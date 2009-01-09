@@ -19,7 +19,6 @@
 
 #include "format_plain_metadata_key.hh"
 #include "format_string.hh"
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>

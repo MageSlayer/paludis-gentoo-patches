@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -52,7 +52,6 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/make_named_values.hh>
@@ -82,7 +81,7 @@ namespace paludis
         std::tr1::shared_ptr<PackageDatabase> package_database;
 
         mutable Mutex sets_mutex;
-        mutable std::map<SetName, std::tr1::shared_ptr<SetSpecTree::ConstItem> > sets;
+        mutable std::map<SetName, std::tr1::shared_ptr<const SetSpecTree> > sets;
 
         std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
         std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > config_location_key;
@@ -272,7 +271,7 @@ PaludisEnvironment::syncers_dirs() const
     return result;
 }
 
-std::tr1::shared_ptr<SetSpecTree::ConstItem>
+const std::tr1::shared_ptr<const SetSpecTree>
 PaludisEnvironment::local_set(const SetName & ss) const
 {
     using namespace std::tr1::placeholders;
@@ -281,7 +280,7 @@ PaludisEnvironment::local_set(const SetName & ss) const
 
     Lock l(_imp->sets_mutex);
 
-    std::map<SetName, std::tr1::shared_ptr<SetSpecTree::ConstItem> >::const_iterator i(_imp->sets.find(ss));
+    std::map<SetName, std::tr1::shared_ptr<const SetSpecTree> >::const_iterator i(_imp->sets.find(ss));
     if (i != _imp->sets.end())
         return i->second;
 
@@ -321,12 +320,12 @@ PaludisEnvironment::local_set(const SetName & ss) const
     }
     else
     {
-        _imp->sets.insert(std::make_pair(ss, std::tr1::shared_ptr<SetSpecTree::ConstItem>()));
-        return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
+        _imp->sets.insert(std::make_pair(ss, make_null_shared_ptr()));
+        return make_null_shared_ptr();
     }
 }
 
-std::tr1::shared_ptr<SetSpecTree::ConstItem>
+const std::tr1::shared_ptr<const SetSpecTree>
 PaludisEnvironment::world_set() const
 {
     return _imp->config->world()->world_set();

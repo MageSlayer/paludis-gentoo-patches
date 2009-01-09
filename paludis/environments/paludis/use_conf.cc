@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,6 +38,8 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/tribool.hh>
+#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/spec_tree.hh>
 #include <paludis/choice.hh>
 #include <tr1/unordered_map>
 #include <algorithm>
@@ -53,7 +55,7 @@ typedef std::tr1::unordered_map<FlagNamePair, Tribool, Hash<FlagNamePair> > Flag
 typedef std::list<ChoicePrefixName> MinusStarPrefixList;
 typedef std::pair<FlagNamePairWithStateMap, MinusStarPrefixList> UseInfo;
 typedef std::pair<std::tr1::shared_ptr<const PackageDepSpec>, UseInfo> PDSWithUseInfo;
-typedef std::pair<std::tr1::shared_ptr<const SetSpecTree::ConstItem>, UseInfo> DSWithUseInfo;
+typedef std::pair<std::tr1::shared_ptr<const SetSpecTree>, UseInfo> DSWithUseInfo;
 typedef std::list<PDSWithUseInfo> PDSWithUseInfoList;
 typedef std::tr1::unordered_map<QualifiedPackageName, PDSWithUseInfoList, Hash<QualifiedPackageName> > Qualified;
 typedef std::list<PDSWithUseInfo> Unqualified;
@@ -249,8 +251,7 @@ UseConf::want_choice_enabled(
             {
                 Log::get_instance()->message("paludis_environment.use_conf.unknown_set", ll_warning, lc_no_context) << "Set name '"
                     << r->first << "' does not exist";
-                r->second.first.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                            std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+                r->second.first.reset(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
             }
         }
 
@@ -342,8 +343,7 @@ UseConf::known_choice_value_names(
                 {
                     Log::get_instance()->message("paludis_environment.use_conf.unknown_set", ll_warning, lc_no_context) << "Set name '"
                         << r->first << "' does not exist";
-                    r->second.first.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                                std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+                    r->second.first.reset(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
                 }
             }
 

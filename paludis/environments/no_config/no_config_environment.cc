@@ -429,16 +429,16 @@ NoConfigEnvironment::accept_keywords(const std::tr1::shared_ptr<const KeywordNam
     return false;
 }
 
-std::tr1::shared_ptr<SetSpecTree::ConstItem>
+const std::tr1::shared_ptr<const SetSpecTree>
 NoConfigEnvironment::local_set(const SetName &) const
 {
-    return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
+    return make_null_shared_ptr();
 }
 
-std::tr1::shared_ptr<SetSpecTree::ConstItem>
+const std::tr1::shared_ptr<const SetSpecTree>
 NoConfigEnvironment::world_set() const
 {
-    return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
+    return make_null_shared_ptr();
 }
 
 void

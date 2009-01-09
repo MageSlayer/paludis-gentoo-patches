@@ -30,6 +30,7 @@
 #include <paludis/hook.hh>
 #include <paludis/package_id.hh>
 #include <paludis/selection.hh>
+#include <paludis/spec_tree.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/make_shared_ptr.hh>
@@ -47,10 +48,10 @@ class EnvironmentImplementationWrapper :
         std::tr1::shared_ptr<PackageDatabase> _db;
 
     protected:
-        virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> local_set(const SetName & s) const
+        virtual const std::tr1::shared_ptr<const SetSpecTree> local_set(const SetName & s) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
-            return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
+            return make_null_shared_ptr();
         }
 
     public:
@@ -264,7 +265,7 @@ class EnvironmentImplementationWrapper :
             return EnvironmentImplementation::set_names();
         }
 
-        virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> set(const SetName & s) const
+        virtual const std::tr1::shared_ptr<const SetSpecTree> set(const SetName & s) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
@@ -274,7 +275,7 @@ class EnvironmentImplementationWrapper :
             return EnvironmentImplementation::set(s);
         }
 
-        std::tr1::shared_ptr<SetSpecTree::ConstItem> default_set(const SetName & s) const
+        const std::tr1::shared_ptr<const SetSpecTree> default_set(const SetName & s) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             return EnvironmentImplementation::set(s);
@@ -355,7 +356,7 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "remove_from_world");
         }
 
-        virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> world_set() const
+        virtual const std::tr1::shared_ptr<const SetSpecTree> world_set() const
         {
             Lock l(get_mutex());
             if (bp::override f = get_override("world_set"))

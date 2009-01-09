@@ -23,7 +23,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/formatter.hh>
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>

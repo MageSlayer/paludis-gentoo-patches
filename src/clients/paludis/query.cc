@@ -25,7 +25,6 @@
 #include <iostream>
 #include <paludis/paludis.hh>
 #include <paludis/fuzzy_finder.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/filter.hh>
 #include <string>
 
@@ -84,26 +83,23 @@ void do_one_package_query(
 
 namespace
 {
-    struct SetPrettyPrinter :
-        ConstVisitor<SetSpecTree>
+    struct SetPrettyPrinter
     {
         std::ostringstream stream;
 
-        void visit_leaf(const PackageDepSpec & d)
+        void visit(const SetSpecTree::NodeType<PackageDepSpec>::Type & node)
         {
-            stream << "            " << d << std::endl;
+            stream << "            " << *node.spec() << std::endl;
         }
 
-        void visit_leaf(const NamedSetDepSpec & d)
+        void visit(const SetSpecTree::NodeType<NamedSetDepSpec>::Type & node)
         {
-            stream << "            " << d << std::endl;
+            stream << "            " << *node.spec() << std::endl;
         }
 
-        void visit_sequence(const AllDepSpec &,
-                SetSpecTree::ConstSequenceIterator cur,
-                SetSpecTree::ConstSequenceIterator end)
+        void visit(const SetSpecTree::NodeType<AllDepSpec>::Type & node)
         {
-            std::for_each(cur, end, accept_visitor(*this));
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
         }
     };
 }
@@ -112,11 +108,11 @@ void do_one_set_query(
         const std::tr1::shared_ptr<Environment> &,
         const std::string & q,
         const std::tr1::shared_ptr<Map<char, std::string> > &,
-        std::tr1::shared_ptr<const SetSpecTree::ConstItem> set)
+        std::tr1::shared_ptr<const SetSpecTree> set)
 {
     cout << "* " << colour(cl_package_name, q) << endl;
     SetPrettyPrinter packages;
-    set->accept(packages);
+    set->root()->accept(packages);
     cout << "    " << std::setw(22) << std::left << "Packages:" << std::setw(0)
         << endl << packages.stream.str() << endl;
 }

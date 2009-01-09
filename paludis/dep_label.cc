@@ -19,7 +19,6 @@
 
 #include <paludis/dep_label.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/stringify.hh>

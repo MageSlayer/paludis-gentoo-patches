@@ -88,8 +88,7 @@ namespace
      * a block (an AllDepSpec or a ConditionalDepSpec), we duplicate the top item
      * of the stack, since labels recurse into subblocks. When we encounter
      * a label, we replace the top item of the stack. */
-    class DistfilesCollector :
-        public ConstVisitor<FetchableURISpecTree>
+    class DistfilesCollector
     {
         private:
             ResultsMap & _results;
@@ -102,45 +101,41 @@ namespace
                 _restricted.push_back(initial);
             }
 
-            void visit_sequence(const AllDepSpec &,
-                    FetchableURISpecTree::ConstSequenceIterator cur,
-                    FetchableURISpecTree::ConstSequenceIterator end)
+            void visit(const FetchableURISpecTree::NodeType<AllDepSpec>::Type & node)
             {
                 /* When we encounter an AllDepSpec, duplicate the top item of
                  * our restricted stack, and then recurse over all of its
                  * children, and then restore the stack. */
                 _restricted.push_back(_restricted.back());
-                std::for_each(cur, end, accept_visitor(*this));
+                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
                 _restricted.pop_back();
             }
 
-            void visit_sequence(const ConditionalDepSpec &,
-                    FetchableURISpecTree::ConstSequenceIterator cur,
-                    FetchableURISpecTree::ConstSequenceIterator end)
+            void visit(const FetchableURISpecTree::NodeType<ConditionalDepSpec>::Type & node)
             {
                 /* Always recurse over a ConditionalDepSpec's children. In real world
                  * code, we would more likely check whether condition is met. */
                 _restricted.push_back(_restricted.back());
-                std::for_each(cur, end, accept_visitor(*this));
+                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
                 _restricted.pop_back();
             }
 
-            void visit_leaf(const FetchableURIDepSpec & s)
+            void visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::Type & node)
             {
                 /* When we encounter a FetchableURIDepSpec, store its distfile name.
                  * We handle 'a -> b' style specs by taking 'b' as the
                  * distfile name. */
-                _results.insert(std::make_pair(s.filename(), _restricted.back()));
+                _results.insert(std::make_pair(node.spec()->filename(), _restricted.back()));
             }
 
-            void visit_leaf(const URILabelsDepSpec & l)
+            void visit(const FetchableURISpecTree::NodeType<URILabelsDepSpec>::Type & node)
             {
                 /* Find out whether the label represents a fetch restriction.
                  * Change the top item of the stack as appropriate. Although
                  * a URILabelsDepSpec can contain multiple labels, only the last
                  * one is relevant. */
                 IsLabelRestrictedVisitor v(_restricted.back());
-                std::for_each(indirect_iterator(l.begin()), indirect_iterator(l.end()), accept_visitor(v));
+                std::for_each(indirect_iterator(node.spec()->begin()), indirect_iterator(node.spec()->end()), accept_visitor(v));
                 _restricted.back() = v.result;
             }
     };
@@ -181,7 +176,7 @@ int main(int argc, char * argv[])
 
             /* Create a visitor that will collect distfiles, and do the collecting. */
             DistfilesCollector collector(results, is_initial_label_restricted.result);
-            (*i)->fetches_key()->value()->accept(collector);
+            (*i)->fetches_key()->value()->root()->accept(collector);
         }
 
         /* Display summary of results */

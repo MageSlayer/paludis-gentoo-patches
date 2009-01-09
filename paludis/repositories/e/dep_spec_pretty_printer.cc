@@ -22,7 +22,6 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/formatter.hh>
 #include <paludis/util/save.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
@@ -110,8 +109,7 @@ paludis::erepository::operator<< (std::ostream & s, const DepSpecPrettyPrinter &
 
 namespace
 {
-    struct IsLabelVisitor :
-        ConstVisitor<GenericSpecTree>
+    struct IsLabelVisitor
     {
         bool result;
 
@@ -120,63 +118,63 @@ namespace
         {
         }
 
-        void visit_leaf(const PlainTextDepSpec &)
+        void visit(const GenericSpecTree::NodeType<PlainTextDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const SimpleURIDepSpec &)
+        void visit(const GenericSpecTree::NodeType<SimpleURIDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const FetchableURIDepSpec &)
+        void visit(const GenericSpecTree::NodeType<FetchableURIDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const LicenseDepSpec &)
+        void visit(const GenericSpecTree::NodeType<LicenseDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const PackageDepSpec &)
+        void visit(const GenericSpecTree::NodeType<PackageDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const BlockDepSpec &)
+        void visit(const GenericSpecTree::NodeType<BlockDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const PlainTextLabelDepSpec &)
-        {
-            result = true;
-        }
-
-        void visit_leaf(const URILabelsDepSpec &)
+        void visit(const GenericSpecTree::NodeType<PlainTextLabelDepSpec>::Type &)
         {
             result = true;
         }
 
-        void visit_leaf(const DependencyLabelsDepSpec &)
+        void visit(const GenericSpecTree::NodeType<URILabelsDepSpec>::Type &)
         {
             result = true;
         }
 
-        void visit_leaf(const NamedSetDepSpec &)
+        void visit(const GenericSpecTree::NodeType<DependencyLabelsDepSpec>::Type &)
+        {
+            result = true;
+        }
+
+        void visit(const GenericSpecTree::NodeType<NamedSetDepSpec>::Type &)
         {
         }
 
-        void visit_sequence(const AllDepSpec &, GenericSpecTree::ConstSequenceIterator, GenericSpecTree::ConstSequenceIterator)
+        void visit(const GenericSpecTree::NodeType<AllDepSpec>::Type &)
         {
         }
 
-        void visit_sequence(const AnyDepSpec &, GenericSpecTree::ConstSequenceIterator, GenericSpecTree::ConstSequenceIterator)
+        void visit(const GenericSpecTree::NodeType<AnyDepSpec>::Type &)
         {
         }
 
-        void visit_sequence(const ConditionalDepSpec &, GenericSpecTree::ConstSequenceIterator, GenericSpecTree::ConstSequenceIterator)
+        void visit(const GenericSpecTree::NodeType<ConditionalDepSpec>::Type &)
         {
         }
     };
 
-    bool is_label(const ConstAcceptInterface<GenericSpecTree> & i)
+    bool is_label(const GenericSpecTree::BasicNode & i)
     {
         IsLabelVisitor v;
         i.accept(v);
@@ -185,12 +183,12 @@ namespace
 }
 
 void
-DepSpecPrettyPrinter::visit_sequence(const AllDepSpec & a,
-        GenericSpecTree::ConstSequenceIterator cur,
-        GenericSpecTree::ConstSequenceIterator end)
+DepSpecPrettyPrinter::visit(const GenericSpecTree::NodeType<AllDepSpec>::Type & node)
 {
-    bool need_parens(_imp->all_needs_parens || a.annotations_key() ||
-            (! _imp->outer_block && end != std::find_if(cur, end, is_label)));
+    bool need_parens(_imp->all_needs_parens || node.spec()->annotations_key() ||
+            (! _imp->outer_block && indirect_iterator(node.end()) != std::find_if(indirect_iterator(node.begin()),
+                                                                                  indirect_iterator(node.end()),
+                                                                                  is_label)));
     Save<bool> old_outer(&_imp->outer_block, false);
     Save<bool> old_needs_parens(&_imp->all_needs_parens, false);
 
@@ -210,7 +208,7 @@ DepSpecPrettyPrinter::visit_sequence(const AllDepSpec & a,
     {
         Save<unsigned> old_indent(&_imp->indent, need_parens ? _imp->indent +1 : _imp->indent);
         Save<bool> extra_label_indent(&_imp->extra_label_indent, need_parens ? false : _imp->extra_label_indent);
-        std::for_each(cur, end, accept_visitor(*this));
+        std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
     }
 
     if (need_parens)
@@ -221,7 +219,7 @@ DepSpecPrettyPrinter::visit_sequence(const AllDepSpec & a,
             _imp->s << " ";
         _imp->s << ")";
 
-        do_annotations(a);
+        do_annotations(*node.spec());
 
         if (_imp->use_newlines)
             _imp->s << _imp->formatter.newline();
@@ -231,9 +229,7 @@ DepSpecPrettyPrinter::visit_sequence(const AllDepSpec & a,
 }
 
 void
-DepSpecPrettyPrinter::visit_sequence(const AnyDepSpec & a,
-        GenericSpecTree::ConstSequenceIterator cur,
-        GenericSpecTree::ConstSequenceIterator end)
+DepSpecPrettyPrinter::visit(const GenericSpecTree::NodeType<AnyDepSpec>::Type & node)
 {
     Save<bool> old_outer(&_imp->outer_block, false);
     Save<bool> old_needs_parens(&_imp->all_needs_parens, true);
@@ -251,7 +247,7 @@ DepSpecPrettyPrinter::visit_sequence(const AnyDepSpec & a,
     {
         Save<unsigned> old_indent(&_imp->indent, _imp->indent + 1);
         Save<bool> extra_label_indent(&_imp->extra_label_indent, false);
-        std::for_each(cur, end, accept_visitor(*this));
+        std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
     }
 
     if (_imp->use_newlines)
@@ -260,7 +256,7 @@ DepSpecPrettyPrinter::visit_sequence(const AnyDepSpec & a,
         _imp->s << " ";
     _imp->s << ")";
 
-    do_annotations(a);
+    do_annotations(*node.spec());
 
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();
@@ -269,9 +265,7 @@ DepSpecPrettyPrinter::visit_sequence(const AnyDepSpec & a,
 }
 
 void
-DepSpecPrettyPrinter::visit_sequence(const ConditionalDepSpec & a,
-        GenericSpecTree::ConstSequenceIterator cur,
-        GenericSpecTree::ConstSequenceIterator end)
+DepSpecPrettyPrinter::visit(const GenericSpecTree::NodeType<ConditionalDepSpec>::Type & node)
 {
     Save<bool> old_outer(&_imp->outer_block, false);
     Save<bool> old_needs_parens(&_imp->all_needs_parens, false);
@@ -282,11 +276,11 @@ DepSpecPrettyPrinter::visit_sequence(const ConditionalDepSpec & a,
         _imp->s << " ";
 
     if (! _imp->check_conditions)
-        _imp->s << _imp->formatter.format(a, format::Plain()) << " (";
-    else if (a.condition_met())
-        _imp->s << _imp->formatter.format(a, format::Enabled()) << " (";
+        _imp->s << _imp->formatter.format(*node.spec(), format::Plain()) << " (";
+    else if (node.spec()->condition_met())
+        _imp->s << _imp->formatter.format(*node.spec(), format::Enabled()) << " (";
     else
-        _imp->s << _imp->formatter.format(a, format::Disabled()) << " (";
+        _imp->s << _imp->formatter.format(*node.spec(), format::Disabled()) << " (";
 
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();
@@ -296,7 +290,7 @@ DepSpecPrettyPrinter::visit_sequence(const ConditionalDepSpec & a,
     {
         Save<unsigned> old_indent(&_imp->indent, _imp->indent + 1);
         Save<bool> extra_label_indent(&_imp->extra_label_indent, false);
-        std::for_each(cur, end, accept_visitor(*this));
+        std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
     }
 
     if (_imp->use_newlines)
@@ -305,7 +299,7 @@ DepSpecPrettyPrinter::visit_sequence(const ConditionalDepSpec & a,
         _imp->s << " ";
     _imp->s << ")";
 
-    do_annotations(a);
+    do_annotations(*node.spec());
 
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();
@@ -314,7 +308,7 @@ DepSpecPrettyPrinter::visit_sequence(const ConditionalDepSpec & a,
 }
 
 void
-DepSpecPrettyPrinter::visit_leaf(const PackageDepSpec & p)
+DepSpecPrettyPrinter::visit(const GenericSpecTree::NodeType<PackageDepSpec>::Type & node)
 {
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.indent(_imp->indent);
@@ -323,19 +317,19 @@ DepSpecPrettyPrinter::visit_leaf(const PackageDepSpec & p)
 
     if (_imp->env && _imp->check_conditions)
     {
-        if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(p, MatchPackageOptions()) |
+        if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*node.spec(), MatchPackageOptions()) |
                     filter::InstalledAtRoot(_imp->env->root()))]->empty())
-            _imp->s << _imp->formatter.format(p, format::Installed());
-        else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(p, MatchPackageOptions()) |
+            _imp->s << _imp->formatter.format(*node.spec(), format::Installed());
+        else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*node.spec(), MatchPackageOptions()) |
                     filter::SupportsAction<InstallAction>() | filter::NotMasked())]->empty())
-            _imp->s << _imp->formatter.format(p, format::Installable());
+            _imp->s << _imp->formatter.format(*node.spec(), format::Installable());
         else
-            _imp->s << _imp->formatter.format(p, format::Plain());
+            _imp->s << _imp->formatter.format(*node.spec(), format::Plain());
     }
     else
-        _imp->s << _imp->formatter.format(p, format::Plain());
+        _imp->s << _imp->formatter.format(*node.spec(), format::Plain());
 
-    do_annotations(p);
+    do_annotations(*node.spec());
 
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();
@@ -344,16 +338,16 @@ DepSpecPrettyPrinter::visit_leaf(const PackageDepSpec & p)
 }
 
 void
-DepSpecPrettyPrinter::visit_leaf(const PlainTextDepSpec & p)
+DepSpecPrettyPrinter::visit(const GenericSpecTree::NodeType<PlainTextDepSpec>::Type & node)
 {
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.indent(_imp->indent);
     else if (_imp->need_space)
         _imp->s << " ";
 
-    _imp->s << _imp->formatter.format(p, format::Plain());
+    _imp->s << _imp->formatter.format(*node.spec(), format::Plain());
 
-    do_annotations(p);
+    do_annotations(*node.spec());
 
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();
@@ -362,16 +356,16 @@ DepSpecPrettyPrinter::visit_leaf(const PlainTextDepSpec & p)
 }
 
 void
-DepSpecPrettyPrinter::visit_leaf(const NamedSetDepSpec & p)
+DepSpecPrettyPrinter::visit(const GenericSpecTree::NodeType<NamedSetDepSpec>::Type & node)
 {
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.indent(_imp->indent);
     else if (_imp->need_space)
         _imp->s << " ";
 
-    _imp->s << _imp->formatter.format(p, format::Plain());
+    _imp->s << _imp->formatter.format(*node.spec(), format::Plain());
 
-    do_annotations(p);
+    do_annotations(*node.spec());
 
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();
@@ -380,7 +374,7 @@ DepSpecPrettyPrinter::visit_leaf(const NamedSetDepSpec & p)
 }
 
 void
-DepSpecPrettyPrinter::visit_leaf(const LicenseDepSpec & p)
+DepSpecPrettyPrinter::visit(const GenericSpecTree::NodeType<LicenseDepSpec>::Type & node)
 {
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.indent(_imp->indent);
@@ -389,15 +383,15 @@ DepSpecPrettyPrinter::visit_leaf(const LicenseDepSpec & p)
 
     if (_imp->env && _imp->id && _imp->check_conditions)
     {
-        if (_imp->env->accept_license(p.text(), *_imp->id))
-            _imp->s << _imp->formatter.format(p, format::Accepted());
+        if (_imp->env->accept_license(node.spec()->text(), *_imp->id))
+            _imp->s << _imp->formatter.format(*node.spec(), format::Accepted());
         else
-            _imp->s << _imp->formatter.format(p, format::Unaccepted());
+            _imp->s << _imp->formatter.format(*node.spec(), format::Unaccepted());
     }
     else
-        _imp->s << _imp->formatter.format(p, format::Plain());
+        _imp->s << _imp->formatter.format(*node.spec(), format::Plain());
 
-    do_annotations(p);
+    do_annotations(*node.spec());
 
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();
@@ -406,16 +400,16 @@ DepSpecPrettyPrinter::visit_leaf(const LicenseDepSpec & p)
 }
 
 void
-DepSpecPrettyPrinter::visit_leaf(const FetchableURIDepSpec & p)
+DepSpecPrettyPrinter::visit(const GenericSpecTree::NodeType<FetchableURIDepSpec>::Type & node)
 {
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.indent(_imp->indent);
     else if (_imp->need_space)
         _imp->s << " ";
 
-    _imp->s << _imp->formatter.format(p, format::Plain());
+    _imp->s << _imp->formatter.format(*node.spec(), format::Plain());
 
-    do_annotations(p);
+    do_annotations(*node.spec());
 
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();
@@ -424,16 +418,16 @@ DepSpecPrettyPrinter::visit_leaf(const FetchableURIDepSpec & p)
 }
 
 void
-DepSpecPrettyPrinter::visit_leaf(const SimpleURIDepSpec & p)
+DepSpecPrettyPrinter::visit(const GenericSpecTree::NodeType<SimpleURIDepSpec>::Type & node)
 {
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.indent(_imp->indent);
     else if (_imp->need_space)
         _imp->s << " ";
 
-    _imp->s << _imp->formatter.format(p, format::Plain());
+    _imp->s << _imp->formatter.format(*node.spec(), format::Plain());
 
-    do_annotations(p);
+    do_annotations(*node.spec());
 
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();
@@ -442,16 +436,16 @@ DepSpecPrettyPrinter::visit_leaf(const SimpleURIDepSpec & p)
 }
 
 void
-DepSpecPrettyPrinter::visit_leaf(const BlockDepSpec & b)
+DepSpecPrettyPrinter::visit(const GenericSpecTree::NodeType<BlockDepSpec>::Type & node)
 {
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.indent(_imp->indent);
     else if (_imp->need_space)
         _imp->s << " ";
 
-    _imp->s << _imp->formatter.format(b, format::Plain());
+    _imp->s << _imp->formatter.format(*node.spec(), format::Plain());
 
-    do_annotations(b);
+    do_annotations(*node.spec());
 
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();
@@ -460,7 +454,7 @@ DepSpecPrettyPrinter::visit_leaf(const BlockDepSpec & b)
 }
 
 void
-DepSpecPrettyPrinter::visit_leaf(const URILabelsDepSpec & l)
+DepSpecPrettyPrinter::visit(const GenericSpecTree::NodeType<URILabelsDepSpec>::Type & node)
 {
     if (_imp->extra_label_indent)
     {
@@ -473,9 +467,9 @@ DepSpecPrettyPrinter::visit_leaf(const URILabelsDepSpec & l)
     else if (_imp->need_space)
         _imp->s << " ";
 
-    _imp->s << _imp->formatter.format(l, format::Plain());
+    _imp->s << _imp->formatter.format(*node.spec(), format::Plain());
 
-    do_annotations(l);
+    do_annotations(*node.spec());
 
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();
@@ -490,7 +484,7 @@ DepSpecPrettyPrinter::visit_leaf(const URILabelsDepSpec & l)
 }
 
 void
-DepSpecPrettyPrinter::visit_leaf(const PlainTextLabelDepSpec & l)
+DepSpecPrettyPrinter::visit(const GenericSpecTree::NodeType<PlainTextLabelDepSpec>::Type & node)
 {
     if (_imp->extra_label_indent)
     {
@@ -503,9 +497,9 @@ DepSpecPrettyPrinter::visit_leaf(const PlainTextLabelDepSpec & l)
     else if (_imp->need_space)
         _imp->s << " ";
 
-    _imp->s << _imp->formatter.format(l, format::Plain());
+    _imp->s << _imp->formatter.format(*node.spec(), format::Plain());
 
-    do_annotations(l);
+    do_annotations(*node.spec());
 
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();
@@ -520,7 +514,7 @@ DepSpecPrettyPrinter::visit_leaf(const PlainTextLabelDepSpec & l)
 }
 
 void
-DepSpecPrettyPrinter::visit_leaf(const DependencyLabelsDepSpec & l)
+DepSpecPrettyPrinter::visit(const GenericSpecTree::NodeType<DependencyLabelsDepSpec>::Type & node)
 {
     if (_imp->extra_label_indent)
     {
@@ -533,9 +527,9 @@ DepSpecPrettyPrinter::visit_leaf(const DependencyLabelsDepSpec & l)
     else if (_imp->need_space)
         _imp->s << " ";
 
-    _imp->s << _imp->formatter.format(l, format::Plain());
+    _imp->s << _imp->formatter.format(*node.spec(), format::Plain());
 
-    do_annotations(l);
+    do_annotations(*node.spec());
 
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.newline();

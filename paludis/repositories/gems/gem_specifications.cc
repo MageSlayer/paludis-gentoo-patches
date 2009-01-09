@@ -23,7 +23,6 @@
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>

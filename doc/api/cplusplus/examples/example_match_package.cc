@@ -45,7 +45,7 @@ int main(int argc, char * argv[])
 
         /* Fetch the 'system' and 'world' sets. Ordinarily we should check for
          * zero pointers here, but these two sets will always exist. */
-        std::tr1::shared_ptr<const SetSpecTree::ConstItem> system(env->set(SetName("system"))),
+        std::tr1::shared_ptr<const SetSpecTree> system(env->set(SetName("system"))),
             world(env->set(SetName("world")));
 
         /* For each ID: */

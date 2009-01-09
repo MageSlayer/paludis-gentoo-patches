@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,7 +21,6 @@
 #include <paludis/qa.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
@@ -33,14 +32,8 @@ using namespace paludis::erepository;
 
 namespace
 {
-    struct HomepageChecker :
-        ConstVisitor<SimpleURISpecTree>,
-        ConstVisitor<SimpleURISpecTree>::VisitConstSequence<HomepageChecker, AllDepSpec>,
-        ConstVisitor<SimpleURISpecTree>::VisitConstSequence<HomepageChecker, ConditionalDepSpec>
+    struct HomepageChecker
     {
-        using ConstVisitor<SimpleURISpecTree>::VisitConstSequence<HomepageChecker, ConditionalDepSpec>::visit_sequence;
-        using ConstVisitor<SimpleURISpecTree>::VisitConstSequence<HomepageChecker, AllDepSpec>::visit_sequence;
-
         const std::tr1::shared_ptr<const MetadataKey> & key;
         const FSEntry entry;
         QAReporter & reporter;
@@ -71,17 +64,27 @@ namespace
                         .with_associated_key(id, key));
         }
 
-        void visit_leaf(const SimpleURIDepSpec & u)
+        void visit(const SimpleURISpecTree::NodeType<SimpleURIDepSpec>::Type & node)
         {
             found_one = true;
 
-            if (0 != u.text().compare(0, 7, "http://") &&
-                    0 != u.text().compare(0, 8, "https://") &&
-                    0 != u.text().compare(0, 6, "ftp://"))
+            if (0 != node.spec()->text().compare(0, 7, "http://") &&
+                    0 != node.spec()->text().compare(0, 8, "https://") &&
+                    0 != node.spec()->text().compare(0, 6, "ftp://"))
                 reporter.message(QAMessage(entry, qaml_normal, name,
-                            "Homepage uses no or unknown protocol in part '" + u.text() + "'")
+                            "Homepage uses no or unknown protocol in part '" + node.spec()->text() + "'")
                         .with_associated_id(id)
                         .with_associated_key(id, key));
+        }
+
+        void visit(const SimpleURISpecTree::NodeType<AllDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
+
+        void visit(const SimpleURISpecTree::NodeType<ConditionalDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
         }
     };
 }
@@ -103,10 +106,9 @@ paludis::erepository::homepage_key_check(
     else
     {
         HomepageChecker h(id->homepage_key(), entry, reporter, id, name);
-        id->homepage_key()->value()->accept(h);
+        id->homepage_key()->value()->root()->accept(h);
     }
 
     return true;
 }
-
 

@@ -18,12 +18,10 @@
  */
 
 #include <paludis/uninstall_list.hh>
-#include <paludis/condition_tracker.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/set-impl.hh>
@@ -33,7 +31,10 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
@@ -61,6 +62,7 @@ typedef std::tr1::unordered_map<
 template class Set<std::tr1::shared_ptr<DepTag> >;
 template class WrappedForwardIterator<Set<std::tr1::shared_ptr<DepTag> >::ConstIteratorTag, const std::tr1::shared_ptr<DepTag> >;
 template class WrappedOutputIterator<Set<std::tr1::shared_ptr<DepTag> >::InserterTag, std::tr1::shared_ptr<DepTag> >;
+template class WrappedForwardIterator<UninstallList::UninstallListTag, const UninstallListEntry>;
 
 namespace paludis
 {
@@ -251,101 +253,87 @@ UninstallList::collect_all_installed() const
 
 namespace
 {
-    struct DepCollector :
-        ConstVisitor<DependencySpecTree>,
-        ConstVisitor<DependencySpecTree>::VisitConstSequence<DepCollector, AllDepSpec>,
-        ConstVisitor<DependencySpecTree>::VisitConstSequence<DepCollector, AnyDepSpec>
+    struct DepCollector
     {
-        using ConstVisitor<DependencySpecTree>::VisitConstSequence<DepCollector, AllDepSpec>::visit_sequence;
-
         const Environment * const env;
         const std::tr1::shared_ptr<const PackageID> pkg;
         std::tr1::shared_ptr<DepListEntryTags> matches;
-        std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > conditions;
         std::set<SetName> recursing_sets;
 
         DepCollector(const Environment * const ee, const std::tr1::shared_ptr<const PackageID> & e) :
             env(ee),
             pkg(e),
-            matches(new DepListEntryTags),
-            conditions(std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >(
-                           new ConstTreeSequence<DependencySpecTree, AllDepSpec>(
-                               std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec))))
+            matches(new DepListEntryTags)
         {
         }
 
-        void visit_leaf(const PackageDepSpec & a)
+        void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
         {
-            Save<std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
-                &conditions, ConditionTracker(conditions).add_condition(a));
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()),
+                    accept_visitor(*this));
+        }
 
+        void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
+        {
             bool best_only(false);
-            if (a.slot_requirement_ptr())
-                best_only = simple_visitor_cast<const SlotAnyUnlockedRequirement>(*a.slot_requirement_ptr());
+            if (node.spec()->slot_requirement_ptr())
+                best_only = simple_visitor_cast<const SlotAnyUnlockedRequirement>(*node.spec()->slot_requirement_ptr());
 
             std::tr1::shared_ptr<const PackageIDSequence> m(
                     best_only ?
-                    (*env)[selection::BestVersionOnly(generator::Matches(a, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))] :
-                    (*env)[selection::AllVersionsSorted(generator::Matches(a, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
+                    (*env)[selection::BestVersionOnly(generator::Matches(*node.spec(), MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))] :
+                    (*env)[selection::AllVersionsSorted(generator::Matches(*node.spec(), MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
             for (PackageIDSequence::ConstIterator it = m->begin(), it_end = m->end();
                  it_end != it; ++it)
                 matches->insert(make_named_values<DepTagEntry>(
                             value_for<n::generation>(0),
-                            value_for<n::tag>(std::tr1::shared_ptr<const DepTag>(new DependencyDepTag(*it, a, conditions)))
+                            value_for<n::tag>(std::tr1::shared_ptr<const DepTag>(new DependencyDepTag(*it, *node.spec())))
                             ));
         }
 
-        void visit_sequence(const AnyDepSpec & a,
-                DependencySpecTree::ConstSequenceIterator cur,
-                DependencySpecTree::ConstSequenceIterator end)
+        void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
         {
-            Save<std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
-                &conditions, ConditionTracker(conditions).add_condition(a));
-
-            std::for_each(cur, end, accept_visitor(*this));
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()),
+                    accept_visitor(*this));
         }
 
-        void visit_sequence(const ConditionalDepSpec & u,
-                DependencySpecTree::ConstSequenceIterator cur,
-                DependencySpecTree::ConstSequenceIterator end)
+        void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            Save<std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
-                &conditions, ConditionTracker(conditions).add_condition(u));
-
-            if (u.condition_met())
-                std::for_each(cur, end, accept_visitor(*this));
+            if (node.spec()->condition_met())
+                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()),
+                        accept_visitor(*this));
         }
 
-        void visit_leaf(const BlockDepSpec &)
+        void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const DependencyLabelsDepSpec &)
+        void visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const NamedSetDepSpec & s)
+        void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node)
         {
-            Context context("When expanding named set '" + stringify(s) + "':");
+            Context context("When expanding named set '" + stringify(*node.spec()) + "':");
 
-            std::tr1::shared_ptr<const SetSpecTree::ConstItem> set(env->set(s.name()));
+            std::tr1::shared_ptr<const SetSpecTree> set(env->set(node.spec()->name()));
 
             if (! set)
             {
-                Log::get_instance()->message("uninstall_list.unknown_set", ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
+                Log::get_instance()->message("uninstall_list.unknown_set", ll_warning, lc_context) << "Unknown set '" << node.spec()->name() << "'";
                 return;
             }
 
-            if (! recursing_sets.insert(s.name()).second)
+            if (! recursing_sets.insert(node.spec()->name()).second)
             {
                 Log::get_instance()->message("uninstall_list.recursive_set", ll_warning, lc_context)
-                    << "Recursively defined set '" << s.name() << "'";
+                    << "Recursively defined set '" << node.spec()->name() << "'";
                 return;
             }
 
-            set->accept(*this);
+            set->root()->accept(*this);
 
-            recursing_sets.erase(s.name());
+            recursing_sets.erase(node.spec()->name());
         }
     };
 }
@@ -369,13 +357,13 @@ UninstallList::collect_depped_upon(std::tr1::shared_ptr<const PackageIDSet> targ
         {
             DepCollector c(_imp->env, *i);
             if ((*i)->build_dependencies_key())
-                (*i)->build_dependencies_key()->value()->accept(c);
+                (*i)->build_dependencies_key()->value()->root()->accept(c);
             if ((*i)->run_dependencies_key())
-                (*i)->run_dependencies_key()->value()->accept(c);
+                (*i)->run_dependencies_key()->value()->root()->accept(c);
             if ((*i)->post_dependencies_key())
-                (*i)->post_dependencies_key()->value()->accept(c);
+                (*i)->post_dependencies_key()->value()->root()->accept(c);
             if ((*i)->suggested_dependencies_key())
-                (*i)->suggested_dependencies_key()->value()->accept(c);
+                (*i)->suggested_dependencies_key()->value()->root()->accept(c);
 
             cache = _imp->dep_collector_cache.insert(std::make_pair(*i,
                         std::tr1::shared_ptr<const DepListEntryTags>(c.matches))).first;
@@ -433,7 +421,7 @@ UninstallList::add_unused_dependencies()
                 PackageIDSetComparator());
 
         /* if any of them aren't already on the list, and aren't in world, add them and recurse */
-        std::tr1::shared_ptr<SetSpecTree::ConstItem> world(_imp->env->set(SetName("world")));
+        std::tr1::shared_ptr<const SetSpecTree> world(_imp->env->set(SetName("world")));
         for (PackageIDSet::ConstIterator i(unused_dependencies->begin()),
                 i_end(unused_dependencies->end()) ; i != i_end ; ++i)
         {
@@ -470,13 +458,13 @@ UninstallList::add_dependencies(const PackageID & e, const bool error)
         {
             DepCollector c(_imp->env, *i);
             if ((*i)->build_dependencies_key())
-                (*i)->build_dependencies_key()->value()->accept(c);
+                (*i)->build_dependencies_key()->value()->root()->accept(c);
             if ((*i)->run_dependencies_key())
-                (*i)->run_dependencies_key()->value()->accept(c);
+                (*i)->run_dependencies_key()->value()->root()->accept(c);
             if ((*i)->post_dependencies_key())
-                (*i)->post_dependencies_key()->value()->accept(c);
+                (*i)->post_dependencies_key()->value()->root()->accept(c);
             if ((*i)->suggested_dependencies_key())
-                (*i)->suggested_dependencies_key()->value()->accept(c);
+                (*i)->suggested_dependencies_key()->value()->root()->accept(c);
             cache = _imp->dep_collector_cache.insert(std::make_pair(*i,
                         std::tr1::shared_ptr<const DepListEntryTags>(c.matches))).first;
         }
@@ -495,7 +483,7 @@ UninstallList::add_dependencies(const PackageID & e, const bool error)
                     logged = true;
                 }
                 real_add(*i, std::tr1::shared_ptr<DependencyDepTag>(
-                        new DependencyDepTag(tag->package_id(), *tag->dependency(), tag->conditions())), error);
+                        new DependencyDepTag(tag->package_id(), *tag->dependency())), error);
             }
         }
 
@@ -510,7 +498,7 @@ UninstallList::collect_world() const
     std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
     std::tr1::shared_ptr<const PackageIDSet> everything(collect_all_installed());
 
-    std::tr1::shared_ptr<SetSpecTree::ConstItem> world(_imp->env->set(SetName("world")));
+    std::tr1::shared_ptr<const SetSpecTree> world(_imp->env->set(SetName("world")));
     for (PackageIDSet::ConstIterator i(everything->begin()),
             i_end(everything->end()) ; i != i_end ; ++i)
     {

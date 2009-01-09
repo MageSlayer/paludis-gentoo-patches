@@ -21,7 +21,6 @@
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/map.hh>
@@ -92,10 +91,10 @@ namespace test_cases
             installed->add_version("cat-two", "bar", "1.5");
             env.package_database()->add_repository(0, installed);
 
-            std::tr1::shared_ptr<SetSpecTree::ConstItem> set1(repo->sets_interface()->package_set(SetName("set1")));
+            std::tr1::shared_ptr<const SetSpecTree> set1(repo->sets_interface()->package_set(SetName("set1")));
             StringifyFormatter ff;
             erepository::DepSpecPrettyPrinter pretty(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
-            set1->accept(pretty);
+            set1->root()->accept(pretty);
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "cat-one/foo >=cat-two/bar-2");
         }
     } test_e_repository_sets_maintainer_defined_sets_list;
@@ -122,10 +121,10 @@ namespace test_cases
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<SetSpecTree::ConstItem> insecurity(repo->sets_interface()->package_set(SetName("insecurity")));
+            std::tr1::shared_ptr<const SetSpecTree> insecurity(repo->sets_interface()->package_set(SetName("insecurity")));
             StringifyFormatter ff;
             erepository::DepSpecPrettyPrinter pretty(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
-            insecurity->accept(pretty);
+            insecurity->root()->accept(pretty);
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "=cat-four/xyzzy-2.0.1::test-repo-1 =cat-four/xyzzy-2.0.2::test-repo-1 =cat-one/foo-1::test-repo-1 =cat-two/bar-1.5::test-repo-1 "
                                        "=cat-two/bar-1.5.1::test-repo-1 =cat-three/baz-1.0::test-repo-1 "
                                        "=cat-three/baz-1.1-r2::test-repo-1 =cat-three/baz-1.2::test-repo-1");
@@ -162,10 +161,10 @@ namespace test_cases
             installed->add_version("cat-four", "xyzzy", "2.0.1")->set_slot(SlotName("2"));
             env.package_database()->add_repository(0, installed);
 
-            std::tr1::shared_ptr<const SetSpecTree::ConstItem> security(repo->sets_interface()->package_set(SetName("security")));
+            std::tr1::shared_ptr<const SetSpecTree> security(repo->sets_interface()->package_set(SetName("security")));
             StringifyFormatter ff;
             erepository::DepSpecPrettyPrinter pretty(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
-            security->accept(pretty);
+            security->root()->accept(pretty);
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "=cat-four/xyzzy-2.0.3::test-repo-1 =cat-two/bar-2.0::test-repo-1 =cat-three/baz-1.3::test-repo-1");
         }
     } test_e_repository_sets_security_set;

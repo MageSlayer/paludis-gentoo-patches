@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,7 +21,6 @@
 #include <paludis/repositories/unpackaged/dep_printer.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/stringify_formatter.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -38,11 +37,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<const DependencySpecTree::ConstItem> spec(
+            std::tr1::shared_ptr<const DependencySpecTree> spec(
                     DepParser::parse(&env, "cat/one  , cat/two, cat/three\n"));
             StringifyFormatter f;
             DepPrinter p(&env, f, true);
-            spec->accept(p);
+            spec->root()->accept(p);
             TEST_CHECK_EQUAL(p.result(), "cat/one, cat/two, cat/three");
         }
     } test_dep_parser;

@@ -26,7 +26,6 @@
 #include <paludis/dep_label.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
@@ -412,7 +411,7 @@ struct MetadataSpecTreeKeyWrapper :
     {
     }
 
-    virtual const std::tr1::shared_ptr<const typename C_::ConstItem> value() const
+    virtual const std::tr1::shared_ptr<const C_> value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
@@ -456,7 +455,7 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
     {
     }
 
-    virtual const std::tr1::shared_ptr<const FetchableURISpecTree::ConstItem> value() const
+    virtual const std::tr1::shared_ptr<const FetchableURISpecTree> value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
@@ -511,7 +510,7 @@ struct MetadataSpecTreeKeyWrapper<DependencySpecTree> :
     {
     }
 
-    virtual const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
+    virtual const std::tr1::shared_ptr<const DependencySpecTree> value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());

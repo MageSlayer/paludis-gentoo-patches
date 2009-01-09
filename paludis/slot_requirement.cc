@@ -18,7 +18,6 @@
  */
 
 #include <paludis/slot_requirement.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <ostream>
 
 using namespace paludis;

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,7 +27,6 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/stringify_formatter-impl.hh>
@@ -106,7 +105,7 @@ namespace paludis
         const std::string v;
 
         mutable Mutex mutex;
-        mutable std::tr1::shared_ptr<const DependencySpecTree::ConstItem> c;
+        mutable std::tr1::shared_ptr<const DependencySpecTree> c;
         const std::tr1::shared_ptr<const DependencyLabelSequence> labels;
 
         Implementation(const Environment * const e, const std::string & vv,
@@ -131,7 +130,7 @@ DepKey::~DepKey()
 {
 }
 
-const std::tr1::shared_ptr<const DependencySpecTree::ConstItem>
+const std::tr1::shared_ptr<const DependencySpecTree>
 DepKey::value() const
 {
     Lock l(_imp->mutex);
@@ -148,7 +147,7 @@ DepKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, ff, 12, true);
-    value()->accept(p);
+    value()->root()->accept(p);
     return stringify(p);
 }
 
@@ -157,7 +156,7 @@ DepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, ff, 0, false);
-    value()->accept(p);
+    value()->root()->accept(p);
     return stringify(p);
 }
 

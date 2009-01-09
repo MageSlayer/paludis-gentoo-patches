@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,7 +25,6 @@
 #include <paludis/util/config_file.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/options.hh>
@@ -70,21 +69,28 @@ namespace
         }
     };
 
-    struct FlagExtractor :
-        ConstVisitor<GenericSpecTree>,
-        ConstVisitor<GenericSpecTree>::VisitConstSequence<FlagExtractor, AllDepSpec>,
-        ConstVisitor<GenericSpecTree>::VisitConstSequence<FlagExtractor, AnyDepSpec>
+    struct FlagExtractor
     {
         std::map<QualifiedPackageName, std::set<ChoiceNameWithPrefix> > relevant;
         std::set<ChoiceNameWithPrefix> current;
         std::set<QualifiedPackageName> needed_packages;
 
-        void visit_leaf(const FetchableURIDepSpec & u)
+        void visit(const GenericSpecTree::NodeType<AllDepSpec>::Type & node)
         {
-            std::string::size_type p(u.filename().rfind('.'));
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
+
+        void visit(const GenericSpecTree::NodeType<AnyDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
+
+        void visit(const GenericSpecTree::NodeType<FetchableURIDepSpec>::Type & node)
+        {
+            std::string::size_type p(node.spec()->filename().rfind('.'));
             if (std::string::npos == p)
                 return;
-            std::string extension(u.filename().substr(p + 1));
+            std::string extension(node.spec()->filename().substr(p + 1));
             std::string needed(ExtractorsRequirements::get_instance()->file->get(extension));
             if (! needed.empty())
             {
@@ -93,60 +99,53 @@ namespace
             }
         }
 
-        void visit_leaf(const PackageDepSpec & p)
+        void visit(const GenericSpecTree::NodeType<PackageDepSpec>::Type & node)
         {
-            if (p.package_ptr() && needed_packages.count(*p.package_ptr()))
-                relevant[*p.package_ptr()].insert(current.begin(), current.end());
+            if (node.spec()->package_ptr() && needed_packages.count(*node.spec()->package_ptr()))
+                relevant[*node.spec()->package_ptr()].insert(current.begin(), current.end());
         }
 
-        void visit_leaf(const BlockDepSpec &)
-        {
-        }
-
-        void visit_leaf(const URILabelsDepSpec &)
+        void visit(const GenericSpecTree::NodeType<BlockDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const DependencyLabelsDepSpec &)
+        void visit(const GenericSpecTree::NodeType<URILabelsDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const PlainTextDepSpec &)
+        void visit(const GenericSpecTree::NodeType<DependencyLabelsDepSpec>::Type &)
         {
         }
 
-        void visit_sequence(const ConditionalDepSpec & u,
-                GenericSpecTree::ConstSequenceIterator cur,
-                GenericSpecTree::ConstSequenceIterator end)
+        void visit(const GenericSpecTree::NodeType<PlainTextDepSpec>::Type &)
+        {
+        }
+
+        void visit(const GenericSpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
             Save<std::set<ChoiceNameWithPrefix> > save_current(&current);
-            current.insert(elike_conditional_dep_spec_flag(u));
-            std::for_each(cur, end, accept_visitor(*this));
+            current.insert(elike_conditional_dep_spec_flag(*node.spec()));
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
         }
 
-        void visit_leaf(const LicenseDepSpec &)
+        void visit(const GenericSpecTree::NodeType<LicenseDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const SimpleURIDepSpec &)
+        void visit(const GenericSpecTree::NodeType<SimpleURIDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const PlainTextLabelDepSpec &)
+        void visit(const GenericSpecTree::NodeType<PlainTextLabelDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const NamedSetDepSpec &)
+        void visit(const GenericSpecTree::NodeType<NamedSetDepSpec>::Type &)
         {
         }
-
-        using ConstVisitor<GenericSpecTree>::VisitConstSequence<FlagExtractor, AllDepSpec>::visit_sequence;
-        using ConstVisitor<GenericSpecTree>::VisitConstSequence<FlagExtractor, AnyDepSpec>::visit_sequence;
     };
 
-    struct Requirements :
-        ConstVisitor<GenericSpecTree>,
-        ConstVisitor<GenericSpecTree>::VisitConstSequence<Requirements, AllDepSpec>
+    struct Requirements
     {
         const QualifiedPackageName & name;
         const std::set<ChoiceNameWithPrefix> & relevant;
@@ -185,12 +184,17 @@ namespace
             requirements.insert(new_requirements.begin(), new_requirements.end());
         }
 
-        void visit_leaf(const FetchableURIDepSpec & u)
+        void visit(const GenericSpecTree::NodeType<AllDepSpec>::Type & node)
         {
-            std::string::size_type p(u.filename().rfind('.'));
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
+
+        void visit(const GenericSpecTree::NodeType<FetchableURIDepSpec>::Type & node)
+        {
+            std::string::size_type p(node.spec()->filename().rfind('.'));
             if (std::string::npos == p)
                 return;
-            std::string extension(u.filename().substr(p + 1));
+            std::string extension(node.spec()->filename().substr(p + 1));
             std::string needed(ExtractorsRequirements::get_instance()->file->get(extension));
             if (needed.empty() || QualifiedPackageName(needed) != name)
                 return;
@@ -198,62 +202,56 @@ namespace
             add_requirements();
         }
 
-        void visit_leaf(const SimpleURIDepSpec &)
+        void visit(const GenericSpecTree::NodeType<SimpleURIDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const PackageDepSpec & p)
+        void visit(const GenericSpecTree::NodeType<PackageDepSpec>::Type & node)
         {
-            if ((! p.package_ptr()) || (name != *p.package_ptr()))
+            if ((! node.spec()->package_ptr()) || (name != *node.spec()->package_ptr()))
                 return;
 
             add_requirements();
         }
 
-        void visit_leaf(const PlainTextLabelDepSpec &)
+        void visit(const GenericSpecTree::NodeType<PlainTextLabelDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const URILabelsDepSpec &)
+        void visit(const GenericSpecTree::NodeType<URILabelsDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const DependencyLabelsDepSpec &)
+        void visit(const GenericSpecTree::NodeType<DependencyLabelsDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const BlockDepSpec &)
+        void visit(const GenericSpecTree::NodeType<BlockDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const PlainTextDepSpec &)
+        void visit(const GenericSpecTree::NodeType<PlainTextDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const LicenseDepSpec &)
+        void visit(const GenericSpecTree::NodeType<LicenseDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const NamedSetDepSpec &)
+        void visit(const GenericSpecTree::NodeType<NamedSetDepSpec>::Type &)
         {
         }
 
-        using ConstVisitor<GenericSpecTree>::VisitConstSequence<Requirements, AllDepSpec>::visit_sequence;
-
-        void visit_sequence(const ConditionalDepSpec & u,
-                GenericSpecTree::ConstSequenceIterator cur,
-                GenericSpecTree::ConstSequenceIterator end)
+        void visit(const GenericSpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
             Save<std::map<ChoiceNameWithPrefix, bool> > save_current(&current);
             std::pair<std::map<ChoiceNameWithPrefix, bool>::const_iterator, bool> p(current.insert(std::make_pair(
-                            elike_conditional_dep_spec_flag(u), ! elike_conditional_dep_spec_is_inverse(u))));
-            if (p.second || (p.first->second == ! elike_conditional_dep_spec_is_inverse(u)))
-                std::for_each(cur, end, accept_visitor(*this));
+                            elike_conditional_dep_spec_flag(*node.spec()), ! elike_conditional_dep_spec_is_inverse(*node.spec()))));
+            if (p.second || (p.first->second == ! elike_conditional_dep_spec_is_inverse(*node.spec())))
+                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
         }
 
-        void visit_sequence(const AnyDepSpec &,
-                GenericSpecTree::ConstSequenceIterator,
-                GenericSpecTree::ConstSequenceIterator)
+        void visit(const GenericSpecTree::NodeType<AnyDepSpec>::Type &)
         {
         }
     };
@@ -278,9 +276,9 @@ paludis::erepository::extractors_check(
              * since it needs to work with USE_EXPAND and it's potentially
              * O(2^n). */
             FlagExtractor f;
-            id->fetches_key()->value()->accept(f);
+            id->fetches_key()->value()->root()->accept(f);
             if (id->build_dependencies_key())
-                id->build_dependencies_key()->value()->accept(f);
+                id->build_dependencies_key()->value()->root()->accept(f);
 
             for (std::map<QualifiedPackageName, std::set<ChoiceNameWithPrefix> >::const_iterator
                     r(f.relevant.begin()), r_end(f.relevant.end()) ;
@@ -297,12 +295,12 @@ paludis::erepository::extractors_check(
 
                 /* Find the set of requirements. */
                 Requirements q(r->first, r->second);
-                id->fetches_key()->value()->accept(q);
+                id->fetches_key()->value()->root()->accept(q);
 
                 /* Find the set of met requirements. */
                 Requirements m(r->first, r->second);
                 if (id->build_dependencies_key())
-                    id->build_dependencies_key()->value()->accept(m);
+                    id->build_dependencies_key()->value()->root()->accept(m);
 
                 /* Find the set of unmet requirements */
                 std::set<std::map<ChoiceNameWithPrefix, bool> > unmet;

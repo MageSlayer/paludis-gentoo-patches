@@ -43,7 +43,6 @@ namespace paludis
      * \nosubgrouping
      */
     class QueryVisitor :
-        public ConstVisitor<DependencySpecTree>,
         private PrivateImplementationPattern<QueryVisitor>
     {
         public:
@@ -60,25 +59,13 @@ namespace paludis
             ///\name Visitor operations
             ///\{
 
-            void visit_sequence(const AllDepSpec &,
-                    DependencySpecTree::ConstSequenceIterator,
-                    DependencySpecTree::ConstSequenceIterator);
-
-            void visit_sequence(const AnyDepSpec &,
-                    DependencySpecTree::ConstSequenceIterator,
-                    DependencySpecTree::ConstSequenceIterator);
-
-            void visit_sequence(const ConditionalDepSpec &,
-                    DependencySpecTree::ConstSequenceIterator,
-                    DependencySpecTree::ConstSequenceIterator);
-
-            void visit_leaf(const PackageDepSpec &);
-
-            void visit_leaf(const BlockDepSpec &);
-
-            void visit_leaf(const DependencyLabelsDepSpec &);
-
-            void visit_leaf(const NamedSetDepSpec &);
+            void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node);
+            void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node);
+            void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node);
+            void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node);
+            void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type & node);
+            void visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type & node);
+            void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node);
 
             ///\}
 

@@ -23,13 +23,13 @@
 #include <paludis/repositories/e/eapi-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/visitor-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/output_deviator-fwd.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/dep_tree.hh>
+#include <paludis/spec_tree-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
+#include <paludis/spec_tree.hh>
 #include <tr1/memory>
 
 namespace paludis
@@ -37,8 +37,7 @@ namespace paludis
     namespace erepository
     {
         class PALUDIS_VISIBLE FetchVisitor :
-            private PrivateImplementationPattern<FetchVisitor>,
-            public ConstVisitor<FetchableURISpecTree>
+            private PrivateImplementationPattern<FetchVisitor>
         {
             public:
                 FetchVisitor(
@@ -55,17 +54,10 @@ namespace paludis
 
                 ~FetchVisitor();
 
-                void visit_sequence(const AllDepSpec &,
-                        FetchableURISpecTree::ConstSequenceIterator,
-                        FetchableURISpecTree::ConstSequenceIterator);
-
-                void visit_sequence(const ConditionalDepSpec &,
-                        FetchableURISpecTree::ConstSequenceIterator,
-                        FetchableURISpecTree::ConstSequenceIterator);
-
-                void visit_leaf(const URILabelsDepSpec &);
-
-                void visit_leaf(const FetchableURIDepSpec &);
+                void visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::Type & node);
+                void visit(const FetchableURISpecTree::NodeType<URILabelsDepSpec>::Type & node);
+                void visit(const FetchableURISpecTree::NodeType<AllDepSpec>::Type & node);
+                void visit(const FetchableURISpecTree::NodeType<ConditionalDepSpec>::Type & node);
         };
     }
 }

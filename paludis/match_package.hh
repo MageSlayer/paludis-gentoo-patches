@@ -33,7 +33,7 @@
 #include <paludis/match_package-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/dep_tree.hh>
+#include <paludis/spec_tree-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <tr1/memory>
@@ -63,7 +63,7 @@ namespace paludis
      */
     bool match_package_in_set(
             const Environment & env,
-            const SetSpecTree::ConstItem & spec,
+            const SetSpecTree & spec,
             const PackageID & target,
             const MatchPackageOptions & options)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;

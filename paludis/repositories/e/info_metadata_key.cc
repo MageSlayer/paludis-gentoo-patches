@@ -31,7 +31,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>

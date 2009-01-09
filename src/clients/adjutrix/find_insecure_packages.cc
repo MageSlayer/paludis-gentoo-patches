@@ -23,9 +23,9 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_tag.hh>
+#include <paludis/spec_tree.hh>
 #include <paludis/package_id.hh>
 #include <paludis/package_database.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
@@ -68,9 +68,7 @@ namespace
             << endl;
     }
 
-    class ListInsecureVisitor :
-        public ConstVisitor<SetSpecTree>,
-        public ConstVisitor<SetSpecTree>::VisitConstSequence<ListInsecureVisitor, AllDepSpec>
+    class ListInsecureVisitor
     {
         private:
             const Environment & _env;
@@ -78,48 +76,51 @@ namespace
             std::set<SetName> recursing_sets;
 
         public:
-            using ConstVisitor<SetSpecTree>::VisitConstSequence<ListInsecureVisitor, AllDepSpec>::visit;
-
             ListInsecureVisitor(const Environment & e) :
                 _env(e)
             {
             }
 
-            void visit_leaf(const PackageDepSpec & a)
+            void visit(const SetSpecTree::NodeType<PackageDepSpec>::Type & node)
             {
                 std::tr1::shared_ptr<const PackageIDSequence> insecure(_env[selection::AllVersionsSorted(
-                            generator::Matches(a, MatchPackageOptions()))]);
+                            generator::Matches(*node.spec(), MatchPackageOptions()))]);
                 for (PackageIDSequence::ConstIterator i(insecure->begin()),
                         i_end(insecure->end()) ; i != i_end ; ++i)
-                    if (a.tag())
-                        _found.insert(std::make_pair(*i, a.tag()->short_text()));
+                    if (node.spec()->tag())
+                        _found.insert(std::make_pair(*i, node.spec()->tag()->short_text()));
                     else
                         throw InternalError(PALUDIS_HERE, "didn't get a tag");
             }
 
-            void visit_leaf(const NamedSetDepSpec & s)
+            void visit(const SetSpecTree::NodeType<NamedSetDepSpec>::Type & node)
             {
-                Context context("When expanding named set '" + stringify(s) + "':");
+                Context context("When expanding named set '" + stringify(*node.spec()) + "':");
 
-                std::tr1::shared_ptr<const SetSpecTree::ConstItem> set(_env.set(s.name()));
+                std::tr1::shared_ptr<const SetSpecTree> set(_env.set(node.spec()->name()));
 
                 if (! set)
                 {
                     Log::get_instance()->message("adjutrix.find_insecure_packages.unknown_set", ll_warning, lc_context)
-                        << "Unknown set '" << s.name() << "'";
+                        << "Unknown set '" << node.spec()->name() << "'";
                     return;
                 }
 
-                if (! recursing_sets.insert(s.name()).second)
+                if (! recursing_sets.insert(node.spec()->name()).second)
                 {
                     Log::get_instance()->message("adjutrix.find_insecure_packages.recursive_set", ll_warning, lc_context)
-                        << "Recursively defined set '" << s.name() << "'";
+                        << "Recursively defined set '" << node.spec()->name() << "'";
                     return;
                 }
 
-                set->accept(*this);
+                set->root()->accept(*this);
 
-                recursing_sets.erase(s.name());
+                recursing_sets.erase(node.spec()->name());
+            }
+
+            void visit(const SetSpecTree::NodeType<AllDepSpec>::Type & node)
+            {
+                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
             }
 
             friend std::ostream & operator<< (std::ostream &, const ListInsecureVisitor &);
@@ -168,11 +169,11 @@ void do_find_insecure_packages(const NoConfigEnvironment & env)
 
         write_repository_header(r->name());
 
-        std::tr1::shared_ptr<const SetSpecTree::ConstItem> all_insecure((*r).sets_interface()->package_set(SetName("insecurity")));
+        std::tr1::shared_ptr<const SetSpecTree> all_insecure((*r).sets_interface()->package_set(SetName("insecurity")));
         if (! all_insecure)
             continue;
         ListInsecureVisitor v(env);
-        all_insecure->accept(v);
+        all_insecure->root()->accept(v);
         cout << v << endl;
     }
 }

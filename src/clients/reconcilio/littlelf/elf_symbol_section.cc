@@ -27,13 +27,13 @@
 
 #include <paludis/util/byte_swap.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/stringify.hh>
 
 #include <istream>
 #include <vector>
 #include <stdexcept>
+#include <algorithm>
 
 using namespace paludis;
 

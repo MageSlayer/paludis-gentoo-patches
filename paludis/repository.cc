@@ -29,7 +29,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/action.hh>
 #include <paludis/metadata_key.hh>

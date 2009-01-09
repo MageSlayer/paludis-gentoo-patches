@@ -29,7 +29,7 @@
 #include <paludis/hook-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/dep_tree.hh>
+#include <paludis/spec_tree-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/mask-fwd.hh>
 #include <paludis/package_database-fwd.hh>
@@ -284,7 +284,7 @@ namespace paludis
              *
              * If the named set is not known, returns a zero pointer.
              */
-            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> set(const SetName &) const
+            virtual const std::tr1::shared_ptr<const SetSpecTree> set(const SetName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}

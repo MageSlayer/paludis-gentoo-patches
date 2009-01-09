@@ -21,7 +21,6 @@
 #include <paludis_ruby.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_tag.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <ruby.h>
 
 using namespace paludis;
@@ -87,12 +86,7 @@ namespace
         {
             ptr = new std::tr1::shared_ptr<const DepTag>(
                     new DependencyDepTag(value_to_package_id(argv[0]),
-                        *value_to_package_dep_spec(argv[1]),
-                        // XXX make this an argument, once the new
-                        // visitors are Rubified
-                        std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >(
-                            new ConstTreeSequence<DependencySpecTree, AllDepSpec>(
-                                std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)))));
+                        *value_to_package_dep_spec(argv[1])));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<const DepTag> >::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
@@ -130,21 +124,6 @@ namespace
         std::tr1::shared_ptr<const DepTag> * ptr;
         Data_Get_Struct(self, std::tr1::shared_ptr<const DepTag>, ptr);
         return package_dep_spec_to_value((std::tr1::static_pointer_cast<const DependencyDepTag>(*ptr))->dependency());
-    }
-
-    /*
-     * call-seq:
-     *     conditions -> DepSpec
-     *
-     * The AnyDepSpec instances and ConditionalDepSpec instances that our dependency
-     * is conditional upon.
-     */
-    VALUE
-    dependency_dep_tag_conditions(VALUE self)
-    {
-        std::tr1::shared_ptr<const DepTag> * ptr;
-        Data_Get_Struct(self, std::tr1::shared_ptr<const DepTag>, ptr);
-        return dep_tree_to_value<DependencySpecTree>((std::tr1::static_pointer_cast<const DependencyDepTag>(*ptr))->conditions());
     }
 
     VALUE
@@ -297,7 +276,6 @@ namespace
         rb_define_singleton_method(c_dependency_dep_tag, "new", RUBY_FUNC_CAST(&dependency_dep_tag_new), -1);
         rb_define_method(c_dependency_dep_tag, "package_id", RUBY_FUNC_CAST(&dependency_dep_tag_package_id), 0);
         rb_define_method(c_dependency_dep_tag, "dependency", RUBY_FUNC_CAST(&dependency_dep_tag_dependency), 0);
-        rb_define_method(c_dependency_dep_tag, "conditions", RUBY_FUNC_CAST(&dependency_dep_tag_conditions), 0);
 
         /*
          * Document-class: Paludis::GLSADepTag

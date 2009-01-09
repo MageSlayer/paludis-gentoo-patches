@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_CRAN_DEP_SPEC_PRETTY_PRINTER_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/dep_tree.hh>
+#include <paludis/spec_tree.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/formatter.hh>
 #include <paludis/environment-fwd.hh>
@@ -37,11 +37,7 @@ namespace paludis
          * \ingroup grpcranrepository
          */
         class PALUDIS_VISIBLE DepSpecPrettyPrinter :
-            private PrivateImplementationPattern<DepSpecPrettyPrinter>,
-            public ConstVisitor<DependencySpecTree>,
-            public ConstVisitor<DependencySpecTree>::VisitConstSequence<DepSpecPrettyPrinter, AllDepSpec>,
-            public ConstVisitor<DependencySpecTree>::VisitConstSequence<DepSpecPrettyPrinter, ConditionalDepSpec>,
-            public ConstVisitor<DependencySpecTree>::VisitConstSequence<DepSpecPrettyPrinter, AnyDepSpec>
+            private PrivateImplementationPattern<DepSpecPrettyPrinter>
         {
             friend std::ostream & operator<< (std::ostream &, const DepSpecPrettyPrinter &);
 
@@ -74,13 +70,13 @@ namespace paludis
 
                 ///\}
 
-                void visit_leaf(const PackageDepSpec &);
-
-                void visit_leaf(const BlockDepSpec &);
-
-                void visit_leaf(const DependencyLabelsDepSpec &);
-
-                void visit_leaf(const NamedSetDepSpec &);
+                void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node);
+                void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node);
+                void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node);
+                void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type & node);
+                void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node);
+                void visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type & node);
+                void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node);
         };
 
         std::ostream & operator<< (std::ostream & s, const DepSpecPrettyPrinter & p) PALUDIS_VISIBLE;

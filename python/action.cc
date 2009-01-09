@@ -21,7 +21,6 @@
 #include <python/exception.hh>
 
 #include <paludis/action.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/repository.hh>

@@ -24,8 +24,6 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/visitor_cast.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/environments/test/test_environment.hh>

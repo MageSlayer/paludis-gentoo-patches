@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,7 @@
 #include <paludis/environment.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/spec_tree.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/match_package.hh>
 #include <paludis/util/config_file.hh>
@@ -35,6 +36,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <tr1/unordered_map>
 #include <list>
 #include <vector>
@@ -45,7 +47,7 @@ using namespace paludis::paludis_environment;
 
 typedef std::list<std::string> LicensesList;
 typedef std::map<std::tr1::shared_ptr<const PackageDepSpec>, LicensesList> PDSToLicensesList;
-typedef std::pair<std::tr1::shared_ptr<const SetSpecTree::ConstItem>, LicensesList> SetNameEntry;
+typedef std::pair<std::tr1::shared_ptr<const SetSpecTree>, LicensesList> SetNameEntry;
 
 typedef std::tr1::unordered_map<QualifiedPackageName, PDSToLicensesList, Hash<QualifiedPackageName> > SpecificMap;
 typedef PDSToLicensesList UnspecificMap;
@@ -120,7 +122,7 @@ LicensesConf::add(const FSEntry & filename)
         catch (const GotASetNotAPackageDepSpec &)
         {
             NamedSetMap::iterator i(_imp->set.insert(std::make_pair(SetName(tokens.at(0)), std::make_pair(
-                                std::tr1::shared_ptr<SetSpecTree::ConstItem>(), LicensesList()))).first);
+                                make_null_shared_ptr(), LicensesList()))).first);
 
             for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                     t != t_end ; ++t)
@@ -176,8 +178,7 @@ LicensesConf::query(const std::string & t, const PackageID & e) const
                 {
                     Log::get_instance()->message("paludis_environment.licenses_conf.unknown_set", ll_warning, lc_no_context) << "Set name '"
                         << i->first << "' does not exist";
-                    i->second.first.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                                std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+                    i->second.first.reset(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
                 }
             }
 
@@ -223,5 +224,4 @@ LicensesConf::query(const std::string & t, const PackageID & e) const
 
     return false;
 }
-
 

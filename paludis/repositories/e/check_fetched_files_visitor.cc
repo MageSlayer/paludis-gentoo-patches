@@ -21,13 +21,13 @@
 #include <paludis/repositories/e/source_uri_finder.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/repositories/e/e_repository_params.hh>
+#include <paludis/repositories/e/manifest2_reader.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
 #include <paludis/repository.hh>
 #include <paludis/about.hh>
 #include <paludis/action.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/fs_entry.hh>
@@ -41,9 +41,11 @@
 #include <paludis/util/md5.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/output_deviator.hh>
-
-#include <paludis/repositories/e/manifest2_reader.hh>
-
+#include <paludis/util/sequence.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/indirect_iterator.hh>
+#include <paludis/util/accept_visitor.hh>
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <list>
@@ -119,22 +121,18 @@ CheckFetchedFilesVisitor::~CheckFetchedFilesVisitor()
 }
 
 void
-CheckFetchedFilesVisitor::visit_sequence(const ConditionalDepSpec & u,
-        FetchableURISpecTree::ConstSequenceIterator cur,
-        FetchableURISpecTree::ConstSequenceIterator end)
+CheckFetchedFilesVisitor::visit(const FetchableURISpecTree::NodeType<ConditionalDepSpec>::Type & node)
 {
     Save<bool> save_in_nofetch(&_imp->in_nofetch, _imp->in_nofetch);
-    if ((_imp->check_unneeded) || (u.condition_met()))
-        std::for_each(cur, end, accept_visitor(*this));
+    if ((_imp->check_unneeded) || (node.spec()->condition_met()))
+        std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
 }
 
 void
-CheckFetchedFilesVisitor::visit_sequence(const AllDepSpec &,
-        FetchableURISpecTree::ConstSequenceIterator cur,
-        FetchableURISpecTree::ConstSequenceIterator end)
+CheckFetchedFilesVisitor::visit(const FetchableURISpecTree::NodeType<AllDepSpec>::Type & node)
 {
     Save<bool> save_in_nofetch(&_imp->in_nofetch, _imp->in_nofetch);
-    std::for_each(cur, end, accept_visitor(*this));
+    std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
 }
 
 namespace
@@ -177,10 +175,10 @@ namespace
 }
 
 void
-CheckFetchedFilesVisitor::visit_leaf(const URILabelsDepSpec & l)
+CheckFetchedFilesVisitor::visit(const FetchableURISpecTree::NodeType<URILabelsDepSpec>::Type & node)
 {
     InNoFetchVisitor v;
-    std::for_each(indirect_iterator(l.begin()), indirect_iterator(l.end()), accept_visitor(v));
+    std::for_each(indirect_iterator(node.spec()->begin()), indirect_iterator(node.spec()->end()), accept_visitor(v));
     _imp->in_nofetch = v.result;
 }
 
@@ -354,70 +352,70 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
 }
 
 void
-CheckFetchedFilesVisitor::visit_leaf(const FetchableURIDepSpec & u)
+CheckFetchedFilesVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::Type & node)
 {
-    Context context("When visiting URI dep spec '" + stringify(u.text()) + "':");
+    Context context("When visiting URI dep spec '" + stringify(node.spec()->text()) + "':");
 
-    if (_imp->done.end() != _imp->done.find(u.filename()))
+    if (_imp->done.end() != _imp->done.find(node.spec()->filename()))
     {
         Log::get_instance()->message("e.check_fetched_files.already_checked", ll_debug, lc_context)
-            << "Already checked '" << u.filename() << "'";
+            << "Already checked '" << node.spec()->filename() << "'";
         return;
     }
-    _imp->done.insert(u.filename());
+    _imp->done.insert(node.spec()->filename());
 
-    *_imp->out << "Checking '" << u.filename() << "'... " << std::flush;
+    *_imp->out << "Checking '" << node.spec()->filename() << "'... " << std::flush;
 
-    if (! (_imp->distdir / u.filename()).is_regular_file())
+    if (! (_imp->distdir / node.spec()->filename()).is_regular_file())
     {
         if (_imp->in_nofetch)
         {
             if (! _imp->exclude_unmirrorable)
             {
                 Log::get_instance()->message("e.check_fetched_files.requires_manual", ll_debug, lc_context)
-                    << "Manual fetch required for '" << u.filename() << "'";
+                    << "Manual fetch required for '" << node.spec()->filename() << "'";
                 *_imp->out << "requires manual fetch";
                 _imp->need_nofetch = true;
                 _imp->failures->push_back(make_named_values<FetchActionFailure>(
                         value_for<n::failed_automatic_fetching>(false),
                         value_for<n::failed_integrity_checks>(""),
                         value_for<n::requires_manual_fetching>(true),
-                        value_for<n::target_file>(u.filename())
+                        value_for<n::target_file>(node.spec()->filename())
                         ));
             }
         }
         else
         {
             Log::get_instance()->message("e.check_fetched_files.does_not_exist", ll_debug, lc_context)
-                << "Automatic fetch failed for '" << u.filename() << "'";
+                << "Automatic fetch failed for '" << node.spec()->filename() << "'";
             *_imp->out << "does not exist";
             _imp->failures->push_back(make_named_values<FetchActionFailure>(
                         value_for<n::failed_automatic_fetching>(true),
                         value_for<n::failed_integrity_checks>(""),
                         value_for<n::requires_manual_fetching>(false),
-                        value_for<n::target_file>(u.filename())
+                        value_for<n::target_file>(node.spec()->filename())
                         ));
         }
     }
-    else if (0 == (_imp->distdir / u.filename()).file_size())
+    else if (0 == (_imp->distdir / node.spec()->filename()).file_size())
     {
-        Log::get_instance()->message("e.check_fetched_files.empty", ll_debug, lc_context) << "Empty file for '" << u.filename() << "'";
+        Log::get_instance()->message("e.check_fetched_files.empty", ll_debug, lc_context) << "Empty file for '" << node.spec()->filename() << "'";
         *_imp->out << "empty file";
         _imp->failures->push_back(make_named_values<FetchActionFailure>(
                 value_for<n::failed_automatic_fetching>(false),
                 value_for<n::failed_integrity_checks>("SIZE (empty file)"),
                 value_for<n::requires_manual_fetching>(false),
-                value_for<n::target_file>(u.filename())
+                value_for<n::target_file>(node.spec()->filename())
                 ));
     }
-    else if (! check_distfile_manifest(_imp->distdir / u.filename()))
+    else if (! check_distfile_manifest(_imp->distdir / node.spec()->filename()))
     {
         Log::get_instance()->message("e.check_fetched_files.failure", ll_debug, lc_context)
-            << "Manifest check failed for '" << u.filename() << "'";
+            << "Manifest check failed for '" << node.spec()->filename() << "'";
     }
     else
     {
-        Log::get_instance()->message("e.check_fetched_files.success", ll_debug, lc_context) << "Success for '" << u.filename() << "'";
+        Log::get_instance()->message("e.check_fetched_files.success", ll_debug, lc_context) << "Success for '" << node.spec()->filename() << "'";
         *_imp->out << "ok";
     }
 

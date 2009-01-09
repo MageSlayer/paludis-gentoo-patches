@@ -39,7 +39,6 @@
 #include <paludis/action.hh>
 #include <paludis/dep_label.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <string>
 #include <algorithm>
 #include <list>

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,7 +23,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/name-fwd.hh>
-#include <paludis/dep_tree.hh>
+#include <paludis/spec_tree.hh>
 #include <paludis/environment-fwd.hh>
 #include <tr1/memory>
 #include <string>
@@ -43,7 +43,7 @@ namespace paludis
                 World(const Environment * const, const std::tr1::shared_ptr<const FSEntry> &);
                 ~World();
 
-                std::tr1::shared_ptr<SetSpecTree::ConstItem> world_set() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::tr1::shared_ptr<const SetSpecTree> world_set() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void add_to_world(const SetName &) const;
                 void add_to_world(const QualifiedPackageName &) const;

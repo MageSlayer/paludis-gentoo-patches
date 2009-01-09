@@ -29,13 +29,15 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/set-impl.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/fd_output_stream.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/pretty_print.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/indirect_iterator.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>

@@ -32,17 +32,17 @@ namespace bp = boost::python;
 struct DepListWrapper
 {
     static void
-    add(DepList & self, std::tr1::shared_ptr<SetSpecTree::ConstItem> st,
+    add(DepList & self, std::tr1::shared_ptr<const SetSpecTree> st,
             std::tr1::shared_ptr<const DestinationsSet> & d)
     {
         self.add(*st, d);
     }
 
     static bool
-    already_installed(const DepList & self, std::tr1::shared_ptr<DependencySpecTree::ConstItem> st,
+    already_installed(const DepList & self, std::tr1::shared_ptr<const DependencySpecTree> st,
             std::tr1::shared_ptr<const DestinationsSet> & d)
     {
-        return self.already_installed(*st, d);
+        return self.already_installed(*st->root(), d);
     }
 };
 
@@ -285,7 +285,7 @@ void expose_dep_list()
                 )
 
         .def("add", &DepListWrapper::add,
-                "add(DepSpec, DestinationsIterable)\n"
+                "add(SetSpecTree, DestinationsIterable)\n"
                 "Add the packages required to resolve an additional dependency spec."
             )
 

@@ -16,7 +16,6 @@ noinst_PROGRAMS = \
 	example_dep_label \
 	example_dep_spec \
 	example_dep_tag \
-	example_dep_tree \
 	example_dep_spec_flattener \
 	example_environment \
 	example_formatter \
@@ -67,12 +66,6 @@ example_dep_label_LDADD = \
 
 example_dep_spec_SOURCES = example_dep_spec.cc
 example_dep_spec_LDADD = \
-	libpaludisexamples.a \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/args/libpaludisargs_@PALUDIS_PC_SLOT@.la
-
-example_dep_tree_SOURCES = example_dep_tree.cc
-example_dep_tree_LDADD = \
 	libpaludisexamples.a \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/args/libpaludisargs_@PALUDIS_PC_SLOT@.la

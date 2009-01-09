@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2006, 2007, 2008 Richard Brown
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -97,8 +97,8 @@ namespace paludis
 #ifdef ENABLE_RUBY_QA
         VALUE qa_message_to_value(const QAMessage &);
 #endif
-        template <typename T_> VALUE dep_tree_to_value(const std::tr1::shared_ptr<const typename T_::ConstItem> &);
-        template <typename T_> std::tr1::shared_ptr<const typename T_::ConstItem> value_to_dep_tree(VALUE);
+        template <typename T_> VALUE dep_tree_to_value(const std::tr1::shared_ptr<const T_> &);
+        template <typename T_> std::tr1::shared_ptr<const T_> value_to_dep_tree(VALUE);
         VALUE package_dep_spec_to_value(const std::tr1::shared_ptr<const PackageDepSpec> &);
         VALUE uri_label_to_value(const std::tr1::shared_ptr<const URILabel> &);
         VALUE mask_to_value(std::tr1::shared_ptr<const Mask>);

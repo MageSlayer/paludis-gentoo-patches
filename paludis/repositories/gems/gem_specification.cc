@@ -20,7 +20,6 @@
 #include <paludis/repositories/gems/gem_specification.hh>
 #include <paludis/repositories/gems/yaml.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/name.hh>

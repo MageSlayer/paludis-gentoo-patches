@@ -18,7 +18,6 @@
  */
 
 #include <paludis/repositories/e/e_mask.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 
 using namespace paludis;

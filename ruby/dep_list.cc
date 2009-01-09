@@ -920,7 +920,7 @@ namespace
             for (long i = 0 ; i < RARRAY(d)->len ; ++i)
                 destinations->insert(value_to_repository(rb_ary_entry(d, i)));
 
-            std::tr1::shared_ptr<const SetSpecTree::ConstItem> sst(value_to_dep_tree<SetSpecTree>(da));
+            std::tr1::shared_ptr<const SetSpecTree> sst(value_to_dep_tree<SetSpecTree>(da));
             p->add(*sst, destinations);
             return self;
         }

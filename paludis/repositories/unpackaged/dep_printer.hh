@@ -20,9 +20,8 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNPACKAGED_DEP_PRINTER_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNPACKAGED_DEP_PRINTER_HH 1
 
-#include <paludis/util/visitor.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/dep_tree.hh>
+#include <paludis/spec_tree.hh>
 #include <paludis/formatter.hh>
 #include <paludis/environment-fwd.hh>
 
@@ -31,10 +30,6 @@ namespace paludis
     namespace unpackaged_repositories
     {
         class PALUDIS_VISIBLE DepPrinter :
-            public ConstVisitor<DependencySpecTree>,
-            public ConstVisitor<DependencySpecTree>::VisitConstSequence<DepPrinter, AllDepSpec>,
-            public ConstVisitor<DependencySpecTree>::VisitConstSequence<DepPrinter, AnyDepSpec>,
-            public ConstVisitor<DependencySpecTree>::VisitConstSequence<DepPrinter, ConditionalDepSpec>,
             private PrivateImplementationPattern<DepPrinter>
         {
             public:
@@ -43,14 +38,13 @@ namespace paludis
 
                 const std::string result() const;
 
-                void visit_leaf(const BlockDepSpec &);
-                void visit_leaf(const PackageDepSpec &);
-                void visit_leaf(const NamedSetDepSpec &);
-                void visit_leaf(const DependencyLabelsDepSpec &);
-
-                using ConstVisitor<DependencySpecTree>::VisitConstSequence<DepPrinter, AllDepSpec>::visit_sequence;
-                using ConstVisitor<DependencySpecTree>::VisitConstSequence<DepPrinter, AnyDepSpec>::visit_sequence;
-                using ConstVisitor<DependencySpecTree>::VisitConstSequence<DepPrinter, ConditionalDepSpec>::visit_sequence;
+                void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node);
+                void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type & node);
+                void visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type & node);
+                void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node);
+                void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node);
+                void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node);
+                void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node);
         };
     }
 }

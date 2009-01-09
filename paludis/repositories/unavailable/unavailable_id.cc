@@ -21,11 +21,11 @@
 #include <paludis/repositories/unavailable/unavailable_repository.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>

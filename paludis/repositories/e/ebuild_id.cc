@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -45,11 +45,11 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/tribool.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 
 #include <set>
 #include <iterator>
@@ -326,15 +326,11 @@ EbuildID::need_keys_added() const
 
 namespace
 {
-    struct LicenceChecker :
-        ConstVisitor<LicenseSpecTree>,
-        ConstVisitor<LicenseSpecTree>::VisitConstSequence<LicenceChecker, AllDepSpec>
+    struct LicenceChecker
     {
-        using ConstVisitor<LicenseSpecTree>::VisitConstSequence<LicenceChecker, AllDepSpec>::visit_sequence;
-
         bool ok;
         const Environment * const env;
-        bool  (Environment::* const func) (const std::string &, const PackageID &) const;
+        bool (Environment::* const func) (const std::string &, const PackageID &) const;
         const PackageID * const id;
 
         LicenceChecker(const Environment * const e,
@@ -347,20 +343,24 @@ namespace
         {
         }
 
-        void visit_sequence(const AnyDepSpec &,
-                LicenseSpecTree::ConstSequenceIterator begin,
-                LicenseSpecTree::ConstSequenceIterator end)
+        void visit(const LicenseSpecTree::NodeType<AllDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
+
+        void visit(const LicenseSpecTree::NodeType<AnyDepSpec>::Type & node)
         {
             bool local_ok(false);
 
-            if (begin == end)
+            if (node.begin() == node.end())
                 local_ok = true;
             else
             {
-                for ( ; begin != end ; ++begin)
+                for (LicenseSpecTree::NodeType<AnyDepSpec>::Type::ConstIterator c(node.begin()), c_end(node.end()) ;
+                        c != c_end ; ++c)
                 {
                     Save<bool> save_ok(&ok, true);
-                    begin->accept(*this);
+                    (*c)->accept(*this);
                     local_ok |= ok;
                 }
             }
@@ -368,17 +368,15 @@ namespace
             ok &= local_ok;
         }
 
-        void visit_sequence(const ConditionalDepSpec & spec,
-                LicenseSpecTree::ConstSequenceIterator begin,
-                LicenseSpecTree::ConstSequenceIterator end)
+        void visit(const LicenseSpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            if (spec.condition_met())
-                std::for_each(begin, end, accept_visitor(*this));
+            if (node.spec()->condition_met())
+                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
         }
 
-        void visit_leaf(const LicenseDepSpec & spec)
+        void visit(const LicenseSpecTree::NodeType<LicenseDepSpec>::Type & node)
         {
-            if (! (env->*func)(spec.text(), *id))
+            if (! (env->*func)(node.spec()->text(), *id))
                 ok = false;
         }
     };
@@ -411,7 +409,7 @@ EbuildID::need_masks_added() const
     if (license_key())
     {
         LicenceChecker c(_imp->environment, &Environment::accept_license, this);
-        license_key()->value()->accept(c);
+        license_key()->value()->root()->accept(c);
         if (! c.ok)
             add_mask(make_shared_ptr(new EUnacceptedMask('L',
                             DistributionData::get_instance()->distribution_from_string(
@@ -1194,32 +1192,26 @@ EbuildID::make_choice_value(
 
 namespace
 {
-    struct UnconditionalRestrictFinder :
-        ConstVisitor<PlainTextSpecTree>
+    struct UnconditionalRestrictFinder
     {
         std::set<std::string> s;
 
-        void visit_leaf(const PlainTextDepSpec & p)
+        void visit(const PlainTextSpecTree::NodeType<PlainTextDepSpec>::Type & node)
         {
-            s.insert(p.text());
+            s.insert(node.spec()->text());
         }
 
-        void visit_leaf(const PlainTextLabelDepSpec & p)
-        {
-            s.insert(p.text());
-        }
-
-        void visit_sequence(const ConditionalDepSpec &,
-                PlainTextSpecTree::ConstSequenceIterator,
-                PlainTextSpecTree::ConstSequenceIterator)
+        void visit(const PlainTextSpecTree::NodeType<PlainTextLabelDepSpec>::Type &)
         {
         }
 
-        void visit_sequence(const AllDepSpec &,
-                PlainTextSpecTree::ConstSequenceIterator cur,
-                PlainTextSpecTree::ConstSequenceIterator end)
+        void visit(const PlainTextSpecTree::NodeType<ConditionalDepSpec>::Type &)
         {
-            std::for_each(cur, end, accept_visitor(*this));
+        }
+
+        void visit(const PlainTextSpecTree::NodeType<AllDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
         }
     };
 }
@@ -1241,7 +1233,7 @@ EbuildID::add_build_options(const std::tr1::shared_ptr<Choices> & choices) const
         if (restrict_key())
         {
             UnconditionalRestrictFinder f;
-            restrict_key()->value()->accept(f);
+            restrict_key()->value()->root()->accept(f);
             may_be_unrestricted_test = f.s.end() == f.s.find("test");
             may_be_unrestricted_strip = f.s.end() == f.s.find("strip");
         }

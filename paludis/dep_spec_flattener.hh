@@ -23,10 +23,10 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
+#include <paludis/spec_tree.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/visitor.hh>
 #include <paludis/util/no_type.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <tr1/memory>
@@ -43,118 +43,14 @@
 
 namespace paludis
 {
-    /** \namespace dep_spec_flattener_internals
-     *
-     * For internal use by DepSpecFlattener.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.26
-     */
-    namespace dep_spec_flattener_internals
-    {
-        /**
-         * Implement visit for NamedSetDepSpec, if necessary.
-         *
-         * \ingroup g_dep_spec
-         * \since 0.26
-         * \nosubgrouping
-         */
-        template <typename H_, typename I_, bool b_>
-        struct VisitNamedSetDepSpec
-        {
-            void visit_leaf(const NoType<0u> &);
-        };
-
-        /**
-         * Implement visit for NamedSetDepSpec, if necessary.
-         *
-         * \ingroup g_dep_spec
-         * \since 0.26
-         * \nosubgrouping
-         */
-        template <typename H_, typename I_>
-        class VisitNamedSetDepSpec<H_, I_, true> :
-            public virtual visitor_internals::Visits<const TreeLeaf<H_, NamedSetDepSpec> >,
-            private PrivateImplementationPattern<VisitNamedSetDepSpec<H_, I_, true> >
-        {
-            private:
-                using PrivateImplementationPattern<VisitNamedSetDepSpec<H_, I_, true> >::_imp;
-
-            protected:
-                VisitNamedSetDepSpec();
-                ~VisitNamedSetDepSpec();
-
-            public:
-                void visit_leaf(const NamedSetDepSpec &);
-        };
-
-        /**
-         * Implement visit for PlainTextLabelDepSpec, if necessary.
-         *
-         * \ingroup g_dep_spec
-         * \since 0.32
-         * \nosubgrouping
-         */
-        template <typename H_, typename I_, bool b_>
-        struct VisitPlainTextLabelDepSpec
-        {
-            void visit_leaf(const NoType<1u> &);
-        };
-
-        /**
-         * Implement visit for PlainTextLabelDepSpec, if necessary.
-         *
-         * \ingroup g_dep_spec
-         * \since 0.32
-         * \nosubgrouping
-         */
-        template <typename H_, typename I_>
-        class VisitPlainTextLabelDepSpec<H_, I_, true> :
-            public virtual visitor_internals::Visits<const TreeLeaf<H_, PlainTextLabelDepSpec> >
-        {
-            public:
-                void visit_leaf(const PlainTextLabelDepSpec &);
-        };
-
-        /**
-         * Implement visit for ConditionalDepSpec, if necessary.
-         *
-         * \ingroup g_dep_spec
-         * \since 0.26
-         * \nosubgrouping
-         */
-        template <typename H_, typename I_, bool b_>
-        struct VisitConditionalDepSpec
-        {
-            void visit_sequence(const NoType<0u> &);
-        };
-
-        /**
-         * Implement visit for ConditionalDepSpec, if necessary.
-         *
-         * \ingroup g_dep_spec
-         * \since 0.26
-         * \nosubgrouping
-         */
-        template <typename H_, typename I_>
-        struct VisitConditionalDepSpec<H_, I_, true> :
-            virtual visitor_internals::Visits<const ConstTreeSequence<H_, ConditionalDepSpec> >
-        {
-            void visit_sequence(
-                    const ConditionalDepSpec &,
-                    typename H_::ConstSequenceIterator,
-                    typename H_::ConstSequenceIterator);
-        };
-    }
-
     /**
      * Extract the enabled components of a dep heirarchy for a particular
      * package. Sets, via NamedSetDepSpec, are automatically expanded.
      *
      * This template can be instantiated as:
      *
-     * - DepSpecFlattener<ProvideSpecTree, PlainTextDepSpec>
-     * - DepSpecFlattener<PlainTextDepSpec, PlainTextDepSpec>
+     * - DepSpecFlattener<ProvideSpecTree, PackageDepSpec>
+     * - DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>
      * - DepSpecFlattener<SetSpecTree, PackageDepSpec>
      * - DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec>
      *
@@ -168,44 +64,33 @@ namespace paludis
     template <typename Heirarchy_, typename Item_>
     class PALUDIS_VISIBLE DepSpecFlattener :
         private InstantiationPolicy<DepSpecFlattener<Heirarchy_, Item_>, instantiation_method::NonCopyableTag>,
-        private PrivateImplementationPattern<DepSpecFlattener<Heirarchy_, Item_> >,
-        public ConstVisitor<Heirarchy_>,
-        public ConstVisitor<Heirarchy_>::template VisitConstSequence<DepSpecFlattener<Heirarchy_, Item_>, AllDepSpec>,
-        public dep_spec_flattener_internals::VisitNamedSetDepSpec<
-            Heirarchy_, Item_, ConstVisitor<Heirarchy_>::template Contains<const TreeLeaf<Heirarchy_, NamedSetDepSpec> >::value>,
-        public dep_spec_flattener_internals::VisitPlainTextLabelDepSpec<
-            Heirarchy_, Item_, ConstVisitor<Heirarchy_>::template Contains<const TreeLeaf<Heirarchy_, PlainTextLabelDepSpec> >::value>,
-        public dep_spec_flattener_internals::VisitConditionalDepSpec<
-            Heirarchy_, Item_, ConstVisitor<Heirarchy_>::template Contains<const ConstTreeSequence<Heirarchy_, ConditionalDepSpec> >::value>
+        private PrivateImplementationPattern<DepSpecFlattener<Heirarchy_, Item_> >
     {
-        friend class dep_spec_flattener_internals::VisitNamedSetDepSpec<
-            Heirarchy_, Item_, ConstVisitor<Heirarchy_>::template Contains<const TreeLeaf<Heirarchy_, NamedSetDepSpec> >::value>;
-        friend class dep_spec_flattener_internals::VisitPlainTextLabelDepSpec<
-            Heirarchy_, Item_, ConstVisitor<Heirarchy_>::template Contains<const TreeLeaf<Heirarchy_, PlainTextLabelDepSpec> >::value>;
-        friend class dep_spec_flattener_internals::VisitConditionalDepSpec<
-            Heirarchy_, Item_, ConstVisitor<Heirarchy_>::template Contains<const ConstTreeSequence<Heirarchy_, ConditionalDepSpec> >::value>;
-
         private:
             typename PrivateImplementationPattern<DepSpecFlattener<Heirarchy_, Item_> >::ImpPtr & _imp;
 
         public:
-            ///\name Visit methods
-            ///{
+            ///\name Visit operations
+            ///\{
 
-            using ConstVisitor<Heirarchy_>::template VisitConstSequence<DepSpecFlattener<Heirarchy_, Item_>, AllDepSpec>::visit_sequence;
+            void visit(const typename Heirarchy_::template NodeType<NamedSetDepSpec>::Type & node);
+            void visit(const typename Heirarchy_::template NodeType<PlainTextDepSpec>::Type & node);
+            void visit(const typename Heirarchy_::template NodeType<PackageDepSpec>::Type & node);
+            void visit(const typename Heirarchy_::template NodeType<SimpleURIDepSpec>::Type & node);
+            void visit(const typename Heirarchy_::template NodeType<PlainTextLabelDepSpec>::Type & node);
 
-            using dep_spec_flattener_internals::VisitConditionalDepSpec<Heirarchy_, Item_,
-                  ConstVisitor<Heirarchy_>::template Contains<const ConstTreeSequence<Heirarchy_, ConditionalDepSpec> >::value>::visit_sequence;
+            void visit(const typename Heirarchy_::template NodeType<AllDepSpec>::Type & node);
+            void visit(const typename Heirarchy_::template NodeType<AnyDepSpec>::Type & node);
+            void visit(const typename Heirarchy_::template NodeType<ConditionalDepSpec>::Type & node);
 
-            using dep_spec_flattener_internals::VisitNamedSetDepSpec<Heirarchy_, Item_,
-                ConstVisitor<Heirarchy_>::template Contains<const TreeLeaf<Heirarchy_, NamedSetDepSpec> >::value>::visit_leaf;
+            ///\}
 
-            using dep_spec_flattener_internals::VisitPlainTextLabelDepSpec<Heirarchy_, Item_,
-                ConstVisitor<Heirarchy_>::template Contains<const TreeLeaf<Heirarchy_, PlainTextLabelDepSpec> >::value>::visit_leaf;
+            ///\name Visit implementation operations
 
-            void visit_leaf(const Item_ &);
+            template <bool b_> void handle_named_set(const NamedSetDepSpec & spec);
+            void handle_item(const Item_ & spec);
 
-            ///}
+            ///\}
 
             ///\name Basic operations
             ///\{
@@ -227,6 +112,13 @@ namespace paludis
 
             ///\}
     };
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class DepSpecFlattener<ProvideSpecTree, PackageDepSpec>;
+    extern template class DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>;
+    extern template class DepSpecFlattener<SetSpecTree, PackageDepSpec>;
+    extern template class DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec>;
+#endif
 }
 
 #endif

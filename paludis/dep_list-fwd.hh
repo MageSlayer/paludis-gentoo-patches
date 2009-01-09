@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_DEP_LIST_FWD_HH 1
 
 #include <paludis/repository-fwd.hh>
-#include <paludis/dep_tree.hh>
+#include <paludis/spec_tree.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 
@@ -43,7 +43,7 @@ namespace paludis
      *
      * \ingroup g_dep_list
      */
-    bool is_viable_any_child(const DependencySpecTree::ConstItem & i);
+    bool is_viable_any_child(const DependencySpecTree::BasicNode & i);
 }
 
 #endif

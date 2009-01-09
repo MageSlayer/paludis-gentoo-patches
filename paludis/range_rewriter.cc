@@ -20,10 +20,12 @@
 #include <paludis/range_rewriter.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/version_requirements.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/dep_spec.hh>
 #include <list>
 #include <sstream>
@@ -211,37 +213,32 @@ RangeRewriter::~RangeRewriter()
 }
 
 void
-RangeRewriter::visit_sequence(const AllDepSpec &,
-        DependencySpecTree::ConstSequenceIterator cur,
-        DependencySpecTree::ConstSequenceIterator end)
+RangeRewriter::visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
 {
-    if (cur != end)
+    if (node.begin() != node.end())
         _imp->invalid = true;
 }
 
 void
-RangeRewriter::visit_sequence(const AnyDepSpec &,
-        DependencySpecTree::ConstSequenceIterator cur,
-        DependencySpecTree::ConstSequenceIterator end)
+RangeRewriter::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
 {
-    if (cur != end)
+    if (node.begin() != node.end())
         _imp->invalid = true;
 }
 
 void
-RangeRewriter::visit_sequence(const ConditionalDepSpec &,
-        DependencySpecTree::ConstSequenceIterator,
-        DependencySpecTree::ConstSequenceIterator)
+RangeRewriter::visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type &)
 {
     _imp->invalid = true;
 }
 
 void
-RangeRewriter::visit_leaf(const PackageDepSpec & a)
+RangeRewriter::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
 {
     if (_imp->invalid)
         return;
 
+    const PackageDepSpec & a(*node.spec());
     if (a.additional_requirements_ptr() || a.slot_requirement_ptr() || a.package_name_part_ptr()
             || a.category_name_part_ptr() || ! a.version_requirements_ptr() || ! a.package_ptr()
             || a.in_repository_ptr()
@@ -279,19 +276,19 @@ RangeRewriter::visit_leaf(const PackageDepSpec & a)
 }
 
 void
-RangeRewriter::visit_leaf(const BlockDepSpec &)
+RangeRewriter::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type &)
 {
     _imp->invalid = true;
 }
 
 void
-RangeRewriter::visit_leaf(const DependencyLabelsDepSpec &)
+RangeRewriter::visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type &)
 {
     _imp->invalid = true;
 }
 
 void
-RangeRewriter::visit_leaf(const NamedSetDepSpec &)
+RangeRewriter::visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type &)
 {
     _imp->invalid = true;
 }

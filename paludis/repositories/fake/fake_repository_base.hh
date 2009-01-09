@@ -95,7 +95,7 @@ namespace paludis
             /**
              * Add a package set.
              */
-            void add_package_set(const SetName &, const std::tr1::shared_ptr<SetSpecTree::ConstItem> &);
+            void add_package_set(const SetName &, const std::tr1::shared_ptr<const SetSpecTree> &);
 
             virtual void invalidate();
 
@@ -108,7 +108,7 @@ namespace paludis
 
             /* RepositorySetsInterface */
 
-            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName & id) const
+            virtual const std::tr1::shared_ptr<const SetSpecTree> package_set(const SetName & id) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::tr1::shared_ptr<const SetNameSet> sets_list() const

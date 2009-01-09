@@ -20,7 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_TAG_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_TAG_FWD_HH 1
 
-#include <paludis/util/visitor-fwd.hh>
 #include <paludis/util/set-fwd.hh>
 #include <paludis/util/attributes.hh>
 

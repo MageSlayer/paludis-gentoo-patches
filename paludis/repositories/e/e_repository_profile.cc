@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -147,7 +147,7 @@ namespace paludis
             ///\name System package set
             ///\{
 
-            std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > system_packages;
+            std::tr1::shared_ptr<SetSpecTree> system_packages;
             std::tr1::shared_ptr<GeneralSetDepTag> system_tag;
 
             ///\}
@@ -188,8 +188,7 @@ namespace paludis
                 package_mask_file(p),
                 env(e),
                 repository(p),
-                system_packages(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                            std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec))),
+                system_packages(new SetSpecTree(make_shared_ptr(new AllDepSpec))),
                 system_tag(new GeneralSetDepTag(SetName("system"), stringify(name))),
                 use_expand(new Set<std::string>),
                 use_expand_hidden(new Set<std::string>)
@@ -484,7 +483,7 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
                                 std::tr1::shared_ptr<const PackageID>())));
 
                 spec->set_tag(system_tag);
-                system_packages->add(std::tr1::shared_ptr<SetSpecTree::ConstItem>(new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+                system_packages->root()->append(spec);
             }
     }
     catch (const InternalError &)
@@ -866,7 +865,7 @@ ERepositoryProfile::environment_variable(const std::string & s) const
         return i->second;
 }
 
-std::tr1::shared_ptr<SetSpecTree::ConstItem>
+const std::tr1::shared_ptr<const SetSpecTree>
 ERepositoryProfile::system_packages() const
 {
     return _imp->system_packages;

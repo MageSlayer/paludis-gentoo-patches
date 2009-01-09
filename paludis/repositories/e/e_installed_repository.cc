@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,7 +24,6 @@
 #include <paludis/repositories/e/eapi_phase.hh>
 #include <paludis/repositories/e/ebuild.hh>
 #include <paludis/repositories/e/e_repository.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/mutex.hh>
@@ -36,6 +35,8 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/action.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
@@ -157,7 +158,7 @@ EInstalledRepository::perform_hook(const Hook & hook) const
     return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
 }
 
-std::tr1::shared_ptr<SetSpecTree::ConstItem>
+const std::tr1::shared_ptr<const SetSpecTree>
 EInstalledRepository::package_set(const SetName & s) const
 {
     using namespace std::tr1::placeholders;
@@ -167,8 +168,7 @@ EInstalledRepository::package_set(const SetName & s) const
 
     if ("everything" == s.data())
     {
-        std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > result(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                    std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+        std::tr1::shared_ptr<SetSpecTree> result(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
         std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("everything"), stringify(name())));
 
         std::tr1::shared_ptr<const CategoryNamePartSet> cats(category_names());
@@ -181,14 +181,14 @@ EInstalledRepository::package_set(const SetName & s) const
             {
                 std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec().package(*e)));
                 spec->set_tag(tag);
-                result->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+                result->root()->append(spec);
             }
         }
 
         return result;
     }
     else
-        return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
+        return make_null_shared_ptr();
 }
 
 std::tr1::shared_ptr<const SetNameSet>

@@ -18,26 +18,26 @@
  */
 
 #include <paludis/dep_spec.hh>
+#include <paludis/spec_tree.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/normalise.hh>
 #include <paludis/repositories/cran/package_dep_spec.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/make_shared_ptr.hh>
 
 #include <string>
 #include <list>
 
 using namespace paludis;
 
-std::tr1::shared_ptr<DependencySpecTree::ConstItem>
+std::tr1::shared_ptr<DependencySpecTree>
 cranrepository::parse_depends(const std::string & s)
 {
     Context context("When parsing CRAN 'Depends:' string: '" + s + "':");
 
-    std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > result(
-            new ConstTreeSequence<DependencySpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+    std::tr1::shared_ptr<DependencySpecTree> result(new DependencySpecTree(make_shared_ptr(new AllDepSpec)));
 
     std::list<std::string> specs;
 
@@ -67,11 +67,9 @@ cranrepository::parse_depends(const std::string & s)
     {
         Context local_context("When processing token '" + *a + "':");
 
-        std::tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > spec(
-                new TreeLeaf<DependencySpecTree, PackageDepSpec>(std::tr1::shared_ptr<PackageDepSpec>(
-                        new PackageDepSpec(cranrepository::parse_cran_package_dep_spec(
-                                strip_leading(strip_trailing(*a, " \r\n\t"), " \r\n\t"))))));
-        result->add(spec);
+        std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(cranrepository::parse_cran_package_dep_spec(
+                        strip_leading(strip_trailing(*a, " \r\n\t"), " \r\n\t"))));
+        result->root()->append(spec);
     }
 
     return result;

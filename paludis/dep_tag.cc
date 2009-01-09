@@ -20,12 +20,13 @@
 #include <paludis/dep_tag.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_label.hh>
+#include <paludis/spec_tree.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/visitor-impl.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <algorithm>
 #include <sstream>
 
@@ -140,68 +141,6 @@ DepTag::~DepTag()
 
 namespace
 {
-    struct DepSpecStringifier :
-        ConstVisitor<DependencySpecTree>
-    {
-        std::ostringstream s;
-
-        void
-        visit_sequence(const AllDepSpec &,
-                DependencySpecTree::ConstSequenceIterator cur,
-                DependencySpecTree::ConstSequenceIterator end)
-        {
-            s << "( ";
-            std::for_each(cur, end, accept_visitor(*this));
-            s << ") ";
-        }
-
-        void
-        visit_sequence(const AnyDepSpec &,
-                DependencySpecTree::ConstSequenceIterator cur,
-                DependencySpecTree::ConstSequenceIterator end)
-        {
-            s << "|| ( ";
-            std::for_each(cur, end, accept_visitor(*this));
-            s << ") ";
-        }
-
-        void
-        visit_sequence(const ConditionalDepSpec & a,
-                DependencySpecTree::ConstSequenceIterator cur,
-                DependencySpecTree::ConstSequenceIterator end)
-        {
-            s << stringify(a) << " ( ";
-            std::for_each(cur, end, accept_visitor(*this));
-            s << ") ";
-        }
-
-        void
-        visit_leaf(const PackageDepSpec & p)
-        {
-            s << p << " ";
-        }
-
-        void
-        visit_leaf(const BlockDepSpec & b)
-        {
-            s << b << " ";
-        }
-
-        void
-        visit_leaf(const DependencyLabelsDepSpec & l)
-        {
-            std::copy(indirect_iterator(l.begin()), indirect_iterator(l.end()),
-                    std::ostream_iterator<DependencyLabel>(s, ","));
-            s << ":";
-        }
-
-        void
-        visit_leaf(const NamedSetDepSpec & p)
-        {
-            s << p << " ";
-        }
-    };
-
     struct DepTagComparator
     {
         std::string value;
@@ -219,9 +158,6 @@ namespace
         void visit(const DependencyDepTag & t)
         {
             value = stringify(*t.package_id()) + "," + stringify(*t.dependency()) + ",";
-            DepSpecStringifier s;
-            t.conditions()->accept(s);
-            value.append(s.s.str());
         }
 
         void visit(const TargetDepTag & t)
@@ -337,22 +273,18 @@ namespace paludis
 
         std::tr1::shared_ptr<const PackageID> id;
         const std::tr1::shared_ptr<PackageDepSpec> spec;
-        const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> cond;
 
-        Implementation(const std::tr1::shared_ptr<const PackageID> & i,
-                const PackageDepSpec & d, const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> & s) :
+        Implementation(const std::tr1::shared_ptr<const PackageID> & i, const PackageDepSpec & d) :
             id(i),
-            spec(std::tr1::static_pointer_cast<PackageDepSpec>(d.clone())),
-            cond(s)
+            spec(std::tr1::static_pointer_cast<PackageDepSpec>(d.clone()))
         {
             spec->set_tag(std::tr1::shared_ptr<const DepTag>());
         }
     };
 }
 
-DependencyDepTag::DependencyDepTag(const std::tr1::shared_ptr<const PackageID> & i, const PackageDepSpec & d,
-        const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> & s) :
-    PrivateImplementationPattern<DependencyDepTag>(new Implementation<DependencyDepTag>(i, d, s))
+DependencyDepTag::DependencyDepTag(const std::tr1::shared_ptr<const PackageID> & i, const PackageDepSpec & d) :
+    PrivateImplementationPattern<DependencyDepTag>(new Implementation<DependencyDepTag>(i, d))
 {
 }
 
@@ -382,12 +314,6 @@ const std::tr1::shared_ptr<const PackageDepSpec>
 DependencyDepTag::dependency() const
 {
     return _imp->spec;
-}
-
-const std::tr1::shared_ptr<const DependencySpecTree::ConstItem>
-DependencyDepTag::conditions() const
-{
-    return _imp->cond;
 }
 
 TargetDepTag::TargetDepTag()

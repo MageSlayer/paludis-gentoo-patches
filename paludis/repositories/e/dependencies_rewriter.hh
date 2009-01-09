@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_DEPENDENCIES_REWRITER_HH 1
 
 #include <paludis/dep_spec.hh>
-#include <paludis/dep_tree.hh>
+#include <paludis/spec_tree.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 
 namespace paludis
@@ -29,7 +29,6 @@ namespace paludis
     namespace erepository
     {
         class DependenciesRewriter :
-            public ConstVisitor<DependencySpecTree>,
             private PrivateImplementationPattern<DependenciesRewriter>
         {
             public:
@@ -38,22 +37,13 @@ namespace paludis
 
                 void _add_where_necessary(const std::string &, const DepSpec &);
 
-                void visit_leaf(const PackageDepSpec &);
-                void visit_leaf(const NamedSetDepSpec &);
-                void visit_leaf(const BlockDepSpec &);
-                void visit_leaf(const DependencyLabelsDepSpec &);
-
-                void visit_sequence(const AnyDepSpec &,
-                        DependencySpecTree::ConstSequenceIterator,
-                        DependencySpecTree::ConstSequenceIterator);
-
-                void visit_sequence(const AllDepSpec &,
-                        DependencySpecTree::ConstSequenceIterator,
-                        DependencySpecTree::ConstSequenceIterator);
-
-                void visit_sequence(const ConditionalDepSpec &,
-                        DependencySpecTree::ConstSequenceIterator,
-                        DependencySpecTree::ConstSequenceIterator);
+                void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node);
+                void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node);
+                void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type & node);
+                void visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type & node);
+                void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node);
+                void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node);
+                void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node);
 
                 const std::string depend() const;
                 const std::string rdepend() const;

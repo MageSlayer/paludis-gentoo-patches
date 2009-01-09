@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,7 +19,6 @@
 
 #include <paludis/repositories/e/fix_locked_dependencies.hh>
 #include <paludis/repositories/e/eapi.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
@@ -44,178 +43,109 @@ using namespace paludis::erepository;
 
 namespace
 {
-    void cannot_add(const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> &) PALUDIS_ATTRIBUTE((noreturn));
+    void cannot_add(const std::tr1::shared_ptr<const DependencySpecTree> &) PALUDIS_ATTRIBUTE((noreturn));
 
-    void cannot_add(const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> &)
+    void cannot_add(const std::tr1::shared_ptr<const DependencySpecTree> &)
     {
         throw InternalError(PALUDIS_HERE, "Got weird tree");
     }
 
-    struct Fixer :
-        ConstVisitor<DependencySpecTree>
+    struct Fixer
     {
-        std::list<std::pair<
-            std::tr1::shared_ptr<DependencySpecTree::ConstItem>,
-            std::tr1::function<void (const std::tr1::shared_ptr<DependencySpecTree::ConstItem> &)> > > stack;
-
-        std::tr1::shared_ptr<const DependencySpecTree::ConstItem> result;
+        std::list<std::tr1::shared_ptr<DependencySpecTree::BasicInnerNode> > stack;
+        std::tr1::shared_ptr<DependencySpecTree> result;
 
         const Environment * const env;
         const EAPI & eapi;
         const std::tr1::shared_ptr<const PackageID> id;
 
         Fixer(const Environment * const e, const EAPI & a, const std::tr1::shared_ptr<const PackageID> & i) :
+            result(new DependencySpecTree(make_shared_ptr(new AllDepSpec))),
             env(e),
             eapi(a),
             id(i)
         {
+            stack.push_front(result->root());
         }
 
-        void visit_sequence(const AllDepSpec & s,
-                DependencySpecTree::ConstSequenceIterator cur,
-                DependencySpecTree::ConstSequenceIterator end)
+        void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
         {
-            std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > c(
-                    new ConstTreeSequence<DependencySpecTree, AllDepSpec>(
-                        std::tr1::static_pointer_cast<AllDepSpec>(s.clone())));
-
-            if (! stack.empty())
-                stack.begin()->second(c);
-            else
-                result = c;
-
-            using namespace std::tr1::placeholders;
-            stack.push_front(std::make_pair(c, std::tr1::bind(&ConstTreeSequence<DependencySpecTree, AllDepSpec>::add, c.get(), _1)));
-            std::for_each(cur, end, accept_visitor(*this));
+            std::tr1::shared_ptr<AllDepSpec> spec(std::tr1::static_pointer_cast<AllDepSpec>(node.spec()->clone()));
+            stack.push_front((*stack.begin())->append(spec));
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
             stack.pop_front();
         }
 
-        void visit_sequence(const AnyDepSpec & s,
-                DependencySpecTree::ConstSequenceIterator cur,
-                DependencySpecTree::ConstSequenceIterator end)
+        void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
         {
-            std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AnyDepSpec> > c(
-                    new ConstTreeSequence<DependencySpecTree, AnyDepSpec>(
-                        std::tr1::static_pointer_cast<AnyDepSpec>(s.clone())));
-
-            if (! stack.empty())
-                stack.begin()->second(c);
-            else
-                result = c;
-
-            using namespace std::tr1::placeholders;
-            stack.push_front(std::make_pair(c, std::tr1::bind(&ConstTreeSequence<DependencySpecTree, AnyDepSpec>::add, c.get(), _1)));
-            std::for_each(cur, end, accept_visitor(*this));
+            std::tr1::shared_ptr<AnyDepSpec> spec(std::tr1::static_pointer_cast<AnyDepSpec>(node.spec()->clone()));
+            stack.push_front((*stack.begin())->append(spec));
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
             stack.pop_front();
         }
 
-        void visit_sequence(const ConditionalDepSpec & s,
-                DependencySpecTree::ConstSequenceIterator cur,
-                DependencySpecTree::ConstSequenceIterator end)
+        void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, ConditionalDepSpec> > c(
-                    new ConstTreeSequence<DependencySpecTree, ConditionalDepSpec>(
-                        std::tr1::static_pointer_cast<ConditionalDepSpec>(s.clone())));
-
-            if (! stack.empty())
-                stack.begin()->second(c);
-            else
-                result = c;
-
-            using namespace std::tr1::placeholders;
-            stack.push_front(std::make_pair(c, std::tr1::bind(&ConstTreeSequence<DependencySpecTree, ConditionalDepSpec>::add, c.get(), _1)));
-            std::for_each(cur, end, accept_visitor(*this));
+            std::tr1::shared_ptr<ConditionalDepSpec> spec(std::tr1::static_pointer_cast<ConditionalDepSpec>(node.spec()->clone()));
+            stack.push_front((*stack.begin())->append(spec));
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
             stack.pop_front();
         }
 
-        void visit_leaf(const PackageDepSpec & s)
+        void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
         {
-            std::tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > c;
+            std::tr1::shared_ptr<const PackageDepSpec> c;
 
             do
             {
-                if (! s.slot_requirement_ptr())
+                if (! node.spec()->slot_requirement_ptr())
                     break;
 
-                const SlotAnyLockedRequirement * const r(simple_visitor_cast<const SlotAnyLockedRequirement>(*s.slot_requirement_ptr()));
+                const SlotAnyLockedRequirement * const r(simple_visitor_cast<const SlotAnyLockedRequirement>(*node.spec()->slot_requirement_ptr()));
                 if (! r)
                     break;
 
                 std::tr1::shared_ptr<const PackageIDSequence> matches((*env)[selection::AllVersionsSorted(
-                            generator::Matches(s, MatchPackageOptions()) | filter::InstalledAtRoot(FSEntry("/")))]);
+                            generator::Matches(*node.spec(), MatchPackageOptions()) | filter::InstalledAtRoot(FSEntry("/")))]);
                 if (matches->empty())
                     break;
 
-                PackageDepSpec new_s(PartiallyMadePackageDepSpec(s).slot_requirement(
+                PackageDepSpec new_s(PartiallyMadePackageDepSpec(*node.spec()).slot_requirement(
                             make_shared_ptr(new ELikeSlotExactRequirement((*matches->last())->slot(), true))));
-                c.reset(new TreeLeaf<DependencySpecTree, PackageDepSpec>(std::tr1::static_pointer_cast<PackageDepSpec>(
-                                new_s.clone())));
+                c.reset(new PackageDepSpec(new_s));
             } while (false);
 
             if (! c)
-                c.reset(new TreeLeaf<DependencySpecTree, PackageDepSpec>(std::tr1::static_pointer_cast<PackageDepSpec>(s.clone())));
+                c = node.spec();
 
-            if (stack.empty())
-            {
-                stack.push_front(std::make_pair(c, &cannot_add));
-                result = c;
-            }
-            else
-                stack.begin()->second(c);
+            (*stack.begin())->append(c);
         }
 
-        void visit_leaf(const NamedSetDepSpec & s)
+        void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node)
         {
-            std::tr1::shared_ptr<TreeLeaf<DependencySpecTree, NamedSetDepSpec> > c(
-                    new TreeLeaf<DependencySpecTree, NamedSetDepSpec>(std::tr1::static_pointer_cast<NamedSetDepSpec>(s.clone())));
-
-            if (stack.empty())
-            {
-                stack.push_front(std::make_pair(c, &cannot_add));
-                result = c;
-            }
-            else
-                stack.begin()->second(c);
+            (*stack.begin())->append(node.spec());
         }
 
-        void visit_leaf(const BlockDepSpec & s)
+        void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type & node)
         {
-            std::tr1::shared_ptr<TreeLeaf<DependencySpecTree, BlockDepSpec> > c(
-                    new TreeLeaf<DependencySpecTree, BlockDepSpec>(std::tr1::static_pointer_cast<BlockDepSpec>(s.clone())));
-
-            if (stack.empty())
-            {
-                stack.push_front(std::make_pair(c, &cannot_add));
-                result = c;
-            }
-            else
-                stack.begin()->second(c);
+            (*stack.begin())->append(node.spec());
         }
 
-        void visit_leaf(const DependencyLabelsDepSpec & s)
+        void visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type & node)
         {
-            std::tr1::shared_ptr<TreeLeaf<DependencySpecTree, DependencyLabelsDepSpec> > c(
-                    new TreeLeaf<DependencySpecTree, DependencyLabelsDepSpec>(std::tr1::static_pointer_cast<DependencyLabelsDepSpec>(s.clone())));
-
-            if (stack.empty())
-            {
-                stack.push_front(std::make_pair(c, &cannot_add));
-                result = c;
-            }
-            else
-                stack.begin()->second(c);
+            (*stack.begin())->append(node.spec());
         }
     };
 }
 
-const std::tr1::shared_ptr<const DependencySpecTree::ConstItem>
+const std::tr1::shared_ptr<const DependencySpecTree>
 paludis::erepository::fix_locked_dependencies(
         const Environment * const env,
         const EAPI & e, const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> & b)
+        const std::tr1::shared_ptr<const DependencySpecTree> & b)
 {
     Fixer f(env, e, id);
-    b->accept(f);
+    b->root()->accept(f);
     return f.result;
 }
 

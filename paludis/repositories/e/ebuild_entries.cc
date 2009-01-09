@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -51,7 +51,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/is_file_with_extension.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
@@ -163,8 +162,7 @@ EbuildEntries::make_id(const QualifiedPackageName & q, const FSEntry & f) const
 namespace
 {
     class AFinder :
-        private InstantiationPolicy<AFinder, instantiation_method::NonCopyableTag>,
-        public ConstVisitor<FetchableURISpecTree>
+        private InstantiationPolicy<AFinder, instantiation_method::NonCopyableTag>
     {
         private:
             std::list<std::pair<const FetchableURIDepSpec *, const URILabelsDepSpec *> > _specs;
@@ -181,33 +179,29 @@ namespace
                 _labels.push_back(0);
             }
 
-            void visit_leaf(const FetchableURIDepSpec & a)
+            void visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::Type & node)
             {
-                _specs.push_back(std::make_pair(&a, *_labels.begin()));
+                _specs.push_back(std::make_pair(node.spec().get(), *_labels.begin()));
             }
 
-            void visit_leaf(const URILabelsDepSpec & l)
+            void visit(const FetchableURISpecTree::NodeType<URILabelsDepSpec>::Type & node)
             {
-                *_labels.begin() = &l;
+                *_labels.begin() = node.spec().get();
             }
 
-            void visit_sequence(const AllDepSpec &,
-                    FetchableURISpecTree::ConstSequenceIterator cur,
-                    FetchableURISpecTree::ConstSequenceIterator e)
+            void visit(const FetchableURISpecTree::NodeType<AllDepSpec>::Type & node)
             {
                 _labels.push_front(*_labels.begin());
-                std::for_each(cur, e, accept_visitor(*this));
+                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
                 _labels.pop_front();
             }
 
-            void visit_sequence(const ConditionalDepSpec & u,
-                    FetchableURISpecTree::ConstSequenceIterator cur,
-                    FetchableURISpecTree::ConstSequenceIterator e)
+            void visit(const FetchableURISpecTree::NodeType<ConditionalDepSpec>::Type & node)
             {
-                if (u.condition_met())
+                if (node.spec()->condition_met())
                 {
                     _labels.push_front(*_labels.begin());
-                    std::for_each(cur, e, accept_visitor(*this));
+                    std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
                     _labels.pop_front();
                 }
             }
@@ -365,7 +359,7 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
     {
         DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment());
         if (id->restrict_key())
-            id->restrict_key()->value()->accept(restricts);
+            id->restrict_key()->value()->root()->accept(restricts);
 
         for (DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>::ConstIterator i(restricts.begin()), i_end(restricts.end()) ;
                 i != i_end ; ++i)
@@ -389,7 +383,7 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
         /* make A */
         AFinder f(_imp->params.environment(), id);
         if (id->fetches_key())
-            id->fetches_key()->value()->accept(f);
+            id->fetches_key()->value()->root()->accept(f);
 
         for (AFinder::ConstIterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
@@ -408,7 +402,7 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
         {
             AAVisitor g;
             if (id->fetches_key())
-                id->fetches_key()->value()->accept(g);
+                id->fetches_key()->value()->root()->accept(g);
             std::set<std::string> already_in_all_archives;
 
             for (AAVisitor::ConstIterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)
@@ -443,13 +437,13 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
         FetchVisitor f(_imp->params.environment(), id, *id->eapi(),
                 _imp->e_repository->params().distdir(), o.fetch_unneeded(), fetch_userpriv_ok, mirrors_name,
                 id->fetches_key()->initial_label(), o.safe_resume(), o.maybe_output_deviant());
-        id->fetches_key()->value()->accept(f);
+        id->fetches_key()->value()->root()->accept(f);
         CheckFetchedFilesVisitor c(_imp->environment, id, _imp->e_repository->params().distdir(),
                 o.fetch_unneeded(), fetch_restrict,
                 ((_imp->e_repository->layout()->package_directory(id->name())) / "Manifest"),
                 _imp->e_repository->params().use_manifest(),
                 o.maybe_output_deviant(), o.exclude_unmirrorable());
-        id->fetches_key()->value()->accept(c);
+        id->fetches_key()->value()->root()->accept(c);
 
         if (c.need_nofetch())
         {
@@ -520,7 +514,7 @@ EbuildEntries::pretend_fetch(const std::tr1::shared_ptr<const ERepositoryID> & i
         PretendFetchVisitor f(_imp->params.environment(), id, *id->eapi(),
                 _imp->e_repository->params().distdir(), a.options.fetch_unneeded(),
                 id->fetches_key()->initial_label(), a);
-        id->fetches_key()->value()->accept(f);
+        id->fetches_key()->value()->root()->accept(f);
     }
 }
 
@@ -536,7 +530,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
     {
         DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment());
         if (id->restrict_key())
-            id->restrict_key()->value()->accept(restricts);
+            id->restrict_key()->value()->root()->accept(restricts);
 
         userpriv_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
@@ -562,7 +556,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
         /* make A */
         AFinder f(_imp->params.environment(), id);
         if (id->fetches_key())
-            id->fetches_key()->value()->accept(f);
+            id->fetches_key()->value()->root()->accept(f);
 
         for (AFinder::ConstIterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
@@ -581,7 +575,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
         {
             AAVisitor g;
             if (id->fetches_key())
-                id->fetches_key()->value()->accept(g);
+                id->fetches_key()->value()->root()->accept(g);
             std::set<std::string> already_in_all_archives;
 
             for (AAVisitor::ConstIterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)
@@ -757,7 +751,7 @@ EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
     {
         DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment());
         if (id->restrict_key())
-            id->restrict_key()->value()->accept(restricts);
+            id->restrict_key()->value()->root()->accept(restricts);
 
         userpriv_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
@@ -839,7 +833,7 @@ EbuildEntries::get_environment_variable(const std::tr1::shared_ptr<const EReposi
 
         DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment());
         if (id->restrict_key())
-            id->restrict_key()->value()->accept(restricts);
+            id->restrict_key()->value()->root()->accept(restricts);
 
         userpriv_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
@@ -964,7 +958,7 @@ EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
     {
         DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment());
         if (id->restrict_key())
-            id->restrict_key()->value()->accept(restricts);
+            id->restrict_key()->value()->root()->accept(restricts);
 
         userpriv_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
@@ -984,7 +978,7 @@ EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
     if (id->raw_myoptions_key())
     {
         MyOptionsRequirementsVerifier verifier(id);
-        id->raw_myoptions_key()->value()->accept(verifier);
+        id->raw_myoptions_key()->value()->root()->accept(verifier);
 
         if (verifier.unmet_requirements() && ! verifier.unmet_requirements()->empty())
         {

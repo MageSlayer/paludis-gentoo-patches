@@ -164,7 +164,7 @@ namespace paludis
             /**
              * Add a DepSpec with role context.
              */
-            void add_in_role(const bool only_if_not_suggested_label, DependencySpecTree::ConstItem &, const std::string & role,
+            void add_in_role(const bool only_if_not_suggested_label, const DependencySpecTree::BasicNode &, const std::string & role,
                     const std::tr1::shared_ptr<const DestinationsSet> &);
 
             /**
@@ -178,32 +178,29 @@ namespace paludis
              * Add a package to the list.
              */
             void add_package(const std::tr1::shared_ptr<const PackageID> &, const std::tr1::shared_ptr<const DepTag> &,
-                    const PackageDepSpec &, const std::tr1::shared_ptr<DependencySpecTree::ConstItem> &,
-                    const std::tr1::shared_ptr<const DestinationsSet> & destinations);
+                    const PackageDepSpec &, const std::tr1::shared_ptr<const DestinationsSet> & destinations);
 
             /**
              * Add an already installed package to the list.
              */
             void add_already_installed_package(const std::tr1::shared_ptr<const PackageID> &, const std::tr1::shared_ptr<const DepTag> &,
-                    const PackageDepSpec &, const std::tr1::shared_ptr<DependencySpecTree::ConstItem> &,
-                    const std::tr1::shared_ptr<const DestinationsSet> & destinations);
+                    const PackageDepSpec &, const std::tr1::shared_ptr<const DestinationsSet> & destinations);
 
             /**
              * Add an error package to the list.
              */
-            void add_error_package(const std::tr1::shared_ptr<const PackageID> &, const DepListEntryKind,
-                    const PackageDepSpec &, const std::tr1::shared_ptr<DependencySpecTree::ConstItem> &);
+            void add_error_package(const std::tr1::shared_ptr<const PackageID> &, const DepListEntryKind, const PackageDepSpec &);
 
             /**
              * Add predependencies.
              */
-            void add_predeps(DependencySpecTree::ConstItem &, const DepListDepsOption, const std::string &,
+            void add_predeps(const DependencySpecTree::BasicNode &, const DepListDepsOption, const std::string &,
                     const std::tr1::shared_ptr<const DestinationsSet> & destinations, const bool only_if_not_suggested_label);
 
             /**
              * Add postdependencies.
              */
-            void add_postdeps(DependencySpecTree::ConstItem &, const DepListDepsOption, const std::string &,
+            void add_postdeps(const DependencySpecTree::BasicNode &, const DepListDepsOption, const std::string &,
                     const std::tr1::shared_ptr<const DestinationsSet> & destinations, const bool only_if_not_suggested_label);
 
             /**
@@ -214,9 +211,8 @@ namespace paludis
 
             void add_not_top_level(
                     const bool only_if_not_suggested_label,
-                    DependencySpecTree::ConstItem &,
-                    const std::tr1::shared_ptr<const DestinationsSet> & target_destinations,
-                    const std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > & conditions);
+                    const DependencySpecTree::BasicNode &,
+                    const std::tr1::shared_ptr<const DestinationsSet> & target_destinations);
 
         public:
             ///\name Basic operations
@@ -259,7 +255,7 @@ namespace paludis
              * Add the packages required to resolve an additional dependency
              * spec.
              */
-            void add(SetSpecTree::ConstItem &,
+            void add(const SetSpecTree &,
                     const std::tr1::shared_ptr<const DestinationsSet> & target_destinations);
 
             /**
@@ -286,7 +282,7 @@ namespace paludis
             /**
              * Return whether a spec structure is already installed.
              */
-            bool already_installed(DependencySpecTree::ConstItem &,
+            bool already_installed(const DependencySpecTree::BasicNode &,
                     const std::tr1::shared_ptr<const DestinationsSet> & target_destinations) const;
 
             /**
@@ -308,8 +304,7 @@ namespace paludis
              * Add a suggested package to the list.
              */
             void add_suggested_package(const std::tr1::shared_ptr<const PackageID> &,
-                    const PackageDepSpec &, const std::tr1::shared_ptr<DependencySpecTree::ConstItem> &,
-                    const std::tr1::shared_ptr<const DestinationsSet> & destinations);
+                    const PackageDepSpec &, const std::tr1::shared_ptr<const DestinationsSet> & destinations);
     };
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE

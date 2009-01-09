@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,10 +18,12 @@
  */
 
 #include <paludis/repositories/e/source_uri_finder.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/repository.hh>
 #include <paludis/environment.hh>
 #include <paludis/action.hh>
@@ -217,4 +219,6 @@ SourceURIFinder::add_listed()
         _imp->items.push_back(std::make_pair(_imp->url, _imp->filename));
     }
 }
+
+template class WrappedForwardIterator<SourceURIFinder::ConstIteratorTag, const std::pair<std::string, std::string> >;
 

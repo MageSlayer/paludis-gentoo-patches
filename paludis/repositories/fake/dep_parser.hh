@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_FAKE_DEP_PARSER_HH 1
 
 #include <paludis/util/exception.hh>
-#include <paludis/dep_tree.hh>
+#include <paludis/spec_tree.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <string>
@@ -45,31 +45,31 @@ namespace paludis
         /**
          * Parse a dependency heirarchy.
          */
-        std::tr1::shared_ptr<DependencySpecTree::ConstItem> parse_depend(const std::string & s,
+        std::tr1::shared_ptr<DependencySpecTree> parse_depend(const std::string & s,
                 const Environment * const, const std::tr1::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
 
         /**
          * Parse a provide heirarchy.
          */
-        std::tr1::shared_ptr<ProvideSpecTree::ConstItem> parse_provide(const std::string & s,
+        std::tr1::shared_ptr<ProvideSpecTree> parse_provide(const std::string & s,
                 const Environment * const, const std::tr1::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
 
         /**
          * Parse a fetchable uri heirarchy.
          */
-        std::tr1::shared_ptr<FetchableURISpecTree::ConstItem> parse_fetchable_uri(const std::string & s,
+        std::tr1::shared_ptr<FetchableURISpecTree> parse_fetchable_uri(const std::string & s,
                 const Environment * const, const std::tr1::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
 
         /**
          * Parse a simple uri heirarchy.
          */
-        std::tr1::shared_ptr<SimpleURISpecTree::ConstItem> parse_simple_uri(const std::string & s,
+        std::tr1::shared_ptr<SimpleURISpecTree> parse_simple_uri(const std::string & s,
                 const Environment * const, const std::tr1::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
 
         /**
          * Parse a license heirarchy.
          */
-        std::tr1::shared_ptr<LicenseSpecTree::ConstItem> parse_license(const std::string & s,
+        std::tr1::shared_ptr<LicenseSpecTree> parse_license(const std::string & s,
                 const Environment * const, const std::tr1::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
     }
 }

@@ -55,11 +55,9 @@ int main(int argc, char * argv[])
          * The package database has its own examples, so we'll start with sets:
          * */
 
-        std::tr1::shared_ptr<SetSpecTree::ConstItem> world(env->set(SetName("world")));
+        std::tr1::shared_ptr<const SetSpecTree> world(env->set(SetName("world")));
         if (world)
         {
-            /* See \ref example_dep_tree.cc "example_dep_tree.cc" for how to
-             * make use of this set. */
             cout << "World set exists" << endl;
         }
         else

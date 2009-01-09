@@ -18,8 +18,8 @@
  */
 
 #include "man.hh"
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <tr1/functional>
 #include <ostream>
 #include <sstream>

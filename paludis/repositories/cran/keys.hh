@@ -81,7 +81,7 @@ namespace paludis
 
                 ~DepKey();
 
-                virtual const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
+                virtual const std::tr1::shared_ptr<const DependencySpecTree> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string pretty_print(const DependencySpecTree::ItemFormatter &) const

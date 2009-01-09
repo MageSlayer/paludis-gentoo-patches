@@ -25,7 +25,6 @@
 #include <paludis/dep_tag.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/join.hh>
 #include <iostream>
 

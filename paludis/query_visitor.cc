@@ -28,7 +28,10 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/visitor-impl.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/accept_visitor.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <tr1/functional>
 #include <algorithm>
 #include <set>
@@ -76,7 +79,7 @@ QueryVisitor::result() const
 }
 
 void
-QueryVisitor::visit_leaf(const PackageDepSpec & a)
+QueryVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
 {
     using namespace std::tr1::placeholders;
 
@@ -88,7 +91,7 @@ QueryVisitor::visit_leaf(const PackageDepSpec & a)
 
     // TODO: check destinations
     std::tr1::shared_ptr<const PackageIDSequence> matches((*_imp->environment)[selection::AllVersionsUnsorted(
-                generator::Matches(a, _imp->dep_list->options()->match_package_options()) |
+                generator::Matches(*node.spec(), _imp->dep_list->options()->match_package_options()) |
                 filter::InstalledAtRoot(_imp->environment->root()))]);
 
     if (indirect_iterator(matches->end()) != std::find_if(indirect_iterator(matches->begin()), indirect_iterator(matches->end()),
@@ -99,7 +102,7 @@ QueryVisitor::visit_leaf(const PackageDepSpec & a)
     }
 
     /* check the merge list for any new packages that match */
-    if (_imp->dep_list->match_on_list(a))
+    if (_imp->dep_list->match_on_list(*node.spec()))
     {
         _imp->result = true;
         return;
@@ -107,44 +110,43 @@ QueryVisitor::visit_leaf(const PackageDepSpec & a)
 }
 
 void
-QueryVisitor::visit_leaf(const NamedSetDepSpec & s)
+QueryVisitor::visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node)
 {
-    Context context("When expanding named set '" + stringify(s) + "':");
+    Context context("When expanding named set '" + stringify(*node.spec()) + "':");
 
-    std::tr1::shared_ptr<const SetSpecTree::ConstItem> set(_imp->environment->set(s.name()));
+    std::tr1::shared_ptr<const SetSpecTree> set(_imp->environment->set(node.spec()->name()));
 
     if (! set)
     {
-        Log::get_instance()->message("dep_list.query_visitor.unknown_set", ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
+        Log::get_instance()->message("dep_list.query_visitor.unknown_set", ll_warning, lc_context) << "Unknown set '" << node.spec()->name() << "'";
         _imp->result = false;
         return;
     }
 
-    if (! _imp->recursing_sets.insert(s.name()).second)
+    if (! _imp->recursing_sets.insert(node.spec()->name()).second)
     {
         Log::get_instance()->message("dep_list.query_visitor.recursive_set", ll_warning, lc_context)
-            << "Recursively defined set '" << s.name() << "'";
+            << "Recursively defined set '" << node.spec()->name() << "'";
         return;
     }
 
-    set->accept(*this);
+    set->root()->accept(*this);
 
-    _imp->recursing_sets.erase(s.name());
+    _imp->recursing_sets.erase(node.spec()->name());
 }
 
 void
-QueryVisitor::visit_sequence(const ConditionalDepSpec & a,
-        DependencySpecTree::ConstSequenceIterator cur,
-        DependencySpecTree::ConstSequenceIterator end)
+QueryVisitor::visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
 {
     /* for use? ( ) dep specs, return true if we're not enabled, so that
      * weird || ( ) cases work. */
-    if (a.condition_met())
+    if (node.spec()->condition_met())
     {
         _imp->result = true;
-        for ( ; cur != end ; ++cur)
+        for (DependencySpecTree::NodeType<AnyDepSpec>::Type::ConstIterator c(node.begin()), c_end(node.end()) ;
+                c != c_end ; ++c)
         {
-            cur->accept(*this);
+            (*c)->accept(*this);
             if (! _imp->result)
                 return;
         }
@@ -154,52 +156,56 @@ QueryVisitor::visit_sequence(const ConditionalDepSpec & a,
 }
 
 void
-QueryVisitor::visit_sequence(const AnyDepSpec &,
-        DependencySpecTree::ConstSequenceIterator cur,
-        DependencySpecTree::ConstSequenceIterator end)
+QueryVisitor::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
 {
     /* empty || ( ) must resolve to true */
     _imp->result = true;
 
     RangeRewriter r;
-    std::for_each(cur, end, accept_visitor(r));
+    std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(r));
 
     if (r.spec())
-        visit_leaf(*r.spec());
+    {
+        DependencySpecTree tree(make_shared_ptr(new AllDepSpec));
+        tree.root()->append(r.spec());
+        tree.root()->accept(*this);
+    }
     else
-        for ( ; cur != end ; ++cur)
+        for (DependencySpecTree::NodeType<AnyDepSpec>::Type::ConstIterator c(node.begin()), c_end(node.end()) ;
+                c != c_end ; ++c)
         {
-            if (! is_viable_any_child(*cur))
+            if (! is_viable_any_child(**c))
                 continue;
 
-            cur->accept(*this);
+            (*c)->accept(*this);
             if (_imp->result)
                 return;
         }
 }
 
 void
-QueryVisitor::visit_leaf(const BlockDepSpec & a)
+QueryVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type & node)
 {
-    visit_leaf(*a.blocked_spec());
+    DependencySpecTree tree(make_shared_ptr(new AllDepSpec));
+    tree.root()->append(node.spec()->blocked_spec());
+    tree.root()->accept(*this);
     _imp->result = !_imp->result;
 }
 
 void
-QueryVisitor::visit_sequence(const AllDepSpec &,
-        DependencySpecTree::ConstSequenceIterator cur,
-        DependencySpecTree::ConstSequenceIterator end)
+QueryVisitor::visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
 {
-    for ( ; cur != end ; ++cur)
+    for (DependencySpecTree::NodeType<AnyDepSpec>::Type::ConstIterator c(node.begin()), c_end(node.end()) ;
+            c != c_end ; ++c)
     {
-        cur->accept(*this);
+        (*c)->accept(*this);
         if (! _imp->result)
             return;
     }
 }
 
 void
-QueryVisitor::visit_leaf(const DependencyLabelsDepSpec &)
+QueryVisitor::visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type &)
 {
     // XXX implement
 }

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,7 +25,6 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/package_database.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/generator.hh>
@@ -64,7 +63,7 @@ namespace test_cases
                     *eapi, FSEntry("fetch_visitor_TEST_dir/out"),
                     false, false, "test", make_shared_ptr(new URIListedThenMirrorsLabel("listed-then-mirrors")), false,
                     make_null_shared_ptr());
-            parse_fetchable_uri("file:///" + stringify(FSEntry("fetch_visitor_TEST_dir/in/input1").realpath()), &env, id, *eapi)->accept(v);
+            parse_fetchable_uri("file:///" + stringify(FSEntry("fetch_visitor_TEST_dir/in/input1").realpath()), &env, id, *eapi)->root()->accept(v);
 
             TEST_CHECK(FSEntry("fetch_visitor_TEST_dir/out/input1").is_regular_file());
             std::ifstream f(stringify(FSEntry("fetch_visitor_TEST_dir/out/input1")).c_str());

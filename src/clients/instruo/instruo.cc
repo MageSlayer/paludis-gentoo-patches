@@ -33,7 +33,6 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_named_values.hh>
@@ -96,32 +95,32 @@ namespace
 
         void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
-            const std::tr1::shared_ptr<PlainTextSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<const PlainTextSpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
         {
-            const std::tr1::shared_ptr<ProvideSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<const ProvideSpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
-            const std::tr1::shared_ptr<FetchableURISpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<const FetchableURISpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
         {
-            const std::tr1::shared_ptr<SimpleURISpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<const SimpleURISpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
-            const std::tr1::shared_ptr<LicenseSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<const LicenseSpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
         {
-            const std::tr1::shared_ptr<DependencySpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<const DependencySpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataCollectionKey<PackageIDSequence> & k)

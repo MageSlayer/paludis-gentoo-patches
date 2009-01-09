@@ -27,7 +27,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/name.hh>
-#include <paludis/dep_tree.hh>
+#include <paludis/spec_tree.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/dep_tag-fwd.hh>
 #include <tr1/functional>
@@ -128,7 +128,7 @@ namespace paludis
             /**
              * Fetch our contents.
              */
-            std::tr1::shared_ptr<SetSpecTree::ConstItem> contents() const;
+            const std::tr1::shared_ptr<const SetSpecTree> contents() const;
 
             /**
              * Rewrite our contents.

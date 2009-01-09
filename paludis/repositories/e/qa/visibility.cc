@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,7 +24,6 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/qa.hh>
@@ -49,8 +48,7 @@ using namespace paludis::erepository;
 
 namespace
 {
-    struct Checker :
-        ConstVisitor<DependencySpecTree>
+    struct Checker
     {
         const FSEntry entry;
         QAReporter * const reporter;
@@ -92,27 +90,27 @@ namespace
         {
         }
 
-        void visit_leaf(const BlockDepSpec &)
+        void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type &)
         {
             viable = true;
         }
 
-        void visit_leaf(const DependencyLabelsDepSpec &)
+        void visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const NamedSetDepSpec &)
+        void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const PackageDepSpec & orig_p)
+        void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
         {
             using namespace std::tr1::placeholders;
 
             success = false;
             viable = true;
 
-            const PackageDepSpec * p(&orig_p);
+            const PackageDepSpec * p(node.spec().get());
             std::tr1::shared_ptr<PackageDepSpec> local_p;
 
             /* rewrite virtuals to avoid problems later on */
@@ -126,18 +124,18 @@ namespace
                     if (v->second->version_requirements_ptr())
                         std::for_each(v->second->version_requirements_ptr()->begin(), v->second->version_requirements_ptr()->end(),
                                 std::tr1::bind(&PartiallyMadePackageDepSpec::version_requirement, &pp, _1));
-                    if (orig_p.version_requirements_ptr())
-                        std::for_each(orig_p.version_requirements_ptr()->begin(), orig_p.version_requirements_ptr()->end(),
+                    if (node.spec()->version_requirements_ptr())
+                        std::for_each(node.spec()->version_requirements_ptr()->begin(), node.spec()->version_requirements_ptr()->end(),
                                 std::tr1::bind(&PartiallyMadePackageDepSpec::version_requirement, &pp, _1));
 
                     pp.package(*v->second->package_ptr());
-                    if (orig_p.slot_requirement_ptr())
-                        pp.slot_requirement(orig_p.slot_requirement_ptr());
-                    if (orig_p.in_repository_ptr())
-                        pp.in_repository(*orig_p.in_repository_ptr());
+                    if (node.spec()->slot_requirement_ptr())
+                        pp.slot_requirement(node.spec()->slot_requirement_ptr());
+                    if (node.spec()->in_repository_ptr())
+                        pp.in_repository(*node.spec()->in_repository_ptr());
 
                     local_p.reset(new PackageDepSpec(pp));
-                    local_p->set_tag(orig_p.tag());
+                    local_p->set_tag(node.spec()->tag());
                     p = local_p.get();
                 }
             }
@@ -149,7 +147,7 @@ namespace
             {
                 if (reporter)
                     reporter->message(QAMessage(entry, qaml_normal, name, "No packages matching '"
-                                + stringify(orig_p) + "' in dependencies key '" + stringify(key->raw_name()) + "' for profile '"
+                                + stringify(*node.spec()) + "' in dependencies key '" + stringify(key->raw_name()) + "' for profile '"
                                 + stringify((*profile).path()) + "' (" + stringify((*profile).arch()) + "."
                                 + stringify((*profile).status())
                                 + (unstable ? ".unstable" : ".stable") + ")")
@@ -192,7 +190,7 @@ namespace
                         {
                             Log::get_instance()->message("e.qa.visibility_check.no_masks", ll_warning, lc_context)
                                 << "Probably a bug: don't know how to get masks for '"
-                                << **i << "' from '" << orig_p << "' -> '" << *p << "'";
+                                << **i << "' from '" << *node.spec() << "' -> '" << *p << "'";
                             continue;
                         }
                     }
@@ -213,7 +211,7 @@ namespace
                 if (! success)
                     if (reporter)
                         reporter->message(QAMessage(entry, qaml_normal, name, "No visible packages matching '"
-                                    + stringify(orig_p) + "' in dependencies key '" + stringify(key->raw_name()) + "' for profile '"
+                                    + stringify(*node.spec()) + "' in dependencies key '" + stringify(key->raw_name()) + "' for profile '"
                                     + stringify((*profile).path()) + "' (" + stringify((*profile).arch()) + "." + stringify((*profile).status())
                                     + (unstable ? ".unstable" : ".stable") + ")")
                                 .with_associated_id(id)
@@ -221,11 +219,9 @@ namespace
             }
         }
 
-        void visit_sequence(const ConditionalDepSpec & u,
-                DependencySpecTree::ConstSequenceIterator cur,
-                DependencySpecTree::ConstSequenceIterator end)
+        void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            ChoiceNameWithPrefix prefixed(elike_conditional_dep_spec_flag(u));
+            ChoiceNameWithPrefix prefixed(elike_conditional_dep_spec_flag(*node.spec()));
             UnprefixedChoiceName value("x");
             std::tr1::shared_ptr<const Choice> choice;
             if (id->choices_key())
@@ -263,25 +259,24 @@ namespace
             }
             else
                 viable =
-                    ((! elike_conditional_dep_spec_is_inverse(u)) && (! (*profile).profile()->use_masked(
+                    ((! elike_conditional_dep_spec_is_inverse(*node.spec())) && (! (*profile).profile()->use_masked(
                             id, choice, value, prefixed))) ||
-                    ((elike_conditional_dep_spec_is_inverse(u)) && (! (*profile).profile()->use_forced(
+                    ((elike_conditional_dep_spec_is_inverse(*node.spec())) && (! (*profile).profile()->use_forced(
                             id, choice, value, prefixed)));
 
             if (viable)
-                std::for_each(cur, end, accept_visitor(*this));
+                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
         }
 
-        void visit_sequence(const AnyDepSpec &,
-                DependencySpecTree::ConstSequenceIterator begin,
-                DependencySpecTree::ConstSequenceIterator end)
+        void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
         {
             success = true;
             viable = true;
-            for (DependencySpecTree::ConstSequenceIterator cur(begin) ; cur != end ; ++cur)
+            for (DependencySpecTree::NodeType<AnyDepSpec>::Type::ConstIterator cur(node.begin()), cur_end(node.end()) ;
+                    cur != cur_end ; ++cur)
             {
                 Checker c(entry, 0, env, id, repo, accepted_keywords, profile, name, unstable, key);
-                accept_visitor(c)(*cur);
+                accept_visitor(c)(**cur);
                 if (c.success)
                 {
                     success = true;
@@ -297,7 +292,7 @@ namespace
                 {
                     StringifyFormatter ff;
                     DepSpecPrettyPrinter printer(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
-                    std::for_each(begin, end, accept_visitor(printer));
+                    std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(printer));
                     reporter->message(QAMessage(entry, qaml_normal, name, "No item in block '|| ( "
                                 + stringify(printer) + " )' visible for profile '"
                                 + stringify((*profile).path()) + "' (" + stringify((*profile).arch()) + "." + stringify((*profile).status())
@@ -308,12 +303,10 @@ namespace
             }
         }
 
-        void visit_sequence(const AllDepSpec &,
-                DependencySpecTree::ConstSequenceIterator cur,
-                DependencySpecTree::ConstSequenceIterator end)
+        void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
         {
             viable = true;
-            std::for_each(cur, end, accept_visitor(*this));
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
         }
     };
 }
@@ -354,25 +347,25 @@ paludis::erepository::visibility_check(
             if (id->build_dependencies_key())
             {
                 Checker c(entry, &reporter, env, id, repo, accepted_keywords, p, name, false, id->build_dependencies_key());
-                id->build_dependencies_key()->value()->accept(c);
+                id->build_dependencies_key()->value()->root()->accept(c);
             }
 
             if (id->run_dependencies_key())
             {
                 Checker c(entry, &reporter, env, id, repo, accepted_keywords, p, name, false, id->run_dependencies_key());
-                id->run_dependencies_key()->value()->accept(c);
+                id->run_dependencies_key()->value()->root()->accept(c);
             }
 
             if (id->post_dependencies_key())
             {
                 Checker c(entry, &reporter, env, id, repo, accepted_keywords, p, name, false, id->post_dependencies_key());
-                id->post_dependencies_key()->value()->accept(c);
+                id->post_dependencies_key()->value()->root()->accept(c);
             }
 
             if (id->suggested_dependencies_key())
             {
                 Checker c(entry, &reporter, env, id, repo, accepted_keywords, p, name, false, id->suggested_dependencies_key());
-                id->post_dependencies_key()->value()->accept(c);
+                id->post_dependencies_key()->value()->root()->accept(c);
             }
         }
         else
@@ -391,25 +384,25 @@ paludis::erepository::visibility_check(
                 if (id->build_dependencies_key())
                 {
                     Checker c(entry, &reporter, env, id, repo, accepted_keywords, p, name, true, id->build_dependencies_key());
-                    id->build_dependencies_key()->value()->accept(c);
+                    id->build_dependencies_key()->value()->root()->accept(c);
                 }
 
                 if (id->run_dependencies_key())
                 {
                     Checker c(entry, &reporter, env, id, repo, accepted_keywords, p, name, true, id->run_dependencies_key());
-                    id->run_dependencies_key()->value()->accept(c);
+                    id->run_dependencies_key()->value()->root()->accept(c);
                 }
 
                 if (id->post_dependencies_key())
                 {
                     Checker c(entry, &reporter, env, id, repo, accepted_keywords, p, name, true, id->post_dependencies_key());
-                    id->post_dependencies_key()->value()->accept(c);
+                    id->post_dependencies_key()->value()->root()->accept(c);
                 }
 
                 if (id->suggested_dependencies_key())
                 {
                     Checker c(entry, &reporter, env, id, repo, accepted_keywords, p, name, true, id->suggested_dependencies_key());
-                    id->post_dependencies_key()->value()->accept(c);
+                    id->post_dependencies_key()->value()->root()->accept(c);
                 }
             }
         }

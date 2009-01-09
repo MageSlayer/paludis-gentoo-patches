@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PYTHON_DEP_SPEC_HH 1
 
 #include <paludis/dep_spec.hh>
-#include <paludis/dep_tree.hh>
+#include <paludis/spec_tree.hh>
 #include <tr1/functional>
 
 namespace paludis
@@ -45,30 +45,23 @@ namespace paludis
         class PythonDependencyLabelsDepSpec;
         class PythonNamedSetDepSpec;
 
-        struct PythonDepSpecVisitorTypes :
-            VisitorTypes<
-                PythonDepSpecVisitorTypes,
-                PythonDepSpec,
-                PythonAnyDepSpec,
-                PythonAllDepSpec,
-                PythonConditionalDepSpec,
-                PythonBlockDepSpec,
-                PythonPlainTextDepSpec,
-                PythonLicenseDepSpec,
-                PythonPackageDepSpec,
-                PythonFetchableURIDepSpec,
-                PythonSimpleURIDepSpec,
-                PythonURILabelsDepSpec,
-                PythonPlainTextLabelDepSpec,
-                PythonDependencyLabelsDepSpec,
-                PythonNamedSetDepSpec
-            >
-        {
-        };
-
         class PALUDIS_VISIBLE PythonDepSpec :
             private InstantiationPolicy<PythonDepSpec, instantiation_method::NonCopyableTag>,
-            public virtual ConstAcceptInterface<PythonDepSpecVisitorTypes>
+            public virtual DeclareAbstractAcceptMethods<PythonDepSpec, MakeTypeList<
+                    PythonAnyDepSpec,
+                    PythonAllDepSpec,
+                    PythonConditionalDepSpec,
+                    PythonBlockDepSpec,
+                    PythonPlainTextDepSpec,
+                    PythonLicenseDepSpec,
+                    PythonPackageDepSpec,
+                    PythonFetchableURIDepSpec,
+                    PythonSimpleURIDepSpec,
+                    PythonURILabelsDepSpec,
+                    PythonPlainTextLabelDepSpec,
+                    PythonDependencyLabelsDepSpec,
+                    PythonNamedSetDepSpec
+                >::Type>
         {
             protected:
                 PythonDepSpec();
@@ -106,7 +99,7 @@ namespace paludis
 
         class PALUDIS_VISIBLE PythonAnyDepSpec :
             public PythonCompositeDepSpec,
-            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonAnyDepSpec>
+            public ImplementAcceptMethods<PythonDepSpec, PythonAnyDepSpec>
         {
             public:
                 PythonAnyDepSpec();
@@ -115,7 +108,7 @@ namespace paludis
 
         class PALUDIS_VISIBLE PythonAllDepSpec :
             public PythonCompositeDepSpec,
-            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonAllDepSpec>
+            public ImplementAcceptMethods<PythonDepSpec, PythonAllDepSpec>
         {
             public:
                 PythonAllDepSpec();
@@ -124,7 +117,7 @@ namespace paludis
 
         class PALUDIS_VISIBLE PythonConditionalDepSpec :
             public PythonCompositeDepSpec,
-            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonConditionalDepSpec>
+            public ImplementAcceptMethods<PythonDepSpec, PythonConditionalDepSpec>
         {
             private:
                 const std::tr1::shared_ptr<const ConditionalDepSpecData> _data;
@@ -160,7 +153,7 @@ namespace paludis
         class PALUDIS_VISIBLE PythonPackageDepSpec :
             public PythonStringDepSpec,
             private PrivateImplementationPattern<PythonPackageDepSpec>,
-            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonPackageDepSpec>
+            public ImplementAcceptMethods<PythonDepSpec, PythonPackageDepSpec>
         {
             public:
                 PythonPackageDepSpec(const PackageDepSpec &);
@@ -191,7 +184,7 @@ namespace paludis
 
         class PALUDIS_VISIBLE PythonPlainTextDepSpec :
             public PythonStringDepSpec,
-            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonPlainTextDepSpec>
+            public ImplementAcceptMethods<PythonDepSpec, PythonPlainTextDepSpec>
         {
             public:
                 PythonPlainTextDepSpec(const std::string &);
@@ -201,7 +194,7 @@ namespace paludis
 
         class PALUDIS_VISIBLE PythonNamedSetDepSpec :
             public PythonStringDepSpec,
-            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonNamedSetDepSpec>
+            public ImplementAcceptMethods<PythonDepSpec, PythonNamedSetDepSpec>
         {
             private:
                 const SetName _name;
@@ -215,7 +208,7 @@ namespace paludis
 
         class PALUDIS_VISIBLE PythonSimpleURIDepSpec :
             public PythonStringDepSpec,
-            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonSimpleURIDepSpec>
+            public ImplementAcceptMethods<PythonDepSpec, PythonSimpleURIDepSpec>
         {
             public:
                 PythonSimpleURIDepSpec(const std::string &);
@@ -224,7 +217,7 @@ namespace paludis
 
         class PALUDIS_VISIBLE PythonLicenseDepSpec :
             public PythonStringDepSpec,
-            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonLicenseDepSpec>
+            public ImplementAcceptMethods<PythonDepSpec, PythonLicenseDepSpec>
         {
             public:
                 PythonLicenseDepSpec(const std::string &);
@@ -233,7 +226,7 @@ namespace paludis
 
         class PALUDIS_VISIBLE PythonFetchableURIDepSpec :
             public PythonStringDepSpec,
-            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonFetchableURIDepSpec>
+            public ImplementAcceptMethods<PythonDepSpec, PythonFetchableURIDepSpec>
         {
             public:
                 PythonFetchableURIDepSpec(const std::string &);
@@ -245,7 +238,7 @@ namespace paludis
 
         class PALUDIS_VISIBLE PythonBlockDepSpec :
             public PythonStringDepSpec,
-            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonBlockDepSpec>
+            public ImplementAcceptMethods<PythonDepSpec, PythonBlockDepSpec>
         {
             private:
                 std::tr1::shared_ptr<const PythonPackageDepSpec> _spec;
@@ -259,7 +252,7 @@ namespace paludis
 
         class PALUDIS_VISIBLE PythonURILabelsDepSpec :
             public PythonDepSpec,
-            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonURILabelsDepSpec>
+            public ImplementAcceptMethods<PythonDepSpec, PythonURILabelsDepSpec>
         {
             public:
                 PythonURILabelsDepSpec(const std::string &);
@@ -268,7 +261,7 @@ namespace paludis
 
         class PALUDIS_VISIBLE PythonPlainTextLabelDepSpec :
             public PythonStringDepSpec,
-            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonPlainTextLabelDepSpec>
+            public ImplementAcceptMethods<PythonDepSpec, PythonPlainTextLabelDepSpec>
         {
             public:
                 PythonPlainTextLabelDepSpec(const std::string &);
@@ -277,7 +270,7 @@ namespace paludis
 
         class PALUDIS_VISIBLE PythonDependencyLabelsDepSpec :
             public PythonDepSpec,
-            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonDependencyLabelsDepSpec>
+            public ImplementAcceptMethods<PythonDepSpec, PythonDependencyLabelsDepSpec>
         {
             public:
                 PythonDependencyLabelsDepSpec(const std::string &);
@@ -288,7 +281,6 @@ namespace paludis
          * Used to convert one of the SpecTrees to PythonDepSpec.
          */
         class SpecTreeToPython :
-            public ConstVisitor<GenericSpecTree>,
             private InstantiationPolicy<SpecTreeToPython, instantiation_method::NonCopyableTag>
         {
             private:
@@ -301,37 +293,20 @@ namespace paludis
 
                 const std::tr1::shared_ptr<const PythonDepSpec> result() const;
 
-                void visit_sequence(const AllDepSpec &,
-                        GenericSpecTree::ConstSequenceIterator,
-                        GenericSpecTree::ConstSequenceIterator);
+                void visit(const GenericSpecTree::NodeType<AllDepSpec>::Type &);
+                void visit(const GenericSpecTree::NodeType<AnyDepSpec>::Type &);
+                void visit(const GenericSpecTree::NodeType<ConditionalDepSpec>::Type &);
 
-                void visit_sequence(const AnyDepSpec &,
-                        GenericSpecTree::ConstSequenceIterator,
-                        GenericSpecTree::ConstSequenceIterator);
-
-                void visit_sequence(const ConditionalDepSpec &,
-                        GenericSpecTree::ConstSequenceIterator,
-                        GenericSpecTree::ConstSequenceIterator);
-
-                void visit_leaf(const PackageDepSpec &);
-
-                void visit_leaf(const PlainTextDepSpec &);
-
-                void visit_leaf(const BlockDepSpec &);
-
-                void visit_leaf(const SimpleURIDepSpec &);
-
-                void visit_leaf(const FetchableURIDepSpec &);
-
-                void visit_leaf(const LicenseDepSpec &);
-
-                void visit_leaf(const PlainTextLabelDepSpec &);
-
-                void visit_leaf(const URILabelsDepSpec &);
-
-                void visit_leaf(const DependencyLabelsDepSpec &);
-
-                void visit_leaf(const NamedSetDepSpec &);
+                void visit(const GenericSpecTree::NodeType<PackageDepSpec>::Type &);
+                void visit(const GenericSpecTree::NodeType<PlainTextDepSpec>::Type &);
+                void visit(const GenericSpecTree::NodeType<BlockDepSpec>::Type &);
+                void visit(const GenericSpecTree::NodeType<SimpleURIDepSpec>::Type &);
+                void visit(const GenericSpecTree::NodeType<FetchableURIDepSpec>::Type &);
+                void visit(const GenericSpecTree::NodeType<LicenseDepSpec>::Type &);
+                void visit(const GenericSpecTree::NodeType<PlainTextLabelDepSpec>::Type &);
+                void visit(const GenericSpecTree::NodeType<URILabelsDepSpec>::Type &);
+                void visit(const GenericSpecTree::NodeType<DependencyLabelsDepSpec>::Type &);
+                void visit(const GenericSpecTree::NodeType<NamedSetDepSpec>::Type &);
         };
 
         /**
@@ -339,19 +314,18 @@ namespace paludis
          */
         template <typename H_>
         class SpecTreeFromPython :
-            public ConstVisitor<PythonDepSpecVisitorTypes>,
             private InstantiationPolicy<SpecTreeFromPython<H_>, instantiation_method::NonCopyableTag>
         {
             private:
-                std::tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> > _result;
-                std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)> _add;
+                std::tr1::shared_ptr<H_> _result;
+                std::tr1::shared_ptr<typename H_::BasicInnerNode> _add_to;
 
             public:
                 SpecTreeFromPython();
 
                 virtual ~SpecTreeFromPython();
 
-                std::tr1::shared_ptr<typename H_::ConstItem> result() const;
+                std::tr1::shared_ptr<H_> result() const;
 
                 void visit(const PythonAllDepSpec &);
                 void visit(const PythonAnyDepSpec &);

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -30,9 +30,9 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/indirect_iterator.hh>
 #include <paludis/package_id.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
@@ -274,13 +274,13 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     (var == eapi->supported()->ebuild_metadata_variables()->pdepend().name()) ||
                     (var == eapi->supported()->ebuild_metadata_variables()->dependencies().name()))
             {
-                std::tr1::shared_ptr<const DependencySpecTree::ConstItem> before(parse_depend(join(tokens.begin() + 4, tokens.end(), " "),
+                std::tr1::shared_ptr<const DependencySpecTree> before(parse_depend(join(tokens.begin() + 4, tokens.end(), " "),
                             environment, package_id, *eapi));
-                std::tr1::shared_ptr<const DependencySpecTree::ConstItem> after(fix_locked_dependencies(
+                std::tr1::shared_ptr<const DependencySpecTree> after(fix_locked_dependencies(
                             environment, *eapi, package_id, before));
                 StringifyFormatter ff;
                 DepSpecPrettyPrinter p(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
-                after->accept(p);
+                after->root()->accept(p);
                 return "O0;" + stringify(p);
             }
 
@@ -330,5 +330,4 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
         return "Eexception ???";
     }
 }
-
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2008 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -23,7 +23,6 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/qa.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/set.hh>
@@ -77,32 +76,32 @@ namespace
 
         void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
-            const std::tr1::shared_ptr<PlainTextSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<const PlainTextSpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
         {
-            const std::tr1::shared_ptr<ProvideSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<const ProvideSpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
-            const std::tr1::shared_ptr<FetchableURISpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<const FetchableURISpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
         {
-            const std::tr1::shared_ptr<SimpleURISpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<const SimpleURISpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
-            const std::tr1::shared_ptr<LicenseSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<const LicenseSpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
         {
-            const std::tr1::shared_ptr<DependencySpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::tr1::shared_ptr<const DependencySpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataCollectionKey<PackageIDSequence> & k)

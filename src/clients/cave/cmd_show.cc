@@ -39,7 +39,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/action.hh>
@@ -113,8 +112,7 @@ namespace
         }
     };
 
-    struct SetDisplayer :
-        ConstVisitor<SetSpecTree>
+    struct SetDisplayer
     {
         const std::tr1::shared_ptr<const Environment> env;
 
@@ -123,26 +121,23 @@ namespace
         {
         }
 
-        void visit_leaf(const PackageDepSpec & spec)
+        void visit(const SetSpecTree::NodeType<PackageDepSpec>::Type & node)
         {
-            cout << format_general_s(select_format_for_spec(env, spec,
+            cout << format_general_s(select_format_for_spec(env, *node.spec(),
                         f::show_set_spec_installed(),
                         f::show_set_spec_installable(),
                         f::show_set_spec_unavailable()),
-                    stringify(spec));
+                    stringify(*node.spec()));
         }
 
-        void visit_leaf(const NamedSetDepSpec & spec)
+        void visit(const SetSpecTree::NodeType<NamedSetDepSpec>::Type & node)
         {
-            cout << format_general_s(f::show_set_set(), stringify(spec));
+            cout << format_general_s(f::show_set_set(), stringify(*node.spec()));
         }
 
-        void visit_sequence(
-                const AllDepSpec &,
-                SetSpecTree::ConstSequenceIterator cur,
-                SetSpecTree::ConstSequenceIterator end)
+        void visit(const SetSpecTree::NodeType<AllDepSpec>::Type & node)
         {
-            std::for_each(cur, end, accept_visitor(*this));
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
         }
     };
 
@@ -150,12 +145,12 @@ namespace
     {
         cout << format_general_s(f::show_set_heading(), stringify(s));
 
-        const std::tr1::shared_ptr<const SetSpecTree::ConstItem> set(env->set(s));
+        const std::tr1::shared_ptr<const SetSpecTree> set(env->set(s));
         if (! set)
             throw NoSuchSetError(stringify(s));
 
         SetDisplayer d(env);
-        set->accept(d);
+        set->root()->accept(d);
 
         cout << endl;
     }

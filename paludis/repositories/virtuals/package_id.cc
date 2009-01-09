@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,7 +23,6 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
@@ -53,30 +52,33 @@ namespace paludis
     struct Implementation<VirtualsDepKey>
     {
         const Environment * const env;
-        const std::tr1::shared_ptr<const TreeLeaf<DependencySpecTree, PackageDepSpec> > value;
+        const std::tr1::shared_ptr<DependencySpecTree> value;
         const std::tr1::shared_ptr<const DependencyLabelSequence> labels;
+        const std::tr1::shared_ptr<const PackageDepSpec> spec;
 
         Implementation(const Environment * const e, const std::tr1::shared_ptr<const PackageID> & v,
                 const std::tr1::shared_ptr<const DependencyLabelSequence> & l,
                 bool exact) :
             env(e),
-            value(exact ?
-                    new TreeLeaf<DependencySpecTree, PackageDepSpec>(make_shared_ptr(new PackageDepSpec(
-                                make_package_dep_spec()
-                                .package(v->name())
-                                .version_requirement(make_named_values<VersionRequirement>(
-                                        value_for<n::version_operator>(vo_equal),
-                                        value_for<n::version_spec>(v->version())))
-                                .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(v->slot())))
-                                .in_repository(v->repository()->name()))))
+            value(new DependencySpecTree(make_shared_ptr(new AllDepSpec))),
+            labels(l),
+            spec(exact ?
+                    make_shared_ptr(new PackageDepSpec(
+                            make_package_dep_spec()
+                            .package(v->name())
+                            .version_requirement(make_named_values<VersionRequirement>(
+                                    value_for<n::version_operator>(vo_equal),
+                                    value_for<n::version_spec>(v->version())))
+                            .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(v->slot())))
+                            .in_repository(v->repository()->name())))
                     :
-                    new TreeLeaf<DependencySpecTree, PackageDepSpec>(make_shared_ptr(new PackageDepSpec(
-                                make_package_dep_spec()
-                                .package(v->name())
-                                )))
-                 ),
-            labels(l)
+                    make_shared_ptr(new PackageDepSpec(
+                            make_package_dep_spec()
+                            .package(v->name())
+                            ))
+                )
         {
+            value->root()->append(spec);
         }
     };
 }
@@ -95,7 +97,7 @@ VirtualsDepKey::~VirtualsDepKey()
 {
 }
 
-const std::tr1::shared_ptr<const DependencySpecTree::ConstItem>
+const std::tr1::shared_ptr<const DependencySpecTree>
 VirtualsDepKey::value() const
 {
     return _imp->value;
@@ -106,17 +108,17 @@ VirtualsDepKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
 {
     if (_imp->env)
     {
-        if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*_imp->value->item(), MatchPackageOptions()) |
+        if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*_imp->spec, MatchPackageOptions()) |
                     filter::InstalledAtRoot(_imp->env->root()))]->empty())
-            return f.format(*_imp->value->item(), format::Installed());
-        else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*_imp->value->item(), MatchPackageOptions()) |
+            return f.format(*_imp->spec, format::Installed());
+        else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*_imp->spec, MatchPackageOptions()) |
                     filter::SupportsAction<InstallAction>() | filter::NotMasked())]->empty())
-            return f.format(*_imp->value->item(), format::Installable());
+            return f.format(*_imp->spec, format::Installable());
         else
-            return f.format(*_imp->value->item(), format::Plain());
+            return f.format(*_imp->spec, format::Plain());
     }
     else
-        return f.format(*_imp->value->item(), format::Plain());
+        return f.format(*_imp->spec, format::Plain());
 }
 
 std::string

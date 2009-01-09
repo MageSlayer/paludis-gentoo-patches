@@ -32,7 +32,6 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>

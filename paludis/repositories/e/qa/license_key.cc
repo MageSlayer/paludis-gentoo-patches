@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,11 +23,9 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/package_id.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/dep_tree.hh>
 #include <paludis/util/fs_entry.hh>
 
 using namespace paludis;
@@ -35,11 +33,7 @@ using namespace paludis::erepository;
 
 namespace
 {
-    struct Checker :
-        ConstVisitor<LicenseSpecTree>,
-        ConstVisitor<LicenseSpecTree>::VisitConstSequence<Checker, AllDepSpec>,
-        ConstVisitor<LicenseSpecTree>::VisitConstSequence<Checker, AnyDepSpec>,
-        ConstVisitor<LicenseSpecTree>::VisitConstSequence<Checker, ConditionalDepSpec>
+    struct Checker
     {
         const FSEntry & entry;
         QAReporter & reporter;
@@ -57,21 +51,32 @@ namespace
         {
         }
 
-        using ConstVisitor<LicenseSpecTree>::VisitConstSequence<Checker, AllDepSpec>::visit_sequence;
-        using ConstVisitor<LicenseSpecTree>::VisitConstSequence<Checker, AnyDepSpec>::visit_sequence;
-        using ConstVisitor<LicenseSpecTree>::VisitConstSequence<Checker, ConditionalDepSpec>::visit_sequence;
-
-        void visit_leaf(const LicenseDepSpec & l)
+        void visit(const LicenseSpecTree::NodeType<LicenseDepSpec>::Type & node)
         {
             for (FSEntrySequence::ConstIterator it(dirs->begin()),
                      it_end(dirs->end()); it_end != it; ++it)
-                if (((*it) / l.text()).is_regular_file_or_symlink_to_regular_file())
+                if (((*it) / node.spec()->text()).is_regular_file_or_symlink_to_regular_file())
                     return;
 
             reporter.message(QAMessage(entry, qaml_normal, name,
-                        "Item '" + l.text() + "' in '" + id->license_key()->raw_name() + "' is not a licence")
+                        "Item '" + node.spec()->text() + "' in '" + id->license_key()->raw_name() + "' is not a licence")
                             .with_associated_id(id)
                             .with_associated_key(id, id->license_key()));
+        }
+
+        void visit(const LicenseSpecTree::NodeType<AnyDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
+
+        void visit(const LicenseSpecTree::NodeType<AllDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
+
+        void visit(const LicenseSpecTree::NodeType<ConditionalDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
         }
     };
 }
@@ -93,7 +98,7 @@ paludis::erepository::license_key_check(
         try
         {
             Checker c(entry, reporter, id, repo->layout()->licenses_dirs(), name);
-            id->license_key()->value()->accept(c);
+            id->license_key()->value()->root()->accept(c);
         }
         catch (const InternalError &)
         {

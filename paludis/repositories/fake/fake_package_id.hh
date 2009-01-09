@@ -70,10 +70,10 @@ namespace paludis
 
         public:
             FakeMetadataSpecTreeKey(const std::string &, const std::string &, const std::string &,
-                    const std::tr1::function<const std::tr1::shared_ptr<const typename C_::ConstItem> (const std::string &)> &, const MetadataKeyType);
+                    const std::tr1::function<const std::tr1::shared_ptr<const C_> (const std::string &)> &, const MetadataKeyType);
             ~FakeMetadataSpecTreeKey();
 
-            virtual const std::tr1::shared_ptr<const typename C_::ConstItem> value() const
+            virtual const std::tr1::shared_ptr<const C_> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             void set_from_string(const std::string &);
@@ -95,11 +95,11 @@ namespace paludis
 
         public:
             FakeMetadataSpecTreeKey(const std::string &, const std::string &, const std::string &,
-                    const std::tr1::function<const std::tr1::shared_ptr<const FetchableURISpecTree::ConstItem> (const std::string &)> &,
+                    const std::tr1::function<const std::tr1::shared_ptr<const FetchableURISpecTree> (const std::string &)> &,
                     const MetadataKeyType);
             ~FakeMetadataSpecTreeKey();
 
-            virtual const std::tr1::shared_ptr<const FetchableURISpecTree::ConstItem> value() const
+            virtual const std::tr1::shared_ptr<const FetchableURISpecTree> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             void set_from_string(const std::string &);
@@ -124,12 +124,12 @@ namespace paludis
 
         public:
             FakeMetadataSpecTreeKey(const std::string &, const std::string &, const std::string &,
-                    const std::tr1::function<const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> (const std::string &)> &,
+                    const std::tr1::function<const std::tr1::shared_ptr<const DependencySpecTree> (const std::string &)> &,
                     const std::tr1::shared_ptr<const DependencyLabelSequence> &,
                     const MetadataKeyType);
             ~FakeMetadataSpecTreeKey();
 
-            virtual const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
+            virtual const std::tr1::shared_ptr<const DependencySpecTree> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             void set_from_string(const std::string &);

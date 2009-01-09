@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,7 +18,6 @@
  */
 
 #include "dep_list_TEST.hh"
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/package_id.hh>
 #include <paludis/mask.hh>
@@ -2102,25 +2101,15 @@ namespace test_cases
 
             DepList d3(&env, DepListOptions());
             d3.options()->fall_back() = dl_fall_back_as_needed_except_targets;
-            std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > t3(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                        std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
-            t3->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
-                            std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("cat/one",
-                                        &env, UserPackageDepSpecOptions()))))));
-            t3->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
-                            std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("cat/two",
-                                        &env, UserPackageDepSpecOptions()))))));
+            std::tr1::shared_ptr<SetSpecTree> t3(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+            t3->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/one", &env, UserPackageDepSpecOptions()))));
+            t3->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/two", &env, UserPackageDepSpecOptions()))));
             TEST_CHECK_THROWS(d3.add(*t3, env.default_destinations()), DepListError);
 
             DepList d4(&env, DepListOptions());
-            std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > t4(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                    std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
-            t4->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
-                            std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("cat/one",
-                                        &env, UserPackageDepSpecOptions()))))));
-            t4->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
-                            std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("cat/three",
-                                        &env, UserPackageDepSpecOptions()))))));
+            std::tr1::shared_ptr<SetSpecTree> t4(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+            t4->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/one", &env, UserPackageDepSpecOptions()))));
+            t4->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/three", &env, UserPackageDepSpecOptions()))));
             TEST_CHECK_THROWS(d4.add(*t4, env.default_destinations()), DepListError);
         }
     } test_dep_list_fall_back_as_needed_not_targets;
@@ -2155,14 +2144,9 @@ namespace test_cases
             DepList d2(&env, DepListOptions());
             d2.options()->upgrade() = dl_upgrade_as_needed;
 
-            std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > t2(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                        std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
-            t2->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
-                            std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("cat/one",
-                                        &env, UserPackageDepSpecOptions()))))));
-            t2->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
-                            std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("cat/two",
-                                        &env, UserPackageDepSpecOptions()))))));
+            std::tr1::shared_ptr<SetSpecTree> t2(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+            t2->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/one", &env, UserPackageDepSpecOptions()))));
+            t2->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/two", &env, UserPackageDepSpecOptions()))));
             d2.add(*t2, env.default_destinations());
             TEST_CHECK_EQUAL(join(d2.begin(), d2.end(), " "), "cat/two-2:0::repo cat/one-1:0::repo");
         }
@@ -2252,52 +2236,6 @@ namespace test_cases
             DepList::Iterator it(d1.begin());
             std::tr1::shared_ptr<DepListEntryTags> tags(it->tags());
             TEST_CHECK_EQUAL(tags->size(), 3U);
-            bool cat_three_has_tag_from_cat_one(false);
-            bool cat_three_has_first_tag_from_cat_two(false);
-            bool cat_three_has_second_tag_from_cat_two(false);
-
-            for (DepListEntryTags::ConstIterator tag_it(tags->begin()),
-                     tag_it_end(tags->end()); tag_it_end != tag_it; ++tag_it)
-            {
-                if ("dependency" != tag_it->tag()->category())
-                    continue;
-                std::tr1::shared_ptr<const DependencyDepTag> tag(
-                    std::tr1::static_pointer_cast<const DependencyDepTag>(tag_it->tag()));
-
-                if ("cat/one-1:0::repo" == tag->short_text())
-                {
-                    cat_three_has_tag_from_cat_one = true;
-                    TEST_CHECK_STRINGIFY_EQUAL(*tag->dependency(), "cat/three");
-                    StringifyFormatter ff;
-                    erepository::DepSpecPrettyPrinter pretty(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
-                    tag->conditions()->accept(pretty);
-                    TEST_CHECK_STRINGIFY_EQUAL(pretty, "cat/three");
-                }
-
-                else if ("cat/two-1:0::repo" == tag->short_text())
-                {
-                    if ("<cat/three-1" == stringify(*tag->dependency()))
-                    {
-                        cat_three_has_first_tag_from_cat_two = true;
-                        StringifyFormatter ff;
-                        erepository::DepSpecPrettyPrinter pretty(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
-                        tag->conditions()->accept(pretty);
-                        TEST_CHECK_STRINGIFY_EQUAL(pretty, "enabled? ( || ( <cat/three-1 ) )");
-                    }
-                    else if ("cat/three:0" == stringify(*tag->dependency()))
-                    {
-                        cat_three_has_second_tag_from_cat_two = true;
-                        StringifyFormatter ff;
-                        erepository::DepSpecPrettyPrinter pretty(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
-                        tag->conditions()->accept(pretty);
-                        TEST_CHECK_STRINGIFY_EQUAL(pretty, "enabled? ( || ( cat/three:0 ) )");
-                    }
-                }
-            }
-
-            TEST_CHECK(cat_three_has_tag_from_cat_one);
-            TEST_CHECK(cat_three_has_first_tag_from_cat_two);
-            TEST_CHECK(cat_three_has_second_tag_from_cat_two);
 
             // tags for cat/one
             ++it;
@@ -2314,10 +2252,6 @@ namespace test_cases
                 std::tr1::static_pointer_cast<const DependencyDepTag>(tags->begin()->tag()));
             TEST_CHECK_EQUAL(deptag->short_text(), "cat/two-1:0::repo");
             TEST_CHECK_STRINGIFY_EQUAL(*deptag->dependency(), "=cat/four-1");
-            StringifyFormatter ff;
-            erepository::DepSpecPrettyPrinter pretty(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
-            deptag->conditions()->accept(pretty);
-            TEST_CHECK_STRINGIFY_EQUAL(pretty, "enabled? ( || ( =cat/four-1 ) )");
 
             // tags for cat/two
             ++it;

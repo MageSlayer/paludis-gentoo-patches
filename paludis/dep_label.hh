@@ -22,7 +22,6 @@
 
 #include <paludis/dep_label-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/util/visitor.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>

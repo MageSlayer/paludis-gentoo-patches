@@ -27,7 +27,7 @@
 #include <paludis/stringify_formatter.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/dep_tree.hh>
+#include <paludis/spec_tree.hh>
 #include <paludis/util/clone-impl.hh>
 
 using namespace paludis;

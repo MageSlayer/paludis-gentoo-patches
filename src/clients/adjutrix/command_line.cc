@@ -20,7 +20,6 @@
 #include "command_line.hh"
 #include <paludis/name.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
-#include <paludis/util/visitor-impl.hh>
 
 template class paludis::InstantiationPolicy<CommandLine, paludis::instantiation_method::SingletonTag>;
 

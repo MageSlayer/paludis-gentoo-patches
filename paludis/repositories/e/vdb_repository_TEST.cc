@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,7 +24,6 @@
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/make_named_values.hh>
@@ -279,17 +278,17 @@ namespace test_cases
 
             erepository::DepSpecPrettyPrinter pd(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
             TEST_CHECK(id->build_dependencies_key());
-            id->build_dependencies_key()->value()->accept(pd);
+            id->build_dependencies_key()->value()->root()->accept(pd);
             TEST_CHECK_STRINGIFY_EQUAL(pd, "( cat/pkg1 build: cat/pkg2 build,run: cat/pkg3 suggested: cat/pkg4 post: )");
 
             erepository::DepSpecPrettyPrinter pr(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
             TEST_CHECK(id->run_dependencies_key());
-            id->run_dependencies_key()->value()->accept(pr);
+            id->run_dependencies_key()->value()->root()->accept(pr);
             TEST_CHECK_STRINGIFY_EQUAL(pr, "( cat/pkg1 build: build,run: cat/pkg3 suggested: cat/pkg4 post: )");
 
             erepository::DepSpecPrettyPrinter pp(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
             TEST_CHECK(id->post_dependencies_key());
-            id->post_dependencies_key()->value()->accept(pp);
+            id->post_dependencies_key()->value()->root()->accept(pp);
             TEST_CHECK_STRINGIFY_EQUAL(pp, "( build: build,run: suggested: post: cat/pkg5 )");
         }
     } test_vdb_repository_dependencies_rewriter;
@@ -851,6 +850,11 @@ namespace test_cases
 
             {
                 std::tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> seq(vdb_repo->provides_interface()->provided_packages());
+
+                for (RepositoryProvidesInterface::ProvidesSequence::ConstIterator s(seq->begin()), s_end(seq->end()) ;
+                        s != s_end ; ++s)
+                    TestMessageSuffix x(stringify(s->virtual_name()) + " by " + stringify(*s->provided_by()), true);
+
                 TEST_CHECK_EQUAL(std::distance(seq->begin(), seq->end()), 5U);
 
                 RepositoryProvidesInterface::ProvidesSequence::ConstIterator it(seq->begin());

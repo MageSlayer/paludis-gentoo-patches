@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2008 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -22,9 +22,9 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/destringify.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/dependencies_rewriter.hh>
@@ -163,7 +163,7 @@ namespace
             if (-1 != m.dependencies().flat_list_index() && ! m.dependencies().name().empty())
             {
                 DependenciesRewriter rewriter;
-                parse_depend(lines.at(m.dependencies().flat_list_index()), _imp->env, id, *id->eapi())->accept(rewriter);
+                parse_depend(lines.at(m.dependencies().flat_list_index()), _imp->env, id, *id->eapi())->root()->accept(rewriter);
                 id->load_build_depend(m.dependencies().name() + ".DEPEND", m.dependencies().description() + " (build)", rewriter.depend());
                 id->load_run_depend(m.dependencies().name() + ".RDEPEND", m.dependencies().description() + " (run)", rewriter.rdepend());
                 id->load_post_depend(m.dependencies().name() + ".PDEPEND", m.dependencies().description() + " (post)", rewriter.pdepend());
@@ -477,7 +477,7 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
                 if (! m.dependencies().name().empty())
                 {
                     DependenciesRewriter rewriter;
-                    parse_depend(keys[m.dependencies().name()], _imp->env, id, *id->eapi())->accept(rewriter);
+                    parse_depend(keys[m.dependencies().name()], _imp->env, id, *id->eapi())->root()->accept(rewriter);
                     id->load_build_depend(m.dependencies().name() + ".DEPEND", m.dependencies().description() + " (build)", rewriter.depend());
                     id->load_run_depend(m.dependencies().name() + ".RDEPEND", m.dependencies().description() + " (run)", rewriter.rdepend());
                     id->load_post_depend(m.dependencies().name() + ".PDEPEND", m.dependencies().description() + " (post)", rewriter.pdepend());
@@ -638,7 +638,7 @@ namespace
     {
         StringifyFormatter ff;
         DepSpecPrettyPrinter p(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
-        d->accept(p);
+        d->root()->accept(p);
         return stringify(p);
     }
 

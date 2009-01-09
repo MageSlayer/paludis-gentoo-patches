@@ -23,11 +23,10 @@
 #include <paludis/repositories/e/e_repository_params.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/visitor-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/output_deviator-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/dep_tree.hh>
+#include <paludis/spec_tree.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/action-fwd.hh>
@@ -38,8 +37,7 @@ namespace paludis
     namespace erepository
     {
         class PALUDIS_VISIBLE CheckFetchedFilesVisitor :
-            private PrivateImplementationPattern<CheckFetchedFilesVisitor>,
-            public ConstVisitor<FetchableURISpecTree>
+            private PrivateImplementationPattern<CheckFetchedFilesVisitor>
         {
             private:
                 bool check_distfile_manifest(const FSEntry & distfile);
@@ -58,17 +56,10 @@ namespace paludis
 
                 ~CheckFetchedFilesVisitor();
 
-                void visit_sequence(const ConditionalDepSpec &,
-                        FetchableURISpecTree::ConstSequenceIterator,
-                        FetchableURISpecTree::ConstSequenceIterator);
-
-                void visit_sequence(const AllDepSpec &,
-                        FetchableURISpecTree::ConstSequenceIterator,
-                        FetchableURISpecTree::ConstSequenceIterator);
-
-                void visit_leaf(const URILabelsDepSpec &);
-
-                void visit_leaf(const FetchableURIDepSpec &);
+                void visit(const FetchableURISpecTree::NodeType<ConditionalDepSpec>::Type & node);
+                void visit(const FetchableURISpecTree::NodeType<AllDepSpec>::Type & node);
+                void visit(const FetchableURISpecTree::NodeType<URILabelsDepSpec>::Type & node);
+                void visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::Type & node);
 
                 const std::tr1::shared_ptr<const Sequence<FetchActionFailure> > failures() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

@@ -19,7 +19,6 @@
 
 #include "masks.hh"
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/visitor-impl.hh>
 
 using namespace paludis;
 using namespace paludis::cranrepository;

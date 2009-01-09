@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,13 +19,13 @@
 
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/dep_tree.hh>
 #include <paludis/environment.hh>
-#include <paludis/repository.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/repository.hh>
 #include <list>
 #include <algorithm>
 #include <set>
@@ -43,6 +43,7 @@ namespace paludis
         const Environment * const env;
 
         std::list<std::tr1::shared_ptr<const Item_> > specs;
+        std::set<SetName> recursing_sets;
 
         Implementation(const Environment * const e) :
             env(e)
@@ -79,78 +80,174 @@ DepSpecFlattener<Heirarchy_, Item_>::end() const
     return ConstIterator(_imp->specs.end());
 }
 
-template <typename Heirarchy_, typename Item_>
-void
-dep_spec_flattener_internals::VisitConditionalDepSpec<Heirarchy_, Item_, true>::visit_sequence(const ConditionalDepSpec & u,
-        typename Heirarchy_::ConstSequenceIterator cur,
-        typename Heirarchy_::ConstSequenceIterator e)
+namespace
 {
-    DepSpecFlattener<Heirarchy_, Item_> * const f(static_cast<DepSpecFlattener<Heirarchy_, Item_> *>(this));
-
-    if (u.condition_met())
-        std::for_each(cur, e, accept_visitor(*f));
-}
-
-namespace paludis
-{
-#ifndef PALUDIS_NO_DOUBLE_TEMPLATE
-    template <>
-#endif
-    template <typename Heirarchy_, typename Item_>
-    struct Implementation<dep_spec_flattener_internals::VisitNamedSetDepSpec<Heirarchy_, Item_, true> >
+    template <typename Heirarchy_, typename Item_, bool>
+    struct HandleNamedSet
     {
-        std::set<SetName> recursing_sets;
+        inline static void handle(const typename Heirarchy_::template NodeType<NamedSetDepSpec>::Type &, DepSpecFlattener<Heirarchy_, Item_> &)
+        {
+        }
+    };
+
+    template <typename Heirarchy_, typename Item_>
+    struct HandleNamedSet<Heirarchy_, Item_, true>
+    {
+        inline static void handle(const typename Heirarchy_::template NodeType<NamedSetDepSpec>::Type & node, DepSpecFlattener<Heirarchy_, Item_> & f)
+        {
+            f.template handle_named_set<true>(*node.spec());
+        }
     };
 }
 
 template <typename Heirarchy_, typename Item_>
-dep_spec_flattener_internals::VisitNamedSetDepSpec<Heirarchy_, Item_, true>::VisitNamedSetDepSpec() :
-    PrivateImplementationPattern<dep_spec_flattener_internals::VisitNamedSetDepSpec<Heirarchy_, Item_, true> >(
-            new Implementation<dep_spec_flattener_internals::VisitNamedSetDepSpec<Heirarchy_, Item_, true> >)
+void
+DepSpecFlattener<Heirarchy_, Item_>::visit(const typename Heirarchy_::template NodeType<NamedSetDepSpec>::Type & node)
 {
+    HandleNamedSet<Heirarchy_, Item_, TypeListContains<
+        typename Heirarchy_::VisitableTypeList, typename Heirarchy_::template NodeType<NamedSetDepSpec>::Type>::value>::handle(node, *this);
+}
+
+namespace
+{
+    template <typename Heirarchy_, typename Item_, typename MaybeItem_, bool>
+    struct HandleItem
+    {
+        inline static void handle(const typename Heirarchy_::template NodeType<MaybeItem_>::Type &, DepSpecFlattener<Heirarchy_, Item_> &)
+        {
+        }
+    };
+
+    template <typename Heirarchy_, typename Item_, typename MaybeItem_>
+    struct HandleItem<Heirarchy_, Item_, MaybeItem_, true>
+    {
+        inline static void handle(const typename Heirarchy_::template NodeType<MaybeItem_>::Type & node, DepSpecFlattener<Heirarchy_, Item_> & f)
+        {
+            f.handle_item(*node.spec());
+        }
+    };
 }
 
 template <typename Heirarchy_, typename Item_>
-dep_spec_flattener_internals::VisitNamedSetDepSpec<Heirarchy_, Item_, true>::~VisitNamedSetDepSpec()
+void
+DepSpecFlattener<Heirarchy_, Item_>::visit(const typename Heirarchy_::template NodeType<PlainTextDepSpec>::Type & node)
+{
+    HandleItem<Heirarchy_, Item_, PlainTextDepSpec, TypeListContains<
+        typename Heirarchy_::VisitableTypeList, typename Heirarchy_::template NodeType<PlainTextDepSpec>::Type>::value>::handle(node, *this);
+}
+
+template <typename Heirarchy_, typename Item_>
+void
+DepSpecFlattener<Heirarchy_, Item_>::visit(const typename Heirarchy_::template NodeType<PackageDepSpec>::Type & node)
+{
+    HandleItem<Heirarchy_, Item_, PackageDepSpec, TypeListContains<
+        typename Heirarchy_::VisitableTypeList, typename Heirarchy_::template NodeType<PackageDepSpec>::Type>::value>::handle(node, *this);
+}
+
+template <typename Heirarchy_, typename Item_>
+void
+DepSpecFlattener<Heirarchy_, Item_>::visit(const typename Heirarchy_::template NodeType<SimpleURIDepSpec>::Type & node)
+{
+    HandleItem<Heirarchy_, Item_, SimpleURIDepSpec, TypeListContains<
+        typename Heirarchy_::VisitableTypeList, typename Heirarchy_::template NodeType<SimpleURIDepSpec>::Type>::value>::handle(node, *this);
+}
+
+template <typename Heirarchy_, typename Item_>
+void
+DepSpecFlattener<Heirarchy_, Item_>::visit(const typename Heirarchy_::template NodeType<PlainTextLabelDepSpec>::Type &)
 {
 }
 
 template <typename Heirarchy_, typename Item_>
 void
-dep_spec_flattener_internals::VisitNamedSetDepSpec<Heirarchy_, Item_, true>::visit_leaf(const NamedSetDepSpec & s)
+DepSpecFlattener<Heirarchy_, Item_>::visit(const typename Heirarchy_::template NodeType<AllDepSpec>::Type & node)
 {
-    DepSpecFlattener<Heirarchy_, Item_> * const f(static_cast<DepSpecFlattener<Heirarchy_, Item_> *>(this));
+    std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+}
 
-    Context context("When expanding named set '" + stringify(s) + "':");
+namespace
+{
+    template <typename Heirarchy_, typename Item_, bool>
+    struct HandleAny
+    {
+        inline static void handle(const typename Heirarchy_::template NodeType<AnyDepSpec>::Type &, DepSpecFlattener<Heirarchy_, Item_> &)
+        {
+        }
+    };
 
-    std::tr1::shared_ptr<const SetSpecTree::ConstItem> set(f->_imp->env->set(s.name()));
+    template <typename Heirarchy_, typename Item_>
+    struct HandleAny<Heirarchy_, Item_, true>
+    {
+        inline static void handle(const typename Heirarchy_::template NodeType<AnyDepSpec>::Type & node, DepSpecFlattener<Heirarchy_, Item_> & f)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(f));
+        }
+    };
+}
 
+template <typename Heirarchy_, typename Item_>
+void
+DepSpecFlattener<Heirarchy_, Item_>::visit(const typename Heirarchy_::template NodeType<AnyDepSpec>::Type & node)
+{
+    HandleAny<Heirarchy_, Item_, TypeListContains<
+        typename Heirarchy_::VisitableTypeList, typename Heirarchy_::template NodeType<AnyDepSpec>::Type>::value>::handle(node, *this);
+}
+
+namespace
+{
+    template <typename Heirarchy_, typename Item_, bool>
+    struct HandleConditional
+    {
+        inline static void handle(const typename Heirarchy_::template NodeType<ConditionalDepSpec>::Type &, DepSpecFlattener<Heirarchy_, Item_> &)
+        {
+        }
+    };
+
+    template <typename Heirarchy_, typename Item_>
+    struct HandleConditional<Heirarchy_, Item_, true>
+    {
+        inline static void handle(const typename Heirarchy_::template NodeType<ConditionalDepSpec>::Type & node, DepSpecFlattener<Heirarchy_, Item_> & f)
+        {
+            if (node.spec()->condition_met())
+                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(f));
+        }
+    };
+}
+
+template <typename Heirarchy_, typename Item_>
+void
+DepSpecFlattener<Heirarchy_, Item_>::visit(const typename Heirarchy_::template NodeType<ConditionalDepSpec>::Type & node)
+{
+    HandleConditional<Heirarchy_, Item_, TypeListContains<
+        typename Heirarchy_::VisitableTypeList, typename Heirarchy_::template NodeType<ConditionalDepSpec>::Type>::value>::handle(node, *this);
+}
+
+template <typename Heirarchy_, typename Item_>
+template <bool>
+void
+DepSpecFlattener<Heirarchy_, Item_>::handle_named_set(const NamedSetDepSpec & spec)
+{
+    if (! _imp->recursing_sets.insert(spec.name()).second)
+        throw RecursivelyDefinedSetError(stringify(spec.name()));
+
+    std::tr1::shared_ptr<const SetSpecTree> set(_imp->env->set(spec.name()));
     if (! set)
-        throw NoSuchSetError(stringify(s.name()));
+        throw NoSuchSetError(stringify(spec.name()));
 
-    if (! this->_imp->recursing_sets.insert(s.name()).second)
-        throw RecursivelyDefinedSetError(stringify(s.name()));
+    set->root()->accept(*this);
 
-    set->accept(*f);
-
-    this->_imp->recursing_sets.erase(s.name());
+    _imp->recursing_sets.erase(spec.name());
 }
 
 template <typename Heirarchy_, typename Item_>
 void
-DepSpecFlattener<Heirarchy_, Item_>::visit_leaf(const Item_ & p)
+DepSpecFlattener<Heirarchy_, Item_>::handle_item(const Item_ & spec)
 {
-    _imp->specs.push_back(std::tr1::static_pointer_cast<const Item_>(p.clone()));
-}
-
-template <typename Heirarchy_, typename Item_>
-void
-dep_spec_flattener_internals::VisitPlainTextLabelDepSpec<Heirarchy_, Item_, true>::visit_leaf(const PlainTextLabelDepSpec &)
-{
+    _imp->specs.push_back(std::tr1::static_pointer_cast<const Item_>(spec.clone()));
 }
 
 template class DepSpecFlattener<ProvideSpecTree, PackageDepSpec>;
-template class DepSpecFlattener<SetSpecTree, PackageDepSpec>;
 template class DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>;
+template class DepSpecFlattener<SetSpecTree, PackageDepSpec>;
 template class DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec>;
 

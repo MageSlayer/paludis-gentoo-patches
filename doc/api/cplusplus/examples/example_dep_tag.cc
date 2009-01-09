@@ -81,7 +81,7 @@ namespace
             const SetName & name,
             SeenCategories & seen_categories)
     {
-        std::tr1::shared_ptr<const SetSpecTree::ConstItem> set(env->set(name));
+        std::tr1::shared_ptr<const SetSpecTree> set(env->set(name));
 
         /* Environment::set can return a zero pointer, if a set is not known. */
         if (! set)
@@ -90,7 +90,7 @@ namespace
         /* The set isn't necessarily flat. We use DepSpecFlattener to make it
          * so, rather than writing a full visitor ourselves. */
         DepSpecFlattener<SetSpecTree, PackageDepSpec> set_flat(env.get());
-        set->accept(set_flat);
+        set->root()->accept(set_flat);
 
         cout << "Set '" << name << "':" << endl;
 

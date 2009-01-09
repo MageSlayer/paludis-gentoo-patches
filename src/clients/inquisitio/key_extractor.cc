@@ -20,7 +20,6 @@
 #include "key_extractor.hh"
 #include "matcher.hh"
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/set.hh>
@@ -70,10 +69,7 @@ KeyExtractor::~KeyExtractor()
 
 namespace
 {
-    class TreeVisitor :
-        public ConstVisitor<GenericSpecTree>,
-        public ConstVisitor<GenericSpecTree>::VisitConstSequence<TreeVisitor, AllDepSpec>,
-        public ConstVisitor<GenericSpecTree>::VisitConstSequence<TreeVisitor, AnyDepSpec>
+    class TreeVisitor
     {
         private:
             const std::string _key;
@@ -96,85 +92,90 @@ namespace
             {
             }
 
-            using ConstVisitor<GenericSpecTree>::VisitConstSequence<TreeVisitor, AllDepSpec>::visit_sequence;
-            using ConstVisitor<GenericSpecTree>::VisitConstSequence<TreeVisitor, AnyDepSpec>::visit_sequence;
+            void visit(const GenericSpecTree::NodeType<AllDepSpec>::Type & node)
+            {
+                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+            }
 
-            void visit_sequence(const ConditionalDepSpec & u,
-                    GenericSpecTree::ConstSequenceIterator cur,
-                    GenericSpecTree::ConstSequenceIterator end)
+            void visit(const GenericSpecTree::NodeType<AnyDepSpec>::Type & node)
+            {
+                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+            }
+
+            void visit(const GenericSpecTree::NodeType<ConditionalDepSpec>::Type & node)
             {
                 if (! result)
                 {
-                    result |= _m(stringify(u));
+                    result |= _m(stringify(*node.spec()));
 
                     if (! result)
                     {
                         if (! _visible_only)
-                            std::for_each(cur, end, accept_visitor(*this));
-                        else if (u.condition_met())
-                            std::for_each(cur, end, accept_visitor(*this));
+                            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+                        else if (node.spec()->condition_met())
+                            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
                     }
                 }
             }
 
-            void visit_leaf(const SimpleURIDepSpec & s)
+            void visit(const GenericSpecTree::NodeType<SimpleURIDepSpec>::Type & node)
             {
                 if (! result)
-                    result |= _m(stringify(s));
+                    result |= _m(stringify(*node.spec()));
             }
 
-            void visit_leaf(const PlainTextDepSpec & s)
+            void visit(const GenericSpecTree::NodeType<URILabelsDepSpec>::Type & node)
             {
                 if (! result)
-                    result |= _m(stringify(s));
+                    result |= _m(stringify(*node.spec()));
             }
 
-            void visit_leaf(const FetchableURIDepSpec & s)
+            void visit(const GenericSpecTree::NodeType<PlainTextDepSpec>::Type & node)
             {
                 if (! result)
-                    result |= _m(stringify(s));
+                    result |= _m(stringify(*node.spec()));
             }
 
-            void visit_leaf(const PackageDepSpec & s)
+            void visit(const GenericSpecTree::NodeType<FetchableURIDepSpec>::Type & node)
             {
                 if (! result)
-                    result |= _m(stringify(s));
+                    result |= _m(stringify(*node.spec()));
             }
 
-            void visit_leaf(const BlockDepSpec & s)
+            void visit(const GenericSpecTree::NodeType<PackageDepSpec>::Type & node)
             {
                 if (! result)
-                    result |= _m(stringify(s));
+                    result |= _m(stringify(*node.spec()));
             }
 
-            void visit_leaf(const LicenseDepSpec & s)
+            void visit(const GenericSpecTree::NodeType<BlockDepSpec>::Type & node)
             {
                 if (! result)
-                    result |= _m(stringify(s));
+                    result |= _m(stringify(*node.spec()));
             }
 
-            void visit_leaf(const URILabelsDepSpec & s)
+            void visit(const GenericSpecTree::NodeType<LicenseDepSpec>::Type & node)
             {
                 if (! result)
-                    result |= _m(stringify(s));
+                    result |= _m(stringify(*node.spec()));
             }
 
-            void visit_leaf(const PlainTextLabelDepSpec & s)
+            void visit(const GenericSpecTree::NodeType<PlainTextLabelDepSpec>::Type & node)
             {
                 if (! result)
-                    result |= _m(stringify(s));
+                    result |= _m(stringify(*node.spec()));
             }
 
-            void visit_leaf(const DependencyLabelsDepSpec & s)
+            void visit(const GenericSpecTree::NodeType<DependencyLabelsDepSpec>::Type & node)
             {
                 if (! result)
-                    result |= _m(stringify(s));
+                    result |= _m(stringify(*node.spec()));
             }
 
-            void visit_leaf(const NamedSetDepSpec & s)
+            void visit(const GenericSpecTree::NodeType<NamedSetDepSpec>::Type & node)
             {
                 if (! result)
-                    result |= _m(stringify(s));
+                    result |= _m(stringify(*node.spec()));
             }
     };
 
@@ -334,7 +335,7 @@ namespace
                 else
                 {
                     TreeVisitor v(_key, _visible_only, _env, _id, _m);
-                    s.value()->accept(v);
+                    s.value()->root()->accept(v);
                     result = v.result;
                 }
             }
@@ -349,7 +350,7 @@ namespace
                 else
                 {
                     TreeVisitor v(_key, _visible_only, _env, _id, _m);
-                    s.value()->accept(v);
+                    s.value()->root()->accept(v);
                     result = v.result;
                 }
             }
@@ -364,7 +365,7 @@ namespace
                 else
                 {
                     TreeVisitor v(_key, _visible_only, _env, _id, _m);
-                    s.value()->accept(v);
+                    s.value()->root()->accept(v);
                     result = v.result;
                 }
             }
@@ -379,7 +380,7 @@ namespace
                 else
                 {
                     TreeVisitor v(_key, _visible_only, _env, _id, _m);
-                    s.value()->accept(v);
+                    s.value()->root()->accept(v);
                     result = v.result;
                 }
             }
@@ -394,7 +395,7 @@ namespace
                 else
                 {
                     TreeVisitor v(_key, _visible_only, _env, _id, _m);
-                    s.value()->accept(v);
+                    s.value()->root()->accept(v);
                     result = v.result;
                 }
             }
@@ -409,7 +410,7 @@ namespace
                 else
                 {
                     TreeVisitor v(_key, _visible_only, _env, _id, _m);
-                    s.value()->accept(v);
+                    s.value()->root()->accept(v);
                     result = v.result;
                 }
             }
@@ -424,7 +425,7 @@ namespace
                 else
                 {
                     TreeVisitor v(_key, _visible_only, _env, _id, _m);
-                    s.value()->accept(v);
+                    s.value()->root()->accept(v);
                     result = v.result;
                 }
             }

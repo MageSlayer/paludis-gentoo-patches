@@ -18,10 +18,11 @@
  */
 
 #include <paludis/override_functions.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>

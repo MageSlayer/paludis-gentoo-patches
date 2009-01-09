@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,13 +19,14 @@
 
 #include <paludis/repositories/e/dependencies_rewriter.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/metadata_key.hh>
 #include <list>
 
@@ -107,37 +108,35 @@ DependenciesRewriter::pdepend() const
 }
 
 void
-DependenciesRewriter::visit_leaf(const PackageDepSpec & spec)
+DependenciesRewriter::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
 {
-    _add_where_necessary(stringify(spec), spec);
+    _add_where_necessary(stringify(*node.spec()), *node.spec());
 }
 
 void
-DependenciesRewriter::visit_leaf(const NamedSetDepSpec & spec)
+DependenciesRewriter::visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node)
 {
-    _add_where_necessary(stringify(spec), spec);
+    _add_where_necessary(stringify(*node.spec()), *node.spec());
 }
 
 void
-DependenciesRewriter::visit_leaf(const BlockDepSpec & spec)
+DependenciesRewriter::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type & node)
 {
-    _add_where_necessary(stringify(spec), spec);
+    _add_where_necessary(stringify(*node.spec()), *node.spec());
 }
 
 void
-DependenciesRewriter::visit_leaf(const DependencyLabelsDepSpec & spec)
+DependenciesRewriter::visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type & node)
 {
-    _imp->depend.append(" " + stringify(spec) + get_annotations(spec));
-    _imp->rdepend.append(" " + stringify(spec) + get_annotations(spec));
-    _imp->pdepend.append(" " + stringify(spec) + get_annotations(spec));
+    _imp->depend.append(" " + stringify(*node.spec()) + get_annotations(*node.spec()));
+    _imp->rdepend.append(" " + stringify(*node.spec()) + get_annotations(*node.spec()));
+    _imp->pdepend.append(" " + stringify(*node.spec()) + get_annotations(*node.spec()));
 
-    _imp->labels.begin()->reset(new ActiveDependencyLabels(**_imp->labels.begin(), spec));
+    _imp->labels.begin()->reset(new ActiveDependencyLabels(**_imp->labels.begin(), *node.spec()));
 }
 
 void
-DependenciesRewriter::visit_sequence(const AllDepSpec & spec,
-        DependencySpecTree::ConstSequenceIterator cur,
-        DependencySpecTree::ConstSequenceIterator end)
+DependenciesRewriter::visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
 {
     _imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**_imp->labels.begin())));
     RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
@@ -147,17 +146,15 @@ DependenciesRewriter::visit_sequence(const AllDepSpec & spec,
     _imp->rdepend.clear();
     _imp->pdepend.clear();
 
-    std::for_each(cur, end, accept_visitor(*this));
+    std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
 
-    _imp->depend = d + " ( " + _imp->depend + " )" + get_annotations(spec);
-    _imp->rdepend = r + " ( " + _imp->rdepend + " )" + get_annotations(spec);
-    _imp->pdepend = p + " ( " + _imp->pdepend + " )" + get_annotations(spec);
+    _imp->depend = d + " ( " + _imp->depend + " )" + get_annotations(*node.spec());
+    _imp->rdepend = r + " ( " + _imp->rdepend + " )" + get_annotations(*node.spec());
+    _imp->pdepend = p + " ( " + _imp->pdepend + " )" + get_annotations(*node.spec());
 }
 
 void
-DependenciesRewriter::visit_sequence(const AnyDepSpec & spec,
-        DependencySpecTree::ConstSequenceIterator cur,
-        DependencySpecTree::ConstSequenceIterator end)
+DependenciesRewriter::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
 {
     _imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**_imp->labels.begin())));
     RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
@@ -167,17 +164,15 @@ DependenciesRewriter::visit_sequence(const AnyDepSpec & spec,
     _imp->rdepend.clear();
     _imp->pdepend.clear();
 
-    std::for_each(cur, end, accept_visitor(*this));
+    std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
 
-    _imp->depend = d + " || ( " + _imp->depend + " )" + get_annotations(spec);
-    _imp->rdepend = r + " || ( " + _imp->rdepend + " )" + get_annotations(spec);
-    _imp->pdepend = p + " || ( " + _imp->pdepend + " )" + get_annotations(spec);
+    _imp->depend = d + " || ( " + _imp->depend + " )" + get_annotations(*node.spec());
+    _imp->rdepend = r + " || ( " + _imp->rdepend + " )" + get_annotations(*node.spec());
+    _imp->pdepend = p + " || ( " + _imp->pdepend + " )" + get_annotations(*node.spec());
 }
 
 void
-DependenciesRewriter::visit_sequence(const ConditionalDepSpec & spec,
-        DependencySpecTree::ConstSequenceIterator cur,
-        DependencySpecTree::ConstSequenceIterator end)
+DependenciesRewriter::visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
 {
     _imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**_imp->labels.begin())));
     RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
@@ -187,11 +182,11 @@ DependenciesRewriter::visit_sequence(const ConditionalDepSpec & spec,
     _imp->rdepend.clear();
     _imp->pdepend.clear();
 
-    std::for_each(cur, end, accept_visitor(*this));
+    std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
 
-    _imp->depend = d + " " + stringify(spec) + " ( " + _imp->depend + " )" + get_annotations(spec);
-    _imp->rdepend = r + " " + stringify(spec) + " ( " + _imp->rdepend + " )" + get_annotations(spec);
-    _imp->pdepend = p + " " + stringify(spec) + " ( " + _imp->pdepend + " )" + get_annotations(spec);
+    _imp->depend = d + " " + stringify(*node.spec()) + " ( " + _imp->depend + " )" + get_annotations(*node.spec());
+    _imp->rdepend = r + " " + stringify(*node.spec()) + " ( " + _imp->rdepend + " )" + get_annotations(*node.spec());
+    _imp->pdepend = p + " " + stringify(*node.spec()) + " ( " + _imp->pdepend + " )" + get_annotations(*node.spec());
 }
 
 namespace

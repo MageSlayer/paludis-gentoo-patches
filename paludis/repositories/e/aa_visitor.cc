@@ -19,9 +19,12 @@
 
 #include <paludis/dep_spec.hh>
 #include <paludis/repositories/e/aa_visitor.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/indirect_iterator.hh>
+#include <paludis/util/accept_visitor.hh>
+#include <list>
+#include <algorithm>
 
 /** \file
  * Implementation of aa_visitor.hh
@@ -51,14 +54,21 @@ AAVisitor::~AAVisitor()
 }
 
 void
-AAVisitor::visit_leaf(const FetchableURIDepSpec & p)
+AAVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::Type & node)
 {
-    _imp->aa.push_back(p.filename());
+    _imp->aa.push_back(node.spec()->filename());
+}
+
+
+void
+AAVisitor::visit(const FetchableURISpecTree::NodeType<URILabelsDepSpec>::Type &)
+{
 }
 
 void
-AAVisitor::visit_leaf(const URILabelsDepSpec &)
+AAVisitor::visit(const FetchableURISpecTree::BasicInnerNode & node)
 {
+    std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
 }
 
 AAVisitor::ConstIterator

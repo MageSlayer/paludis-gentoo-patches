@@ -29,12 +29,16 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/accept_visitor.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/package_database.hh>
 #include <paludis/version_requirements.hh>
+#include <algorithm>
 #include <set>
 #include <map>
 
@@ -42,9 +46,7 @@ using namespace paludis;
 
 namespace
 {
-    class VulnerableChecker :
-        public ConstVisitor<SetSpecTree>,
-        public ConstVisitor<SetSpecTree>::VisitConstSequence<VulnerableChecker, AllDepSpec>
+    class VulnerableChecker
     {
         private:
             std::multimap<std::tr1::shared_ptr<const PackageID>, std::tr1::shared_ptr<const DepTag>, PackageIDSetComparator> _found;
@@ -55,36 +57,40 @@ namespace
             typedef std::multimap<std::tr1::shared_ptr<const PackageID>, std::tr1::shared_ptr<const DepTag>,
                     PackageIDSetComparator>::const_iterator ConstIterator;
 
-            using ConstVisitor<SetSpecTree>::VisitConstSequence<VulnerableChecker, AllDepSpec>::visit;
-
             VulnerableChecker(const Environment & e) :
                 _env(e)
             {
             }
 
-            void visit_leaf(const PackageDepSpec &);
-
-            void visit_leaf(const NamedSetDepSpec & s)
+            void visit(const SetSpecTree::NodeType<AllDepSpec>::Type & node)
             {
-                Context context("When expanding named set '" + stringify(s) + "':");
+                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+            }
 
-                std::tr1::shared_ptr<const SetSpecTree::ConstItem> set(_env.set(s.name()));
+            void visit(const SetSpecTree::NodeType<PackageDepSpec>::Type & node);
+
+            void visit(const SetSpecTree::NodeType<NamedSetDepSpec>::Type & node)
+            {
+                Context context("When expanding named set '" + stringify(*node.spec()) + "':");
+
+                std::tr1::shared_ptr<const SetSpecTree> set(_env.set(node.spec()->name()));
                 if (! set)
                 {
-                    Log::get_instance()->message("report_task.unknown_set", ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
+                    Log::get_instance()->message("report_task.unknown_set", ll_warning, lc_context)
+                        << "Unknown set '" << node.spec()->name() << "'";
                     return;
                 }
 
-                if (! _recursing_sets.insert(s.name()).second)
+                if (! _recursing_sets.insert(node.spec()->name()).second)
                 {
                     Log::get_instance()->message("report_task.recursive_set", ll_warning, lc_context)
-                        << "Recursively defined set '" << s.name() << "'";
+                        << "Recursively defined set '" << node.spec()->name() << "'";
                     return;
                 }
 
-                set->accept(*this);
+                set->root()->accept(*this);
 
-                _recursing_sets.erase(s.name());
+                _recursing_sets.erase(node.spec()->name());
             }
 
             std::pair<ConstIterator, ConstIterator> insecure_tags(const std::tr1::shared_ptr<const PackageID> & id) const
@@ -94,14 +100,14 @@ namespace
     };
 
     void
-    VulnerableChecker::visit_leaf(const PackageDepSpec & a)
+    VulnerableChecker::visit(const SetSpecTree::NodeType<PackageDepSpec>::Type & node)
     {
         std::tr1::shared_ptr<const PackageIDSequence> insecure(_env[selection::AllVersionsSorted(
-                    generator::Matches(a, MatchPackageOptions()))]);
+                    generator::Matches(*node.spec(), MatchPackageOptions()))]);
         for (PackageIDSequence::ConstIterator i(insecure->begin()),
                 i_end(insecure->end()) ; i != i_end ; ++i)
-            if (a.tag() && simple_visitor_cast<const GLSADepTag>(*a.tag()))
-                _found.insert(std::make_pair(*i, a.tag()));
+            if (node.spec()->tag() && simple_visitor_cast<const GLSADepTag>(*node.spec()->tag()))
+                _found.insert(std::make_pair(*i, node.spec()->tag()));
             else
                 throw InternalError(PALUDIS_HERE, "didn't get a tag");
     }
@@ -150,10 +156,10 @@ ReportTask::execute()
 
         try
         {
-            std::tr1::shared_ptr<const SetSpecTree::ConstItem> insecure((*rr).sets_interface()->package_set(SetName("insecurity")));
+            std::tr1::shared_ptr<const SetSpecTree> insecure((*rr).sets_interface()->package_set(SetName("insecurity")));
             if (! insecure)
                 continue;
-            insecure->accept(vuln);
+            insecure->root()->accept(vuln);
         }
         catch (const NotAvailableError &)
         {

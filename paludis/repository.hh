@@ -23,7 +23,7 @@
 #include <paludis/action-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/dep_tree.hh>
+#include <paludis/spec_tree-fwd.hh>
 #include <paludis/name.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/qa-fwd.hh>
@@ -397,7 +397,7 @@ namespace paludis
             /**
              * Fetch a package set.
              */
-            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName & s) const = 0;
+            virtual const std::tr1::shared_ptr<const SetSpecTree> package_set(const SetName & s) const = 0;
 
             /**
              * Gives a list of the names of all the sets provided by this repo.

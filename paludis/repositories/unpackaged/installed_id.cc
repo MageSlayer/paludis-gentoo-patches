@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,12 +28,11 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/dir_iterator.hh>
-#include <paludis/util/visitor-impl.hh>
-#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/package_database.hh>
@@ -227,7 +226,7 @@ namespace
     {
         private:
             const Environment * const _env;
-            mutable std::tr1::shared_ptr<const DependencySpecTree::ConstItem> _v;
+            mutable std::tr1::shared_ptr<const DependencySpecTree> _v;
             mutable Mutex _mutex;
             const FSEntry _f;
             const std::tr1::shared_ptr<const DependencyLabelSequence> _labels;
@@ -243,7 +242,7 @@ namespace
             {
             }
 
-            const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
+            const std::tr1::shared_ptr<const DependencySpecTree> value() const
             {
                 Lock l(_mutex);
                 if (_v)
@@ -264,7 +263,7 @@ namespace
             pretty_print(const DependencySpecTree::ItemFormatter & f) const
             {
                 DepPrinter p(_env, f, false);
-                value()->accept(p);
+                value()->root()->accept(p);
                 return p.result();
             }
 
@@ -272,7 +271,7 @@ namespace
             pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
             {
                 DepPrinter p(_env, f, true);
-                value()->accept(p);
+                value()->root()->accept(p);
                 return p.result();
             }
 
@@ -768,3 +767,4 @@ InstalledUnpackagedID::choices_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >();
 }
+

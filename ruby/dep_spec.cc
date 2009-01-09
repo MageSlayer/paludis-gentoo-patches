@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2006, 2007, 2008 Richard Brown
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -25,7 +25,6 @@
 #include <paludis/version_operator.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/save.hh>
@@ -121,10 +120,8 @@ namespace
     struct WrappedSpecBase;
     template <typename> struct WrappedSpec;
 
-    struct WrappedSpecVisitorTypes :
-        VisitorTypes<
-            WrappedSpecVisitorTypes,
-            WrappedSpecBase,
+    struct WrappedSpecBase :
+        virtual DeclareAbstractAcceptMethods<WrappedSpecBase, MakeTypeList<
             WrappedSpec<PlainTextDepSpec>,
             WrappedSpec<SimpleURIDepSpec>,
             WrappedSpec<FetchableURIDepSpec>,
@@ -138,12 +135,7 @@ namespace
             WrappedSpec<AllDepSpec>,
             WrappedSpec<AnyDepSpec>,
             WrappedSpec<ConditionalDepSpec>
-        >
-    {
-    };
-
-    struct WrappedSpecBase :
-        virtual ConstAcceptInterface<WrappedSpecVisitorTypes>
+        >::Type>
     {
         typedef std::list<std::pair<VALUE, std::tr1::shared_ptr<const WrappedSpecBase> > > Children;
 
@@ -158,7 +150,7 @@ namespace
     template <typename T_>
     class WrappedSpec :
         public WrappedSpecBase,
-        public ConstAcceptInterfaceVisitsThis<WrappedSpecVisitorTypes, WrappedSpec<T_> >
+        public ImplementAcceptMethods<WrappedSpecBase, WrappedSpec<T_> >
     {
         private:
             std::tr1::shared_ptr<T_> _spec;
@@ -195,93 +187,86 @@ namespace
             }
     };
 
-    struct TreeToValue :
-        ConstVisitor<GenericSpecTree>
+    struct TreeToValue
     {
         std::tr1::shared_ptr<const WrappedSpecBase> wrapped;
         VALUE klass;
 
-        void visit_leaf(const PackageDepSpec & spec)
+        void visit(const GenericSpecTree::NodeType<PackageDepSpec>::Type & node)
         {
-            wrapped.reset(new WrappedSpec<PackageDepSpec>(std::tr1::static_pointer_cast<PackageDepSpec>(spec.clone())));
+            wrapped.reset(new WrappedSpec<PackageDepSpec>(std::tr1::static_pointer_cast<PackageDepSpec>(node.spec()->clone())));
             klass = c_package_dep_spec;
         }
 
-        void visit_leaf(const BlockDepSpec & spec)
+        void visit(const GenericSpecTree::NodeType<BlockDepSpec>::Type & node)
         {
-            wrapped.reset(new WrappedSpec<BlockDepSpec>(std::tr1::static_pointer_cast<BlockDepSpec>(spec.clone())));
+            wrapped.reset(new WrappedSpec<BlockDepSpec>(std::tr1::static_pointer_cast<BlockDepSpec>(node.spec()->clone())));
             klass = c_block_dep_spec;
         }
 
-        void visit_leaf(const PlainTextDepSpec & spec)
+        void visit(const GenericSpecTree::NodeType<PlainTextDepSpec>::Type & node)
         {
-            wrapped.reset(new WrappedSpec<PlainTextDepSpec>(std::tr1::static_pointer_cast<PlainTextDepSpec>(spec.clone())));
+            wrapped.reset(new WrappedSpec<PlainTextDepSpec>(std::tr1::static_pointer_cast<PlainTextDepSpec>(node.spec()->clone())));
             klass = c_plain_text_dep_spec;
         }
 
-        void visit_leaf(const SimpleURIDepSpec & spec)
+        void visit(const GenericSpecTree::NodeType<SimpleURIDepSpec>::Type & node)
         {
-            wrapped.reset(new WrappedSpec<SimpleURIDepSpec>(std::tr1::static_pointer_cast<SimpleURIDepSpec>(spec.clone())));
+            wrapped.reset(new WrappedSpec<SimpleURIDepSpec>(std::tr1::static_pointer_cast<SimpleURIDepSpec>(node.spec()->clone())));
             klass = c_simple_uri_dep_spec;
         }
 
-        void visit_leaf(const FetchableURIDepSpec & spec)
+        void visit(const GenericSpecTree::NodeType<FetchableURIDepSpec>::Type & node)
         {
-            wrapped.reset(new WrappedSpec<FetchableURIDepSpec>(std::tr1::static_pointer_cast<FetchableURIDepSpec>(spec.clone())));
+            wrapped.reset(new WrappedSpec<FetchableURIDepSpec>(std::tr1::static_pointer_cast<FetchableURIDepSpec>(node.spec()->clone())));
             klass = c_fetchable_uri_dep_spec;
         }
 
-        void visit_leaf(const URILabelsDepSpec & spec)
+        void visit(const GenericSpecTree::NodeType<URILabelsDepSpec>::Type & node)
         {
-            wrapped.reset(new WrappedSpec<URILabelsDepSpec>(std::tr1::static_pointer_cast<URILabelsDepSpec>(spec.clone())));
+            wrapped.reset(new WrappedSpec<URILabelsDepSpec>(std::tr1::static_pointer_cast<URILabelsDepSpec>(node.spec()->clone())));
             klass = c_uri_labels_dep_spec;
         }
 
-        void visit_leaf(const PlainTextLabelDepSpec & spec)
+        void visit(const GenericSpecTree::NodeType<PlainTextLabelDepSpec>::Type & node)
         {
-            wrapped.reset(new WrappedSpec<PlainTextLabelDepSpec>(std::tr1::static_pointer_cast<PlainTextLabelDepSpec>(spec.clone())));
+            wrapped.reset(new WrappedSpec<PlainTextLabelDepSpec>(std::tr1::static_pointer_cast<PlainTextLabelDepSpec>(node.spec()->clone())));
             klass = c_plain_text_label_dep_spec;
         }
 
-        void visit_leaf(const DependencyLabelsDepSpec & spec)
+        void visit(const GenericSpecTree::NodeType<DependencyLabelsDepSpec>::Type & node)
         {
-            wrapped.reset(new WrappedSpec<DependencyLabelsDepSpec>(std::tr1::static_pointer_cast<DependencyLabelsDepSpec>(spec.clone())));
+            wrapped.reset(new WrappedSpec<DependencyLabelsDepSpec>(std::tr1::static_pointer_cast<DependencyLabelsDepSpec>(node.spec()->clone())));
             klass = c_dependency_labels_dep_spec;
         }
 
-        void visit_leaf(const NamedSetDepSpec & spec)
+        void visit(const GenericSpecTree::NodeType<NamedSetDepSpec>::Type & node)
         {
-            wrapped.reset(new WrappedSpec<NamedSetDepSpec>(std::tr1::static_pointer_cast<NamedSetDepSpec>(spec.clone())));
+            wrapped.reset(new WrappedSpec<NamedSetDepSpec>(std::tr1::static_pointer_cast<NamedSetDepSpec>(node.spec()->clone())));
             klass = c_named_set_dep_spec;
         }
 
-        void visit_leaf(const LicenseDepSpec & spec)
+        void visit(const GenericSpecTree::NodeType<LicenseDepSpec>::Type & node)
         {
-            wrapped.reset(new WrappedSpec<LicenseDepSpec>(std::tr1::static_pointer_cast<LicenseDepSpec>(spec.clone())));
+            wrapped.reset(new WrappedSpec<LicenseDepSpec>(std::tr1::static_pointer_cast<LicenseDepSpec>(node.spec()->clone())));
             klass = c_license_dep_spec;
         }
 
-        void visit_sequence(const ConditionalDepSpec & spec,
-                GenericSpecTree::ConstSequenceIterator cur,
-                GenericSpecTree::ConstSequenceIterator end)
+        void visit(const GenericSpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            wrapped.reset((new WrappedSpec<ConditionalDepSpec>(std::tr1::static_pointer_cast<ConditionalDepSpec>(spec.clone())))->add_children(cur, end));
+            wrapped.reset((new WrappedSpec<ConditionalDepSpec>(std::tr1::static_pointer_cast<ConditionalDepSpec>(node.spec()->clone())))->add_children(node.begin(), node.end()));
             klass = c_conditional_dep_spec;
         }
 
-        void visit_sequence(const AllDepSpec & spec,
-                GenericSpecTree::ConstSequenceIterator cur,
-                GenericSpecTree::ConstSequenceIterator end)
+        void visit(const GenericSpecTree::NodeType<AllDepSpec>::Type & node)
         {
-            wrapped.reset((new WrappedSpec<AllDepSpec>(std::tr1::static_pointer_cast<AllDepSpec>(spec.clone())))->add_children(cur, end));
+            wrapped.reset((new WrappedSpec<AllDepSpec>(std::tr1::static_pointer_cast<AllDepSpec>(node.spec()->clone())))->add_children(node.begin(), node.end()));
             klass = c_all_dep_spec;
         }
 
-        void visit_sequence(const AnyDepSpec & spec,
-                GenericSpecTree::ConstSequenceIterator cur,
-                GenericSpecTree::ConstSequenceIterator end)
+        void visit(const GenericSpecTree::NodeType<AnyDepSpec>::Type & node)
         {
-            wrapped.reset((new WrappedSpec<AnyDepSpec>(std::tr1::static_pointer_cast<AnyDepSpec>(spec.clone())))->add_children(cur, end));
+            wrapped.reset((new WrappedSpec<AnyDepSpec>(std::tr1::static_pointer_cast<AnyDepSpec>(node.spec()->clone())))->add_children(node.begin(), node.end()));
             klass = c_any_dep_spec;
         }
     };
@@ -294,148 +279,121 @@ namespace
         for ( ; cur != end ; ++cur)
         {
             TreeToValue v;
-            cur->accept(v);
+            (*cur)->accept(v);
             _children->push_back(std::make_pair(v.klass, v.wrapped));
         }
 
         return this;
     }
 
-    template <typename H_>
-    struct ValueToTree :
-        ConstVisitor<WrappedSpecVisitorTypes>
-    {
-        std::tr1::shared_ptr<typename H_::ConstItem> result;
-        std::tr1::function<void (const std::tr1::shared_ptr<ConstAcceptInterface<H_> > &)> adder;
+    template <typename H_, typename S_, bool>
+    struct InnerNodeHandler;
 
-        ValueToTree(VALUE val)
+    template <typename H_, typename S_, bool>
+    struct LeafNodeHandler;
+
+    template <typename H_>
+    struct ValueToTree
+    {
+        std::tr1::shared_ptr<H_> result;
+        std::tr1::shared_ptr<typename H_::BasicInnerNode> add_to;
+
+        ValueToTree(VALUE val, std::tr1::shared_ptr<H_> r = make_null_shared_ptr()) :
+            result(r)
         {
-            using namespace std::tr1::placeholders;
-            adder = std::tr1::bind(std::tr1::mem_fn(&ValueToTree<H_>::set_result), this, _1);
+            if (result)
+                add_to = result->root();
 
             std::tr1::shared_ptr<WrappedSpecBase> * p;
             Data_Get_Struct(val, std::tr1::shared_ptr<WrappedSpecBase>, p);
             (*p)->accept(*this);
         }
 
-        void set_result(const std::tr1::shared_ptr<ConstAcceptInterface<H_> > & res)
+        void visit(const WrappedSpec<AllDepSpec> & spec)
         {
-            result = res;
+            InnerNodeHandler<H_, AllDepSpec,
+                TypeListContains<typename H_::VisitableTypeList, typename H_::template NodeType<AllDepSpec>::Type>::value>::handle(this, spec);
+        }
+
+        void visit(const WrappedSpec<ConditionalDepSpec> & spec)
+        {
+            InnerNodeHandler<H_, ConditionalDepSpec,
+                TypeListContains<typename H_::VisitableTypeList, typename H_::template NodeType<ConditionalDepSpec>::Type>::value>::handle(this, spec);
         }
 
         template <typename T_>
-        void do_visit_sequence(const WrappedSpec<T_> & item, std::tr1::true_type)
+        void visit(const WrappedSpec<T_> & spec)
         {
-            using namespace std::tr1::placeholders;
-
-            std::tr1::shared_ptr<ConstTreeSequence<H_, T_> > a(
-                new ConstTreeSequence<H_, T_>(
-                    std::tr1::static_pointer_cast<T_>(item.spec()->clone())));
-            adder(a);
-
-            Save<std::tr1::function<void (const std::tr1::shared_ptr<ConstAcceptInterface<H_> > &)> > s(
-                &adder, std::tr1::bind(std::tr1::mem_fn(&ConstTreeSequence<H_, T_>::add), a.get(), _1));
-            std::for_each(indirect_iterator(second_iterator(item.children()->begin())),
-                          indirect_iterator(second_iterator(item.children()->end())),
-                          accept_visitor(*this));
+            LeafNodeHandler<H_, T_,
+                TypeListContains<typename H_::VisitableTypeList, typename H_::template NodeType<T_>::Type>::value>::handle(this, spec);
         }
+    };
 
-        template <typename T_>
-        void do_visit_sequence(const WrappedSpec<T_> &, std::tr1::false_type)
+    template <typename H_, typename S_>
+    struct InnerNodeHandler<H_, S_, false>
+    {
+        static void handle(ValueToTree<H_> * const, const WrappedSpec<S_> &)
         {
-            rb_raise(rb_eTypeError, "Item of type %s is not allowed in hierarchy of type %s", NiceNames<T_>::name, NiceNames<H_>::name);
+            rb_raise(rb_eTypeError, "Item of type %s is not allowed in hierarchy of type %s", NiceNames<S_>::name, NiceNames<H_>::name);
         }
+    };
 
-        template <typename T_>
-        void do_visit_sequence(const WrappedSpec<T_> & s)
+    template <typename H_, typename S_>
+    struct LeafNodeHandler<H_, S_, false>
+    {
+        static void handle(ValueToTree<H_> * const, const WrappedSpec<S_> &)
         {
-            do_visit_sequence(s, std::tr1::is_convertible<ConstVisitor<H_> *, Visits<const ConstTreeSequence<H_, T_> > *>());
+            rb_raise(rb_eTypeError, "Item of type %s is not allowed in hierarchy of type %s", NiceNames<S_>::name, NiceNames<H_>::name);
         }
+    };
 
-        virtual void visit(const WrappedSpec<AllDepSpec> & s)
+    template <typename H_, typename S_>
+    struct TopNodeHandler
+    {
+        static void handle(ValueToTree<H_> * const, const WrappedSpec<S_> &)
         {
-            do_visit_sequence(s);
+            rb_raise(rb_eTypeError, "Item of type %s is not allowed as the root for heirarchy of type %s", NiceNames<S_>::name, NiceNames<H_>::name);
         }
+    };
 
-        virtual void visit(const WrappedSpec<AnyDepSpec> & s)
+    template <typename H_>
+    struct TopNodeHandler<H_, AllDepSpec>
+    {
+        static void handle(ValueToTree<H_> * const t, const WrappedSpec<AllDepSpec> & spec)
         {
-            do_visit_sequence(s);
+            t->result.reset(new H_(spec.spec()));
+            t->add_to = t->result->root();
         }
+    };
 
-        virtual void visit(const WrappedSpec<ConditionalDepSpec> & s)
+    template <typename H_, typename S_>
+    struct InnerNodeHandler<H_, S_, true>
+    {
+        static void handle(ValueToTree<H_> * const t, const WrappedSpec<S_> & spec)
         {
-            do_visit_sequence(s);
+            if (! t->result)
+            {
+                TopNodeHandler<H_, S_>::handle(t, spec);
+                std::for_each(indirect_iterator(second_iterator(spec.children()->begin())),
+                        indirect_iterator(second_iterator(spec.children()->end())),
+                        accept_visitor(*t));
+            }
+            else
+            {
+                Save<std::tr1::shared_ptr<typename H_::BasicInnerNode> > save(&t->add_to, t->add_to->append(spec.spec()));
+                std::for_each(indirect_iterator(second_iterator(spec.children()->begin())),
+                        indirect_iterator(second_iterator(spec.children()->end())),
+                        accept_visitor(*t));
+            }
         }
+    };
 
-        template <typename T_>
-        void do_visit_leaf(const WrappedSpec<T_> & item, std::tr1::true_type)
+    template <typename H_, typename S_>
+    struct LeafNodeHandler<H_, S_, true>
+    {
+        static void handle(ValueToTree<H_> * const t, const WrappedSpec<S_> & spec)
         {
-            std::tr1::shared_ptr<TreeLeaf<H_, T_> > a(
-                new TreeLeaf<H_, T_>(
-                    std::tr1::static_pointer_cast<T_>(item.spec()->clone())));
-            adder(a);
-        }
-
-        template <typename T_>
-        void do_visit_leaf(const WrappedSpec<T_> &, std::tr1::false_type)
-        {
-            rb_raise(rb_eTypeError, "Item of type %s is not allowed in hierarchy of type %s", NiceNames<T_>::name, NiceNames<H_>::name);
-        }
-
-        template <typename T_>
-        void do_visit_leaf(const WrappedSpec<T_> & s)
-        {
-            do_visit_leaf(s, std::tr1::is_convertible<ConstVisitor<H_> *, Visits<const TreeLeaf<H_, T_> > *>());
-        }
-
-        virtual void visit(const WrappedSpec<PlainTextDepSpec> & s)
-        {
-            do_visit_leaf(s);
-        }
-
-        virtual void visit(const WrappedSpec<SimpleURIDepSpec> & s)
-        {
-            do_visit_leaf(s);
-        }
-
-        virtual void visit(const WrappedSpec<FetchableURIDepSpec> & s)
-        {
-            do_visit_leaf(s);
-        }
-
-        virtual void visit(const WrappedSpec<LicenseDepSpec> & s)
-        {
-            do_visit_leaf(s);
-        }
-
-        virtual void visit(const WrappedSpec<PackageDepSpec> & s)
-        {
-            do_visit_leaf(s);
-        }
-
-        virtual void visit(const WrappedSpec<BlockDepSpec> & s)
-        {
-            do_visit_leaf(s);
-        }
-
-        virtual void visit(const WrappedSpec<URILabelsDepSpec> & s)
-        {
-            do_visit_leaf(s);
-        }
-
-        virtual void visit(const WrappedSpec<PlainTextLabelDepSpec> & s)
-        {
-            do_visit_leaf(s);
-        }
-
-        virtual void visit(const WrappedSpec<DependencyLabelsDepSpec> & s)
-        {
-            do_visit_leaf(s);
-        }
-
-        virtual void visit(const WrappedSpec<NamedSetDepSpec> & s)
-        {
-            do_visit_leaf(s);
+            t->add_to->append(spec.spec());
         }
     };
 
@@ -1401,12 +1359,17 @@ paludis::ruby::value_to_dep_spec(VALUE v)
 }
 
 template <typename H_>
-std::tr1::shared_ptr<const typename H_::ConstItem>
+std::tr1::shared_ptr<const H_>
 paludis::ruby::value_to_dep_tree(VALUE v)
 {
-    if (rb_obj_is_kind_of(v, c_dep_spec))
+    if (rb_obj_is_kind_of(v, c_all_dep_spec))
     {
         ValueToTree<H_> vtt(v);
+        return vtt.result;
+    }
+    else if (rb_obj_is_kind_of(v, c_dep_spec))
+    {
+        ValueToTree<H_> vtt(v, make_shared_ptr(new H_(make_shared_ptr(new AllDepSpec))));
         return vtt.result;
     }
     else
@@ -1425,12 +1388,12 @@ paludis::ruby::package_dep_spec_to_value(const std::tr1::shared_ptr<const Packag
 
 template <typename T_>
 VALUE
-paludis::ruby::dep_tree_to_value(const std::tr1::shared_ptr<const typename T_::ConstItem> & m)
+paludis::ruby::dep_tree_to_value(const std::tr1::shared_ptr<const T_> & m)
 {
     try
     {
         TreeToValue v;
-        m->accept(v);
+        m->root()->accept(v);
         std::tr1::shared_ptr<const WrappedSpecBase> * ptr(new std::tr1::shared_ptr<const WrappedSpecBase>(v.wrapped));
         return Data_Wrap_Struct(v.klass, 0, &Common<std::tr1::shared_ptr<const WrappedSpecBase> >::free, ptr);
     }
@@ -1455,15 +1418,15 @@ paludis::ruby::uri_label_to_value(const std::tr1::shared_ptr<const URILabel> & m
     }
 }
 
-template VALUE paludis::ruby::dep_tree_to_value<SetSpecTree> (const std::tr1::shared_ptr<const SetSpecTree::ConstItem> &);
-template VALUE paludis::ruby::dep_tree_to_value<DependencySpecTree> (const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> &);
-template VALUE paludis::ruby::dep_tree_to_value<FetchableURISpecTree> (const std::tr1::shared_ptr<const FetchableURISpecTree::ConstItem> &);
-template VALUE paludis::ruby::dep_tree_to_value<SimpleURISpecTree> (const std::tr1::shared_ptr<const SimpleURISpecTree::ConstItem> &);
-template VALUE paludis::ruby::dep_tree_to_value<PlainTextSpecTree> (const std::tr1::shared_ptr<const PlainTextSpecTree::ConstItem> &);
-template VALUE paludis::ruby::dep_tree_to_value<ProvideSpecTree> (const std::tr1::shared_ptr<const ProvideSpecTree::ConstItem> &);
-template VALUE paludis::ruby::dep_tree_to_value<LicenseSpecTree> (const std::tr1::shared_ptr<const LicenseSpecTree::ConstItem> &);
+template VALUE paludis::ruby::dep_tree_to_value<SetSpecTree> (const std::tr1::shared_ptr<const SetSpecTree> &);
+template VALUE paludis::ruby::dep_tree_to_value<DependencySpecTree> (const std::tr1::shared_ptr<const DependencySpecTree> &);
+template VALUE paludis::ruby::dep_tree_to_value<FetchableURISpecTree> (const std::tr1::shared_ptr<const FetchableURISpecTree> &);
+template VALUE paludis::ruby::dep_tree_to_value<SimpleURISpecTree> (const std::tr1::shared_ptr<const SimpleURISpecTree> &);
+template VALUE paludis::ruby::dep_tree_to_value<PlainTextSpecTree> (const std::tr1::shared_ptr<const PlainTextSpecTree> &);
+template VALUE paludis::ruby::dep_tree_to_value<ProvideSpecTree> (const std::tr1::shared_ptr<const ProvideSpecTree> &);
+template VALUE paludis::ruby::dep_tree_to_value<LicenseSpecTree> (const std::tr1::shared_ptr<const LicenseSpecTree> &);
 
-template std::tr1::shared_ptr<const SetSpecTree::ConstItem> paludis::ruby::value_to_dep_tree <SetSpecTree> (VALUE);
+template std::tr1::shared_ptr<const SetSpecTree> paludis::ruby::value_to_dep_tree <SetSpecTree> (VALUE);
 
 RegisterRubyClass::Register paludis_ruby_register_dep_spec PALUDIS_ATTRIBUTE((used))
     (&do_register_dep_spec);

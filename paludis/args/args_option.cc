@@ -21,7 +21,6 @@
 #include "args_error.hh"
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <set>
 #include <vector>
 #include <algorithm>

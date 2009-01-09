@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_UNINSTALL_TASK_HH 1
 
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/dep_tree.hh>
 #include <paludis/package_id.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
@@ -158,7 +157,7 @@ namespace paludis
             ///\{
 
             virtual void world_remove_set(const SetName &);
-            virtual void world_remove_packages(const std::tr1::shared_ptr<const SetSpecTree::ConstItem> &);
+            virtual void world_remove_packages(const std::tr1::shared_ptr<const SetSpecTree> &);
 
             ///\}
 

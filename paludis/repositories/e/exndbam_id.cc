@@ -21,8 +21,8 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/contents.hh>
 #include <paludis/ndbam.hh>
 #include <tr1/functional>

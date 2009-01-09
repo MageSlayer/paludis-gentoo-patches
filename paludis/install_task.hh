@@ -207,7 +207,7 @@ namespace paludis
             ///\{
 
             virtual void world_update_set(const SetName &);
-            virtual void world_update_packages(const std::tr1::shared_ptr<const SetSpecTree::ConstItem> &);
+            virtual void world_update_packages(const std::tr1::shared_ptr<const SetSpecTree> &);
 
             ///\}
 

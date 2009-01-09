@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,7 +20,6 @@
 #include <paludis/repositories/cran/dep_spec_pretty_printer.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/options.hh>
 #include <paludis/environment.hh>
@@ -73,7 +72,7 @@ DepSpecPrettyPrinter::~DepSpecPrettyPrinter()
 }
 
 void
-DepSpecPrettyPrinter::visit_leaf(const PackageDepSpec & p)
+DepSpecPrettyPrinter::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
 {
     if (_imp->multiline)
         _imp->s << _imp->formatter.indent(_imp->indent);
@@ -84,34 +83,52 @@ DepSpecPrettyPrinter::visit_leaf(const PackageDepSpec & p)
 
     if (_imp->env)
     {
-        if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(p, MatchPackageOptions()) |
+        if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*node.spec(), MatchPackageOptions()) |
                     filter::InstalledAtRoot(_imp->env->root()))]->empty())
-            _imp->s << _imp->formatter.format(p, format::Installed());
-        else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(p, MatchPackageOptions()) |
+            _imp->s << _imp->formatter.format(*node.spec(), format::Installed());
+        else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*node.spec(), MatchPackageOptions()) |
                     filter::SupportsAction<InstallAction>() | filter::NotMasked())]->empty())
-            _imp->s << _imp->formatter.format(p, format::Installable());
+            _imp->s << _imp->formatter.format(*node.spec(), format::Installable());
         else
-            _imp->s << _imp->formatter.format(p, format::Plain());
+            _imp->s << _imp->formatter.format(*node.spec(), format::Plain());
     }
     else
-        _imp->s << _imp->formatter.format(p, format::Plain());
+        _imp->s << _imp->formatter.format(*node.spec(), format::Plain());
 
     if (_imp->multiline)
         _imp->s << _imp->formatter.newline();
 }
 
 void
-DepSpecPrettyPrinter::visit_leaf(const BlockDepSpec &)
+DepSpecPrettyPrinter::visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
+{
+    std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+}
+
+void
+DepSpecPrettyPrinter::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
+{
+    std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+}
+
+void
+DepSpecPrettyPrinter::visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
+{
+    std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+}
+
+void
+DepSpecPrettyPrinter::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type &)
 {
 }
 
 void
-DepSpecPrettyPrinter::visit_leaf(const DependencyLabelsDepSpec &)
+DepSpecPrettyPrinter::visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type &)
 {
 }
 
 void
-DepSpecPrettyPrinter::visit_leaf(const NamedSetDepSpec & p)
+DepSpecPrettyPrinter::visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node)
 {
     if (_imp->multiline)
         _imp->s << _imp->formatter.indent(_imp->indent);
@@ -120,7 +137,7 @@ DepSpecPrettyPrinter::visit_leaf(const NamedSetDepSpec & p)
     else
         _imp->need_comma = true;
 
-    _imp->s << _imp->formatter.format(p, format::Plain());
+    _imp->s << _imp->formatter.format(*node.spec(), format::Plain());
 
     if (_imp->multiline)
         _imp->s << _imp->formatter.newline();

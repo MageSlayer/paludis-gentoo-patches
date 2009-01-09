@@ -20,8 +20,6 @@
 #include "args_error.hh"
 #include "bad_argument.hh"
 
-#include <paludis/util/visitor.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/join.hh>

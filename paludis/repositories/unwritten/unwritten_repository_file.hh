@@ -27,7 +27,7 @@
 #include <paludis/metadata_key-fwd.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
-#include <paludis/dep_tree-fwd.hh>
+#include <paludis/spec_tree-fwd.hh>
 
 namespace paludis
 {

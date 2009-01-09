@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -156,7 +156,7 @@ World::_remove_string_from_world(const std::string & n) const
     }
 }
 
-std::tr1::shared_ptr<SetSpecTree::ConstItem>
+const std::tr1::shared_ptr<const SetSpecTree>
 World::world_set() const
 {
     using namespace std::tr1::placeholders;
@@ -182,8 +182,7 @@ World::world_set() const
                 << "World file '" << *_imp->maybe_world_file << "' doesn't exist";
     }
 
-    return std::tr1::shared_ptr<SetSpecTree::ConstItem>(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+    return make_shared_ptr(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
 }
 
 std::tr1::shared_ptr<const FSEntry>

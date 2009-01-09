@@ -19,7 +19,6 @@
 
 #include "format_plain_contents_entry.hh"
 #include "format_string.hh"
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/fs_entry.hh>

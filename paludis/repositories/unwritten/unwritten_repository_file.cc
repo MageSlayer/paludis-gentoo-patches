@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,7 +28,6 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/literal_metadata_key.hh>
@@ -74,8 +73,7 @@ UnwrittenRepositoryFile::end() const
 
 namespace
 {
-    struct UnwrittenHomepagePrinter :
-        ConstVisitor<SimpleURISpecTree>
+    struct UnwrittenHomepagePrinter
     {
         std::stringstream s;
         const SimpleURISpecTree::ItemFormatter & formatter;
@@ -85,43 +83,37 @@ namespace
         {
         }
 
-        void visit_sequence(
-                const AllDepSpec &,
-                SimpleURISpecTree::ConstSequenceIterator cur,
-                SimpleURISpecTree::ConstSequenceIterator end)
+        void visit(const SimpleURISpecTree::NodeType<AllDepSpec>::Type & node)
         {
-            std::for_each(cur, end, accept_visitor(*this));
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
         }
 
-        void visit_sequence(
-                const ConditionalDepSpec &,
-                SimpleURISpecTree::ConstSequenceIterator cur,
-                SimpleURISpecTree::ConstSequenceIterator end)
+        void visit(const SimpleURISpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            std::for_each(cur, end, accept_visitor(*this));
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
         }
 
-        void visit_leaf(const SimpleURIDepSpec & u)
+        void visit(const SimpleURISpecTree::NodeType<SimpleURIDepSpec>::Type & node)
         {
             if (! s.str().empty())
                 s << " ";
-            s << formatter.format(u, format::Plain());
+            s << formatter.format(*node.spec(), format::Plain());
         }
     };
 
     struct UnwrittenHomepageKey :
         MetadataSpecTreeKey<SimpleURISpecTree>
     {
-        const std::tr1::shared_ptr<const SimpleURISpecTree::ConstItem> vv;
+        const std::tr1::shared_ptr<const SimpleURISpecTree> vv;
 
         UnwrittenHomepageKey(const std::string & r, const std::string & h, const MetadataKeyType t,
-                const std::tr1::shared_ptr<const SimpleURISpecTree::ConstItem> & v) :
+                const std::tr1::shared_ptr<const SimpleURISpecTree> & v) :
             MetadataSpecTreeKey<SimpleURISpecTree>(r, h, t),
             vv(v)
         {
         }
 
-        const std::tr1::shared_ptr<const SimpleURISpecTree::ConstItem> value() const
+        const std::tr1::shared_ptr<const SimpleURISpecTree> value() const
         {
             return vv;
         }
@@ -129,14 +121,14 @@ namespace
         std::string pretty_print(const SimpleURISpecTree::ItemFormatter & f) const
         {
             UnwrittenHomepagePrinter p(f);
-            value()->accept(p);
+            value()->root()->accept(p);
             return p.s.str();
         }
 
         std::string pretty_print_flat(const SimpleURISpecTree::ItemFormatter & f) const
         {
             UnwrittenHomepagePrinter p(f);
-            value()->accept(p);
+            value()->root()->accept(p);
             return p.s.str();
         }
     };
@@ -280,14 +272,13 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
             else if (token == "homepage")
             {
                 std::tr1::shared_ptr<AllDepSpec> all_spec(new AllDepSpec);
-                std::tr1::shared_ptr<ConstTreeSequence<SimpleURISpecTree, AllDepSpec> > spec(
-                        new ConstTreeSequence<SimpleURISpecTree, AllDepSpec>(all_spec));
+                std::tr1::shared_ptr<SimpleURISpecTree> tree(new SimpleURISpecTree(all_spec));
                 std::list<std::string> tokens;
                 tokenise_whitespace(token2, std::back_inserter(tokens));
                 for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
                         t != t_end ; ++t)
-                    spec->add(make_shared_ptr(new TreeLeaf<SimpleURISpecTree, SimpleURIDepSpec>(make_shared_ptr(new SimpleURIDepSpec(*t)))));
-                entry->homepage().reset(new UnwrittenHomepageKey("homepage", "Homepage", mkt_normal, spec));
+                    tree->root()->append(make_shared_ptr(new SimpleURIDepSpec(*t)));
+                entry->homepage().reset(new UnwrittenHomepageKey("homepage", "Homepage", mkt_normal, tree));
             }
             else if (token == "comment")
                 entry->comment().reset(new LiteralMetadataValueKey<std::string>("comment", "Comment", mkt_normal, token2));
@@ -329,4 +320,5 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
 template class PrivateImplementationPattern<UnwrittenRepositoryFile>;
 template class WrappedForwardIterator<UnwrittenRepositoryFile::ConstIteratorTag,
          const UnwrittenRepositoryFileEntry>;
+
 

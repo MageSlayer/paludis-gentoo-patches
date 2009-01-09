@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,7 +22,6 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/map.hh>
@@ -55,7 +54,6 @@ namespace paludis
 {
     namespace n
     {
-        struct add_handler;
         struct item;
         struct spec;
     }
@@ -66,12 +64,9 @@ namespace
     template <typename T_>
     struct ParseStackTypes
     {
-        typedef std::tr1::function<void (const std::tr1::shared_ptr<const typename T_::ConstItem> &)> AddHandler;
-
         struct Item
         {
-            NamedValue<n::add_handler, AddHandler> add_handler;
-            NamedValue<n::item, const std::tr1::shared_ptr<const typename T_::ConstItem> > item;
+            NamedValue<n::item, std::tr1::shared_ptr<typename T_::BasicInnerNode> > item;
             NamedValue<n::spec, std::tr1::shared_ptr<DepSpec> > spec;
         };
 
@@ -89,7 +84,7 @@ namespace
     {
         std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
                     parse_elike_package_dep_spec(s, eapi.supported()->package_dep_spec_parse_options(), id)));
-        (*h.begin()).add_handler()(make_shared_ptr(new TreeLeaf<T_, PackageDepSpec>(spec)));
+        h.begin()->item()->append(spec);
         annotations_go_here(spec);
     }
 
@@ -114,7 +109,7 @@ namespace
             std::tr1::shared_ptr<BlockDepSpec> spec(new BlockDepSpec(
                         make_shared_ptr(new PackageDepSpec(parse_elike_package_dep_spec(s.substr(specstart),
                                     eapi.supported()->package_dep_spec_parse_options(), id))), s));
-            (*h.begin()).add_handler()(make_shared_ptr(new TreeLeaf<T_, BlockDepSpec>(spec)));
+            h.begin()->item()->append(spec);
             annotations_go_here(spec);
         }
         else
@@ -128,7 +123,7 @@ namespace
             const std::string & s)
     {
         std::tr1::shared_ptr<LicenseDepSpec> spec(new LicenseDepSpec(s));
-        (*h.begin()).add_handler()(make_shared_ptr(new TreeLeaf<T_, LicenseDepSpec>(spec)));
+        h.begin()->item()->append(spec);
         annotations_go_here(spec);
     }
 
@@ -139,7 +134,7 @@ namespace
             const std::string & s)
     {
         std::tr1::shared_ptr<PlainTextDepSpec> spec(new PlainTextDepSpec(s));
-        (*h.begin()).add_handler()(make_shared_ptr(new TreeLeaf<T_, PlainTextDepSpec>(spec)));
+        h.begin()->item()->append(spec);
         annotations_go_here(spec);
     }
 
@@ -150,7 +145,7 @@ namespace
             const std::string & s)
     {
         std::tr1::shared_ptr<SimpleURIDepSpec> spec(new SimpleURIDepSpec(s));
-        (*h.begin()).add_handler()(make_shared_ptr(new TreeLeaf<T_, SimpleURIDepSpec>(spec)));
+        h.begin()->item()->append(spec);
         annotations_go_here(spec);
     }
 
@@ -166,7 +161,7 @@ namespace
         if (t.empty() || eapi.supported()->dependency_spec_tree_parse_options()[dstpo_uri_supports_arrow])
         {
             std::tr1::shared_ptr<FetchableURIDepSpec> spec(new FetchableURIDepSpec(t.empty() ? f : f + " -> " + t));
-            (*h.begin()).add_handler()(make_shared_ptr(new TreeLeaf<T_, FetchableURIDepSpec>(spec)));
+            h.begin()->item()->append(spec);
             annotations_go_here(spec);
         }
         else
@@ -209,7 +204,7 @@ namespace
             const EAPI & eapi)
     {
         std::tr1::shared_ptr<DependencyLabelsDepSpec> spec(parse_dependency_label(s, eapi));
-        (*h.begin()).add_handler()(make_shared_ptr(new TreeLeaf<T_, DependencyLabelsDepSpec>(spec)));
+        h.begin()->item()->append(spec);
         annotations_go_here(spec);
     }
 
@@ -221,7 +216,7 @@ namespace
             const EAPI & eapi)
     {
         std::tr1::shared_ptr<URILabelsDepSpec> spec(parse_uri_label(s, eapi));
-        (*h.begin()).add_handler()(make_shared_ptr(new TreeLeaf<T_, URILabelsDepSpec>(spec)));
+        h.begin()->item()->append(spec);
         annotations_go_here(spec);
     }
 
@@ -232,20 +227,16 @@ namespace
             const std::string & s)
     {
         std::tr1::shared_ptr<PlainTextLabelDepSpec> spec(parse_plain_text_label(s));
-        (*h.begin()).add_handler()(make_shared_ptr(new TreeLeaf<T_, PlainTextLabelDepSpec>(spec)));
+        h.begin()->item()->append(spec);
         annotations_go_here(spec);
     }
 
     template <typename T_, typename A_>
     void any_all_handler(typename ParseStackTypes<T_>::Stack & stack)
     {
-        using namespace std::tr1::placeholders;
         std::tr1::shared_ptr<A_> spec(new A_);
-        std::tr1::shared_ptr<ConstTreeSequence<T_, A_> > item(new ConstTreeSequence<T_, A_>(spec));
-        (*stack.begin()).add_handler()(item);
         stack.push_front(make_named_values<typename ParseStackTypes<T_>::Item>(
-                value_for<n::add_handler>(std::tr1::bind(&ConstTreeSequence<T_, A_>::add, item.get(), _1)),
-                value_for<n::item>(item),
+                value_for<n::item>(stack.begin()->item()->append(spec)),
                 value_for<n::spec>(spec)
                 ));
     }
@@ -257,14 +248,10 @@ namespace
             const Environment * const env,
             const std::tr1::shared_ptr<const PackageID> & id)
     {
-        using namespace std::tr1::placeholders;
         std::tr1::shared_ptr<ConditionalDepSpec> spec(new ConditionalDepSpec(parse_elike_conditional_dep_spec(u, env, id,
                         id->supports_action(SupportsActionTest<InstalledAction>()))));
-        std::tr1::shared_ptr<ConstTreeSequence<T_, ConditionalDepSpec> > item(new ConstTreeSequence<T_, ConditionalDepSpec>(spec));
-        (*stack.begin()).add_handler()(item);
         stack.push_front(make_named_values<typename ParseStackTypes<T_>::Item>(
-                value_for<n::add_handler>(std::tr1::bind(&ConstTreeSequence<T_, ConditionalDepSpec>::add, item.get(), _1)),
-                value_for<n::item>(item),
+                value_for<n::item>(stack.begin()->item()->append(spec)),
                 value_for<n::spec>(spec)
                 ));
     }
@@ -326,7 +313,7 @@ namespace
     }
 }
 
-std::tr1::shared_ptr<DependencySpecTree::ConstItem>
+std::tr1::shared_ptr<DependencySpecTree>
 paludis::erepository::parse_depend(const std::string & s,
         const Environment * const env, const std::tr1::shared_ptr<const PackageID> & id, const EAPI & eapi)
 {
@@ -335,11 +322,9 @@ paludis::erepository::parse_depend(const std::string & s,
     ParseStackTypes<DependencySpecTree>::Stack stack;
     std::tr1::shared_ptr<AllDepSpec> spec(new AllDepSpec);
     std::tr1::shared_ptr<DepSpec> thing_to_annotate(spec);
-    std::tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > top(
-            new ConstTreeSequence<DependencySpecTree, AllDepSpec>(spec));
+    std::tr1::shared_ptr<DependencySpecTree> top(make_shared_ptr(new DependencySpecTree(spec)));
     stack.push_front(make_named_values<ParseStackTypes<DependencySpecTree>::Item>(
-                value_for<n::add_handler>(std::tr1::bind(&ConstTreeSequence<DependencySpecTree, AllDepSpec>::add, top.get(), _1)),
-                value_for<n::item>(top),
+                value_for<n::item>(top->root()),
                 value_for<n::spec>(spec)
             ));
 
@@ -366,10 +351,10 @@ paludis::erepository::parse_depend(const std::string & s,
 
     parse_elike_dependencies(s, callbacks);
 
-    return (*stack.begin()).item();
+    return top;
 }
 
-std::tr1::shared_ptr<ProvideSpecTree::ConstItem>
+std::tr1::shared_ptr<ProvideSpecTree>
 paludis::erepository::parse_provide(const std::string & s,
         const Environment * const env, const std::tr1::shared_ptr<const PackageID> & id, const EAPI & eapi)
 {
@@ -378,11 +363,9 @@ paludis::erepository::parse_provide(const std::string & s,
     ParseStackTypes<ProvideSpecTree>::Stack stack;
     std::tr1::shared_ptr<AllDepSpec> spec(new AllDepSpec);
     std::tr1::shared_ptr<DepSpec> thing_to_annotate(spec);
-    std::tr1::shared_ptr<ConstTreeSequence<ProvideSpecTree, AllDepSpec> > top(
-            new ConstTreeSequence<ProvideSpecTree, AllDepSpec>(spec));
+    std::tr1::shared_ptr<ProvideSpecTree> top(make_shared_ptr(new ProvideSpecTree(spec)));
     stack.push_front(make_named_values<ParseStackTypes<ProvideSpecTree>::Item>(
-                value_for<n::add_handler>(std::tr1::bind(&ConstTreeSequence<ProvideSpecTree, AllDepSpec>::add, top.get(), _1)),
-                value_for<n::item>(top),
+                value_for<n::item>(top->root()),
                 value_for<n::spec>(spec)
             ));
 
@@ -407,10 +390,10 @@ paludis::erepository::parse_provide(const std::string & s,
 
     parse_elike_dependencies(s, callbacks);
 
-    return (*stack.begin()).item();
+    return top;
 }
 
-std::tr1::shared_ptr<FetchableURISpecTree::ConstItem>
+std::tr1::shared_ptr<FetchableURISpecTree>
 paludis::erepository::parse_fetchable_uri(const std::string & s,
         const Environment * const env, const std::tr1::shared_ptr<const PackageID> & id, const EAPI & eapi)
 {
@@ -419,13 +402,11 @@ paludis::erepository::parse_fetchable_uri(const std::string & s,
     ParseStackTypes<FetchableURISpecTree>::Stack stack;
     std::tr1::shared_ptr<AllDepSpec> spec(new AllDepSpec);
     std::tr1::shared_ptr<DepSpec> thing_to_annotate(spec);
-    std::tr1::shared_ptr<ConstTreeSequence<FetchableURISpecTree, AllDepSpec> > top(
-            new ConstTreeSequence<FetchableURISpecTree, AllDepSpec>(spec));
+    std::tr1::shared_ptr<FetchableURISpecTree> top(make_shared_ptr(new FetchableURISpecTree(spec)));
     stack.push_front(make_named_values<ParseStackTypes<FetchableURISpecTree>::Item>(
-                value_for<n::add_handler>(std::tr1::bind(&ConstTreeSequence<FetchableURISpecTree, AllDepSpec>::add, top.get(), _1)),
-                value_for<n::item>(top),
+                value_for<n::item>(top->root()),
                 value_for<n::spec>(spec)
-                ));
+            ));
 
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
@@ -452,10 +433,10 @@ paludis::erepository::parse_fetchable_uri(const std::string & s,
 
     parse_elike_dependencies(s, callbacks);
 
-    return (*stack.begin()).item();
+    return top;
 }
 
-std::tr1::shared_ptr<SimpleURISpecTree::ConstItem>
+std::tr1::shared_ptr<SimpleURISpecTree>
 paludis::erepository::parse_simple_uri(const std::string & s,
         const Environment * const env, const std::tr1::shared_ptr<const PackageID> & id, const EAPI &)
 {
@@ -464,11 +445,9 @@ paludis::erepository::parse_simple_uri(const std::string & s,
     ParseStackTypes<SimpleURISpecTree>::Stack stack;
     std::tr1::shared_ptr<AllDepSpec> spec(new AllDepSpec);
     std::tr1::shared_ptr<DepSpec> thing_to_annotate(spec);
-    std::tr1::shared_ptr<ConstTreeSequence<SimpleURISpecTree, AllDepSpec> > top(
-            new ConstTreeSequence<SimpleURISpecTree, AllDepSpec>(spec));
+    std::tr1::shared_ptr<SimpleURISpecTree> top(make_shared_ptr(new SimpleURISpecTree(spec)));
     stack.push_front(make_named_values<ParseStackTypes<SimpleURISpecTree>::Item>(
-                value_for<n::add_handler>(std::tr1::bind(&ConstTreeSequence<SimpleURISpecTree, AllDepSpec>::add, top.get(), _1)),
-                value_for<n::item>(top),
+                value_for<n::item>(top->root()),
                 value_for<n::spec>(spec)
             ));
 
@@ -493,10 +472,10 @@ paludis::erepository::parse_simple_uri(const std::string & s,
 
     parse_elike_dependencies(s, callbacks);
 
-    return (*stack.begin()).item();
+    return top;
 }
 
-std::tr1::shared_ptr<LicenseSpecTree::ConstItem>
+std::tr1::shared_ptr<LicenseSpecTree>
 paludis::erepository::parse_license(const std::string & s,
         const Environment * const env, const std::tr1::shared_ptr<const PackageID> & id, const EAPI & eapi)
 {
@@ -505,11 +484,9 @@ paludis::erepository::parse_license(const std::string & s,
     ParseStackTypes<LicenseSpecTree>::Stack stack;
     std::tr1::shared_ptr<AllDepSpec> spec(new AllDepSpec);
     std::tr1::shared_ptr<DepSpec> thing_to_annotate(spec);
-    std::tr1::shared_ptr<ConstTreeSequence<LicenseSpecTree, AllDepSpec> > top(
-            new ConstTreeSequence<LicenseSpecTree, AllDepSpec>(spec));
+    std::tr1::shared_ptr<LicenseSpecTree> top(make_shared_ptr(new LicenseSpecTree(spec)));
     stack.push_front(make_named_values<ParseStackTypes<LicenseSpecTree>::Item>(
-                value_for<n::add_handler>(std::tr1::bind(&ConstTreeSequence<LicenseSpecTree, AllDepSpec>::add, top.get(), _1)),
-                value_for<n::item>(top),
+                value_for<n::item>(top->root()),
                 value_for<n::spec>(spec)
             ));
 
@@ -534,10 +511,10 @@ paludis::erepository::parse_license(const std::string & s,
 
     parse_elike_dependencies(s, callbacks);
 
-    return (*stack.begin()).item();
+    return top;
 }
 
-std::tr1::shared_ptr<PlainTextSpecTree::ConstItem>
+std::tr1::shared_ptr<PlainTextSpecTree>
 paludis::erepository::parse_plain_text(const std::string & s,
         const Environment * const env, const std::tr1::shared_ptr<const PackageID> & id, const EAPI &)
 {
@@ -546,11 +523,9 @@ paludis::erepository::parse_plain_text(const std::string & s,
     ParseStackTypes<PlainTextSpecTree>::Stack stack;
     std::tr1::shared_ptr<AllDepSpec> spec(new AllDepSpec);
     std::tr1::shared_ptr<DepSpec> thing_to_annotate(spec);
-    std::tr1::shared_ptr<ConstTreeSequence<PlainTextSpecTree, AllDepSpec> > top(
-            new ConstTreeSequence<PlainTextSpecTree, AllDepSpec>(spec));
+    std::tr1::shared_ptr<PlainTextSpecTree> top(make_shared_ptr(new PlainTextSpecTree(spec)));
     stack.push_front(make_named_values<ParseStackTypes<PlainTextSpecTree>::Item>(
-                value_for<n::add_handler>(std::tr1::bind(&ConstTreeSequence<PlainTextSpecTree, AllDepSpec>::add, top.get(), _1)),
-                value_for<n::item>(top),
+                value_for<n::item>(top->root()),
                 value_for<n::spec>(spec)
             ));
 
@@ -575,10 +550,10 @@ paludis::erepository::parse_plain_text(const std::string & s,
 
     parse_elike_dependencies(s, callbacks);
 
-    return (*stack.begin()).item();
+    return top;
 }
 
-std::tr1::shared_ptr<PlainTextSpecTree::ConstItem>
+std::tr1::shared_ptr<PlainTextSpecTree>
 paludis::erepository::parse_myoptions(const std::string & s,
         const Environment * const env, const std::tr1::shared_ptr<const PackageID> & id, const EAPI &)
 {
@@ -587,11 +562,9 @@ paludis::erepository::parse_myoptions(const std::string & s,
     ParseStackTypes<PlainTextSpecTree>::Stack stack;
     std::tr1::shared_ptr<AllDepSpec> spec(new AllDepSpec);
     std::tr1::shared_ptr<DepSpec> thing_to_annotate(spec);
-    std::tr1::shared_ptr<ConstTreeSequence<PlainTextSpecTree, AllDepSpec> > top(
-            new ConstTreeSequence<PlainTextSpecTree, AllDepSpec>(spec));
+    std::tr1::shared_ptr<PlainTextSpecTree> top(make_shared_ptr(new PlainTextSpecTree(spec)));
     stack.push_front(make_named_values<ParseStackTypes<PlainTextSpecTree>::Item>(
-                value_for<n::add_handler>(std::tr1::bind(&ConstTreeSequence<PlainTextSpecTree, AllDepSpec>::add, top.get(), _1)),
-                value_for<n::item>(top),
+                value_for<n::item>(top->root()),
                 value_for<n::spec>(spec)
             ));
 
@@ -618,7 +591,7 @@ paludis::erepository::parse_myoptions(const std::string & s,
 
     parse_elike_dependencies(s, callbacks);
 
-    return (*stack.begin()).item();
+    return top;
 }
 
 std::tr1::shared_ptr<URILabelsDepSpec>

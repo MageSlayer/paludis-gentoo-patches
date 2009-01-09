@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,7 +20,6 @@
 #include "restrict_key.hh"
 #include <paludis/qa.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/name.hh>
@@ -53,14 +52,8 @@ namespace
         }
     };
 
-    struct RestrictChecker :
-        ConstVisitor<PlainTextSpecTree>,
-        ConstVisitor<PlainTextSpecTree>::VisitConstSequence<RestrictChecker, AllDepSpec>,
-        ConstVisitor<PlainTextSpecTree>::VisitConstSequence<RestrictChecker, ConditionalDepSpec>
+    struct RestrictChecker
     {
-        using ConstVisitor<PlainTextSpecTree>::VisitConstSequence<RestrictChecker, ConditionalDepSpec>::visit_sequence;
-        using ConstVisitor<PlainTextSpecTree>::VisitConstSequence<RestrictChecker, AllDepSpec>::visit_sequence;
-
         const std::set<std::string> & allowed_restricts;
 
         const std::tr1::shared_ptr<const MetadataKey> & key;
@@ -84,27 +77,37 @@ namespace
         {
         }
 
-        void visit_leaf(const PlainTextLabelDepSpec & t)
+        void visit(const PlainTextSpecTree::NodeType<PlainTextLabelDepSpec>::Type & node)
         {
             reporter.message(QAMessage(entry, qaml_normal, name,
-                        "Unexpected label '" + stringify(t) + "' in '" + key->raw_name() + "@")
+                        "Unexpected label '" + stringify(node.spec()->text()) + "' in '" + key->raw_name() + "@")
                     .with_associated_id(id)
                     .with_associated_key(id, key));
         }
 
-        void visit_leaf(const PlainTextDepSpec & t)
+        void visit(const PlainTextSpecTree::NodeType<PlainTextDepSpec>::Type & node)
         {
-            if (allowed_restricts.end() == allowed_restricts.find(t.text()))
+            if (allowed_restricts.end() == allowed_restricts.find(node.spec()->text()))
                 reporter.message(QAMessage(entry, qaml_normal, name,
-                            "Unrecognised value '" + t.text() + "' in '" + key->raw_name() + "'")
+                            "Unrecognised value '" + node.spec()->text() + "' in '" + key->raw_name() + "'")
                         .with_associated_id(id)
                         .with_associated_key(id, key));
 
-            else if (0 == t.text().compare(0, 2, "no"))
+            else if (0 == node.spec()->text().compare(0, 2, "no"))
                 reporter.message(QAMessage(entry, qaml_minor, name,
-                            "Deprecated value '" + t.text() + "' in '" + key->raw_name() + "' (use '" + t.text().substr(2) + "' instead)")
+                            "Deprecated value '" + node.spec()->text() + "' in '" + key->raw_name() + "' (use '" + node.spec()->text().substr(2) + "' instead)")
                         .with_associated_id(id)
                         .with_associated_key(id, key));
+        }
+
+        void visit(const PlainTextSpecTree::NodeType<AllDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
+
+        void visit(const PlainTextSpecTree::NodeType<ConditionalDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
         }
     };
 }
@@ -123,7 +126,7 @@ paludis::erepository::restrict_key_check(
     if (id->restrict_key())
     {
         RestrictChecker r(id->restrict_key(), entry, reporter, id, name);
-        id->restrict_key()->value()->accept(r);
+        id->restrict_key()->value()->root()->accept(r);
     }
 
     return true;

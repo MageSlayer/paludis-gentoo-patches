@@ -26,10 +26,11 @@
 #include <paludis/package_id.hh>
 #include <paludis/slot_requirement.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
 #include <paludis/metadata_key.hh>
@@ -212,14 +213,14 @@ paludis::match_package(
 bool
 paludis::match_package_in_set(
         const Environment & env,
-        const SetSpecTree::ConstItem & target,
+        const SetSpecTree & target,
         const PackageID & entry,
         const MatchPackageOptions & options)
 {
     using namespace std::tr1::placeholders;
 
     DepSpecFlattener<SetSpecTree, PackageDepSpec> f(&env);
-    target.accept(f);
+    target.root()->accept(f);
     return indirect_iterator(f.end()) != std::find_if(
             indirect_iterator(f.begin()), indirect_iterator(f.end()),
             std::tr1::bind(&match_package, std::tr1::cref(env), _1, std::tr1::cref(entry), std::tr1::cref(options)));

@@ -19,7 +19,6 @@
 
 #include <paludis_ruby.hh>
 #include <paludis/mask.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <ruby.h>
 

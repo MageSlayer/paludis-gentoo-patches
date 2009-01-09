@@ -38,8 +38,6 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/visitor_cast.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/cookie.hh>
 #include <paludis/util/output_deviator.hh>
@@ -447,7 +445,7 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
     if (! m.dependencies().name().empty())
     {
         DependenciesRewriter rewriter;
-        parse_depend(get(keys, m.dependencies().name()), params.environment(), id, *id->eapi())->accept(rewriter);
+        parse_depend(get(keys, m.dependencies().name()), params.environment(), id, *id->eapi())->root()->accept(rewriter);
         id->load_build_depend(m.dependencies().name() + ".DEPEND", m.dependencies().description() + " (build)", rewriter.depend());
         id->load_run_depend(m.dependencies().name() + ".RDEPEND", m.dependencies().description() + " (run)", rewriter.rdepend());
         id->load_post_depend(m.dependencies().name() + ".PDEPEND", m.dependencies().description() + " (post)", rewriter.pdepend());

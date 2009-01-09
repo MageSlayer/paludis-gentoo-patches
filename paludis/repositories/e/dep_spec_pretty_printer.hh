@@ -22,7 +22,7 @@
 
 #include <iosfwd>
 #include <paludis/dep_spec.hh>
-#include <paludis/dep_tree.hh>
+#include <paludis/spec_tree.hh>
 #include <paludis/metadata_key-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -43,7 +43,6 @@ namespace paludis
          * \ingroup grperepository
          */
         class PALUDIS_VISIBLE DepSpecPrettyPrinter :
-            public ConstVisitor<GenericSpecTree>,
             private PrivateImplementationPattern<DepSpecPrettyPrinter>
         {
             friend std::ostream & operator<< (std::ostream &, const DepSpecPrettyPrinter &);
@@ -92,37 +91,19 @@ namespace paludis
                 /// \name Visit functions
                 ///{
 
-                void visit_sequence(const AllDepSpec &,
-                        GenericSpecTree::ConstSequenceIterator,
-                        GenericSpecTree::ConstSequenceIterator);
-
-                void visit_sequence(const AnyDepSpec &,
-                        GenericSpecTree::ConstSequenceIterator,
-                        GenericSpecTree::ConstSequenceIterator);
-
-                void visit_sequence(const ConditionalDepSpec &,
-                        GenericSpecTree::ConstSequenceIterator,
-                        GenericSpecTree::ConstSequenceIterator);
-
-                void visit_leaf(const PackageDepSpec &);
-
-                void visit_leaf(const PlainTextDepSpec &);
-
-                void visit_leaf(const BlockDepSpec &);
-
-                void visit_leaf(const FetchableURIDepSpec &);
-
-                void visit_leaf(const SimpleURIDepSpec &);
-
-                void visit_leaf(const LicenseDepSpec &);
-
-                void visit_leaf(const URILabelsDepSpec &);
-
-                void visit_leaf(const DependencyLabelsDepSpec &);
-
-                void visit_leaf(const NamedSetDepSpec &);
-
-                void visit_leaf(const PlainTextLabelDepSpec &);
+                void visit(const GenericSpecTree::NodeType<AllDepSpec>::Type & node);
+                void visit(const GenericSpecTree::NodeType<AnyDepSpec>::Type & node);
+                void visit(const GenericSpecTree::NodeType<ConditionalDepSpec>::Type & node);
+                void visit(const GenericSpecTree::NodeType<PackageDepSpec>::Type & node);
+                void visit(const GenericSpecTree::NodeType<BlockDepSpec>::Type & node);
+                void visit(const GenericSpecTree::NodeType<DependencyLabelsDepSpec>::Type & node);
+                void visit(const GenericSpecTree::NodeType<NamedSetDepSpec>::Type & node);
+                void visit(const GenericSpecTree::NodeType<SimpleURIDepSpec>::Type & node);
+                void visit(const GenericSpecTree::NodeType<FetchableURIDepSpec>::Type & node);
+                void visit(const GenericSpecTree::NodeType<URILabelsDepSpec>::Type & node);
+                void visit(const GenericSpecTree::NodeType<PlainTextDepSpec>::Type & node);
+                void visit(const GenericSpecTree::NodeType<PlainTextLabelDepSpec>::Type & node);
+                void visit(const GenericSpecTree::NodeType<LicenseDepSpec>::Type & node);
 
                 ///}
         };

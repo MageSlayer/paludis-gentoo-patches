@@ -20,7 +20,6 @@
 #include "yaml.hh"
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <tr1/functional>
@@ -28,6 +27,7 @@
 #include <cstring>
 #include <algorithm>
 #include <map>
+#include <list>
 
 using namespace paludis;
 using namespace paludis::yaml;

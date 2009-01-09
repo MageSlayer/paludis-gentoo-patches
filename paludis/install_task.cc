@@ -35,7 +35,6 @@
 #include <paludis/filter.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/log.hh>
@@ -45,6 +44,9 @@
 #include <paludis/util/destringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <paludis/handled_information.hh>
 #include <tr1/functional>
 #include <sstream>
@@ -73,7 +75,7 @@ namespace paludis
         std::string config_protect;
 
         std::list<std::string> raw_targets;
-        std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > targets;
+        std::tr1::shared_ptr<SetSpecTree> targets;
         std::tr1::shared_ptr<std::string> add_to_world_spec;
         std::tr1::shared_ptr<const DestinationsSet> destinations;
 
@@ -108,7 +110,7 @@ namespace paludis
                                 this, std::tr1::placeholders::_1))
                     )),
             config_protect(""),
-            targets(new ConstTreeSequence<SetSpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec))),
+            targets(new SetSpecTree(make_shared_ptr(new AllDepSpec))),
             destinations(d),
             pretend(false),
             fetch_only(false),
@@ -141,7 +143,7 @@ InstallTask::~InstallTask()
 void
 InstallTask::clear()
 {
-    _imp->targets.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+    _imp->targets.reset(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
     _imp->had_set_targets = false;
     _imp->had_package_targets = false;
     _imp->dep_list.clear();
@@ -387,7 +389,7 @@ InstallTask::_add_target(const std::string & target)
 {
     Context context("When adding install target '" + target + "':");
 
-    std::tr1::shared_ptr<SetSpecTree::ConstItem> s;
+    std::tr1::shared_ptr<SetSpecTree> s;
 
     try
     {
@@ -405,8 +407,7 @@ InstallTask::_add_target(const std::string & target)
         {
             /* no wildcards */
             spec->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
-            _imp->targets->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
-                        new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+            _imp->targets->root()->append(spec);
         }
         else
         {
@@ -417,8 +418,7 @@ InstallTask::_add_target(const std::string & target)
             {
                 /* no match. we'll get an error from this later anyway. */
                 spec->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
-                _imp->targets->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
-                            new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+                _imp->targets->root()->append(spec);
             }
             else
                 for (PackageIDSequence::ConstIterator i(names->begin()), i_end(names->end()) ;
@@ -428,8 +428,7 @@ InstallTask::_add_target(const std::string & target)
                     p.package((*i)->name());
                     std::tr1::shared_ptr<PackageDepSpec> specn(new PackageDepSpec(p));
                     specn->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
-                    _imp->targets->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
-                                new TreeLeaf<SetSpecTree, PackageDepSpec>(specn)));
+                    _imp->targets->root()->append(specn);
                 }
         }
 
@@ -443,9 +442,7 @@ InstallTask::_add_target(const std::string & target)
             throw HadBothPackageAndSetTargets();
         _imp->had_set_targets = true;
 
-        _imp->targets->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, NamedSetDepSpec> >(
-                    new TreeLeaf<SetSpecTree, NamedSetDepSpec>(std::tr1::shared_ptr<NamedSetDepSpec>(
-                            new NamedSetDepSpec(SetName(target))))));
+        _imp->targets->root()->append(make_shared_ptr(new NamedSetDepSpec(SetName(target))));
         _imp->had_set_targets = true;
         if (! _imp->override_target_type)
             _imp->dep_list.options()->target_type() = dl_target_set;
@@ -478,8 +475,7 @@ InstallTask::_add_package_id(const std::tr1::shared_ptr<const PackageID> & targe
                 .in_repository(target->repository()->name())));
 
     spec->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
-    _imp->targets->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
-                new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+    _imp->targets->root()->append(spec);
 
     _imp->raw_targets.push_back(stringify(*spec));
 }
@@ -780,8 +776,9 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
         on_no_clean_needed(*dep);
     else
     {
-        if (0 != perform_hook(Hook("clean_all_pre")("TARGETS", join(
-                             indirect_iterator(clean_list.begin()), indirect_iterator(clean_list.end()), " "))).max_exit_status())
+        if (0 != perform_hook(Hook("clean_all_pre")
+                    ("TARGETS", join(indirect_iterator(clean_list.begin()), indirect_iterator(clean_list.end()), " "))
+                    ).max_exit_status())
             throw InstallActionError("Clean aborted by hook");
         on_clean_all_pre(*dep, clean_list);
 
@@ -972,8 +969,7 @@ InstallTask::_main_actions()
                                 "() \t\r\n"));
                 }
 
-                std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > all(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                            std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+                std::tr1::shared_ptr<SetSpecTree> all(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
                 std::list<std::string> tokens;
                 tokenise_whitespace(*_imp->add_to_world_spec, std::back_inserter(tokens));
                 if ((! tokens.empty()) && ("(" == *tokens.begin()) && (")" == *previous(tokens.end())))
@@ -986,14 +982,10 @@ InstallTask::_main_actions()
                         t != t_end ; ++t)
                 {
                     if (s_had_package_targets)
-                        all->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
-                                    new TreeLeaf<SetSpecTree, PackageDepSpec>(std::tr1::shared_ptr<PackageDepSpec>(
-                                            new PackageDepSpec(parse_user_package_dep_spec(*t, _imp->env,
-                                                    UserPackageDepSpecOptions()))))));
+                        all->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec(*t, _imp->env,
+                                            UserPackageDepSpecOptions()))));
                     else
-                        all->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, NamedSetDepSpec> >(
-                                    new TreeLeaf<SetSpecTree, NamedSetDepSpec>(std::tr1::shared_ptr<NamedSetDepSpec>(
-                                            new NamedSetDepSpec(SetName(*t))))));
+                        all->root()->append(make_shared_ptr(new NamedSetDepSpec(SetName(*t))));
                 }
 
                 if (s_had_package_targets)
@@ -1217,12 +1209,8 @@ InstallTask::world_update_set(const SetName & s)
 
 namespace
 {
-    struct WorldTargetFinder :
-        ConstVisitor<SetSpecTree>,
-        ConstVisitor<SetSpecTree>::VisitConstSequence<WorldTargetFinder, AllDepSpec>
+    struct WorldTargetFinder
     {
-        using ConstVisitor<SetSpecTree>::VisitConstSequence<WorldTargetFinder, AllDepSpec>::visit_sequence;
-
         Environment * const env;
         InstallTask * const task;
 
@@ -1232,31 +1220,37 @@ namespace
         {
         }
 
-        void visit_leaf(const PackageDepSpec & a)
+        void visit(const SetSpecTree::NodeType<AllDepSpec>::Type & node)
         {
-            if (a.slot_requirement_ptr())
-                task->on_update_world_skip(a, "slot restrictions");
-            else if (a.version_requirements_ptr() && ! a.version_requirements_ptr()->empty())
-                task->on_update_world_skip(a, "version restrictions");
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()),
+                    accept_visitor(*this));
+        }
+
+        void visit(const SetSpecTree::NodeType<PackageDepSpec>::Type & node)
+        {
+            if (node.spec()->slot_requirement_ptr())
+                task->on_update_world_skip(*node.spec(), "slot restrictions");
+            else if (node.spec()->version_requirements_ptr() && ! node.spec()->version_requirements_ptr()->empty())
+                task->on_update_world_skip(*node.spec(), "version restrictions");
             else
             {
-                if (a.package_ptr())
-                    env->add_to_world(*a.package_ptr());
-                task->on_update_world(a);
+                if (node.spec()->package_ptr())
+                    env->add_to_world(*node.spec()->package_ptr());
+                task->on_update_world(*node.spec());
             }
         }
 
-        void visit_leaf(const NamedSetDepSpec &)
+        void visit(const SetSpecTree::NodeType<NamedSetDepSpec>::Type &)
         {
         }
     };
 }
 
 void
-InstallTask::world_update_packages(const std::tr1::shared_ptr<const SetSpecTree::ConstItem> & a)
+InstallTask::world_update_packages(const std::tr1::shared_ptr<const SetSpecTree> & a)
 {
     WorldTargetFinder w(_imp->env, this);
-    a->accept(w);
+    a->root()->accept(w);
 }
 
 bool
@@ -1273,12 +1267,8 @@ InstallTask::set_continue_on_failure(const InstallTaskContinueOnFailure c)
 
 namespace
 {
-    struct CheckSatisfiedVisitor :
-        ConstVisitor<DependencySpecTree>,
-        ConstVisitor<DependencySpecTree>::VisitConstSequence<CheckSatisfiedVisitor, AllDepSpec>
+    struct CheckSatisfiedVisitor
     {
-        using ConstVisitor<DependencySpecTree>::VisitConstSequence<CheckSatisfiedVisitor, AllDepSpec>::visit_sequence;
-
         const Environment * const env;
         const PackageID & id;
         std::tr1::shared_ptr<const PackageDepSpec> failure;
@@ -1291,67 +1281,72 @@ namespace
         {
         }
 
-        void visit_leaf(const BlockDepSpec &)
+        void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()),
+                    accept_visitor(*this));
+        }
+
+        void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const DependencyLabelsDepSpec &)
+        void visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const PackageDepSpec & a)
+        void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
         {
             if (! failure)
-                if ((*env)[selection::SomeArbitraryVersion(generator::Matches(a, MatchPackageOptions())
+                if ((*env)[selection::SomeArbitraryVersion(generator::Matches(*node.spec(), MatchPackageOptions())
                             | filter::SupportsAction<InstalledAction>())]->empty())
-                    failure.reset(new PackageDepSpec(a));
+                    failure = node.spec();
         }
 
-        void visit_sequence(const ConditionalDepSpec & u,
-                DependencySpecTree::ConstSequenceIterator cur,
-                DependencySpecTree::ConstSequenceIterator end)
+        void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            if (u.condition_met())
-                std::for_each(cur, end, accept_visitor(*this));
+            if (node.spec()->condition_met())
+                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()),
+                        accept_visitor(*this));
         }
 
-        void visit_sequence(const AnyDepSpec &,
-                DependencySpecTree::ConstSequenceIterator cur,
-                DependencySpecTree::ConstSequenceIterator end)
+        void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
         {
             if (failure)
                 return;
 
             failure.reset();
-            for ( ; cur != end ; ++cur)
+            for (DependencySpecTree::NodeType<ConditionalDepSpec>::Type::ConstIterator cur(node.begin()) ;
+                    cur != node.end() ; ++cur)
             {
                 failure.reset();
-                cur->accept(*this);
+                (*cur)->accept(*this);
                 if (! failure)
                     break;
             }
         }
 
-        void visit_leaf(const NamedSetDepSpec & s)
+        void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node)
         {
-            std::tr1::shared_ptr<const SetSpecTree::ConstItem> set(env->set(s.name()));
+            std::tr1::shared_ptr<const SetSpecTree> set(env->set(node.spec()->name()));
 
             if (! set)
             {
-                Log::get_instance()->message("install_task.unknown_set", ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
+                Log::get_instance()->message("install_task.unknown_set", ll_warning, lc_context) << "Unknown set '"
+                    << node.spec()->name() << "'";
                 return;
             }
 
-            if (! recursing_sets.insert(s.name()).second)
+            if (! recursing_sets.insert(node.spec()->name()).second)
             {
                 Log::get_instance()->message("install_task.recursive_set", ll_warning, lc_context)
-                    << "Recursively defined set '" << s.name() << "'";
+                    << "Recursively defined set '" << node.spec()->name() << "'";
                 return;
             }
 
-            set->accept(*this);
+            set->root()->accept(*this);
 
-            recursing_sets.erase(s.name());
+            recursing_sets.erase(node.spec()->name());
         }
     };
 }
@@ -1366,23 +1361,23 @@ InstallTask::_unsatisfied(const DepListEntry & e) const
     if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_pre() ||
             dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_pre())
         if (e.package_id()->build_dependencies_key())
-            e.package_id()->build_dependencies_key()->value()->accept(v);
+            e.package_id()->build_dependencies_key()->value()->root()->accept(v);
 
     if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_runtime() ||
             dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_runtime())
         if (e.package_id()->run_dependencies_key())
-            e.package_id()->run_dependencies_key()->value()->accept(v);
+            e.package_id()->run_dependencies_key()->value()->root()->accept(v);
 
     if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_post() ||
             dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_post())
         if (e.package_id()->post_dependencies_key())
-            e.package_id()->post_dependencies_key()->value()->accept(v);
+            e.package_id()->post_dependencies_key()->value()->root()->accept(v);
 
     if ((dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_suggested() ||
                 dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_suggested())
             && dl_suggested_install == _imp->dep_list.options()->suggested())
         if (e.package_id()->suggested_dependencies_key())
-            e.package_id()->suggested_dependencies_key()->value()->accept(v);
+            e.package_id()->suggested_dependencies_key()->value()->root()->accept(v);
 
     return v.failure;
 }
@@ -1431,14 +1426,8 @@ namespace
         }
     };
 
-    struct CheckIndependentVisitor :
-        ConstVisitor<DependencySpecTree>,
-        ConstVisitor<DependencySpecTree>::VisitConstSequence<CheckIndependentVisitor, AllDepSpec>,
-        ConstVisitor<DependencySpecTree>::VisitConstSequence<CheckIndependentVisitor, AnyDepSpec>
+    struct CheckIndependentVisitor
     {
-        using ConstVisitor<DependencySpecTree>::VisitConstSequence<CheckIndependentVisitor, AllDepSpec>::visit_sequence;
-        using ConstVisitor<DependencySpecTree>::VisitConstSequence<CheckIndependentVisitor, AnyDepSpec>::visit_sequence;
-
         const Environment * const env;
         const DepList & dep_list;
         const std::tr1::shared_ptr<const PackageID> id;
@@ -1459,15 +1448,27 @@ namespace
         {
         }
 
-        void visit_leaf(const BlockDepSpec &)
+        void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()),
+                    accept_visitor(*this));
+        }
+
+        void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()),
+                    accept_visitor(*this));
+        }
+
+        void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const DependencyLabelsDepSpec &)
+        void visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const PackageDepSpec & a)
+        void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
         {
             if (failure)
                 return;
@@ -1478,7 +1479,7 @@ namespace
                 if (! d->handled())
                     continue;
 
-                if (! match_package(*env, a, *d->package_id(), MatchPackageOptions()))
+                if (! match_package(*env, *node.spec(), *d->package_id(), MatchPackageOptions()))
                     continue;
 
                 CheckHandledVisitor v;
@@ -1493,7 +1494,7 @@ namespace
             /* no match on the dep list, fall back to installed packages. if
              * there are no matches here it's not a problem because of or-deps. */
             std::tr1::shared_ptr<const PackageIDSequence> installed((*env)[selection::AllVersionsUnsorted(
-                        generator::Matches(a, MatchPackageOptions()) |
+                        generator::Matches(*node.spec(), MatchPackageOptions()) |
                         filter::SupportsAction<InstalledAction>())]);
 
             for (PackageIDSequence::ConstIterator i(installed->begin()), i_end(installed->end()) ;
@@ -1508,23 +1509,23 @@ namespace
                 if (dl_deps_pre == dep_list.options()->uninstalled_deps_pre() ||
                         dl_deps_pre_or_post == dep_list.options()->uninstalled_deps_pre())
                     if ((*i)->build_dependencies_key())
-                        (*i)->build_dependencies_key()->value()->accept(v);
+                        (*i)->build_dependencies_key()->value()->root()->accept(v);
 
                 if (dl_deps_pre == dep_list.options()->uninstalled_deps_runtime() ||
                         dl_deps_pre_or_post == dep_list.options()->uninstalled_deps_runtime())
                     if ((*i)->run_dependencies_key())
-                        (*i)->run_dependencies_key()->value()->accept(v);
+                        (*i)->run_dependencies_key()->value()->root()->accept(v);
 
                 if (dl_deps_pre == dep_list.options()->uninstalled_deps_post() ||
                         dl_deps_pre_or_post == dep_list.options()->uninstalled_deps_post())
                     if ((*i)->post_dependencies_key())
-                        (*i)->post_dependencies_key()->value()->accept(v);
+                        (*i)->post_dependencies_key()->value()->root()->accept(v);
 
                 if ((dl_deps_pre == dep_list.options()->uninstalled_deps_suggested() ||
                             dl_deps_pre_or_post == dep_list.options()->uninstalled_deps_suggested())
                         && dl_suggested_install == dep_list.options()->suggested())
                     if ((*i)->suggested_dependencies_key())
-                        (*i)->suggested_dependencies_key()->value()->accept(v);
+                        (*i)->suggested_dependencies_key()->value()->root()->accept(v);
 
                 if (v.failure)
                 {
@@ -1534,34 +1535,33 @@ namespace
             }
         }
 
-        void visit_sequence(const ConditionalDepSpec & u,
-                DependencySpecTree::ConstSequenceIterator cur,
-                DependencySpecTree::ConstSequenceIterator end)
+        void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            if (u.condition_met())
-                std::for_each(cur, end, accept_visitor(*this));
+            if (node.spec()->condition_met())
+                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()),
+                        accept_visitor(*this));
         }
 
-        void visit_leaf(const NamedSetDepSpec & s)
+        void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node)
         {
-            std::tr1::shared_ptr<const SetSpecTree::ConstItem> set(env->set(s.name()));
+            std::tr1::shared_ptr<const SetSpecTree> set(env->set(node.spec()->name()));
 
             if (! set)
             {
-                Log::get_instance()->message("install_task.unknown_set", ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
+                Log::get_instance()->message("install_task.unknown_set", ll_warning, lc_context) << "Unknown set '" << node.spec()->name() << "'";
                 return;
             }
 
-            if (! recursing_sets.insert(s.name()).second)
+            if (! recursing_sets.insert(node.spec()->name()).second)
             {
                 Log::get_instance()->message("install_task.recursive_set", ll_warning, lc_context)
-                    << "Recursively defined set '" << s.name() << "'";
+                    << "Recursively defined set '" << node.spec()->name() << "'";
                 return;
             }
 
-            set->accept(*this);
+            set->root()->accept(*this);
 
-            recursing_sets.erase(s.name());
+            recursing_sets.erase(node.spec()->name());
         }
     };
 }
@@ -1593,23 +1593,23 @@ InstallTask::_dependent(const DepListEntry & e) const
     if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_pre() ||
             dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_pre())
         if (e.package_id()->build_dependencies_key())
-            e.package_id()->build_dependencies_key()->value()->accept(v);
+            e.package_id()->build_dependencies_key()->value()->root()->accept(v);
 
     if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_runtime() ||
             dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_runtime())
         if (e.package_id()->run_dependencies_key())
-            e.package_id()->run_dependencies_key()->value()->accept(v);
+            e.package_id()->run_dependencies_key()->value()->root()->accept(v);
 
     if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_post() ||
             dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_post())
         if (e.package_id()->post_dependencies_key())
-            e.package_id()->post_dependencies_key()->value()->accept(v);
+            e.package_id()->post_dependencies_key()->value()->root()->accept(v);
 
     if ((dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_suggested() ||
                 dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_suggested())
             && dl_suggested_install == _imp->dep_list.options()->suggested())
         if (e.package_id()->suggested_dependencies_key())
-            e.package_id()->suggested_dependencies_key()->value()->accept(v);
+            e.package_id()->suggested_dependencies_key()->value()->root()->accept(v);
 
     return v.failure;
 }

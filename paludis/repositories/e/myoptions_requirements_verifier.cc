@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,7 +22,6 @@
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/myoption.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/tokeniser.hh>
@@ -78,9 +77,9 @@ MyOptionsRequirementsVerifier::unmet_requirements() const
 }
 
 void
-MyOptionsRequirementsVerifier::visit_leaf(const PlainTextLabelDepSpec & s)
+MyOptionsRequirementsVerifier::visit(const PlainTextSpecTree::NodeType<PlainTextLabelDepSpec>::Type & node)
 {
-    *_imp->current_prefix_stack.begin() = ChoicePrefixName(s.label());
+    *_imp->current_prefix_stack.begin() = ChoicePrefixName(node.spec()->label());
 }
 
 namespace
@@ -223,18 +222,18 @@ MyOptionsRequirementsVerifier::verify_one(const ChoicePrefixName & spec_prefix,
 }
 
 void
-MyOptionsRequirementsVerifier::visit_leaf(const PlainTextDepSpec & s)
+MyOptionsRequirementsVerifier::visit(const PlainTextSpecTree::NodeType<PlainTextDepSpec>::Type & node)
 {
-    Context context("When verifying requirements for item '" + stringify(s) + "':");
+    Context context("When verifying requirements for item '" + stringify(*node.spec()) + "':");
 
     for (std::list<ChildrenList>::iterator l(_imp->current_children_stack.begin()), l_end(_imp->current_children_stack.end()) ;
             l != l_end ; ++l)
-        l->push_back(std::make_pair(*_imp->current_prefix_stack.begin(), s.text()));
+        l->push_back(std::make_pair(*_imp->current_prefix_stack.begin(), node.spec()->text()));
 
     {
         Context local_context("When finding associated choice:");
 
-        std::pair<UnprefixedChoiceName, bool> active_myoption(parse_myoption(s.text()));
+        std::pair<UnprefixedChoiceName, bool> active_myoption(parse_myoption(node.spec()->text()));
         ChoiceNameWithPrefix active_flag((
                     ! stringify(*_imp->current_prefix_stack.begin()).empty() ? stringify(*_imp->current_prefix_stack.begin()) +
                     stringify(_imp->id->eapi()->supported()->choices_options()->use_expand_separator()) : "") +
@@ -247,24 +246,22 @@ MyOptionsRequirementsVerifier::visit_leaf(const PlainTextDepSpec & s)
                 ++*l;
     }
 
-    if ((! s.annotations_key()) || (s.annotations_key()->begin_metadata() == s.annotations_key()->end_metadata()))
+    if ((! node.spec()->annotations_key()) || (node.spec()->annotations_key()->begin_metadata() == node.spec()->annotations_key()->end_metadata()))
         return;
 
-    verify_one(*_imp->current_prefix_stack.begin(), s.text(), s.annotations_key());
+    verify_one(*_imp->current_prefix_stack.begin(), node.spec()->text(), node.spec()->annotations_key());
 }
 
 void
-MyOptionsRequirementsVerifier::visit_sequence(const ConditionalDepSpec & spec,
-        PlainTextSpecTree::ConstSequenceIterator cur,
-        PlainTextSpecTree::ConstSequenceIterator end)
+MyOptionsRequirementsVerifier::visit(const PlainTextSpecTree::NodeType<ConditionalDepSpec>::Type & node)
 {
-    if (spec.condition_met())
+    if (node.spec()->condition_met())
     {
         _imp->current_prefix_stack.push_front(*_imp->current_prefix_stack.begin());
         _imp->current_children_stack.push_front(ChildrenList());
         _imp->number_enabled_stack.push_front(0);
 
-        std::for_each(cur, end, accept_visitor(*this));
+        std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
 
         _imp->number_enabled_stack.pop_front();
         _imp->current_children_stack.pop_front();
@@ -273,23 +270,21 @@ MyOptionsRequirementsVerifier::visit_sequence(const ConditionalDepSpec & spec,
 }
 
 void
-MyOptionsRequirementsVerifier::visit_sequence(const AllDepSpec & s,
-        PlainTextSpecTree::ConstSequenceIterator cur,
-        PlainTextSpecTree::ConstSequenceIterator end)
+MyOptionsRequirementsVerifier::visit(const PlainTextSpecTree::NodeType<AllDepSpec>::Type & node)
 {
     _imp->current_prefix_stack.push_front(*_imp->current_prefix_stack.begin());
     _imp->current_children_stack.push_front(ChildrenList());
     _imp->number_enabled_stack.push_front(0);
 
-    std::for_each(cur, end, accept_visitor(*this));
-    if (s.annotations_key() && (s.annotations_key()->begin_metadata() != s.annotations_key()->end_metadata()))
+    std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+    if (node.spec()->annotations_key() && (node.spec()->annotations_key()->begin_metadata() != node.spec()->annotations_key()->end_metadata()))
     {
         for (ChildrenList::const_iterator i(_imp->current_children_stack.begin()->begin()),
                 i_end(_imp->current_children_stack.begin()->end()) ;
                 i != i_end ; ++i)
-            verify_one(i->first, i->second, s.annotations_key());
+            verify_one(i->first, i->second, node.spec()->annotations_key());
 
-        for (MetadataSectionKey::MetadataConstIterator m(s.annotations_key()->begin_metadata()), m_end(s.annotations_key()->end_metadata()) ;
+        for (MetadataSectionKey::MetadataConstIterator m(node.spec()->annotations_key()->begin_metadata()), m_end(node.spec()->annotations_key()->end_metadata()) ;
                 m != m_end ; ++m)
         {
             const MetadataValueKey<std::string> * mm(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));

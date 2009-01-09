@@ -66,7 +66,7 @@ namespace paludis
                         const MetadataKeyType);
                 ~EDependenciesKey();
 
-                virtual const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
+                virtual const std::tr1::shared_ptr<const DependencySpecTree> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string pretty_print(const DependencySpecTree::ItemFormatter &) const
@@ -92,7 +92,7 @@ namespace paludis
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EFetchableURIKey();
 
-                virtual const std::tr1::shared_ptr<const FetchableURISpecTree::ConstItem> value() const
+                virtual const std::tr1::shared_ptr<const FetchableURISpecTree> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string pretty_print(const FetchableURISpecTree::ItemFormatter &) const
@@ -118,7 +118,7 @@ namespace paludis
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~ESimpleURIKey();
 
-                virtual const std::tr1::shared_ptr<const SimpleURISpecTree::ConstItem> value() const
+                virtual const std::tr1::shared_ptr<const SimpleURISpecTree> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string pretty_print(const SimpleURISpecTree::ItemFormatter &) const
@@ -141,7 +141,7 @@ namespace paludis
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EPlainTextSpecKey();
 
-                virtual const std::tr1::shared_ptr<const PlainTextSpecTree::ConstItem> value() const
+                virtual const std::tr1::shared_ptr<const PlainTextSpecTree> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string pretty_print(const PlainTextSpecTree::ItemFormatter &) const
@@ -164,7 +164,7 @@ namespace paludis
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EMyOptionsKey();
 
-                virtual const std::tr1::shared_ptr<const PlainTextSpecTree::ConstItem> value() const
+                virtual const std::tr1::shared_ptr<const PlainTextSpecTree> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string pretty_print(const PlainTextSpecTree::ItemFormatter &) const
@@ -187,7 +187,7 @@ namespace paludis
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EProvideKey();
 
-                virtual const std::tr1::shared_ptr<const ProvideSpecTree::ConstItem> value() const
+                virtual const std::tr1::shared_ptr<const ProvideSpecTree> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string pretty_print(const ProvideSpecTree::ItemFormatter &) const
@@ -211,7 +211,7 @@ namespace paludis
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~ELicenseKey();
 
-                virtual const std::tr1::shared_ptr<const LicenseSpecTree::ConstItem> value() const
+                virtual const std::tr1::shared_ptr<const LicenseSpecTree> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string pretty_print(const LicenseSpecTree::ItemFormatter &) const

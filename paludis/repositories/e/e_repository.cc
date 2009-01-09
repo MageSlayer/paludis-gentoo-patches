@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2006 Danny van Dyk
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -72,7 +72,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/rmd160.hh>
@@ -81,6 +80,8 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/destringify.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 
 #include <tr1/functional>
 #include <tr1/unordered_map>
@@ -690,7 +691,7 @@ ERepository::need_mirrors() const
     }
 }
 
-std::tr1::shared_ptr<SetSpecTree::ConstItem>
+const std::tr1::shared_ptr<const SetSpecTree>
 ERepository::package_set(const SetName & s) const
 {
     if (s.data() == "system")
@@ -1188,7 +1189,7 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
         if (! id->fetches_key())
             continue;
         AAVisitor aa;
-        id->fetches_key()->value()->accept(aa);
+        id->fetches_key()->value()->root()->accept(aa);
 
         for (AAVisitor::ConstIterator d(aa.begin()) ;
                 d != aa.end() ; ++d)

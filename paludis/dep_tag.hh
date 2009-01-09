@@ -30,14 +30,13 @@
  * - \ref example_dep_tag.cc "example_dep_tag.cc" (for tags)
  * - \ref example_dep_spec.cc "example_dep_spec.cc" (for specifications)
  * - \ref example_dep_label.cc "example_dep_label.cc" (for labels)
- * - \ref example_dep_tree.cc "example_dep_tree.cc" (for specification trees)
  */
 
 #include <paludis/dep_tag-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/dep_tree.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/spec_tree-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/exception.hh>
@@ -278,8 +277,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            DependencyDepTag(const std::tr1::shared_ptr<const PackageID> &, const PackageDepSpec &,
-                    const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> &);
+            DependencyDepTag(const std::tr1::shared_ptr<const PackageID> &, const PackageDepSpec &);
 
             ~DependencyDepTag();
 
@@ -298,12 +296,6 @@ namespace paludis
              * The PackageDepSpec that pulled us in.
              */
             const std::tr1::shared_ptr<const PackageDepSpec> dependency() const;
-
-            /**
-             * The AnyDepSpec instances and ConditionalDepSpec instances that our dependency
-             * is conditional upon.
-             */
-            const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> conditions() const;
     };
 
     /**

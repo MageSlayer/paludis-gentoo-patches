@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNPACKAGED_DEP_PARSER_HH 1
 
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/dep_tree.hh>
+#include <paludis/spec_tree-fwd.hh>
 #include <paludis/environment-fwd.hh>
 
 namespace paludis
@@ -32,7 +32,7 @@ namespace paludis
             private InstantiationPolicy<DepParser, instantiation_method::NonInstantiableTag>
         {
             public:
-                static std::tr1::shared_ptr<const DependencySpecTree::ConstItem> parse(
+                static std::tr1::shared_ptr<const DependencySpecTree> parse(
                         const Environment * const env, const std::string &);
         };
     }

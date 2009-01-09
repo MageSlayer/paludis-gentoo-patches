@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,7 +25,6 @@
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
@@ -93,47 +92,43 @@ PretendFetchVisitor::~PretendFetchVisitor()
 }
 
 void
-PretendFetchVisitor::visit_sequence(const ConditionalDepSpec & u,
-        FetchableURISpecTree::ConstSequenceIterator cur,
-        FetchableURISpecTree::ConstSequenceIterator end)
+PretendFetchVisitor::visit(const FetchableURISpecTree::NodeType<ConditionalDepSpec>::Type & node)
 {
-    if ((_imp->fetch_unneeded) || (u.condition_met()))
+    if ((_imp->fetch_unneeded) || (node.spec()->condition_met()))
     {
         _imp->labels.push_front(* _imp->labels.begin());
-        std::for_each(cur, end, accept_visitor(*this));
+        std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
         _imp->labels.pop_front();
     }
 }
 
 void
-PretendFetchVisitor::visit_sequence(const AllDepSpec &,
-        FetchableURISpecTree::ConstSequenceIterator cur,
-        FetchableURISpecTree::ConstSequenceIterator end)
+PretendFetchVisitor::visit(const FetchableURISpecTree::NodeType<AllDepSpec>::Type & node)
 {
     _imp->labels.push_front(* _imp->labels.begin());
-    std::for_each(cur, end, accept_visitor(*this));
+    std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
     _imp->labels.pop_front();
 }
 
 void
-PretendFetchVisitor::visit_leaf(const URILabelsDepSpec & l)
+PretendFetchVisitor::visit(const FetchableURISpecTree::NodeType<URILabelsDepSpec>::Type & node)
 {
-    for (URILabelsDepSpec::ConstIterator i(l.begin()), i_end(l.end()) ;
+    for (URILabelsDepSpec::ConstIterator i(node.spec()->begin()), i_end(node.spec()->end()) ;
             i != i_end ; ++i)
         *_imp->labels.begin() = i->get();
 }
 
 void
-PretendFetchVisitor::visit_leaf(const FetchableURIDepSpec & u)
+PretendFetchVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::Type & node)
 {
-    if (! _imp->already_done.insert(u.filename()).second)
+    if (! _imp->already_done.insert(node.spec()->filename()).second)
         return;
 
-    FSEntry destination(_imp->distdir / u.filename());
+    FSEntry destination(_imp->distdir / node.spec()->filename());
     if (destination.exists())
         return;
 
-    Manifest2Reader::ConstIterator m(_imp->manifest.find("DIST", u.filename()));
+    Manifest2Reader::ConstIterator m(_imp->manifest.find("DIST", node.spec()->filename()));
     if (_imp->manifest.end() == m)
         return;
 

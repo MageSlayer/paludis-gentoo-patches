@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,18 +31,19 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/map.hh>
+#include <paludis/util/sequence.hh>
 
 #include <paludis/environment.hh>
 #include <paludis/stringify_formatter-impl.hh>
 #include <paludis/choice.hh>
 #include <paludis/elike_choices.hh>
 
+#include <list>
 #include <algorithm>
 #include <set>
 #include <map>
@@ -113,8 +114,7 @@ namespace
         }
     };
 
-    struct MyOptionsFinder :
-        ConstVisitor<PlainTextSpecTree>
+    struct MyOptionsFinder
     {
         typedef std::map<std::string, std::string> Annotations;
         typedef std::map<UnprefixedChoiceName, Annotations> Values;
@@ -128,26 +128,26 @@ namespace
             current_prefix_stack.push_front(ChoicePrefixName(""));
         }
 
-        void visit_leaf(const PlainTextDepSpec & s)
+        void visit(const PlainTextSpecTree::NodeType<PlainTextDepSpec>::Type & node)
         {
-            if (s.text().empty())
+            if (node.spec()->text().empty())
                 return;
 
-            Context context("When handling item '" + stringify(s) + "':");
+            Context context("When handling item '" + stringify(*node.spec()) + "':");
 
             Prefixes::iterator p(prefixes.find(*current_prefix_stack.begin()));
             if (p == prefixes.end())
                 p = prefixes.insert(std::make_pair(*current_prefix_stack.begin(), Values())).first;
 
-            UnprefixedChoiceName n(parse_myoption(s.text()).first);
+            UnprefixedChoiceName n(parse_myoption(node.spec()->text()).first);
             Values::iterator v(p->second.find(n));
             if (v == p->second.end())
                 v = p->second.insert(std::make_pair(n, Annotations())).first;
 
-            if (s.annotations_key())
+            if (node.spec()->annotations_key())
             {
-                for (MetadataSectionKey::MetadataConstIterator m(s.annotations_key()->begin_metadata()),
-                        m_end(s.annotations_key()->end_metadata()) ;
+                for (MetadataSectionKey::MetadataConstIterator m(node.spec()->annotations_key()->begin_metadata()),
+                        m_end(node.spec()->annotations_key()->end_metadata()) ;
                         m != m_end ; ++m)
                 {
                     const MetadataValueKey<std::string> * mm(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
@@ -164,26 +164,22 @@ namespace
             }
         }
 
-        void visit_leaf(const PlainTextLabelDepSpec & s)
+        void visit(const PlainTextSpecTree::NodeType<PlainTextLabelDepSpec>::Type & node)
         {
-            *current_prefix_stack.begin() = ChoicePrefixName(s.label());
+            *current_prefix_stack.begin() = ChoicePrefixName(node.spec()->label());
         }
 
-        void visit_sequence(const ConditionalDepSpec &,
-                PlainTextSpecTree::ConstSequenceIterator cur,
-                PlainTextSpecTree::ConstSequenceIterator end)
+        void visit(const PlainTextSpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
             current_prefix_stack.push_front(*current_prefix_stack.begin());
-            std::for_each(cur, end, accept_visitor(*this));
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
             current_prefix_stack.pop_front();
         }
 
-        void visit_sequence(const AllDepSpec &,
-                PlainTextSpecTree::ConstSequenceIterator cur,
-                PlainTextSpecTree::ConstSequenceIterator end)
+        void visit(const PlainTextSpecTree::NodeType<AllDepSpec>::Type & node)
         {
             current_prefix_stack.push_front(*current_prefix_stack.begin());
-            std::for_each(cur, end, accept_visitor(*this));
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
             current_prefix_stack.pop_front();
         }
     };
@@ -275,7 +271,7 @@ EChoicesKey::value() const
 
         /* yay. myoptions is easy. */
         MyOptionsFinder myoptions;
-        _imp->id->raw_myoptions_key()->value()->accept(myoptions);
+        _imp->id->raw_myoptions_key()->value()->root()->accept(myoptions);
 
         if (_imp->id->raw_use_expand_key())
             for (Set<std::string>::ConstIterator u(_imp->id->raw_use_expand_key()->value()->begin()),

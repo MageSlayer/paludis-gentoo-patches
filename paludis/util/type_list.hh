@@ -145,6 +145,24 @@ namespace paludis
     {
         typedef typename MakeTypeListConstEntry<TypeList_>::Type Type;
     };
+
+    template <typename Item_>
+    struct TypeListContains<TypeListTail, Item_>
+    {
+        enum { value = 0 };
+    };
+
+    template <typename Item_, typename Tail_>
+    struct TypeListContains<TypeListEntry<Item_, Tail_>, Item_>
+    {
+        enum { value = 1 };
+    };
+
+    template <typename NotItem_, typename Item_, typename Tail_>
+    struct TypeListContains<TypeListEntry<NotItem_, Tail_>, Item_>
+    {
+        enum { value = TypeListContains<Tail_, Item_>::value };
+    };
 }
 
 #endif

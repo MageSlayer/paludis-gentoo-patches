@@ -3,7 +3,7 @@
 
 include_hh << END
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/dep_tree-fwd.hh>
+#include <paludis/spec_tree-fwd.hh>
 #include <paludis/formatter.hh>
 END
 
@@ -40,7 +40,6 @@ make_nn_NiceNames() {
     name "LicenseSpecTree"
     name "FetchableURISpecTree"
     name "SimpleURISpecTree"
-    name "FlattenableSpecTree"
     name "ProvideSpecTree"
     name "PlainTextSpecTree"
     name "DependencySpecTree"

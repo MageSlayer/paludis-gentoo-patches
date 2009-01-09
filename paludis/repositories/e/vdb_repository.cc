@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -61,7 +61,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/system.hh>
@@ -639,9 +638,9 @@ VDBRepository::provides_from_package_id(const PackageID & id) const
         if (! id.provide_key())
             return;
 
-        std::tr1::shared_ptr<const ProvideSpecTree::ConstItem> provide(id.provide_key()->value());
+        std::tr1::shared_ptr<const ProvideSpecTree> provide(id.provide_key()->value());
         DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->params.environment());
-        provide->accept(f);
+        provide->root()->accept(f);
 
         std::tr1::shared_ptr<Sequence<QualifiedPackageName> > qpns(new Sequence<QualifiedPackageName>);
 

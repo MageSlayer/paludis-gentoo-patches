@@ -21,7 +21,6 @@
 #include <src/output/colour.hh>
 #include "command_line.hh"
 #include <paludis/paludis.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/fuzzy_finder.hh>
 #include <iostream>
 #include <algorithm>

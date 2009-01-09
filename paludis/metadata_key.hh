@@ -25,7 +25,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/dep_tree.hh>
+#include <paludis/spec_tree.hh>
 #include <paludis/contents-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/formatter-fwd.hh>
@@ -355,7 +355,7 @@ namespace paludis
             /**
              * Fetch our value.
              */
-            virtual const std::tr1::shared_ptr<const typename C_::ConstItem> value() const
+            virtual const std::tr1::shared_ptr<const C_> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -401,7 +401,7 @@ namespace paludis
             /**
              * Fetch our value.
              */
-            virtual const std::tr1::shared_ptr<const FetchableURISpecTree::ConstItem> value() const
+            virtual const std::tr1::shared_ptr<const FetchableURISpecTree> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -454,7 +454,7 @@ namespace paludis
             /**
              * Fetch our value.
              */
-            virtual const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
+            virtual const std::tr1::shared_ptr<const DependencySpecTree> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**

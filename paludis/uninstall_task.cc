@@ -28,7 +28,6 @@
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/iterator_funcs.hh>
@@ -199,9 +198,9 @@ UninstallTask::add_target(const std::string & target)
             throw HadBothPackageAndSetTargets();
         _imp->had_set_targets = true;
 
-        std::tr1::shared_ptr<SetSpecTree::ConstItem> spec(_imp->env->set(SetName(target)));
+        std::tr1::shared_ptr<const SetSpecTree> spec(_imp->env->set(SetName(target)));
         DepSpecFlattener<SetSpecTree, PackageDepSpec> f(_imp->env);
-        spec->accept(f);
+        spec->root()->accept(f);
         std::copy(f.begin(), f.end(), std::back_inserter(_imp->targets));
     }
 
@@ -297,8 +296,7 @@ UninstallTask::execute()
     {
         on_update_world_pre();
 
-        std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > all(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                    std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+        std::tr1::shared_ptr<SetSpecTree> all(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
 
         std::map<QualifiedPackageName, std::set<VersionSpec> > being_removed;
         for (UninstallList::ConstIterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
@@ -319,8 +317,7 @@ UninstallTask::execute()
                     remove = false;
 
             if (remove)
-                all->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
-                                std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(make_package_dep_spec().package(i->first))))));
+                all->root()->append(make_shared_ptr(new PackageDepSpec(make_package_dep_spec().package(i->first))));
         }
 
         world_remove_packages(all);
@@ -413,12 +410,8 @@ UninstallTask::world_remove_set(const SetName & s)
 
 namespace
 {
-    struct WorldTargetFinder :
-        ConstVisitor<SetSpecTree>,
-        ConstVisitor<SetSpecTree>::VisitConstSequence<WorldTargetFinder, AllDepSpec>
+    struct WorldTargetFinder
     {
-        using ConstVisitor<SetSpecTree>::VisitConstSequence<WorldTargetFinder, AllDepSpec>::visit_sequence;
-
         Environment * const env;
         UninstallTask * const task;
 
@@ -428,27 +421,32 @@ namespace
         {
         }
 
-        void visit_leaf(const PackageDepSpec & a)
+        void visit(const SetSpecTree::NodeType<AllDepSpec>::Type & node)
         {
-            if (! (a.slot_requirement_ptr() || (a.version_requirements_ptr() && ! a.version_requirements_ptr()->empty())))
-            {
-                if (a.package_ptr())
-                    env->remove_from_world(*a.package_ptr());
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
 
-                task->on_update_world(a);
+        void visit(const SetSpecTree::NodeType<PackageDepSpec>::Type & node)
+        {
+            if (! (node.spec()->slot_requirement_ptr() || (node.spec()->version_requirements_ptr() && ! node.spec()->version_requirements_ptr()->empty())))
+            {
+                if (node.spec()->package_ptr())
+                    env->remove_from_world(*node.spec()->package_ptr());
+
+                task->on_update_world(*node.spec());
             }
         }
 
-        void visit_leaf(const NamedSetDepSpec &)
+        void visit(const SetSpecTree::NodeType<NamedSetDepSpec>::Type &)
         {
         }
     };
 }
 
 void
-UninstallTask::world_remove_packages(const std::tr1::shared_ptr<const SetSpecTree::ConstItem> & a)
+UninstallTask::world_remove_packages(const std::tr1::shared_ptr<const SetSpecTree> & a)
 {
     WorldTargetFinder w(_imp->env, this);
-    a->accept(w);
+    a->root()->accept(w);
 }
 

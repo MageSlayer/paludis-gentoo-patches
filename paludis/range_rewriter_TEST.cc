@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,7 +20,6 @@
 #include <paludis/range_rewriter.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/environments/test/test_environment.hh>
 
@@ -42,17 +41,15 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > a(new TreeLeaf<DependencySpecTree, PackageDepSpec>(
-                        std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("=a/b-1",
-                                    &env, UserPackageDepSpecOptions())))));
-            std::tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > b(new TreeLeaf<DependencySpecTree, PackageDepSpec>(
-                        std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec("=a/b-2",
-                                    &env, UserPackageDepSpecOptions())))));
+            std::tr1::shared_ptr<DependencySpecTree> a(new DependencySpecTree(make_shared_ptr(new AllDepSpec)));
+            a->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("=a/b-1",
+                                &env, UserPackageDepSpecOptions()))));
+            a->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("=a/b-2",
+                                &env, UserPackageDepSpecOptions()))));
 
             RangeRewriter r;
             TEST_CHECK(! r.spec());
-            a->accept(r);
-            b->accept(r);
+            std::for_each(indirect_iterator(a->root()->begin()), indirect_iterator(a->root()->end()), accept_visitor(r));
             TEST_CHECK(r.spec());
 
             TEST_CHECK(r.spec());

@@ -59,8 +59,7 @@ class TestCase_04_DependencyDepTag(unittest.TestCase):
         repo = FakeRepository(env, "repo")
         pid = repo.add_version("cat/foo", "1.0")
         pds = parse_user_package_dep_spec("=cat/boo-1", env, [])
-        cds = env.set("everything")
-        dt = DependencyDepTag(pid, pds, cds);
+        dt = DependencyDepTag(pid, pds);
 
     def test_01_instance(self):
         self.assert_(isinstance(dt, DepTag))
@@ -70,7 +69,6 @@ class TestCase_04_DependencyDepTag(unittest.TestCase):
         self.assertEquals(dt.short_text, "cat/foo-1.0:0::repo")
         self.assertEquals(dt.package_id, pid)
         self.assertEquals(str(dt.dependency), str(pds))
-        self.assert_(isinstance(dt.conditions, AllDepSpec))
 
 class TestCase_05_TargetDepTag(unittest.TestCase):
     def setUp(self):

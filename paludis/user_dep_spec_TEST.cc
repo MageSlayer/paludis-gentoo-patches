@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,9 +25,8 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/visitor_cast.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/repositories/fake/fake_repository.hh>

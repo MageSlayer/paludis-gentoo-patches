@@ -37,15 +37,17 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 
 #include <tr1/functional>
 #include <tr1/unordered_map>
 #include <vector>
 #include <utility>
+#include <algorithm>
 
 using namespace paludis;
 

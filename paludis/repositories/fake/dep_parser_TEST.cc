@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,7 +19,6 @@
 
 #include <paludis/repositories/fake/dep_parser.hh>
 #include <paludis/environments/test/test_environment.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <sstream>
@@ -30,55 +29,48 @@ using namespace test;
 
 namespace
 {
-    struct QuickPrinter :
-        ConstVisitor<DependencySpecTree>
+    struct QuickPrinter
     {
         std::stringstream str;
 
-        void visit_leaf(const PackageDepSpec & s)
+        void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
         {
-            str << "p<" << stringify(s) << ">";
+            str << "p<" << stringify(*node.spec()) << ">";
         }
 
-        void visit_leaf(const NamedSetDepSpec & s)
+        void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node)
         {
-            str << "s<" << stringify(s) << ">";
+            str << "s<" << stringify(*node.spec()) << ">";
         }
 
-        void visit_leaf(const BlockDepSpec & s)
+        void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type & node)
         {
-            str << "b<" << stringify(s) << ">";
+            str << "b<" << stringify(*node.spec()) << ">";
         }
 
-        void visit_leaf(const DependencyLabelsDepSpec & s)
+        void visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type & node)
         {
-            str << "l<" << stringify(s) << ">";
+            str << "l<" << stringify(*node.spec()) << ">";
         }
 
-        void visit_sequence(const AllDepSpec &,
-                DependencySpecTree::ConstSequenceIterator cur,
-                DependencySpecTree::ConstSequenceIterator end)
+        void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
         {
             str << "all<";
-            std::for_each(cur, end, accept_visitor(*this));
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
             str << ">";
         }
 
-        void visit_sequence(const AnyDepSpec &,
-                DependencySpecTree::ConstSequenceIterator cur,
-                DependencySpecTree::ConstSequenceIterator end)
+        void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
         {
             str << "any<";
-            std::for_each(cur, end, accept_visitor(*this));
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
             str << ">";
         }
 
-        void visit_sequence(const ConditionalDepSpec & s,
-                DependencySpecTree::ConstSequenceIterator cur,
-                DependencySpecTree::ConstSequenceIterator end)
+        void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            str << "cond<" << s << ",";
-            std::for_each(cur, end, accept_visitor(*this));
+            str << "cond<" << *node.spec() << ",";
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
             str << ">";
         }
     };
@@ -93,11 +85,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<DependencySpecTree::ConstItem> d(fakerepository::parse_depend(
+            std::tr1::shared_ptr<DependencySpecTree> d(fakerepository::parse_depend(
                         "( ( a/a b/b ) )", &env, std::tr1::shared_ptr<const PackageID>()));
 
             QuickPrinter p;
-            d->accept(p);
+            d->root()->accept(p);
             TEST_CHECK_EQUAL(p.str.str(), "all<all<all<p<a/a>p<b/b>>>>");
         }
     } dep_parser_test;

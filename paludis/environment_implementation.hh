@@ -50,10 +50,10 @@ namespace paludis
         public Environment
     {
         protected:
-            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> local_set(const SetName &) const
+            virtual const std::tr1::shared_ptr<const SetSpecTree> local_set(const SetName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> world_set() const
+            virtual const std::tr1::shared_ptr<const SetSpecTree> world_set() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
         public:
@@ -76,7 +76,7 @@ namespace paludis
             virtual std::tr1::shared_ptr<const SetNameSet> set_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> set(const SetName &) const
+            virtual const std::tr1::shared_ptr<const SetSpecTree> set(const SetName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::tr1::shared_ptr<const DestinationsSet> default_destinations() const

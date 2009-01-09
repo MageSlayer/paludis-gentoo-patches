@@ -35,10 +35,9 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/save.hh>
-#include <paludis/util/visitor-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/tribool.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <map>
 #include <list>
 #include <sstream>
@@ -111,11 +110,11 @@ namespace paludis
     template <typename C_>
     struct Implementation<FakeMetadataSpecTreeKey<C_> >
     {
-        std::tr1::shared_ptr<const typename C_::ConstItem> value;
+        std::tr1::shared_ptr<const C_> value;
         std::string string_value;
-        const std::tr1::function<const std::tr1::shared_ptr<const typename C_::ConstItem> (const std::string &)> func;
+        const std::tr1::function<const std::tr1::shared_ptr<const C_> (const std::string &)> func;
 
-        Implementation(const std::tr1::function<const std::tr1::shared_ptr<const typename C_::ConstItem> (const std::string &)> & f) :
+        Implementation(const std::tr1::function<const std::tr1::shared_ptr<const C_> (const std::string &)> & f) :
             func(f)
         {
         }
@@ -124,12 +123,12 @@ namespace paludis
     template <>
     struct Implementation<FakeMetadataSpecTreeKey<FetchableURISpecTree> >
     {
-        std::tr1::shared_ptr<const FetchableURISpecTree::ConstItem> value;
+        std::tr1::shared_ptr<const FetchableURISpecTree> value;
         std::string string_value;
-        const std::tr1::function<const std::tr1::shared_ptr<const FetchableURISpecTree::ConstItem> (const std::string &)> func;
+        const std::tr1::function<const std::tr1::shared_ptr<const FetchableURISpecTree> (const std::string &)> func;
         std::tr1::shared_ptr<const URILabel> initial_label;
 
-        Implementation(const std::tr1::function<const std::tr1::shared_ptr<const FetchableURISpecTree::ConstItem> (const std::string &)> & f) :
+        Implementation(const std::tr1::function<const std::tr1::shared_ptr<const FetchableURISpecTree> (const std::string &)> & f) :
             func(f),
             initial_label(new URIListedThenMirrorsLabel("listed-then-mirrors"))
         {
@@ -139,12 +138,12 @@ namespace paludis
     template <>
     struct Implementation<FakeMetadataSpecTreeKey<DependencySpecTree> >
     {
-        std::tr1::shared_ptr<const DependencySpecTree::ConstItem> value;
+        std::tr1::shared_ptr<const DependencySpecTree> value;
         std::string string_value;
-        const std::tr1::function<const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> (const std::string &)> func;
+        const std::tr1::function<const std::tr1::shared_ptr<const DependencySpecTree> (const std::string &)> func;
         std::tr1::shared_ptr<const DependencyLabelSequence> labels;
 
-        Implementation(const std::tr1::function<const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> (const std::string &)> & f,
+        Implementation(const std::tr1::function<const std::tr1::shared_ptr<const DependencySpecTree> (const std::string &)> & f,
                 const std::tr1::shared_ptr<const DependencyLabelSequence> & s) :
             func(f),
             labels(s)
@@ -155,7 +154,7 @@ namespace paludis
 
 template <typename C_>
 FakeMetadataSpecTreeKey<C_>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
-        const std::tr1::function<const std::tr1::shared_ptr<const typename C_::ConstItem> (const std::string &)> & f, const MetadataKeyType t) :
+        const std::tr1::function<const std::tr1::shared_ptr<const C_> (const std::string &)> & f, const MetadataKeyType t) :
     MetadataSpecTreeKey<C_>(r, h, t),
     PrivateImplementationPattern<FakeMetadataSpecTreeKey<C_> >(new Implementation<FakeMetadataSpecTreeKey<C_> >(f)),
     _imp(PrivateImplementationPattern<FakeMetadataSpecTreeKey<C_> >::_imp)
@@ -177,7 +176,7 @@ FakeMetadataSpecTreeKey<C_>::set_from_string(const std::string & s)
 }
 
 template <typename C_>
-const std::tr1::shared_ptr<const typename C_::ConstItem>
+const std::tr1::shared_ptr<const C_>
 FakeMetadataSpecTreeKey<C_>::value() const
 {
     return _imp->value;
@@ -198,7 +197,7 @@ FakeMetadataSpecTreeKey<C_>::pretty_print_flat(const typename C_::ItemFormatter 
 }
 
 FakeMetadataSpecTreeKey<FetchableURISpecTree>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
-        const std::tr1::function<const std::tr1::shared_ptr<const FetchableURISpecTree::ConstItem> (const std::string &)> & f, const MetadataKeyType t) :
+        const std::tr1::function<const std::tr1::shared_ptr<const FetchableURISpecTree> (const std::string &)> & f, const MetadataKeyType t) :
     MetadataSpecTreeKey<FetchableURISpecTree>(r, h, t),
     PrivateImplementationPattern<FakeMetadataSpecTreeKey<FetchableURISpecTree> >(
             new Implementation<FakeMetadataSpecTreeKey<FetchableURISpecTree> >(f)),
@@ -218,7 +217,7 @@ FakeMetadataSpecTreeKey<FetchableURISpecTree>::set_from_string(const std::string
     _imp->value = _imp->func(s);
 }
 
-const std::tr1::shared_ptr<const FetchableURISpecTree::ConstItem>
+const std::tr1::shared_ptr<const FetchableURISpecTree>
 FakeMetadataSpecTreeKey<FetchableURISpecTree>::value() const
 {
     return _imp->value;
@@ -243,7 +242,7 @@ FakeMetadataSpecTreeKey<FetchableURISpecTree>::initial_label() const
 }
 
 FakeMetadataSpecTreeKey<DependencySpecTree>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
-        const std::tr1::function<const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> (const std::string &)> & f,
+        const std::tr1::function<const std::tr1::shared_ptr<const DependencySpecTree> (const std::string &)> & f,
         const std::tr1::shared_ptr<const DependencyLabelSequence> & s, const MetadataKeyType t) :
     MetadataSpecTreeKey<DependencySpecTree>(r, h, t),
     PrivateImplementationPattern<FakeMetadataSpecTreeKey<DependencySpecTree> >(
@@ -264,7 +263,7 @@ FakeMetadataSpecTreeKey<DependencySpecTree>::set_from_string(const std::string &
     _imp->value = _imp->func(s);
 }
 
-const std::tr1::shared_ptr<const DependencySpecTree::ConstItem>
+const std::tr1::shared_ptr<const DependencySpecTree>
 FakeMetadataSpecTreeKey<DependencySpecTree>::value() const
 {
     return _imp->value;
@@ -833,15 +832,11 @@ FakePackageID::supports_action(const SupportsActionTestBase & b) const
 
 namespace
 {
-    struct LicenceChecker :
-        ConstVisitor<LicenseSpecTree>,
-        ConstVisitor<LicenseSpecTree>::VisitConstSequence<LicenceChecker, AllDepSpec>
+    struct LicenceChecker
     {
-        using ConstVisitor<LicenseSpecTree>::VisitConstSequence<LicenceChecker, AllDepSpec>::visit_sequence;
-
         bool ok;
         const Environment * const env;
-        bool  (Environment::* const func) (const std::string &, const PackageID &) const;
+        bool (Environment::* const func) (const std::string &, const PackageID &) const;
         const PackageID * const id;
 
         LicenceChecker(const Environment * const e,
@@ -854,20 +849,19 @@ namespace
         {
         }
 
-        void visit_sequence(const AnyDepSpec &,
-                LicenseSpecTree::ConstSequenceIterator begin,
-                LicenseSpecTree::ConstSequenceIterator end)
+        void visit(const LicenseSpecTree::NodeType<AnyDepSpec>::Type & node)
         {
             bool local_ok(false);
 
-            if (begin == end)
+            if (node.begin() == node.end())
                 local_ok = true;
             else
             {
-                for ( ; begin != end ; ++begin)
+                for (LicenseSpecTree::NodeType<AnyDepSpec>::Type::ConstIterator c(node.begin()), c_end(node.end()) ;
+                        c != c_end ; ++c)
                 {
                     Save<bool> save_ok(&ok, true);
-                    begin->accept(*this);
+                    (*c)->accept(*this);
                     local_ok |= ok;
                 }
             }
@@ -875,17 +869,20 @@ namespace
             ok &= local_ok;
         }
 
-        void visit_sequence(const ConditionalDepSpec & spec,
-                LicenseSpecTree::ConstSequenceIterator begin,
-                LicenseSpecTree::ConstSequenceIterator end)
+        void visit(const LicenseSpecTree::NodeType<AllDepSpec>::Type & node)
         {
-            if (spec.condition_met())
-                std::for_each(begin, end, accept_visitor(*this));
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
         }
 
-        void visit_leaf(const LicenseDepSpec & spec)
+        void visit(const LicenseSpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            if (! (env->*func)(spec.text(), *id))
+            if (node.spec()->condition_met())
+                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
+
+        void visit(const LicenseSpecTree::NodeType<LicenseDepSpec>::Type & node)
+        {
+            if (! (env->*func)(node.spec()->text(), *id))
                 ok = false;
         }
     };
@@ -910,7 +907,7 @@ FakePackageID::need_masks_added() const
     if (license_key())
     {
         LicenceChecker c(_imp->env, &Environment::accept_license, this);
-        license_key()->value()->accept(c);
+        license_key()->value()->root()->accept(c);
         if (! c.ok)
             add_mask(make_shared_ptr(new FakeUnacceptedMask('L', "license", license_key())));
     }

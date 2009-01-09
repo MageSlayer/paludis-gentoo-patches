@@ -24,8 +24,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/visitor-impl.hh>
-#include <paludis/util/visitor-impl.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/metadata_key.hh>
 #include <sstream>
 

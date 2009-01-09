@@ -29,7 +29,6 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
@@ -38,6 +37,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/package_database.hh>
+#include <cstdlib>
 #include <tr1/functional>
 #include <iostream>
 #include <fstream>

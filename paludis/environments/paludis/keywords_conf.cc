@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,7 @@
 #include <paludis/environment.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/spec_tree.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/match_package.hh>
 #include <paludis/util/config_file.hh>
@@ -36,6 +37,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <tr1/unordered_map>
 #include <list>
 #include <vector>
@@ -46,7 +48,7 @@ using namespace paludis::paludis_environment;
 
 typedef std::list<KeywordName> KeywordsList;
 typedef std::map<std::tr1::shared_ptr<const PackageDepSpec>, KeywordsList> PDSToKeywordsList;
-typedef std::pair<std::tr1::shared_ptr<const SetSpecTree::ConstItem>, KeywordsList> SetNameEntry;
+typedef std::pair<std::tr1::shared_ptr<const SetSpecTree>, KeywordsList> SetNameEntry;
 
 typedef std::tr1::unordered_map<QualifiedPackageName, PDSToKeywordsList, Hash<QualifiedPackageName> > SpecificMap;
 typedef PDSToKeywordsList UnspecificMap;
@@ -121,7 +123,7 @@ KeywordsConf::add(const FSEntry & filename)
         catch (const GotASetNotAPackageDepSpec &)
         {
             NamedSetMap::iterator i(_imp->set.insert(std::make_pair(SetName(tokens.at(0)), std::make_pair(
-                                std::tr1::shared_ptr<SetSpecTree::ConstItem>(), KeywordsList()))).first);
+                                make_null_shared_ptr(), KeywordsList()))).first);
 
             for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                     t != t_end ; ++t)
@@ -184,8 +186,7 @@ KeywordsConf::query(const std::tr1::shared_ptr<const KeywordNameSet> & k, const 
                 {
                     Log::get_instance()->message("paludis_environment.keywords_conf.unknown_set", ll_warning, lc_no_context) << "Set name '"
                         << i->first << "' does not exist";
-                    i->second.first.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                                std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+                    i->second.first.reset(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
                 }
             }
 

@@ -24,7 +24,6 @@
 #include <paludis/about.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>

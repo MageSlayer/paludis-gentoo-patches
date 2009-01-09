@@ -86,15 +86,6 @@ module Paludis
             assert_kind_of PackageDepSpec, pds
             assert_equal "foo/bar", pds.to_s
         end
-
-        # XXX extend this once we can define a non-trival condition in ruby
-        def test_conditions
-            dt = get_dt
-            assert_respond_to dt, :conditions
-            cond = dt.conditions
-            assert_kind_of AllDepSpec, cond
-            assert_equal 0, cond.to_a.length
-        end
     end
 
     class TestCase_GLSADepTag < Test::Unit::TestCase

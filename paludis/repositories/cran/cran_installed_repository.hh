@@ -149,7 +149,7 @@ namespace paludis
 
             /* RepositorySetsInterface */
 
-            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName & id) const
+            virtual const std::tr1::shared_ptr<const SetSpecTree> package_set(const SetName & id) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* Keys */

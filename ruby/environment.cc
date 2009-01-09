@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2007, 2008 Richard Brown
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -94,7 +94,7 @@ namespace
         try
         {
             SetName s(StringValuePtr(set_name));
-            std::tr1::shared_ptr<SetSpecTree::ConstItem> set = (value_to_environment(self)->set(s));
+            std::tr1::shared_ptr<const SetSpecTree> set = (value_to_environment(self)->set(s));
             if (set)
                 return dep_tree_to_value<SetSpecTree>(set);
             else

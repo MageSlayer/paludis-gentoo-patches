@@ -22,7 +22,6 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/visitor.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/dep_label.hh>
 #include <paludis/environment-fwd.hh>

@@ -25,7 +25,6 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/system.hh>
@@ -41,7 +40,7 @@
 
 using namespace paludis;
 
-typedef std::tr1::unordered_map<SetName, std::tr1::shared_ptr<const SetSpecTree::ConstItem>, Hash<SetName> > Sets;
+typedef std::tr1::unordered_map<SetName, std::tr1::shared_ptr<const SetSpecTree>, Hash<SetName> > Sets;
 
 namespace paludis
 {
@@ -128,12 +127,12 @@ TestEnvironment::fetch_package_id(const QualifiedPackageName & q,
     throw NoSuchPackageError(stringify(q) + "-" + stringify(v) + "::" + stringify(r));
 }
 
-std::tr1::shared_ptr<SetSpecTree::ConstItem>
+const std::tr1::shared_ptr<const SetSpecTree>
 TestEnvironment::local_set(const SetName & s) const
 {
     Sets::const_iterator i(_imp->sets.find(s));
     if (_imp->sets.end() == i)
-        return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
+        return make_null_shared_ptr();
     else
         return i->second;
 }
@@ -200,7 +199,7 @@ TestEnvironment::unmasked_by_user(const PackageID &) const
     return false;
 }
 
-std::tr1::shared_ptr<SetSpecTree::ConstItem>
+const std::tr1::shared_ptr<const SetSpecTree>
 TestEnvironment::world_set() const
 {
     return local_set(SetName("world"));
@@ -243,6 +242,8 @@ TestEnvironment::config_location_key() const
     return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 
+#if 0
+
 void
 TestEnvironment::add_set(const SetName & s, const std::string & members_str)
 {
@@ -269,6 +270,8 @@ TestEnvironment::add_set(const SetName & s, const std::string & members_str)
 
     _imp->sets[s] = top;
 }
+
+#endif
 
 const Tribool
 TestEnvironment::want_choice_enabled(

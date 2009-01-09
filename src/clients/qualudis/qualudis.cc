@@ -26,7 +26,6 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/strip.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <tr1/functional>

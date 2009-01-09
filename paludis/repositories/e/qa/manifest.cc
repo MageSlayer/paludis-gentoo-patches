@@ -21,14 +21,13 @@
 #include <iostream>
 #include "manifest.hh"
 #include <paludis/qa.hh>
-#include <paludis/dep_tree.hh>
+#include <paludis/spec_tree.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/sha1.hh>
 #include <paludis/util/sha256.hh>
@@ -50,16 +49,10 @@ using namespace paludis::erepository;
 
 namespace
 {
-    struct DistfilesCollector :
-        ConstVisitor<FetchableURISpecTree>,
-        ConstVisitor<FetchableURISpecTree>::VisitConstSequence<DistfilesCollector, AllDepSpec>,
-        ConstVisitor<FetchableURISpecTree>::VisitConstSequence<DistfilesCollector, ConditionalDepSpec>
+    struct DistfilesCollector
     {
         std::tr1::shared_ptr<const PackageID> id;
         std::map<std::string, std::tr1::shared_ptr<PackageIDSet> > & distfiles;
-
-        using ConstVisitor<FetchableURISpecTree>::VisitConstSequence<DistfilesCollector, AllDepSpec>::visit_sequence;
-        using ConstVisitor<FetchableURISpecTree>::VisitConstSequence<DistfilesCollector, ConditionalDepSpec>::visit_sequence;
 
         DistfilesCollector(const std::tr1::shared_ptr<const PackageID> & i,
                            std::map<std::string, std::tr1::shared_ptr<PackageIDSet> > & d) :
@@ -68,18 +61,27 @@ namespace
         {
         }
 
-        void visit_leaf(const URILabelsDepSpec &)
+        void visit(const FetchableURISpecTree::NodeType<AllDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
+
+        void visit(const FetchableURISpecTree::NodeType<ConditionalDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
+
+        void visit(const FetchableURISpecTree::NodeType<URILabelsDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const FetchableURIDepSpec & u)
+        void visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::Type & node)
         {
-            std::map<std::string, std::tr1::shared_ptr<PackageIDSet> >::iterator it(
-                distfiles.find(u.filename()));
+            std::map<std::string, std::tr1::shared_ptr<PackageIDSet> >::iterator it(distfiles.find(node.spec()->filename()));
             if (distfiles.end() == it)
             {
                 std::tr1::shared_ptr<PackageIDSet> set(new PackageIDSet);
-                it = distfiles.insert(std::make_pair(u.filename(), set)).first;
+                it = distfiles.insert(std::make_pair(node.spec()->filename(), set)).first;
             }
             it->second->insert(id);
         }
@@ -247,7 +249,7 @@ paludis::erepository::manifest_check(
             if ((*it)->fetches_key())
             {
                 DistfilesCollector c(*it, checker.distfiles);
-                (*it)->fetches_key()->value()->accept(c);
+                (*it)->fetches_key()->value()->root()->accept(c);
             }
         }
 

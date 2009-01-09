@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,7 +27,6 @@
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_shared_ptr.hh>
@@ -490,11 +489,11 @@ namespace test_cases
                     StringifyFormatter ff;
                     erepository::DepSpecPrettyPrinter pd(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
                     TEST_CHECK(id1->build_dependencies_key());
-                    id1->build_dependencies_key()->value()->accept(pd);
+                    id1->build_dependencies_key()->value()->root()->accept(pd);
                     TEST_CHECK_STRINGIFY_EQUAL(pd, "foo/bar");
                     erepository::DepSpecPrettyPrinter pr(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
                     TEST_CHECK(id1->run_dependencies_key());
-                    id1->run_dependencies_key()->value()->accept(pr);
+                    id1->run_dependencies_key()->value()->root()->accept(pr);
                     TEST_CHECK_STRINGIFY_EQUAL(pr, "foo/bar");
 
                     const std::tr1::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(generator::Matches(
@@ -506,11 +505,11 @@ namespace test_cases
                     TEST_CHECK_EQUAL(id2->short_description_key()->value(), "dquote \" squote ' backslash \\ dollar $");
                     erepository::DepSpecPrettyPrinter pd2(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
                     TEST_CHECK(id2->build_dependencies_key());
-                    id2->build_dependencies_key()->value()->accept(pd2);
+                    id2->build_dependencies_key()->value()->root()->accept(pd2);
                     TEST_CHECK_STRINGIFY_EQUAL(pd2, "foo/bar bar/baz");
                     erepository::DepSpecPrettyPrinter pr2(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
                     TEST_CHECK(id2->run_dependencies_key());
-                    id2->run_dependencies_key()->value()->accept(pr2);
+                    id2->run_dependencies_key()->value()->root()->accept(pr2);
                     TEST_CHECK_STRINGIFY_EQUAL(pr2, "foo/bar");
 
                     const std::tr1::shared_ptr<const PackageID> id3(*env[selection::RequireExactlyOne(generator::Matches(
@@ -2295,17 +2294,17 @@ namespace test_cases
 
             erepository::DepSpecPrettyPrinter pd(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
             TEST_CHECK(id->build_dependencies_key());
-            id->build_dependencies_key()->value()->accept(pd);
+            id->build_dependencies_key()->value()->root()->accept(pd);
             TEST_CHECK_STRINGIFY_EQUAL(pd, "( cat/pkg1 build: cat/pkg2 build,run: cat/pkg3 suggested: cat/pkg4 post: )");
 
             erepository::DepSpecPrettyPrinter pr(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
             TEST_CHECK(id->run_dependencies_key());
-            id->run_dependencies_key()->value()->accept(pr);
+            id->run_dependencies_key()->value()->root()->accept(pr);
             TEST_CHECK_STRINGIFY_EQUAL(pr, "( cat/pkg1 build: build,run: cat/pkg3 suggested: cat/pkg4 post: )");
 
             erepository::DepSpecPrettyPrinter pp(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
             TEST_CHECK(id->post_dependencies_key());
-            id->post_dependencies_key()->value()->accept(pp);
+            id->post_dependencies_key()->value()->root()->accept(pp);
             TEST_CHECK_STRINGIFY_EQUAL(pp, "( build: build,run: suggested: post: cat/pkg5 )");
         }
     } test_e_repository_dependencies_rewriter;

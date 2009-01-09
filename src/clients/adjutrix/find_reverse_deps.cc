@@ -23,7 +23,6 @@
 
 #include <paludis/util/save.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/options.hh>
@@ -51,9 +50,7 @@ using std::endl;
 
 namespace
 {
-    class ReverseDepChecker :
-        public ConstVisitor<DependencySpecTree>,
-        public ConstVisitor<DependencySpecTree>::VisitConstSequence<ReverseDepChecker, AllDepSpec>
+    class ReverseDepChecker
     {
         private:
             const Environment * const _env;
@@ -70,8 +67,6 @@ namespace
             std::set<SetName> _recursing_sets;
 
         public:
-            using ConstVisitor<DependencySpecTree>::VisitConstSequence<ReverseDepChecker, AllDepSpec>::visit_sequence;
-
             ReverseDepChecker(const Environment * const e,
                     const PackageIDSequence & entries,
                     const std::string & p) :
@@ -85,10 +80,10 @@ namespace
             {
             }
 
-            void check(std::tr1::shared_ptr<const DependencySpecTree::ConstItem> spec, const std::string & depname)
+            void check(const std::tr1::shared_ptr<const DependencySpecTree> & tree, const std::string & depname)
             {
                 _depname = depname;
-                spec->accept(*this);
+                tree->root()->accept(*this);
             }
 
             bool found_matches()
@@ -96,79 +91,76 @@ namespace
                 return _found_matches;
             }
 
-            void visit_sequence(const AnyDepSpec &,
-                    DependencySpecTree::ConstSequenceIterator,
-                    DependencySpecTree::ConstSequenceIterator);
+            void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node);
+            void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node);
+            void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node);
+            void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node);
 
-            void visit_sequence(const ConditionalDepSpec &,
-                    DependencySpecTree::ConstSequenceIterator,
-                    DependencySpecTree::ConstSequenceIterator);
-
-            void visit_leaf(const PackageDepSpec &);
-
-            void visit_leaf(const BlockDepSpec &)
+            void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type &)
             {
             }
 
-            void visit_leaf(const DependencyLabelsDepSpec &)
+            void visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type &)
             {
             }
 
-            void visit_leaf(const NamedSetDepSpec & s)
+            void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node)
             {
-                Context context("When expanding named set '" + stringify(s) + "':");
+                Context context("When expanding named set '" + stringify(*node.spec()) + "':");
 
-                std::tr1::shared_ptr<const SetSpecTree::ConstItem> set(_env->set(s.name()));
+                std::tr1::shared_ptr<const SetSpecTree> set(_env->set(node.spec()->name()));
 
                 if (! set)
                 {
                     Log::get_instance()->message("adjutrix.find_reverse_deps.unknown_set", ll_warning, lc_context)
-                        << "Unknown set '" << s.name() << "'";
+                        << "Unknown set '" << node.spec()->name() << "'";
                     return;
                 }
 
-                if (! _recursing_sets.insert(s.name()).second)
+                if (! _recursing_sets.insert(node.spec()->name()).second)
                 {
                     Log::get_instance()->message("adjutrix.find_reverse_deps.recursive_set", ll_warning, lc_context)
-                        << "Recursively defined set '" << s.name() << "'";
+                        << "Recursively defined set '" << node.spec()->name() << "'";
                     return;
                 }
 
-                set->accept(*this);
+                set->root()->accept(*this);
 
-                _recursing_sets.erase(s.name());
+                _recursing_sets.erase(node.spec()->name());
             }
     };
 
     void
-    ReverseDepChecker::visit_sequence(const AnyDepSpec &,
-            DependencySpecTree::ConstSequenceIterator cur,
-            DependencySpecTree::ConstSequenceIterator end)
+    ReverseDepChecker::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
     {
         Save<bool> in_any_save(&_in_any, true);
-        std::for_each(cur, end, accept_visitor(*this));
+        std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
     }
 
     void
-    ReverseDepChecker::visit_sequence(const ConditionalDepSpec & a,
-            DependencySpecTree::ConstSequenceIterator cur,
-            DependencySpecTree::ConstSequenceIterator end)
+    ReverseDepChecker::visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
+    {
+        std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+    }
+
+    void
+    ReverseDepChecker::visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
     {
         Save<bool> in_use_save(&_in_use, true);
         Save<std::string> flag_save(&_flags);
 
         if (! _flags.empty())
             _flags += " ";
-        _flags += stringify(a);
+        _flags += stringify(*node.spec());
 
-        std::for_each(cur, end, accept_visitor(*this));
+        std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
     }
 
     void
-    ReverseDepChecker::visit_leaf(const PackageDepSpec & a)
+        ReverseDepChecker::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
     {
         std::tr1::shared_ptr<const PackageIDSequence> dep_entries((*_env)[selection::AllVersionsSorted(
-                    generator::Matches(a, MatchPackageOptions() + mpo_ignore_additional_requirements))]);
+                    generator::Matches(*node.spec(), MatchPackageOptions() + mpo_ignore_additional_requirements))]);
         std::tr1::shared_ptr<PackageIDSequence> matches(new PackageIDSequence);
 
         bool header_written = false;

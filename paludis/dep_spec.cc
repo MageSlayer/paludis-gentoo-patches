@@ -35,7 +35,6 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/metadata_key.hh>
 #include <tr1/functional>
@@ -1258,6 +1257,7 @@ template class LabelsDepSpec<URILabel>;
 template class LabelsDepSpec<DependencyLabel>;
 
 template class Sequence<std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> >;
+template class WrappedForwardIterator<AdditionalPackageDepSpecRequirements::ConstIteratorTag, const std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> >;
 
 template class Cloneable<DepSpec>;
 template class PrivateImplementationPattern<ConditionalDepSpec>;

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,7 +21,6 @@
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
@@ -33,31 +32,25 @@ using namespace paludis;
 
 namespace
 {
-    struct SetSpecStringifier :
-        ConstVisitor<SetSpecTree>
+    struct SetSpecStringifier
     {
         std::ostringstream s;
 
-        void
-        visit_sequence(const AllDepSpec &,
-                SetSpecTree::ConstSequenceIterator cur,
-                SetSpecTree::ConstSequenceIterator end)
+        void visit(const SetSpecTree::NodeType<AllDepSpec>::Type & node)
         {
             s << "( ";
-            std::for_each(cur, end, accept_visitor(*this));
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
             s << ") ";
         }
 
-        void
-        visit_leaf(const PackageDepSpec & p)
+        void visit(const SetSpecTree::NodeType<PackageDepSpec>::Type & node)
         {
-            s << p << " ";
+            s << *node.spec() << " ";
         }
 
-        void
-        visit_leaf(const NamedSetDepSpec & p)
+        void visit(const SetSpecTree::NodeType<NamedSetDepSpec>::Type & node)
         {
-            s << p << " ";
+            s << *node.spec() << " ";
         }
     };
 }
@@ -85,7 +78,7 @@ namespace test_cases
 
             {
                 SetSpecStringifier p;
-                f.contents()->accept(p);
+                f.contents()->root()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( foo/bar >=bar/baz-1.23 ) ");
             }
 
@@ -93,7 +86,7 @@ namespace test_cases
             f.add("moo/oink");
             {
                 SetSpecStringifier p;
-                f.contents()->accept(p);
+                f.contents()->root()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( foo/bar >=bar/baz-1.23 moo/oink ) ");
             }
 
@@ -111,7 +104,7 @@ namespace test_cases
 
             {
                 SetSpecStringifier p;
-                f.contents()->accept(p);
+                f.contents()->root()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( foo/bar moo/oink ) ");
             }
 
@@ -152,7 +145,7 @@ namespace test_cases
 
             {
                 SetSpecStringifier p;
-                f.contents()->accept(p);
+                f.contents()->root()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( >=bar/baz-1.23 set ) ");
             }
 
@@ -162,7 +155,7 @@ namespace test_cases
             f.add("couch");
             {
                 SetSpecStringifier p;
-                f.contents()->accept(p);
+                f.contents()->root()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( >=bar/baz-1.23 set moo/oink couch ) ");
             }
 
@@ -181,7 +174,7 @@ namespace test_cases
 
             {
                 SetSpecStringifier p;
-                f.contents()->accept(p);
+                f.contents()->root()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( moo/oink couch ) ");
             }
 
@@ -222,7 +215,7 @@ namespace test_cases
 
             {
                 SetSpecStringifier p;
-                f.contents()->accept(p);
+                f.contents()->root()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( >=bar/bar-1.23 set set2* ) ");
             }
 
@@ -237,7 +230,7 @@ namespace test_cases
 
             {
                 SetSpecStringifier p;
-                fstar.contents()->accept(p);
+                fstar.contents()->root()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( foo/foo >=bar/bar-1.23 >=baz/baz-1.23 set* set2* ) ");
             }
 

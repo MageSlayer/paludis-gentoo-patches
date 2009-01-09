@@ -17,9 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "handled_information.hh"
+#include <paludis/handled_information.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/dep_spec.hh>
 
 using namespace paludis;

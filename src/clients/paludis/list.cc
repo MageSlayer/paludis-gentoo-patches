@@ -23,7 +23,6 @@
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/visitor.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/metadata_key.hh>

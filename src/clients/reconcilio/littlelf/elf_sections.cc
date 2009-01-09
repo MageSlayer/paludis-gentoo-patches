@@ -21,7 +21,6 @@
 #include "elf_sections.hh"
 #include "elf_types.hh"
 
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/stringify.hh>
 
 #include <istream>

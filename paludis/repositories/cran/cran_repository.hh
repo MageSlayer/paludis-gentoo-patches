@@ -128,7 +128,7 @@ namespace paludis
 
             /* RepositorySyncableInterface */
 
-            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName &) const;
+            virtual const std::tr1::shared_ptr<const SetSpecTree> package_set(const SetName &) const;
 
             virtual std::tr1::shared_ptr<const SetNameSet> sets_list() const;
 

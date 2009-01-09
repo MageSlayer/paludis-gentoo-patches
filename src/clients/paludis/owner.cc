@@ -18,7 +18,6 @@
  */
 
 #include "owner.hh"
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/set.hh>
 #include <src/output/colour.hh>
 #include "command_line.hh"

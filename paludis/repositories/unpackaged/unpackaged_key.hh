@@ -43,7 +43,7 @@ namespace paludis
                         const std::string & v);
                 ~UnpackagedDependencyKey();
 
-                const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const;
+                const std::tr1::shared_ptr<const DependencySpecTree> value() const;
 
                 std::string pretty_print(const DependencySpecTree::ItemFormatter & f) const;
 

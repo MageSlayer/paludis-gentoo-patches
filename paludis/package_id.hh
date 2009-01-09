@@ -30,7 +30,7 @@
 
 #include <paludis/action-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/dep_tree-fwd.hh>
+#include <paludis/spec_tree-fwd.hh>
 #include <paludis/mask-fwd.hh>
 #include <paludis/metadata_key-fwd.hh>
 #include <paludis/metadata_key_holder.hh>

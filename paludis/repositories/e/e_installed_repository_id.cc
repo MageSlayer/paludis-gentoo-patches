@@ -34,13 +34,13 @@
 #include <paludis/environment.hh>
 #include <paludis/action.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <iterator>
 #include <fstream>
@@ -273,7 +273,7 @@ EInstalledRepositoryID::need_keys_added() const
         if ((_imp->dir / vars->dependencies().name()).exists())
         {
             DependenciesRewriter rewriter;
-            parse_depend(file_contents(_imp->dir / vars->dependencies().name()), _imp->environment, shared_from_this(), *eapi())->accept(rewriter);
+            parse_depend(file_contents(_imp->dir / vars->dependencies().name()), _imp->environment, shared_from_this(), *eapi())->root()->accept(rewriter);
 
             _imp->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->dependencies().name() + ".DEPEND",
                         vars->dependencies().description() + " (build)", rewriter.depend(), _imp->build_dependencies_labels, mkt_dependencies));

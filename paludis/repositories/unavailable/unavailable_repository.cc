@@ -22,7 +22,6 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/active_object_ptr.hh>
 #include <paludis/util/deferred_construction_ptr.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/make_named_values.hh>

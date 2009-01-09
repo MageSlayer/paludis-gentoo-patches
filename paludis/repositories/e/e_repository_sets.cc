@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2006 Danny van Dyk
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -94,7 +94,7 @@ ERepositorySets::~ERepositorySets()
 {
 }
 
-std::tr1::shared_ptr<SetSpecTree::ConstItem>
+const std::tr1::shared_ptr<const SetSpecTree>
 ERepositorySets::package_set(const SetName & ss) const
 {
     using namespace std::tr1::placeholders;
@@ -127,7 +127,7 @@ ERepositorySets::package_set(const SetName & ss) const
         return f.contents();
     }
     else
-        return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
+        return make_null_shared_ptr();
 }
 
 std::tr1::shared_ptr<const SetNameSet>
@@ -249,12 +249,12 @@ namespace
     }
 }
 
-std::tr1::shared_ptr<SetSpecTree::ConstItem>
+const std::tr1::shared_ptr<const SetSpecTree>
 ERepositorySets::security_set(bool insecurity) const
 {
     Context context("When building security or insecurity package set:");
-    std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > security_packages(
-            new ConstTreeSequence<SetSpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+
+    std::tr1::shared_ptr<SetSpecTree> security_packages(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
 
     if (!_imp->params.securitydir().is_directory_or_symlink_to_directory())
         return security_packages;
@@ -305,8 +305,7 @@ ERepositorySets::security_set(bool insecurity) const
                                             value_for<n::version_spec>((*c)->version())))
                                     .in_repository((*c)->repository()->name())));
                         spec->set_tag(glsa_tags.find(glsa->id())->second);
-                        security_packages->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
-                                    new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+                        security_packages->root()->append(spec);
                     }
                     else
                     {
@@ -341,8 +340,7 @@ ERepositorySets::security_set(bool insecurity) const
                                                 value_for<n::version_spec>((*r)->version())))
                                         .in_repository((*r)->repository()->name())));
                             spec->set_tag(glsa_tags.find(glsa->id())->second);
-                            security_packages->add(std::tr1::shared_ptr<SetSpecTree::ConstItem>(
-                                        new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+                            security_packages->root()->append(spec);
                             ok = true;
                             break;
                         }

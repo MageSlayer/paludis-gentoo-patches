@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,7 +23,6 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/config_file.hh>
@@ -58,7 +57,7 @@ namespace
         public:
             virtual ~SetFileHandler();
 
-            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> contents() const = 0;
+            virtual std::tr1::shared_ptr<SetSpecTree> contents() const = 0;
             virtual void add(const std::string &) = 0;
             virtual void remove(const std::string &) = 0;
             virtual void rewrite() const = 0;
@@ -72,14 +71,14 @@ namespace
 
             const SetFileParams _p;
             std::list<std::string> _lines;
-            mutable std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > _contents;
+            mutable std::tr1::shared_ptr<SetSpecTree> _contents;
 
             void _create_contents() const;
 
         public:
             PaludisConfHandler(const SetFileParams &);
 
-            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> contents() const;
+            virtual std::tr1::shared_ptr<SetSpecTree> contents() const;
             virtual void add(const std::string &);
             virtual void remove(const std::string &);
             virtual void rewrite() const;
@@ -90,12 +89,12 @@ namespace
     {
         private:
             const SetFileParams _p;
-            std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > _contents;
+            std::tr1::shared_ptr<SetSpecTree> _contents;
 
         public:
             PaludisBashHandler(const SetFileParams &);
 
-            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> contents() const;
+            virtual std::tr1::shared_ptr<SetSpecTree> contents() const;
             virtual void add(const std::string &) PALUDIS_ATTRIBUTE((noreturn));
             virtual void remove(const std::string &) PALUDIS_ATTRIBUTE((noreturn));
             virtual void rewrite() const PALUDIS_ATTRIBUTE((noreturn));
@@ -109,14 +108,14 @@ namespace
 
             const SetFileParams _p;
             std::list<std::string> _lines;
-            mutable std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > _contents;
+            mutable std::tr1::shared_ptr<SetSpecTree> _contents;
 
             void _create_contents() const;
 
         public:
             SimpleHandler(const SetFileParams &);
 
-            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> contents() const;
+            virtual std::tr1::shared_ptr<SetSpecTree> contents() const;
             virtual void add(const std::string &);
             virtual void remove(const std::string &);
             virtual void rewrite() const;
@@ -164,7 +163,7 @@ namespace
     };
 
     void
-    do_one_conf_line(const std::string & line, std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > result,
+    do_one_conf_line(const std::string & line, std::tr1::shared_ptr<SetSpecTree> result,
             const SetFileParams & params)
     {
         if (line.empty())
@@ -215,16 +214,14 @@ namespace
                     if (! spec)
                         throw InternalError(PALUDIS_HERE, "Bad params.set_name_suffix");
 
-                    result->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, NamedSetDepSpec> >(
-                                new TreeLeaf<SetSpecTree, NamedSetDepSpec>(spec)));
+                    result->root()->append(spec);
                 }
                 else
                 {
                     std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser()(tokens.at(1))));
                     if (params.tag())
                         spec->set_tag(params.tag());
-                    result->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
-                                new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+                    result->root()->append(spec);
                 }
             }
             else if ("?" == tokens.at(0))
@@ -248,8 +245,7 @@ namespace
                     else if (! (*params.environment())[selection::SomeArbitraryVersion(
                                 generator::Package(*spec->package_ptr()) |
                                 filter::InstalledAtRoot(params.environment()->root()))]->empty())
-                        result->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
-                                    new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+                        result->root()->append(spec);
                 }
                 else
                     Log::get_instance()->message("set_file.bad_operator", ll_warning, lc_context)
@@ -279,8 +275,7 @@ namespace
                                     .slot_requirement(spec->slot_requirement_ptr()),
                                     MatchPackageOptions()) |
                                 filter::InstalledAtRoot(params.environment()->root()))]->empty())
-                        result->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
-                                    new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+                        result->root()->append(spec);
                 }
                 else
                     Log::get_instance()->message("set_file.bad_operator", ll_warning, lc_context)
@@ -327,7 +322,7 @@ SimpleHandler::_create_contents() const
 {
     Context context("When parsing atoms in simple set file '" + stringify(_p.file_name()) + "':");
 
-    _contents.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+    _contents.reset(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
     for (std::list<std::string>::const_iterator i(_lines.begin()), i_end(_lines.end()) ;
             i != i_end ; ++i)
     {
@@ -344,16 +339,14 @@ SimpleHandler::_create_contents() const
             if (std::string::npos == i->find('/'))
             {
                 std::tr1::shared_ptr<NamedSetDepSpec> p(new NamedSetDepSpec(SetName(*i)));
-                _contents->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, NamedSetDepSpec> >(
-                            new TreeLeaf<SetSpecTree, NamedSetDepSpec>(p)));
+                _contents->root()->append(p);
             }
             else
             {
                 std::tr1::shared_ptr<PackageDepSpec> p(new PackageDepSpec(_p.parser()(stringify(*i))));
                 if (_p.tag())
                     p->set_tag(_p.tag());
-                _contents->add(std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
-                            new TreeLeaf<SetSpecTree, PackageDepSpec>(p)));
+                _contents->root()->append(p);
             }
         }
         catch (const InternalError &)
@@ -368,7 +361,7 @@ SimpleHandler::_create_contents() const
     }
 }
 
-std::tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree>
 SimpleHandler::contents() const
 {
     Lock l(_mutex);
@@ -434,13 +427,13 @@ PaludisConfHandler::_create_contents() const
 {
     Context context("When parsing atoms in paludis conf set file '" + stringify(_p.file_name()) + "':");
 
-    _contents.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+    _contents.reset(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
     for (std::list<std::string>::const_iterator i(_lines.begin()), i_end(_lines.end()) ;
             i != i_end ; ++i)
         do_one_conf_line(*i, _contents, _p);
 }
 
-std::tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree>
 PaludisConfHandler::contents() const
 {
     Lock l(_mutex);
@@ -493,7 +486,7 @@ PaludisBashHandler::PaludisBashHandler(const SetFileParams & p) :
     _p(p)
 {
     Context context("When loading paludis bash set file '" + stringify(_p.file_name()) + "':");
-    _contents.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+    _contents.reset(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
 
     std::stringstream s;
     Command cmd(Command("bash '" + stringify(_p.file_name()) + "'")
@@ -517,11 +510,11 @@ PaludisBashHandler::PaludisBashHandler(const SetFileParams & p) :
         Log::get_instance()->message("set_file.script.failure", ll_warning, lc_context)
             << "Set file script '" << _p.file_name() << "' returned non-zero exit status '"
             << exit_status << "'";
-        _contents.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+        _contents.reset(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
     }
 }
 
-std::tr1::shared_ptr<SetSpecTree::ConstItem>
+std::tr1::shared_ptr<SetSpecTree>
 PaludisBashHandler::contents() const
 {
     return _contents;
@@ -570,7 +563,7 @@ SetFile::~SetFile()
 {
 }
 
-std::tr1::shared_ptr<SetSpecTree::ConstItem>
+const std::tr1::shared_ptr<const SetSpecTree>
 SetFile::contents() const
 {
     return _imp->handler->contents();

@@ -56,9 +56,9 @@ namespace paludis
         protected:
             virtual void need_keys_added() const;
 
-            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> local_set(const SetName & id) const;
+            virtual const std::tr1::shared_ptr<const SetSpecTree> local_set(const SetName & id) const;
 
-            virtual std::tr1::shared_ptr<SetSpecTree::ConstItem> world_set() const;
+            virtual const std::tr1::shared_ptr<const SetSpecTree> world_set() const;
 
         public:
             ///\name Basic operations

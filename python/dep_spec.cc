@@ -30,7 +30,6 @@
 #include <paludis/version_requirements.hh>
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -42,35 +41,6 @@
 using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
-
-template class ConstVisitor<PythonDepSpecVisitorTypes>;
-template class ConstAcceptInterface<PythonDepSpecVisitorTypes>;
-
-template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonAllDepSpec>;
-template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonAnyDepSpec>;
-template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonConditionalDepSpec>;
-template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonPackageDepSpec>;
-template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonBlockDepSpec>;
-template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonPlainTextDepSpec>;
-template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonSimpleURIDepSpec>;
-template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonFetchableURIDepSpec>;
-template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonLicenseDepSpec>;
-template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonURILabelsDepSpec>;
-template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonDependencyLabelsDepSpec>;
-template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonNamedSetDepSpec>;
-
-template class Visits<const PythonAllDepSpec>;
-template class Visits<const PythonAnyDepSpec>;
-template class Visits<const PythonConditionalDepSpec>;
-template class Visits<const PythonPackageDepSpec>;
-template class Visits<const PythonBlockDepSpec>;
-template class Visits<const PythonPlainTextDepSpec>;
-template class Visits<const PythonSimpleURIDepSpec>;
-template class Visits<const PythonFetchableURIDepSpec>;
-template class Visits<const PythonLicenseDepSpec>;
-template class Visits<const PythonURILabelsDepSpec>;
-template class Visits<const PythonDependencyLabelsDepSpec>;
-template class Visits<const PythonNamedSetDepSpec>;
 
 template class WrappedForwardIterator<PythonCompositeDepSpec::ConstIteratorTag,
          const std::tr1::shared_ptr<const PythonDepSpec> >;
@@ -575,96 +545,90 @@ SpecTreeToPython::~SpecTreeToPython()
 }
 
 void
-SpecTreeToPython::visit_sequence(const AllDepSpec & d,
-        GenericSpecTree::ConstSequenceIterator cur,
-        GenericSpecTree::ConstSequenceIterator end)
+SpecTreeToPython::visit(const GenericSpecTree::NodeType<AllDepSpec>::Type & node)
 {
-    std::tr1::shared_ptr<PythonAllDepSpec> py_cds(new PythonAllDepSpec(d));
+    std::tr1::shared_ptr<PythonAllDepSpec> py_cds(new PythonAllDepSpec(*node.spec()));
     _current_parent->add_child(py_cds);
     Save<std::tr1::shared_ptr<PythonCompositeDepSpec> > old_parent(&_current_parent, py_cds);
-    std::for_each(cur, end, accept_visitor(*this));
+    std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
 }
 
 void
-SpecTreeToPython::visit_sequence(const AnyDepSpec & d,
-        GenericSpecTree::ConstSequenceIterator cur,
-        GenericSpecTree::ConstSequenceIterator end)
+SpecTreeToPython::visit(const GenericSpecTree::NodeType<AnyDepSpec>::Type & node)
 {
-    std::tr1::shared_ptr<PythonAnyDepSpec> py_cds(new PythonAnyDepSpec(d));
+    std::tr1::shared_ptr<PythonAnyDepSpec> py_cds(new PythonAnyDepSpec(*node.spec()));
     _current_parent->add_child(py_cds);
     Save<std::tr1::shared_ptr<PythonCompositeDepSpec> > old_parent(&_current_parent, py_cds);
-    std::for_each(cur, end, accept_visitor(*this));
+    std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
 }
 
 void
-SpecTreeToPython::visit_sequence(const ConditionalDepSpec & d,
-        GenericSpecTree::ConstSequenceIterator cur,
-        GenericSpecTree::ConstSequenceIterator end)
+SpecTreeToPython::visit(const GenericSpecTree::NodeType<ConditionalDepSpec>::Type & node)
 {
-    std::tr1::shared_ptr<PythonConditionalDepSpec> py_cds(new PythonConditionalDepSpec(d));
+    std::tr1::shared_ptr<PythonConditionalDepSpec> py_cds(new PythonConditionalDepSpec(*node.spec()));
     _current_parent->add_child(py_cds);
     Save<std::tr1::shared_ptr<PythonCompositeDepSpec> > old_parent(&_current_parent, py_cds);
-    std::for_each(cur, end, accept_visitor(*this));
+    std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
 }
 
 void
-SpecTreeToPython::visit_leaf(const PackageDepSpec & d)
+SpecTreeToPython::visit(const GenericSpecTree::NodeType<PackageDepSpec>::Type & node)
 {
-    _current_parent->add_child(make_shared_ptr(new PythonPackageDepSpec(d)));
+    _current_parent->add_child(make_shared_ptr(new PythonPackageDepSpec(*node.spec())));
 }
 
 void
-SpecTreeToPython::visit_leaf(const PlainTextDepSpec & d)
+SpecTreeToPython::visit(const GenericSpecTree::NodeType<PlainTextDepSpec>::Type & node)
 {
-    _current_parent->add_child(make_shared_ptr(new PythonPlainTextDepSpec(d)));
+    _current_parent->add_child(make_shared_ptr(new PythonPlainTextDepSpec(*node.spec())));
 }
 
 void
-SpecTreeToPython::visit_leaf(const NamedSetDepSpec & d)
+SpecTreeToPython::visit(const GenericSpecTree::NodeType<NamedSetDepSpec>::Type & node)
 {
-    _current_parent->add_child(make_shared_ptr(new PythonNamedSetDepSpec(d)));
+    _current_parent->add_child(make_shared_ptr(new PythonNamedSetDepSpec(*node.spec())));
 }
 
 void
-SpecTreeToPython::visit_leaf(const LicenseDepSpec & d)
+SpecTreeToPython::visit(const GenericSpecTree::NodeType<LicenseDepSpec>::Type & node)
 {
-    _current_parent->add_child(make_shared_ptr(new PythonLicenseDepSpec(d)));
+    _current_parent->add_child(make_shared_ptr(new PythonLicenseDepSpec(*node.spec())));
 }
 
 void
-SpecTreeToPython::visit_leaf(const SimpleURIDepSpec & d)
+SpecTreeToPython::visit(const GenericSpecTree::NodeType<SimpleURIDepSpec>::Type & node)
 {
-    _current_parent->add_child(make_shared_ptr(new PythonSimpleURIDepSpec(d)));
+    _current_parent->add_child(make_shared_ptr(new PythonSimpleURIDepSpec(*node.spec())));
 }
 
 void
-SpecTreeToPython::visit_leaf(const FetchableURIDepSpec & d)
+SpecTreeToPython::visit(const GenericSpecTree::NodeType<FetchableURIDepSpec>::Type & node)
 {
-    _current_parent->add_child(make_shared_ptr(new PythonFetchableURIDepSpec(d)));
+    _current_parent->add_child(make_shared_ptr(new PythonFetchableURIDepSpec(*node.spec())));
 }
 
 void
-SpecTreeToPython::visit_leaf(const BlockDepSpec & d)
+SpecTreeToPython::visit(const GenericSpecTree::NodeType<BlockDepSpec>::Type & node)
 {
-    _current_parent->add_child(make_shared_ptr(new PythonBlockDepSpec(d)));
+    _current_parent->add_child(make_shared_ptr(new PythonBlockDepSpec(*node.spec())));
 }
 
 void
-SpecTreeToPython::visit_leaf(const URILabelsDepSpec & d)
+SpecTreeToPython::visit(const GenericSpecTree::NodeType<URILabelsDepSpec>::Type & node)
 {
-    _current_parent->add_child(make_shared_ptr(new PythonURILabelsDepSpec(d)));
+    _current_parent->add_child(make_shared_ptr(new PythonURILabelsDepSpec(*node.spec())));
 }
 
 void
-SpecTreeToPython::visit_leaf(const PlainTextLabelDepSpec & d)
+SpecTreeToPython::visit(const GenericSpecTree::NodeType<PlainTextLabelDepSpec>::Type & node)
 {
-    _current_parent->add_child(make_shared_ptr(new PythonPlainTextLabelDepSpec(d)));
+    _current_parent->add_child(make_shared_ptr(new PythonPlainTextLabelDepSpec(*node.spec())));
 }
 
 void
-SpecTreeToPython::visit_leaf(const DependencyLabelsDepSpec & d)
+SpecTreeToPython::visit(const GenericSpecTree::NodeType<DependencyLabelsDepSpec>::Type & node)
 {
-    _current_parent->add_child(make_shared_ptr(new PythonDependencyLabelsDepSpec(d)));
+    _current_parent->add_child(make_shared_ptr(new PythonDependencyLabelsDepSpec(*node.spec())));
 }
 
 const std::tr1::shared_ptr<const PythonDepSpec>
@@ -783,8 +747,8 @@ void dispatch(SpecTreeFromPython<H_> * const v, const PyD_ & d)
 
 template <typename H_>
 SpecTreeFromPython<H_>::SpecTreeFromPython() :
-    _result(new ConstTreeSequence<H_, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec()))),
-    _add(std::tr1::bind(&ConstTreeSequence<H_, AllDepSpec>::add, _result, std::tr1::placeholders::_1))
+    _result(new H_(make_shared_ptr(new AllDepSpec))),
+    _add_to(_result->root())
 {
 }
 
@@ -888,126 +852,98 @@ template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonAllDepSpec & d)
 {
-    std::tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> > cds(
-                new ConstTreeSequence<H_, AllDepSpec>(make_shared_ptr(new AllDepSpec())));
-
-    _add(cds);
-
-    Save<std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)> > old_add(&_add,
-            std::tr1::bind(&ConstTreeSequence<H_, AllDepSpec>::add, cds, std::tr1::placeholders::_1));
-    std::for_each(IndirectIterator<PythonCompositeDepSpec::ConstIterator, const PythonDepSpec>(d.begin()),
-            IndirectIterator<PythonCompositeDepSpec::ConstIterator, const PythonDepSpec>(d.end()),
-            accept_visitor(*this));
+    Save<std::tr1::shared_ptr<typename H_::BasicInnerNode> > old_add_to(&_add_to, _add_to->append(make_shared_ptr(new AllDepSpec())));
+    std::for_each(indirect_iterator(d.begin()), indirect_iterator(d.end()), accept_visitor(*this));
 }
 
 template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonAnyDepSpec & d)
 {
-    std::tr1::shared_ptr<ConstTreeSequence<H_, AnyDepSpec> > cds(
-                new ConstTreeSequence<H_, AnyDepSpec>(make_shared_ptr(new AnyDepSpec())));
-
-    _add(cds);
-
-    Save<std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)> > old_add(&_add,
-            std::tr1::bind(&ConstTreeSequence<H_, AnyDepSpec>::add, cds, std::tr1::placeholders::_1));
-    std::for_each(IndirectIterator<PythonCompositeDepSpec::ConstIterator, const PythonDepSpec>(d.begin()),
-            IndirectIterator<PythonCompositeDepSpec::ConstIterator, const PythonDepSpec>(d.end()),
-            accept_visitor(*this));
+    Save<std::tr1::shared_ptr<typename H_::BasicInnerNode> > old_add_to(&_add_to, _add_to->append(make_shared_ptr(new AnyDepSpec())));
+    std::for_each(indirect_iterator(d.begin()), indirect_iterator(d.end()), accept_visitor(*this));
 }
 
 template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonConditionalDepSpec & d)
 {
-    std::tr1::shared_ptr<ConstTreeSequence<H_, ConditionalDepSpec> > cds(
-                new ConstTreeSequence<H_, ConditionalDepSpec>(make_shared_ptr(
-                        new ConditionalDepSpec(d.data()))));
-
-    _add(cds);
-
-    Save<std::tr1::function<void (std::tr1::shared_ptr<ConstAcceptInterface<H_> >)> > old_add(&_add,
-            std::tr1::bind(&ConstTreeSequence<H_, ConditionalDepSpec>::add, cds, std::tr1::placeholders::_1));
-    std::for_each(IndirectIterator<PythonCompositeDepSpec::ConstIterator, const PythonDepSpec>(d.begin()),
-            IndirectIterator<PythonCompositeDepSpec::ConstIterator, const PythonDepSpec>(d.end()),
-            accept_visitor(*this));
+    Save<std::tr1::shared_ptr<typename H_::BasicInnerNode> > old_add_to(&_add_to, _add_to->append(make_shared_ptr(new ConditionalDepSpec(d.data()))));
+    std::for_each(indirect_iterator(d.begin()), indirect_iterator(d.end()), accept_visitor(*this));
 }
 
 template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonPackageDepSpec & d)
 {
-    _add(make_shared_ptr(new TreeLeaf<H_, PackageDepSpec>(make_shared_ptr(new PackageDepSpec(d)))));
+    _add_to->append(make_shared_ptr(new PackageDepSpec(d)));
 }
 
 template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonLicenseDepSpec & d)
 {
-    _add(make_shared_ptr(new TreeLeaf<H_, LicenseDepSpec>(make_shared_ptr(new LicenseDepSpec(d.text())))));
+    _add_to->append(make_shared_ptr(new LicenseDepSpec(d.text())));
 }
 
 template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonSimpleURIDepSpec & d)
 {
-    _add(make_shared_ptr(new TreeLeaf<H_, SimpleURIDepSpec>(make_shared_ptr(new SimpleURIDepSpec(d.text())))));
+    _add_to->append(make_shared_ptr(new SimpleURIDepSpec(d.text())));
 }
 
 template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonPlainTextDepSpec & d)
 {
-    _add(make_shared_ptr(new TreeLeaf<H_, PlainTextDepSpec>(make_shared_ptr(new PlainTextDepSpec(d.text())))));
+    _add_to->append(make_shared_ptr(new PlainTextDepSpec(d.text())));
 }
 
 template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonNamedSetDepSpec & d)
 {
-    _add(make_shared_ptr(new TreeLeaf<H_, NamedSetDepSpec>(make_shared_ptr(new NamedSetDepSpec(d.name())))));
+    _add_to->append(make_shared_ptr(new NamedSetDepSpec(d.name())));
 }
 
 template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonFetchableURIDepSpec & d)
 {
-    _add(make_shared_ptr(new TreeLeaf<H_, FetchableURIDepSpec>(
-                    make_shared_ptr(new FetchableURIDepSpec(d.text())))));
+    _add_to->append(make_shared_ptr(new FetchableURIDepSpec(d.text())));
 }
 
 template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonURILabelsDepSpec &)
 {
-    _add(make_shared_ptr(new TreeLeaf<H_, URILabelsDepSpec>(make_shared_ptr(new URILabelsDepSpec))));
+    _add_to->append(make_shared_ptr(new URILabelsDepSpec));
 }
 
 template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonPlainTextLabelDepSpec & s)
 {
-    _add(make_shared_ptr(new TreeLeaf<H_, PlainTextLabelDepSpec>(make_shared_ptr(new PlainTextLabelDepSpec(s.text())))));
+    _add_to->append(make_shared_ptr(new PlainTextLabelDepSpec(s.text())));
 }
 
 template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonDependencyLabelsDepSpec &)
 {
-    _add(make_shared_ptr(new TreeLeaf<H_, DependencyLabelsDepSpec>(make_shared_ptr(
-                        new DependencyLabelsDepSpec))));
+    _add_to->append(make_shared_ptr(new DependencyLabelsDepSpec));
 }
 
 template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonBlockDepSpec & d)
 {
-    _add(make_shared_ptr(new TreeLeaf<H_, BlockDepSpec>(make_shared_ptr(
-                        new BlockDepSpec(make_shared_ptr(new PackageDepSpec(*d.blocked_spec())))))));
+    _add_to->append(make_shared_ptr(new BlockDepSpec(make_shared_ptr(new PackageDepSpec(*d.blocked_spec())))));
 }
 
 template <typename H_>
-std::tr1::shared_ptr<typename H_::ConstItem>
+std::tr1::shared_ptr<H_>
 SpecTreeFromPython<H_>::result() const
 {
     return _result;
@@ -1018,14 +954,14 @@ struct RegisterSpecTreeToPython
 {
     RegisterSpecTreeToPython()
     {
-        bp::to_python_converter<std::tr1::shared_ptr<typename T_::ConstItem>, RegisterSpecTreeToPython<T_> >();
+        bp::to_python_converter<std::tr1::shared_ptr<const T_>, RegisterSpecTreeToPython<T_> >();
     }
 
     static PyObject *
-    convert(const std::tr1::shared_ptr<typename T_::ConstItem> & n)
+    convert(const std::tr1::shared_ptr<const T_> & n)
     {
         SpecTreeToPython v;
-        n->accept(v);
+        n->root()->accept(v);
         return bp::incref(bp::object(v.result()).ptr());
     }
 };
@@ -1060,7 +996,7 @@ struct RegisterSpecTreeSharedPtrFromPython
     RegisterSpecTreeSharedPtrFromPython()
     {
         bp::converter::registry::push_back(&convertible, &construct,
-                boost::python::type_id<std::tr1::shared_ptr<const typename H_::ConstItem> >());
+                boost::python::type_id<std::tr1::shared_ptr<const H_> >());
     }
 
     static void *
@@ -1075,14 +1011,14 @@ struct RegisterSpecTreeSharedPtrFromPython
     static void
     construct(PyObject * obj_ptr, bp::converter::rvalue_from_python_stage1_data * data)
     {
-        typedef bp::converter::rvalue_from_python_storage<std::tr1::shared_ptr<const typename H_::ConstItem> > Storage;
+        typedef bp::converter::rvalue_from_python_storage<std::tr1::shared_ptr<const H_> > Storage;
         void * storage = reinterpret_cast<Storage *>(data)->storage.bytes;
 
         SpecTreeFromPython<H_> v;
         PythonDepSpec * p = bp::extract<PythonDepSpec *>(obj_ptr);
         p->accept(v);
 
-        new (storage) std::tr1::shared_ptr<const typename H_::ConstItem>(v.result());
+        new (storage) std::tr1::shared_ptr<const H_>(v.result());
         data->convertible = storage;
     }
 };

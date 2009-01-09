@@ -21,12 +21,13 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_database.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/hook.hh>
 #include <paludis/distribution.hh>
 #include <paludis/selection.hh>
@@ -85,11 +86,11 @@ EnvironmentImplementation::default_destinations() const
     return result;
 }
 
-std::tr1::shared_ptr<SetSpecTree::ConstItem>
+const std::tr1::shared_ptr<const SetSpecTree>
 EnvironmentImplementation::set(const SetName & s) const
 {
     {
-        std::tr1::shared_ptr<SetSpecTree::ConstItem> l(local_set(s));
+        const std::tr1::shared_ptr<const SetSpecTree> l(local_set(s));
         if (l)
         {
             Log::get_instance()->message("environment_implementation.local_set", ll_debug, lc_context) << "Set '" << s << "' is a local set";
@@ -97,13 +98,13 @@ EnvironmentImplementation::set(const SetName & s) const
         }
     }
 
-    std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > result;
+    std::tr1::shared_ptr<SetSpecTree> result;;
 
     /* these sets always exist, even if empty */
     if (s.data() == "everything" || s.data() == "system" || s.data() == "world" || s.data() == "security")
     {
         Log::get_instance()->message("environment_implementation.standard_set", ll_debug, lc_context) << "Set '" << s << "' is a standard set";
-        result.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+        result.reset(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
     }
 
     for (PackageDatabase::RepositoryConstIterator r(package_database()->begin_repositories()),
@@ -113,26 +114,25 @@ EnvironmentImplementation::set(const SetName & s) const
         if (! (**r).sets_interface())
             continue;
 
-        std::tr1::shared_ptr<SetSpecTree::ConstItem> add((**r).sets_interface()->package_set(s));
+        std::tr1::shared_ptr<const SetSpecTree> add((**r).sets_interface()->package_set(s));
         if (add)
         {
             Log::get_instance()->message("environment_implementation.set_found_in_repository", ll_debug, lc_context)
                 << "Set '" << s << "' found in '" << (*r)->name() << "'";
             if (! result)
-                result.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
-            result->add(add);
+                result.reset(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+            result->root()->append_node(add->root());
         }
     }
 
     if ("everything" == s.data() || "world" == s.data())
-        result->add(make_shared_ptr(new TreeLeaf<SetSpecTree, NamedSetDepSpec>(
-                        make_shared_ptr(new NamedSetDepSpec(SetName("system"))))));
+        result->root()->append(make_shared_ptr(new NamedSetDepSpec(SetName("system"))));
 
     if ("world" == s.data())
     {
-        std::tr1::shared_ptr<SetSpecTree::ConstItem> w(world_set());
+        std::tr1::shared_ptr<const SetSpecTree> w(world_set());
         if (w)
-            result->add(w);
+            result->root()->append_node(w->root());
     }
 
     if (! result)

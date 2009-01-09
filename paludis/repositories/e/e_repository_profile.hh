@@ -21,17 +21,18 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_PROFILE_HH 1
 
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/dep_tree.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
 #include <paludis/mask-fwd.hh>
 #include <paludis/metadata_key-fwd.hh>
 #include <paludis/choice-fwd.hh>
+#include <paludis/spec_tree-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/tribool.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <string>
 
 /** \file
@@ -129,7 +130,7 @@ namespace paludis
             ///\name System package set
             ///\{
 
-            std::tr1::shared_ptr<SetSpecTree::ConstItem> system_packages() const;
+            const std::tr1::shared_ptr<const SetSpecTree> system_packages() const;
 
             ///\}
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -34,7 +34,6 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/make_named_values.hh>
@@ -760,10 +759,10 @@ PortageEnvironment::mirrors(const std::string & m) const
     return result;
 }
 
-std::tr1::shared_ptr<SetSpecTree::ConstItem>
+const std::tr1::shared_ptr<const SetSpecTree>
 PortageEnvironment::local_set(const SetName &) const
 {
-    return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
+    return make_null_shared_ptr();
 }
 
 bool
@@ -942,7 +941,7 @@ PortageEnvironment::_remove_string_from_world(const std::string & s) const
     }
 }
 
-std::tr1::shared_ptr<SetSpecTree::ConstItem>
+const std::tr1::shared_ptr<const SetSpecTree>
 PortageEnvironment::world_set() const
 {
     Context context("When fetching environment world set:");
@@ -970,8 +969,7 @@ PortageEnvironment::world_set() const
         Log::get_instance()->message("portage_environment.world_file.does_not_exist", ll_warning, lc_no_context) <<
             "World file '" << _imp->world_file << "' doesn't exist";
 
-    return std::tr1::shared_ptr<SetSpecTree::ConstItem>(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+    return make_shared_ptr(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
 }
 
 void

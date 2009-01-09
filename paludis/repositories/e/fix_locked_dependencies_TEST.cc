@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,7 +24,6 @@
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/package_database.hh>
@@ -54,7 +53,7 @@ namespace test_cases
 
             std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string("paludis-1"));
 
-            std::tr1::shared_ptr<DependencySpecTree::ConstItem> bb(parse_depend(
+            std::tr1::shared_ptr<const DependencySpecTree> bb(parse_depend(
                         "|| ( foo/bar ( bar/baz oink/squeak ) ) blah/blah", &env, id, *eapi)),
                 aa(fix_locked_dependencies(&env, *eapi, id, bb));
 
@@ -62,20 +61,20 @@ namespace test_cases
             DepSpecPrettyPrinter
                 a(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false),
                 b(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
-            aa->accept(a);
-            bb->accept(b);
+            aa->root()->accept(a);
+            bb->root()->accept(b);
 
             TEST_CHECK_STRINGIFY_EQUAL(a, b);
 
-            std::tr1::shared_ptr<DependencySpecTree::ConstItem> cc(parse_depend(
+            std::tr1::shared_ptr<const DependencySpecTree> cc(parse_depend(
                         "foo/bar:= cat/installed:= >=cat/installed-1.2:= <=cat/installed-1.2:=", &env, id, *eapi)),
                 dd(fix_locked_dependencies(&env, *eapi, id, cc));
 
             DepSpecPrettyPrinter
                 c(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false),
                 d(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
-            cc->accept(c);
-            dd->accept(d);
+            cc->root()->accept(c);
+            dd->root()->accept(d);
 
             TEST_CHECK_STRINGIFY_EQUAL(c, "foo/bar:= cat/installed:= >=cat/installed-1.2:= <=cat/installed-1.2:=");
             TEST_CHECK_STRINGIFY_EQUAL(d, "foo/bar:= cat/installed:=monkey >=cat/installed-1.2:= <=cat/installed-1.2:=monkey");

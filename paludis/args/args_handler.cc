@@ -22,10 +22,11 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/create_iterator-impl.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <algorithm>
 #include <sstream>
 #include <list>

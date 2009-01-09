@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,12 +35,11 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/visitor-impl.hh>
-#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/member_iterator-impl.hh>
+#include <paludis/util/sequence.hh>
 
 #include <paludis/contents.hh>
 #include <paludis/repository.hh>
@@ -88,7 +87,7 @@ namespace paludis
         const std::tr1::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
-        mutable std::tr1::shared_ptr<const DependencySpecTree::ConstItem> value;
+        mutable std::tr1::shared_ptr<const DependencySpecTree> value;
         mutable std::tr1::function<void () throw ()> value_used;
         const std::tr1::shared_ptr<const DependencyLabelSequence> labels;
 
@@ -120,7 +119,7 @@ EDependenciesKey::~EDependenciesKey()
 {
 }
 
-const std::tr1::shared_ptr<const DependencySpecTree::ConstItem>
+const std::tr1::shared_ptr<const DependencySpecTree>
 EDependenciesKey::value() const
 {
     Lock l(_imp->value_mutex);
@@ -150,7 +149,7 @@ EDependenciesKey::pretty_print(const DependencySpecTree::ItemFormatter & f) cons
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
-    value()->accept(p);
+    value()->root()->accept(p);
     return stringify(p);
 }
 
@@ -159,7 +158,7 @@ EDependenciesKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f)
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
-    value()->accept(p);
+    value()->root()->accept(p);
     return stringify(p);
 }
 
@@ -172,7 +171,7 @@ namespace paludis
         const std::tr1::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
-        mutable std::tr1::shared_ptr<const LicenseSpecTree::ConstItem> value;
+        mutable std::tr1::shared_ptr<const LicenseSpecTree> value;
         mutable std::tr1::function<void () throw ()> value_used;
 
         Implementation(const Environment * const e,
@@ -199,7 +198,7 @@ ELicenseKey::~ELicenseKey()
 {
 }
 
-const std::tr1::shared_ptr<const LicenseSpecTree::ConstItem>
+const std::tr1::shared_ptr<const LicenseSpecTree>
 ELicenseKey::value() const
 {
     Lock l(_imp->value_mutex);
@@ -223,7 +222,7 @@ ELicenseKey::pretty_print(const LicenseSpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
-    value()->accept(p);
+    value()->root()->accept(p);
     return stringify(p);
 }
 
@@ -232,7 +231,7 @@ ELicenseKey::pretty_print_flat(const LicenseSpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
-    value()->accept(p);
+    value()->root()->accept(p);
     return stringify(p);
 }
 
@@ -245,7 +244,7 @@ namespace paludis
         const std::tr1::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
-        mutable std::tr1::shared_ptr<const FetchableURISpecTree::ConstItem> value;
+        mutable std::tr1::shared_ptr<const FetchableURISpecTree> value;
         mutable std::tr1::shared_ptr<const URILabel> initial_label;
 
         Implementation(const Environment * const e, const std::tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
@@ -270,7 +269,7 @@ EFetchableURIKey::~EFetchableURIKey()
 {
 }
 
-const std::tr1::shared_ptr<const FetchableURISpecTree::ConstItem>
+const std::tr1::shared_ptr<const FetchableURISpecTree>
 EFetchableURIKey::value() const
 {
     Lock l(_imp->value_mutex);
@@ -288,7 +287,7 @@ EFetchableURIKey::pretty_print(const FetchableURISpecTree::ItemFormatter & f) co
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
-    value()->accept(p);
+    value()->root()->accept(p);
     return stringify(p);
 }
 
@@ -297,7 +296,7 @@ EFetchableURIKey::pretty_print_flat(const FetchableURISpecTree::ItemFormatter & 
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
-    value()->accept(p);
+    value()->root()->accept(p);
     return stringify(p);
 }
 
@@ -310,7 +309,7 @@ EFetchableURIKey::initial_label() const
     {
         DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> f(_imp->env);
         if (_imp->id->restrict_key())
-            _imp->id->restrict_key()->value()->accept(f);
+            _imp->id->restrict_key()->value()->root()->accept(f);
         for (DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>::ConstIterator i(f.begin()), i_end(f.end()) ;
                 i != i_end ; ++i)
         {
@@ -346,7 +345,7 @@ namespace paludis
         const std::tr1::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
-        mutable std::tr1::shared_ptr<const SimpleURISpecTree::ConstItem> value;
+        mutable std::tr1::shared_ptr<const SimpleURISpecTree> value;
 
         Implementation(const Environment * const e, const std::tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
             env(e),
@@ -370,7 +369,7 @@ ESimpleURIKey::~ESimpleURIKey()
 {
 }
 
-const std::tr1::shared_ptr<const SimpleURISpecTree::ConstItem>
+const std::tr1::shared_ptr<const SimpleURISpecTree>
 ESimpleURIKey::value() const
 {
     Lock l(_imp->value_mutex);
@@ -388,7 +387,7 @@ ESimpleURIKey::pretty_print(const SimpleURISpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
-    value()->accept(p);
+    value()->root()->accept(p);
     return stringify(p);
 }
 
@@ -397,7 +396,7 @@ ESimpleURIKey::pretty_print_flat(const SimpleURISpecTree::ItemFormatter & f) con
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
-    value()->accept(p);
+    value()->root()->accept(p);
     return stringify(p);
 }
 
@@ -410,7 +409,7 @@ namespace paludis
         const std::tr1::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
-        mutable std::tr1::shared_ptr<const PlainTextSpecTree::ConstItem> value;
+        mutable std::tr1::shared_ptr<const PlainTextSpecTree> value;
 
         Implementation(const Environment * const e, const std::tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
             env(e),
@@ -434,7 +433,7 @@ EPlainTextSpecKey::~EPlainTextSpecKey()
 {
 }
 
-const std::tr1::shared_ptr<const PlainTextSpecTree::ConstItem>
+const std::tr1::shared_ptr<const PlainTextSpecTree>
 EPlainTextSpecKey::value() const
 {
     Lock l(_imp->value_mutex);
@@ -452,7 +451,7 @@ EPlainTextSpecKey::pretty_print(const PlainTextSpecTree::ItemFormatter & f) cons
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
-    value()->accept(p);
+    value()->root()->accept(p);
     return stringify(p);
 }
 
@@ -461,7 +460,7 @@ EPlainTextSpecKey::pretty_print_flat(const PlainTextSpecTree::ItemFormatter & f)
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
-    value()->accept(p);
+    value()->root()->accept(p);
     return stringify(p);
 }
 
@@ -474,7 +473,7 @@ namespace paludis
         const std::tr1::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
-        mutable std::tr1::shared_ptr<const PlainTextSpecTree::ConstItem> value;
+        mutable std::tr1::shared_ptr<const PlainTextSpecTree> value;
 
         Implementation(const Environment * const e, const std::tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
             env(e),
@@ -498,7 +497,7 @@ EMyOptionsKey::~EMyOptionsKey()
 {
 }
 
-const std::tr1::shared_ptr<const PlainTextSpecTree::ConstItem>
+const std::tr1::shared_ptr<const PlainTextSpecTree>
 EMyOptionsKey::value() const
 {
     Lock l(_imp->value_mutex);
@@ -516,7 +515,7 @@ EMyOptionsKey::pretty_print(const PlainTextSpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
-    value()->accept(p);
+    value()->root()->accept(p);
     return stringify(p);
 }
 
@@ -525,7 +524,7 @@ EMyOptionsKey::pretty_print_flat(const PlainTextSpecTree::ItemFormatter & f) con
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
-    value()->accept(p);
+    value()->root()->accept(p);
     return stringify(p);
 }
 
@@ -538,7 +537,7 @@ namespace paludis
         const std::tr1::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
-        mutable std::tr1::shared_ptr<const ProvideSpecTree::ConstItem> value;
+        mutable std::tr1::shared_ptr<const ProvideSpecTree> value;
 
         Implementation(const Environment * const e, const std::tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
             env(e),
@@ -561,7 +560,7 @@ EProvideKey::~EProvideKey()
 {
 }
 
-const std::tr1::shared_ptr<const ProvideSpecTree::ConstItem>
+const std::tr1::shared_ptr<const ProvideSpecTree>
 EProvideKey::value() const
 {
     Lock l(_imp->value_mutex);
@@ -579,7 +578,7 @@ EProvideKey::pretty_print(const ProvideSpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
-    value()->accept(p);
+    value()->root()->accept(p);
     return stringify(p);
 }
 
@@ -588,7 +587,7 @@ EProvideKey::pretty_print_flat(const ProvideSpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
-    value()->accept(p);
+    value()->root()->accept(p);
     return stringify(p);
 }
 

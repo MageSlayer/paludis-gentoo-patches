@@ -31,7 +31,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/mutex.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/action.hh>

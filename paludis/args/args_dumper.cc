@@ -19,7 +19,6 @@
 
 #include <paludis/args/args_dumper.hh>
 #include <paludis/args/args_option.hh>
-#include <paludis/util/visitor-impl.hh>
 
 #include <sstream>
 

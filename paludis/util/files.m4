@@ -8,6 +8,7 @@ dnl the base filename with no extension; later parameters can be `hh', `cc',
 dnl `test', `impl', `testscript'. Note that there isn't much error checking done
 dnl on this file at present...
 
+add(`accept_visitor',                    `hh')
 add(`action_queue',                      `hh', `cc', `test')
 add(`active_object_ptr',                 `hh', `cc', `fwd', `test')
 add(`attributes',                        `hh')
@@ -73,8 +74,6 @@ add(`tribool',                           `hh', `cc', `fwd', `test')
 add(`type_list',                         `hh', `cc', `fwd')
 add(`util',                              `hh')
 add(`validated',                         `hh', `fwd', `test')
-add(`visitor',                           `hh', `impl', `fwd', `test')
-add(`visitor_cast',                      `hh', `test')
 add(`wrapped_forward_iterator',          `hh', `fwd', `impl', `test')
 add(`wrapped_output_iterator',           `hh', `fwd', `impl')
 

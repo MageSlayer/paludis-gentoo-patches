@@ -20,15 +20,15 @@
 #include "console_query_task.hh"
 #include "mask_displayer.hh"
 #include "colour_formatter.hh"
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/map-impl.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/mask.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_database.hh>
@@ -40,6 +40,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/choice.hh>
 #include <list>
+#include <algorithm>
 
 using namespace paludis;
 
@@ -231,9 +232,7 @@ ConsoleQueryTask::display_versions_by_repository(const PackageDepSpec &,
 
 namespace
 {
-    class ComplexLicenseFinder :
-        public ConstVisitor<LicenseSpecTree>,
-        public ConstVisitor<LicenseSpecTree>::VisitConstSequence<ComplexLicenseFinder, AllDepSpec>
+    class ComplexLicenseFinder
     {
         private:
             bool _is_complex;
@@ -244,22 +243,16 @@ namespace
             {
             }
 
-            using ConstVisitor<LicenseSpecTree>::VisitConstSequence<ComplexLicenseFinder, AllDepSpec>::visit_sequence;
-
-            void visit_leaf(const LicenseDepSpec &)
+            void visit(const LicenseSpecTree::BasicNode &)
             {
             }
 
-            void visit_sequence(const AnyDepSpec &,
-                    LicenseSpecTree::ConstSequenceIterator,
-                    LicenseSpecTree::ConstSequenceIterator)
+            void visit(const LicenseSpecTree::NodeType<AnyDepSpec>::Type &)
             {
                 _is_complex = true;
             }
 
-            void visit_sequence(const ConditionalDepSpec &,
-                    LicenseSpecTree::ConstSequenceIterator,
-                    LicenseSpecTree::ConstSequenceIterator)
+            void visit(const LicenseSpecTree::NodeType<ConditionalDepSpec>::Type &)
             {
                 _is_complex = true;
             }
@@ -434,7 +427,7 @@ namespace
                     {
                         task->output_left_column(k.human_name() + ":", in);
                         ComplexLicenseFinder is_complex;
-                        k.value()->accept(is_complex);
+                        k.value()->root()->accept(is_complex);
                         if (is_complex)
                         {
                             task->output_right_column("");
@@ -827,16 +820,8 @@ ConsoleQueryTask::display_metadata_key(const std::string & k, const std::string 
 
 namespace
 {
-    struct IsEmpty :
-        ConstVisitor<GenericSpecTree>,
-        ConstVisitor<GenericSpecTree>::VisitConstSequence<IsEmpty, AllDepSpec>,
-        ConstVisitor<GenericSpecTree>::VisitConstSequence<IsEmpty, AnyDepSpec>,
-        ConstVisitor<GenericSpecTree>::VisitConstSequence<IsEmpty, ConditionalDepSpec>
+    struct IsEmpty
     {
-        using ConstVisitor<GenericSpecTree>::VisitConstSequence<IsEmpty, AnyDepSpec>::visit_sequence;
-        using ConstVisitor<GenericSpecTree>::VisitConstSequence<IsEmpty, AllDepSpec>::visit_sequence;
-        using ConstVisitor<GenericSpecTree>::VisitConstSequence<IsEmpty, ConditionalDepSpec>::visit_sequence;
-
         bool empty;
 
         IsEmpty() :
@@ -844,50 +829,55 @@ namespace
         {
         }
 
-        void visit_leaf(const PackageDepSpec &)
+        void visit(const GenericSpecTree::BasicInnerNode & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
+
+        void visit(const GenericSpecTree::NodeType<PackageDepSpec>::Type &)
         {
             empty = false;
         }
 
-        void visit_leaf(const BlockDepSpec &)
+        void visit(const GenericSpecTree::NodeType<BlockDepSpec>::Type &)
         {
             empty = false;
         }
 
-        void visit_leaf(const SimpleURIDepSpec &)
+        void visit(const GenericSpecTree::NodeType<SimpleURIDepSpec>::Type &)
         {
             empty = false;
         }
 
-        void visit_leaf(const FetchableURIDepSpec &)
+        void visit(const GenericSpecTree::NodeType<FetchableURIDepSpec>::Type &)
         {
             empty = false;
         }
 
-        void visit_leaf(const PlainTextDepSpec &)
+        void visit(const GenericSpecTree::NodeType<PlainTextDepSpec>::Type &)
         {
             empty = false;
         }
 
-        void visit_leaf(const LicenseDepSpec &)
+        void visit(const GenericSpecTree::NodeType<LicenseDepSpec>::Type &)
         {
             empty = false;
         }
 
-        void visit_leaf(const NamedSetDepSpec &)
+        void visit(const GenericSpecTree::NodeType<NamedSetDepSpec>::Type &)
         {
             empty = false;
         }
 
-        void visit_leaf(const URILabelsDepSpec &)
+        void visit(const GenericSpecTree::NodeType<URILabelsDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const PlainTextLabelDepSpec &)
+        void visit(const GenericSpecTree::NodeType<PlainTextLabelDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const DependencyLabelsDepSpec &)
+        void visit(const GenericSpecTree::NodeType<DependencyLabelsDepSpec>::Type &)
         {
         }
     };

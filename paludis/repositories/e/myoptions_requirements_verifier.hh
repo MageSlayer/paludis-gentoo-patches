@@ -21,12 +21,11 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_MYOPTIONS_REQUIREMENTS_VERIFIER_HH 1
 
 #include <paludis/repositories/e/e_repository_id.hh>
-#include <paludis/util/visitor.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/dep_tree.hh>
+#include <paludis/spec_tree.hh>
 #include <tr1/memory>
 
 namespace paludis
@@ -34,8 +33,7 @@ namespace paludis
     namespace erepository
     {
         class PALUDIS_VISIBLE MyOptionsRequirementsVerifier :
-            private PrivateImplementationPattern<MyOptionsRequirementsVerifier>,
-            public ConstVisitor<PlainTextSpecTree>
+            private PrivateImplementationPattern<MyOptionsRequirementsVerifier>
         {
             private:
                 void verify_one(const ChoicePrefixName &, const std::string &,
@@ -47,19 +45,10 @@ namespace paludis
 
                 const std::tr1::shared_ptr<const Sequence<std::string> > unmet_requirements() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                void visit_leaf(const PlainTextLabelDepSpec &);
-
-                void visit_leaf(const PlainTextDepSpec &);
-
-                void visit_sequence(const ConditionalDepSpec &,
-                        PlainTextSpecTree::ConstSequenceIterator,
-                        PlainTextSpecTree::ConstSequenceIterator
-                        );
-
-                void visit_sequence(const AllDepSpec &,
-                        PlainTextSpecTree::ConstSequenceIterator,
-                        PlainTextSpecTree::ConstSequenceIterator
-                        );
+                void visit(const PlainTextSpecTree::NodeType<PlainTextLabelDepSpec>::Type & node);
+                void visit(const PlainTextSpecTree::NodeType<PlainTextDepSpec>::Type & node);
+                void visit(const PlainTextSpecTree::NodeType<AllDepSpec>::Type & node);
+                void visit(const PlainTextSpecTree::NodeType<ConditionalDepSpec>::Type & node);
         };
     }
 

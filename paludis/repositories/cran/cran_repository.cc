@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2006, 2007 Danny van Dyk
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -42,10 +42,11 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/is_file_with_extension.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/output_deviator.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/syncer.hh>
 #include <tr1/unordered_map>
 #include <tr1/functional>
@@ -341,7 +342,7 @@ CRANRepository::do_install(const std::tr1::shared_ptr<const PackageID> & id_unca
 }
 #endif
 
-std::tr1::shared_ptr<SetSpecTree::ConstItem>
+const std::tr1::shared_ptr<const SetSpecTree>
 CRANRepository::package_set(const SetName & s) const
 {
     if ("base" == s.data())
@@ -350,11 +351,10 @@ CRANRepository::package_set(const SetName & s) const
          * \todo Implement system as all package which are installed
          * by dev-lang/R by default.
          */
-        return std::tr1::shared_ptr<SetSpecTree::ConstItem>(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                    std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+        return make_shared_ptr(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
     }
     else
-        return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
+        return make_null_shared_ptr();
 }
 
 std::tr1::shared_ptr<const SetNameSet>

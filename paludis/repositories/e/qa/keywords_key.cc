@@ -24,7 +24,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/package_id.hh>
 #include <paludis/name.hh>

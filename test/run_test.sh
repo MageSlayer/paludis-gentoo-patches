@@ -6,6 +6,8 @@ testname=${testname%.rb}
 testname=${testname%.py}
 testname=${testname%.bash}
 
+TEST_OUTPUT_WRAPPER="${OVERRIDE_TEST_OUTPUT_WRAPPER-${TEST_OUTPUT_WRAPPER}}"
+
 if test -f "$TEST_SCRIPT_DIR""${testname}"_"cleanup.sh" ; then
     echo ">>> cleanup for test ${testname}"
     if ! "$TEST_SCRIPT_DIR""${testname}"_"cleanup.sh" ; then

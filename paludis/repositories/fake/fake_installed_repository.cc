@@ -19,12 +19,11 @@
 
 #include "fake_installed_repository.hh"
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/environment.hh>
@@ -106,7 +105,7 @@ FakeInstalledRepository::provided_packages() const
                     continue;
 
                 DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(environment());
-                (*v)->provide_key()->value()->accept(f);
+                (*v)->provide_key()->value()->root()->accept(f);
 
                 for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator q(f.begin()), q_end(f.end()) ; q != q_end ; ++q)
                     result->push_back(make_named_values<RepositoryProvidesEntry>(
@@ -233,3 +232,4 @@ FakeInstalledRepository::repository_factory_dependencies(
 {
     return make_shared_ptr(new RepositoryNameSet);
 }
+

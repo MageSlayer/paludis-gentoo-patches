@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,7 +21,6 @@
 #include <paludis/repositories/unpackaged/dep_printer.hh>
 #include <paludis/repositories/unpackaged/dep_parser.hh>
 #include <paludis/repositories/unpackaged/unpackaged_id.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/mutex.hh>
@@ -41,7 +40,7 @@ namespace paludis
     struct Implementation<UnpackagedDependencyKey>
     {
         const Environment * const env;
-        const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> value;
+        const std::tr1::shared_ptr<const DependencySpecTree> value;
         const std::tr1::shared_ptr<const DependencyLabelSequence> labels;
 
         Implementation(const Environment * const e, const std::string & v,
@@ -68,7 +67,7 @@ UnpackagedDependencyKey::~UnpackagedDependencyKey()
 {
 }
 
-const std::tr1::shared_ptr<const DependencySpecTree::ConstItem>
+const std::tr1::shared_ptr<const DependencySpecTree>
 UnpackagedDependencyKey::value() const
 {
     return _imp->value;
@@ -78,7 +77,7 @@ std::string
 UnpackagedDependencyKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
 {
     DepPrinter p(_imp->env, f, false);
-    _imp->value->accept(p);
+    _imp->value->root()->accept(p);
     return p.result();
 }
 
@@ -86,7 +85,7 @@ std::string
 UnpackagedDependencyKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
 {
     DepPrinter p(_imp->env, f, true);
-    _imp->value->accept(p);
+    _imp->value->root()->accept(p);
     return p.result();
 }
 

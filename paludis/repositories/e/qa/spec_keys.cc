@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,7 +31,6 @@
 #include <paludis/util/save.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/mutex.hh>
@@ -39,6 +38,8 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/create_iterator-impl.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/elike_conditional_dep_spec.hh>
 #include <algorithm>
 #include <map>
@@ -85,8 +86,7 @@ namespace
         }
     };
 
-    struct Checker :
-        ConstVisitor<GenericSpecTree>
+    struct Checker
     {
         const FSEntry entry;
         QAReporter & reporter;
@@ -121,62 +121,60 @@ namespace
         {
         }
 
-        void visit_leaf(const PackageDepSpec & p)
+        void visit(const GenericSpecTree::NodeType<PackageDepSpec>::Type & node)
         {
-            if (pds_blacklist && p.package_ptr())
+            if (pds_blacklist && node.spec()->package_ptr())
             {
-                if (pds_blacklist->end() != pds_blacklist->find(*p.package_ptr()))
-                    reporter.message(QAMessage(entry, qaml_maybe, name, "Package '" + stringify(p)
+                if (pds_blacklist->end() != pds_blacklist->find(*node.spec()->package_ptr()))
+                    reporter.message(QAMessage(entry, qaml_maybe, name, "Package '" + stringify(*node.spec())
                                 + "' blacklisted in '" + stringify(key->raw_name()) + "'")
                             .with_associated_id(id)
                             .with_associated_key(id, key));
             }
         }
 
-        void visit_leaf(const BlockDepSpec & b)
+        void visit(const GenericSpecTree::NodeType<BlockDepSpec>::Type & node)
         {
             if (child_of_any)
                 reporter.message(QAMessage(entry, qaml_normal, name, "'|| ( )' with block child '"
-                            + stringify(b) + "' in '" + stringify(key->raw_name()) + "'")
+                            + stringify(*node.spec()) + "' in '" + stringify(key->raw_name()) + "'")
                             .with_associated_id(id)
                             .with_associated_key(id, key));
         }
 
-        void visit_leaf(const SimpleURIDepSpec &)
+        void visit(const GenericSpecTree::NodeType<SimpleURIDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const FetchableURIDepSpec &)
+        void visit(const GenericSpecTree::NodeType<FetchableURIDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const PlainTextDepSpec &)
+        void visit(const GenericSpecTree::NodeType<PlainTextDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const PlainTextLabelDepSpec &)
+        void visit(const GenericSpecTree::NodeType<PlainTextLabelDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const URILabelsDepSpec &)
+        void visit(const GenericSpecTree::NodeType<URILabelsDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const DependencyLabelsDepSpec &)
+        void visit(const GenericSpecTree::NodeType<DependencyLabelsDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const LicenseDepSpec &)
+        void visit(const GenericSpecTree::NodeType<LicenseDepSpec>::Type &)
         {
         }
 
-        void visit_leaf(const NamedSetDepSpec &)
+        void visit(const GenericSpecTree::NodeType<NamedSetDepSpec>::Type &)
         {
         }
 
-        void visit_sequence(const ConditionalDepSpec & u,
-                GenericSpecTree::ConstSequenceIterator cur,
-                GenericSpecTree::ConstSequenceIterator end)
+        void visit(const GenericSpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
             if (child_of_any)
                 reporter.message(QAMessage(entry, qaml_normal, name,
@@ -185,9 +183,9 @@ namespace
                             .with_associated_id(id)
                             .with_associated_key(id, key));
 
-            if (uses.count(elike_conditional_dep_spec_flag(u)))
+            if (uses.count(elike_conditional_dep_spec_flag(*node.spec())))
                 reporter.message(QAMessage(entry, qaml_normal, name,
-                            "Recursive use of flag '" + stringify(elike_conditional_dep_spec_flag(u)) + "' in '"
+                            "Recursive use of flag '" + stringify(elike_conditional_dep_spec_flag(*node.spec())) + "' in '"
                             + stringify(key->raw_name()) + "'")
                             .with_associated_id(id)
                             .with_associated_key(id, key));
@@ -195,7 +193,7 @@ namespace
             std::tr1::shared_ptr<const ChoiceValue> value;
             std::tr1::shared_ptr<const Choice> choice;
             {
-                ChoiceNameWithPrefix f(elike_conditional_dep_spec_flag(u));
+                ChoiceNameWithPrefix f(elike_conditional_dep_spec_flag(*node.spec()));
                 for (Choices::ConstIterator c(id->choices_key()->value()->begin()), c_end(id->choices_key()->value()->end()) ;
                         c != c_end && ! value ; ++c)
                     for (Choice::ConstIterator i((*c)->begin()), i_end((*c)->end()) ;
@@ -212,7 +210,7 @@ namespace
             if (! choice)
             {
                 reporter.message(QAMessage(entry, qaml_normal, name,
-                            "Conditional flag '" + stringify(elike_conditional_dep_spec_flag(u)) +
+                            "Conditional flag '" + stringify(elike_conditional_dep_spec_flag(*node.spec())) +
                             "' in '" + stringify(key->raw_name()) + "' does not exist")
                         .with_associated_id(id)
                         .with_associated_key(id, key)
@@ -222,12 +220,12 @@ namespace
             {
                 if (forbid_arch_flags)
                     reporter.message(QAMessage(entry, qaml_normal, name,
-                                "Arch flag '" + stringify(elike_conditional_dep_spec_flag(u)) + "' in '" + stringify(key->raw_name()) + "'")
+                                "Arch flag '" + stringify(elike_conditional_dep_spec_flag(*node.spec())) + "' in '" + stringify(key->raw_name()) + "'")
                                 .with_associated_id(id)
                                 .with_associated_key(id, key));
-                else if (elike_conditional_dep_spec_is_inverse(u) && forbid_inverse_arch_flags)
+                else if (elike_conditional_dep_spec_is_inverse(*node.spec()) && forbid_inverse_arch_flags)
                     reporter.message(QAMessage(entry, qaml_maybe, name,
-                                "Inverse arch flag '" + stringify(elike_conditional_dep_spec_flag(u)) + "' in '" + stringify(key->raw_name()) + "'")
+                                "Inverse arch flag '" + stringify(elike_conditional_dep_spec_flag(*node.spec())) + "' in '" + stringify(key->raw_name()) + "'")
                                 .with_associated_id(id)
                                 .with_associated_key(id, key));
             }
@@ -235,23 +233,21 @@ namespace
             Save<unsigned> save_level(&level, level + 1);
             Save<bool> save_child_of_any(&child_of_any, false);
             Save<std::set<ChoiceNameWithPrefix> > save_uses(&uses, uses);
-            uses.insert(elike_conditional_dep_spec_flag(u));
-            if (cur == end)
+            uses.insert(elike_conditional_dep_spec_flag(*node.spec()));
+            if (node.begin() == node.end())
                 reporter.message(QAMessage(entry, qaml_normal, name,
                             "Empty 'use? ( )' in '" + stringify(key->raw_name()) + "'")
                             .with_associated_id(id)
                             .with_associated_key(id, key));
             else
-                std::for_each(cur, end, accept_visitor(*this));
+                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
         }
 
-        void visit_sequence(const AllDepSpec &,
-                GenericSpecTree::ConstSequenceIterator cur,
-                GenericSpecTree::ConstSequenceIterator end)
+        void visit(const GenericSpecTree::NodeType<AllDepSpec>::Type & node)
         {
             Save<unsigned> save_level(&level, level + 1);
             Save<bool> save_child_of_any(&child_of_any, false);
-            if (cur == end)
+            if (node.begin() == node.end())
             {
                 if (level > 1)
                     reporter.message(QAMessage(entry, qaml_normal, name,
@@ -260,30 +256,28 @@ namespace
                             .with_associated_key(id, key));
             }
             else
-                std::for_each(cur, end, accept_visitor(*this));
+                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
         }
 
-        void visit_sequence(const AnyDepSpec &,
-                GenericSpecTree::ConstSequenceIterator cur,
-                GenericSpecTree::ConstSequenceIterator end)
+        void visit(const GenericSpecTree::NodeType<AnyDepSpec>::Type & node)
         {
             Save<unsigned> save_level(&level, level + 1);
             Save<bool> save_child_of_any(&child_of_any, true);
-            if (cur == end)
+            if (node.begin() == node.end())
                 reporter.message(QAMessage(entry, qaml_normal, name,
                             "Empty '|| ( )' in '" + stringify(key->raw_name()) + "'")
                             .with_associated_id(id)
                             .with_associated_key(id, key));
-            else if (next(cur) == end)
+            else if (next(node.begin()) == node.end())
             {
-                cur->accept(*this);
+                (*node.begin())->accept(*this);
                 reporter.message(QAMessage(entry, qaml_normal, name,
                         "'|| ( )' with only one child in '" + stringify(key->raw_name()) + "'")
                             .with_associated_id(id)
                             .with_associated_key(id, key));
             }
             else
-                std::for_each(cur, end, accept_visitor(*this));
+                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
         }
     };
 
@@ -381,7 +375,7 @@ namespace
             {
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
                 Checker c(entry, reporter, id, key, name, std::tr1::shared_ptr<const QualifiedPackageNameSet>(), false, false);
-                k.value()->accept(c);
+                k.value()->root()->accept(c);
             }
             catch (const InternalError &)
             {
@@ -402,7 +396,7 @@ namespace
             {
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
                 Checker c(entry, reporter, id, key, name, std::tr1::shared_ptr<const QualifiedPackageNameSet>(), true, true);
-                k.value()->accept(c);
+                k.value()->root()->accept(c);
             }
             catch (const InternalError &)
             {
@@ -423,7 +417,7 @@ namespace
             {
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
                 Checker c(entry, reporter, id, key, name, std::tr1::shared_ptr<const QualifiedPackageNameSet>(), true, true);
-                k.value()->accept(c);
+                k.value()->root()->accept(c);
             }
             catch (const InternalError &)
             {
@@ -444,7 +438,7 @@ namespace
             {
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
                 Checker c(entry, reporter, id, key, name, SpecKeysBlacklist::get_instance()->blacklist(k.raw_name()), false, true);
-                k.value()->accept(c);
+                k.value()->root()->accept(c);
             }
             catch (const InternalError &)
             {
@@ -465,7 +459,7 @@ namespace
             {
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
                 Checker c(entry, reporter, id, key, name, SpecKeysBlacklist::get_instance()->blacklist(k.raw_name()), true, true);
-                k.value()->accept(c);
+                k.value()->root()->accept(c);
             }
             catch (const InternalError &)
             {
@@ -486,7 +480,7 @@ namespace
             {
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
                 Checker c(entry, reporter, id, key, name, std::tr1::shared_ptr<const QualifiedPackageNameSet>(), true, true);
-                k.value()->accept(c);
+                k.value()->root()->accept(c);
             }
             catch (const InternalError &)
             {

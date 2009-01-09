@@ -36,7 +36,6 @@
 #include <paludis/formatter.hh>
 #include <paludis/stringify_formatter-impl.hh>
 #include <paludis/util/clone-impl.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <tr1/memory>
 
 using namespace paludis;

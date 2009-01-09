@@ -65,6 +65,8 @@ namespace paludis
     template <typename Item_>
     struct MakeTypeListConstEntry;
 
+    template <typename TypeList_, typename Item_>
+    struct TypeListContains;
 }
 
 #endif

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,7 +28,6 @@
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
 #include <paludis/about.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/fs_entry.hh>
@@ -108,32 +107,28 @@ FetchVisitor::~FetchVisitor()
 }
 
 void
-FetchVisitor::visit_sequence(const ConditionalDepSpec & u,
-        FetchableURISpecTree::ConstSequenceIterator cur,
-        FetchableURISpecTree::ConstSequenceIterator end)
+FetchVisitor::visit(const FetchableURISpecTree::NodeType<ConditionalDepSpec>::Type & node)
 {
-    if ((_imp->fetch_unneeded) || (u.condition_met()))
+    if ((_imp->fetch_unneeded) || (node.spec()->condition_met()))
     {
         _imp->labels.push_front(* _imp->labels.begin());
-        std::for_each(cur, end, accept_visitor(*this));
+        std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
         _imp->labels.pop_front();
     }
 }
 
 void
-FetchVisitor::visit_sequence(const AllDepSpec &,
-        FetchableURISpecTree::ConstSequenceIterator cur,
-        FetchableURISpecTree::ConstSequenceIterator end)
+FetchVisitor::visit(const FetchableURISpecTree::NodeType<AllDepSpec>::Type & node)
 {
     _imp->labels.push_front(* _imp->labels.begin());
-    std::for_each(cur, end, accept_visitor(*this));
+    std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
     _imp->labels.pop_front();
 }
 
 void
-FetchVisitor::visit_leaf(const URILabelsDepSpec & l)
+FetchVisitor::visit(const FetchableURISpecTree::NodeType<URILabelsDepSpec>::Type & node)
 {
-    for (URILabelsDepSpec::ConstIterator i(l.begin()), i_end(l.end()) ;
+    for (URILabelsDepSpec::ConstIterator i(node.spec()->begin()), i_end(node.spec()->end()) ;
             i != i_end ; ++i)
         *_imp->labels.begin() = i->get();
 }
@@ -149,22 +144,22 @@ namespace
 }
 
 void
-FetchVisitor::visit_leaf(const FetchableURIDepSpec & u)
+FetchVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::Type & node)
 {
-    Context context("When visiting URI dep spec '" + stringify(u.text()) + "':");
+    Context context("When visiting URI dep spec '" + stringify(node.spec()->text()) + "':");
 
     if (! *_imp->labels.begin())
         throw FetchActionError("No fetch action label available");
 
     SourceURIFinder source_uri_finder(_imp->env, _imp->id->repository().get(),
-            u.original_url(), u.filename(), _imp->mirrors_name);
+            node.spec()->original_url(), node.spec()->filename(), _imp->mirrors_name);
     (*_imp->labels.begin())->accept(source_uri_finder);
     for (SourceURIFinder::ConstIterator i(source_uri_finder.begin()), i_end(source_uri_finder.end()) ;
             i != i_end ; ++i)
     {
         Context local_context("When fetching URI '" + stringify(i->first) + "' to '" + stringify(i->second) + ":");
 
-        FSEntry destination(_imp->distdir / u.filename());
+        FSEntry destination(_imp->distdir / node.spec()->filename());
 
         if (destination.exists())
         {

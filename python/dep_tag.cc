@@ -161,9 +161,8 @@ void expose_dep_tag()
         (
          "DependencyDepTag",
          "DepTag subclass for dependencies.",
-         bp::init<const std::tr1::shared_ptr<const PackageID> &, const PackageDepSpec &,
-                const std::tr1::shared_ptr<const DependencySpecTree::ConstItem> >(
-                    "__init__(PackageID, PackageDepSpec, CompositeDepSpec)"
+         bp::init<const std::tr1::shared_ptr<const PackageID> &, const PackageDepSpec &>(
+                    "__init__(PackageID, PackageDepSpec)"
                     )
         )
         .add_property("package_id", &DependencyDepTag::package_id,
@@ -175,11 +174,6 @@ void expose_dep_tag()
                     bp::return_value_policy<bp::return_by_value>()),
                 "[ro] PackageDepSpec\n"
                 "The PackageDepSpec that pulled us in."
-                )
-
-        .add_property("conditions", &DependencyDepTag::conditions,
-                "[ro] CompositeDepSpec\n"
-                "The AnyDepSpec instances and ConditionalDepSpec instances that our dependency is conditional upon."
                 )
         ;
 

@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2006, 2007 Danny van Dyk
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -42,9 +42,9 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <tr1/functional>
 #include <tr1/unordered_map>
 #include <functional>
@@ -445,7 +445,7 @@ CRANInstalledRepository::do_uninstall(const QualifiedPackageName & q, const Vers
 }
 #endif
 
-std::tr1::shared_ptr<SetSpecTree::ConstItem>
+const std::tr1::shared_ptr<const SetSpecTree>
 CRANInstalledRepository::package_set(const SetName & s) const
 {
     Context context("When fetching package set '" + stringify(s) + "' from '" +
@@ -453,24 +453,21 @@ CRANInstalledRepository::package_set(const SetName & s) const
 
     if ("everything" == s.data())
     {
-        std::tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > result(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                    std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+        std::tr1::shared_ptr<SetSpecTree> result(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
 
         need_ids();
 
         for (IDMap::const_iterator p(_imp->ids.begin()), p_end(_imp->ids.end()) ;
                 p != p_end ; ++p)
         {
-            std::tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> > spec(
-                    new TreeLeaf<SetSpecTree, PackageDepSpec>(make_shared_ptr(
-                            new PackageDepSpec(cranrepository::parse_cran_package_dep_spec(stringify(p->first.package()))))));
-            result->add(spec);
+            std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(cranrepository::parse_cran_package_dep_spec(stringify(p->first.package()))));
+            result->root()->append(spec);
         }
 
         return result;
     }
     else
-        return std::tr1::shared_ptr<SetSpecTree::ConstItem>();
+        return make_null_shared_ptr();
 }
 
 std::tr1::shared_ptr<const SetNameSet>
