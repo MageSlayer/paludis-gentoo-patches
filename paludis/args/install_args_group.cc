@@ -146,7 +146,7 @@ InstallArgsGroup::populate_install_task(const Environment *, InstallTask & task)
     else if (a_change_phases_for.argument() == "last")
         task.set_phase_options_apply_to_last(true);
     else
-        throw args::DoHelp("bad value for --item-for-phase-options");
+        throw args::DoHelp("bad value for --change-phases-for");
 
     std::tr1::shared_ptr<Set<std::string> > skip_phases(new Set<std::string>);
     std::copy(a_skip_phase.begin_args(), a_skip_phase.end_args(), skip_phases->inserter());
