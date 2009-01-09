@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -59,6 +59,7 @@ namespace paludis
         struct safe_resume;
         struct target_file;
         struct used_this_for_config_protect;
+        struct want_phase;
     }
 
     /**
@@ -97,6 +98,7 @@ namespace paludis
     {
         NamedValue<n::destination, std::tr1::shared_ptr<Repository> > destination;
         NamedValue<n::used_this_for_config_protect, std::tr1::function<void (const std::string &)> > used_this_for_config_protect;
+        NamedValue<n::want_phase, std::tr1::function<WantPhase (const std::string &)> > want_phase;
     };
 
     /**

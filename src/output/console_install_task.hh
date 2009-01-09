@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -194,6 +194,12 @@ namespace paludis
             virtual void on_display_failure_summary_skipped_dependent(const DepListEntry &, const std::tr1::shared_ptr<const PackageID> &);
             virtual void on_display_failure_summary_totals(const int, const int, const int, const int, const int);
             virtual void on_display_failure_summary_post();
+
+            virtual void on_phase_skip(const std::string & phase);
+            virtual void on_phase_abort(const std::string & phase);
+            virtual void on_phase_skip_until(const std::string & phase);
+            virtual void on_phase_proceed_conditionally(const std::string & phase);
+            virtual void on_phase_proceed_unconditionally(const std::string & phase);
 
             ///\name More granular display routines
             ///\{

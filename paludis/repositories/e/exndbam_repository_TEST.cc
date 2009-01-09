@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -50,6 +50,11 @@ namespace
 
     void dummy_used_this_for_config_protect(const std::string &)
     {
+    }
+
+    WantPhase want_all_phases(const std::string &)
+    {
+        return wp_yes;
     }
 }
 
@@ -117,7 +122,8 @@ namespace test_cases
 
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(exndbam_repo),
-                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
+                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
+                        value_for<n::want_phase>(&want_all_phases)
                     ));
 
             UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(

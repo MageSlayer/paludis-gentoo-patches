@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -62,7 +62,7 @@ namespace paludis
             void _display_task_list();
             bool _pretend();
             void _main_actions();
-            void _one(const DepList::Iterator, const int, const int, const int, const int);
+            void _one(const DepList::Iterator, const int, const int, const int, const int, const bool is_first, const bool is_last);
             void _display_failure_summary();
 
             void _add_target(const std::string &);
@@ -100,6 +100,12 @@ namespace paludis
             void set_add_to_world_spec(const std::string &);
             void set_safe_resume(const bool);
             void set_continue_on_failure(const InstallTaskContinueOnFailure);
+            void set_skip_phases(const std::tr1::shared_ptr<const Set<std::string> > &);
+            void set_skip_until_phases(const std::tr1::shared_ptr<const Set<std::string> > &);
+            void set_abort_at_phases(const std::tr1::shared_ptr<const Set<std::string> > &);
+            void set_phase_options_apply_to_first(const bool);
+            void set_phase_options_apply_to_last(const bool);
+            void set_phase_options_apply_to_all(const bool);
 
             ///\}
 
@@ -200,6 +206,12 @@ namespace paludis
 
             virtual void on_install_action_error(const InstallActionError &) = 0;
             virtual void on_fetch_action_error(const FetchActionError &) = 0;
+
+            virtual void on_phase_skip(const std::string & phase) = 0;
+            virtual void on_phase_abort(const std::string & phase) = 0;
+            virtual void on_phase_skip_until(const std::string & phase) = 0;
+            virtual void on_phase_proceed_conditionally(const std::string & phase) = 0;
+            virtual void on_phase_proceed_unconditionally(const std::string & phase) = 0;
 
             ///\}
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -62,6 +62,64 @@ template class WrappedForwardIterator<InstallTask::TargetsConstIteratorTag, cons
 
 #include <paludis/install_task-se.cc>
 
+namespace
+{
+    WantPhase want_phase_function(
+            InstallTask * const task,
+            const std::tr1::shared_ptr<const Set<std::string> > & abort_at_phases,
+            const std::tr1::shared_ptr<const Set<std::string> > & skip_phases,
+            const std::tr1::shared_ptr<const Set<std::string> > & skip_until_phases,
+            bool phase_options_apply_to_first,
+            bool phase_options_apply_to_last,
+            bool phase_options_apply_to_all,
+            bool is_first, bool is_last, bool & done_any, const std::string & phase)
+    {
+        bool apply(false);
+
+        if (is_first && phase_options_apply_to_first)
+            apply = true;
+
+        if (is_last && phase_options_apply_to_last)
+            apply = true;
+
+        if (phase_options_apply_to_all)
+            apply = true;
+
+        if (apply)
+        {
+            if (abort_at_phases->end() != abort_at_phases->find(phase))
+            {
+                task->on_phase_abort(phase);
+                return wp_abort;
+            }
+
+            if (! skip_until_phases->empty())
+                if (! done_any)
+                    if (skip_until_phases->end() == skip_until_phases->find(phase))
+                    {
+                        task->on_phase_skip_until(phase);
+                        return wp_skip;
+                    }
+
+            /* make --skip-until-phase foo --skip-phase foo work */
+            done_any = true;
+
+            if (skip_phases->end() != skip_phases->find(phase))
+            {
+                task->on_phase_skip(phase);
+                return wp_skip;
+            }
+
+            task->on_phase_proceed_conditionally(phase);
+        }
+        else
+            task->on_phase_proceed_unconditionally(phase);
+
+        done_any = true;
+        return wp_yes;
+    }
+}
+
 namespace paludis
 {
     template<>
@@ -89,6 +147,14 @@ namespace paludis
 
         InstallTaskContinueOnFailure continue_on_failure;
 
+        std::tr1::shared_ptr<const Set<std::string> > abort_at_phases;
+        std::tr1::shared_ptr<const Set<std::string> > skip_phases;
+        std::tr1::shared_ptr<const Set<std::string> > skip_until_phases;
+
+        bool phase_options_apply_to_first;
+        bool phase_options_apply_to_last;
+        bool phase_options_apply_to_all;
+
         bool had_resolution_failures;
 
         Implementation<InstallTask>(Environment * const e, const DepListOptions & o,
@@ -107,7 +173,8 @@ namespace paludis
                         value_for<n::destination>(std::tr1::shared_ptr<Repository>()),
                         value_for<n::used_this_for_config_protect>(std::tr1::bind(
                                 &Implementation<InstallTask>::assign_config_protect,
-                                this, std::tr1::placeholders::_1))
+                                this, std::tr1::placeholders::_1)),
+                        value_for<n::want_phase>(std::tr1::function<WantPhase (const std::string &)>())
                     )),
             config_protect(""),
             targets(new SetSpecTree(make_shared_ptr(new AllDepSpec))),
@@ -119,6 +186,12 @@ namespace paludis
             had_package_targets(false),
             override_target_type(false),
             continue_on_failure(itcof_if_fetch_only),
+            abort_at_phases(new Set<std::string>),
+            skip_phases(new Set<std::string>),
+            skip_until_phases(new Set<std::string>),
+            phase_options_apply_to_first(false),
+            phase_options_apply_to_last(false),
+            phase_options_apply_to_all(false),
             had_resolution_failures(false)
         {
         }
@@ -659,7 +732,7 @@ InstallTask::_pretend()
 }
 
 void
-InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const int s, const int f)
+InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const int s, const int f, const bool is_first, const bool is_last)
 {
     std::string cpvr(stringify(*dep->package_id()));
 
@@ -705,7 +778,13 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
 
         if (! _imp->fetch_only)
         {
+            bool done_any(false);
             _imp->install_options.destination() = dep->destination();
+            _imp->install_options.want_phase() = std::tr1::bind(&want_phase_function, this,
+                    _imp->abort_at_phases, _imp->skip_phases, _imp->skip_until_phases,
+                    _imp->phase_options_apply_to_first, _imp->phase_options_apply_to_last, _imp->phase_options_apply_to_all,
+                    is_first, is_last, std::tr1::ref(done_any),
+                    std::tr1::placeholders::_1);
             InstallAction install_action(_imp->install_options);
             dep->package_id()->perform_action(install_action);
         }
@@ -870,16 +949,23 @@ InstallTask::_main_actions()
 
     /* fetch / install our entire list */
     int x(0), y(0), s(0), f(0);
+    bool is_first(true), is_last(false);
+    DepList::Iterator dep_last_package(_imp->dep_list.end());
     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
             dep != dep_end ; ++dep)
         if (dep->kind() == dlk_package)
+        {
+            dep_last_package = dep;
             ++y;
+        }
 
     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
             dep != dep_end ; ++dep)
     {
         if (dlk_package != dep->kind())
             continue;
+
+        is_last = (dep == dep_last_package);
 
         ++x;
 
@@ -929,7 +1015,7 @@ InstallTask::_main_actions()
 
         try
         {
-            _one(dep, x, y, s, f);
+            _one(dep, x, y, s, f, is_first, is_last);
         }
         catch (const InstallActionError & e)
         {
@@ -943,6 +1029,8 @@ InstallTask::_main_actions()
             on_fetch_action_error(e);
             ++f;
         }
+
+        is_first = false;
     }
 
     /* go no further if we had failures */
@@ -1664,5 +1752,41 @@ FetchActionOptions &
 InstallTask::fetch_action_options()
 {
     return _imp->fetch_options;
+}
+
+void
+InstallTask::set_skip_phases(const std::tr1::shared_ptr<const Set<std::string> > & s)
+{
+    _imp->skip_phases = s;
+}
+
+void
+InstallTask::set_skip_until_phases(const std::tr1::shared_ptr<const Set<std::string> > & s)
+{
+    _imp->skip_until_phases = s;
+}
+
+void
+InstallTask::set_abort_at_phases(const std::tr1::shared_ptr<const Set<std::string> > & s)
+{
+    _imp->abort_at_phases = s;
+}
+
+void
+InstallTask::set_phase_options_apply_to_first(const bool b)
+{
+    _imp->phase_options_apply_to_first = b;
+}
+
+void
+InstallTask::set_phase_options_apply_to_last(const bool b)
+{
+    _imp->phase_options_apply_to_last = b;
+}
+
+void
+InstallTask::set_phase_options_apply_to_all(const bool b)
+{
+    _imp->phase_options_apply_to_all = b;
 }
 

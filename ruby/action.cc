@@ -474,6 +474,11 @@ namespace
         }
     };
 
+    WantPhase want_all_phases(const std::string &)
+    {
+        return wp_yes;
+    }
+
     /*
      * call-seq:
      *     InstallActionOptions.new(destination) -> InstallActionOptions
@@ -510,7 +515,8 @@ namespace
 
             ptr = new InstallActionOptions(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(v_destination),
-                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
+                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
+                        value_for<n::want_phase>(&want_all_phases)
                     ));
 
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<InstallActionOptions>::free, ptr));

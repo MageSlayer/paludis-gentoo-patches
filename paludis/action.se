@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_WantPhase()
+{
+    prefix wp
+
+    key wp_yes                 "Yes, run the phase"
+    key wp_skip                "Skip the phase"
+    key wp_abort               "Abort"
+
+    doxygen_comment << "END"
+        /**
+         * Whether or not we want a phase for an InstallAction.
+         *
+         * \see InstallActionOptions
+         * \ingroup g_repository
+         */
+END
+}
+

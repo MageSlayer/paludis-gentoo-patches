@@ -617,6 +617,31 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
+        bool skip(false);
+        do
+        {
+            switch (o.want_phase()(phase->equal_option("skipname")))
+            {
+                case wp_yes:
+                    continue;
+
+                case wp_skip:
+                    skip = true;
+                    continue;
+
+                case wp_abort:
+                    throw InstallActionError("Told to abort install");
+
+                case last_wp:
+                    break;
+            }
+
+            throw InternalError(PALUDIS_HERE, "bad want_phase");
+        } while (false);
+
+        if (skip)
+            continue;
+
         if (can_skip_phase(id, *phase))
         {
             std::cout << "--- No need to do anything for " << phase->equal_option("skipname") << " phase" << std::endl;

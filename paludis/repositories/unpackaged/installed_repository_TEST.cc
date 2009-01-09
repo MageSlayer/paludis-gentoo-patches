@@ -81,6 +81,11 @@ namespace
     void dummy_used_this_for_config_protect(const std::string &)
     {
     }
+
+    WantPhase want_all_phases(const std::string &)
+    {
+        return wp_yes;
+    }
 }
 
 namespace test_cases
@@ -393,7 +398,8 @@ namespace test_cases
 
                 InstallAction action(make_named_values<InstallActionOptions>(
                             value_for<n::destination>(repo),
-                            value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
+                            value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
+                            value_for<n::want_phase>(&want_all_phases)
                         ));
                 (*env[selection::RequireExactlyOne(generator::InRepository(RepositoryName("unpackaged")))]->begin())->perform_action(action);
 
@@ -447,7 +453,8 @@ namespace test_cases
 
                 InstallAction action(make_named_values<InstallActionOptions>(
                             value_for<n::destination>(repo),
-                            value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
+                            value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
+                            value_for<n::want_phase>(&want_all_phases)
                         ));
                 (*env[selection::RequireExactlyOne(generator::InRepository(RepositoryName("unpackaged")))]->begin())->perform_action(action);
 
@@ -504,7 +511,8 @@ namespace test_cases
 
                 InstallAction action(make_named_values<InstallActionOptions>(
                             value_for<n::destination>(repo),
-                            value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
+                            value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
+                            value_for<n::want_phase>(&want_all_phases)
                         ));
                 (*env[selection::RequireExactlyOne(generator::InRepository(RepositoryName("unpackaged")))]->begin())->perform_action(action);
 

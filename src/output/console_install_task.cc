@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -1900,5 +1900,34 @@ ConsoleInstallTask::perform_hook(const Hook & hook) const
     if (resume_command.empty())
         return InstallTask::perform_hook(hook);
     return InstallTask::perform_hook(hook("RESUME_COMMAND", resume_command));
+}
+
+void
+ConsoleInstallTask::on_phase_skip(const std::string & phase)
+{
+    output_starred_item("Skipping phase '" + phase + "' as instructed");
+}
+
+void
+ConsoleInstallTask::on_phase_abort(const std::string & phase)
+{
+    output_starred_item("Aborting at phase '" + phase + "' as instructed");
+}
+
+void
+ConsoleInstallTask::on_phase_skip_until(const std::string & phase)
+{
+    output_starred_item("Skipping phase '" + phase + "' as instructed since it is before a start phase");
+}
+
+void
+ConsoleInstallTask::on_phase_proceed_conditionally(const std::string & phase)
+{
+    output_starred_item("Executing phase '" + phase + "' as instructed");
+}
+
+void
+ConsoleInstallTask::on_phase_proceed_unconditionally(const std::string &)
+{
 }
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2007 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -65,7 +65,17 @@ InstallArgsGroup::InstallArgsGroup(ArgsHandler * h, const std::string & our_name
             ("if-independent",      "If independent of failed and skipped packages")
             ("always",              "Always (UNSAFE)"),
             "if-fetch-only"),
-    a_continue_on_eroyf(&a_continue_on_failure, "continue-on-eroyf", true)
+    a_continue_on_eroyf(&a_continue_on_failure, "continue-on-eroyf", true),
+    a_skip_phase(this, "skip-phase", '\0', "Skip phases with a given name (e.g. init, preinst, unpack, merge, strip). Dangerous."),
+    a_abort_at_phase(this, "abort-at-phase", '\0', "Abort when a phase with a given name is encountered."),
+    a_skip_until_phase(this, "skip-until-phase", '\0', "Skip all phases until a phase with a given name is encountered. Dangerous."),
+    a_change_phases_for(this, "change-phases-for", '\0', "Control to which package or packages options --" + a_skip_phase.long_name() + ", --"
+            + a_skip_until_phase.long_name() + " and --" + a_skip_until_phase.long_name() + " apply.",
+            args::EnumArg::EnumArgOptions
+            ("all",                "All packages")
+            ("first",              "Only the first package on the list")
+            ("last",               "Only the last package on the list"),
+            "all")
 {
 }
 
@@ -128,6 +138,27 @@ InstallArgsGroup::populate_install_task(const Environment *, InstallTask & task)
         task.set_continue_on_failure(itcof_always);
     else
         throw args::DoHelp("bad value for --continue-on-failure");
+
+    if (a_change_phases_for.argument() == "all")
+        task.set_phase_options_apply_to_all(true);
+    else if (a_change_phases_for.argument() == "first")
+        task.set_phase_options_apply_to_first(true);
+    else if (a_change_phases_for.argument() == "last")
+        task.set_phase_options_apply_to_last(true);
+    else
+        throw args::DoHelp("bad value for --item-for-phase-options");
+
+    std::tr1::shared_ptr<Set<std::string> > skip_phases(new Set<std::string>);
+    std::copy(a_skip_phase.begin_args(), a_skip_phase.end_args(), skip_phases->inserter());
+    task.set_skip_phases(skip_phases);
+
+    std::tr1::shared_ptr<Set<std::string> > abort_at_phases(new Set<std::string>);
+    std::copy(a_abort_at_phase.begin_args(), a_abort_at_phase.end_args(), abort_at_phases->inserter());
+    task.set_abort_at_phases(abort_at_phases);
+
+    std::tr1::shared_ptr<Set<std::string> > skip_until_phases(new Set<std::string>);
+    std::copy(a_skip_until_phase.begin_args(), a_skip_until_phase.end_args(), skip_until_phases->inserter());
+    task.set_skip_until_phases(skip_until_phases);
 }
 
 bool

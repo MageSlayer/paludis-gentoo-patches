@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2007 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -90,6 +90,18 @@ namespace paludis
                 /// --continue-on-failure
                 paludis::args::EnumArg a_continue_on_failure;
                 paludis::args::AliasArg a_continue_on_eroyf;
+
+                /// --skip-phase
+                paludis::args::StringSetArg a_skip_phase;
+
+                /// --abort-at-phase
+                paludis::args::StringSetArg a_abort_at_phase;
+
+                /// --skip-until-phase
+                paludis::args::StringSetArg a_skip_until_phase;
+
+                /// --change-phases-for
+                paludis::args::EnumArg a_change_phases_for;
 
                 /// }
 

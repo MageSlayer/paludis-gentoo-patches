@@ -54,12 +54,18 @@ namespace
     {
     }
 
+    WantPhase want_all_phases(const std::string &)
+    {
+        return wp_yes;
+    }
+
     InstallActionOptions * make_install_action_options(
             const std::tr1::shared_ptr<paludis::Repository> & r)
     {
         return new InstallActionOptions(make_named_values<InstallActionOptions>(
                     value_for<n::destination>(r),
-                    value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect)
+                    value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
+                    value_for<n::want_phase>(&want_all_phases)
                     ));
     }
 
