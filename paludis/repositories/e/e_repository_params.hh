@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -60,6 +60,7 @@ namespace paludis
         struct newsdir;
         struct profile_eapi_when_unspecified;
         struct profiles;
+        struct profiles_explicitly_set;
         struct securitydir;
         struct setsdir;
         struct sync;
@@ -96,6 +97,7 @@ namespace paludis
             NamedValue<n::newsdir, FSEntry> newsdir;
             NamedValue<n::profile_eapi_when_unspecified, std::string> profile_eapi_when_unspecified;
             NamedValue<n::profiles, std::tr1::shared_ptr<const FSEntrySequence> > profiles;
+            NamedValue<n::profiles_explicitly_set, bool> profiles_explicitly_set;
             NamedValue<n::securitydir, FSEntry> securitydir;
             NamedValue<n::setsdir, FSEntry> setsdir;
             NamedValue<n::sync, std::string> sync;

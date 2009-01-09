@@ -340,7 +340,8 @@ namespace paludis
         profile_ptr.reset(new ERepositoryProfile(
                     params.environment(), repo, repo->name(), *params.profiles(),
                     EAPIData::get_instance()->eapi_from_string(
-                        params.eapi_when_unknown())->supported()->ebuild_environment_variables()->env_arch()));
+                        params.eapi_when_unknown())->supported()->ebuild_environment_variables()->env_arch(),
+                    params.profiles_explicitly_set()));
     }
 
     void
@@ -384,7 +385,8 @@ namespace paludis
                             value_for<n::profile>(std::tr1::shared_ptr<ERepositoryProfile>(new ERepositoryProfile(
                                         params.environment(), repo, repo->name(), profiles,
                                         EAPIData::get_instance()->eapi_from_string(
-                                            params.eapi_when_unknown())->supported()->ebuild_environment_variables()->env_arch()))),
+                                            params.eapi_when_unknown())->supported()->ebuild_environment_variables()->env_arch(),
+                                        true))),
                             value_for<n::status>(tokens.at(2))
                             ));
                 }
@@ -1364,6 +1366,7 @@ ERepository::repository_factory_create(
     }
 
     std::tr1::shared_ptr<FSEntrySequence> profiles(new FSEntrySequence);
+    bool profiles_explicitly_set(false);
     tokenise_whitespace(f("profiles"), create_inserter<FSEntry>(std::back_inserter(*profiles)));
     if (profiles->empty())
     {
@@ -1378,6 +1381,8 @@ ERepository::repository_factory_create(
             throw ERepositoryConfigurationError("No profiles have been specified");
         }
     }
+    else
+        profiles_explicitly_set = true;
 
     std::tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
     tokenise_whitespace(f("eclassdirs"), create_inserter<FSEntry>(std::back_inserter(*eclassdirs)));
@@ -1574,6 +1579,7 @@ ERepository::repository_factory_create(
                     value_for<n::newsdir>(FSEntry(newsdir).realpath_if_exists()),
                     value_for<n::profile_eapi_when_unspecified>(profile_eapi),
                     value_for<n::profiles>(profiles),
+                    value_for<n::profiles_explicitly_set>(profiles_explicitly_set),
                     value_for<n::securitydir>(FSEntry(securitydir).realpath_if_exists()),
                     value_for<n::setsdir>(FSEntry(setsdir).realpath_if_exists()),
                     value_for<n::sync>(sync),

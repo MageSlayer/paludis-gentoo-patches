@@ -182,7 +182,7 @@ namespace paludis
 
             Implementation(const Environment * const e, const ERepository * const p,
                     const RepositoryName & name, const FSEntrySequence & dirs,
-                    const std::string & arch_var_if_special) :
+                    const std::string & arch_var_if_special, const bool profiles_explicitly_set) :
                 packages_file(p),
                 virtuals_file(p),
                 package_mask_file(p),
@@ -205,10 +205,11 @@ namespace paludis
                 {
                     Context subcontext("When using directory '" + stringify(*d) + "':");
 
-                    if (! p->params().ignore_deprecated_profiles())
-                        if ((*d / "deprecated").is_regular_file_or_symlink_to_regular_file())
-                            Log::get_instance()->message("e.profile.deprecated", ll_warning, lc_context) << "Profile directory '" << *d
-                                << "' is deprecated. See the file '" << (*d / "deprecated") << "' for details";
+                    if (profiles_explicitly_set)
+                        if (! p->params().ignore_deprecated_profiles())
+                            if ((*d / "deprecated").is_regular_file_or_symlink_to_regular_file())
+                                Log::get_instance()->message("e.profile.deprecated", ll_warning, lc_context) << "Profile directory '" << *d
+                                    << "' is deprecated. See the file '" << (*d / "deprecated") << "' for details";
 
                     load_profile_directory_recursively(*d);
                 }
@@ -730,9 +731,9 @@ Implementation<ERepositoryProfile>::handle_profile_arch_var(const std::string & 
 ERepositoryProfile::ERepositoryProfile(
         const Environment * const env, const ERepository * const p, const RepositoryName & name,
         const FSEntrySequence & location,
-        const std::string & arch_var_if_special) :
+        const std::string & arch_var_if_special, const bool x) :
     PrivateImplementationPattern<ERepositoryProfile>(
-            new Implementation<ERepositoryProfile>(env, p, name, location, arch_var_if_special))
+            new Implementation<ERepositoryProfile>(env, p, name, location, arch_var_if_special, x))
 {
 }
 
