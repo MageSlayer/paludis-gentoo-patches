@@ -19,15 +19,19 @@ _paludis() {
 
     install_uninstall_args=(
         "(--pretend -p)"{--pretend,-p}"[Pretend only]"
+        "(--destinations -d)"{--destinations,-d}"[Use specified destinations instead of defaults]:Destinations:_paludis_packages repositories"
         "(--preserve-world -1)"{--preserve-world,-1}"[Don't modify the world file]"
+        "--add-to-world-spec[Use this atom, rather than all targets, for updating world (for resume commands)]"
         "(--fetch -f)"{--fetch,-f}"[Only fetch sources; don't install anything]"
+        "--no-safe-resume[Do not allow interrupted downloads to be resumed]"
         "--show-reasons[Show why packages are being (un)installed]:Verbosity:((none\:Don\'t\ show\ any\ information summary\:Show\ a\ summary full\:Show\ full\ output))"
         "--show-use-descriptions[Show descriptions of USE flags]:Which:((none\:Don\'t\ show\ any\ descriptions new\:Show\ for\ new\ use\ flags changed\:Show\ for\ new\ and\ changed\ flags all\:Show for all flags))"
         "--show-package-descriptions[Show package descriptions]:When:((none\:Don\'t\ show\ any\ descriptions new\:Show\ descriptions\ for\ new\ packages all\:Show\ descriptions\ for\ all\ packages))"
-        "--add-to-world-spec[Use this atom, rather than all targets, for updating world (for resume commands)]"
-        "--no-safe-resume[Do not allow interrupted downloads to be resumed]"
         "--continue-on-failure[Whether to continue after a fetch or install error]:When:((if-fetch-only\:If\ fetching\ only never\:Never if-satisfied\:If\ remaining\ packages\ dependencies\ are\ satisfied if-independent\:If\ independent\ of\ failed\ and\ skipped\ packages always\:Always))"
-        "(--destinations -d)"{--destinations,-d}"[Use specified destinations instead of defaults]:Destinations:_paludis_packages repositories"
+        "--skip-phase[Skip phases with a given name]:Phase: "
+        "--abort-at-phase[Abort when a phase with a given name is encountered]:Phase: "
+        "--skip-until-phase[Skip all phases until a phase with a given name is encountered]:Phase: "
+        "--change-phases-for[Control which packages to change phases for]:Target:((all\:'All packages' first\:'Only the first package on the list' last\:'Only the last package on the list'))"
     )
     list_args=(
         "--repository-format[Matches with this repository format only]:format:_paludis_packages repository-formats"
