@@ -70,7 +70,7 @@ InstallArgsGroup::InstallArgsGroup(ArgsHandler * h, const std::string & our_name
     a_abort_at_phase(this, "abort-at-phase", '\0', "Abort when a phase with a given name is encountered."),
     a_skip_until_phase(this, "skip-until-phase", '\0', "Skip all phases until a phase with a given name is encountered. Dangerous."),
     a_change_phases_for(this, "change-phases-for", '\0', "Control to which package or packages options --" + a_skip_phase.long_name() + ", --"
-            + a_skip_until_phase.long_name() + " and --" + a_skip_until_phase.long_name() + " apply.",
+            + a_abort_at_phase.long_name() + " and --" + a_skip_until_phase.long_name() + " apply.",
             args::EnumArg::EnumArgOptions
             ("all",                "All packages")
             ("first",              "Only the first package on the list")
