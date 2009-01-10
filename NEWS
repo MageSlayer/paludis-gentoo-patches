@@ -4,6 +4,26 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.32.4:
+    * DEFINED_PHASES can now be cached for 0-based EAPIs.
+
+    * Tidy up documentation and completion functions after the removal of
+      --checks and --debug-build.
+
+    * Profile EAPI files are now supported for E repositories.
+
+    * Fix bug where IUSE="foo +foo -foo" would show three foos rather than one.
+
+0.32.3:
+    * Fixed handling of VIDEO_CARDS="foo" in make.conf, ** in package.keywords
+      with PortageEnvironment.
+
+    * Fixed new/changed options display.
+
+    * Fixed the stripper.
+
+    * RESTRICTed build options are no longer shown.
+
 0.32.2:
     * Fixed various compiler issues.
 
