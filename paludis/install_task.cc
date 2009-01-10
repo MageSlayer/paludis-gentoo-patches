@@ -781,7 +781,7 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
             bool done_any(false);
             _imp->install_options.destination() = dep->destination();
             _imp->install_options.want_phase() = std::tr1::bind(&want_phase_function, this,
-                    _imp->abort_at_phases, _imp->skip_phases, _imp->skip_until_phases,
+                    std::tr1::cref(_imp->abort_at_phases), std::tr1::cref(_imp->skip_phases), std::tr1::cref(_imp->skip_until_phases),
                     _imp->phase_options_apply_to_first, _imp->phase_options_apply_to_last, _imp->phase_options_apply_to_all,
                     is_first, is_last, std::tr1::ref(done_any),
                     std::tr1::placeholders::_1);
