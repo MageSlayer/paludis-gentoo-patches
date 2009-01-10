@@ -12,6 +12,10 @@ AM_CXXFLAGS = -I$(top_srcdir) -I$(srcdir)/ \
 	      @PALUDIS_CXXFLAGS_VISIBILITY@ \
 	      @PALUDIS_CXXFLAGS_NO_STRICT_ALIASING@
 
+# need this to go after the user's flags. -g is useless in here anyway,
+# and boost.python makes g++ eat silly amounts of memory.
+CXXFLAGS += @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DDATADIR=\"$(datadir)\" \
