@@ -64,58 +64,44 @@ template class WrappedForwardIterator<InstallTask::TargetsConstIteratorTag, cons
 
 namespace
 {
+    WantPhase want_all_phases_function(InstallTask * const task, bool & done_any, const std::string & phase)
+    {
+        task->on_phase_proceed_unconditionally(phase);
+        done_any = true;
+        return wp_yes;
+    }
+
     WantPhase want_phase_function(
             InstallTask * const task,
             const std::tr1::shared_ptr<const Set<std::string> > & abort_at_phases,
             const std::tr1::shared_ptr<const Set<std::string> > & skip_phases,
             const std::tr1::shared_ptr<const Set<std::string> > & skip_until_phases,
-            bool phase_options_apply_to_first,
-            bool phase_options_apply_to_last,
-            bool phase_options_apply_to_all,
-            bool is_first, bool is_last, bool & done_any, const std::string & phase)
+            bool & done_any, const std::string & phase)
     {
-        bool apply(false);
-
-        if (is_first && phase_options_apply_to_first)
-            apply = true;
-
-        if (is_last && phase_options_apply_to_last)
-            apply = true;
-
-        if (phase_options_apply_to_all)
-            apply = true;
-
-        if (apply)
+        if (abort_at_phases->end() != abort_at_phases->find(phase))
         {
-            if (abort_at_phases->end() != abort_at_phases->find(phase))
-            {
-                task->on_phase_abort(phase);
-                return wp_abort;
-            }
-
-            if (! skip_until_phases->empty())
-                if (! done_any)
-                    if (skip_until_phases->end() == skip_until_phases->find(phase))
-                    {
-                        task->on_phase_skip_until(phase);
-                        return wp_skip;
-                    }
-
-            /* make --skip-until-phase foo --skip-phase foo work */
-            done_any = true;
-
-            if (skip_phases->end() != skip_phases->find(phase))
-            {
-                task->on_phase_skip(phase);
-                return wp_skip;
-            }
-
-            task->on_phase_proceed_conditionally(phase);
+            task->on_phase_abort(phase);
+            return wp_abort;
         }
-        else
-            task->on_phase_proceed_unconditionally(phase);
 
+        if (! skip_until_phases->empty())
+            if (! done_any)
+                if (skip_until_phases->end() == skip_until_phases->find(phase))
+                {
+                    task->on_phase_skip_until(phase);
+                    return wp_skip;
+                }
+
+        /* make --skip-until-phase foo --skip-phase foo work */
         done_any = true;
+
+        if (skip_phases->end() != skip_phases->find(phase))
+        {
+            task->on_phase_skip(phase);
+            return wp_skip;
+        }
+
+        task->on_phase_proceed_conditionally(phase);
         return wp_yes;
     }
 }
@@ -780,11 +766,22 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
         {
             bool done_any(false);
             _imp->install_options.destination() = dep->destination();
-            _imp->install_options.want_phase() = std::tr1::bind(&want_phase_function, this,
+
+            bool apply_phases(false);
+            if (is_first && _imp->phase_options_apply_to_first)
+                apply_phases = true;
+            if (is_last && _imp->phase_options_apply_to_last)
+                apply_phases = true;
+            if (_imp->phase_options_apply_to_all)
+                apply_phases = true;
+            if (apply_phases)
+                _imp->install_options.want_phase() = std::tr1::bind(&want_phase_function, this,
                     std::tr1::cref(_imp->abort_at_phases), std::tr1::cref(_imp->skip_phases), std::tr1::cref(_imp->skip_until_phases),
-                    _imp->phase_options_apply_to_first, _imp->phase_options_apply_to_last, _imp->phase_options_apply_to_all,
-                    is_first, is_last, std::tr1::ref(done_any),
-                    std::tr1::placeholders::_1);
+                    std::tr1::ref(done_any), std::tr1::placeholders::_1);
+            else
+                _imp->install_options.want_phase() = std::tr1::bind(&want_all_phases_function, this,
+                    std::tr1::ref(done_any), std::tr1::placeholders::_1);
+
             InstallAction install_action(_imp->install_options);
             dep->package_id()->perform_action(install_action);
         }
