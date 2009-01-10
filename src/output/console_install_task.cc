@@ -1256,7 +1256,7 @@ void
 ConsoleInstallTask::display_merge_list_entry_distsize(const DepListEntry & d,
         const DisplayMode m)
 {
-    if (normal_entry != m && suggested_entry != m)
+    if (normal_entry != m)
         return;
 
     SupportsActionTest<PretendFetchAction> action_test;
