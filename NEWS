@@ -4,6 +4,14 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.34.0_alpha1:
+    * Masks that have been overridden by the user are now shown.
+
+    * Support phases.
+
+    * Paludis internals are now threaded using pthreads, and provide the SGI
+      guarantee.
+
 0.32.4:
     * DEFINED_PHASES can now be cached for 0-based EAPIs.
 
