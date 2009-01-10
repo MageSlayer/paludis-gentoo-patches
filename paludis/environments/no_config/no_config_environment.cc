@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,11 +32,16 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/graph-impl.hh>
+#include <paludis/util/hashes.hh>
+#include <paludis/util/member_iterator-impl.hh>
 #include <paludis/distribution.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/repository_factory.hh>
+#include <tr1/unordered_map>
+#include <tr1/functional>
 #include <algorithm>
 #include <set>
 #include <list>
@@ -168,7 +173,12 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 
     if (! is_vdb)
     {
+        /* don't assume these're in initialisable order. */
+        std::map<FSEntry, bool> repository_dirs;
+        RepositoryName main_repository_name("x");
         bool ignored_one(false);
+
+        repository_dirs.insert(std::make_pair(params.repository_dir(), true));
         for (FSEntrySequence::ConstIterator d(params.extra_repository_dirs()->begin()), d_end(params.extra_repository_dirs()->end()) ;
                 d != d_end ; ++d)
         {
@@ -180,58 +190,121 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
                 continue;
             }
 
+            repository_dirs.insert(std::make_pair(*d, false));
+        }
+
+        std::tr1::unordered_map<RepositoryName, std::tr1::function<std::string (const std::string &)>,
+            Hash<RepositoryName> > repo_configs;
+
+        for (std::map<FSEntry, bool>::const_iterator r(repository_dirs.begin()), r_end(repository_dirs.end()) ;
+                r != r_end ; ++r)
+        {
+            Context local_context("When reading repository at location '" + stringify(r->first) + "':");
+
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
 
             if (params.extra_params())
                 std::copy(params.extra_params()->begin(), params.extra_params()->end(), keys->inserter());
 
             keys->insert("format", "ebuild");
-            keys->insert("location", stringify(*d));
+            keys->insert("location", stringify(r->first));
             keys->insert("profiles", "/var/empty");
             keys->insert("ignore_deprecated_profiles", "true");
             keys->insert("write_cache", stringify(params.write_cache()));
             keys->insert("names_cache", "/var/empty");
             keys->insert("builddir", "/var/empty");
+
             if (params.disable_metadata_cache())
                 keys->insert("cache", "/var/empty");
 
-            std::tr1::shared_ptr<Repository> repo(RepositoryFactory::get_instance()->create(
-                        env, std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
-            if (stringify(repo->name()) == params.master_repository_name())
-                master_repo = repo;
-            package_database->add_repository(1, repo);
+            if (r->second && ! params.master_repository_name().empty())
+                keys->insert("master_repository", params.master_repository_name());
+
+            if ((r->first / "metadata" / "profiles_desc.conf").exists())
+                keys->insert("layout", "exheres");
+
+            std::tr1::function<std::string (const std::string &)> repo_func(
+                    std::tr1::bind(&from_keys, keys, std::tr1::placeholders::_1));
+
+            RepositoryName name(RepositoryFactory::get_instance()->name(env, repo_func));
+            if (! repo_configs.insert(std::make_pair(name, repo_func)).second)
+            {
+                Log::get_instance()->message("no_config_environment.repositories.duplicate", ll_warning, lc_context)
+                    << "Duplicate repository name '" << name << "' from path '" << r->first << "', skipping";
+                continue;
+            }
+
+            if (r->second)
+                main_repository_name = name;
         }
 
-        if ((! params.master_repository_name().empty()) && (! master_repo) && (! ignored_one))
-            throw ConfigurationError("Can't find repository '" + params.master_repository_name() + "'");
+        /* work out order for repository creation */
+        DirectedGraph<RepositoryName, bool, RepositoryNameComparator> repository_deps;
+        std::for_each(first_iterator(repo_configs.begin()), first_iterator(repo_configs.end()), std::tr1::bind(
+                    std::tr1::mem_fn(&DirectedGraph<RepositoryName, bool, RepositoryNameComparator>::add_node),
+                    &repository_deps, std::tr1::placeholders::_1));
 
-        std::tr1::shared_ptr<Map<std::string, std::string> > keys( new Map<std::string, std::string>);
+        for (std::tr1::unordered_map<RepositoryName, std::tr1::function<std::string (const std::string &)>, Hash<RepositoryName> >::const_iterator
+                r(repo_configs.begin()), r_end(repo_configs.end()) ; r != r_end ; ++r)
+        {
+            std::tr1::shared_ptr<const RepositoryNameSet> deps(RepositoryFactory::get_instance()->dependencies(
+                        env, r->second));
+            for (RepositoryNameSet::ConstIterator d(deps->begin()), d_end(deps->end()) ;
+                    d != d_end ; ++d)
+            {
+                if (*d == r->first)
+                    throw ConfigurationError("Repository '" + stringify(r->first) + "' depends upon itself");
+                try
+                {
+                    repository_deps.add_edge(r->first, *d, true);
+                }
+                catch (const NoSuchGraphNodeError &)
+                {
+                    throw ConfigurationError("Repository '" + stringify(r->first) + "' depends upon '" +
+                            stringify(*d) + "', which is not configured");
+                }
+            }
+        }
 
-        if (params.extra_params())
-            std::copy(params.extra_params()->begin(), params.extra_params()->end(), keys->inserter());
+        try
+        {
+            std::list<RepositoryName> ordered_repos;
+            repository_deps.topological_sort(std::back_inserter(ordered_repos));
 
-        keys->insert("format", "ebuild");
-        keys->insert("location", stringify(params.repository_dir()));
-        keys->insert("profiles", "/var/empty");
-        keys->insert("ignore_deprecated_profiles", "true");
-        keys->insert("write_cache", stringify(params.write_cache()));
-        keys->insert("names_cache", "/var/empty");
-        keys->insert("builddir", "/var/empty");
+            for (std::list<RepositoryName>::const_iterator o(ordered_repos.begin()), o_end(ordered_repos.end()) ;
+                    o != o_end ; ++o)
+            {
+                std::tr1::unordered_map<RepositoryName, std::tr1::function<std::string (const std::string &)>, Hash<RepositoryName> >::const_iterator
+                    c(repo_configs.find(*o));
+                if (c == repo_configs.end())
+                    throw InternalError(PALUDIS_HERE, "*o not in repo_configs");
 
-        if (params.disable_metadata_cache())
-            keys->insert("cache", "/var/empty");
+                std::tr1::shared_ptr<Repository> repo(RepositoryFactory::get_instance()->create(env, c->second));
+                if (repo->name() == main_repository_name)
+                {
+                    main_repo = repo;
+                    package_database->add_repository(3, repo);
+                }
+                else if (stringify(repo->name()) == params.master_repository_name())
+                {
+                    master_repo = repo;
+                    package_database->add_repository(2, repo);
+                }
+                else
+                    package_database->add_repository(1, repo);
+            }
+        }
+        catch (const NoGraphTopologicalOrderExistsError & x)
+        {
+            throw ConfigurationError("Repositories have circular dependencies. Unresolvable repositories are '"
+                    + join(x.remaining_nodes()->begin(), x.remaining_nodes()->end(), "', '") + "'");
+        }
 
-        if (master_repo)
-            keys->insert("master_repository", params.master_repository_name());
+        if (! main_repo)
+            throw ConfigurationError("Don't have a main repository");
 
-        if ((params.repository_dir() / "metadata" / "profiles_desc.conf").exists())
-            keys->insert("layout", "exheres");
-
-        package_database->add_repository(2, ((main_repo =
-                        RepositoryFactory::get_instance()->create(env,
-                            std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)))));
-
-        if ((! params.master_repository_name().empty()) && (! master_repo) && (params.master_repository_name() != stringify(main_repo->name())))
+        if ((! params.master_repository_name().empty()) && (! master_repo) &&
+                (params.master_repository_name() != stringify(main_repo->name())))
             throw ConfigurationError("Can't find repository '" + params.master_repository_name() + "'");
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY
