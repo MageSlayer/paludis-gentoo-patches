@@ -93,6 +93,13 @@ class TestCase_01_Repository(unittest.TestCase):
         self.assert_(not repo.some_ids_might_support_action(SupportsConfigActionTest()))
         self.assert_(irepo.some_ids_might_support_action(SupportsConfigActionTest()))
 
+    def test_12_keys(self):
+        self.assert_(repo.location_key())
+        self.assertEquals(repo.location_key().value(), repo_path)
+        self.assert_(repo.find_metadata("format"))
+        self.assertEquals(repo.find_metadata("format").value(), "ebuild")
+        self.assert_(not repo.find_metadata("asdf"))
+
 class TestCase_02_RepositoryInterfaces(unittest.TestCase):
     def setUp(self):
         global e, nce, db, repo, irepo

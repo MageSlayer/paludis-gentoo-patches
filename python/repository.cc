@@ -92,6 +92,16 @@ struct RepositoryWrapper :
     {
         return self.qa_interface();
     }
+
+    static PyObject *
+    find_metadata(const Repository & self, const std::string & key)
+    {
+        Repository::MetadataConstIterator i(self.find_metadata(key));
+        if (i != self.end_metadata())
+            return bp::incref(bp::object(*i).ptr());
+        else
+            return Py_None;
+    }
 };
 
 struct FakeRepositoryWrapper
@@ -251,6 +261,30 @@ void expose_repository()
                     bp::return_internal_reference<>()),
                 "[ro] RepositoryQAInterface"
                 )
+
+        .def("format_key", &Repository::format_key,
+                "The format_key, if not None, holds our repository's format"
+            )
+
+        .def("location_key", &Repository::location_key,
+                "The location_key, if not None, holds a file or directory containing "
+                "our repository's data."
+            )
+
+        .def("installed_root_key", &Repository::installed_root_key,
+                "The installed_root_key, if not None, specifies that we contain installed "
+                "packages at the specified root."
+            )
+
+        .add_property("metadata", bp::range(&Repository::begin_metadata, &Repository::end_metadata),
+                "[ro] Iterable of MetadataKey\n"
+                "NEED_DOC"
+                )
+
+        .def("find_metadata", &RepositoryWrapper::find_metadata,
+                "find_metadata(string) -> MetadataKey\n"
+                "NEED_DOC"
+            )
         ;
 
     /**
