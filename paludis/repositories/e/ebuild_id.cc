@@ -380,6 +380,12 @@ namespace
                 ok = false;
         }
     };
+
+    bool is_stable_keyword(const KeywordName & k)
+    {
+        char c(*stringify(k).c_str());
+        return (c != '~') && (c != '-');
+    }
 }
 
 void
@@ -401,10 +407,25 @@ EbuildID::need_masks_added() const
     }
 
     if (keywords_key())
+    {
         if (! _imp->environment->accept_keywords(keywords_key()->value(), *this))
+        {
             add_mask(make_shared_ptr(new EUnacceptedMask('K',
                             DistributionData::get_instance()->distribution_from_string(
                                 _imp->environment->distribution())->concept_keyword(), keywords_key())));
+        }
+        else if (keywords_key()->value()->end() == std::find_if(keywords_key()->value()->begin(),
+                    keywords_key()->value()->end(), &is_stable_keyword))
+        {
+            add_overridden_mask(make_shared_ptr(new OverriddenMask(
+                            make_named_values<OverriddenMask>(
+                                value_for<n::mask>(make_shared_ptr(new EUnacceptedMask('~',
+                                            DistributionData::get_instance()->distribution_from_string(
+                                                _imp->environment->distribution())->concept_keyword() + " (unstable accepted)", keywords_key()))),
+                                value_for<n::override_reason>(mro_accepted_unstable)
+                                ))));
+        }
+    }
 
     if (license_key())
     {
@@ -427,9 +448,37 @@ EbuildID::need_masks_added() const
             add_mask(make_shared_ptr(new ERepositoryMask('P', "profile", _imp->profile_mask)));
 
         /* user */
-        std::tr1::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(*this));
+        std::tr1::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(*this, false));
         if (user_mask)
             add_mask(user_mask);
+    }
+    else
+    {
+        /* repo overridden by user */
+        if (_imp->repository_mask->value())
+            add_overridden_mask(make_shared_ptr(new OverriddenMask(
+                            make_named_values<OverriddenMask>(
+                                value_for<n::mask>(make_shared_ptr(new ERepositoryMask('r', "repository (overridden)", _imp->repository_mask))),
+                                value_for<n::override_reason>(mro_overridden_by_user)
+                                ))));
+
+        /* profile unless user */
+        if (_imp->profile_mask->value())
+            add_overridden_mask(make_shared_ptr(new OverriddenMask(
+                            make_named_values<OverriddenMask>(
+                                value_for<n::mask>(make_shared_ptr(new ERepositoryMask('p', "profile (overridden)", _imp->profile_mask))),
+                                value_for<n::override_reason>(mro_overridden_by_user)
+                                ))));
+
+        /* user */
+        std::tr1::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(*this, true));
+        if (user_mask)
+            add_overridden_mask(make_shared_ptr(new OverriddenMask(
+                            make_named_values<OverriddenMask>(
+                                value_for<n::mask>(user_mask),
+                                value_for<n::override_reason>(mro_overridden_by_user)
+                                ))));
+
     }
 
     /* break portage */

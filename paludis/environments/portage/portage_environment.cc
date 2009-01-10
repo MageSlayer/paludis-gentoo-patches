@@ -804,15 +804,24 @@ namespace
     class UserConfigMask :
         public UserMask
     {
-        char key() const
-        {
-            return 'U';
-        }
+        private:
+            bool _overridden;
 
-        const std::string description() const
-        {
-            return "user";
-        }
+        public:
+            UserConfigMask(const bool o) :
+                _overridden(o)
+            {
+            }
+
+            char key() const
+            {
+                return _overridden ? 'u' : 'U';
+            }
+
+            const std::string description() const
+            {
+                return _overridden ? "user (overridden)" : "user";
+            }
     };
 }
 
@@ -837,12 +846,12 @@ PortageEnvironment::mask_for_breakage(const PackageID & id) const
 }
 
 const std::tr1::shared_ptr<const Mask>
-PortageEnvironment::mask_for_user(const PackageID & d) const
+PortageEnvironment::mask_for_user(const PackageID & d, const bool o) const
 {
     for (PackageMask::const_iterator i(_imp->package_mask.begin()), i_end(_imp->package_mask.end()) ;
             i != i_end ; ++i)
         if (match_package(*this, **i, d, MatchPackageOptions()))
-            return make_shared_ptr(new UserConfigMask);
+            return make_shared_ptr(new UserConfigMask(o));
 
     return std::tr1::shared_ptr<const Mask>();
 }

@@ -462,15 +462,24 @@ namespace
     class UserConfigMask :
         public UserMask
     {
-        char key() const
-        {
-            return 'U';
-        }
+        private:
+        bool _overridden;
 
-        const std::string description() const
-        {
-            return "user";
-        }
+        public:
+            UserConfigMask(const bool o) :
+                _overridden(o)
+            {
+            }
+
+            char key() const
+            {
+                return _overridden ? 'u' : 'U';
+            }
+
+            const std::string description() const
+            {
+                return _overridden ? "user (overridden)" : "user";
+            }
     };
 }
 
@@ -495,10 +504,10 @@ PaludisEnvironment::mask_for_breakage(const PackageID & id) const
 }
 
 const std::tr1::shared_ptr<const Mask>
-PaludisEnvironment::mask_for_user(const PackageID & d) const
+PaludisEnvironment::mask_for_user(const PackageID & d, const bool o) const
 {
     if (_imp->config->package_mask_conf()->query(d))
-        return make_shared_ptr(new UserConfigMask);
+        return make_shared_ptr(new UserConfigMask(o));
 
     return std::tr1::shared_ptr<const Mask>();
 }

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,6 +22,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/repository.hh>
@@ -29,6 +30,7 @@
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <paludis/mask.hh>
 #include <tr1/functional>
 
 using namespace paludis;
@@ -584,9 +586,19 @@ GemSpecification::need_masks_added() const
     if (! _imp->environment->unmasked_by_user(*this))
     {
         /* user */
-        std::tr1::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(*this));
+        std::tr1::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(*this, false));
         if (user_mask)
             add_mask(user_mask);
+    }
+    else
+    {
+        std::tr1::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(*this, true));
+        if (user_mask)
+            add_overridden_mask(make_shared_ptr(new OverriddenMask(
+                            make_named_values<OverriddenMask>(
+                                value_for<n::mask>(user_mask),
+                                value_for<n::override_reason>(mro_overridden_by_user)
+                                ))));
     }
 
     /* break portage */

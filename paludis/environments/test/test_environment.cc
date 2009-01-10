@@ -188,7 +188,7 @@ TestEnvironment::mask_for_breakage(const PackageID &) const
 }
 
 const std::tr1::shared_ptr<const Mask>
-TestEnvironment::mask_for_user(const PackageID &) const
+TestEnvironment::mask_for_user(const PackageID &, const bool) const
 {
     return std::tr1::shared_ptr<const Mask>();
 }

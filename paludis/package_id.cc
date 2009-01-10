@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -56,8 +56,9 @@ template class WrappedForwardIterator<Set<std::tr1::shared_ptr<const PackageID>,
 template class WrappedOutputIterator<Set<std::tr1::shared_ptr<const PackageID>, PackageIDSetComparator>::InserterTag,
          std::tr1::shared_ptr<const PackageID> >;
 
-template class WrappedForwardIterator<PackageID::MetadataConstIteratorTag, std::tr1::shared_ptr<const MetadataKey> >;
-template class WrappedForwardIterator<PackageID::MasksConstIteratorTag, std::tr1::shared_ptr<const Mask> >;
+template class WrappedForwardIterator<PackageID::MetadataConstIteratorTag, const std::tr1::shared_ptr<const MetadataKey> >;
+template class WrappedForwardIterator<PackageID::MasksConstIteratorTag, const std::tr1::shared_ptr<const Mask> >;
+template class WrappedForwardIterator<PackageID::OverriddenMasksConstIteratorTag, const std::tr1::shared_ptr<const OverriddenMask> >;
 
 namespace paludis
 {
@@ -65,6 +66,7 @@ namespace paludis
     struct Implementation<PackageID>
     {
         mutable std::list<std::tr1::shared_ptr<const Mask> > masks;
+        mutable std::list<std::tr1::shared_ptr<const OverriddenMask> > overridden_masks;
     };
 }
 
@@ -84,6 +86,12 @@ PackageID::add_mask(const std::tr1::shared_ptr<const Mask> & k) const
     _imp->masks.push_back(k);
 }
 
+void
+PackageID::add_overridden_mask(const std::tr1::shared_ptr<const OverriddenMask> & k) const
+{
+    _imp->overridden_masks.push_back(k);
+}
+
 PackageID::MasksConstIterator
 PackageID::begin_masks() const
 {
@@ -98,6 +106,20 @@ PackageID::end_masks() const
     return MasksConstIterator(_imp->masks.end());
 }
 
+PackageID::OverriddenMasksConstIterator
+PackageID::begin_overridden_masks() const
+{
+    need_masks_added();
+    return OverriddenMasksConstIterator(_imp->overridden_masks.begin());
+}
+
+PackageID::OverriddenMasksConstIterator
+PackageID::end_overridden_masks() const
+{
+    need_masks_added();
+    return OverriddenMasksConstIterator(_imp->overridden_masks.end());
+}
+
 bool
 PackageID::masked() const
 {
@@ -108,6 +130,7 @@ void
 PackageID::invalidate_masks() const
 {
     _imp->masks.clear();
+    _imp->overridden_masks.clear();
 }
 
 std::ostream &

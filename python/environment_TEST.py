@@ -103,7 +103,7 @@ class TestCase_04_Environment_subclassingd(unittest.TestCase):
         def mask_for_breakage(self, pid):
             return UserMask()
 
-        def mask_for_user(self, pid):
+        def mask_for_user(self, pid, b):
             return UserMask()
 
         def unmasked_by_user(self, pid):

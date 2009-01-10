@@ -57,7 +57,7 @@ namespace environment
 
         e.mask_for_breakage(*pid);
 
-        e.mask_for_user(*pid);
+        e.mask_for_user(*pid, false);
 
         bool PALUDIS_ATTRIBUTE((unused)) b4(e.unmasked_by_user(*pid));
 

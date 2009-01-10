@@ -93,13 +93,13 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "mask_for_breakage");
         }
 
-        virtual const std::tr1::shared_ptr<const Mask> mask_for_user(const PackageID & p) const
+        virtual const std::tr1::shared_ptr<const Mask> mask_for_user(const PackageID & p, const bool b) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
 
             if (bp::override f = get_override("mask_for_user"))
-                return f(boost::cref(p));
+                return f(boost::cref(p), b);
             else
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "mask_for_user");
         }
@@ -571,9 +571,10 @@ void expose_environment()
             )
 
         .def("mask_for_user", bp::pure_virtual(&EnvImp::mask_for_user),
-                "mask_for_user(PackageID) -> Mask\n"
+                "mask_for_user(PackageID, bool) -> Mask\n"
                 "Do we have a 'user' mask for a particular package?\n\n"
-                "Returns None if no."
+                "Returns None if no. The second parameter should be true if the mask will be overridden "
+                "and false otherwise."
             )
 
         .def("unmasked_by_user", bp::pure_virtual(&EnvImp::unmasked_by_user),

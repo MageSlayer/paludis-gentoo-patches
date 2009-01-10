@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -215,6 +215,19 @@ ConsoleQueryTask::display_versions_by_repository(const PackageDepSpec &,
                         _imp->masks_to_explain->insert((*m)->key(), (*m)->description());
                     }
                     right_column.append(render_as_masked("(" + (*e)->canonical_form(idcf_version) + ")" + reasons));
+                }
+
+                {
+                    std::string reasons;
+                    for (PackageID::OverriddenMasksConstIterator m((*e)->begin_overridden_masks()), m_end((*e)->end_overridden_masks()) ;
+                            m != m_end ; ++m)
+                    {
+                        reasons.append(stringify((*m)->mask()->key()));
+                        _imp->masks_to_explain->insert((*m)->mask()->key(), (*m)->mask()->description());
+                    }
+
+                    if (! reasons.empty())
+                        right_column.append(render_as_visible("(" + reasons + ")"));
                 }
 
                 if (**e == *display_entry)

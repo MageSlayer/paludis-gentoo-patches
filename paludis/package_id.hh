@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -102,6 +102,13 @@ namespace paludis
              * Add a new Mask.
              */
             virtual void add_mask(const std::tr1::shared_ptr<const Mask> &) const;
+
+            /**
+             * Add a new OverriddenMask.
+             *
+             * \since 0.34
+             */
+            virtual void add_overridden_mask(const std::tr1::shared_ptr<const OverriddenMask> &) const;
 
             /**
              * This method will be called before any of the mask iteration
@@ -305,13 +312,13 @@ namespace paludis
             ///\{
 
             struct MasksConstIteratorTag;
-            typedef WrappedForwardIterator<MasksConstIteratorTag, std::tr1::shared_ptr<const Mask> > MasksConstIterator;
+            typedef WrappedForwardIterator<MasksConstIteratorTag, const std::tr1::shared_ptr<const Mask> > MasksConstIterator;
 
             MasksConstIterator begin_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
             MasksConstIterator end_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
-             * Do we have any masks? Equivalent to begin_masks() != end_masks().
+             * Do we have any effective masks? Equivalent to begin_masks() != end_masks().
              */
             bool masked() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -331,6 +338,18 @@ namespace paludis
              * want packages that break Portage" mask.
              */
             virtual std::tr1::shared_ptr<const Set<std::string> > breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            ///\}
+
+            ///\name Overridden masks
+            ///\{
+            ///\since 0.34
+
+            struct OverriddenMasksConstIteratorTag;
+            typedef WrappedForwardIterator<OverriddenMasksConstIteratorTag, const std::tr1::shared_ptr<const OverriddenMask> > OverriddenMasksConstIterator;
+
+            OverriddenMasksConstIterator begin_overridden_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            OverriddenMasksConstIterator end_overridden_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
 

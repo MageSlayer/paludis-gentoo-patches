@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -46,7 +46,9 @@ namespace paludis
     namespace n
     {
         struct comment;
+        struct mask;
         struct mask_file;
+        struct override_reason;
     }
 
     /**
@@ -200,6 +202,19 @@ namespace paludis
              * Fetch the associated package.
              */
             virtual const std::tr1::shared_ptr<const PackageID> associated_package() const = 0;
+    };
+
+    /**
+     * An OverriddenMask holds a Mask and an explanation of why it has been overridden.
+     *
+     * \ingroup g_mask
+     * \since 0.34
+     */
+    struct OverriddenMask
+    {
+        NamedValue<n::mask, std::tr1::shared_ptr<const Mask> > mask;
+        NamedValue<n::override_reason, MaskOverrideReason> override_reason;
+
     };
 }
 

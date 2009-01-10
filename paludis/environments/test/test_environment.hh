@@ -92,7 +92,7 @@ namespace paludis
             virtual const std::tr1::shared_ptr<const Mask> mask_for_breakage(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::tr1::shared_ptr<const Mask> mask_for_user(const PackageID &) const
+            virtual const std::tr1::shared_ptr<const Mask> mask_for_user(const PackageID &, const bool) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool unmasked_by_user(const PackageID &) const

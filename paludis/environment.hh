@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -157,10 +157,14 @@ namespace paludis
              *
              * Returns a zero pointer if no.
              *
+             * If the second parameter is true, return a Mask suitable for
+             * being added to an OverriddenMask.
+             *
              * Used by PackageID implementations. Generally PackageID's masks methods
              * should be used rather than calling this directly.
              */
-            virtual const std::tr1::shared_ptr<const Mask> mask_for_user(const PackageID &) const
+            virtual const std::tr1::shared_ptr<const Mask> mask_for_user(const PackageID &,
+                    const bool will_be_used_for_overridden) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**

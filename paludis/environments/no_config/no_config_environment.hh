@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -171,7 +171,7 @@ namespace paludis
             virtual const std::tr1::shared_ptr<const Mask> mask_for_breakage(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::tr1::shared_ptr<const Mask> mask_for_user(const PackageID &) const
+            virtual const std::tr1::shared_ptr<const Mask> mask_for_user(const PackageID &, const bool will_be_used_for_overridden) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool unmasked_by_user(const PackageID &) const

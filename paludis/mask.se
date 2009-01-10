@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_MaskOverrideReason()
+{
+    prefix mro
+    want_destringify
+
+    key mro_accepted_unstable  "The package is unstable, but the user accepted that (for example, ~keyword)"
+    key mro_overridden_by_user "The user overrode the mask (for example, package_unmask.conf)"
+
+    doxygen_comment << "END"
+        /**
+         * The reason an OverriddenMask is overridden.
+         *
+         * \see OverriddenMask
+         * \ingroup g_mask
+         */
+END
+}
+
