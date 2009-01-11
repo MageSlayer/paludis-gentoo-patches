@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -311,24 +311,56 @@ UnpackagedID::perform_action(Action & action) const
     std::tr1::shared_ptr<const ChoiceValue> split_choice(choices_key()->value()->find_by_name_with_prefix(
                 ELikeSplitChoiceValue::canonical_name_with_prefix()));
 
-    UnpackagedStripper stripper(make_named_values<UnpackagedStripperOptions>(
-                value_for<n::debug_dir>(fs_location_key()->value() / "usr" / libdir / "debug"),
-                value_for<n::image_dir>(fs_location_key()->value()),
-                value_for<n::package_id>(shared_from_this()),
-                value_for<n::split>(split_choice && split_choice->enabled()),
-                value_for<n::strip>(strip_choice && strip_choice->enabled())
-            ));
+    switch (install_action->options.want_phase()("strip"))
+    {
+        case wp_yes:
+            {
+                UnpackagedStripper stripper(make_named_values<UnpackagedStripperOptions>(
+                            value_for<n::debug_dir>(fs_location_key()->value() / "usr" / libdir / "debug"),
+                            value_for<n::image_dir>(fs_location_key()->value()),
+                            value_for<n::package_id>(shared_from_this()),
+                            value_for<n::split>(split_choice && split_choice->enabled()),
+                            value_for<n::strip>(strip_choice && strip_choice->enabled())
+                            ));
 
-    stripper.strip();
+                stripper.strip();
+            }
+            break;
 
-    (*install_action->options.destination()).destination_interface()->merge(
-            make_named_values<MergeParams>(
-                value_for<n::environment_file>(FSEntry("/dev/null")),
-                value_for<n::image_dir>(fs_location_key()->value()),
-                value_for<n::options>(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs),
-                value_for<n::package_id>(shared_from_this()),
-                value_for<n::used_this_for_config_protect>(install_action->options.used_this_for_config_protect())
-            ));
+        case wp_skip:
+            break;
+
+        case wp_abort:
+            throw InstallActionError("Told to abort install");
+
+        case last_wp:
+            throw InternalError(PALUDIS_HERE, "bad WantPhase");
+    }
+
+    switch (install_action->options.want_phase()("merge"))
+    {
+        case wp_yes:
+            {
+                (*install_action->options.destination()).destination_interface()->merge(
+                        make_named_values<MergeParams>(
+                            value_for<n::environment_file>(FSEntry("/dev/null")),
+                            value_for<n::image_dir>(fs_location_key()->value()),
+                            value_for<n::options>(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs),
+                            value_for<n::package_id>(shared_from_this()),
+                            value_for<n::used_this_for_config_protect>(install_action->options.used_this_for_config_protect())
+                            ));
+            }
+            break;
+
+        case wp_skip:
+            break;
+
+        case wp_abort:
+            throw InstallActionError("Told to abort install");
+
+        case last_wp:
+            throw InternalError(PALUDIS_HERE, "bad WantPhase");
+    }
 }
 
 void
