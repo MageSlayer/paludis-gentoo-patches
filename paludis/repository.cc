@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -139,6 +139,15 @@ Repository::Repository(
         Log::get_instance()->message("repository.blacklisted", ll_warning, lc_no_context)
             << "Repository '" << stringify(name())
             << "' is blacklisted with reason '" << reason << "'.";
+    else if (stringify(our_name) == "paludis-extras")
+    {
+        /* Seriously guys. You've broken too many systems, wasted too much of
+         * other people's time and put off too many users who think your bugs
+         * are Paludis bugs. In a world containing kde-crazy, xeffects and
+         * sabayon, you're the only people who've warranted this kind of
+         * measure. This is no longer a joke. */
+        throw ConfigurationError("Please use a different package manager.");
+    }
 }
 
 Repository::~Repository()
