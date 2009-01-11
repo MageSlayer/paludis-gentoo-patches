@@ -53,6 +53,10 @@ _importare() {
         --show-use-descriptions \
         --show-package-descriptions \
         --continue-on-failure \
+        --skip-phase \
+        --abort-at-phase \
+        --skip-until-phase \
+        --change-phases-for \
         ${source_opts} \
         ${metadata_opts} \
         ${deplist_opts}"
@@ -103,6 +107,10 @@ _importare() {
                     ;;
                 --continue-on-failure)
                     COMPREPLY=($(compgen -W "if-fetch-only never if-satisfied if-independent always" -- "${cur}"))
+                    return 0
+                    ;;
+                --change-phases-for)
+                    COMPREPLY=($(compgen -W "all first last" -- "${cur}"))
                     return 0
                     ;;
 
