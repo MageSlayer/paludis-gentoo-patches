@@ -33,6 +33,10 @@ _importare() {
         "--show-use-descriptions[Show descriptions of USE flags]:Which:((none\:Don\'t\ show\ any\ descriptions new\:Show\ for\ new\ use\ flags changed\:Show\ for\ new\ and\ changed\ flags all\:Show for all flags))"
         "--show-package-descriptions[Show package descriptions]:When:((none\:Don\'t\ show\ any\ descriptions new\:Show\ descriptions\ for\ new\ packages all\:Show\ descriptions\ for\ all\ packages))"
         "--continue-on-failure[Whether to continue after a fetch or install error]:When:((if-fetch-only\:If\ fetching\ only never\:Never if-satisfied\:If\ remaining\ packages\ dependencies\ are\ satisfied if-independent\:If\ independent\ of\ failed\ and\ skipped\ packages always\:Always))"
+        "--skip-phase[Skip phases with a given name]:Phase: "
+        "--abort-at-phase[Abort when a phase with a given name is encountered]:Phase: "
+        "--skip-until-phase[Skip all phases until a phase with a given name is encountered]:Phase: "
+        "--change-phases-for[Control which packages to change phases for]:Target:((all\:'All packages' first\:'Only the first package on the list' last\:'Only the last package on the list'))"
     )
     deplist_descriptions='
         pre\:"As pre dependencies"

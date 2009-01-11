@@ -4,6 +4,8 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+    * Updates to zsh completions.
+
 0.34.0_alpha1:
     * Masks that have been overridden by the user are now shown.
 
