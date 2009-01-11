@@ -50,6 +50,8 @@ unavailable_repository_TEST_LDADD = \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
+unavailable_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
 EXTRA_DIST = \
 	unavailable_repository_TEST.cc \
 	unavailable_repository_TEST_setup.sh \

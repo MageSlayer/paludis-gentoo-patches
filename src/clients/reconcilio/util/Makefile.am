@@ -28,12 +28,16 @@ realpath_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a
 
+realpath_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
 wildcard_expander_TEST_SOURCES = wildcard_expander_TEST.cc
 wildcard_expander_TEST_LDADD = \
 	libreconcilioutil.a \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a
+
+wildcard_expander_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 MAINTAINERCLEANFILES = Makefile.in

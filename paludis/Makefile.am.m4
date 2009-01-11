@@ -25,7 +25,7 @@ $1_TEST_LDADD = \
 	libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
-$1_TEST_CXXFLAGS = -I$(top_srcdir) $(AM_CXXFLAGS)
+$1_TEST_CXXFLAGS = -I$(top_srcdir) $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 ')dnl
 define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.sh $1_TEST_cleanup.sh')')dnl
 define(`addhh', `define(`filelist', filelist `$1.hh')define(`headerlist', headerlist `$1.hh')')dnl
@@ -127,7 +127,7 @@ dep_list_TEST_blockers_LDADD = \
 	libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
-dep_list_TEST_blockers_CXXFLAGS = -I$(top_srcdir) $(AM_CXXFLAGS)
+dep_list_TEST_blockers_CXXFLAGS = -I$(top_srcdir) $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
 TESTS = testlist
 

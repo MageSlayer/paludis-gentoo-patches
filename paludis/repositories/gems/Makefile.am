@@ -95,11 +95,11 @@ gem_specifications_TEST_LDADD = \
 	$(top_builddir)/test/libtest.a \
 	-lsyck
 
-gems_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
-installed_gems_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
-yaml_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
-gem_specification_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
-gem_specifications_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
+gems_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+installed_gems_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+yaml_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+gem_specification_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+gem_specifications_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
 EXTRA_DIST = \
 	installed_gems_repository_TEST.cc \

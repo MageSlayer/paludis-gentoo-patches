@@ -791,6 +791,24 @@ PALUDIS_CXXFLAGS_NO_STRICT_ALIASING=$PALUDIS_CXXFLAGS
 PALUDIS_CXXFLAGS=$old_PALUDIS_CXXFLAGS
 AC_SUBST([PALUDIS_CXXFLAGS_NO_STRICT_ALIASING])
 
+AC_MSG_CHECKING([for debugging flags to move from CXXFLAGS to PALUDIS_CXXFLAGS])
+cxxflags_g=
+cxxflags_rest=
+for flag in $CXXFLAGS ; do
+	if echo $flag | grep '^-g' >/dev/null ; then
+		cxxflags_g="${cxxflags_g} ${flag}"
+	else
+		cxxflags_rest="${cxxflags_rest} ${flag}"
+	fi
+done
+AC_MSG_RESULT([$cxxflags_g])
+CXXFLAGS=$cxxflags_rest
+AC_MSG_CHECKING([for new CXXFLAGS])
+AC_MSG_RESULT([$CXXFLAGS])
+PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} ${cxxflags_g}"
+AC_MSG_CHECKING([for new PALUDIS_CXXFLAGS])
+AC_MSG_RESULT([$PALUDIS_CXXFLAGS])
+
 AC_MSG_CHECKING([whether we can turn off debugging to avoid pythons eating all your rams])
 old_PALUDIS_CXXFLAGS=$PALUDIS_CXXFLAGS
 PALUDIS_CXXFLAGS=
@@ -799,6 +817,7 @@ AC_MSG_RESULT([$PALUDIS_CXXFLAGS])
 PALUDIS_CXXFLAGS_NO_DEBUGGING=$PALUDIS_CXXFLAGS
 PALUDIS_CXXFLAGS=$old_PALUDIS_CXXFLAGS
 AC_SUBST([PALUDIS_CXXFLAGS_NO_DEBUGGING])
+
 dnl }}}
 
 dnl {{{ sandbox

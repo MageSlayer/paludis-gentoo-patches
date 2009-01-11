@@ -69,6 +69,7 @@ test_ldadd = \
 
 args_TEST_SOURCES = args_TEST.cc
 args_TEST_LDADD = $(test_ldadd)
+args_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done

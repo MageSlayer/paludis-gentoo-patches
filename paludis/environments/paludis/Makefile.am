@@ -91,18 +91,6 @@ check_SCRIPTS = paludis_environment_TEST_setup.sh paludis_environment_TEST_clean
 
 paludis_environment_TEST_SOURCES = paludis_environment_TEST.cc
 
-if MONOLITHIC
-
-paludis_environment_TEST_LDADD = \
-	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/test/libtest.a \
-	libpaludispaludisenvironment_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(DYNAMIC_LD_LIBS)
-
-else
-
 paludis_environment_TEST_LDADD = \
 	libpaludispaludisenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
@@ -111,7 +99,7 @@ paludis_environment_TEST_LDADD = \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-endif
+paludis_environment_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done

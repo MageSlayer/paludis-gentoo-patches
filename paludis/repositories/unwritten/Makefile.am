@@ -49,6 +49,8 @@ unwritten_repository_TEST_LDADD = \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
+unwritten_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
 EXTRA_DIST = \
 	unwritten_repository_TEST.cc \
 	unwritten_repository_TEST_setup.sh \

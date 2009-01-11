@@ -72,6 +72,8 @@ portage_environment_TEST_LDADD = \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
+portage_environment_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = portage_environment_TEST_setup.sh portage_environment_TEST_cleanup.sh
 

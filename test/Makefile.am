@@ -26,9 +26,11 @@ check_SCRIPTS = run_test.sh
 
 test_pass_TEST_SOURCES = test_pass_TEST.cc
 test_pass_TEST_LDADD = libtest.a
+test_pass_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
 test_fail_TEST_SOURCES = test_fail_TEST.cc
 test_fail_TEST_LDADD = libtest.a
+test_fail_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
 built-sources : $(BUILT_SOURCES)
 	for s in $(SUBDIRS) ; do $(MAKE) -C $$s built-sources || exit 1 ; done

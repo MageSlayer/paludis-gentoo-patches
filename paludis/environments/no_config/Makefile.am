@@ -60,6 +60,8 @@ no_config_environment_TEST_LDADD = \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
+no_config_environment_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
 BUILT_SOURCES = \
 	no_config_environment-se.hh \
 	no_config_environment-se.cc
