@@ -601,8 +601,8 @@ int main(int, char **)
 }
 ],
 	[AC_MSG_RESULT([already have it])],
-	[save_LDFLAGS=$LDFLAGS
-	LDFLAGS="-lrt $LDFLAGS"
+	[save_LIBS=$LIBS
+	LIBS="-lrt $LIBS"
 	AC_LINK_IFELSE([
 #include <time.h>
 #include <sys/time.h>
@@ -620,7 +620,7 @@ int main(int, char **)
 		AC_MSG_RESULT([don't know])
 		AC_MSG_ERROR([don't know how to get clock_gettime])
 	])
-	LDFLAGS=$save_LDFLAGS
+	LIBS=$save_LIBS
 	])
 
 AC_SUBST([PTHREAD_LIBS])
