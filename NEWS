@@ -4,6 +4,14 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.34.0_alpha2:
+    * Unpackaged repository now defines merge and strip phases, making phases
+      useful for importare.
+
+    * Fixed build errors on certain systems.
+
+    * Stop pythons from eating all your rams when compiling.
+
     * Updates to zsh completions.
 
 0.34.0_alpha1:
