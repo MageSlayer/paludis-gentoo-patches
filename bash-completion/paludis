@@ -107,6 +107,10 @@ _paludis() {
         --show-use-descriptions \
         --show-package-descriptions \
         --continue-on-failure \
+        --skip-phase \
+        --abort-at-phase \
+        --skip-until-phase \
+        --change-phases-for \
         --compact \
         ${deplist_opts}"
     uninstall_opts="--pretend -p \
@@ -231,7 +235,10 @@ _paludis() {
                     COMPREPLY=($(compgen -W "if-fetch-only never if-satisfied if-independent always" -- "${cur}"))
                     return 0
                     ;;
-
+                --change-phases-for)
+                    COMPREPLY=($(compgen -W "all first last" -- "${cur}"))
+                    return 0
+                    ;;
                 --dl-reinstall)
                     COMPREPLY=($(compgen -W "never always if-use-changed" -- "${cur}"))
                     return 0
