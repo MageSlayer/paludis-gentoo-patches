@@ -60,6 +60,7 @@ namespace paludis
                             value_for<n::default_profile_eapi>(k->get("default_profile_eapi")),
                             value_for<n::default_provides_cache>(k->get("default_provides_cache")),
                             value_for<n::default_write_cache>(k->get("default_write_cache")),
+                            value_for<n::news_directory>(FSEntry(k->get("news_directory"))),
                             value_for<n::qa_category_dir_checks>(make_set(k->get("qa_category_dir_checks"))),
                             value_for<n::qa_eclass_file_contents_checks>(make_set(k->get("qa_eclass_file_contents_checks"))),
                             value_for<n::qa_package_dir_checks>(make_set(k->get("qa_package_dir_checks"))),

@@ -20,6 +20,7 @@
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/e_repository_news.hh>
 #include <paludis/repositories/e/eapi.hh>
+#include <paludis/repositories/e/extra_distribution_data.hh>
 
 #include <paludis/util/config_file.hh>
 #include <paludis/environment.hh>
@@ -31,6 +32,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/distribution.hh>
 #include <paludis/elike_package_dep_spec.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
@@ -43,6 +45,7 @@
 #include <list>
 
 using namespace paludis;
+using namespace paludis::erepository;
 
 template class WrappedForwardIterator<NewsFile::DisplayIfInstalledConstIteratorTag, const std::string>;
 template class WrappedForwardIterator<NewsFile::DisplayIfKeywordConstIteratorTag, const std::string>;
@@ -62,6 +65,7 @@ namespace paludis
         const ERepository * const e_repository;
         const erepository::ERepositoryParams params;
 
+        const FSEntry news_directory;
         const FSEntry skip_file;
         const FSEntry unread_file;
 
@@ -70,9 +74,12 @@ namespace paludis
             environment(e),
             e_repository(p),
             params(k),
-            skip_file(e->root() / "var" / "lib" / "gentoo" / "news" /
+            news_directory(EExtraDistributionData::get_instance()->data_from_distribution(
+                        *DistributionData::get_instance()->distribution_from_string(
+                            e->distribution()))->news_directory()),
+            skip_file(e->root() / news_directory /
                     ("news-" + stringify(e_repository->name()) + ".skip")),
-            unread_file(e->root() / "var" / "lib" / "gentoo" / "news" /
+            unread_file(e->root() / news_directory /
                     ("news-" + stringify(e_repository->name()) + ".unread"))
         {
         }

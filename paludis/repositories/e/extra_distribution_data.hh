@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_PALUDIS_REPOSITORIES_E_EXTRA_DISTRIBUTION_DATA_HH 1
 
 #include <paludis/distribution-fwd.hh>
+#include <paludis/util/fs_entry.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/set.hh>
 #include <tr1/memory>
@@ -39,6 +40,7 @@ namespace paludis
         struct default_profile_eapi;
         struct default_provides_cache;
         struct default_write_cache;
+        struct news_directory;
         struct qa_category_dir_checks;
         struct qa_eclass_file_contents_checks;
         struct qa_package_dir_checks;
@@ -60,6 +62,7 @@ namespace paludis
             NamedValue<n::default_profile_eapi, std::string> default_profile_eapi;
             NamedValue<n::default_provides_cache, std::string> default_provides_cache;
             NamedValue<n::default_write_cache, std::string> default_write_cache;
+            NamedValue<n::news_directory, FSEntry> news_directory;
             NamedValue<n::qa_category_dir_checks, std::tr1::shared_ptr<const Set<std::string> > > qa_category_dir_checks;
             NamedValue<n::qa_eclass_file_contents_checks, std::tr1::shared_ptr<const Set<std::string> > > qa_eclass_file_contents_checks;
             NamedValue<n::qa_package_dir_checks, std::tr1::shared_ptr<const Set<std::string> > > qa_package_dir_checks;
