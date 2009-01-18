@@ -58,9 +58,17 @@ namespace paludis
         const PackageID * const id;
         const Environment * const env;
 
-        Implementation(const PackageID * const i, const Environment * const e) :
+        const std::string raw_name;
+        const std::string human_name;
+        const MetadataKeyType type;
+
+        Implementation(const PackageID * const i, const Environment * const e,
+                const std::string & r, const std::string & h, const MetadataKeyType t) :
             id(i),
-            env(e)
+            env(e),
+            raw_name(r),
+            human_name(h),
+            type(t)
         {
         }
     };
@@ -70,8 +78,7 @@ template <typename C_>
 FakeMetadataCollectionKey<C_>::FakeMetadataCollectionKey(
         const std::string & r, const std::string & h, const MetadataKeyType t, const PackageID * const i,
         const Environment * const e) :
-    MetadataCollectionKey<C_>(r, h, t),
-    PrivateImplementationPattern<FakeMetadataCollectionKey<C_> >(new Implementation<FakeMetadataCollectionKey<C_> >(i, e)),
+    PrivateImplementationPattern<FakeMetadataCollectionKey<C_> >(new Implementation<FakeMetadataCollectionKey<C_> >(i, e, r, h, t)),
     _imp(PrivateImplementationPattern<FakeMetadataCollectionKey<C_> >::_imp)
 {
 }
@@ -85,7 +92,28 @@ template <typename C_>
 const std::tr1::shared_ptr<const C_>
 FakeMetadataCollectionKey<C_>::value() const
 {
-    return _imp->collection;
+    return this->_imp->collection;
+}
+
+template <typename C_>
+const std::string
+FakeMetadataCollectionKey<C_>::raw_name() const
+{
+    return this->_imp->raw_name;
+}
+
+template <typename C_>
+const std::string
+FakeMetadataCollectionKey<C_>::human_name() const
+{
+    return this->_imp->human_name;
+}
+
+template <typename C_>
+MetadataKeyType
+FakeMetadataCollectionKey<C_>::type() const
+{
+    return this->_imp->type;
 }
 
 FakeMetadataKeywordSetKey::FakeMetadataKeywordSetKey(const std::string & r,
@@ -115,8 +143,16 @@ namespace paludis
         std::string string_value;
         const std::tr1::function<const std::tr1::shared_ptr<const C_> (const std::string &)> func;
 
-        Implementation(const std::tr1::function<const std::tr1::shared_ptr<const C_> (const std::string &)> & f) :
-            func(f)
+        const std::string raw_name;
+        const std::string human_name;
+        const MetadataKeyType type;
+
+        Implementation(const std::tr1::function<const std::tr1::shared_ptr<const C_> (const std::string &)> & f,
+                const std::string & r, const std::string & h, const MetadataKeyType t) :
+            func(f),
+            raw_name(r),
+            human_name(h),
+            type(t)
         {
         }
     };
@@ -129,9 +165,17 @@ namespace paludis
         const std::tr1::function<const std::tr1::shared_ptr<const FetchableURISpecTree> (const std::string &)> func;
         std::tr1::shared_ptr<const URILabel> initial_label;
 
-        Implementation(const std::tr1::function<const std::tr1::shared_ptr<const FetchableURISpecTree> (const std::string &)> & f) :
+        const std::string raw_name;
+        const std::string human_name;
+        const MetadataKeyType type;
+
+        Implementation(const std::tr1::function<const std::tr1::shared_ptr<const FetchableURISpecTree> (const std::string &)> & f,
+                const std::string & r, const std::string & h, const MetadataKeyType t) :
             func(f),
-            initial_label(new URIListedThenMirrorsLabel("listed-then-mirrors"))
+            initial_label(new URIListedThenMirrorsLabel("listed-then-mirrors")),
+            raw_name(r),
+            human_name(h),
+            type(t)
         {
         }
     };
@@ -144,10 +188,18 @@ namespace paludis
         const std::tr1::function<const std::tr1::shared_ptr<const DependencySpecTree> (const std::string &)> func;
         std::tr1::shared_ptr<const DependencyLabelSequence> labels;
 
+        const std::string raw_name;
+        const std::string human_name;
+        const MetadataKeyType type;
+
         Implementation(const std::tr1::function<const std::tr1::shared_ptr<const DependencySpecTree> (const std::string &)> & f,
-                const std::tr1::shared_ptr<const DependencyLabelSequence> & s) :
+                const std::tr1::shared_ptr<const DependencyLabelSequence> & s,
+                const std::string & r, const std::string & h, const MetadataKeyType t) :
             func(f),
-            labels(s)
+            labels(s),
+            raw_name(r),
+            human_name(h),
+            type(t)
         {
         }
     };
@@ -156,8 +208,7 @@ namespace paludis
 template <typename C_>
 FakeMetadataSpecTreeKey<C_>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
         const std::tr1::function<const std::tr1::shared_ptr<const C_> (const std::string &)> & f, const MetadataKeyType t) :
-    MetadataSpecTreeKey<C_>(r, h, t),
-    PrivateImplementationPattern<FakeMetadataSpecTreeKey<C_> >(new Implementation<FakeMetadataSpecTreeKey<C_> >(f)),
+    PrivateImplementationPattern<FakeMetadataSpecTreeKey<C_> >(new Implementation<FakeMetadataSpecTreeKey<C_> >(f, r, h, t)),
     _imp(PrivateImplementationPattern<FakeMetadataSpecTreeKey<C_> >::_imp)
 {
     set_from_string(v);
@@ -184,6 +235,27 @@ FakeMetadataSpecTreeKey<C_>::value() const
 }
 
 template <typename C_>
+const std::string
+FakeMetadataSpecTreeKey<C_>::raw_name() const
+{
+    return this->_imp->raw_name;
+}
+
+template <typename C_>
+const std::string
+FakeMetadataSpecTreeKey<C_>::human_name() const
+{
+    return this->_imp->human_name;
+}
+
+template <typename C_>
+MetadataKeyType
+FakeMetadataSpecTreeKey<C_>::type() const
+{
+    return this->_imp->type;
+}
+
+template <typename C_>
 std::string
 FakeMetadataSpecTreeKey<C_>::pretty_print(const typename C_::ItemFormatter &) const
 {
@@ -199,9 +271,8 @@ FakeMetadataSpecTreeKey<C_>::pretty_print_flat(const typename C_::ItemFormatter 
 
 FakeMetadataSpecTreeKey<FetchableURISpecTree>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
         const std::tr1::function<const std::tr1::shared_ptr<const FetchableURISpecTree> (const std::string &)> & f, const MetadataKeyType t) :
-    MetadataSpecTreeKey<FetchableURISpecTree>(r, h, t),
     PrivateImplementationPattern<FakeMetadataSpecTreeKey<FetchableURISpecTree> >(
-            new Implementation<FakeMetadataSpecTreeKey<FetchableURISpecTree> >(f)),
+            new Implementation<FakeMetadataSpecTreeKey<FetchableURISpecTree> >(f, r, h, t)),
     _imp(PrivateImplementationPattern<FakeMetadataSpecTreeKey<FetchableURISpecTree> >::_imp)
 {
     set_from_string(v);
@@ -216,6 +287,24 @@ FakeMetadataSpecTreeKey<FetchableURISpecTree>::set_from_string(const std::string
 {
     _imp->string_value = s;
     _imp->value = _imp->func(s);
+}
+
+const std::string
+FakeMetadataSpecTreeKey<FetchableURISpecTree>::raw_name() const
+{
+    return _imp->raw_name;
+}
+
+const std::string
+FakeMetadataSpecTreeKey<FetchableURISpecTree>::human_name() const
+{
+    return _imp->human_name;
+}
+
+MetadataKeyType
+FakeMetadataSpecTreeKey<FetchableURISpecTree>::type() const
+{
+    return _imp->type;
 }
 
 const std::tr1::shared_ptr<const FetchableURISpecTree>
@@ -245,9 +334,8 @@ FakeMetadataSpecTreeKey<FetchableURISpecTree>::initial_label() const
 FakeMetadataSpecTreeKey<DependencySpecTree>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
         const std::tr1::function<const std::tr1::shared_ptr<const DependencySpecTree> (const std::string &)> & f,
         const std::tr1::shared_ptr<const DependencyLabelSequence> & s, const MetadataKeyType t) :
-    MetadataSpecTreeKey<DependencySpecTree>(r, h, t),
     PrivateImplementationPattern<FakeMetadataSpecTreeKey<DependencySpecTree> >(
-            new Implementation<FakeMetadataSpecTreeKey<DependencySpecTree> >(f, s)),
+            new Implementation<FakeMetadataSpecTreeKey<DependencySpecTree> >(f, s, r, h, t)),
     _imp(PrivateImplementationPattern<FakeMetadataSpecTreeKey<DependencySpecTree> >::_imp)
 {
     set_from_string(v);
@@ -286,6 +374,24 @@ const std::tr1::shared_ptr<const DependencyLabelSequence>
 FakeMetadataSpecTreeKey<DependencySpecTree>::initial_labels() const
 {
     return _imp->labels;
+}
+
+const std::string
+FakeMetadataSpecTreeKey<DependencySpecTree>::raw_name() const
+{
+    return _imp->raw_name;
+}
+
+const std::string
+FakeMetadataSpecTreeKey<DependencySpecTree>::human_name() const
+{
+    return _imp->human_name;
+}
+
+MetadataKeyType
+FakeMetadataSpecTreeKey<DependencySpecTree>::type() const
+{
+    return _imp->type;
 }
 
 namespace paludis
@@ -368,7 +474,6 @@ namespace
 
 FakeMetadataChoicesKey::FakeMetadataChoicesKey(const Environment * const e,
         const std::tr1::shared_ptr<const PackageID> & i) :
-    MetadataValueKey<std::tr1::shared_ptr<const Choices> >("Choices", "Choices", mkt_normal),
     PrivateImplementationPattern<FakeMetadataChoicesKey>(new Implementation<FakeMetadataChoicesKey>(e, i)),
     _imp(PrivateImplementationPattern<FakeMetadataChoicesKey>::_imp)
 {
@@ -397,6 +502,24 @@ const std::tr1::shared_ptr<const Choices>
 FakeMetadataChoicesKey::value() const
 {
     return _imp->value;
+}
+
+const std::string
+FakeMetadataChoicesKey::raw_name() const
+{
+    return "PALUDIS_CHOICES";
+}
+
+const std::string
+FakeMetadataChoicesKey::human_name() const
+{
+    return "Choices";
+}
+
+MetadataKeyType
+FakeMetadataChoicesKey::type() const
+{
+    return mkt_internal;
 }
 
 namespace paludis

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,6 +38,10 @@ namespace paludis
                 const Environment * const _env;
                 const std::tr1::shared_ptr<PackageIDSequence> _v;
 
+                const std::string _r;
+                const std::string _h;
+                const MetadataKeyType _t;
+
             public:
                 PackageIDSequenceKey(const Environment * const,
                         const std::string &, const std::string &, const MetadataKeyType);
@@ -49,6 +53,10 @@ namespace paludis
 
                 virtual std::string pretty_print_flat(const Formatter<PackageID> &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class PackageIDKey :
@@ -56,6 +64,10 @@ namespace paludis
         {
             private:
                 const CRANPackageID * const _v;
+
+                const std::string _r;
+                const std::string _h;
+                const MetadataKeyType _t;
 
             public:
                 PackageIDKey(const std::string &, const std::string &, const CRANPackageID * const, const MetadataKeyType);
@@ -65,6 +77,10 @@ namespace paludis
 
                 virtual std::string pretty_print(const Formatter<PackageID> &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class DepKey :
@@ -92,6 +108,10 @@ namespace paludis
 
                 virtual const std::tr1::shared_ptr<const DependencyLabelSequence> initial_labels() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

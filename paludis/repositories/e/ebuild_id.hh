@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -118,7 +118,7 @@ namespace paludis
                 void load_build_depend(const std::string &, const std::string &, const std::string &) const;
                 void load_run_depend(const std::string &, const std::string &, const std::string &) const;
                 void load_post_depend(const std::string &, const std::string &, const std::string &) const;
-                void load_src_uri(const std::string &, const std::string &, const std::string &) const;
+                void load_src_uri(const std::tr1::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_homepage(const std::string &, const std::string &, const std::string &) const;
                 void load_license(const std::string &, const std::string &, const std::string &) const;
                 void load_provide(const std::string &, const std::string &, const std::string &) const;

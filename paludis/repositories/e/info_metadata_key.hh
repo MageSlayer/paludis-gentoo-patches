@@ -30,22 +30,27 @@ namespace paludis
                         const std::tr1::shared_ptr<const FSEntrySequence> & f,
                         const ERepository * const);
                 ~InfoPkgsMetadataKey();
+
+                virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class InfoVarsMetadataKey :
             public MetadataCollectionKey<Set<std::string> >,
             private PrivateImplementationPattern<InfoVarsMetadataKey>
         {
-            private:
-                PrivateImplementationPattern<InfoVarsMetadataKey>::ImpPtr & _imp;
-
             public:
                 InfoVarsMetadataKey(const std::tr1::shared_ptr<const FSEntrySequence> &);
                 ~InfoVarsMetadataKey();
 
                 const std::tr1::shared_ptr<const Set<std::string> > value() const;
 
-               std::string pretty_print_flat(const Formatter<std::string> &) const;
+                std::string pretty_print_flat(const Formatter<std::string> &) const;
+
+                virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 

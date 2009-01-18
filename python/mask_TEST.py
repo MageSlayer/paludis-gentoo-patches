@@ -124,7 +124,7 @@ class TestCase_02_Masks_subclassing(unittest.TestCase):
                 return "test"
 
             def unaccepted_key(self):
-                return MetadataStringKey("raw", "human", MetadataKeyType.NORMAL)
+                return MetadataStringKey()
 
         test_unaccepted_mask(TestUnacceptedMask())
 
@@ -137,7 +137,7 @@ class TestCase_02_Masks_subclassing(unittest.TestCase):
                 return "test"
 
             def mask_key(self):
-                return MetadataStringKey("raw", "human", MetadataKeyType.NORMAL)
+                return MetadataStringKey()
 
         test_repository_mask(TestRepositoryMask())
 

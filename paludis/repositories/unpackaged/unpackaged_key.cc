@@ -43,11 +43,19 @@ namespace paludis
         const std::tr1::shared_ptr<const DependencySpecTree> value;
         const std::tr1::shared_ptr<const DependencyLabelSequence> labels;
 
+        const std::string raw_name;
+        const std::string human_name;
+        const MetadataKeyType type;
+
         Implementation(const Environment * const e, const std::string & v,
-                const std::tr1::shared_ptr<const DependencyLabelSequence> & l) :
+                const std::tr1::shared_ptr<const DependencyLabelSequence> & l,
+                const std::string & r, const std::string & h, const MetadataKeyType t) :
             env(e),
             value(DepParser::parse(env, v)),
-            labels(l)
+            labels(l),
+            raw_name(r),
+            human_name(h),
+            type(t)
         {
         }
     };
@@ -57,9 +65,7 @@ UnpackagedDependencyKey::UnpackagedDependencyKey(const Environment * const env,
         const std::string & r, const std::string & h, const MetadataKeyType t,
         const std::tr1::shared_ptr<const DependencyLabelSequence> & l,
         const std::string & v) :
-    MetadataSpecTreeKey<DependencySpecTree>(r, h, t),
-    PrivateImplementationPattern<UnpackagedDependencyKey>(new Implementation<UnpackagedDependencyKey>(env, v, l)),
-    _imp(PrivateImplementationPattern<UnpackagedDependencyKey>::_imp)
+    PrivateImplementationPattern<UnpackagedDependencyKey>(new Implementation<UnpackagedDependencyKey>(env, v, l, r, h, t))
 {
 }
 
@@ -71,6 +77,24 @@ const std::tr1::shared_ptr<const DependencySpecTree>
 UnpackagedDependencyKey::value() const
 {
     return _imp->value;
+}
+
+const std::string
+UnpackagedDependencyKey::raw_name() const
+{
+    return _imp->raw_name;
+}
+
+const std::string
+UnpackagedDependencyKey::human_name() const
+{
+    return _imp->human_name;
+}
+
+MetadataKeyType
+UnpackagedDependencyKey::type() const
+{
+    return _imp->type;
 }
 
 std::string
@@ -106,9 +130,17 @@ namespace paludis
         mutable Mutex mutex;
         mutable std::tr1::shared_ptr<Choices> value;
 
-        Implementation(const Environment * const e, const UnpackagedID * const i) :
+        const std::string raw_name;
+        const std::string human_name;
+        const MetadataKeyType type;
+
+        Implementation(const Environment * const e, const UnpackagedID * const i,
+                const std::string & r, const std::string & h, const MetadataKeyType t) :
             env(e),
-            id(i)
+            id(i),
+            raw_name(r),
+            human_name(h),
+            type(t)
         {
         }
     };
@@ -116,9 +148,7 @@ namespace paludis
 
 UnpackagedChoicesKey::UnpackagedChoicesKey(const Environment * const env, const std::string & r, const std::string & h,
         const MetadataKeyType t, const UnpackagedID * const id) :
-    MetadataValueKey<std::tr1::shared_ptr<const Choices> >(r, h, t),
-    PrivateImplementationPattern<UnpackagedChoicesKey>(new Implementation<UnpackagedChoicesKey>(env, id)),
-    _imp(PrivateImplementationPattern<UnpackagedChoicesKey>::_imp)
+    PrivateImplementationPattern<UnpackagedChoicesKey>(new Implementation<UnpackagedChoicesKey>(env, id, r, h, t))
 {
 }
 
@@ -141,5 +171,23 @@ UnpackagedChoicesKey::value() const
     }
 
     return _imp->value;
+}
+
+const std::string
+UnpackagedChoicesKey::raw_name() const
+{
+    return _imp->raw_name;
+}
+
+const std::string
+UnpackagedChoicesKey::human_name() const
+{
+    return _imp->human_name;
+}
+
+MetadataKeyType
+UnpackagedChoicesKey::type() const
+{
+    return _imp->type;
 }
 

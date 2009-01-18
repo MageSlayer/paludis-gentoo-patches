@@ -490,7 +490,7 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
     }
 
     if (! m.src_uri()->name().empty())
-        id->load_src_uri(m.src_uri()->name(), m.src_uri()->description(), get(keys, m.src_uri()->name()));
+        id->load_src_uri(m.src_uri(), get(keys, m.src_uri()->name()));
 
     if (! m.homepage()->name().empty())
         id->load_homepage(m.homepage()->name(), m.homepage()->description(), get(keys, m.homepage()->name()));

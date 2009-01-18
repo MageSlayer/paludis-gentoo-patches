@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -58,7 +58,6 @@ namespace
 
         public:
             ExndbamContentsKey(const PackageID * const i, const NDBAM * const d) :
-                MetadataValueKey<std::tr1::shared_ptr<const Contents> > ("contents", "Contents", mkt_internal),
                 _id(i),
                 _db(d)
             {
@@ -78,6 +77,21 @@ namespace
                         std::tr1::bind(&create_sym, std::tr1::ref(*_v), _1, _2)
                         );
                 return _v;
+            }
+
+            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return "contents";
+            }
+
+            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return "Contents";
+            }
+
+            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return mkt_internal;
             }
     };
 }

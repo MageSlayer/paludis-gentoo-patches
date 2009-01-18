@@ -178,7 +178,7 @@ namespace
             id->set_slot(SlotName(lines.at(m.slot()->flat_list_index())));
 
             if (-1 != m.src_uri()->flat_list_index() && ! m.src_uri()->name().empty())
-                id->load_src_uri(m.src_uri()->name(), m.src_uri()->description(), lines.at(m.src_uri()->flat_list_index()));
+                id->load_src_uri(m.src_uri(), lines.at(m.src_uri()->flat_list_index()));
 
             if (-1 != m.restrictions()->flat_list_index() && ! m.restrictions()->name().empty())
                 id->load_restrict(m.restrictions()->name(), m.restrictions()->description(), lines.at(m.restrictions()->flat_list_index()));
@@ -492,7 +492,7 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
                 id->set_slot(SlotName(keys[m.slot()->name()]));
 
                 if (! m.src_uri()->name().empty())
-                    id->load_src_uri(m.src_uri()->name(), m.src_uri()->description(), keys[m.src_uri()->name()]);
+                    id->load_src_uri(m.src_uri(), keys[m.src_uri()->name()]);
 
                 if (! m.restrictions()->name().empty())
                     id->load_restrict(m.restrictions()->name(), m.restrictions()->description(), keys[m.restrictions()->name()]);

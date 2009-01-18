@@ -62,7 +62,6 @@ namespace
 
         public:
             InstalledUnpackagedFSEntryKey(const FSEntry & l) :
-                MetadataValueKey<FSEntry> ("location", "Location", mkt_internal),
                 _location(l)
             {
             }
@@ -70,6 +69,21 @@ namespace
             const FSEntry value() const
             {
                 return _location;
+            }
+
+            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return "location";
+            }
+
+            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return "Location";
+            }
+
+            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return mkt_internal;
             }
     };
 
@@ -99,7 +113,6 @@ namespace
 
         public:
             InstalledUnpackagedContentsKey(const PackageID * const i, const NDBAM * const d) :
-                MetadataValueKey<std::tr1::shared_ptr<const Contents> > ("contents", "Contents", mkt_internal),
                 _id(i),
                 _db(d)
             {
@@ -120,6 +133,21 @@ namespace
                         );
                 return _v;
             }
+
+            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return "contents";
+            }
+
+            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return "Contents";
+            }
+
+            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return mkt_internal;
+            }
     };
 
     class InstalledUnpackagedTimeKey :
@@ -130,7 +158,6 @@ namespace
 
         public:
             InstalledUnpackagedTimeKey(const FSEntry & f) :
-                MetadataTimeKey("installed_time", "Installed time", mkt_normal),
                 _time(f.mtime())
             {
             }
@@ -138,6 +165,21 @@ namespace
             time_t value() const
             {
                 return _time;
+            }
+
+            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return "installed_time";
+            }
+
+            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return "Installed time";
+            }
+
+            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return mkt_normal;
             }
     };
 
@@ -149,10 +191,16 @@ namespace
             mutable Mutex _mutex;
             const FSEntry _f;
 
+            const std::string _raw_name;
+            const std::string _human_name;
+            const MetadataKeyType _type;
+
         public:
             InstalledUnpackagedStringKey(const std::string & r, const std::string & h, const FSEntry & f, const MetadataKeyType t) :
-                MetadataValueKey<std::string> (r, h, t),
-                _f(f)
+                _f(f),
+                _raw_name(r),
+                _human_name(h),
+                _type(t)
             {
             }
 
@@ -171,6 +219,21 @@ namespace
                             strip_trailing(std::string((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>()), "\n")));
                 return *_v;
             }
+
+            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return _raw_name;
+            }
+
+            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return _human_name;
+            }
+
+            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return _type;
+            }
     };
 
     class InstalledUnpackagedStringSetKey :
@@ -181,9 +244,15 @@ namespace
             mutable Mutex _mutex;
             FSEntrySequence _f;
 
+            const std::string _raw_name;
+            const std::string _human_name;
+            const MetadataKeyType _type;
+
         public:
             InstalledUnpackagedStringSetKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
-                MetadataCollectionKey<Set<std::string> > (r, h, t)
+                _raw_name(r),
+                _human_name(h),
+                _type(t)
             {
             }
 
@@ -219,6 +288,21 @@ namespace
                 using namespace std::tr1::placeholders;
                 return join(value()->begin(), value()->end(), " ", std::tr1::bind(&format_string, _1, f));
             }
+
+            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return _raw_name;
+            }
+
+            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return _human_name;
+            }
+
+            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return _type;
+            }
     };
 
     class InstalledUnpackagedDependencyKey :
@@ -231,14 +315,20 @@ namespace
             const FSEntry _f;
             const std::tr1::shared_ptr<const DependencyLabelSequence> _labels;
 
+            const std::string _raw_name;
+            const std::string _human_name;
+            const MetadataKeyType _type;
+
         public:
             InstalledUnpackagedDependencyKey(const Environment * const e,
                     const std::string & r, const std::string & h, const FSEntry & f,
                     const std::tr1::shared_ptr<const DependencyLabelSequence> & l, const MetadataKeyType t) :
-                MetadataSpecTreeKey<DependencySpecTree>(r, h, t),
                 _env(e),
                 _f(f),
-                _labels(l)
+                _labels(l),
+                _raw_name(r),
+                _human_name(h),
+                _type(t)
             {
             }
 
@@ -278,6 +368,21 @@ namespace
             const std::tr1::shared_ptr<const DependencyLabelSequence> initial_labels() const
             {
                 return _labels;
+            }
+
+            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return _raw_name;
+            }
+
+            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return _human_name;
+            }
+
+            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return _type;
             }
     };
 }

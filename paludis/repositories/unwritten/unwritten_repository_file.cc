@@ -106,10 +106,16 @@ namespace
     {
         const std::tr1::shared_ptr<const SimpleURISpecTree> vv;
 
+        const std::string _raw_name;
+        const std::string _human_name;
+        const MetadataKeyType _type;
+
         UnwrittenHomepageKey(const std::string & r, const std::string & h, const MetadataKeyType t,
                 const std::tr1::shared_ptr<const SimpleURISpecTree> & v) :
-            MetadataSpecTreeKey<SimpleURISpecTree>(r, h, t),
-            vv(v)
+            vv(v),
+            _raw_name(r),
+            _human_name(h),
+            _type(t)
         {
         }
 
@@ -130,6 +136,21 @@ namespace
             UnwrittenHomepagePrinter p(f);
             value()->root()->accept(p);
             return p.s.str();
+        }
+
+        virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            return _raw_name;
+        }
+
+        virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            return _human_name;
+        }
+
+        virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            return _type;
         }
     };
 }

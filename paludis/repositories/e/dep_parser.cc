@@ -288,8 +288,7 @@ namespace
     struct AnnotationsKey :
         MetadataSectionKey
     {
-        AnnotationsKey(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m) :
-            MetadataSectionKey("Annotations", "Annotations", mkt_normal)
+        AnnotationsKey(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m)
         {
             for (Map<std::string, std::string>::ConstIterator k(m->begin()), k_end(m->end()) ;
                     k != k_end ; ++k)
@@ -298,6 +297,21 @@ namespace
 
         void need_keys_added() const
         {
+        }
+
+        virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            return "Annotations";
+        }
+
+        virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            return "Annotations";
+        }
+
+        virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            return mkt_normal;
         }
     };
 

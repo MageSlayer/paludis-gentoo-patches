@@ -69,32 +69,59 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
     def test_01_package_id(self):
         class TestKey(MetadataPackageIDKey):
             def __init__(self):
-                MetadataPackageIDKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
+                MetadataPackageIDKey.__init__(self)
 
             def value(self):
                 e = NoConfigEnvironment(repo_path, "/var/empty")
                 pid = iter(e.package_database.fetch_repository("testrepo").package_ids("foo/bar")).next()
                 return pid
 
+            def raw_name(self):
+                return "raw"
+
+            def human_name(self):
+                return "human"
+
+            def type(self):
+                return MetadataKeyType.NORMAL
+
         test_metadata_package_id_key(TestKey())
 
     def test_02_string(self):
         class TestKey(MetadataStringKey):
             def __init__(self):
-                MetadataStringKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
+                MetadataStringKey.__init__(self)
 
             def value(self):
                 return "str"
+
+            def raw_name(self):
+                return "raw"
+
+            def human_name(self):
+                return "human"
+
+            def type(self):
+                return MetadataKeyType.NORMAL
 
         test_metadata_string_key(TestKey())
 
     def test_03_time(self):
         class TestKey(MetadataTimeKey):
             def __init__(self):
-                MetadataTimeKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
+                MetadataTimeKey.__init__(self)
 
             def value(self):
                 return 123
+
+            def raw_name(self):
+                return "raw"
+
+            def human_name(self):
+                return "human"
+
+            def type(self):
+                return MetadataKeyType.NORMAL
 
         test_metadata_time_key(TestKey())
 
@@ -102,27 +129,45 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
     def test_04_contents(self):
         class TestKey(MetadataContentsKey):
             def __init__(self):
-                MetadataContentsKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
+                MetadataContentsKey.__init__(self)
 
             def value(self):
                 return Contents()
+
+            def raw_name(self):
+                return "raw"
+
+            def human_name(self):
+                return "human"
+
+            def type(self):
+                return MetadataKeyType.NORMAL
 
         test_metadata_contents_key(TestKey())
 
     def test_05_repository_mask_info(self):
         class TestKey(MetadataRepositoryMaskInfoKey):
             def __init__(self):
-                MetadataRepositoryMaskInfoKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
+                MetadataRepositoryMaskInfoKey.__init__(self)
 
             def value(self):
                 return RepositoryMaskInfo(["comment"], "/foo")
+
+            def raw_name(self):
+                return "raw"
+
+            def human_name(self):
+                return "human"
+
+            def type(self):
+                return MetadataKeyType.NORMAL
 
         test_metadata_repository_mask_info_key(TestKey())
 
     def test_06_keyword_name_iterable(self):
         class TestKey(MetadataKeywordNameIterableKey):
             def __init__(self):
-                MetadataKeywordNameIterableKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
+                MetadataKeywordNameIterableKey.__init__(self)
 
             def value(self):
                 return ["keyword"]
@@ -130,13 +175,22 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def pretty_print_flat(self, f):
                 return f.format_keyword_name_plain(KeywordName("foo"))
 
+            def raw_name(self):
+                return "raw"
+
+            def human_name(self):
+                return "human"
+
+            def type(self):
+                return MetadataKeyType.NORMAL
+
         test_metadata_keyword_name_set_key(TestKey())
 
 
     def test_09_string_iterable(self):
         class TestKey(MetadataStringIterableKey):
             def __init__(self):
-                MetadataStringIterableKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
+                MetadataStringIterableKey.__init__(self)
 
             def value(self):
                 return ["string"]
@@ -144,12 +198,21 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def pretty_print_flat(self, f):
                 return f.format_string_plain("foo")
 
+            def raw_name(self):
+                return "raw"
+
+            def human_name(self):
+                return "human"
+
+            def type(self):
+                return MetadataKeyType.NORMAL
+
         test_metadata_string_set_key(TestKey())
 
     def test_10_license_spec_tree(self):
         class TestKey(MetadataLicenseSpecTreeKey):
             def __init__(self):
-                MetadataLicenseSpecTreeKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
+                MetadataLicenseSpecTreeKey.__init__(self)
 
             def value(self):
                 return AllDepSpec()
@@ -164,12 +227,21 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 #return f.format_use_dep_spec_plain(...)
                 return "str"
 
+            def raw_name(self):
+                return "raw"
+
+            def human_name(self):
+                return "human"
+
+            def type(self):
+                return MetadataKeyType.NORMAL
+
         test_metadata_license_spec_tree_key(TestKey())
 
     def test_11_provide_spec_tree(self):
         class TestKey(MetadataProvideSpecTreeKey):
             def __init__(self):
-                MetadataProvideSpecTreeKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
+                MetadataProvideSpecTreeKey.__init__(self)
                 self.e = NoConfigEnvironment(repo_path, "/var/empty")
 
             def value(self):
@@ -182,6 +254,15 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def pretty_print_flat(self, f):
                 pds = parse_user_package_dep_spec("cat/pkg", self.e, [])
                 return f.format_package_dep_spec_plain(pds)
+
+            def raw_name(self):
+                return "raw"
+
+            def human_name(self):
+                return "human"
+
+            def type(self):
+                return MetadataKeyType.NORMAL
 
         test_metadata_provide_spec_tree_key(TestKey())
 
@@ -189,7 +270,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
         class TestKey(MetadataDependencySpecTreeKey):
             def __init__(self):
                 self.e = NoConfigEnvironment(repo_path, "/var/empty")
-                MetadataDependencySpecTreeKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
+                MetadataDependencySpecTreeKey.__init__(self)
 
             def value(self):
                 return AllDepSpec()
@@ -201,6 +282,15 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def pretty_print_flat(self, f):
                 pds = parse_user_package_dep_spec("cat/pkg", self.e, [])
                 return f.format_package_dep_spec_plain(pds)
+
+            def raw_name(self):
+                return "raw"
+
+            def human_name(self):
+                return "human"
+
+            def type(self):
+                return MetadataKeyType.NORMAL
 
         test_metadata_dependency_spec_tree_key(TestKey())
 
@@ -208,7 +298,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
     def test_13_plain_text_spec_tree(self):
         class TestKey(MetadataPlainTextSpecTreeKey):
             def __init__(self):
-                MetadataPlainTextSpecTreeKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
+                MetadataPlainTextSpecTreeKey.__init__(self)
 
             def value(self):
                 return AllDepSpec()
@@ -223,12 +313,21 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 #return f.format_plain_text_dep_spec_plain(PlainTextDepSpec("foo"))
                 return "str"
 
+            def raw_name(self):
+                return "raw"
+
+            def human_name(self):
+                return "human"
+
+            def type(self):
+                return MetadataKeyType.NORMAL
+
         test_metadata_plain_text_spec_tree_key(TestKey())
 
     def test_14_fetchable_uri_spec_tree(self):
         class TestKey(MetadataFetchableURISpecTreeKey):
             def __init__(self):
-                MetadataFetchableURISpecTreeKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
+                MetadataFetchableURISpecTreeKey.__init__(self)
 
             def value(self):
                 return AllDepSpec()
@@ -246,12 +345,21 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def initial_label(self):
                 return URIMirrorsOnlyLabel("foo")
 
+            def raw_name(self):
+                return "raw"
+
+            def human_name(self):
+                return "human"
+
+            def type(self):
+                return MetadataKeyType.NORMAL
+
         test_metadata_fetchable_uri_spec_tree_key(TestKey())
 
     def test_15_simple_uri_spec_tree(self):
         class TestKey(MetadataSimpleURISpecTreeKey):
             def __init__(self):
-                MetadataSimpleURISpecTreeKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
+                MetadataSimpleURISpecTreeKey.__init__(self)
 
             def value(self):
                 return AllDepSpec()
@@ -266,12 +374,21 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 #return f.format_use_dep_spec_plain(...)
                 return "str"
 
+            def raw_name(self):
+                return "raw"
+
+            def human_name(self):
+                return "human"
+
+            def type(self):
+                return MetadataKeyType.NORMAL
+
         test_metadata_simple_uri_spec_tree_key(TestKey())
 
     def test_16_section(self):
         class TestKey(MetadataSectionKey):
             def __init__(self):
-                MetadataSectionKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
+                MetadataSectionKey.__init__(self)
 
             def need_keys_added(self):
                 return
@@ -279,15 +396,33 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def title_key(self):
                 return None
 
+            def raw_name(self):
+                return "raw"
+
+            def human_name(self):
+                return "human"
+
+            def type(self):
+                return MetadataKeyType.NORMAL
+
         test_metadata_section_key(TestKey())
 
     def test_17_choices(self):
         class TestKey(MetadataChoicesKey):
             def __init__(self):
-                MetadataChoicesKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
+                MetadataChoicesKey.__init__(self)
 
             def value(self):
                 return Choices()
+
+            def raw_name(self):
+                return "raw"
+
+            def human_name(self):
+                return "human"
+
+            def type(self):
+                return MetadataKeyType.NORMAL
 
         test_metadata_choices_key(TestKey())
 

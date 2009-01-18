@@ -339,8 +339,7 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->src_uri()->name().empty())
         if ((_imp->dir / vars->src_uri()->name()).exists())
         {
-            _imp->src_uri.reset(new EFetchableURIKey(_imp->environment, shared_from_this(), vars->src_uri()->name(),
-                        vars->src_uri()->description(),
+            _imp->src_uri.reset(new EFetchableURIKey(_imp->environment, shared_from_this(), vars->src_uri(),
                         file_contents(_imp->dir / vars->src_uri()->name()), mkt_dependencies));
             add_metadata_key(_imp->src_uri);
         }

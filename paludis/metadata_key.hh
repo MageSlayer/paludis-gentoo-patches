@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -34,7 +34,6 @@
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/remove_shared_ptr.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
@@ -85,7 +84,6 @@ namespace paludis
      */
     class PALUDIS_VISIBLE MetadataKey :
         private InstantiationPolicy<MetadataKey, instantiation_method::NonCopyableTag>,
-        private PrivateImplementationPattern<MetadataKey>,
         public virtual DeclareAbstractAcceptMethods<MetadataKey, MakeTypeList<
                 MetadataCollectionKey<KeywordNameSet>,
                 MetadataCollectionKey<Set<std::string> >,
@@ -110,13 +108,10 @@ namespace paludis
                 MetadataSectionKey
                 >::Type>
     {
-        protected:
+        public:
             ///\name Basic operations
             ///\{
 
-            MetadataKey(const std::string & raw_name, const std::string & human_name, const MetadataKeyType);
-
-        public:
             virtual ~MetadataKey() = 0;
 
             ///\}
@@ -124,17 +119,17 @@ namespace paludis
             /**
              * Fetch our raw name.
              */
-            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Fetch our human name.
              */
-            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Fetch our key type.
              */
-            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
     /**
@@ -150,19 +145,11 @@ namespace paludis
         public ImplementAcceptMethods<MetadataKey, MetadataSectionKey>,
         public MetadataKeyHolder
     {
-        protected:
-            ///\name Basic operations
-            ///\{
-
-            MetadataSectionKey(const std::string &, const std::string &, const MetadataKeyType);
-
-            ///\}
-
         public:
             ///\name Basic operations
             ///\{
 
-            virtual ~MetadataSectionKey();
+            virtual ~MetadataSectionKey() = 0;
 
             ///\}
     };
@@ -250,15 +237,9 @@ namespace paludis
         public ImplementAcceptMethods<MetadataKey, MetadataValueKey<C_> >,
         public virtual ExtraMetadataValueKeyMethods<C_>
     {
-        protected:
-            ///\name Basic operations
-            ///\{
-
-            MetadataValueKey(const std::string &, const std::string &, const MetadataKeyType);
-
-            ///\}
-
         public:
+            virtual ~MetadataValueKey() = 0;
+
             /**
              * Fetch our value.
              */
@@ -277,15 +258,9 @@ namespace paludis
         public MetadataKey,
         public ImplementAcceptMethods<MetadataKey, MetadataTimeKey>
     {
-        protected:
-            ///\name Basic operations
-            ///\{
-
-            MetadataTimeKey(const std::string &, const std::string &, const MetadataKeyType);
-
-            ///\}
-
         public:
+            virtual ~MetadataTimeKey() = 0;
+
             /**
              * Fetch our value.
              */
@@ -306,15 +281,9 @@ namespace paludis
         public MetadataKey,
         public ImplementAcceptMethods<MetadataKey, MetadataCollectionKey<C_> >
     {
-        protected:
-            ///\name Basic operations
-            ///\{
-
-            MetadataCollectionKey(const std::string &, const std::string &, const MetadataKeyType);
-
-            ///\}
-
         public:
+            virtual ~MetadataCollectionKey() = 0;
+
             /**
              * Fetch our value.
              */
@@ -343,15 +312,9 @@ namespace paludis
         public MetadataKey,
         public ImplementAcceptMethods<MetadataKey, MetadataSpecTreeKey<C_> >
     {
-        protected:
-            ///\name Basic operations
-            ///\{
-
-            MetadataSpecTreeKey(const std::string &, const std::string &, const MetadataKeyType);
-
-            ///\}
-
         public:
+            virtual ~MetadataSpecTreeKey() = 0;
+
             /**
              * Fetch our value.
              */
@@ -389,15 +352,9 @@ namespace paludis
         public MetadataKey,
         public ImplementAcceptMethods<MetadataKey, MetadataSpecTreeKey<FetchableURISpecTree> >
     {
-        protected:
-            ///\name Basic operations
-            ///\{
-
-            MetadataSpecTreeKey(const std::string &, const std::string &, const MetadataKeyType);
-
-            ///\}
-
         public:
+            virtual ~MetadataSpecTreeKey() = 0;
+
             /**
              * Fetch our value.
              */
@@ -442,15 +399,9 @@ namespace paludis
         public MetadataKey,
         public ImplementAcceptMethods<MetadataKey, MetadataSpecTreeKey<DependencySpecTree> >
     {
-        protected:
-            ///\name Basic operations
-            ///\{
-
-            MetadataSpecTreeKey(const std::string &, const std::string &, const MetadataKeyType);
-
-            ///\}
-
         public:
+            virtual ~MetadataSpecTreeKey() = 0;
+
             /**
              * Fetch our value.
              */

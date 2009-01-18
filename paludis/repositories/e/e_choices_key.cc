@@ -64,13 +64,21 @@ namespace paludis
         const std::tr1::shared_ptr<const ERepository> maybe_e_repository;
         const std::tr1::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > maybe_descriptions;
 
+        const std::string raw_name;
+        const std::string human_name;
+        const MetadataKeyType type;
+
         Implementation(const Environment * const e, const std::tr1::shared_ptr<const ERepositoryID> & i,
                 const std::tr1::shared_ptr<const ERepository> & p,
-                const std::tr1::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & d) :
+                const std::tr1::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & d,
+                const std::string & r, const std::string & h, const MetadataKeyType t) :
             env(e),
             id(i),
             maybe_e_repository(p),
-            maybe_descriptions(d)
+            maybe_descriptions(d),
+            raw_name(r),
+            human_name(h),
+            type(t)
         {
         }
     };
@@ -82,9 +90,7 @@ EChoicesKey::EChoicesKey(
         const std::string & r, const std::string & h, const MetadataKeyType t,
         const std::tr1::shared_ptr<const ERepository> & p,
         const std::tr1::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & d) :
-    MetadataValueKey<std::tr1::shared_ptr<const Choices> > (r, h, t),
-    PrivateImplementationPattern<EChoicesKey>(new Implementation<EChoicesKey>(e, i, p, d)),
-    _imp(PrivateImplementationPattern<EChoicesKey>::_imp)
+    PrivateImplementationPattern<EChoicesKey>(new Implementation<EChoicesKey>(e, i, p, d, r, h, t))
 {
 }
 
@@ -479,5 +485,23 @@ EChoicesKey::value() const
     }
 
     return _imp->value;
+}
+
+const std::string
+EChoicesKey::raw_name() const
+{
+    return _imp->raw_name;
+}
+
+const std::string
+EChoicesKey::human_name() const
+{
+    return _imp->human_name;
+}
+
+MetadataKeyType
+EChoicesKey::type() const
+{
+    return _imp->type;
 }
 

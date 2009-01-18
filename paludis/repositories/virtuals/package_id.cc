@@ -56,9 +56,12 @@ namespace paludis
         const std::tr1::shared_ptr<const DependencyLabelSequence> labels;
         const std::tr1::shared_ptr<const PackageDepSpec> spec;
 
+        const std::string raw_name;
+        const std::string human_name;
+
         Implementation(const Environment * const e, const std::tr1::shared_ptr<const PackageID> & v,
                 const std::tr1::shared_ptr<const DependencyLabelSequence> & l,
-                bool exact) :
+                bool exact, const std::string & h, const std::string & r) :
             env(e),
             value(new DependencySpecTree(make_shared_ptr(new AllDepSpec))),
             labels(l),
@@ -76,7 +79,9 @@ namespace paludis
                             make_package_dep_spec()
                             .package(v->name())
                             ))
-                )
+                ),
+            raw_name(r),
+            human_name(h)
         {
             value->root()->append(spec);
         }
@@ -87,8 +92,7 @@ VirtualsDepKey::VirtualsDepKey(const Environment * const e, const std::string & 
         const std::tr1::shared_ptr<const PackageID> & v,
         const std::tr1::shared_ptr<const DependencyLabelSequence> & l,
         const bool exact) :
-    MetadataSpecTreeKey<DependencySpecTree>(r, h, mkt_dependencies),
-    PrivateImplementationPattern<VirtualsDepKey>(new Implementation<VirtualsDepKey>(e, v, l, exact)),
+    PrivateImplementationPattern<VirtualsDepKey>(new Implementation<VirtualsDepKey>(e, v, l, exact, r, h)),
     _imp(PrivateImplementationPattern<VirtualsDepKey>::_imp)
 {
 }
@@ -101,6 +105,24 @@ const std::tr1::shared_ptr<const DependencySpecTree>
 VirtualsDepKey::value() const
 {
     return _imp->value;
+}
+
+const std::string
+VirtualsDepKey::raw_name() const
+{
+    return _imp->raw_name;
+}
+
+const std::string
+VirtualsDepKey::human_name() const
+{
+    return _imp->human_name;
+}
+
+MetadataKeyType
+VirtualsDepKey::type() const
+{
+    return mkt_dependencies;
 }
 
 std::string

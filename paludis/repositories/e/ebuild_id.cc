@@ -842,10 +842,10 @@ EbuildID::load_post_depend(const std::string & r, const std::string & h, const s
 }
 
 void
-EbuildID::load_src_uri(const std::string & r, const std::string & h, const std::string & v) const
+EbuildID::load_src_uri(const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->src_uri.reset(new EFetchableURIKey(_imp->environment, shared_from_this(), r, h, v, mkt_dependencies));
+    _imp->src_uri.reset(new EFetchableURIKey(_imp->environment, shared_from_this(), m, v, mkt_dependencies));
     add_metadata_key(_imp->src_uri);
 }
 

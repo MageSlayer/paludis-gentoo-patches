@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -37,7 +37,6 @@ namespace
 
         public:
             UnChoicesKey() :
-                MetadataValueKey<std::tr1::shared_ptr<const Choices> >("PALUDIS_CHOICES", "Choices", mkt_internal),
                 _value(new Choices)
             {
                 _value->add(make_shared_ptr(new Choice("Choices", "Choices", ChoicePrefixName(""), true, true, true, false)));
@@ -50,6 +49,21 @@ namespace
             const std::tr1::shared_ptr<const Choices> value() const
             {
                 return _value;
+            }
+
+            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return "Choices";
+            }
+
+            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return "PALUDIS_CHOICES";
+            }
+
+            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return mkt_internal;
             }
     };
 }

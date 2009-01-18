@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,9 +33,6 @@ namespace paludis
             public MetadataSpecTreeKey<DependencySpecTree>,
             private PrivateImplementationPattern<UnpackagedDependencyKey>
         {
-            private:
-                PrivateImplementationPattern<UnpackagedDependencyKey>::ImpPtr & _imp;
-
             public:
                 UnpackagedDependencyKey(const Environment * const env,
                         const std::string & r, const std::string & h, const MetadataKeyType t,
@@ -51,15 +48,16 @@ namespace paludis
 
                 virtual const std::tr1::shared_ptr<const DependencyLabelSequence> initial_labels() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class UnpackagedChoicesKey :
             public MetadataValueKey<std::tr1::shared_ptr<const Choices> >,
             private PrivateImplementationPattern<UnpackagedChoicesKey>
         {
-            private:
-                PrivateImplementationPattern<UnpackagedChoicesKey>::ImpPtr & _imp;
-
             public:
                 UnpackagedChoicesKey(const Environment * const env,
                         const std::string & r, const std::string & h, const MetadataKeyType t,
@@ -67,6 +65,10 @@ namespace paludis
                 ~UnpackagedChoicesKey();
 
                 virtual const std::tr1::shared_ptr<const Choices> value() const;
+
+                virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

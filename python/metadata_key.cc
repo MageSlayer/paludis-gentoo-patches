@@ -173,11 +173,6 @@ struct MetadataPackageIDKeyWrapper :
     MetadataValueKey<std::tr1::shared_ptr<const PackageID> > ,
     bp::wrapper<MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
 {
-    MetadataPackageIDKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataValueKey<std::tr1::shared_ptr<const PackageID> > (r, h, t)
-    {
-    }
-
     virtual const std::tr1::shared_ptr<const PackageID> value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
@@ -198,17 +193,42 @@ struct MetadataPackageIDKeyWrapper :
         else
             throw PythonMethodNotImplemented("MetadataPackageIDKey", "pretty_print");
     }
+
+    virtual const std::string raw_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("raw_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataPackageIDKey", "raw_name");
+    }
+
+    virtual const std::string human_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("human_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataPackageIDKey", "human_name");
+    }
+
+    virtual MetadataKeyType type() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("type"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataPackageIDKey", "type");
+    }
 };
 
 struct MetadataStringKeyWrapper :
     MetadataValueKey<std::string> ,
     bp::wrapper<MetadataValueKey<std::string> >
 {
-    MetadataStringKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataValueKey<std::string> (r, h, t)
-    {
-    }
-
     virtual const std::string value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
@@ -219,17 +239,42 @@ struct MetadataStringKeyWrapper :
         else
             throw PythonMethodNotImplemented("MetadataStringKey", "value");
     }
+
+    virtual const std::string raw_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("raw_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataStringKey", "raw_name");
+    }
+
+    virtual const std::string human_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("human_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataStringKey", "human_name");
+    }
+
+    virtual MetadataKeyType type() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("type"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataStringKey", "type");
+    }
 };
 
 struct MetadataSectionKeyWrapper :
     MetadataSectionKey,
     bp::wrapper<MetadataSectionKey>
 {
-    MetadataSectionKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataSectionKey(r, h, t)
-    {
-    }
-
     static PyObject *
     find_metadata(const MetadataSectionKey & self, const std::string & key)
     {
@@ -259,17 +304,42 @@ struct MetadataSectionKeyWrapper :
         else
             throw PythonMethodNotImplemented("MetadataSectionKey", "title_key");
     }
+
+    virtual const std::string raw_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("raw_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSectionKey", "raw_name");
+    }
+
+    virtual const std::string human_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("human_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSectionKey", "human_name");
+    }
+
+    virtual MetadataKeyType type() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("type"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSectionKey", "type");
+    }
 };
 
 struct MetadataTimeKeyWrapper :
     MetadataTimeKey,
     bp::wrapper<MetadataTimeKey>
 {
-    MetadataTimeKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataTimeKey(r, h, t)
-    {
-    }
-
     virtual time_t value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
@@ -280,17 +350,42 @@ struct MetadataTimeKeyWrapper :
         else
             throw PythonMethodNotImplemented("MetadataTimeKey", "value");
     }
+
+    virtual const std::string raw_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("raw_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataTimeKey", "raw_name");
+    }
+
+    virtual const std::string human_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("human_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataTimeKey", "human_name");
+    }
+
+    virtual MetadataKeyType type() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("type"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataTimeKey", "type");
+    }
 };
 
 struct MetadataContentsKeyWrapper :
     MetadataValueKey<std::tr1::shared_ptr<const Contents> > ,
     bp::wrapper<MetadataValueKey<std::tr1::shared_ptr<const Contents> > >
 {
-    MetadataContentsKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataValueKey<std::tr1::shared_ptr<const Contents> > (r, h, t)
-    {
-    }
-
     virtual const std::tr1::shared_ptr<const Contents> value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
@@ -301,17 +396,42 @@ struct MetadataContentsKeyWrapper :
         else
             throw PythonMethodNotImplemented("MetadataContentsKey", "value");
     }
+
+    virtual const std::string raw_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("raw_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataContentsKey", "raw_name");
+    }
+
+    virtual const std::string human_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("human_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataContentsKey", "human_name");
+    }
+
+    virtual MetadataKeyType type() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("type"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataContentsKey", "type");
+    }
 };
 
 struct MetadataChoicesKeyWrapper :
     MetadataValueKey<std::tr1::shared_ptr<const Choices> > ,
     bp::wrapper<MetadataValueKey<std::tr1::shared_ptr<const Choices> > >
 {
-    MetadataChoicesKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataValueKey<std::tr1::shared_ptr<const Choices> > (r, h, t)
-    {
-    }
-
     virtual const std::tr1::shared_ptr<const Choices> value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
@@ -322,17 +442,42 @@ struct MetadataChoicesKeyWrapper :
         else
             throw PythonMethodNotImplemented("MetadataChoicesKey", "value");
     }
+
+    virtual const std::string raw_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("raw_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataChoicesKey", "raw_name");
+    }
+
+    virtual const std::string human_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("human_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataChoicesKey", "human_name");
+    }
+
+    virtual MetadataKeyType type() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("type"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataChoicesKey", "type");
+    }
 };
 
 struct MetadataFSEntryKeyWrapper :
     MetadataValueKey<FSEntry> ,
     bp::wrapper<MetadataValueKey<FSEntry> >
 {
-    MetadataFSEntryKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataValueKey<FSEntry> (r, h, t)
-    {
-    }
-
     virtual const FSEntry value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
@@ -343,17 +488,42 @@ struct MetadataFSEntryKeyWrapper :
         else
             throw PythonMethodNotImplemented("MetadataValueKey<FSEntry> ", "value");
     }
+
+    virtual const std::string raw_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("raw_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataFSEntryKey", "raw_name");
+    }
+
+    virtual const std::string human_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("human_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataFSEntryKey", "human_name");
+    }
+
+    virtual MetadataKeyType type() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("type"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataFSEntryKey", "type");
+    }
 };
 
 struct MetadataRepositoryMaskInfoKeyWrapper :
     MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > ,
     bp::wrapper<MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > >
 {
-    MetadataRepositoryMaskInfoKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > (r, h, t)
-    {
-    }
-
     virtual const std::tr1::shared_ptr<const RepositoryMaskInfo> value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
@@ -364,6 +534,36 @@ struct MetadataRepositoryMaskInfoKeyWrapper :
         else
             throw PythonMethodNotImplemented("MetadataRepositoryMaskInfoKey", "value");
     }
+
+    virtual const std::string raw_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("raw_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataRepositoryMaskInfoKey", "raw_name");
+    }
+
+    virtual const std::string human_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("human_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataRepositoryMaskInfoKey", "human_name");
+    }
+
+    virtual MetadataKeyType type() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("type"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataRepositoryMaskInfoKey", "type");
+    }
 };
 
 template <typename C_>
@@ -371,11 +571,6 @@ struct MetadataCollectionKeyWrapper :
     MetadataCollectionKey<C_>,
     bp::wrapper<MetadataCollectionKey<C_> >
 {
-    MetadataCollectionKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataCollectionKey<C_>(r, h, t)
-    {
-    }
-
     virtual const std::tr1::shared_ptr<const C_> value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
@@ -399,6 +594,36 @@ struct MetadataCollectionKeyWrapper :
         else
             throw PythonMethodNotImplemented("MetadataCollectionKey", "pretty_print_flat");
     }
+
+    virtual const std::string raw_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = this->get_override("raw_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataCollectionKey", "raw_name");
+    }
+
+    virtual const std::string human_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = this->get_override("human_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataCollectionKey", "human_name");
+    }
+
+    virtual MetadataKeyType type() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = this->get_override("type"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataCollectionKey", "type");
+    }
 };
 
 template <typename C_>
@@ -406,11 +631,6 @@ struct MetadataSpecTreeKeyWrapper :
     MetadataSpecTreeKey<C_>,
     bp::wrapper<MetadataSpecTreeKey<C_> >
 {
-    MetadataSpecTreeKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataSpecTreeKey<C_>(r, h, t)
-    {
-    }
-
     virtual const std::tr1::shared_ptr<const C_> value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
@@ -443,6 +663,36 @@ struct MetadataSpecTreeKeyWrapper :
         else
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print_flat");
     }
+
+    virtual const std::string raw_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = this->get_override("raw_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "raw_name");
+    }
+
+    virtual const std::string human_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = this->get_override("human_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "human_name");
+    }
+
+    virtual MetadataKeyType type() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = this->get_override("type"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "type");
+    }
 };
 
 template <>
@@ -450,11 +700,6 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
     MetadataSpecTreeKey<FetchableURISpecTree>,
     bp::wrapper<MetadataSpecTreeKey<FetchableURISpecTree> >
 {
-    MetadataSpecTreeKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataSpecTreeKey<FetchableURISpecTree>(r, h, t)
-    {
-    }
-
     virtual const std::tr1::shared_ptr<const FetchableURISpecTree> value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
@@ -498,6 +743,36 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
         else
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "initial_label");
     }
+
+    virtual const std::string raw_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("raw_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "raw_name");
+    }
+
+    virtual const std::string human_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("human_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "human_name");
+    }
+
+    virtual MetadataKeyType type() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("type"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "type");
+    }
 };
 
 template <>
@@ -505,11 +780,6 @@ struct MetadataSpecTreeKeyWrapper<DependencySpecTree> :
     MetadataSpecTreeKey<DependencySpecTree>,
     bp::wrapper<MetadataSpecTreeKey<DependencySpecTree> >
 {
-    MetadataSpecTreeKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataSpecTreeKey<DependencySpecTree>(r, h, t)
-    {
-    }
-
     virtual const std::tr1::shared_ptr<const DependencySpecTree> value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
@@ -553,6 +823,36 @@ struct MetadataSpecTreeKeyWrapper<DependencySpecTree> :
         else
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "initial_labels");
     }
+
+    virtual const std::string raw_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("raw_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "raw_name");
+    }
+
+    virtual const std::string human_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("human_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "human_name");
+    }
+
+    virtual MetadataKeyType type() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("type"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "type");
+    }
 };
 
 template <typename C_>
@@ -568,8 +868,8 @@ struct class_set_key :
                     "as its value.\n\n"
 
                     "This class can be subclassed in Python.",
-                    bp::init<const std::string &, const std::string &, MetadataKeyType>(
-                        "__init__(raw_name, human_name, MetadataKeyType)"
+                    bp::init<>(
+                        "__init__()"
                         )
                     )
     {
@@ -603,8 +903,8 @@ struct class_spec_tree_key :
                     "kind as its value.\n\n"
 
                     "This class can be subclassed in Python.",
-                    bp::init<const std::string &, const std::string &, MetadataKeyType>(
-                        "__init__(raw_name, human_name, MetadataKeyType)"
+                    bp::init<>(
+                        "__init__()"
                         )
                     )
     {
@@ -646,8 +946,8 @@ struct class_spec_tree_key<FetchableURISpecTree> :
                     "kind as its value.\n\n"
 
                     "This class can be subclassed in Python.",
-                    bp::init<const std::string &, const std::string &, MetadataKeyType>(
-                        "__init__(raw_name, human_name, MetadataKeyType)"
+                    bp::init<>(
+                        "__init__()"
                         )
                     )
     {
@@ -695,8 +995,8 @@ struct class_spec_tree_key<DependencySpecTree> :
                     "kind as its value.\n\n"
 
                     "This class can be subclassed in Python.",
-                    bp::init<const std::string &, const std::string &, MetadataKeyType>(
-                        "__init__(raw_name, human_name, MetadataKeyType)"
+                    bp::init<>(
+                        "__init__()"
                         )
                     )
     {
@@ -796,8 +1096,8 @@ void expose_metadata_key()
          "value.\n\n"
 
          "This class can be subclassed in Python.",
-         bp::init<const std::string &, const std::string &, MetadataKeyType>(
-             "__init__(raw_name, human_name, MetadataKeyType)"
+         bp::init<>(
+             "__init__()"
              )
         )
         .def("value", bp::pure_virtual(&MetadataValueKey<std::tr1::shared_ptr<const PackageID> > ::value),
@@ -820,8 +1120,8 @@ void expose_metadata_key()
          "value.\n\n"
 
          "This class can be subclassed in Python.",
-         bp::init<const std::string &, const std::string &, MetadataKeyType>(
-             "__init__(raw_name, human_name, MetadataKeyType)"
+         bp::init<>(
+             "__init__()"
              )
         )
         .def("value", bp::pure_virtual(&MetadataValueKey<std::string> ::value),
@@ -844,8 +1144,8 @@ void expose_metadata_key()
          "may have a title.\n\n"
 
          "This class can be subclassed in Python.",
-         bp::init<const std::string &, const std::string &, MetadataKeyType>(
-             "__init__(raw_name, human_name, MetadataKeyType)"
+         bp::init<>(
+             "__init__()"
              )
         )
         .add_property("metadata", bp::range(&MetadataSectionKey::begin_metadata, &MetadataSectionKey::end_metadata),
@@ -872,8 +1172,8 @@ void expose_metadata_key()
          "A MetadataTimeKey is a MetadataKey that has a int(time_t) as its value.\n\n"
 
          "This class can be subclassed in Python.",
-         bp::init<const std::string &, const std::string &, MetadataKeyType>(
-             "__init__(raw_name, human_name, MetadataKeyType)"
+         bp::init<>(
+             "__init__()"
              )
         )
         .def("value", bp::pure_virtual(&MetadataTimeKey::value),
@@ -895,8 +1195,8 @@ void expose_metadata_key()
          "A MetadataFSEntryKey is a MetadataKey that has an string(FSEntry) as its value.\n\n"
 
          "This class can be subclassed in Python.",
-         bp::init<const std::string &, const std::string &, MetadataKeyType>(
-             "__init__(raw_name, human_name, MetadataKeyType)"
+         bp::init<>(
+             "__init__()"
              )
         )
         .def("value", bp::pure_virtual(&MetadataValueKey<FSEntry> ::value),
@@ -918,8 +1218,8 @@ void expose_metadata_key()
          "A MetadataContentsKey is a MetadataKey that holds a Contents heirarchy.\n\n"
 
          "This class can be subclassed in Python.",
-         bp::init<const std::string &, const std::string &, MetadataKeyType>(
-             "__init__(raw_name, human_name, MetadataKeyType)"
+         bp::init<>(
+             "__init__()"
              )
         )
         .def("value", bp::pure_virtual(&MetadataValueKey<std::tr1::shared_ptr<const Contents> > ::value),
@@ -959,8 +1259,8 @@ void expose_metadata_key()
          "A MetadataChoicesKey is a MetadataKey that holds a Choices heirarchy.\n\n"
 
          "This class can be subclassed in Python.",
-         bp::init<const std::string &, const std::string &, MetadataKeyType>(
-             "__init__(raw_name, human_name, MetadataKeyType)"
+         bp::init<>(
+             "__init__()"
              )
         )
         .def("value", bp::pure_virtual(&MetadataValueKey<std::tr1::shared_ptr<const Choices> > ::value),
@@ -1002,8 +1302,8 @@ void expose_metadata_key()
          "RepositoryMaskInfo as its value.\n\n"
 
          "This class can be subclassed in Python.",
-         bp::init<const std::string &, const std::string &, MetadataKeyType>(
-             "__init__(raw_name, human_name, MetadataKeyType)"
+         bp::init<>(
+             "__init__()"
              )
         )
         .def("value", bp::pure_virtual(&MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > ::value),

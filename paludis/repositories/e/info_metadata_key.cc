@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -85,9 +85,7 @@ namespace paludis
 }
 
 InfoVarsMetadataKey::InfoVarsMetadataKey(const std::tr1::shared_ptr<const FSEntrySequence> & f) :
-    MetadataCollectionKey<Set<std::string> >("info_vars", "Variable information names", mkt_internal),
-    PrivateImplementationPattern<InfoVarsMetadataKey>(new Implementation<InfoVarsMetadataKey>(f)),
-    _imp(PrivateImplementationPattern<InfoVarsMetadataKey>::_imp)
+    PrivateImplementationPattern<InfoVarsMetadataKey>(new Implementation<InfoVarsMetadataKey>(f))
 {
 }
 
@@ -121,10 +119,27 @@ InfoVarsMetadataKey::value() const
     return _imp->value;
 }
 
+const std::string
+InfoVarsMetadataKey::raw_name() const
+{
+    return "info_vars";
+}
+
+const std::string
+InfoVarsMetadataKey::human_name() const
+{
+    return "Variable information names";
+}
+
+MetadataKeyType
+InfoVarsMetadataKey::type() const
+{
+    return mkt_internal;
+}
+
 InfoPkgsMetadataKey::InfoPkgsMetadataKey(const Environment * const e,
         const std::tr1::shared_ptr<const FSEntrySequence> & f,
         const ERepository * const r) :
-    MetadataSectionKey("info_pkgs", "Package information", mkt_normal),
     PrivateImplementationPattern<InfoPkgsMetadataKey>(new Implementation<InfoPkgsMetadataKey>(e, f, r)),
     _imp(PrivateImplementationPattern<InfoPkgsMetadataKey>::_imp)
 {
@@ -204,6 +219,25 @@ InfoVarsMetadataKey::pretty_print_flat(const Formatter<std::string> & f) const
     using namespace std::tr1::placeholders;
     return join(value()->begin(), value()->end(), " ", std::tr1::bind(&format_string, _1, f));
 }
+
+const std::string
+InfoPkgsMetadataKey::raw_name() const
+{
+    return "info_pkgs";
+}
+
+const std::string
+InfoPkgsMetadataKey::human_name() const
+{
+    return "Package information";
+}
+
+MetadataKeyType
+InfoPkgsMetadataKey::type() const
+{
+    return mkt_internal;
+}
+
 
 template class PrivateImplementationPattern<InfoPkgsMetadataKey>;
 template class PrivateImplementationPattern<InfoVarsMetadataKey>;

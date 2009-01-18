@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -51,35 +51,7 @@ namespace paludis
     };
 }
 
-MetadataKey::MetadataKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
-    PrivateImplementationPattern<MetadataKey>(new Implementation<MetadataKey>(r, h, t))
-{
-}
-
 MetadataKey::~MetadataKey()
-{
-}
-
-const std::string
-MetadataKey::raw_name() const
-{
-    return _imp->raw_name;
-}
-
-const std::string
-MetadataKey::human_name() const
-{
-    return _imp->human_name;
-}
-
-MetadataKeyType
-MetadataKey::type() const
-{
-    return _imp->type;
-}
-
-MetadataSectionKey::MetadataSectionKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
-    MetadataKey(r, h, t)
 {
 }
 
@@ -87,20 +59,7 @@ MetadataSectionKey::~MetadataSectionKey()
 {
 }
 
-MetadataTimeKey::MetadataTimeKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
-    MetadataKey(r, h, t)
-{
-}
-
-template <typename C_>
-MetadataValueKey<C_>::MetadataValueKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
-    MetadataKey(r, h, t)
-{
-}
-
-template <typename C_>
-MetadataCollectionKey<C_>::MetadataCollectionKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
-    MetadataKey(r, h, t)
+MetadataTimeKey::~MetadataTimeKey()
 {
 }
 
@@ -116,19 +75,26 @@ ExtraMetadataValueKeyMethods<std::tr1::shared_ptr<const PackageID> >::~ExtraMeta
 {
 }
 
-template <typename C_>
-MetadataSpecTreeKey<C_>::MetadataSpecTreeKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
-    MetadataKey(r, h, t)
+template <typename T_>
+MetadataCollectionKey<T_>::~MetadataCollectionKey()
 {
 }
 
-MetadataSpecTreeKey<FetchableURISpecTree>::MetadataSpecTreeKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
-    MetadataKey(r, h, t)
+template <typename T_>
+MetadataSpecTreeKey<T_>::~MetadataSpecTreeKey()
 {
 }
 
-MetadataSpecTreeKey<DependencySpecTree>::MetadataSpecTreeKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
-    MetadataKey(r, h, t)
+template <typename T_>
+MetadataValueKey<T_>::~MetadataValueKey()
+{
+}
+
+MetadataSpecTreeKey<FetchableURISpecTree>::~MetadataSpecTreeKey()
+{
+}
+
+MetadataSpecTreeKey<DependencySpecTree>::~MetadataSpecTreeKey()
 {
 }
 

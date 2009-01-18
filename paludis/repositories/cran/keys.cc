@@ -39,9 +39,11 @@ using namespace paludis::cranrepository;
 
 PackageIDSequenceKey::PackageIDSequenceKey(const Environment * const e,
         const std::string & r, const std::string & h, const MetadataKeyType t) :
-    MetadataCollectionKey<PackageIDSequence>(r, h, t),
     _env(e),
-    _v(new PackageIDSequence)
+    _v(new PackageIDSequence),
+    _r(r),
+    _h(h),
+    _t(t)
 {
 }
 
@@ -49,6 +51,24 @@ const std::tr1::shared_ptr<const PackageIDSequence>
 PackageIDSequenceKey::value() const
 {
     return _v;
+}
+
+const std::string
+PackageIDSequenceKey::raw_name() const
+{
+    return _r;
+}
+
+const std::string
+PackageIDSequenceKey::human_name() const
+{
+    return _h;
+}
+
+MetadataKeyType
+PackageIDSequenceKey::type() const
+{
+    return _t;
 }
 
 void
@@ -69,8 +89,10 @@ PackageIDSequenceKey::pretty_print_flat(const Formatter<PackageID> & f) const
 
 PackageIDKey::PackageIDKey(const std::string & r, const std::string & h,
         const CRANPackageID * const v, const MetadataKeyType t) :
-    MetadataValueKey<std::tr1::shared_ptr<const PackageID> >(r, h, t),
-    _v(v)
+    _v(v),
+    _r(r),
+    _h(h),
+    _t(t)
 {
 }
 
@@ -78,6 +100,24 @@ const std::tr1::shared_ptr<const PackageID>
 PackageIDKey::value() const
 {
     return _v->shared_from_this();
+}
+
+const std::string
+PackageIDKey::raw_name() const
+{
+    return _r;
+}
+
+const std::string
+PackageIDKey::human_name() const
+{
+    return _h;
+}
+
+MetadataKeyType
+PackageIDKey::type() const
+{
+    return _t;
 }
 
 std::string
@@ -108,11 +148,19 @@ namespace paludis
         mutable std::tr1::shared_ptr<const DependencySpecTree> c;
         const std::tr1::shared_ptr<const DependencyLabelSequence> labels;
 
+        const std::string raw_name;
+        const std::string human_name;
+        const MetadataKeyType type;
+
         Implementation(const Environment * const e, const std::string & vv,
-                const std::tr1::shared_ptr<const DependencyLabelSequence> & s) :
+                const std::tr1::shared_ptr<const DependencyLabelSequence> & s,
+                const std::string & r, const std::string & h, const MetadataKeyType & t) :
             env(e),
             v(vv),
-            labels(s)
+            labels(s),
+            raw_name(r),
+            human_name(h),
+            type(t)
         {
         }
     };
@@ -120,14 +168,31 @@ namespace paludis
 
 DepKey::DepKey(const Environment * const e, const std::string & r, const std::string & h, const std::string & v,
         const std::tr1::shared_ptr<const DependencyLabelSequence> & s, const MetadataKeyType t) :
-    MetadataSpecTreeKey<DependencySpecTree>(r, h, t),
-    PrivateImplementationPattern<DepKey>(new Implementation<DepKey>(e, v, s)),
+    PrivateImplementationPattern<DepKey>(new Implementation<DepKey>(e, v, s, r, h, t)),
     _imp(PrivateImplementationPattern<DepKey>::_imp)
 {
 }
 
 DepKey::~DepKey()
 {
+}
+
+const std::string
+DepKey::raw_name() const
+{
+    return _imp->raw_name;
+}
+
+const std::string
+DepKey::human_name() const
+{
+    return _imp->human_name;
+}
+
+MetadataKeyType
+DepKey::type() const
+{
+    return _imp->type;
 }
 
 const std::tr1::shared_ptr<const DependencySpecTree>
