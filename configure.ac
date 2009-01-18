@@ -1414,9 +1414,18 @@ dnl }}}
 dnl {{{ eselect or eclectic
 AC_MSG_CHECKING([for config framework])
 AC_ARG_WITH([config-framework],
-	AS_HELP_STRING([--with-config-framework=@<:@eselect|eclectic@:>@], [Specify whether to use eselect or eclectic (default: eselect)]),
+	AS_HELP_STRING([--with-config-framework=@<:@eselect|eclectic@:>@],
+				   [Specify whether to use eselect or eclectic (default: auto)]),
 	CONFIG_FRAMEWORK=`eval echo $withval`,
-	CONFIG_FRAMEWORK=eselect)
+	CONFIG_FRAMEWORK=auto)
+
+if test x"$CONFIG_FRAMEWORK" = x"auto" ; then
+	if test -x `which eclectic 2>/dev/null` ; then
+		CONFIG_FRAMEWORK="eclectic"
+	else
+		CONFIG_FRAMEWORK="eselect"
+	fi
+fi
 
 if $CONFIG_FRAMEWORK version >/dev/null 2>/dev/null ; then
 	AC_MSG_RESULT([$CONFIG_FRAMEWORK])
