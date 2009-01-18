@@ -403,7 +403,8 @@ namespace paludis
         }
 
         if (! found_one)
-            throw ERepositoryConfigurationError("No profiles.desc found");
+            throw ERepositoryConfigurationError("No profiles.desc found (maybe this repository is not synced, or maybe "
+                    "you need to specify its master");
 
         has_profiles_desc = true;
     }
