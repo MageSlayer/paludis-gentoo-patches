@@ -729,6 +729,29 @@ else
 fi
 AC_MSG_RESULT([${cxxflags_message}])
 
+AC_MSG_CHECKING([whether we want -Wno-non-virtual-dtor to work around compiler silliness])
+AC_COMPILE_IFELSE([
+#ifndef __GNUC__
+#  error not gcc
+#endif
+
+#if __GNUC__ != 4
+#  error not gcc 4
+#endif
+
+#if __GNUC_MINOR__ != 1
+#  error not gcc 4.1
+#endif
+
+int main(int, char **)
+{
+}
+],
+	[AC_MSG_RESULT([yes])
+	PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -Wnon-virtual-dtor"
+	],
+	[AC_MSG_RESULT([no])])
+
 AC_MSG_CHECKING([whether -pedantic works if we use extern template])
 if test "x${cxx_compiler_icc}" = "xyes" ; then
 	AC_MSG_RESULT([no, icc doesn't do pedantic])
