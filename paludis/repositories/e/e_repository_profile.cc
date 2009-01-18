@@ -40,6 +40,7 @@
 #include <paludis/util/config_file.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/mutex.hh>
 #include <paludis/choice.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/environment.hh>
@@ -917,5 +918,16 @@ const std::tr1::shared_ptr<const Set<std::string> >
 ERepositoryProfile::use_expand_hidden() const
 {
     return _imp->use_expand_hidden;
+}
+
+const std::tr1::shared_ptr<ERepositoryProfile>
+RepositoryEInterfaceProfilesDescLineProfile::fetch() const
+{
+    Lock lock(*mutex());
+    if (! value())
+        value().reset(new ERepositoryProfile(environment(), repository(), repository_name(), *location(),
+                    arch_var_if_special(), profiles_explicitly_set()));
+
+    return value();
 }
 

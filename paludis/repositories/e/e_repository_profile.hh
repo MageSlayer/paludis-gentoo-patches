@@ -22,17 +22,19 @@
 
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
-#include <paludis/name-fwd.hh>
+#include <paludis/name.hh>
 #include <paludis/version_spec-fwd.hh>
 #include <paludis/mask-fwd.hh>
 #include <paludis/metadata_key-fwd.hh>
 #include <paludis/choice-fwd.hh>
 #include <paludis/spec_tree-fwd.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/mutex-fwd.hh>
+#include <paludis/util/named_value.hh>
 #include <string>
 
 /** \file
@@ -45,6 +47,34 @@ namespace paludis
 {
     class Environment;
     class ERepository;
+
+    namespace n
+    {
+        struct arch_var_if_special;
+        struct environment;
+        struct location;
+        struct mutex;
+        struct profiles_explicitly_set;
+        struct repository;
+        struct repository_name;
+        struct value;
+    }
+
+    class ERepositoryProfile;
+
+    struct PALUDIS_VISIBLE RepositoryEInterfaceProfilesDescLineProfile
+    {
+        NamedValue<n::arch_var_if_special, std::string> arch_var_if_special;
+        NamedValue<n::environment, const Environment *> environment;
+        NamedValue<n::location, std::tr1::shared_ptr<const FSEntrySequence> > location;
+        NamedValue<n::mutex, std::tr1::shared_ptr<Mutex> > mutex;
+        NamedValue<n::profiles_explicitly_set, bool> profiles_explicitly_set;
+        NamedValue<n::repository, const ERepository *> repository;
+        NamedValue<n::repository_name, RepositoryName> repository_name;
+        mutable NamedValue<n::value, std::tr1::shared_ptr<ERepositoryProfile> > value;
+
+        const std::tr1::shared_ptr<ERepositoryProfile> fetch() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
 
     /**
      * Holds the profile data (but <em>not</em> the profiles/ top level data) for

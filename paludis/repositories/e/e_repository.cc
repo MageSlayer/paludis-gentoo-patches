@@ -375,18 +375,24 @@ namespace paludis
                 if (tokens.size() < 3)
                     continue;
 
-                FSEntrySequence profiles;
-                profiles.push_back(layout->profiles_base_dir() / tokens.at(1));
+                std::tr1::shared_ptr<FSEntrySequence> profiles(new FSEntrySequence);
+                profiles->push_back(layout->profiles_base_dir() / tokens.at(1));
                 try
                 {
                     profiles_desc.push_back(make_named_values<RepositoryEInterface::ProfilesDescLine>(
                             value_for<n::arch>(tokens.at(0)),
-                            value_for<n::path>(*profiles.begin()),
-                            value_for<n::profile>(std::tr1::shared_ptr<ERepositoryProfile>(new ERepositoryProfile(
-                                        params.environment(), repo, repo->name(), profiles,
-                                        EAPIData::get_instance()->eapi_from_string(
-                                            params.eapi_when_unknown())->supported()->ebuild_environment_variables()->env_arch(),
-                                        true))),
+                            value_for<n::path>(*profiles->begin()),
+                            value_for<n::profile>(make_shared_ptr(new RepositoryEInterfaceProfilesDescLineProfile(
+                                        make_named_values<RepositoryEInterfaceProfilesDescLineProfile>(
+                                            value_for<n::arch_var_if_special>(EAPIData::get_instance()->eapi_from_string(params.eapi_when_unknown())->supported()->ebuild_environment_variables()->env_arch()),
+                                            value_for<n::environment>(params.environment()),
+                                            value_for<n::location>(profiles),
+                                            value_for<n::mutex>(make_shared_ptr(new Mutex)),
+                                            value_for<n::profiles_explicitly_set>(true),
+                                            value_for<n::repository>(repo),
+                                            value_for<n::repository_name>(repo->name()),
+                                            value_for<n::value>(make_null_shared_ptr())
+                                            )))),
                             value_for<n::status>(tokens.at(2))
                             ));
                 }
@@ -912,7 +918,8 @@ ERepository::set_profile(const ProfilesConstIterator & iter)
 
     Log::get_instance()->message("e.profile.using", ll_debug, lc_context)
         << "Using profile '" << ((*iter).path()) << "'";
-    _imp->profile_ptr = (*iter).profile();
+
+    _imp->profile_ptr = (*iter).profile()->fetch();
 
     if ((*DistributionData::get_instance()->distribution_from_string(_imp->params.environment()->distribution()))
             .support_old_style_virtuals())

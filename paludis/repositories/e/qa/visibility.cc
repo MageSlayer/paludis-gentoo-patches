@@ -116,8 +116,8 @@ namespace
             /* rewrite virtuals to avoid problems later on */
             if (p->package_ptr())
             {
-                ERepositoryProfile::VirtualsConstIterator v((*profile).profile()->find_virtual(*p->package_ptr()));
-                if ((*profile).profile()->end_virtuals() != v)
+                ERepositoryProfile::VirtualsConstIterator v((*profile).profile()->fetch()->find_virtual(*p->package_ptr()));
+                if ((*profile).profile()->fetch()->end_virtuals() != v)
                 {
                     PartiallyMadePackageDepSpec pp;
 
@@ -162,7 +162,7 @@ namespace
                     /* can't use the usual masked rules here, so this gets a bit complicated... */
                     if ((*i)->repository() == repo)
                     {
-                        if (repo->repository_masked(**i) || (*profile).profile()->profile_masked(**i) || ! (*i)->keywords_key())
+                        if (repo->repository_masked(**i) || (*profile).profile()->fetch()->profile_masked(**i) || ! (*i)->keywords_key())
                             continue;
                     }
                     else
@@ -259,9 +259,9 @@ namespace
             }
             else
                 viable =
-                    ((! elike_conditional_dep_spec_is_inverse(*node.spec())) && (! (*profile).profile()->use_masked(
+                    ((! elike_conditional_dep_spec_is_inverse(*node.spec())) && (! (*profile).profile()->fetch()->use_masked(
                             id, choice, value, prefixed))) ||
-                    ((elike_conditional_dep_spec_is_inverse(*node.spec())) && (! (*profile).profile()->use_forced(
+                    ((elike_conditional_dep_spec_is_inverse(*node.spec())) && (! (*profile).profile()->fetch()->use_forced(
                             id, choice, value, prefixed)));
 
             if (viable)
@@ -331,11 +331,11 @@ paludis::erepository::visibility_check(
     for (ERepository::ProfilesConstIterator p(repo->begin_profiles()), p_end(repo->end_profiles()) ;
             p != p_end ; ++p)
     {
-        if ((*p).profile()->profile_masked(*id))
+        if ((*p).profile()->fetch()->profile_masked(*id))
             continue;
 
         std::set<KeywordName> accepted_keywords, overlap;
-        tokenise_whitespace((*p).profile()->environment_variable(
+        tokenise_whitespace((*p).profile()->fetch()->environment_variable(
                     repo->accept_keywords_variable()), create_inserter<KeywordName>(std::inserter(accepted_keywords, accepted_keywords.begin())));
 
         std::set_intersection(accepted_keywords.begin(), accepted_keywords.end(),
