@@ -1334,7 +1334,7 @@ AC_ARG_WITH([clients],
 			[  --with-clients=foo,bar,...
 			  Build the specified clients:
 			  all             All available clients
-			  default         Equivalent to adjutrix,paludis
+			  default         Equivalent to adjutrix,importare,paludis,reconcilio
 			                  Also includes qualudis if --enable-qa
 
 			  accerso         A fetch / mirror client
