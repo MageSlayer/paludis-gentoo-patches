@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -36,6 +36,9 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/mutex.hh>
+#include <paludis/util/thread_pool.hh>
+#include <paludis/util/destringify.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
@@ -51,6 +54,8 @@ using std::endl;
 
 namespace
 {
+    typedef std::multimap<std::tr1::shared_ptr<const PackageID>, std::string, PackageIDComparator> Results;
+
     struct KeyValidator
     {
         void visit(const MetadataValueKey<std::string> & k)
@@ -159,6 +164,93 @@ namespace
                     indirect_iterator(k.end_metadata()), accept_visitor(*this));
         }
     };
+
+    void worker(Mutex & mutex, const std::tr1::shared_ptr<PackageIDSequence> & ids, CategoryNamePart & old_cat,
+            unsigned & total, unsigned & success, Results & results)
+    {
+        while (true)
+        {
+            std::tr1::shared_ptr<const PackageID> id;
+            {
+                Lock lock(mutex);
+                if (ids->empty())
+                    return;
+                id = *ids->begin();
+                ids->pop_front();
+
+                if (id->name().category() != old_cat)
+                {
+                    cout << "Processing " << colour(cl_package_name, stringify(id->name().category())) << "..." << endl;
+                    old_cat = id->name().category();
+                }
+
+                ++total;
+            }
+
+            Context i_context("When generating metadata for ID '" + stringify(*id) + "':");
+
+            try
+            {
+                PackageID::MetadataConstIterator eapi_i(id->find_metadata("EAPI"));
+                if (id->end_metadata() == eapi_i)
+                {
+                    Lock lock(mutex);
+                    results.insert(std::make_pair(id, "No EAPI metadata key"));
+                    continue;
+                }
+
+                if (! simple_visitor_cast<const MetadataValueKey<std::string> >(**eapi_i))
+                {
+                    Lock lock(mutex);
+                    results.insert(std::make_pair(id, "EAPI metadata key is not a string key"));
+                    continue;
+                }
+
+                if (simple_visitor_cast<const MetadataValueKey<std::string> >(**eapi_i)->value() == "UNKNOWN")
+                {
+                    Lock lock(mutex);
+                    results.insert(std::make_pair(id, "EAPI is 'UNKNOWN'"));
+                    continue;
+                }
+
+                bool metadata_errors(false);
+                KeyValidator v;
+                for (PackageID::MetadataConstIterator m(id->begin_metadata()), m_end(id->end_metadata()); m_end != m; ++m)
+                {
+                    try
+                    {
+                        (*m)->accept(v);
+                    }
+                    catch (const InternalError &)
+                    {
+                        throw;
+                    }
+                    catch (const Exception & e)
+                    {
+                        Lock lock(mutex);
+                        results.insert(std::make_pair(id, "Error in metadata key '" + (*m)->raw_name() + "': '" + e.message() +
+                                    "' (" + e.what() + ")"));
+                        metadata_errors = true;
+                    }
+                }
+
+                if (! metadata_errors)
+                {
+                    Lock lock(mutex);
+                    ++success;
+                }
+            }
+            catch (const InternalError &)
+            {
+                throw;
+            }
+            catch (const Exception & e)
+            {
+                Lock lock(mutex);
+                results.insert(std::make_pair(id, "Uncaught exception '" + e.message() + "' (" + e.what() + ")"));
+            }
+        }
+    }
 }
 
 int
@@ -239,78 +331,18 @@ main(int argc, char *argv[])
                     value_for<n::write_cache>(CommandLine::get_instance()->a_output_directory.argument())
                 ));
 
-        std::tr1::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(
+        std::tr1::shared_ptr<PackageIDSequence> ids(env[selection::AllVersionsSorted(
                     generator::InRepository(env.main_repository()->name()))]);
-        std::multimap<std::tr1::shared_ptr<const PackageID>, std::string, PackageIDComparator> results(env.package_database().get());
+        Results results(env.package_database().get());
         unsigned success(0), total(0);
-
         CategoryNamePart old_cat("OLDCAT");
-        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                i != i_end ; ++i)
+        Mutex mutex;
+
         {
-            Context i_context("When fetching ID '" + stringify(**i) + "':");
-
-            if ((*i)->name().category() != old_cat)
-            {
-                cout << "Processing " << colour(cl_package_name, stringify((*i)->name().category())) << "..." << endl;
-                old_cat = (*i)->name().category();
-            }
-
-            ++total;
-
-            try
-            {
-                PackageID::MetadataConstIterator eapi_i((*i)->find_metadata("EAPI"));
-                if ((*i)->end_metadata() == eapi_i)
-                {
-                    results.insert(std::make_pair(*i, "No EAPI metadata key"));
-                    continue;
-                }
-
-                if (! simple_visitor_cast<const MetadataValueKey<std::string> >(**eapi_i))
-                {
-                    results.insert(std::make_pair(*i, "EAPI metadata key is not a string key"));
-                    continue;
-                }
-
-                if (simple_visitor_cast<const MetadataValueKey<std::string> >(**eapi_i)->value() == "UNKNOWN")
-                {
-                    results.insert(std::make_pair(*i, "EAPI is 'UNKNOWN'"));
-                    continue;
-                }
-
-                bool metadata_errors(false);
-                KeyValidator v;
-                for (PackageID::MetadataConstIterator m((*i)->begin_metadata()),
-                         m_end((*i)->end_metadata()); m_end != m; ++m)
-                {
-                    try
-                    {
-                        (*m)->accept(v);
-                    }
-                    catch (const InternalError &)
-                    {
-                        throw;
-                    }
-                    catch (const Exception & e)
-                    {
-                        results.insert(std::make_pair(*i, "Error in metadata key '" + (*m)->raw_name() + "': '" + e.message() +
-                                    "' (" + e.what() + ")"));
-                        metadata_errors = true;
-                    }
-                }
-
-                if (! metadata_errors)
-                    ++success;
-            }
-            catch (const InternalError &)
-            {
-                throw;
-            }
-            catch (const Exception & e)
-            {
-                results.insert(std::make_pair(*i, "Uncaught exception '" + e.message() + "' (" + e.what() + ")"));
-            }
+            ThreadPool pool;
+            for (int n(0), n_end(destringify<int>(getenv_with_default("INSTRUO_THREADS", "5"))) ; n < n_end ; ++n)
+                pool.create_thread(std::tr1::bind(&worker, std::tr1::ref(mutex), std::tr1::ref(ids), std::tr1::ref(old_cat),
+                            std::tr1::ref(total), std::tr1::ref(success), std::tr1::ref(results)));
         }
 
         std::cout << std::endl;
@@ -339,8 +371,7 @@ main(int argc, char *argv[])
 
         int exit_status(0);
         std::tr1::shared_ptr<const PackageID> old_id;
-        for (std::multimap<std::tr1::shared_ptr<const PackageID>, std::string, std::tr1::reference_wrapper<const PackageIDComparator> >::const_iterator
-                r(results.begin()), r_end(results.end()) ; r != r_end ; ++r)
+        for (Results::const_iterator r(results.begin()), r_end(results.end()) ; r != r_end ; ++r)
         {
             exit_status |= 1;
             if ((! old_id) || (*old_id != *r->first))
