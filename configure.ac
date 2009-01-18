@@ -681,7 +681,6 @@ if test "x${cxx_compiler_icc}" = "xyes" ; then
 	CHECK_CXXFLAG([-wd1125])
 	CHECK_CXXFLAG([-wd1418])
 	CHECK_CXXFLAG([-wd1419])
-	PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC=$PALUDIS_CXXFLAGS
 elif test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 	CHECK_CXXFLAG([-Wall])
 	CHECK_CXXFLAG([-Wextra])
@@ -722,10 +721,8 @@ elif test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 		PALUDIS_CXXFLAGS_NO_WWRITE_STRINGS=-Wno-write-strings
 	fi
 	CHECK_CXXFLAG([-Wno-ignored-qualifiers])
-	PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC=$PALUDIS_CXXFLAGS
 else
 	CHECK_CXXFLAG([-Wall])
-	PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC=$PALUDIS_CXXFLAGS
 fi
 AC_MSG_RESULT([${cxxflags_message}])
 
@@ -751,6 +748,8 @@ int main(int, char **)
 	PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -Wnon-virtual-dtor"
 	],
 	[AC_MSG_RESULT([no])])
+
+PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC=$PALUDIS_CXXFLAGS
 
 AC_MSG_CHECKING([whether -pedantic works if we use extern template])
 if test "x${cxx_compiler_icc}" = "xyes" ; then
