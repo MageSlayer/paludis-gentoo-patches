@@ -1420,7 +1420,8 @@ AC_ARG_WITH([config-framework],
 	CONFIG_FRAMEWORK=auto)
 
 if test x"$CONFIG_FRAMEWORK" = x"auto" ; then
-	if test -x `which eclectic 2>/dev/null` ; then
+	eclectic=`which eclectic 2>/dev/null`
+	if test -n "$eclectic" && test -x "$eclectic" ; then
 		CONFIG_FRAMEWORK="eclectic"
 	else
 		CONFIG_FRAMEWORK="eselect"
