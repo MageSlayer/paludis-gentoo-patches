@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -91,13 +91,13 @@ namespace
             )));
     }
 
-    EAPIMetadataVariable make_metadata_variable(const KeyValueConfigFile & k, const std::string & s)
+    std::tr1::shared_ptr<EAPIMetadataVariable> make_metadata_variable(const KeyValueConfigFile & k, const std::string & s)
     {
-        return make_named_values<EAPIMetadataVariable>(
-                value_for<n::description>(check_get(k, "description_" + s)),
-                value_for<n::flat_list_index>(destringify_key<int>(k, "flat_list_" + s)),
-                value_for<n::name>(check_get(k, "metadata_" + s))
-                );
+        return make_shared_ptr(new EAPIMetadataVariable(make_named_values<EAPIMetadataVariable>(
+                        value_for<n::description>(check_get(k, "description_" + s)),
+                        value_for<n::flat_list_index>(destringify_key<int>(k, "flat_list_" + s)),
+                        value_for<n::name>(check_get(k, "metadata_" + s))
+                        )));
     }
 
     std::tr1::shared_ptr<const EAPIEbuildMetadataVariables> make_ebuild_metadata_variables(const KeyValueConfigFile & k)

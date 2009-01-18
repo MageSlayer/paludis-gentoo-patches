@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -409,7 +409,7 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
             << "ID pre-load EAPI '" << id->eapi()->name() << "' is supported";
 
     std::string s;
-    if (! ((s = get(keys, id->eapi()->supported()->ebuild_metadata_variables()->eapi().name()))).empty())
+    if (! ((s = get(keys, id->eapi()->supported()->ebuild_metadata_variables()->eapi()->name()))).empty())
         id->set_eapi(s);
     else
         id->set_eapi(id->e_repository()->params().eapi_when_unspecified());
@@ -432,42 +432,42 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
 
     const EAPIEbuildMetadataVariables & m(*id->eapi()->supported()->ebuild_metadata_variables());
 
-    if (! m.short_description().name().empty())
-        id->load_short_description(m.short_description().name(), m.short_description().description(), get(keys, m.short_description().name()));
+    if (! m.short_description()->name().empty())
+        id->load_short_description(m.short_description()->name(), m.short_description()->description(), get(keys, m.short_description()->name()));
 
-    if (! m.long_description().name().empty())
+    if (! m.long_description()->name().empty())
     {
-        std::string value(get(keys, m.long_description().name()));
+        std::string value(get(keys, m.long_description()->name()));
         if (! value.empty())
-            id->load_long_description(m.long_description().name(), m.long_description().description(), value);
+            id->load_long_description(m.long_description()->name(), m.long_description()->description(), value);
     }
 
-    if (! m.dependencies().name().empty())
+    if (! m.dependencies()->name().empty())
     {
         DependenciesRewriter rewriter;
-        parse_depend(get(keys, m.dependencies().name()), params.environment(), id, *id->eapi())->root()->accept(rewriter);
-        id->load_build_depend(m.dependencies().name() + ".DEPEND", m.dependencies().description() + " (build)", rewriter.depend());
-        id->load_run_depend(m.dependencies().name() + ".RDEPEND", m.dependencies().description() + " (run)", rewriter.rdepend());
-        id->load_post_depend(m.dependencies().name() + ".PDEPEND", m.dependencies().description() + " (post)", rewriter.pdepend());
+        parse_depend(get(keys, m.dependencies()->name()), params.environment(), id, *id->eapi())->root()->accept(rewriter);
+        id->load_build_depend(m.dependencies()->name() + ".DEPEND", m.dependencies()->description() + " (build)", rewriter.depend());
+        id->load_run_depend(m.dependencies()->name() + ".RDEPEND", m.dependencies()->description() + " (run)", rewriter.rdepend());
+        id->load_post_depend(m.dependencies()->name() + ".PDEPEND", m.dependencies()->description() + " (post)", rewriter.pdepend());
     }
     else
     {
-        if (! m.build_depend().name().empty())
-            id->load_build_depend(m.build_depend().name(), m.build_depend().description(), get(keys, m.build_depend().name()));
+        if (! m.build_depend()->name().empty())
+            id->load_build_depend(m.build_depend()->name(), m.build_depend()->description(), get(keys, m.build_depend()->name()));
 
-        if (! m.run_depend().name().empty())
-            id->load_run_depend(m.run_depend().name(), m.run_depend().description(), get(keys, m.run_depend().name()));
+        if (! m.run_depend()->name().empty())
+            id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(), get(keys, m.run_depend()->name()));
 
-        if (! m.pdepend().name().empty())
-            id->load_post_depend(m.pdepend().name(), m.pdepend().description(), get(keys, m.pdepend().name()));
+        if (! m.pdepend()->name().empty())
+            id->load_post_depend(m.pdepend()->name(), m.pdepend()->description(), get(keys, m.pdepend()->name()));
     }
 
-    if (! m.slot().name().empty())
+    if (! m.slot()->name().empty())
     {
         try
         {
             Context c("When setting SLOT:");
-            std::string slot(get(keys, m.slot().name()));
+            std::string slot(get(keys, m.slot()->name()));
             if (slot.empty())
             {
                 Log::get_instance()->message("e.ebuild.no_slot", ll_qa, lc_context)
@@ -489,75 +489,75 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
         }
     }
 
-    if (! m.src_uri().name().empty())
-        id->load_src_uri(m.src_uri().name(), m.src_uri().description(), get(keys, m.src_uri().name()));
+    if (! m.src_uri()->name().empty())
+        id->load_src_uri(m.src_uri()->name(), m.src_uri()->description(), get(keys, m.src_uri()->name()));
 
-    if (! m.homepage().name().empty())
-        id->load_homepage(m.homepage().name(), m.homepage().description(), get(keys, m.homepage().name()));
+    if (! m.homepage()->name().empty())
+        id->load_homepage(m.homepage()->name(), m.homepage()->description(), get(keys, m.homepage()->name()));
 
-    if (! m.license().name().empty())
-        id->load_license(m.license().name(), m.license().description(), get(keys, m.license().name()));
+    if (! m.license()->name().empty())
+        id->load_license(m.license()->name(), m.license()->description(), get(keys, m.license()->name()));
 
-    if (! m.provide().name().empty())
-        id->load_provide(m.provide().name(), m.provide().description(), get(keys, m.provide().name()));
+    if (! m.provide()->name().empty())
+        id->load_provide(m.provide()->name(), m.provide()->description(), get(keys, m.provide()->name()));
 
-    if (! m.iuse().name().empty())
-        id->load_iuse(m.iuse().name(), m.iuse().description(), get(keys, m.iuse().name()));
+    if (! m.iuse()->name().empty())
+        id->load_iuse(m.iuse()->name(), m.iuse()->description(), get(keys, m.iuse()->name()));
 
-    if (! m.myoptions().name().empty())
-        id->load_myoptions(m.myoptions().name(), m.myoptions().description(), get(keys, m.myoptions().name()));
+    if (! m.myoptions()->name().empty())
+        id->load_myoptions(m.myoptions()->name(), m.myoptions()->description(), get(keys, m.myoptions()->name()));
 
-    if (! m.inherited().name().empty())
-        id->load_inherited(m.inherited().name(), m.inherited().description(), get(keys, m.inherited().name()));
+    if (! m.inherited()->name().empty())
+        id->load_inherited(m.inherited()->name(), m.inherited()->description(), get(keys, m.inherited()->name()));
 
-    if (! m.keywords().name().empty())
-        id->load_keywords(m.keywords().name(), m.keywords().description(), get(keys, m.keywords().name()));
+    if (! m.keywords()->name().empty())
+        id->load_keywords(m.keywords()->name(), m.keywords()->description(), get(keys, m.keywords()->name()));
 
-    if (! m.restrictions().name().empty())
-        id->load_restrict(m.restrictions().name(), m.restrictions().description(), get(keys, m.restrictions().name()));
+    if (! m.restrictions()->name().empty())
+        id->load_restrict(m.restrictions()->name(), m.restrictions()->description(), get(keys, m.restrictions()->name()));
 
-    if (! m.properties().name().empty())
-        id->load_properties(m.properties().name(), m.properties().description(), get(keys, m.properties().name()));
+    if (! m.properties()->name().empty())
+        id->load_properties(m.properties()->name(), m.properties()->description(), get(keys, m.properties()->name()));
 
-    if (! m.use().name().empty())
-        id->load_use(m.use().name(), m.use().description(), get(keys, m.use().name()));
+    if (! m.use()->name().empty())
+        id->load_use(m.use()->name(), m.use()->description(), get(keys, m.use()->name()));
 
-    if (! m.upstream_changelog().name().empty())
+    if (! m.upstream_changelog()->name().empty())
     {
-        std::string value(get(keys, m.upstream_changelog().name()));
+        std::string value(get(keys, m.upstream_changelog()->name()));
         if (! value.empty())
-            id->load_upstream_changelog(m.upstream_changelog().name(), m.upstream_changelog().description(), value);
+            id->load_upstream_changelog(m.upstream_changelog()->name(), m.upstream_changelog()->description(), value);
     }
 
-    if (! m.upstream_documentation().name().empty())
+    if (! m.upstream_documentation()->name().empty())
     {
-        std::string value(get(keys, m.upstream_documentation().name()));
+        std::string value(get(keys, m.upstream_documentation()->name()));
         if (! value.empty())
-            id->load_upstream_documentation(m.upstream_documentation().name(), m.upstream_documentation().description(), value);
+            id->load_upstream_documentation(m.upstream_documentation()->name(), m.upstream_documentation()->description(), value);
     }
 
-    if (! m.upstream_release_notes().name().empty())
+    if (! m.upstream_release_notes()->name().empty())
     {
-        std::string value(get(keys, m.upstream_release_notes().name()));
+        std::string value(get(keys, m.upstream_release_notes()->name()));
         if (! value.empty())
-            id->load_upstream_release_notes(m.upstream_release_notes().name(), m.upstream_release_notes().description(), value);
+            id->load_upstream_release_notes(m.upstream_release_notes()->name(), m.upstream_release_notes()->description(), value);
     }
 
-    if (! m.bugs_to().name().empty())
+    if (! m.bugs_to()->name().empty())
     {
-        std::string value(get(keys, m.bugs_to().name()));
+        std::string value(get(keys, m.bugs_to()->name()));
         if (! value.empty())
-            id->load_bugs_to(m.bugs_to().name(), m.bugs_to().description(), value);
+            id->load_bugs_to(m.bugs_to()->name(), m.bugs_to()->description(), value);
     }
 
-    if (! m.remote_ids().name().empty())
+    if (! m.remote_ids()->name().empty())
     {
-        std::string value(get(keys, m.remote_ids().name()));
+        std::string value(get(keys, m.remote_ids()->name()));
         if (! value.empty())
-            id->load_remote_ids(m.remote_ids().name(), m.remote_ids().description(), value);
+            id->load_remote_ids(m.remote_ids()->name(), m.remote_ids()->description(), value);
     }
 
-    if (! m.defined_phases().name().empty())
+    if (! m.defined_phases()->name().empty())
     {
         std::set<std::string> defined_phases, raw_values, ebuild_functions;
         std::string raw_value(get(keys, "PALUDIS_DECLARED_FUNCTIONS"));
@@ -586,9 +586,9 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
         }
 
         if (defined_phases.empty())
-            id->load_defined_phases(m.defined_phases().name(), m.defined_phases().description(), "-");
+            id->load_defined_phases(m.defined_phases()->name(), m.defined_phases()->description(), "-");
         else
-            id->load_defined_phases(m.defined_phases().name(), m.defined_phases().description(),
+            id->load_defined_phases(m.defined_phases()->name(), m.defined_phases()->description(),
                     join(defined_phases.begin(), defined_phases.end(), " "));
     }
 }
@@ -880,7 +880,7 @@ WriteVDBEntryCommand::operator() ()
             .with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params.environment(), params.package_id(), _1))
             );
 
-    std::string defined_phases(params.package_id()->eapi()->supported()->ebuild_metadata_variables()->defined_phases().name());
+    std::string defined_phases(params.package_id()->eapi()->supported()->ebuild_metadata_variables()->defined_phases()->name());
     if (! defined_phases.empty())
         if (params.package_id()->defined_phases_key())
             cmd.with_setenv(defined_phases, join(params.package_id()->defined_phases_key()->value()->begin(),
@@ -1089,7 +1089,7 @@ WriteBinaryEbuildCommand::operator() ()
             .with_setenv("PALUDIS_BINARY_URI_PREFIX", params.destination_repository()->params().binary_uri_prefix())
             .with_setenv("PALUDIS_BINARY_KEYWORDS", params.destination_repository()->params().binary_keywords())
             .with_setenv("PALUDIS_BINARY_KEYWORDS_VARIABLE", EAPIData::get_instance()->eapi_from_string("pbin-1+"
-                        + params.package_id()->eapi()->exported_name())->supported()->ebuild_metadata_variables()->keywords().name())
+                        + params.package_id()->eapi()->exported_name())->supported()->ebuild_metadata_variables()->keywords()->name())
             .with_setenv("PALUDIS_BINARY_DISTDIR_VARIABLE", EAPIData::get_instance()->eapi_from_string("pbin-1+"
                         + params.package_id()->eapi()->exported_name())->supported()->ebuild_environment_variables()->env_distdir())
             .with_setenv("PALUDIS_EBUILD_MODULE_SUFFIXES",

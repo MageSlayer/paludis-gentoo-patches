@@ -288,13 +288,13 @@ EbuildID::need_keys_added() const
     if (_imp->eapi->supported())
     {
         _imp->raw_use_expand = make_shared_ptr(new LiteralMetadataStringSetKey(
-                    _imp->eapi->supported()->ebuild_metadata_variables()->use_expand().name(),
-                    _imp->eapi->supported()->ebuild_metadata_variables()->use_expand().description(),
+                    _imp->eapi->supported()->ebuild_metadata_variables()->use_expand()->name(),
+                    _imp->eapi->supported()->ebuild_metadata_variables()->use_expand()->description(),
                     mkt_internal,
                     std::tr1::static_pointer_cast<const ERepository>(repository())->profile()->use_expand()));
         _imp->raw_use_expand_hidden = make_shared_ptr(new LiteralMetadataStringSetKey(
-                    _imp->eapi->supported()->ebuild_metadata_variables()->use_expand_hidden().name(),
-                    _imp->eapi->supported()->ebuild_metadata_variables()->use_expand_hidden().description(),
+                    _imp->eapi->supported()->ebuild_metadata_variables()->use_expand_hidden()->name(),
+                    _imp->eapi->supported()->ebuild_metadata_variables()->use_expand_hidden()->description(),
                     mkt_internal,
                     std::tr1::static_pointer_cast<const ERepository>(repository())->profile()->use_expand_hidden()));
 

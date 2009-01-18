@@ -269,10 +269,10 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
             std::string var(tokens[3]);
 
-            if ((var == eapi->supported()->ebuild_metadata_variables()->build_depend().name()) ||
-                    (var == eapi->supported()->ebuild_metadata_variables()->run_depend().name()) ||
-                    (var == eapi->supported()->ebuild_metadata_variables()->pdepend().name()) ||
-                    (var == eapi->supported()->ebuild_metadata_variables()->dependencies().name()))
+            if ((var == eapi->supported()->ebuild_metadata_variables()->build_depend()->name()) ||
+                    (var == eapi->supported()->ebuild_metadata_variables()->run_depend()->name()) ||
+                    (var == eapi->supported()->ebuild_metadata_variables()->pdepend()->name()) ||
+                    (var == eapi->supported()->ebuild_metadata_variables()->dependencies()->name()))
             {
                 std::tr1::shared_ptr<const DependencySpecTree> before(parse_depend(join(tokens.begin() + 4, tokens.end(), " "),
                             environment, package_id, *eapi));

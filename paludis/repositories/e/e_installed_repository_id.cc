@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -193,249 +193,249 @@ EInstalledRepositoryID::need_keys_added() const
             add_metadata_key(_imp->raw_use);
         }
 
-    if (! vars->inherited().name().empty())
-        if ((_imp->dir / vars->inherited().name()).exists())
+    if (! vars->inherited()->name().empty())
+        if ((_imp->dir / vars->inherited()->name()).exists())
         {
-            _imp->inherited.reset(new EStringSetKey(shared_from_this(), vars->inherited().name(), vars->inherited().description(),
-                        file_contents(_imp->dir / vars->inherited().name()), mkt_internal));
+            _imp->inherited.reset(new EStringSetKey(shared_from_this(), vars->inherited()->name(), vars->inherited()->description(),
+                        file_contents(_imp->dir / vars->inherited()->name()), mkt_internal));
             add_metadata_key(_imp->inherited);
         }
 
-    if (! vars->defined_phases().name().empty())
-        if ((_imp->dir / vars->defined_phases().name()).exists())
+    if (! vars->defined_phases()->name().empty())
+        if ((_imp->dir / vars->defined_phases()->name()).exists())
         {
-            std::string d(file_contents(_imp->dir / vars->defined_phases().name()));
+            std::string d(file_contents(_imp->dir / vars->defined_phases()->name()));
             if (! d.empty())
             {
-                _imp->defined_phases.reset(new EStringSetKey(shared_from_this(), vars->defined_phases().name(), vars->defined_phases().description(),
+                _imp->defined_phases.reset(new EStringSetKey(shared_from_this(), vars->defined_phases()->name(), vars->defined_phases()->description(),
                             d, mkt_internal));
                 add_metadata_key(_imp->defined_phases);
             }
         }
 
-    if (! vars->iuse().name().empty())
+    if (! vars->iuse()->name().empty())
     {
-        if ((_imp->dir / vars->iuse().name()).exists())
-            _imp->raw_iuse.reset(new EStringSetKey(shared_from_this(), vars->iuse().name(), vars->iuse().description(),
-                        file_contents(_imp->dir / vars->iuse().name()), mkt_internal));
+        if ((_imp->dir / vars->iuse()->name()).exists())
+            _imp->raw_iuse.reset(new EStringSetKey(shared_from_this(), vars->iuse()->name(), vars->iuse()->description(),
+                        file_contents(_imp->dir / vars->iuse()->name()), mkt_internal));
         else
         {
             /* hack: if IUSE doesn't exist, we still need an iuse_key to make the choices
              * code behave sanely. */
-            _imp->raw_iuse.reset(new EStringSetKey(shared_from_this(), vars->iuse().name(), vars->iuse().description(),
+            _imp->raw_iuse.reset(new EStringSetKey(shared_from_this(), vars->iuse()->name(), vars->iuse()->description(),
                         "", mkt_internal));
         }
         add_metadata_key(_imp->raw_iuse);
     }
 
-    if (! vars->myoptions().name().empty())
-        if ((_imp->dir / vars->myoptions().name()).exists())
+    if (! vars->myoptions()->name().empty())
+        if ((_imp->dir / vars->myoptions()->name()).exists())
         {
-            _imp->raw_myoptions.reset(new EMyOptionsKey(_imp->environment, shared_from_this(), vars->myoptions().name(),
-                        vars->myoptions().description(), file_contents(_imp->dir / vars->myoptions().name()), mkt_internal));
+            _imp->raw_myoptions.reset(new EMyOptionsKey(_imp->environment, shared_from_this(), vars->myoptions()->name(),
+                        vars->myoptions()->description(), file_contents(_imp->dir / vars->myoptions()->name()), mkt_internal));
             add_metadata_key(_imp->raw_myoptions);
         }
 
-    if (! vars->use_expand().name().empty())
-        if ((_imp->dir / vars->use_expand().name()).exists())
+    if (! vars->use_expand()->name().empty())
+        if ((_imp->dir / vars->use_expand()->name()).exists())
         {
-            _imp->raw_use_expand.reset(new EStringSetKey(shared_from_this(), vars->use_expand().name(), vars->use_expand().description(),
-                        file_contents(_imp->dir / vars->use_expand().name()), mkt_internal));
+            _imp->raw_use_expand.reset(new EStringSetKey(shared_from_this(), vars->use_expand()->name(), vars->use_expand()->description(),
+                        file_contents(_imp->dir / vars->use_expand()->name()), mkt_internal));
             add_metadata_key(_imp->raw_use_expand);
         }
 
-    if (! vars->use_expand_hidden().name().empty())
-        if ((_imp->dir / vars->use_expand_hidden().name()).exists())
+    if (! vars->use_expand_hidden()->name().empty())
+        if ((_imp->dir / vars->use_expand_hidden()->name()).exists())
         {
-            _imp->raw_use_expand_hidden.reset(new EStringSetKey(shared_from_this(), vars->use_expand_hidden().name(), vars->use_expand_hidden().description(),
-                        file_contents(_imp->dir / vars->use_expand_hidden().name()), mkt_internal));
+            _imp->raw_use_expand_hidden.reset(new EStringSetKey(shared_from_this(), vars->use_expand_hidden()->name(), vars->use_expand_hidden()->description(),
+                        file_contents(_imp->dir / vars->use_expand_hidden()->name()), mkt_internal));
             add_metadata_key(_imp->raw_use_expand_hidden);
         }
 
-    if (! vars->license().name().empty())
-        if ((_imp->dir / vars->license().name()).exists())
+    if (! vars->license()->name().empty())
+        if ((_imp->dir / vars->license()->name()).exists())
         {
-            _imp->license.reset(new ELicenseKey(_imp->environment, shared_from_this(), vars->license().name(), vars->license().description(),
-                        file_contents(_imp->dir / vars->license().name()),  mkt_normal));
+            _imp->license.reset(new ELicenseKey(_imp->environment, shared_from_this(), vars->license()->name(), vars->license()->description(),
+                        file_contents(_imp->dir / vars->license()->name()),  mkt_normal));
             add_metadata_key(_imp->license);
         }
 
-    if (! vars->provide().name().empty())
-        if ((_imp->dir / vars->provide().name()).exists())
+    if (! vars->provide()->name().empty())
+        if ((_imp->dir / vars->provide()->name()).exists())
         {
-            _imp->provide.reset(new EProvideKey(_imp->environment, shared_from_this(), vars->provide().name(), vars->provide().description(),
-                        file_contents(_imp->dir / vars->provide().name()), mkt_internal));
+            _imp->provide.reset(new EProvideKey(_imp->environment, shared_from_this(), vars->provide()->name(), vars->provide()->description(),
+                        file_contents(_imp->dir / vars->provide()->name()), mkt_internal));
             add_metadata_key(_imp->provide);
         }
 
-    if (! vars->dependencies().name().empty())
+    if (! vars->dependencies()->name().empty())
     {
-        if ((_imp->dir / vars->dependencies().name()).exists())
+        if ((_imp->dir / vars->dependencies()->name()).exists())
         {
             DependenciesRewriter rewriter;
-            parse_depend(file_contents(_imp->dir / vars->dependencies().name()), _imp->environment, shared_from_this(), *eapi())->root()->accept(rewriter);
+            parse_depend(file_contents(_imp->dir / vars->dependencies()->name()), _imp->environment, shared_from_this(), *eapi())->root()->accept(rewriter);
 
-            _imp->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->dependencies().name() + ".DEPEND",
-                        vars->dependencies().description() + " (build)", rewriter.depend(), _imp->build_dependencies_labels, mkt_dependencies));
+            _imp->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".DEPEND",
+                        vars->dependencies()->description() + " (build)", rewriter.depend(), _imp->build_dependencies_labels, mkt_dependencies));
             add_metadata_key(_imp->build_dependencies);
 
-            _imp->run_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->dependencies().name() + ".RDEPEND",
-                        vars->dependencies().description() + " (run)", rewriter.rdepend(), _imp->build_dependencies_labels, mkt_dependencies));
+            _imp->run_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".RDEPEND",
+                        vars->dependencies()->description() + " (run)", rewriter.rdepend(), _imp->build_dependencies_labels, mkt_dependencies));
             add_metadata_key(_imp->run_dependencies);
 
-            _imp->post_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->dependencies().name() + ".PDEPEND",
-                        vars->dependencies().description() + " (post)", rewriter.pdepend(), _imp->build_dependencies_labels, mkt_dependencies));
+            _imp->post_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".PDEPEND",
+                        vars->dependencies()->description() + " (post)", rewriter.pdepend(), _imp->build_dependencies_labels, mkt_dependencies));
             add_metadata_key(_imp->post_dependencies);
         }
     }
     else
     {
-        if (! vars->build_depend().name().empty())
-            if ((_imp->dir / vars->build_depend().name()).exists())
+        if (! vars->build_depend()->name().empty())
+            if ((_imp->dir / vars->build_depend()->name()).exists())
             {
-                _imp->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->build_depend().name(),
-                            vars->build_depend().description(), file_contents(_imp->dir / vars->build_depend().name()),
+                _imp->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->build_depend()->name(),
+                            vars->build_depend()->description(), file_contents(_imp->dir / vars->build_depend()->name()),
                             _imp->build_dependencies_labels, mkt_dependencies));
                 add_metadata_key(_imp->build_dependencies);
             }
 
-        if (! vars->run_depend().name().empty())
-            if ((_imp->dir / vars->run_depend().name()).exists())
+        if (! vars->run_depend()->name().empty())
+            if ((_imp->dir / vars->run_depend()->name()).exists())
             {
-                _imp->run_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->run_depend().name(),
-                            vars->run_depend().description(), file_contents(_imp->dir / vars->run_depend().name()),
+                _imp->run_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->run_depend()->name(),
+                            vars->run_depend()->description(), file_contents(_imp->dir / vars->run_depend()->name()),
                             _imp->run_dependencies_labels, mkt_dependencies));
                 add_metadata_key(_imp->run_dependencies);
             }
 
-        if (! vars->pdepend().name().empty())
-            if ((_imp->dir / vars->pdepend().name()).exists())
+        if (! vars->pdepend()->name().empty())
+            if ((_imp->dir / vars->pdepend()->name()).exists())
             {
-                _imp->post_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->pdepend().name(),
-                            vars->pdepend().description(), file_contents(_imp->dir / vars->pdepend().name()),
+                _imp->post_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->pdepend()->name(),
+                            vars->pdepend()->description(), file_contents(_imp->dir / vars->pdepend()->name()),
                             _imp->post_dependencies_labels, mkt_dependencies));
                 add_metadata_key(_imp->post_dependencies);
             }
     }
 
-    if (! vars->restrictions().name().empty())
-        if ((_imp->dir / vars->restrictions().name()).exists())
+    if (! vars->restrictions()->name().empty())
+        if ((_imp->dir / vars->restrictions()->name()).exists())
         {
-            _imp->restrictions.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), vars->restrictions().name(),
-                        vars->restrictions().description(),
-                        file_contents(_imp->dir / vars->restrictions().name()), mkt_internal));
+            _imp->restrictions.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), vars->restrictions()->name(),
+                        vars->restrictions()->description(),
+                        file_contents(_imp->dir / vars->restrictions()->name()), mkt_internal));
             add_metadata_key(_imp->restrictions);
         }
 
-    if (! vars->properties().name().empty())
-        if ((_imp->dir / vars->properties().name()).exists())
+    if (! vars->properties()->name().empty())
+        if ((_imp->dir / vars->properties()->name()).exists())
         {
-            _imp->properties.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), vars->properties().name(),
-                        vars->properties().description(),
-                        file_contents(_imp->dir / vars->properties().name()), mkt_internal));
+            _imp->properties.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), vars->properties()->name(),
+                        vars->properties()->description(),
+                        file_contents(_imp->dir / vars->properties()->name()), mkt_internal));
             add_metadata_key(_imp->properties);
         }
 
-    if (! vars->src_uri().name().empty())
-        if ((_imp->dir / vars->src_uri().name()).exists())
+    if (! vars->src_uri()->name().empty())
+        if ((_imp->dir / vars->src_uri()->name()).exists())
         {
-            _imp->src_uri.reset(new EFetchableURIKey(_imp->environment, shared_from_this(), vars->src_uri().name(),
-                        vars->src_uri().description(),
-                        file_contents(_imp->dir / vars->src_uri().name()), mkt_dependencies));
+            _imp->src_uri.reset(new EFetchableURIKey(_imp->environment, shared_from_this(), vars->src_uri()->name(),
+                        vars->src_uri()->description(),
+                        file_contents(_imp->dir / vars->src_uri()->name()), mkt_dependencies));
             add_metadata_key(_imp->src_uri);
         }
 
-    if (! vars->short_description().name().empty())
-        if ((_imp->dir / vars->short_description().name()).exists())
+    if (! vars->short_description()->name().empty())
+        if ((_imp->dir / vars->short_description()->name()).exists())
         {
-            _imp->short_description.reset(new LiteralMetadataValueKey<std::string> (vars->short_description().name(),
-                        vars->short_description().description(), mkt_significant, file_contents(_imp->dir / vars->short_description().name())));
+            _imp->short_description.reset(new LiteralMetadataValueKey<std::string> (vars->short_description()->name(),
+                        vars->short_description()->description(), mkt_significant, file_contents(_imp->dir / vars->short_description()->name())));
             add_metadata_key(_imp->short_description);
         }
 
-    if (! vars->long_description().name().empty())
-        if ((_imp->dir / vars->long_description().name()).exists())
+    if (! vars->long_description()->name().empty())
+        if ((_imp->dir / vars->long_description()->name()).exists())
         {
-            std::string value(file_contents(_imp->dir / vars->long_description().name()));
+            std::string value(file_contents(_imp->dir / vars->long_description()->name()));
             if (! value.empty())
             {
-                _imp->long_description.reset(new LiteralMetadataValueKey<std::string> (vars->long_description().name(),
-                            vars->long_description().description(), mkt_significant, value));
+                _imp->long_description.reset(new LiteralMetadataValueKey<std::string> (vars->long_description()->name(),
+                            vars->long_description()->description(), mkt_significant, value));
                 add_metadata_key(_imp->long_description);
             }
         }
 
-    if (! vars->upstream_changelog().name().empty())
-        if ((_imp->dir / vars->upstream_changelog().name()).exists())
+    if (! vars->upstream_changelog()->name().empty())
+        if ((_imp->dir / vars->upstream_changelog()->name()).exists())
         {
-            std::string value(file_contents(_imp->dir / vars->upstream_changelog().name()));
+            std::string value(file_contents(_imp->dir / vars->upstream_changelog()->name()));
             if (! value.empty())
             {
                 _imp->upstream_changelog.reset(new ESimpleURIKey(_imp->environment, shared_from_this(),
-                            vars->upstream_changelog().name(),
-                            vars->upstream_changelog().description(), value, mkt_normal));
+                            vars->upstream_changelog()->name(),
+                            vars->upstream_changelog()->description(), value, mkt_normal));
                 add_metadata_key(_imp->upstream_changelog);
             }
         }
 
-    if (! vars->upstream_release_notes().name().empty())
-        if ((_imp->dir / vars->upstream_release_notes().name()).exists())
+    if (! vars->upstream_release_notes()->name().empty())
+        if ((_imp->dir / vars->upstream_release_notes()->name()).exists())
         {
-            std::string value(file_contents(_imp->dir / vars->upstream_release_notes().name()));
+            std::string value(file_contents(_imp->dir / vars->upstream_release_notes()->name()));
             if (! value.empty())
             {
                 _imp->upstream_release_notes.reset(new ESimpleURIKey(_imp->environment, shared_from_this(),
-                            vars->upstream_release_notes().name(),
-                            vars->upstream_release_notes().description(), value, mkt_normal));
+                            vars->upstream_release_notes()->name(),
+                            vars->upstream_release_notes()->description(), value, mkt_normal));
                 add_metadata_key(_imp->upstream_release_notes);
             }
         }
 
-    if (! vars->upstream_documentation().name().empty())
-        if ((_imp->dir / vars->upstream_documentation().name()).exists())
+    if (! vars->upstream_documentation()->name().empty())
+        if ((_imp->dir / vars->upstream_documentation()->name()).exists())
         {
-            std::string value(file_contents(_imp->dir / vars->upstream_documentation().name()));
+            std::string value(file_contents(_imp->dir / vars->upstream_documentation()->name()));
             if (! value.empty())
             {
                 _imp->upstream_documentation.reset(new ESimpleURIKey(_imp->environment, shared_from_this(),
-                            vars->upstream_documentation().name(),
-                            vars->upstream_documentation().description(), value, mkt_normal));
+                            vars->upstream_documentation()->name(),
+                            vars->upstream_documentation()->description(), value, mkt_normal));
                 add_metadata_key(_imp->upstream_documentation);
             }
         }
 
-    if (! vars->bugs_to().name().empty())
-        if ((_imp->dir / vars->bugs_to().name()).exists())
+    if (! vars->bugs_to()->name().empty())
+        if ((_imp->dir / vars->bugs_to()->name()).exists())
         {
-            std::string value(file_contents(_imp->dir / vars->bugs_to().name()));
+            std::string value(file_contents(_imp->dir / vars->bugs_to()->name()));
             if (! value.empty())
             {
                 _imp->bugs_to.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(),
-                            vars->bugs_to().name(),
-                            vars->bugs_to().description(), value, mkt_normal));
+                            vars->bugs_to()->name(),
+                            vars->bugs_to()->description(), value, mkt_normal));
                 add_metadata_key(_imp->bugs_to);
             }
         }
 
-    if (! vars->remote_ids().name().empty())
-        if ((_imp->dir / vars->remote_ids().name()).exists())
+    if (! vars->remote_ids()->name().empty())
+        if ((_imp->dir / vars->remote_ids()->name()).exists())
         {
-            std::string value(file_contents(_imp->dir / vars->remote_ids().name()));
+            std::string value(file_contents(_imp->dir / vars->remote_ids()->name()));
             if (! value.empty())
             {
                 _imp->remote_ids.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(),
-                            vars->remote_ids().name(),
-                            vars->remote_ids().description(), value, mkt_internal));
+                            vars->remote_ids()->name(),
+                            vars->remote_ids()->description(), value, mkt_internal));
                 add_metadata_key(_imp->remote_ids);
             }
         }
 
-    if (! vars->homepage().name().empty())
-        if ((_imp->dir / vars->homepage().name()).exists())
+    if (! vars->homepage()->name().empty())
+        if ((_imp->dir / vars->homepage()->name()).exists())
         {
-            _imp->homepage.reset(new ESimpleURIKey(_imp->environment, shared_from_this(), vars->homepage().name(),
-                        vars->homepage().description(),
-                        file_contents(_imp->dir / vars->homepage().name()), mkt_significant));
+            _imp->homepage.reset(new ESimpleURIKey(_imp->environment, shared_from_this(), vars->homepage()->name(),
+                        vars->homepage()->description(),
+                        file_contents(_imp->dir / vars->homepage()->name()), mkt_significant));
             add_metadata_key(_imp->homepage);
         }
 
