@@ -745,7 +745,7 @@ int main(int, char **)
 }
 ],
 	[AC_MSG_RESULT([yes])
-	PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -Wnon-virtual-dtor"
+	PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -Wno-non-virtual-dtor"
 	],
 	[AC_MSG_RESULT([no])])
 
