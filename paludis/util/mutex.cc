@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,30 +24,34 @@
 
 using namespace paludis;
 
-Mutex::Mutex() :
-    _attr(new pthread_mutexattr_t),
-    _mutex(new pthread_mutex_t)
+namespace
 {
-    pthread_mutexattr_init(_attr);
-    pthread_mutexattr_settype(_attr, PTHREAD_MUTEX_RECURSIVE);
-    pthread_mutex_init(_mutex, _attr);
+    pthread_mutexattr_t make_recursive_attr()
+    {
+        pthread_mutexattr_t result;
+        pthread_mutexattr_init(&result);
+        pthread_mutexattr_settype(&result, PTHREAD_MUTEX_RECURSIVE);
+        return result;
+    }
+}
+
+Mutex::Mutex()
+{
+    static const pthread_mutexattr_t attr = make_recursive_attr();
+    pthread_mutex_init(&_mutex, &attr);
 }
 
 Mutex::~Mutex()
 {
     int r(0);
-    if (0 != ((r = pthread_mutex_destroy(_mutex))))
+    if (0 != ((r = pthread_mutex_destroy(&_mutex))))
         throw InternalError(PALUDIS_HERE, "mutex destory failed: " + stringify(strerror(r)));
-    pthread_mutexattr_destroy(_attr);
-
-    delete _mutex;
-    delete _attr;
 }
 
 pthread_mutex_t *
 Mutex::posix_mutex()
 {
-    return _mutex;
+    return &_mutex;
 }
 
 Lock::Lock(Mutex & m) :
