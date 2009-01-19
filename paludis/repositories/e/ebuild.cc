@@ -496,7 +496,7 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
         id->load_homepage(m.homepage()->name(), m.homepage()->description(), get(keys, m.homepage()->name()));
 
     if (! m.license()->name().empty())
-        id->load_license(m.license()->name(), m.license()->description(), get(keys, m.license()->name()));
+        id->load_license(m.license(), get(keys, m.license()->name()));
 
     if (! m.provide()->name().empty())
         id->load_provide(m.provide()->name(), m.provide()->description(), get(keys, m.provide()->name()));
@@ -514,10 +514,10 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
         id->load_keywords(m.keywords()->name(), m.keywords()->description(), get(keys, m.keywords()->name()));
 
     if (! m.restrictions()->name().empty())
-        id->load_restrict(m.restrictions()->name(), m.restrictions()->description(), get(keys, m.restrictions()->name()));
+        id->load_restrict(m.restrictions(), get(keys, m.restrictions()->name()));
 
     if (! m.properties()->name().empty())
-        id->load_properties(m.properties()->name(), m.properties()->description(), get(keys, m.properties()->name()));
+        id->load_properties(m.properties(), get(keys, m.properties()->name()));
 
     if (! m.use()->name().empty())
         id->load_use(m.use()->name(), m.use()->description(), get(keys, m.use()->name()));
@@ -547,14 +547,14 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
     {
         std::string value(get(keys, m.bugs_to()->name()));
         if (! value.empty())
-            id->load_bugs_to(m.bugs_to()->name(), m.bugs_to()->description(), value);
+            id->load_bugs_to(m.bugs_to(), value);
     }
 
     if (! m.remote_ids()->name().empty())
     {
         std::string value(get(keys, m.remote_ids()->name()));
         if (! value.empty())
-            id->load_remote_ids(m.remote_ids()->name(), m.remote_ids()->description(), value);
+            id->load_remote_ids(m.remote_ids(), value);
     }
 
     if (! m.defined_phases()->name().empty())

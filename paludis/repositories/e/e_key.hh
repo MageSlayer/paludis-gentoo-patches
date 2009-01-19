@@ -148,7 +148,8 @@ namespace paludis
             public:
                 EPlainTextSpecKey(const Environment * const,
                         const std::tr1::shared_ptr<const ERepositoryID> &,
-                        const std::string &, const std::string &, const std::string &, const MetadataKeyType);
+                        const std::tr1::shared_ptr<const EAPIMetadataVariable> &,
+                        const std::string &, const MetadataKeyType);
                 ~EPlainTextSpecKey();
 
                 virtual const std::tr1::shared_ptr<const PlainTextSpecTree> value() const
@@ -221,7 +222,8 @@ namespace paludis
                 ELicenseKey(
                         const Environment * const,
                         const std::tr1::shared_ptr<const ERepositoryID> &,
-                        const std::string &, const std::string &, const std::string &, const MetadataKeyType);
+                        const std::tr1::shared_ptr<const EAPIMetadataVariable> &,
+                        const std::string &, const MetadataKeyType);
                 ~ELicenseKey();
 
                 virtual const std::tr1::shared_ptr<const LicenseSpecTree> value() const

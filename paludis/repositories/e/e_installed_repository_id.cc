@@ -255,7 +255,7 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->license()->name().empty())
         if ((_imp->dir / vars->license()->name()).exists())
         {
-            _imp->license.reset(new ELicenseKey(_imp->environment, shared_from_this(), vars->license()->name(), vars->license()->description(),
+            _imp->license.reset(new ELicenseKey(_imp->environment, shared_from_this(), vars->license(),
                         file_contents(_imp->dir / vars->license()->name()),  mkt_normal));
             add_metadata_key(_imp->license);
         }
@@ -321,8 +321,7 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->restrictions()->name().empty())
         if ((_imp->dir / vars->restrictions()->name()).exists())
         {
-            _imp->restrictions.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), vars->restrictions()->name(),
-                        vars->restrictions()->description(),
+            _imp->restrictions.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), vars->restrictions(),
                         file_contents(_imp->dir / vars->restrictions()->name()), mkt_internal));
             add_metadata_key(_imp->restrictions);
         }
@@ -330,8 +329,7 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->properties()->name().empty())
         if ((_imp->dir / vars->properties()->name()).exists())
         {
-            _imp->properties.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), vars->properties()->name(),
-                        vars->properties()->description(),
+            _imp->properties.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), vars->properties(),
                         file_contents(_imp->dir / vars->properties()->name()), mkt_internal));
             add_metadata_key(_imp->properties);
         }
@@ -410,8 +408,7 @@ EInstalledRepositoryID::need_keys_added() const
             if (! value.empty())
             {
                 _imp->bugs_to.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(),
-                            vars->bugs_to()->name(),
-                            vars->bugs_to()->description(), value, mkt_normal));
+                            vars->bugs_to(), value, mkt_normal));
                 add_metadata_key(_imp->bugs_to);
             }
         }
@@ -423,8 +420,7 @@ EInstalledRepositoryID::need_keys_added() const
             if (! value.empty())
             {
                 _imp->remote_ids.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(),
-                            vars->remote_ids()->name(),
-                            vars->remote_ids()->description(), value, mkt_internal));
+                            vars->remote_ids(), value, mkt_internal));
                 add_metadata_key(_imp->remote_ids);
             }
         }

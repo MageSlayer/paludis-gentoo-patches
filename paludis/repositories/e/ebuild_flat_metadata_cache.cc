@@ -181,16 +181,16 @@ namespace
                 id->load_src_uri(m.src_uri(), lines.at(m.src_uri()->flat_list_index()));
 
             if (-1 != m.restrictions()->flat_list_index() && ! m.restrictions()->name().empty())
-                id->load_restrict(m.restrictions()->name(), m.restrictions()->description(), lines.at(m.restrictions()->flat_list_index()));
+                id->load_restrict(m.restrictions(), lines.at(m.restrictions()->flat_list_index()));
 
             if (-1 != m.properties()->flat_list_index() && ! m.properties()->name().empty())
-                id->load_properties(m.properties()->name(), m.properties()->description(), lines.at(m.properties()->flat_list_index()));
+                id->load_properties(m.properties(), lines.at(m.properties()->flat_list_index()));
 
             if (-1 != m.homepage()->flat_list_index() && ! m.homepage()->name().empty())
                 id->load_homepage(m.homepage()->name(), m.homepage()->description(), lines.at(m.homepage()->flat_list_index()));
 
             if (-1 != m.license()->flat_list_index() && ! m.license()->name().empty())
-                id->load_license(m.license()->name(), m.license()->description(), lines.at(m.license()->flat_list_index()));
+                id->load_license(m.license(), lines.at(m.license()->flat_list_index()));
 
             if (-1 != m.short_description()->flat_list_index() && ! m.short_description()->name().empty())
                 id->load_short_description(m.short_description()->name(),
@@ -213,7 +213,8 @@ namespace
 
             if (-1 != m.defined_phases()->flat_list_index() && ! m.defined_phases()->name().empty())
                 if (! lines.at(m.defined_phases()->flat_list_index()).empty())
-                    id->load_defined_phases(m.defined_phases()->name(), m.defined_phases()->description(), lines.at(m.defined_phases()->flat_list_index()));
+                    id->load_defined_phases(m.defined_phases()->name(), m.defined_phases()->description(),
+                            lines.at(m.defined_phases()->flat_list_index()));
 
             if (-1 != m.iuse()->flat_list_index() && ! m.iuse()->name().empty())
                 id->load_iuse(m.iuse()->name(), m.iuse()->description(), lines.at(m.iuse()->flat_list_index()));
@@ -258,16 +259,14 @@ namespace
             {
                 std::string value(lines.at(m.bugs_to()->flat_list_index()));
                 if (! value.empty())
-                    id->load_bugs_to(m.bugs_to()->name(),
-                            m.bugs_to()->description(), value);
+                    id->load_bugs_to(m.bugs_to(), value);
             }
 
             if (-1 != m.remote_ids()->flat_list_index() && ! m.remote_ids()->name().empty())
             {
                 std::string value(lines.at(m.remote_ids()->flat_list_index()));
                 if (! value.empty())
-                    id->load_remote_ids(m.remote_ids()->name(),
-                            m.remote_ids()->description(), value);
+                    id->load_remote_ids(m.remote_ids(), value);
             }
         }
         else
@@ -495,16 +494,16 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
                     id->load_src_uri(m.src_uri(), keys[m.src_uri()->name()]);
 
                 if (! m.restrictions()->name().empty())
-                    id->load_restrict(m.restrictions()->name(), m.restrictions()->description(), keys[m.restrictions()->name()]);
+                    id->load_restrict(m.restrictions(), keys[m.restrictions()->name()]);
 
                 if (! m.properties()->name().empty())
-                    id->load_properties(m.properties()->name(), m.properties()->description(), keys[m.properties()->name()]);
+                    id->load_properties(m.properties(), keys[m.properties()->name()]);
 
                 if (! m.homepage()->name().empty())
                     id->load_homepage(m.homepage()->name(), m.homepage()->description(), keys[m.homepage()->name()]);
 
                 if (! m.license()->name().empty())
-                    id->load_license(m.license()->name(), m.license()->description(), keys[m.license()->name()]);
+                    id->load_license(m.license(), keys[m.license()->name()]);
 
                 if (! m.short_description()->name().empty())
                         id->load_short_description(m.short_description()->name(),
@@ -586,16 +585,14 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
                 {
                     std::string value(keys[m.bugs_to()->name()]);
                     if (! value.empty())
-                        id->load_bugs_to(m.bugs_to()->name(),
-                                m.bugs_to()->description(), value);
+                        id->load_bugs_to(m.bugs_to(), value);
                 }
 
                 if (! m.remote_ids()->name().empty())
                 {
                     std::string value(keys[m.remote_ids()->name()]);
                     if (! value.empty())
-                        id->load_remote_ids(m.remote_ids()->name(),
-                                m.remote_ids()->description(), value);
+                        id->load_remote_ids(m.remote_ids(), value);
                 }
             }
             else

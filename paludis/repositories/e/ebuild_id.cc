@@ -858,26 +858,26 @@ EbuildID::load_homepage(const std::string & r, const std::string & h, const std:
 }
 
 void
-EbuildID::load_license(const std::string & r, const std::string & h, const std::string & v) const
+EbuildID::load_license(const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->license.reset(new ELicenseKey(_imp->environment, shared_from_this(), r, h, v, mkt_internal));
+    _imp->license.reset(new ELicenseKey(_imp->environment, shared_from_this(), m, v, mkt_internal));
     add_metadata_key(_imp->license);
 }
 
 void
-EbuildID::load_restrict(const std::string & r, const std::string & h, const std::string & v) const
+EbuildID::load_restrict(const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->restrictions.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), r, h, v, mkt_internal));
+    _imp->restrictions.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), m, v, mkt_internal));
     add_metadata_key(_imp->restrictions);
 }
 
 void
-EbuildID::load_properties(const std::string & r, const std::string & h, const std::string & v) const
+EbuildID::load_properties(const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->properties.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), r, h, v, mkt_internal));
+    _imp->properties.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), m, v, mkt_internal));
     add_metadata_key(_imp->properties);
 }
 
@@ -965,18 +965,18 @@ EbuildID::load_upstream_release_notes(const std::string & r, const std::string &
 }
 
 void
-EbuildID::load_bugs_to(const std::string & r, const std::string & h, const std::string & v) const
+EbuildID::load_bugs_to(const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->bugs_to.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), r, h, v, mkt_normal));
+    _imp->bugs_to.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), m, v, mkt_normal));
     add_metadata_key(_imp->bugs_to);
 }
 
 void
-EbuildID::load_remote_ids(const std::string & r, const std::string & h, const std::string & v) const
+EbuildID::load_remote_ids(const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->remote_ids.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), r, h, v, mkt_internal));
+    _imp->remote_ids.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), m, v, mkt_internal));
     add_metadata_key(_imp->remote_ids);
 }
 

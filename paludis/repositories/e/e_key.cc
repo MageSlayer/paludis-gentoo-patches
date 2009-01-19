@@ -108,7 +108,6 @@ namespace paludis
         const std::string string_value;
         mutable Mutex value_mutex;
         mutable std::tr1::shared_ptr<const DependencySpecTree> value;
-        mutable std::tr1::function<void () throw ()> value_used;
         const std::tr1::shared_ptr<const DependencyLabelSequence> labels;
 
         const std::string raw_name;
@@ -150,14 +149,7 @@ EDependenciesKey::value() const
 {
     Lock l(_imp->value_mutex);
     if (_imp->value)
-    {
-        if (_imp->value_used)
-        {
-            _imp->value_used();
-            _imp->value_used = std::tr1::function<void () throw ()>();
-        }
         return _imp->value;
-    }
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     _imp->value = parse_depend(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
@@ -216,20 +208,17 @@ namespace paludis
         const std::string string_value;
         mutable Mutex value_mutex;
         mutable std::tr1::shared_ptr<const LicenseSpecTree> value;
-        mutable std::tr1::function<void () throw ()> value_used;
 
-        const std::string raw_name;
-        const std::string human_name;
+        const std::tr1::shared_ptr<const EAPIMetadataVariable> variable;
         const MetadataKeyType type;
 
         Implementation(const Environment * const e,
                 const std::tr1::shared_ptr<const ERepositoryID> & i, const std::string & v,
-                const std::string & r, const std::string & h, const MetadataKeyType t) :
+                const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const MetadataKeyType t) :
             env(e),
             id(i),
             string_value(v),
-            raw_name(r),
-            human_name(h),
+            variable(m),
             type(t)
         {
         }
@@ -239,8 +228,8 @@ namespace paludis
 ELicenseKey::ELicenseKey(
         const Environment * const e,
         const std::tr1::shared_ptr<const ERepositoryID> & id,
-        const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<ELicenseKey>(new Implementation<ELicenseKey>(e, id, v, r, h, t))
+        const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v, const MetadataKeyType t) :
+    PrivateImplementationPattern<ELicenseKey>(new Implementation<ELicenseKey>(e, id, v, m, t))
 {
 }
 
@@ -253,14 +242,7 @@ ELicenseKey::value() const
 {
     Lock l(_imp->value_mutex);
     if (_imp->value)
-    {
-        if (_imp->value_used)
-        {
-            _imp->value_used();
-            _imp->value_used = std::tr1::function<void () throw ()>();
-        }
         return _imp->value;
-    }
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     _imp->value = parse_license(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
@@ -288,13 +270,13 @@ ELicenseKey::pretty_print_flat(const LicenseSpecTree::ItemFormatter & f) const
 const std::string
 ELicenseKey::raw_name() const
 {
-    return _imp->raw_name;
+    return _imp->variable->name();
 }
 
 const std::string
 ELicenseKey::human_name() const
 {
-    return _imp->human_name;
+    return _imp->variable->description();
 }
 
 MetadataKeyType
@@ -527,17 +509,16 @@ namespace paludis
         mutable Mutex value_mutex;
         mutable std::tr1::shared_ptr<const PlainTextSpecTree> value;
 
-        const std::string raw_name;
-        const std::string human_name;
+        const std::tr1::shared_ptr<const EAPIMetadataVariable> variable;
         const MetadataKeyType type;
 
         Implementation(const Environment * const e, const std::tr1::shared_ptr<const ERepositoryID> & i, const std::string & v,
-                const std::string & r, const std::string & h, const MetadataKeyType t) :
+                const std::tr1::shared_ptr<const EAPIMetadataVariable> & m,
+                const MetadataKeyType t) :
             env(e),
             id(i),
             string_value(v),
-            raw_name(r),
-            human_name(h),
+            variable(m),
             type(t)
         {
         }
@@ -546,8 +527,8 @@ namespace paludis
 
 EPlainTextSpecKey::EPlainTextSpecKey(const Environment * const e,
         const std::tr1::shared_ptr<const ERepositoryID> & id,
-        const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<EPlainTextSpecKey>(new Implementation<EPlainTextSpecKey>(e, id, v, r, h, t))
+        const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v, const MetadataKeyType t) :
+    PrivateImplementationPattern<EPlainTextSpecKey>(new Implementation<EPlainTextSpecKey>(e, id, v, m, t))
 {
 }
 
@@ -589,13 +570,13 @@ EPlainTextSpecKey::pretty_print_flat(const PlainTextSpecTree::ItemFormatter & f)
 const std::string
 EPlainTextSpecKey::raw_name() const
 {
-    return _imp->raw_name;
+    return _imp->variable->name();
 }
 
 const std::string
 EPlainTextSpecKey::human_name() const
 {
-    return _imp->human_name;
+    return _imp->variable->description();
 }
 
 MetadataKeyType
@@ -789,7 +770,6 @@ namespace paludis
         const std::string string_value;
         mutable Mutex value_mutex;
         mutable std::tr1::shared_ptr<KeywordNameSet> value;
-        mutable std::tr1::function<void () throw ()> value_used;
 
         const std::string raw_name;
         const std::string human_name;
@@ -823,14 +803,7 @@ EKeywordsKey::value() const
 {
     Lock l(_imp->value_mutex);
     if (_imp->value)
-    {
-        if (_imp->value_used)
-        {
-            _imp->value_used();
-            _imp->value_used = std::tr1::function<void () throw ()>();
-        }
         return _imp->value;
-    }
 
     _imp->value.reset(new KeywordNameSet);
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");

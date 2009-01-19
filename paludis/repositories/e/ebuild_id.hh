@@ -120,21 +120,21 @@ namespace paludis
                 void load_post_depend(const std::string &, const std::string &, const std::string &) const;
                 void load_src_uri(const std::tr1::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_homepage(const std::string &, const std::string &, const std::string &) const;
-                void load_license(const std::string &, const std::string &, const std::string &) const;
+                void load_license(const std::tr1::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_provide(const std::string &, const std::string &, const std::string &) const;
                 void load_iuse(const std::string &, const std::string &, const std::string &) const;
                 void load_myoptions(const std::string &, const std::string &, const std::string &) const;
                 void load_use(const std::string &, const std::string &, const std::string &) const;
                 void load_inherited(const std::string &, const std::string &, const std::string &) const;
                 void load_keywords(const std::string &, const std::string &, const std::string &) const;
-                void load_restrict(const std::string &, const std::string &, const std::string &) const;
-                void load_properties(const std::string &, const std::string &, const std::string &) const;
+                void load_restrict(const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const;
+                void load_properties(const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string &) const;
                 void load_long_description(const std::string &, const std::string &, const std::string &) const;
                 void load_upstream_changelog(const std::string &, const std::string &, const std::string &) const;
                 void load_upstream_documentation(const std::string &, const std::string &, const std::string &) const;
                 void load_upstream_release_notes(const std::string &, const std::string &, const std::string &) const;
-                void load_bugs_to(const std::string &, const std::string &, const std::string &) const;
-                void load_remote_ids(const std::string &, const std::string &, const std::string &) const;
+                void load_bugs_to(const std::tr1::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
+                void load_remote_ids(const std::tr1::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_defined_phases(const std::string &, const std::string &, const std::string &) const;
 
                 virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
