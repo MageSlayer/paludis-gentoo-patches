@@ -4,6 +4,11 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.34.0:
+    * instruo is now parallelised.
+
+    * For NoConfigEnvironment profiles are only loaded when needed.
+
 0.34.0_alpha2:
     * Unpackaged repository now defines merge and strip phases, making phases
       useful for importare.
