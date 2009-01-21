@@ -163,6 +163,9 @@ namespace paludis
 
             virtual void remove_from_world(const SetName &) const;
 
+            virtual std::tr1::shared_ptr<const SetNameSet> set_names() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
             virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
             virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > config_location_key() const;
     };

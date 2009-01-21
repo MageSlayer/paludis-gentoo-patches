@@ -998,3 +998,11 @@ PortageEnvironment::config_location_key() const
     return _imp->config_location_key;
 }
 
+std::tr1::shared_ptr<const SetNameSet>
+PortageEnvironment::set_names() const
+{
+    std::tr1::shared_ptr<SetNameSet> result(new SetNameSet);
+    result->insert(SetName("world"));
+    return result;
+}
+

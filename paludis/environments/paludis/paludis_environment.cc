@@ -370,6 +370,8 @@ PaludisEnvironment::set_names() const
                 result->insert(SetName(strip_trailing_string(d->basename(), ".bash")));
         }
 
+    result->insert(SetName("world"));
+
     return result;
 }
 
