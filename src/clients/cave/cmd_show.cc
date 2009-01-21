@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -43,6 +43,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/action.hh>
 #include <paludis/mask.hh>
+#include <paludis/choice.hh>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
@@ -432,8 +433,62 @@ namespace
             }
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > &)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > & k)
         {
+            if (cmdline.a_flat.specified())
+            {
+                std::stringstream s;
+                bool empty_prefix(true);
+                for (Choices::ConstIterator c(k.value()->begin()), c_end(k.value()->end()) ;
+                        c != c_end ; ++c)
+                {
+                    if (! cmdline.a_internal_keys.specified())
+                    {
+                        if ((*c)->hidden())
+                            continue;
+                        if ((*c)->begin() == (*c)->end())
+                            continue;
+                    }
+
+                    if ((! empty_prefix) || (! (*c)->show_with_no_prefix()))
+                    {
+                        s << (*c)->prefix() << ": ";
+                        empty_prefix = false;
+                    }
+
+                    for (Choice::ConstIterator v((*c)->begin()), v_end((*c)->end()) ;
+                            v != v_end ; ++v)
+                        s << (*v)->unprefixed_name() << " ";
+                }
+                cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+                        s.str(), indent, important);
+            }
+            else
+            {
+                cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+                        "", indent, important);
+                for (Choices::ConstIterator c(k.value()->begin()), c_end(k.value()->end()) ;
+                        c != c_end ; ++c)
+                {
+                    if (! cmdline.a_internal_keys.specified())
+                    {
+                        if ((*c)->hidden())
+                            continue;
+                        if ((*c)->begin() == (*c)->end())
+                            continue;
+                    }
+
+                    cout << format_general_rhvib(f::show_metadata_key_value(), (*c)->raw_name(), (*c)->human_name(),
+                            "", indent + 1, important);
+
+                    for (Choice::ConstIterator v((*c)->begin()), v_end((*c)->end()) ;
+                            v != v_end ; ++v)
+                    {
+                        cout << format_general_rhvib(f::show_metadata_key_value(), stringify((*v)->name_with_prefix()),
+                                stringify((*v)->unprefixed_name()), (*v)->description(), indent + 2, important);
+                    }
+                }
+            }
         }
 
         void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > & k)
