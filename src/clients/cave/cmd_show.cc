@@ -458,7 +458,22 @@ namespace
 
                     for (Choice::ConstIterator v((*c)->begin()), v_end((*c)->end()) ;
                             v != v_end ; ++v)
-                        s << (*v)->unprefixed_name() << " ";
+                    {
+                        if ((*v)->enabled())
+                        {
+                            if ((*v)->locked())
+                                s << format_general_s(f::show_choice_forced_enabled(), stringify((*v)->unprefixed_name())) << " ";
+                            else
+                                s << format_general_s(f::show_choice_enabled(), stringify((*v)->unprefixed_name())) << " ";
+                        }
+                        else
+                        {
+                            if ((*v)->locked())
+                                s << format_general_s(f::show_choice_forced_disabled(), stringify((*v)->unprefixed_name())) << " ";
+                            else
+                                s << format_general_s(f::show_choice_disabled(), stringify((*v)->unprefixed_name())) << " ";
+                        }
+                    }
                 }
                 cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
                         s.str(), indent, important);
@@ -484,8 +499,40 @@ namespace
                     for (Choice::ConstIterator v((*c)->begin()), v_end((*c)->end()) ;
                             v != v_end ; ++v)
                     {
-                        cout << format_general_rhvib(f::show_metadata_key_value(), stringify((*v)->name_with_prefix()),
-                                stringify((*v)->unprefixed_name()), (*v)->description(), indent + 2, important);
+                        if ((*v)->enabled())
+                        {
+                            if ((*v)->locked())
+                            {
+                                cout << format_general_rhvib(f::show_metadata_key_value(),
+                                        format_general_s(f::show_choice_forced_enabled(), stringify((*v)->name_with_prefix())),
+                                        format_general_s(f::show_choice_forced_enabled(), stringify((*v)->unprefixed_name())),
+                                        (*v)->description(), indent + 2, important);
+                            }
+                            else
+                            {
+                                cout << format_general_rhvib(f::show_metadata_key_value(),
+                                        format_general_s(f::show_choice_enabled(), stringify((*v)->name_with_prefix())),
+                                        format_general_s(f::show_choice_enabled(), stringify((*v)->unprefixed_name())),
+                                        (*v)->description(), indent + 2, important);
+                            }
+                        }
+                        else
+                        {
+                            if ((*v)->locked())
+                            {
+                                cout << format_general_rhvib(f::show_metadata_key_value(),
+                                        format_general_s(f::show_choice_forced_disabled(), stringify((*v)->name_with_prefix())),
+                                        format_general_s(f::show_choice_forced_disabled(), stringify((*v)->unprefixed_name())),
+                                        (*v)->description(), indent + 2, important);
+                            }
+                            else
+                            {
+                                cout << format_general_rhvib(f::show_metadata_key_value(),
+                                        format_general_s(f::show_choice_disabled(), stringify((*v)->name_with_prefix())),
+                                        format_general_s(f::show_choice_disabled(), stringify((*v)->unprefixed_name())),
+                                        (*v)->description(), indent + 2, important);
+                            }
+                        }
                     }
                 }
             }

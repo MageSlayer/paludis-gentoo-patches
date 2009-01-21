@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -386,6 +386,30 @@ const std::string
 paludis::cave::f::show_contents_sym()
 {
     return "%{if b}%{column 30}%{endif}%r -> %v%{if b}\\n%{else} %{endif}";
+}
+
+const std::string
+paludis::cave::f::show_choice_forced_enabled()
+{
+    return c::green() + "(%s)" + c::normal();
+}
+
+const std::string
+paludis::cave::f::show_choice_enabled()
+{
+    return c::green() + "%s" + c::normal();
+}
+
+const std::string
+paludis::cave::f::show_choice_forced_disabled()
+{
+    return c::red() + "(-%s)" + c::normal();
+}
+
+const std::string
+paludis::cave::f::show_choice_disabled()
+{
+    return c::red() + "-%s" + c::normal();
 }
 
 const std::string
