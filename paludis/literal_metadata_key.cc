@@ -281,6 +281,17 @@ ExtraLiteralMetadataValueKeyMethods<long>::pretty_print() const
     return stringify(v);
 }
 
+ExtraLiteralMetadataValueKeyMethods<bool>::~ExtraLiteralMetadataValueKeyMethods()
+{
+}
+
+std::string
+ExtraLiteralMetadataValueKeyMethods<bool>::pretty_print() const
+{
+    bool v(static_cast<const LiteralMetadataValueKey<bool> *>(this)->value());
+    return stringify(v);
+}
+
 ExtraLiteralMetadataValueKeyMethods<std::tr1::shared_ptr<const PackageID> >::~ExtraLiteralMetadataValueKeyMethods()
 {
 }

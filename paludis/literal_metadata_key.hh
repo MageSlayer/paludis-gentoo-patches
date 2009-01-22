@@ -57,7 +57,7 @@ namespace paludis
      * \since 0.26
      */
     template <>
-    class ExtraLiteralMetadataValueKeyMethods<std::tr1::shared_ptr<const PackageID> > :
+    class PALUDIS_VISIBLE ExtraLiteralMetadataValueKeyMethods<std::tr1::shared_ptr<const PackageID> > :
         public virtual ExtraMetadataValueKeyMethods<std::tr1::shared_ptr<const PackageID> >
     {
         public:
@@ -74,8 +74,25 @@ namespace paludis
      * \since 0.28
      */
     template <>
-    class ExtraLiteralMetadataValueKeyMethods<long> :
+    class PALUDIS_VISIBLE ExtraLiteralMetadataValueKeyMethods<long> :
         public virtual ExtraMetadataValueKeyMethods<long>
+    {
+        public:
+            virtual ~ExtraLiteralMetadataValueKeyMethods() = 0;
+
+            virtual std::string pretty_print() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+    /**
+     * Implement extra methods for LiteralMetadataValueKey for bool.
+     *
+     * \ingroup g_metadata_key
+     * \since 0.34.1
+     */
+    template <>
+    class PALUDIS_VISIBLE ExtraLiteralMetadataValueKeyMethods<bool> :
+        public virtual ExtraMetadataValueKeyMethods<bool>
     {
         public:
             virtual ~ExtraLiteralMetadataValueKeyMethods() = 0;
