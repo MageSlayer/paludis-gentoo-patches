@@ -29,6 +29,8 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/make_named_values.hh>
+#include <paludis/package_dep_spec_properties.hh>
 #include <paludis/mask.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_database.hh>
@@ -135,34 +137,50 @@ ConsoleQueryTask::show_one(const PackageDepSpec & a, const std::tr1::shared_ptr<
 void
 ConsoleQueryTask::display_header(const PackageDepSpec & a, const std::tr1::shared_ptr<const PackageID> & e) const
 {
-    if (a.version_requirements_ptr() || a.slot_requirement_ptr() || a.additional_requirements_ptr() ||
-            a.in_repository_ptr() ||
-            a.from_repository_ptr() ||
-            a.installable_to_repository_ptr() ||
-            a.installable_to_path_ptr() ||
-            a.installed_at_path_ptr())
-        output_starred_item(render_as_package_name(stringify(a)));
-    else
+    if (package_dep_spec_has_properties(a, make_named_values<PackageDepSpecProperties>(
+                    value_for<n::has_additional_requirements>(false),
+                    value_for<n::has_category_name_part>(false),
+                    value_for<n::has_from_repository>(false),
+                    value_for<n::has_in_repository>(false),
+                    value_for<n::has_installable_to_path>(false),
+                    value_for<n::has_installable_to_repository>(false),
+                    value_for<n::has_installed_at_path>(false),
+                    value_for<n::has_package>(true),
+                    value_for<n::has_package_name_part>(false),
+                    value_for<n::has_slot_requirement>(false),
+                    value_for<n::has_tag>(indeterminate),
+                    value_for<n::has_version_requirements>(false)
+                    )))
         output_starred_item(render_as_package_name(stringify(e->name())));
+    else
+        output_starred_item(render_as_package_name(stringify(a)));
 }
 
 void
 ConsoleQueryTask::display_compact(const PackageDepSpec & a, const std::tr1::shared_ptr<const PackageID> & e) const
 {
-    if (a.version_requirements_ptr() || a.slot_requirement_ptr() || a.additional_requirements_ptr() ||
-            a.in_repository_ptr() ||
-            a.from_repository_ptr() ||
-            a.installable_to_repository_ptr() ||
-            a.installable_to_path_ptr() ||
-            a.installed_at_path_ptr())
-    {
-        std::string pad(std::max<long>(1, 30 - stringify(a).length()), ' ');
-        output_starred_item_no_endl(render_as_package_name(stringify(a)) + pad);
-    }
-    else
+    if (package_dep_spec_has_properties(a, make_named_values<PackageDepSpecProperties>(
+                    value_for<n::has_additional_requirements>(false),
+                    value_for<n::has_category_name_part>(false),
+                    value_for<n::has_from_repository>(false),
+                    value_for<n::has_in_repository>(false),
+                    value_for<n::has_installable_to_path>(false),
+                    value_for<n::has_installable_to_repository>(false),
+                    value_for<n::has_installed_at_path>(false),
+                    value_for<n::has_package>(true),
+                    value_for<n::has_package_name_part>(false),
+                    value_for<n::has_slot_requirement>(false),
+                    value_for<n::has_tag>(indeterminate),
+                    value_for<n::has_version_requirements>(false)
+                    )))
     {
         std::string pad(std::max<long>(1, 30 - stringify(e->name()).length()), ' ');
         output_starred_item_no_endl(render_as_package_name(stringify(e->name())) + pad);
+    }
+    else
+    {
+        std::string pad(std::max<long>(1, 30 - stringify(a).length()), ' ');
+        output_starred_item_no_endl(render_as_package_name(stringify(a)) + pad);
     }
 
     if (e->short_description_key())

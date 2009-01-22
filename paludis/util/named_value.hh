@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_NAMED_VALUE_HH 1
 
 #include <paludis/util/named_value-fwd.hh>
+#include <paludis/util/tribool.hh>
 
 namespace paludis
 {
@@ -91,6 +92,13 @@ namespace paludis
     value_for(const char * const v)
     {
         return NamedValue<K_, std::string>(v);
+    }
+
+    template <typename K_>
+    NamedValue<K_, Tribool>
+    value_for(TriboolIndeterminateValueType v)
+    {
+        return NamedValue<K_, Tribool>(v);
     }
 }
 

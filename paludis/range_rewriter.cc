@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,6 +20,8 @@
 #include <paludis/range_rewriter.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/version_requirements.hh>
+#include <paludis/package_dep_spec_properties.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/make_shared_ptr.hh>
@@ -239,14 +241,20 @@ RangeRewriter::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & 
         return;
 
     const PackageDepSpec & a(*node.spec());
-    if (a.additional_requirements_ptr() || a.slot_requirement_ptr() || a.package_name_part_ptr()
-            || a.category_name_part_ptr() || ! a.version_requirements_ptr() || ! a.package_ptr()
-            || a.in_repository_ptr()
-            || a.from_repository_ptr()
-            || a.installable_to_repository_ptr()
-            || a.installable_to_path_ptr()
-            || a.installed_at_path_ptr()
-       )
+    if (! package_dep_spec_has_properties(a, make_named_values<PackageDepSpecProperties>(
+                    value_for<n::has_additional_requirements>(false),
+                    value_for<n::has_category_name_part>(false),
+                    value_for<n::has_from_repository>(false),
+                    value_for<n::has_in_repository>(false),
+                    value_for<n::has_installable_to_path>(false),
+                    value_for<n::has_installable_to_repository>(false),
+                    value_for<n::has_installed_at_path>(false),
+                    value_for<n::has_package>(true),
+                    value_for<n::has_package_name_part>(false),
+                    value_for<n::has_slot_requirement>(false),
+                    value_for<n::has_tag>(indeterminate),
+                    value_for<n::has_version_requirements>(true)
+                    )))
     {
         _imp->invalid = true;
         return;

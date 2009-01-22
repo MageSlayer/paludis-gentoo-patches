@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,6 +38,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/choice.hh>
+#include <paludis/package_dep_spec_properties.hh>
 
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
@@ -864,13 +865,20 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
 
         /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
          * ourself */
-        if (! (node.spec()->blocked_spec()->version_requirements_ptr() || node.spec()->blocked_spec()->slot_requirement_ptr()
-                    || node.spec()->blocked_spec()->additional_requirements_ptr()
-                    || node.spec()->blocked_spec()->from_repository_ptr()
-                    || node.spec()->blocked_spec()->in_repository_ptr()
-                    || node.spec()->blocked_spec()->installed_at_path_ptr()
-                    || node.spec()->blocked_spec()->installable_to_repository_ptr()
-                    || node.spec()->blocked_spec()->installable_to_path_ptr())
+        if (package_dep_spec_has_properties(*node.spec()->blocked_spec(), make_named_values<PackageDepSpecProperties>(
+                        value_for<n::has_additional_requirements>(false),
+                        value_for<n::has_category_name_part>(indeterminate),
+                        value_for<n::has_from_repository>(false),
+                        value_for<n::has_in_repository>(false),
+                        value_for<n::has_installable_to_path>(false),
+                        value_for<n::has_installable_to_repository>(false),
+                        value_for<n::has_installed_at_path>(false),
+                        value_for<n::has_package>(indeterminate),
+                        value_for<n::has_package_name_part>(indeterminate),
+                        value_for<n::has_slot_requirement>(false),
+                        value_for<n::has_tag>(indeterminate),
+                        value_for<n::has_version_requirements>(false)
+                        ))
                 && d->_imp->current_package_id())
         {
             if ((*aa)->name() == d->_imp->current_package_id()->name())
@@ -909,13 +917,20 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
 
         /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
          * ourself */
-        if (! (node.spec()->blocked_spec()->version_requirements_ptr() || node.spec()->blocked_spec()->slot_requirement_ptr()
-                    || node.spec()->blocked_spec()->additional_requirements_ptr()
-                    || node.spec()->blocked_spec()->in_repository_ptr()
-                    || node.spec()->blocked_spec()->from_repository_ptr()
-                    || node.spec()->blocked_spec()->installed_at_path_ptr()
-                    || node.spec()->blocked_spec()->installable_to_repository_ptr()
-                    || node.spec()->blocked_spec()->installable_to_path_ptr())
+        if (package_dep_spec_has_properties(*node.spec()->blocked_spec(), make_named_values<PackageDepSpecProperties>(
+                        value_for<n::has_additional_requirements>(false),
+                        value_for<n::has_category_name_part>(indeterminate),
+                        value_for<n::has_from_repository>(false),
+                        value_for<n::has_in_repository>(false),
+                        value_for<n::has_installable_to_path>(false),
+                        value_for<n::has_installable_to_repository>(false),
+                        value_for<n::has_installed_at_path>(false),
+                        value_for<n::has_package>(indeterminate),
+                        value_for<n::has_package_name_part>(indeterminate),
+                        value_for<n::has_slot_requirement>(false),
+                        value_for<n::has_tag>(indeterminate),
+                        value_for<n::has_version_requirements>(false)
+                        ))
                 && d->_imp->current_package_id())
         {
             if ((*r)->package_id()->name() == d->_imp->current_package_id()->name())
@@ -939,13 +954,20 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
 
             /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
              * ourself */
-            if (! (node.spec()->blocked_spec()->version_requirements_ptr() || node.spec()->blocked_spec()->slot_requirement_ptr()
-                        || node.spec()->blocked_spec()->additional_requirements_ptr()
-                        || node.spec()->blocked_spec()->in_repository_ptr()
-                        || node.spec()->blocked_spec()->from_repository_ptr()
-                        || node.spec()->blocked_spec()->installed_at_path_ptr()
-                        || node.spec()->blocked_spec()->installable_to_repository_ptr()
-                        || node.spec()->blocked_spec()->installable_to_path_ptr())
+            if (package_dep_spec_has_properties(*node.spec()->blocked_spec(), make_named_values<PackageDepSpecProperties>(
+                            value_for<n::has_additional_requirements>(false),
+                            value_for<n::has_category_name_part>(indeterminate),
+                            value_for<n::has_from_repository>(false),
+                            value_for<n::has_in_repository>(false),
+                            value_for<n::has_installable_to_path>(false),
+                            value_for<n::has_installable_to_repository>(false),
+                            value_for<n::has_installed_at_path>(false),
+                            value_for<n::has_package>(indeterminate),
+                            value_for<n::has_package_name_part>(indeterminate),
+                            value_for<n::has_slot_requirement>(false),
+                            value_for<n::has_tag>(indeterminate),
+                            value_for<n::has_version_requirements>(false)
+                            ))
                     && d->_imp->current_package_id())
             {
                 if (r->package_id()->name() == d->_imp->current_package_id()->name())

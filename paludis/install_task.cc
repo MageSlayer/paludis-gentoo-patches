@@ -35,6 +35,7 @@
 #include <paludis/filter.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
+#include <paludis/package_dep_spec_properties.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/log.hh>
@@ -1313,16 +1314,25 @@ namespace
 
         void visit(const SetSpecTree::NodeType<PackageDepSpec>::Type & node)
         {
-            if (node.spec()->slot_requirement_ptr())
-                task->on_update_world_skip(*node.spec(), "slot restrictions");
-            else if (node.spec()->version_requirements_ptr() && ! node.spec()->version_requirements_ptr()->empty())
-                task->on_update_world_skip(*node.spec(), "version restrictions");
-            else
+            if (package_dep_spec_has_properties(*node.spec(), make_named_values<PackageDepSpecProperties>(
+                            value_for<n::has_additional_requirements>(false),
+                            value_for<n::has_category_name_part>(false),
+                            value_for<n::has_from_repository>(false),
+                            value_for<n::has_in_repository>(false),
+                            value_for<n::has_installable_to_path>(false),
+                            value_for<n::has_installable_to_repository>(false),
+                            value_for<n::has_installed_at_path>(false),
+                            value_for<n::has_package>(true),
+                            value_for<n::has_package_name_part>(false),
+                            value_for<n::has_slot_requirement>(false),
+                            value_for<n::has_tag>(indeterminate),
+                            value_for<n::has_version_requirements>(false)
+                            )))
             {
-                if (node.spec()->package_ptr())
-                    env->add_to_world(*node.spec()->package_ptr());
-                task->on_update_world(*node.spec());
+                env->add_to_world(*node.spec()->package_ptr());
             }
+            else
+                task->on_update_world_skip(*node.spec(), "not a simple cat/pkg");
         }
 
         void visit(const SetSpecTree::NodeType<NamedSetDepSpec>::Type &)

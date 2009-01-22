@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -30,6 +30,8 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/make_named_values.hh>
+#include <paludis/package_dep_spec_properties.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
@@ -288,7 +290,20 @@ namespace
         virtual std::tr1::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const env) const
         {
-            if ((! spec.in_repository_ptr()) && (! spec.installed_at_path_ptr()))
+            if (package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
+                            value_for<n::has_additional_requirements>(indeterminate),
+                            value_for<n::has_category_name_part>(indeterminate),
+                            value_for<n::has_from_repository>(indeterminate),
+                            value_for<n::has_in_repository>(false),
+                            value_for<n::has_installable_to_path>(indeterminate),
+                            value_for<n::has_installable_to_repository>(indeterminate),
+                            value_for<n::has_installed_at_path>(false),
+                            value_for<n::has_package>(indeterminate),
+                            value_for<n::has_package_name_part>(indeterminate),
+                            value_for<n::has_slot_requirement>(indeterminate),
+                            value_for<n::has_tag>(indeterminate),
+                            value_for<n::has_version_requirements>(indeterminate)
+                            )))
                 return AllGeneratorHandlerBase::repositories(env);
 
             std::tr1::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);

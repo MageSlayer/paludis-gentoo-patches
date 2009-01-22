@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -39,7 +39,7 @@ namespace paludis
         public:
             Tribool();
             Tribool(const bool);
-            Tribool(NoType<0u> * (*) (const NoType<0u> * const));
+            Tribool(TriboolIndeterminateValueType);
 
             bool is_true() const PALUDIS_ATTRIBUTE((warn_unused_result));
             bool is_false() const PALUDIS_ATTRIBUTE((warn_unused_result));
