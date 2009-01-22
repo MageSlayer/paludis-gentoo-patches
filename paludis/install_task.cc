@@ -1384,7 +1384,8 @@ namespace
         {
             if (! failure)
                 if ((*env)[selection::SomeArbitraryVersion(generator::Matches(*node.spec(), MatchPackageOptions())
-                            | filter::SupportsAction<InstalledAction>())]->empty())
+                            | filter::SupportsAction<InstalledAction>()
+                            | filter::SupportsAction<UninstallAction>())]->empty())
                     failure = node.spec();
         }
 
@@ -1580,7 +1581,8 @@ namespace
              * there are no matches here it's not a problem because of or-deps. */
             std::tr1::shared_ptr<const PackageIDSequence> installed((*env)[selection::AllVersionsUnsorted(
                         generator::Matches(*node.spec(), MatchPackageOptions()) |
-                        filter::SupportsAction<InstalledAction>())]);
+                        filter::SupportsAction<InstalledAction>() |
+                        filter::SupportsAction<UninstallAction>())]);
 
             for (PackageIDSequence::ConstIterator i(installed->begin()), i_end(installed->end()) ;
                     i != i_end ; ++i)
