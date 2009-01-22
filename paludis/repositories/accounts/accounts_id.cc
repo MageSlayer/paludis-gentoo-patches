@@ -18,6 +18,7 @@
  */
 
 #include <paludis/repositories/accounts/accounts_id.hh>
+#include <paludis/repositories/accounts/accounts_dep_key.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/config_file.hh>
@@ -33,6 +34,7 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/repository.hh>
 #include <paludis/action.hh>
+#include <algorithm>
 
 using namespace paludis;
 using namespace paludis::accounts_repository;
@@ -65,6 +67,7 @@ namespace paludis
         mutable std::tr1::shared_ptr<const LiteralMetadataStringSetKey> extra_groups_key;
         mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > home_key;
         mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > shell_key;
+        mutable std::tr1::shared_ptr<const AccountsDepKey> dependencies_key;
 
         mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > groupname_key;
         mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > preferred_gid_key;
@@ -126,6 +129,8 @@ AccountsID::_add_metadata_keys() const
         add_metadata_key(_imp->shell_key);
     if (_imp->home_key)
         add_metadata_key(_imp->home_key);
+    if (_imp->dependencies_key)
+        add_metadata_key(_imp->dependencies_key);
 
     if (_imp->groupname_key)
         add_metadata_key(_imp->groupname_key);
@@ -169,17 +174,26 @@ AccountsID::_need_file_keys() const
             _imp->home_key.reset(new LiteralMetadataValueKey<std::string>("home", "Home Directory",
                         mkt_normal, k.get("home")));
 
-        if (! k.get("default_group").empty())
-            _imp->default_group_key.reset(new LiteralMetadataValueKey<std::string>("default_group", "Default Group",
-                        mkt_normal, k.get("default_group")));
+        std::tr1::shared_ptr<Set<std::string> > all_groups_s(new Set<std::string>);
 
         if (! k.get("extra_groups").empty())
         {
             std::tr1::shared_ptr<Set<std::string> > groups_s(new Set<std::string>);
             tokenise_whitespace(k.get("extra_groups"), groups_s->inserter());
+            std::copy(groups_s->begin(), groups_s->end(), all_groups_s->inserter());
             _imp->extra_groups_key.reset(new LiteralMetadataStringSetKey("extra_groups", "Extra Groups",
                         mkt_normal, groups_s));
         }
+
+        if (! k.get("default_group").empty())
+        {
+            _imp->default_group_key.reset(new LiteralMetadataValueKey<std::string>("default_group", "Default Group",
+                        mkt_normal, k.get("default_group")));
+            all_groups_s->insert(k.get("default_group"));
+        }
+
+        if (! all_groups_s->empty())
+            _imp->dependencies_key.reset(new AccountsDepKey(_imp->env, all_groups_s));
     }
     else
     {
@@ -295,13 +309,15 @@ AccountsID::contained_in_key() const
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 AccountsID::build_dependencies_key() const
 {
-    return make_null_shared_ptr();
+    _need_file_keys();
+    return _imp->dependencies_key;
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 AccountsID::run_dependencies_key() const
 {
-    return make_null_shared_ptr();
+    _need_file_keys();
+    return _imp->dependencies_key;
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
