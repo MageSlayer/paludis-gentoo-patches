@@ -29,13 +29,13 @@ namespace paludis
     {
         class AccountsRepository;
 
-        class AccountsUserID :
+        class AccountsID :
             public PackageID,
-            private PrivateImplementationPattern<AccountsUserID>,
-            public std::tr1::enable_shared_from_this<AccountsUserID>
+            private PrivateImplementationPattern<AccountsID>,
+            public std::tr1::enable_shared_from_this<AccountsID>
         {
             private:
-                PrivateImplementationPattern<AccountsUserID>::ImpPtr & _imp;
+                PrivateImplementationPattern<AccountsID>::ImpPtr & _imp;
 
                 void _add_metadata_keys() const;
                 void _need_file_keys() const;
@@ -46,11 +46,11 @@ namespace paludis
                 virtual void need_masks_added() const;
 
             public:
-                AccountsUserID(const Environment * const,
+                AccountsID(const Environment * const,
                         const QualifiedPackageName &, const std::tr1::shared_ptr<const Repository> &,
                         const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > &,
-                        const FSEntry &);
-                ~AccountsUserID();
+                        const FSEntry &, const bool is_user);
+                ~AccountsID();
 
                 virtual const std::string canonical_form(const PackageIDCanonicalForm) const;
 

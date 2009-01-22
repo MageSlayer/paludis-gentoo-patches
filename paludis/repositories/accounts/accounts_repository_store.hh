@@ -51,14 +51,20 @@ namespace paludis
                         const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
                         const FSEntry & dir);
 
-                void _load_one_groups(const std::tr1::shared_ptr<const Repository> & repo, const FSEntry & dir);
-
                 void _load_one_user(
                         const std::tr1::shared_ptr<const Repository> & repo,
                         const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
                         const FSEntry & file);
 
-                void _load_one_group(const std::tr1::shared_ptr<const Repository> & repo, const FSEntry & file);
+                void _load_one_groups(
+                        const std::tr1::shared_ptr<const Repository> & repo,
+                        const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
+                        const FSEntry & dir);
+
+                void _load_one_group(
+                        const std::tr1::shared_ptr<const Repository> & repo,
+                        const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
+                        const FSEntry & file);
 
             public:
                 AccountsRepositoryStore(

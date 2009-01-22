@@ -39,7 +39,7 @@ using namespace paludis::accounts_repository;
 namespace paludis
 {
     template <>
-    struct Implementation<InstalledAccountsUserID>
+    struct Implementation<InstalledAccountsID>
     {
         const Environment * const env;
 
@@ -50,72 +50,76 @@ namespace paludis
 
         const std::tr1::shared_ptr<const LiteralMetadataValueKey<bool> > transient_key;
 
+        const bool is_user;
+
         Implementation(const Environment * const e,
-                const QualifiedPackageName & q, const std::tr1::shared_ptr<const Repository> & r) :
+                const QualifiedPackageName & q, const std::tr1::shared_ptr<const Repository> & r,
+                const bool u) :
             env(e),
             name(q),
             version("0"),
             slot("0"),
             repository(r),
-            transient_key(new LiteralMetadataValueKey<bool>("transient", "Transient", mkt_internal, true))
+            transient_key(new LiteralMetadataValueKey<bool>("transient", "Transient", mkt_internal, true)),
+            is_user(u)
         {
         }
     };
 }
 
-InstalledAccountsUserID::InstalledAccountsUserID(const Environment * const e,
-        const QualifiedPackageName & q, const std::tr1::shared_ptr<const Repository> & r) :
-    PrivateImplementationPattern<InstalledAccountsUserID>(new Implementation<InstalledAccountsUserID>(e, q, r)),
-    _imp(PrivateImplementationPattern<InstalledAccountsUserID>::_imp)
+InstalledAccountsID::InstalledAccountsID(const Environment * const e,
+        const QualifiedPackageName & q, const std::tr1::shared_ptr<const Repository> & r, const bool u) :
+    PrivateImplementationPattern<InstalledAccountsID>(new Implementation<InstalledAccountsID>(e, q, r, u)),
+    _imp(PrivateImplementationPattern<InstalledAccountsID>::_imp)
 {
     add_metadata_key(_imp->transient_key);
 }
 
-InstalledAccountsUserID::~InstalledAccountsUserID()
+InstalledAccountsID::~InstalledAccountsID()
 {
 }
 
 void
-InstalledAccountsUserID::need_keys_added() const
+InstalledAccountsID::need_keys_added() const
 {
 }
 
 void
-InstalledAccountsUserID::clear_metadata_keys() const
+InstalledAccountsID::clear_metadata_keys() const
 {
 }
 
 void
-InstalledAccountsUserID::need_masks_added() const
+InstalledAccountsID::need_masks_added() const
 {
 }
 
 const QualifiedPackageName
-InstalledAccountsUserID::name() const
+InstalledAccountsID::name() const
 {
     return _imp->name;
 }
 
 const VersionSpec
-InstalledAccountsUserID::version() const
+InstalledAccountsID::version() const
 {
     return _imp->version;
 }
 
 const SlotName
-InstalledAccountsUserID::slot() const
+InstalledAccountsID::slot() const
 {
     return _imp->slot;
 }
 
 const std::tr1::shared_ptr<const Repository>
-InstalledAccountsUserID::repository() const
+InstalledAccountsID::repository() const
 {
     return _imp->repository;
 }
 
 const std::string
-InstalledAccountsUserID::canonical_form(const PackageIDCanonicalForm f) const
+InstalledAccountsID::canonical_form(const PackageIDCanonicalForm f) const
 {
     switch (f)
     {
@@ -136,127 +140,127 @@ InstalledAccountsUserID::canonical_form(const PackageIDCanonicalForm f) const
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
-InstalledAccountsUserID::virtual_for_key() const
+InstalledAccountsID::virtual_for_key() const
 {
     return make_null_shared_ptr();
 }
 
 const std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
-InstalledAccountsUserID::keywords_key() const
+InstalledAccountsID::keywords_key() const
 {
     return make_null_shared_ptr();
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
-InstalledAccountsUserID::provide_key() const
+InstalledAccountsID::provide_key() const
 {
     return make_null_shared_ptr();
 }
 
 const std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
-InstalledAccountsUserID::contains_key() const
+InstalledAccountsID::contains_key() const
 {
     return make_null_shared_ptr();
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
-InstalledAccountsUserID::contained_in_key() const
+InstalledAccountsID::contained_in_key() const
 {
     return make_null_shared_ptr();
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-InstalledAccountsUserID::build_dependencies_key() const
+InstalledAccountsID::build_dependencies_key() const
 {
     return make_null_shared_ptr();
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-InstalledAccountsUserID::run_dependencies_key() const
+InstalledAccountsID::run_dependencies_key() const
 {
     return make_null_shared_ptr();
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-InstalledAccountsUserID::post_dependencies_key() const
+InstalledAccountsID::post_dependencies_key() const
 {
     return make_null_shared_ptr();
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-InstalledAccountsUserID::suggested_dependencies_key() const
+InstalledAccountsID::suggested_dependencies_key() const
 {
     return make_null_shared_ptr();
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
-InstalledAccountsUserID::fetches_key() const
+InstalledAccountsID::fetches_key() const
 {
     return make_null_shared_ptr();
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
-InstalledAccountsUserID::homepage_key() const
+InstalledAccountsID::homepage_key() const
 {
     return make_null_shared_ptr();
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
-InstalledAccountsUserID::short_description_key() const
+InstalledAccountsID::short_description_key() const
 {
     return make_null_shared_ptr();
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
-InstalledAccountsUserID::long_description_key() const
+InstalledAccountsID::long_description_key() const
 {
     return make_null_shared_ptr();
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >
-InstalledAccountsUserID::contents_key() const
+InstalledAccountsID::contents_key() const
 {
     return make_null_shared_ptr();
 }
 
 const std::tr1::shared_ptr<const MetadataTimeKey>
-InstalledAccountsUserID::installed_time_key() const
+InstalledAccountsID::installed_time_key() const
 {
     return make_null_shared_ptr();
 }
 
 const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
-InstalledAccountsUserID::from_repositories_key() const
+InstalledAccountsID::from_repositories_key() const
 {
     return make_null_shared_ptr();
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
-InstalledAccountsUserID::fs_location_key() const
+InstalledAccountsID::fs_location_key() const
 {
     return make_null_shared_ptr();
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<bool> >
-InstalledAccountsUserID::transient_key() const
+InstalledAccountsID::transient_key() const
 {
     return _imp->transient_key;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >
-InstalledAccountsUserID::choices_key() const
+InstalledAccountsID::choices_key() const
 {
     return make_null_shared_ptr();
 }
 
 std::tr1::shared_ptr<const Set<std::string> >
-InstalledAccountsUserID::breaks_portage() const
+InstalledAccountsID::breaks_portage() const
 {
     return make_shared_ptr(new Set<std::string>);
 }
 
 bool
-InstalledAccountsUserID::arbitrary_less_than_comparison(const PackageID & other) const
+InstalledAccountsID::arbitrary_less_than_comparison(const PackageID & other) const
 {
     if (slot() < other.slot())
         return true;
@@ -265,19 +269,19 @@ InstalledAccountsUserID::arbitrary_less_than_comparison(const PackageID & other)
 }
 
 std::size_t
-InstalledAccountsUserID::extra_hash_value() const
+InstalledAccountsID::extra_hash_value() const
 {
     return Hash<SlotName>()(slot());
 }
 
 bool
-InstalledAccountsUserID::supports_action(const SupportsActionTestBase & test) const
+InstalledAccountsID::supports_action(const SupportsActionTestBase & test) const
 {
     return simple_visitor_cast<const SupportsActionTest<InstalledAction> >(test);
 }
 
 void
-InstalledAccountsUserID::perform_action(Action & action) const
+InstalledAccountsID::perform_action(Action & action) const
 {
     throw UnsupportedActionError(*this, action);
 }

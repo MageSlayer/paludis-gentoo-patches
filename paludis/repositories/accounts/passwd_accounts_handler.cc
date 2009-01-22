@@ -32,6 +32,7 @@
 #include <iostream>
 #include <sys/types.h>
 #include <pwd.h>
+#include <grp.h>
 
 using namespace paludis;
 using namespace paludis::accounts_repository;
@@ -43,6 +44,17 @@ PasswdAccountsHandler::merge(const MergeParams & params)
 
     std::cout << ">>> Installing " << *params.package_id() << " using passwd handler" << std::endl;
 
+    if (params.package_id()->end_metadata() != params.package_id()->find_metadata("groupname"))
+        merge_group(params);
+    else
+        merge_user(params);
+
+    std::cout << ">>> Finished installing " << *params.package_id() << std::endl;
+}
+
+void
+PasswdAccountsHandler::merge_user(const MergeParams & params)
+{
     std::string username;
     do
     {
@@ -187,14 +199,68 @@ PasswdAccountsHandler::merge(const MergeParams & params)
             home = " -d '" + home + "'";
     } while (false);
 
-    Command cmd("useradd " + username + gecos + primary_group + extra_groups + shell + home);
+    Command cmd("useradd -r " + username + preferred_uid + gecos + primary_group + extra_groups + shell + home);
     cmd.with_echo_to_stderr();
     int exit_status(run_command(cmd));
 
     if (0 != exit_status)
         throw InstallActionError("Install of '" + stringify(*params.package_id()) + "' failed because useradd returned "
                 + stringify(exit_status));
+}
 
-    std::cout << ">>> Finished installing " << *params.package_id() << std::endl;
+void
+PasswdAccountsHandler::merge_group(const MergeParams & params)
+{
+    std::string groupname;
+    do
+    {
+        PackageID::MetadataConstIterator m(params.package_id()->find_metadata("groupname"));
+        if (params.package_id()->end_metadata() == m)
+            throw InstallActionError("Key 'groupname' for '" + stringify(*params.package_id()) + "' does not exist");
+
+        const MetadataValueKey<std::string> * k(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
+        if (! k)
+            throw InstallActionError("Key 'groupname' for '" + stringify(*params.package_id()) + "' is not a string key");
+
+        groupname = k->value();
+
+        if (0 != getgrnam(groupname.c_str()))
+            throw InstallActionError("Group '" + groupname + "' already exists");
+    } while (false);
+
+    std::string preferred_gid;
+    do
+    {
+        PackageID::MetadataConstIterator m(params.package_id()->find_metadata("preferred_gid"));
+        if (params.package_id()->end_metadata() == m)
+            break;
+
+        const MetadataValueKey<std::string> * k(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
+        if (! k)
+            throw InstallActionError("Key 'preferred_gid' for '" + stringify(*params.package_id()) + "' is not a string key");
+
+        preferred_gid = k->value();
+
+        if (std::string::npos != preferred_gid.find_first_not_of("0123456789"))
+            throw InstallActionError("Value for key 'preferred_gid' for '" + stringify(*params.package_id()) + "' must be a number");
+
+        uid_t gid(destringify<uid_t>(preferred_gid));
+        if (getgrgid(gid))
+        {
+            std::cout << ">>> Preferred GID " << gid << " already in use, not specifying an ID" << std::endl;
+            preferred_gid = "";
+        }
+
+        if (! preferred_gid.empty())
+            preferred_gid = " -g '" + preferred_gid + "'";
+    } while (false);
+
+    Command cmd("groupadd -r " + groupname + preferred_gid);
+    cmd.with_echo_to_stderr();
+    int exit_status(run_command(cmd));
+
+    if (0 != exit_status)
+        throw InstallActionError("Install of '" + stringify(*params.package_id()) + "' failed because groupadd returned "
+                + stringify(exit_status));
 }
 

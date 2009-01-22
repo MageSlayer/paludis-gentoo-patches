@@ -31,6 +31,9 @@ namespace paludis
         {
             public:
                 virtual void merge(const MergeParams &);
+
+                void merge_user(const MergeParams &);
+                void merge_group(const MergeParams &);
         };
     }
 }

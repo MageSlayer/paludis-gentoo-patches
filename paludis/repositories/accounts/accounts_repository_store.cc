@@ -45,6 +45,7 @@
 #include <set>
 #include <sys/types.h>
 #include <pwd.h>
+#include <grp.h>
 
 using namespace paludis;
 using namespace paludis::accounts_repository;
@@ -153,7 +154,7 @@ AccountsRepositoryStore::_load_one(
             "Repository " << repo->name() << " has accounts_repository_data_location " << dir << ", but no users subdirectory";
 
     if ((dir / "groups").is_directory_or_symlink_to_directory())
-        _load_one_groups(repo, dir / "groups");
+        _load_one_groups(repo, from_repo, dir / "groups");
     else
         Log::get_instance()->message("accounts.no_groups", ll_debug, lc_context) <<
             "Repository " << repo->name() << " has accounts_repository_data_location " << dir << ", but no groups subdirectory";
@@ -169,17 +170,6 @@ AccountsRepositoryStore::_load_one_users(
     for (DirIterator d(dir, DirIteratorOptions()), d_end ; d != d_end ; ++d)
         if (is_file_with_extension(*d, ".conf", IsFileWithOptions()))
             _load_one_user(repo, from_repo, *d);
-        else
-            Log::get_instance()->message("accounts.unknown_file", ll_debug, lc_context) <<
-                "Don't know what to do with '" << *d << "'";
-}
-
-void
-AccountsRepositoryStore::_load_one_groups(const std::tr1::shared_ptr<const Repository> & repo, const FSEntry & dir)
-{
-    for (DirIterator d(dir, DirIteratorOptions()), d_end ; d != d_end ; ++d)
-        if (is_file_with_extension(*d, ".conf", IsFileWithOptions()))
-            _load_one_group(repo, *d);
         else
             Log::get_instance()->message("accounts.unknown_file", ll_debug, lc_context) <<
                 "Don't know what to do with '" << *d << "'";
@@ -220,14 +210,63 @@ AccountsRepositoryStore::_load_one_user(
         q->second.reset(new PackageIDSequence);
 
     if (_imp->installed)
-        q->second->push_back(make_shared_ptr(new InstalledAccountsUserID(_imp->env, qpn, repo)));
+        q->second->push_back(make_shared_ptr(new InstalledAccountsID(_imp->env, qpn, repo, true)));
     else
-        q->second->push_back(make_shared_ptr(new AccountsUserID(_imp->env, qpn, repo, from_repo, filename)));
+        q->second->push_back(make_shared_ptr(new AccountsID(_imp->env, qpn, repo, from_repo, filename, true)));
 }
 
 void
-AccountsRepositoryStore::_load_one_group(const std::tr1::shared_ptr<const Repository> &, const FSEntry &)
+AccountsRepositoryStore::_load_one_groups(
+        const std::tr1::shared_ptr<const Repository> & repo,
+        const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
+        const FSEntry & dir)
 {
+    for (DirIterator d(dir, DirIteratorOptions()), d_end ; d != d_end ; ++d)
+        if (is_file_with_extension(*d, ".conf", IsFileWithOptions()))
+            _load_one_group(repo, from_repo, *d);
+        else
+            Log::get_instance()->message("accounts.unknown_file", ll_debug, lc_context) <<
+                "Don't know what to do with '" << *d << "'";
+}
+
+void
+AccountsRepositoryStore::_load_one_group(
+        const std::tr1::shared_ptr<const Repository> & repo,
+        const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
+        const FSEntry & filename)
+{
+    CategoryNamePart cat("group");
+    PackageNamePart pkg(strip_trailing_string(filename.basename(), ".conf"));
+    QualifiedPackageName qpn(cat + pkg);
+    std::string groupname(stringify(pkg));
+
+    if (_imp->installed)
+    {
+        if (! getgrnam(groupname.c_str()))
+            return;
+    }
+    else
+    {
+        if (getgrnam(groupname.c_str()))
+            return;
+    }
+
+    PackageNames::iterator p(_imp->package_names.find(cat));
+    if (p == _imp->package_names.end())
+        p = _imp->package_names.insert(std::make_pair(cat, make_shared_ptr(new QualifiedPackageNameSet))).first;
+
+    p->second->insert(qpn);
+
+    IDs::iterator q(_imp->ids.find(qpn));
+    if (q == _imp->ids.end())
+        q = _imp->ids.insert(std::make_pair(qpn, make_shared_ptr(new PackageIDSequence))).first;
+    else
+        q->second.reset(new PackageIDSequence);
+
+    if (_imp->installed)
+        q->second->push_back(make_shared_ptr(new InstalledAccountsID(_imp->env, qpn, repo, false)));
+    else
+        q->second->push_back(make_shared_ptr(new AccountsID(_imp->env, qpn, repo, from_repo, filename, false)));
 }
 
 bool
