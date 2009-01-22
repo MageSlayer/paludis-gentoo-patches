@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2006 Danny van Dyk
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -127,6 +127,9 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::tr1::shared_ptr<Map<FSEntry, std::string> > manifest_files(const QualifiedPackageName &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual std::tr1::shared_ptr<MetadataValueKey<FSEntry> > accounts_repository_data_location_key() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual FSEntry sync_filter_file() const;

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2006 Danny van Dyk
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -39,6 +39,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/choice.hh>
 #include <tr1/functional>
 #include <tr1/unordered_map>
@@ -662,5 +663,11 @@ TraditionalLayout::binary_ebuild_location(const QualifiedPackageName & q, const 
         const std::string & eapi) const
 {
     return package_directory(q) / _imp->entries->binary_ebuild_name(q, v, eapi);
+}
+
+std::tr1::shared_ptr<MetadataValueKey<FSEntry> >
+TraditionalLayout::accounts_repository_data_location_key() const
+{
+    return make_null_shared_ptr();
 }
 

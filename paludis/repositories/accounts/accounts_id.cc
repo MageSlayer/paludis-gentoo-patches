@@ -1,0 +1,419 @@
+/* vim: set sw=4 sts=4 et foldmethod=syntax : */
+
+/*
+ * Copyright (c) 2009 Ciaran McCreesh
+ *
+ * This file is part of the Paludis package manager. Paludis is free software;
+ * you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License version 2, as published by the Free Software Foundation.
+ *
+ * Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#include <paludis/repositories/accounts/accounts_id.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/config_file.hh>
+#include <paludis/util/options.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/hashes.hh>
+#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/tokeniser.hh>
+#include <paludis/util/mutex.hh>
+#include <paludis/util/make_named_values.hh>
+#include <paludis/name.hh>
+#include <paludis/version_spec.hh>
+#include <paludis/literal_metadata_key.hh>
+#include <paludis/repository.hh>
+#include <paludis/action.hh>
+
+using namespace paludis;
+using namespace paludis::accounts_repository;
+
+namespace paludis
+{
+    template <>
+    struct Implementation<AccountsUserID>
+    {
+        const Environment * const env;
+
+        const QualifiedPackageName name;
+        const VersionSpec version;
+        const SlotName slot;
+        const std::tr1::shared_ptr<const Repository> repository;
+
+        const std::tr1::shared_ptr<const LiteralMetadataValueKey<FSEntry> > fs_location_key;
+        const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key;
+
+        mutable Mutex mutex;
+        mutable bool has_file_keys;
+        mutable bool has_metadata_keys;
+        mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > username_key;
+        mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > gecos_key;
+        mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > preferred_uid_key;
+        mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > default_group_key;
+        mutable std::tr1::shared_ptr<const LiteralMetadataStringSetKey> extra_groups_key;
+        mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > home_key;
+        mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > shell_key;
+
+        Implementation(const Environment * const e,
+                const QualifiedPackageName & q, const std::tr1::shared_ptr<const Repository> & r,
+                const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & f,
+                const FSEntry & l) :
+            env(e),
+            name(q),
+            version("0"),
+            slot("0"),
+            repository(r),
+            fs_location_key(new LiteralMetadataValueKey<FSEntry>("location", "Location", mkt_internal, l)),
+            from_repositories_key(f),
+            has_file_keys(false),
+            has_metadata_keys(false)
+        {
+        }
+    };
+}
+
+AccountsUserID::AccountsUserID(const Environment * const e,
+        const QualifiedPackageName & q, const std::tr1::shared_ptr<const Repository> & r,
+        const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & f, const FSEntry & l) :
+    PrivateImplementationPattern<AccountsUserID>(new Implementation<AccountsUserID>(e, q, r, f, l)),
+    _imp(PrivateImplementationPattern<AccountsUserID>::_imp)
+{
+}
+
+AccountsUserID::~AccountsUserID()
+{
+}
+
+void
+AccountsUserID::_add_metadata_keys() const
+{
+    Lock lock(_imp->mutex);
+
+    if (_imp->has_metadata_keys)
+        return;
+
+    add_metadata_key(_imp->fs_location_key);
+    add_metadata_key(_imp->from_repositories_key);
+
+    if (_imp->username_key)
+        add_metadata_key(_imp->username_key);
+    if (_imp->gecos_key)
+        add_metadata_key(_imp->gecos_key);
+    if (_imp->preferred_uid_key)
+        add_metadata_key(_imp->preferred_uid_key);
+    if (_imp->default_group_key)
+        add_metadata_key(_imp->default_group_key);
+    if (_imp->extra_groups_key)
+        add_metadata_key(_imp->extra_groups_key);
+    if (_imp->shell_key)
+        add_metadata_key(_imp->shell_key);
+    if (_imp->home_key)
+        add_metadata_key(_imp->home_key);
+
+    _imp->has_metadata_keys = true;
+}
+
+void
+AccountsUserID::_need_file_keys() const
+{
+    if (_imp->has_file_keys)
+        return;
+
+    Lock lock(_imp->mutex);
+
+    KeyValueConfigFile k(_imp->fs_location_key->value(), KeyValueConfigFileOptions(),
+            &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
+
+    /* also need to change the handlers if any of the raw names are changed */
+
+    _imp->username_key.reset(new LiteralMetadataValueKey<std::string>("username", "Username",
+                mkt_significant, stringify(name().package())));
+
+    if (! k.get("gecos").empty())
+        _imp->gecos_key.reset(new LiteralMetadataValueKey<std::string>("gecos", "Description",
+                    mkt_significant, k.get("gecos")));
+
+    if (! k.get("preferred_uid").empty())
+        _imp->preferred_uid_key.reset(new LiteralMetadataValueKey<std::string>("preferred_uid", "Preferred UID",
+                    mkt_normal, k.get("preferred_uid")));
+
+    if (! k.get("shell").empty())
+        _imp->shell_key.reset(new LiteralMetadataValueKey<std::string>("shell", "Shell",
+                    mkt_normal, k.get("shell")));
+
+    if (! k.get("home").empty())
+        _imp->home_key.reset(new LiteralMetadataValueKey<std::string>("home", "Home Directory",
+                    mkt_normal, k.get("home")));
+
+    if (! k.get("default_group").empty())
+        _imp->default_group_key.reset(new LiteralMetadataValueKey<std::string>("default_group", "Default Group",
+                    mkt_normal, k.get("default_group")));
+
+    if (! k.get("extra_groups").empty())
+    {
+        std::tr1::shared_ptr<Set<std::string> > groups_s(new Set<std::string>);
+        tokenise_whitespace(k.get("extra_groups"), groups_s->inserter());
+        _imp->extra_groups_key.reset(new LiteralMetadataStringSetKey("extra_groups", "Extra Groups",
+                    mkt_normal, groups_s));
+    }
+
+    _imp->has_file_keys = true;
+}
+
+void
+AccountsUserID::need_keys_added() const
+{
+    if (! _imp->has_file_keys)
+        _need_file_keys();
+
+    if (! _imp->has_metadata_keys)
+        _add_metadata_keys();
+}
+
+void
+AccountsUserID::clear_metadata_keys() const
+{
+    Lock lock(_imp->mutex);
+    _imp->has_metadata_keys = false;
+    PackageID::clear_metadata_keys();
+}
+
+void
+AccountsUserID::need_masks_added() const
+{
+}
+
+const QualifiedPackageName
+AccountsUserID::name() const
+{
+    return _imp->name;
+}
+
+const VersionSpec
+AccountsUserID::version() const
+{
+    return _imp->version;
+}
+
+const SlotName
+AccountsUserID::slot() const
+{
+    return _imp->slot;
+}
+
+const std::tr1::shared_ptr<const Repository>
+AccountsUserID::repository() const
+{
+    return _imp->repository;
+}
+
+const std::string
+AccountsUserID::canonical_form(const PackageIDCanonicalForm f) const
+{
+    switch (f)
+    {
+        case idcf_full:
+            return stringify(name()) + "-" + stringify(version()) + ":" + stringify(slot()) + "::" + stringify(repository()->name());
+
+        case idcf_no_version:
+            return stringify(name()) + ":" + stringify(slot()) + "::" + stringify(repository()->name());
+
+        case idcf_version:
+            return stringify(version());
+
+        case last_idcf:
+            break;
+    }
+
+    throw InternalError(PALUDIS_HERE, "Bad PackageIDCanonicalForm");
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
+AccountsUserID::virtual_for_key() const
+{
+    return make_null_shared_ptr();
+}
+
+const std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
+AccountsUserID::keywords_key() const
+{
+    return make_null_shared_ptr();
+}
+
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
+AccountsUserID::provide_key() const
+{
+    return make_null_shared_ptr();
+}
+
+const std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
+AccountsUserID::contains_key() const
+{
+    return make_null_shared_ptr();
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
+AccountsUserID::contained_in_key() const
+{
+    return make_null_shared_ptr();
+}
+
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+AccountsUserID::build_dependencies_key() const
+{
+    return make_null_shared_ptr();
+}
+
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+AccountsUserID::run_dependencies_key() const
+{
+    return make_null_shared_ptr();
+}
+
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+AccountsUserID::post_dependencies_key() const
+{
+    return make_null_shared_ptr();
+}
+
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+AccountsUserID::suggested_dependencies_key() const
+{
+    return make_null_shared_ptr();
+}
+
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
+AccountsUserID::fetches_key() const
+{
+    return make_null_shared_ptr();
+}
+
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
+AccountsUserID::homepage_key() const
+{
+    return make_null_shared_ptr();
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+AccountsUserID::short_description_key() const
+{
+    _need_file_keys();
+    return _imp->gecos_key;
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+AccountsUserID::long_description_key() const
+{
+    return make_null_shared_ptr();
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >
+AccountsUserID::contents_key() const
+{
+    return make_null_shared_ptr();
+}
+
+const std::tr1::shared_ptr<const MetadataTimeKey>
+AccountsUserID::installed_time_key() const
+{
+    return make_null_shared_ptr();
+}
+
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+AccountsUserID::from_repositories_key() const
+{
+    return _imp->from_repositories_key;
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+AccountsUserID::fs_location_key() const
+{
+    return _imp->fs_location_key;
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<bool> >
+AccountsUserID::transient_key() const
+{
+    return make_null_shared_ptr();
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >
+AccountsUserID::choices_key() const
+{
+    return make_null_shared_ptr();
+}
+
+std::tr1::shared_ptr<const Set<std::string> >
+AccountsUserID::breaks_portage() const
+{
+    return make_shared_ptr(new Set<std::string>);
+}
+
+bool
+AccountsUserID::arbitrary_less_than_comparison(const PackageID & other) const
+{
+    if (slot() < other.slot())
+        return true;
+
+    return false;
+}
+
+std::size_t
+AccountsUserID::extra_hash_value() const
+{
+    return Hash<SlotName>()(slot());
+}
+
+bool
+AccountsUserID::supports_action(const SupportsActionTestBase & test) const
+{
+    return simple_visitor_cast<const SupportsActionTest<InstallAction> >(test);
+}
+
+void
+AccountsUserID::perform_action(Action & action) const
+{
+    const InstallAction * const install_action(simple_visitor_cast<const InstallAction>(action));
+    if (! install_action)
+        throw UnsupportedActionError(*this, action);
+
+    if (! (*install_action->options.destination()).destination_interface())
+        throw InstallActionError("Can't install '" + stringify(*this)
+                + "' to destination '" + stringify(install_action->options.destination()->name())
+                + "' because destination does not provide destination_interface");
+
+    switch (install_action->options.want_phase()("merge"))
+    {
+        case wp_yes:
+            {
+                (*install_action->options.destination()).destination_interface()->merge(
+                        make_named_values<MergeParams>(
+                            value_for<n::environment_file>(FSEntry("/dev/null")),
+                            value_for<n::image_dir>(fs_location_key()->value()),
+                            value_for<n::options>(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs),
+                            value_for<n::package_id>(shared_from_this()),
+                            value_for<n::used_this_for_config_protect>(install_action->options.used_this_for_config_protect())
+                            ));
+            }
+            break;
+
+        case wp_skip:
+            break;
+
+        case wp_abort:
+            throw InstallActionError("Told to abort install");
+
+        case last_wp:
+            throw InternalError(PALUDIS_HERE, "bad WantPhase");
+    }
+}
+

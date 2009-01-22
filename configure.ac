@@ -1253,7 +1253,7 @@ AC_SUBST([VIM_INSTALL_DIR])
 dnl }}}
 
 dnl {{{ repositories
-ALL_REPOSITORIES="cran e fake gems unavailable unpackaged unwritten virtuals"
+ALL_REPOSITORIES="accounts cran e fake gems unavailable unpackaged unwritten virtuals"
 DEFAULT_REPOSITORIES="e fake unavailable unpackaged unwritten virtuals"
 AC_MSG_CHECKING([which repositories to build...])
 AC_ARG_WITH([repositories],
@@ -1262,6 +1262,7 @@ AC_ARG_WITH([repositories],
 			  all             All available repositories
 			  default         Equivalent to e,fake,unavailable,unpackaged,unwritten,virtuals
 
+			  accounts        Account management (requires distribution support)
 			  cran            The Comprehensive R Archive Network (unusable)
 			  e               Ebuild, Ebin, Exheres, VDB etc
 			  fake            A fake repository for test cases and adjutrix
@@ -1524,6 +1525,7 @@ AC_OUTPUT(
 	paludis/environments/test/Makefile
 	paludis/fetchers/Makefile
 	paludis/repositories/Makefile
+	paludis/repositories/accounts/Makefile
 	paludis/repositories/cran/Makefile
 	paludis/repositories/cran/cran/Makefile
 	paludis/repositories/e/Makefile

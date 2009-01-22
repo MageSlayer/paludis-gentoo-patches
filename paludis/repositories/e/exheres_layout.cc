@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -40,7 +40,9 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/choice.hh>
+#include <paludis/literal_metadata_key.hh>
 #include <tr1/functional>
 #include <tr1/unordered_map>
 #include <functional>
@@ -646,5 +648,15 @@ ExheresLayout::binary_ebuild_location(const QualifiedPackageName & q, const Vers
         const std::string & eapi) const
 {
     return package_directory(q) / _imp->entries->binary_ebuild_name(q, v, eapi);
+}
+
+std::tr1::shared_ptr<MetadataValueKey<FSEntry> >
+ExheresLayout::accounts_repository_data_location_key() const
+{
+    if ((_imp->tree_root / "metadata" / "accounts").exists())
+        return make_shared_ptr(new LiteralMetadataValueKey<FSEntry>("accounts_repository_data_location",
+                    "AccountsRepository data location", mkt_internal, _imp->tree_root / "metadata" / "accounts"));
+    else
+        return make_null_shared_ptr();
 }
 
