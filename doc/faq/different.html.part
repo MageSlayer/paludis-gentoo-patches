@@ -100,7 +100,7 @@ Unlike layman, playman only creates the necessary configuration for the overlay,
 and is not used to sync it. A regular <code>paludis --sync</code> will sync your
 main repository as well as your overlays.</p>
 
-<p>To get playman, just install paludis 0.26.0_alpha13 or later with the ruby
+<p>To get playman, just install paludis 0.26.0_alpha13 or later with the ruby-bindings
 USE flag enabled. The script will be installed as /usr/bin/playman.
 <code>playman --help</code> describes the available options.</p>
 
