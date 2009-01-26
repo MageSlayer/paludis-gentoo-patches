@@ -44,6 +44,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/choice.hh>
 #include <vector>
+#include <limits>
 
 using namespace paludis;
 
@@ -304,6 +305,121 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
                 VersionSpec v1(tokens[3]), v2(tokens[4]);
                 return v2 >= v1 ? "O0;" : "O1;";
+            }
+            else if (tokens[2] == "SPLIT" || tokens[2] == "SPLIT_ALL")
+            {
+                bool all(tokens[2] == "SPLIT_ALL");
+
+                if (tokens.size() != 4)
+                {
+                    Log::get_instance()->message("e.pipe_commands.ever.split.bad", ll_warning, lc_context) << "Got bad EVER " + tokens[2] + " pipe command";
+                    return "Ebad EVER " + tokens[2] + " command {'" + join(tokens.begin(), tokens.end(), "', '") + "'}";
+                }
+
+                VersionSpec v(tokens[3]);
+                std::string result;
+                for (VersionSpec::ConstIterator c(v.begin()), c_end(v.end()) ;
+                        c != c_end ; ++c)
+                {
+                    if (c->text().empty())
+                        continue;
+
+                    if (! result.empty())
+                        result.append(" ");
+
+                    switch (c->text().at(0))
+                    {
+                        case '.':
+                        case '-':
+                        case '_':
+                            {
+                                if (all)
+                                    result.append(c->text().substr(0, 1));
+                                if (c->text().length() > 1)
+                                {
+                                    if (all)
+                                        result.append(" ");
+                                    result.append(c->text().substr(1));
+                                }
+
+                            }
+                            break;
+
+                        default:
+                            result.append(c->text());
+                            break;
+                    }
+                }
+                return "O0;" + result;
+            }
+            else if (tokens[2] == "RANGE")
+            {
+                if (tokens.size() != 5)
+                {
+                    Log::get_instance()->message("e.pipe_commands.ever.major.bad", ll_warning, lc_context) << "Got bad EVER " + tokens[2] + " pipe command";
+                    return "Ebad EVER " + tokens[2] + " command {'" + join(tokens.begin(), tokens.end(), "', '") + "'}";
+                }
+
+                std::string range_s(tokens[3]);
+                std::string::size_type hyphen_pos(range_s.find('-'));
+                int range_start, range_end;
+
+                if (std::string::npos == hyphen_pos)
+                    range_start = range_end = destringify<int>(range_s);
+                else
+                {
+                    std::string range_start_s(range_s.substr(0, hyphen_pos));
+                    std::string range_end_s(range_s.substr(hyphen_pos + 1));
+
+                    if (range_start_s.empty())
+                        range_start = 0;
+                    else
+                        range_start = destringify<int>(range_start_s);
+
+                    if (range_end_s.empty())
+                        range_end = std::numeric_limits<int>::max();
+                    else
+                        range_end = destringify<int>(range_end_s);
+
+                }
+
+                VersionSpec v(tokens[4]);
+
+                int current_pos(0);
+                std::string result;
+                for (VersionSpec::ConstIterator c(v.begin()), c_end(v.end()) ;
+                        c != c_end ; ++c)
+                {
+                    ++current_pos;
+                    if (current_pos > range_end)
+                        break;
+                    if (current_pos < range_start)
+                        continue;
+
+                    if (c->text().empty())
+                        continue;
+
+                    switch (c->text().at(0))
+                    {
+                        case '.':
+                        case '-':
+                        case '_':
+                            {
+                                if (! result.empty())
+                                    result.append(c->text().substr(0, 1));
+                                if (c->text().length() > 1)
+                                    result.append(c->text().substr(1));
+
+                            }
+                            break;
+
+                        default:
+                            result.append(c->text());
+                            break;
+                    }
+                }
+
+                return "O0;" + result;
             }
             else
             {

@@ -2019,36 +2019,6 @@ pkg_setup() {
     done
 }
 END
-mkdir -p "packages/cat/ever"
-cat <<'END' > packages/cat/ever/ever-1.3.ebuild || exit 1
-if ever at_least 2 ; then
-    DESCRIPTION="Really Not The Long Description"
-    SUMMARY="Really Not The Short Description"
-elif ever at_least 1.2.3 ; then
-    DESCRIPTION="The Long Description"
-    SUMMARY="The Short Description"
-else
-    DESCRIPTION="Not The Long Description"
-    SUMMARY="Not The Short Description"
-fi
-
-HOMEPAGE="http://example.com/"
-DOWNLOADS=""
-SLOT="0"
-MYOPTIONS="spork"
-LICENCES="GPL-2"
-PLATFORMS="test"
-
-pkg_setup() {
-    ever at_least 1.2 || die "at_least 1.2"
-    ever at_least 1.3 || die "at_least 1.3"
-    ever at_least 1.4 && die "at_least 1.4"
-
-    ever at_least 1.2 1.2 || die "at_least 1.2 1.2"
-    ever at_least 1.3 1.2 && die "at_least 1.3 1.2"
-    ever at_least 1.4 1.2 && die "at_least 1.4 1.2"
-}
-END
 mkdir -p "packages/cat/econf-phase"
 cat <<'END' > packages/cat/econf-phase/econf-phase-0.ebuild || exit 1
 DESCRIPTION="The Long Description"

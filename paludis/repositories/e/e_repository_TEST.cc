@@ -2211,17 +2211,6 @@ namespace test_cases
             }
 
             {
-                TestMessageSuffix suffix("ever", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/ever-1.3",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-                TEST_CHECK(id);
-                TEST_CHECK(id->short_description_key());
-                TEST_CHECK_EQUAL(id->short_description_key()->value(), "The Short Description");
-                id->perform_action(action);
-            }
-
-            {
                 TestMessageSuffix suffix("econf phase", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/econf-phase-0",

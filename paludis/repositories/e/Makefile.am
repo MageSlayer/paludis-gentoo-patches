@@ -163,6 +163,20 @@ e_repository_TEST_LDADD = \
 
 e_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
+e_repository_TEST_ever_SOURCES = e_repository_TEST_ever.cc
+
+e_repository_TEST_ever_LDADD = \
+	libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
+e_repository_TEST_ever_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
 vdb_repository_TEST_SOURCES = vdb_repository_TEST.cc
 
 vdb_repository_TEST_LDADD = \
@@ -340,6 +354,9 @@ EXTRA_DIST = \
 	e_repository_TEST.cc \
 	e_repository_TEST_setup.sh \
 	e_repository_TEST_cleanup.sh \
+	e_repository_TEST_ever.cc \
+	e_repository_TEST_ever_setup.sh \
+	e_repository_TEST_ever_cleanup.sh \
 	e_repository_params-se.hh \
 	e_repository_params-se.cc \
 	e_repository_params.se \
@@ -383,6 +400,7 @@ BUILT_SOURCES = \
 
 check_SCRIPTS = \
 	e_repository_TEST_setup.sh e_repository_TEST_cleanup.sh \
+	e_repository_TEST_ever_setup.sh e_repository_TEST_ever_cleanup.sh \
 	xml_things_TEST_setup.sh xml_things_TEST_cleanup.sh \
 	vdb_repository_TEST_setup.sh vdb_repository_TEST_cleanup.sh \
 	exndbam_repository_TEST_setup.sh exndbam_repository_TEST_cleanup.sh \
@@ -465,20 +483,21 @@ paludis_datadir = $(datadir)/paludis
 dist_paludis_data_DATA = traditional.exclude ebuild_entries_suffixes.conf
 
 TESTS = \
+	aa_visitor_TEST \
 	dep_parser_TEST \
 	dep_spec_pretty_printer_TEST \
 	e_repository_TEST \
-	vdb_merger_TEST \
-	vdb_unmerger_TEST \
-	$(GLSA_TESTS) \
+	e_repository_TEST_ever \
 	e_repository_sets_TEST \
-	aa_visitor_TEST \
-	fetch_visitor_TEST \
-	source_uri_finder_TEST \
+	ebuild_flat_metadata_cache_TEST \
 	exndbam_repository_TEST \
-	vdb_repository_TEST \
+	fetch_visitor_TEST \
 	fix_locked_dependencies_TEST \
-	ebuild_flat_metadata_cache_TEST
+	source_uri_finder_TEST \
+	vdb_merger_TEST \
+	vdb_repository_TEST \
+	vdb_unmerger_TEST \
+	$(GLSA_TESTS)
 
 check_PROGRAMS = $(TESTS)
 
