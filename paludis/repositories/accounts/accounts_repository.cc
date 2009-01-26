@@ -337,6 +337,13 @@ namespace
 {
     struct SupportsActionQuery
     {
+        bool installed;
+
+        SupportsActionQuery(bool b) :
+            installed(b)
+        {
+        }
+
         bool visit(const SupportsActionTest<InstalledAction> &) const
         {
             return false;
@@ -382,7 +389,7 @@ namespace
 bool
 AccountsRepository::some_ids_might_support_action(const SupportsActionTestBase & a) const
 {
-    SupportsActionQuery q;
+    SupportsActionQuery q(_imp->params_if_installed);
     return a.accept_returning<bool>(q);
 }
 
