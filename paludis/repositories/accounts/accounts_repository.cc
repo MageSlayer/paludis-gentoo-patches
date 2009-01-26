@@ -346,12 +346,12 @@ namespace
 
         bool visit(const SupportsActionTest<InstalledAction> &) const
         {
-            return false;
+            return installed;
         }
 
         bool visit(const SupportsActionTest<InstallAction> &) const
         {
-            return true;
+            return ! installed;
         }
 
         bool visit(const SupportsActionTest<FetchAction> &) const
