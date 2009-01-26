@@ -11,6 +11,7 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail \
 	installed_accounts.html \
 	installed_unpackaged.html \
 	unavailable.html \
+	unwritten.html \
 	vdb.html
 
 MAINTAINERCLEANFILES = Makefile.in
@@ -26,6 +27,7 @@ EXTRA_DIST = \
 	installed_accounts.html \
 	installed_unpackaged.html \
 	unavailable.html \
+	unwritten.html \
 	vdb.html
 
 paludisconfigurationrepositorieshtmldir = $(htmldir)/configuration/repositories/
@@ -38,6 +40,7 @@ paludisconfigurationrepositorieshtml_DATA = \
 	installed_accounts.html \
 	installed_unpackaged.html \
 	unavailable.html \
+	unwritten.html \
 	vdb.html
 
 if HAVE_HTMLTIDY
@@ -67,6 +70,9 @@ installed_unpackaged.html : header.html.part $(srcdir)/installed_unpackaged.html
 
 unavailable.html : header.html.part $(srcdir)/unavailable.html.part footer.html.part
 	cat header.html.part $(srcdir)/unavailable.html.part footer.html.part > $@
+
+unwritten.html : header.html.part $(srcdir)/unwritten.html.part footer.html.part
+	cat header.html.part $(srcdir)/unwritten.html.part footer.html.part > $@
 
 vdb.html : header.html.part $(srcdir)/vdb.html.part footer.html.part
 	cat header.html.part $(srcdir)/vdb.html.part footer.html.part > $@

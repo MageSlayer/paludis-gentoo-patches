@@ -22,7 +22,7 @@
             </td>
 
             <td class="currentpage">
-                &nbsp;
+                <a href="###TOPURI###configuration/repositories/vdb.html">VDB</a>
             </td>
         </tr>
 
@@ -126,7 +126,7 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/repositories/vdb.html">VDB</a>
+                <a href="###TOPURI###configuration/repositories/unwritten.html">unwritten</a>
             </td>
 
             <td class="currentpage">
