@@ -71,7 +71,7 @@ script can be used to generate a Paludis configuration from an existing Portage 
 </ul>
 
 <p>You may also wish to set up an unavailable repository for tracking repositories in layman. See <a
-    href="../configuration/unavailable.html">the unavailable repository documentation</a> for a sample repository
+    href="../configuration/repositories/unavailable.html">the unavailable repository documentation</a> for a sample repository
 config.</p>
 
 <p>Next, proceed to <a href="#testing">Testing a configuration</a>.</p>
@@ -274,7 +274,7 @@ used via <code>sync_options = </code>.</p>
 <h5>repositories/layman.conf</h5>
 
 <p>You may also wish to set up an unavailable repository for tracking repositories in layman. See <a
-    href="../configuration/unavailable.html">the unavailable repository documentation</a> for a sample repository
+    href="../configuration/repositories/unavailable.html">the unavailable repository documentation</a> for a sample repository
 config.</p>
 
 <p>Next, proceed to <a href="#testing">Testing a configuration</a>.</p>
@@ -307,7 +307,7 @@ format = exndbam
 
 
 <p>You should usually set up an unavailable repository for tracking repositories that you do not have configured. See <a
-    href="../configuration/unavailable.html">the unavailable repository documentation</a> for a sample repository
+    href="../configuration/repositories/unavailable.html">the unavailable repository documentation</a> for a sample repository
 config.</p>
 
 <p>Next, proceed to <a href="#testing">Testing a configuration</a>.</p>
