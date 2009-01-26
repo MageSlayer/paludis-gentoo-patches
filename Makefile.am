@@ -9,7 +9,7 @@ SUBDIRS = misc test paludis python ruby src doc hooks vim bash-completion zsh-co
 DISTCHECK_CONFIGURE_FLAGS = --enable-qa --enable-ruby --enable-ruby-doc --enable-vim \
 	--enable-python --enable-python-doc --enable-xml \
 	--with-ruby-install-dir='$${DESTDIR}$${prefix}/ruby_dir' \
-	--with-repositories=default \
+	--with-repositories=default,accounts \
 	--with-environments=default,portage \
 	--with-clients=default,accerso,cave,inquisitio,instruo \
 	--with-default-distribution=giant-space-monkey \
