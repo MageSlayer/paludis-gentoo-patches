@@ -63,7 +63,7 @@ namespace paludis
         mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > username_key;
         mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > gecos_key;
         mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > preferred_uid_key;
-        mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > default_group_key;
+        mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > primary_group_key;
         mutable std::tr1::shared_ptr<const LiteralMetadataStringSetKey> extra_groups_key;
         mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > home_key;
         mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > shell_key;
@@ -121,8 +121,8 @@ AccountsID::_add_metadata_keys() const
         add_metadata_key(_imp->gecos_key);
     if (_imp->preferred_uid_key)
         add_metadata_key(_imp->preferred_uid_key);
-    if (_imp->default_group_key)
-        add_metadata_key(_imp->default_group_key);
+    if (_imp->primary_group_key)
+        add_metadata_key(_imp->primary_group_key);
     if (_imp->extra_groups_key)
         add_metadata_key(_imp->extra_groups_key);
     if (_imp->shell_key)
@@ -185,11 +185,11 @@ AccountsID::_need_file_keys() const
                         mkt_normal, groups_s));
         }
 
-        if (! k.get("default_group").empty())
+        if (! k.get("primary_group").empty())
         {
-            _imp->default_group_key.reset(new LiteralMetadataValueKey<std::string>("default_group", "Default Group",
-                        mkt_normal, k.get("default_group")));
-            all_groups_s->insert(k.get("default_group"));
+            _imp->primary_group_key.reset(new LiteralMetadataValueKey<std::string>("primary_group", "Default Group",
+                        mkt_normal, k.get("primary_group")));
+            all_groups_s->insert(k.get("primary_group"));
         }
 
         if (! all_groups_s->empty())
