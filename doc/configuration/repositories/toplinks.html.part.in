@@ -13,16 +13,16 @@
                 <a href="###TOPURI###index.html">Introduction</a>
             </td>
 
-            <td class="currentpage">
-                <a href="###TOPURI###configuration/hooks.html">Hooks</a>
+            <td>
+                &nbsp;
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/environment.html">environment.conf</a>
+                <a href="###TOPURI###configuration/repositories/accounts.html">accounts</a>
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/sets.html">sets/</a>
+                &nbsp;
             </td>
         </tr>
 
@@ -31,16 +31,16 @@
                 <a href="http://trac.pioto.org/paludis/">Bugs, Requests, Support</a>
             </td>
 
-            <td class="currentpage">
-                <a href="###TOPURI###configuration/syncers.html">Syncers</a>
+            <td>
+                &nbsp;
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/keywords.html">keywords.conf</a>
+                <a href="###TOPURI###configuration/repositories/e.html">ebuild and exheres</a>
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/repositories/index.html">repositories/</a>
+                &nbsp;
             </td>
         </tr>
 
@@ -49,12 +49,12 @@
                 <a href="###TOPURI###overview/index.html">Overview</a>
             </td>
 
-            <td class="currentpage">
-                <a href="###TOPURI###configuration/fetchers.html">Fetchers</a>
+            <td>
+                &nbsp;
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/use.html">use.conf</a>
+                <a href="###TOPURI###configuration/repositories/exndbam.html">exndbam</a>
             </td>
 
             <td class="currentpage">
@@ -67,12 +67,12 @@
                 <a href="###TOPURI###faq/index.html">FAQ</a>
             </td>
 
-            <td class="currentpage">
-                <a href="###TOPURI###configuration/envvars.html">Env Vars</a>
+            <td>
+                &nbsp;
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/licenses.html">licenses.conf</a>
+                <a href="###TOPURI###configuration/repositories/installed_accounts.html">installed_accounts</a>
             </td>
 
             <td class="currentpage">
@@ -85,12 +85,12 @@
                 <a href="###TOPURI###clients/index.html">Clients</a>
             </td>
 
-            <td class="currentpage">
-                <a href="###TOPURI###configuration/configfiles.html">File Formats</a>
+            <td>
+                &nbsp;
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/mirrors.html">mirrors.conf</a>
+                <a href="###TOPURI###configuration/repositories/installed_unpackaged.html">installed_unpackaged</a>
             </td>
 
             <td class="currentpage">
@@ -103,12 +103,12 @@
                 <a href="###TOPURI###configuration/index.html">Configuration</a>
             </td>
 
-            <td class="currentpage">
-                <a href="###TOPURI###configuration/specs.html">Dep Specs</a>
+            <td class="currenttab">
+                <a href="###TOPURI###configuration/repositories/index.html">repositories/</a>
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/packagemask.html">package_mask.conf</a>
+                <a href="###TOPURI###configuration/repositories/unavailable.html">unavailable</a>
             </td>
 
             <td class="currentpage">
@@ -121,12 +121,12 @@
                 <a href="###TOPURI###api/index.html">API</a>
             </td>
 
-            <td class="currentpage">
-                <a href="###TOPURI###configuration/specpath.html">specpath.conf</a>
+            <td>
+                &nbsp;
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/bashrc.html">bashrc</a>
+                <a href="###TOPURI###configuration/repositories/vdb.html">VDB</a>
             </td>
 
             <td class="currentpage">

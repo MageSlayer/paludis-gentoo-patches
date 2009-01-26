@@ -1,11 +1,12 @@
 <!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
 
-<h1>vdb Options</h1>
+<h1>vdb Repository Format</h1>
 
-###PALUDISENVIRONMENTONLY###
+<p>The <code>vdb</code> repository format is used on Gentoo and derived distributions to track packages installed from
+an ebuild. It is not used on Exherbo; <a href="exndbam.html">exndbam</a> serves the equivalent purpose there.</p>
 
-<p>As well as the general keys supported for all repositories, the following keys have meaning for vdb format
-repositories:</p>
+<p>As well as the <a href="index.html">general keys supported for all repositories</a>, the following keys have meaning
+for <code>vdb</code> format repositories:</p>
 
 <dl>
     <dt><code>location</code></dt>
@@ -14,18 +15,19 @@ repositories:</p>
 
     <dt><code>provides_cache</code></dt>
     <dd>The directory to use for reading and writing a cache of providers of old-style virtuals. See <a
-        href="../overview/gettingstarted.html">Getting Started</a> for notes. Optional, set to <code>/var/empty</code>
+        href="../../overview/gettingstarted.html">Getting Started</a> for notes. Optional, set to <code>/var/empty</code>
     to disable.</dd>
 
     <dt><code>names_cache</code></dt>
     <dd>The directory in which to look for a names cache, and in which to generate a names cache. A names cache will
     significantly speed up converting a <code>pkg</code> into a <code>cat/pkg</code>. See <a
-        href="../overview/gettingstarted.html">Getting Started</a> for notes. Optional, set to <code>/var/empty</code>
+        href="../../overview/gettingstarted.html">Getting Started</a> for notes. Optional, set to <code>/var/empty</code>
     to disable.</dd>
 
     <dt><code>builddir</code></dt>
     <dd>The directory to use when 'building' a package for an uninstall (a temporary directory is needed for various
     operations). Optional.</dd>
 </dl>
+
 
 

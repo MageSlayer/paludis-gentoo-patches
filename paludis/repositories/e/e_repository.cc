@@ -239,6 +239,7 @@ namespace paludis
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > binary_destination_key;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > binary_src_uri_prefix_key;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > binary_keywords;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > accounts_repository_data_location_key;
     };
 
     Implementation<ERepository>::Implementation(ERepository * const r,
@@ -321,7 +322,8 @@ namespace paludis
         binary_src_uri_prefix_key(new LiteralMetadataValueKey<std::string> (
                     "binary_uri_prefix", "binary_uri_prefix", mkt_normal, params.binary_uri_prefix())),
         binary_keywords(new LiteralMetadataValueKey<std::string> (
-                    "binary_keywords", "binary_keywords", mkt_normal, params.binary_keywords()))
+                    "binary_keywords", "binary_keywords", mkt_normal, params.binary_keywords())),
+        accounts_repository_data_location_key(layout->accounts_repository_data_location_key())
     {
     }
 
@@ -530,6 +532,8 @@ ERepository::_add_metadata_keys() const
     add_metadata_key(_imp->binary_destination_key);
     add_metadata_key(_imp->binary_src_uri_prefix_key);
     add_metadata_key(_imp->binary_keywords);
+    if (_imp->accounts_repository_data_location_key)
+        add_metadata_key(_imp->accounts_repository_data_location_key);
 }
 
 bool

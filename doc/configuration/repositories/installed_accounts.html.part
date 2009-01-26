@@ -1,0 +1,21 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>installed_accounts Repository Format</h1>
+
+<p>The <code>installed_accounts</code> repository format, along with the <a href="accounts.html">accounts</a> format, is
+used by Exherbo to track user and group accounts. It is not used by Gentoo and derived distributions.</p>
+
+<p>As well as the <a href="index.html">general keys supported for all repositories</a>, the following keys have meaning
+for <code>installed_accounts</code> format repositories:</p>
+
+<dl>
+    <dt><code>name</code></dt>
+    <dd>If set, use this as the repository name instead of <code>accounts</code>.</dd>
+
+    <dt><code>handler</code></dt>
+    <dd>The handler to use for creating accounts. Currently only <code>passwd</code> is supported, which uses
+    <code>useradd</code> and <code>groupadd</code>. Mandatory</dd>
+</dl>
+
+
+

@@ -1,0 +1,21 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>exndbam Repository Format</h1>
+
+<p>The <code>exndbam</code> repository format is used on Exherbo to track packages installed from an exheres. It is not
+used on Gentoo and derived distributions; <a href="vdb.html">VDB</a> serves the equivalent purpose there.</p>
+
+<p>As well as the <a href="index.html">general keys supported for all repositories</a>, the following keys have meaning
+for <code>exndbam</code> format repositories:</p>
+
+<dl>
+    <dt><code>location</code></dt>
+    <dd>The location of the repository. Mandatory.</dd>
+
+    <dt><code>builddir</code></dt>
+    <dd>The directory to use when 'building' a package for an uninstall (a temporary directory is needed for various
+    operations). Optional.</dd>
+</dl>
+
+
+

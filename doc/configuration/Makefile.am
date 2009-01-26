@@ -1,4 +1,4 @@
-SUBDIRS = .
+SUBDIRS = repositories .
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail \
 	header.html.part \
@@ -32,21 +32,7 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail \
 	sets.html \
 	sets.html.part \
 	configfiles.html \
-	specs.html \
-	repositories.html \
-	repositories.html.part \
-	erepository.html \
-	erepository.html.part \
-	installedunpackaged.html \
-	installedunpackaged.html.part \
-	vdb.html \
-	vdb.html.part \
-	exndbam.html \
-	exndbam.html.part \
-	unavailable.html \
-	unavailable.html.part \
-	unwritten.html \
-	unwritten.html.part
+	specs.html
 
 MAINTAINERCLEANFILES = Makefile.in
 
@@ -68,14 +54,7 @@ EXTRA_DIST = \
 	paludisenvironmentonly.html.part \
 	configfiles.html.part \
 	specs.html.part \
-	sets.html.part.in \
-	repositories.html.part.in \
-	erepository.html.part.in \
-	installedunpackaged.html.part.in \
-	unavailable.html.part.in \
-	unwritten.html.part.in \
-	vdb.html.part.in \
-	exndbam.html.part.in
+	sets.html.part.in
 
 paludisconfigurationhtmldir = $(htmldir)/configuration
 
@@ -95,14 +74,7 @@ paludisconfigurationhtml_DATA = \
 	use.html \
 	configfiles.html \
 	specs.html \
-	sets.html \
-	repositories.html \
-	erepository.html \
-	installedunpackaged.html \
-	unavailable.html \
-	unwritten.html \
-	vdb.html \
-	exndbam.html
+	sets.html
 
 if HAVE_HTMLTIDY
 
@@ -177,42 +149,6 @@ specpath.html.part : $(srcdir)/specpath.html.part.in $(srcdir)/paludisenvironmen
 	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
 	    < $(srcdir)/specpath.html.part.in > specpath.html.part
 
-erepository.html.part : $(srcdir)/erepository.html.part.in $(srcdir)/paludisenvironmentonly.html.part
-	sed \
-	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
-	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
-	    < $(srcdir)/erepository.html.part.in > erepository.html.part
-
-unavailable.html.part : $(srcdir)/unavailable.html.part.in $(srcdir)/paludisenvironmentonly.html.part
-	sed \
-	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
-	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
-	    < $(srcdir)/unavailable.html.part.in > unavailable.html.part
-
-unwritten.html.part : $(srcdir)/unwritten.html.part.in $(srcdir)/paludisenvironmentonly.html.part
-	sed \
-	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
-	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
-	    < $(srcdir)/unwritten.html.part.in > unwritten.html.part
-
-installedunpackaged.html.part : $(srcdir)/installedunpackaged.html.part.in $(srcdir)/paludisenvironmentonly.html.part
-	sed \
-	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
-	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
-	    < $(srcdir)/installedunpackaged.html.part.in > installedunpackaged.html.part
-
-vdb.html.part : $(srcdir)/vdb.html.part.in $(srcdir)/paludisenvironmentonly.html.part
-	sed \
-	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
-	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
-	    < $(srcdir)/vdb.html.part.in > vdb.html.part
-
-exndbam.html.part : $(srcdir)/exndbam.html.part.in $(srcdir)/paludisenvironmentonly.html.part
-	sed \
-	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
-	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
-	    < $(srcdir)/exndbam.html.part.in > exndbam.html.part
-
 environment.html.part : $(srcdir)/environment.html.part.in $(srcdir)/paludisenvironmentonly.html.part
 	sed \
 	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
@@ -224,12 +160,6 @@ keywords.html.part : $(srcdir)/keywords.html.part.in $(srcdir)/paludisenvironmen
 	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
 	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
 	    < $(srcdir)/keywords.html.part.in > keywords.html.part
-
-repositories.html.part : $(srcdir)/repositories.html.part.in $(srcdir)/paludisenvironmentonly.html.part
-	sed \
-	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
-	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
-	    < $(srcdir)/repositories.html.part.in > repositories.html.part
 
 packagemask.html.part : $(srcdir)/packagemask.html.part.in $(srcdir)/paludisenvironmentonly.html.part
 	sed \
@@ -279,9 +209,6 @@ environment.html : header.html.part environment.html.part footer.html.part
 keywords.html : header.html.part keywords.html.part footer.html.part
 	cat header.html.part keywords.html.part footer.html.part > $@
 
-repositories.html : header.html.part repositories.html.part footer.html.part
-	cat header.html.part repositories.html.part footer.html.part > $@
-
 packagemask.html : header.html.part packagemask.html.part footer.html.part
 	cat header.html.part packagemask.html.part footer.html.part > $@
 
@@ -302,24 +229,6 @@ use.html : header.html.part use.html.part footer.html.part
 
 specpath.html : header.html.part specpath.html.part footer.html.part
 	cat header.html.part specpath.html.part footer.html.part > $@
-
-erepository.html : header.html.part erepository.html.part footer.html.part
-	cat header.html.part erepository.html.part footer.html.part > $@
-
-installedunpackaged.html : header.html.part installedunpackaged.html.part footer.html.part
-	cat header.html.part installedunpackaged.html.part footer.html.part > $@
-
-unavailable.html : header.html.part unavailable.html.part footer.html.part
-	cat header.html.part unavailable.html.part footer.html.part > $@
-
-unwritten.html : header.html.part unwritten.html.part footer.html.part
-	cat header.html.part unwritten.html.part footer.html.part > $@
-
-vdb.html : header.html.part vdb.html.part footer.html.part
-	cat header.html.part vdb.html.part footer.html.part > $@
-
-exndbam.html : header.html.part exndbam.html.part footer.html.part
-	cat header.html.part exndbam.html.part footer.html.part > $@
 
 syncers.html : header.html.part syncers.html.part footer.html.part
 	cat header.html.part syncers.html.part footer.html.part > $@
