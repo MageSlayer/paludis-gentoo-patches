@@ -32,7 +32,7 @@ namespace paludis
             private PrivateImplementationPattern<AccountsDepKey>
         {
             public:
-                AccountsDepKey(const Environment * const e, 
+                AccountsDepKey(const Environment * const e,
                         const std::tr1::shared_ptr<const Set<std::string> > &);
                 ~AccountsDepKey();
 
