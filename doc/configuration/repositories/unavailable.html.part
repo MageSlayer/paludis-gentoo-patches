@@ -1,11 +1,14 @@
 <!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
 
-<h1>unavailable Options</h1>
+<h1>unavailable Repository Format</h1>
 
-###PALUDISENVIRONMENTONLY###
+<p>The <code>unavailable</code> repository format can be used to see basic information about packages that are available
+in other repositories that have not been configured on this system. On Gentoo, this is used for seeing repositories
+known to <code>layman</code> and <code>playman.rb</code>. On Exherbo, this is used for seeing all official and
+selected unofficial repositories.</p>
 
-<p>As well as the general keys supported for all repositories, the following
-keys have meaning for unavailable format repositories:</p>
+<p>As well as the <a href="index.html">general keys supported for all repositories</a>, the following keys have meaning
+for <code>unavailable</code> format repositories:</p>
 
 <dl>
     <dt><code>location</code></dt>
@@ -43,6 +46,16 @@ importance = -100
 format = unavailable
 location = /var/db/paludis/repositories/unavailable
 sync = tar+http://git.exherbo.org/exherbo_repositories.tar.bz2
+importance = -100
+</pre>
+
+<p>The following lists selected unofficial repositories:</p>
+
+<pre>
+format = unavailable
+name = unavailable-unofficial
+location = /var/db/paludis/repositories/unavailable-unofficial
+sync = tar+http://git.exherbo.org/exherbo_unofficial_repositories.tar.bz2
 importance = -100
 </pre>
 

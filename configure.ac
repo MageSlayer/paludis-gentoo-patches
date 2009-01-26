@@ -1505,6 +1505,7 @@ AC_OUTPUT(
 	doc/api/ruby/Makefile
 	doc/clients/Makefile
 	doc/configuration/Makefile
+	doc/configuration/repositories/Makefile
 	doc/faq/Makefile
 	doc/overview/Makefile
 	hooks/Makefile

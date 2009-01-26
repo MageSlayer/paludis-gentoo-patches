@@ -1,8 +1,8 @@
 <!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
 
-<h1>Repositories</h1>
+<h1>repositories/ Configuration</h1>
 
-###PALUDISENVIRONMENTONLY###
+<h2>In General</h2>
 
 <p>Each file in <code>repositories/</code> named <code>*.conf</code> defines a repository. A repository configuration
 file is a standard key=value config file, and it may be in bash format (in which case it has a <code>.bash</code>
@@ -18,7 +18,8 @@ prepended to each individual file.</p>
 
 <h2>Predefined Keys</h2>
 
-<p>The following keys are predefined. They should not be modified.</p>
+<p>The following keys are predefined. They should not be modified, but may be used in configuration files to define
+other keys.</p>
 
 <dl>
     <dt><code>root</code></dt>
@@ -44,9 +45,26 @@ prepended to each individual file.</p>
 
 <p>For format-specific keys, see the documentation for that format.</p>
 
-<h2>Predefined Repositories</h2>
+<h2>Repository Formats</h2>
 
-<p>If using a distribution that supports old-style virtuals, two repositories are magically defined:</p>
+<h3>For All Distributions</h3>
+
+<ul>
+    <li><a href="unavailable.html">unavailable</a>, for information about ebuilds that are present in an overlay or
+    supplemental repository that is not configured on this system.</li>
+    <li><a href="installedunpackaged.html">installed_unpackaged</a>, for tracking installs of packages installed
+    manually rather than through an ebuild.</li>
+</ul>
+
+<h3>Gentoo and Derived Distributions</h3>
+
+<ul>
+    <li><a href="e.html">ebuild</a> format repositories.</li>
+    <li><a href="vdb.html">VDB</a>, for tracking installed ebuilds.</li>
+</ul>
+
+<p>In addition, the following repositories are magically defined on Gentoo and derived distributions that make use of
+old-style virtuals:</p>
 
 <dl>
     <dt><code>virtuals</code></dt>
@@ -57,4 +75,13 @@ prepended to each individual file.</p>
     <dd>A special repository that contains special package entries for installed old style virtuals (provided
     packages).</dd>
 </dl>
+
+<h3>Exherbo</h3>
+
+<ul>
+    <li><a href="e.html">exheres</a> format repositories.</li>
+    <li><a href="exndbam.html">exndbam</a>, for tracking installed packages installed from an exheres.</li>
+    <li><a href="accounts.html">accounts</a> and <a href="installed_accounts.html">installed_accounts</a> format
+    repositories, for tracking user and group accounts.</li>
+</ul>
 

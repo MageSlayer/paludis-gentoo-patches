@@ -1,0 +1,15 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>installed_unpackaged Repository Format</h1>
+
+<p>The <code>installed_unpackaged</code> repository format is used to keep
+track of packages installed using <code>importare</code>.</p>
+
+<p>As well as the <a href="index.html">general keys supported for all repositories</a>, the following keys have meaning
+for <code>installed_unpackaged</code> format repositories:</p>
+
+<dl>
+    <dt><code>location</code></dt>
+    <dd>The location of the repository. Mandatory.</dd>
+</dl>
+
