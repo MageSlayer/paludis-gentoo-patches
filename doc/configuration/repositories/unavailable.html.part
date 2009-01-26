@@ -18,7 +18,7 @@ for <code>unavailable</code> format repositories:</p>
     <dd>The name of the repository. Defaults to <code>unavailable</code>.</dd>
 
     <dt><code>sync</code></dt>
-    <dd>How to sync the repository. See <a href="syncers.html">Syncers</a> for supported formats.</dd>
+    <dd>How to sync the repository. See <a href="../syncers.html">Syncers</a> for supported formats.</dd>
 
     <dt><code>sync_options</code></dt>
     <dd>Any options to be passed to the syncer. Optional.</dd>
