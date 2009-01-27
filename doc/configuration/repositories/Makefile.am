@@ -17,18 +17,16 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail \
 MAINTAINERCLEANFILES = Makefile.in
 
 EXTRA_DIST = \
-	header.html.part \
-	toplinks.html.part \
-	footer.html.part \
+	toplinks.html.part.in \
 	index.html.part \
-	accounts.html \
-	e.html \
-	exndbam.html \
-	installed_accounts.html \
-	installed_unpackaged.html \
-	unavailable.html \
-	unwritten.html \
-	vdb.html
+	accounts.html.part \
+	e.html.part \
+	exndbam.html.part \
+	installed_accounts.html.part \
+	installed_unpackaged.html.part \
+	unavailable.html.part \
+	unwritten.html.part \
+	vdb.html.part
 
 paludisconfigurationrepositorieshtmldir = $(htmldir)/configuration/repositories/
 
