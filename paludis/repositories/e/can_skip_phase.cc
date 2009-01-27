@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,11 +21,48 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/spec_tree.hh>
 #include <set>
+#include <algorithm>
 
 using namespace paludis;
 using namespace paludis::erepository;
+
+namespace
+{
+    struct FindAnyFetchesFinder
+    {
+        bool result;
+
+        FindAnyFetchesFinder() :
+            result(true)
+        {
+        }
+
+        void visit(const FetchableURISpecTree::NodeType<AllDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
+
+        void visit(const FetchableURISpecTree::NodeType<ConditionalDepSpec>::Type & node)
+        {
+            if (node.spec()->condition_met())
+                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
+
+        void visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::Type &)
+        {
+            result = false;
+        }
+
+        void visit(const FetchableURISpecTree::NodeType<URILabelsDepSpec>::Type &)
+        {
+        }
+    };
+}
 
 bool
 paludis::erepository::can_skip_phase(const std::tr1::shared_ptr<const ERepositoryID> & id,
@@ -39,12 +76,28 @@ paludis::erepository::can_skip_phase(const std::tr1::shared_ptr<const ERepositor
         return false;
 
     std::set<std::string> skip_if_no_values;
-    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(skipifno, ",", "", inserter(skip_if_no_values, skip_if_no_values.begin()));
+    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(skipifno, ",", "",
+            inserter(skip_if_no_values, skip_if_no_values.begin()));
 
     for (std::set<std::string>::const_iterator i(skip_if_no_values.begin()), i_end(skip_if_no_values.end()) ;
             i != i_end ; ++i)
-        if (id->defined_phases_key()->value()->end() != id->defined_phases_key()->value()->find(*i))
-            return false;
+    {
+        if (*i == "*sources")
+        {
+            if (id->fetches_key())
+            {
+                FindAnyFetchesFinder f;
+                id->fetches_key()->value()->root()->accept(f);
+                if (! f.result)
+                    return false;
+            }
+        }
+        else
+        {
+            if (id->defined_phases_key()->value()->end() != id->defined_phases_key()->value()->find(*i))
+                return false;
+        }
+    }
 
     return true;
 }
