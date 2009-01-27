@@ -227,6 +227,8 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
                     std::tr1::bind(&from_keys, keys, std::tr1::placeholders::_1));
 
             RepositoryName name(RepositoryFactory::get_instance()->name(env, repo_func));
+            if (ignored_one && r->second && stringify(name) == params.master_repository_name())
+                keys->erase(std::string("master_repository"));
             if (! repo_configs.insert(std::make_pair(name, repo_func)).second)
             {
                 Log::get_instance()->message("no_config_environment.repositories.duplicate", ll_warning, lc_context)
