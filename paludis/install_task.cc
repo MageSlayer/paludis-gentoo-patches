@@ -503,7 +503,6 @@ InstallTask::_add_target(const std::string & target)
         _imp->had_set_targets = true;
 
         _imp->targets->root()->append(make_shared_ptr(new NamedSetDepSpec(SetName(target))));
-        _imp->had_set_targets = true;
         if (! _imp->override_target_type)
             _imp->dep_list.options()->target_type() = dl_target_set;
 
