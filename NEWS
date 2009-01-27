@@ -4,6 +4,14 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.34.1:
+    * We can now skip src_ phases where it is safe to do so.
+
+    * Documentation updates for repository configuration.
+
+    * Support for managing user and group accounts (requires distribution
+      support).
+
 0.34.0:
     * instruo is now parallelised.
 
