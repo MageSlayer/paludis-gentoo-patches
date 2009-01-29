@@ -36,7 +36,7 @@ versions of this FAQ suggested using <code>SKIP_FUNCTIONS</code> to override thi
 <p>Unfortunately, because the QA standards in many parts of the Gentoo tree are so low,
 and because some Gentoo developers have such terrible attitudes towards QA, this is
 no longer the default behaviour. Whether or not tests are run is now controlled by
-the <code>--checks</code> command line argument.</p>
+the state of <code>BUILD_OPTIONS: optional_tests</code> in use.conf.</p>
 
 <h2 id="sandboxwithroot">Sandbox Violations when <code>ROOT</code> is Set</h2>
 
