@@ -1339,7 +1339,7 @@ AC_DEFINE_UNQUOTED([DEFAULT_DISTRIBUTION], "$DEFAULT_DISTRIBUTION", [Default dis
 dnl }}}
 
 dnl {{{ clients
-ALL_CLIENTS="accerso adjutrix cave importare inquisitio instruo paludis qualudis reconcilio"
+ALL_CLIENTS="accerso adjutrix appareo cave importare inquisitio instruo paludis qualudis reconcilio"
 ALL_CLIENTS_HTML=""
 for a in $ALL_CLIENTS ; do
 	if test x$a = xcave ; then
@@ -1362,6 +1362,7 @@ AC_ARG_WITH([clients],
 
 			  accerso         A fetch / mirror client
 			  adjutrix        A tool for tree querying
+			  appareo         A tool for generating manifests
 			  cave            The modular Paludis client
 			  importare       On-the-fly unpackaged installer
 			  inquisitio      A search client
@@ -1561,6 +1562,7 @@ AC_OUTPUT(
 	src/clients/Makefile
 	src/clients/accerso/Makefile
 	src/clients/adjutrix/Makefile
+	src/clients/appareo/Makefile
 	src/clients/cave/Makefile
 	src/clients/importare/Makefile
 	src/clients/inquisitio/Makefile

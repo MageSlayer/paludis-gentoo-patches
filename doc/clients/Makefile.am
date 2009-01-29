@@ -62,6 +62,16 @@ adjutrix.html : header.html.part footer.html.part
 	    fi ; } && \
 	    cat footer.html.part ; } > $@
 
+appareo.html : header.html.part footer.html.part
+	{ cat header.html.part && { \
+	    if test -x $(top_builddir)/src/clients/appareo/man-appareo ; then \
+	        $(top_builddir)/src/clients/appareo/man-appareo --html ; \
+	    else \
+	        echo "<h1>appareo</h1>"; \
+	        echo "<p>Sorry, documentation was generated without support for the appareo client.</p>" ; \
+	    fi ; } && \
+	    cat footer.html.part ; } > $@
+
 inquisitio.html : header.html.part footer.html.part
 	{ cat header.html.part && { \
 	    if test -x $(top_builddir)/src/clients/inquisitio/man-inquisitio ; then \
