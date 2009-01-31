@@ -343,6 +343,7 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
             if (id->eapi()->supported())
             {
                 const EAPIEbuildMetadataVariables & m(*id->eapi()->supported()->ebuild_metadata_variables());
+                std::vector<std::string> inherited;
 
                 {
                     std::map<std::string, std::string>::const_iterator mtime_it(keys.find("_mtime_"));
@@ -361,6 +362,7 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
                                  it_end(eclasses.end()); it_end != it; ++it)
                         {
                             std::string eclass_name(*it);
+                            inherited.push_back(eclass_name);
                             if (eclasses.end() == ++it)
                             {
                                 Log::get_instance()->message("e.cache.flat_hash.eclass.truncated", ll_warning, lc_context)
@@ -417,6 +419,7 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
                                  it_end(exlibs.end()); it_end != it; ++it)
                         {
                             std::string exlib_name(*it);
+                            inherited.push_back(exlib_name);
                             if (exlibs.end() == ++it)
                             {
                                 Log::get_instance()->message("e.cache.flat_hash.exlib.truncated", ll_warning, lc_context)
@@ -522,21 +525,7 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
                     id->load_keywords(m.keywords()->name(), m.keywords()->description(), keys[m.keywords()->name()]);
 
                 if (! m.inherited()->name().empty())
-                {
-                    std::vector<std::string> full, brief;
-                    if (id->eapi()->supported()->ebuild_options()->support_eclasses())
-                        tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(keys["_eclasses_"], "\t", "", std::back_inserter(full));
-                    else if (id->eapi()->supported()->ebuild_options()->support_exlibs())
-                        tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(keys["_exlibs_"], "\t", "", std::back_inserter(full));
-                    for (std::vector<std::string>::const_iterator it(full.begin()),
-                             it_end(full.end()); it_end != it; ++it)
-                    {
-                        brief.push_back(*it);
-                        if (std::string::npos != (++it)->find('/'))
-                            ++it;
-                    }
-                    id->load_inherited(m.inherited()->name(), m.inherited()->description(), join(brief.begin(), brief.end(), " "));
-                }
+                    id->load_inherited(m.inherited()->name(), m.inherited()->description(), join(inherited.begin(), inherited.end(), " "));
 
                 if (! m.defined_phases()->name().empty())
                     if (! keys[m.defined_phases()->name()].empty())
