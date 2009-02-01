@@ -762,8 +762,10 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
                 _imp->merged_ids.equal_range(src.lowlevel_id()));
         for (MergedMap::const_iterator i = ii.first ; i != ii.second ; ++i)
         {
-            if (0 == ::link(i->second.c_str(), stringify(dst_real).c_str()))
+            if (0 == ::link(i->second.c_str(), stringify(dst).c_str()))
             {
+                if (0 != std::rename(stringify(dst).c_str(), stringify(dst_real).c_str()))
+                    throw MergerError("rename(" + stringify(dst) + ", " + stringify(dst_real) + ") failed: " + stringify(::strerror(errno)));
                 do_copy = false;
                 result += msi_as_hardlink;
                 break;
