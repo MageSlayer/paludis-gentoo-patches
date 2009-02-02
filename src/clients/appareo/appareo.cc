@@ -263,7 +263,7 @@ main(int argc, char *argv[])
             }
 
             cout << colour(cl_heading, "Appareo results for ") << colour(cl_repository_name, env.main_repository()->name())
-                << total << " IDs, " << success << " successes, " << (total - success) << " failures" << endl << endl;
+                << ": " << total << " IDs, " << success << " successes, " << (total - success) << " failures" << endl << endl;
 
             int exit_status(0);
             std::tr1::shared_ptr<const PackageID> old_id;
