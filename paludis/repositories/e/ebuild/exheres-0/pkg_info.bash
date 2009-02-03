@@ -18,7 +18,7 @@
 
 default_pkg_info()
 {
-    echo "No additional information available"
+    :
 }
 
 pkg_info()

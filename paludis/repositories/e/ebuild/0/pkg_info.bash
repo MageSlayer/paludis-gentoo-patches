@@ -18,7 +18,7 @@
 
 pkg_info()
 {
-    echo "No additional information available"
+    :
 }
 
 ebuild_f_info()
