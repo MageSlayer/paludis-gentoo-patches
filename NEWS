@@ -4,6 +4,13 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.34.2:
+    * Wildcards are now allowed for --contents and --executables.
+
+    * A hardlink-merging bug has been fixed.
+
+    * New appareo client, for manifest generation.
+
 0.34.1:
     * We can now skip src_ phases where it is safe to do so.
 
