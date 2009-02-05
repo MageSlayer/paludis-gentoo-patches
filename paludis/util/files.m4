@@ -25,6 +25,7 @@ add(`dir_iterator',                      `hh', `cc', `fwd', `se', `test', `tests
 add(`exception',                         `hh', `cc')
 add(`fast_unique_copy',                  `hh', `test')
 add(`fd_output_stream',                  `hh')
+add(`forward_parallel_for_each',         `hh', `test')
 add(`fs_entry',                          `hh', `cc', `fwd', `test', `testscript')
 add(`fd_holder',                         `hh')
 add(`graph',                             `hh', `cc', `fwd', `impl', `test')

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -34,6 +34,9 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/create_iterator-impl.hh>
+#include <paludis/util/forward_parallel_for_each.hh>
+#include <paludis/util/system.hh>
+#include <paludis/util/destringify.hh>
 #include <tr1/functional>
 #include <list>
 #include <set>
@@ -293,9 +296,11 @@ do_search(const Environment & env)
             extractors
             );
 
-    std::for_each(ids.begin(), ids.end(), std::tr1::bind(&set_id, std::tr1::cref(env), std::tr1::cref(repos), _1, eligible, matches,
+    const unsigned n_threads(destringify<int>(getenv_with_default("INQUISITIO_THREADS", "5")));
+    forward_parallel_for_each(ids.begin(), ids.end(), std::tr1::bind(&set_id, std::tr1::cref(env), std::tr1::cref(repos), _1, eligible, matches,
                 CommandLine::get_instance()->a_all_versions.specified(),
-                CommandLine::get_instance()->a_not.specified()));
+                CommandLine::get_instance()->a_not.specified()),
+            n_threads, 10);
 
     bool any(false);
     InquisitioQueryTask task(&env);
