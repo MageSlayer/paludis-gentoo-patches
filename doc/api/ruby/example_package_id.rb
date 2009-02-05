@@ -29,7 +29,6 @@ ids.each do | id |
     # Start by outputting some basic properties:
     puts "    Name: ".ljust(40) + id.name
     puts "    Version: ".ljust(40) + id.version.to_s
-    puts "    Slot: ".ljust(40) + id.slot
     puts "    Repository: ".ljust(40) + id.repository_name
 
     # The PackageID.canonical_form method should be used when
