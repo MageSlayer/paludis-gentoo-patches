@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -149,7 +149,7 @@ namespace paludis
             NamedValue<n::loadsaveenv_dir, FSEntry> loadsaveenv_dir;
             NamedValue<n::profiles, std::tr1::shared_ptr<const FSEntrySequence> > profiles;
             NamedValue<n::root, std::string> root;
-            NamedValue<n::slot, SlotName> slot;
+            NamedValue<n::slot, std::string> slot;
             NamedValue<n::use, std::string> use;
             NamedValue<n::use_expand, std::string> use_expand;
             NamedValue<n::use_expand_hidden, std::string> use_expand_hidden;

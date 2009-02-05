@@ -345,6 +345,24 @@ namespace
         {
         }
     };
+
+    bool slot_is_same(
+            const PackageID & a,
+            const PackageID & b)
+    {
+        if (a.slot_key())
+            return b.slot_key() && a.slot_key()->value() == b.slot_key()->value();
+        else
+            return ! b.slot_key();
+    }
+
+    std::string slot_as_human_string(const std::tr1::shared_ptr<const PackageID> & id)
+    {
+        if (! id->slot_key())
+            return "(no slot)";
+        else
+            return stringify(id->slot_key()->value());
+    }
 }
 
 void
@@ -551,7 +569,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::T
     std::tr1::shared_ptr<PackageIDSequence> already_installed_in_same_slot(new PackageIDSequence);
     for (PackageIDSequence::ConstIterator aa(already_installed->begin()),
             aa_end(already_installed->end()) ; aa != aa_end ; ++aa)
-        if ((*aa)->slot() == best_visible_candidate->slot())
+        if (slot_is_same(**aa, *best_visible_candidate))
             already_installed_in_same_slot->push_back(*aa);
     /* no need to sort already_installed_in_same_slot here, although if the above is
      * changed then check that this still holds... */
@@ -590,8 +608,8 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::T
                 *best_visible_candidate << "' (in different slot)";
     }
     else
-        Log::get_instance()->message("dep_list.no_installed", ll_debug, lc_context) << "No installed packages in SLOT '"
-            << best_visible_candidate->slot() << "', taking uninstalled package '"
+        Log::get_instance()->message("dep_list.no_installed", ll_debug, lc_context) << "No installed packages in SLOT "
+            << slot_as_human_string(best_visible_candidate) << ", taking uninstalled package '"
             << *best_visible_candidate << "'";
 
     /* if this is a downgrade, make sure that that's ok */
@@ -605,11 +623,9 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::T
             {
                 std::tr1::shared_ptr<const PackageIDSequence> are_we_downgrading(
                         (*d->_imp->env)[selection::AllVersionsSorted(
-                            generator::Matches(make_package_dep_spec()
-                                .package(best_visible_candidate->name())
-                                .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(best_visible_candidate->slot()))),
-                                d->_imp->opts->match_package_options()) |
-                            filter::SupportsAction<InstalledAction>())]);
+                            generator::Package(best_visible_candidate->name()) |
+                            filter::SupportsAction<InstalledAction>() |
+                            filter::SameSlot(best_visible_candidate))]);
 
                 if (are_we_downgrading->empty())
                     break;
@@ -848,7 +864,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
         bool replaced(false);
         for (std::list<MergeList::const_iterator>::const_iterator r(will_be_installed.begin()),
                 r_end(will_be_installed.end()) ; r != r_end && ! replaced ; ++r)
-            if ((*r)->package_id()->slot() == (*aa)->slot())
+            if (slot_is_same(*(*r)->package_id(), **aa))
             {
                 /* if it's a virtual, it only replaces if it's the same package. */
                 if ((*r)->package_id()->virtual_for_key())
@@ -1643,7 +1659,7 @@ DepList::replaced(const PackageID & m) const
     while (p.second != ((p.first = std::find_if(p.first, p.second,
                         MatchDepListEntryAgainstPackageDepSpec(_imp->env, spec, _imp->opts->match_package_options())))))
     {
-        if (p.first->second->package_id()->slot() != m.slot())
+        if (! slot_is_same(*p.first->second->package_id(), m))
             p.first = next(p.first);
         else
             return true;

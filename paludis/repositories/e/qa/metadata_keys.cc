@@ -39,6 +39,11 @@ namespace
             const std::string & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
+        void visit(const MetadataValueKey<SlotName> & k)
+        {
+            const SlotName & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+        }
+
         void visit(const MetadataValueKey<long> & k)
         {
             long PALUDIS_ATTRIBUTE((unused)) t(k.value());

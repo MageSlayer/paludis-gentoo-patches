@@ -117,6 +117,7 @@ template class MetadataValueKey<std::string>;
 template class MetadataValueKey<long>;
 template class MetadataValueKey<bool>;
 template class MetadataValueKey<FSEntry>;
+template class MetadataValueKey<SlotName>;
 template class MetadataValueKey<std::tr1::shared_ptr<const PackageID> >;
 template class MetadataValueKey<std::tr1::shared_ptr<const Contents> >;
 template class MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> >;

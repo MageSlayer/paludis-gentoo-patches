@@ -50,8 +50,8 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assertEquals(self.ipid.version, VersionSpec("1"))
 
     def test_04_slot(self):
-        self.assertEquals(str(self.ipid.slot), "test_slot")
-        self.assertEquals(str(self.pid.slot), "0")
+        self.assertEquals(str(self.ipid.slot_key().value()), "test_slot")
+        self.assertEquals(str(self.pid.slot_key().value()), "0")
 
     def test_05_repository(self):
         self.assertEquals(str(self.pid.repository.name), "testrepo")
@@ -59,8 +59,8 @@ class TestCase_01_PackageID(unittest.TestCase):
 
     def test_07_canonical_form(self):
         # Load the metadata
-        self.pid.slot
-        self.ipid.slot
+        self.pid.slot_key().value
+        self.ipid.slot_key().value
 
         self.assertEquals(self.pid.canonical_form(PackageIDCanonicalForm.FULL), "foo/bar-1.0:0::testrepo")
         self.assertEquals(self.pid.canonical_form(PackageIDCanonicalForm.VERSION), "1.0")
@@ -74,8 +74,8 @@ class TestCase_01_PackageID(unittest.TestCase):
 
     def test_08_str(self):
         # Load the metadata
-        self.pid.slot
-        self.ipid.slot
+        self.pid.slot_key().value
+        self.ipid.slot_key().value
 
         self.assertEquals(str(self.pid), "foo/bar-1.0:0::testrepo")
         self.assertEquals(str(self.ipid), "cat-one/pkg-one-1:test_slot::installed")

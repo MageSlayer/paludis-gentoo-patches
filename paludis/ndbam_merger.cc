@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -34,6 +34,7 @@
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/ndbam_merger.hh>
+#include <paludis/metadata_key.hh>
 #include <fstream>
 #include <iostream>
 #include <iomanip>
@@ -93,7 +94,7 @@ NDBAMMerger::extend_hook(const Hook & h)
         std::string pn(stringify(_imp->params.package_id()->name().package()));
         std::string pvr(stringify(_imp->params.package_id()->version()));
         std::string pv(stringify(_imp->params.package_id()->version().remove_revision()));
-        std::string slot(stringify(_imp->params.package_id()->slot()));
+        std::string slot(_imp->params.package_id()->slot_key() ? stringify(_imp->params.package_id()->slot_key()->value()) : "");
 
         return Merger::extend_hook(h)
             ("P", pn + "-" + pv)

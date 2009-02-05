@@ -132,6 +132,11 @@ namespace paludis
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * \since 0.36
+             */
+            void change_value(const T_ &);
     };
 
     /**

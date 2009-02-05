@@ -397,7 +397,6 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
     {
         Log::get_instance()->message("e.ebuild.preload_eapi.unsupported", ll_debug, lc_context)
             << "ID pre-load EAPI '" << id->eapi()->name() << "' not supported";
-        id->set_slot(SlotName("UNKNOWN"));
 
         if (! captured_stderr.empty())
             id->load_captured_stderr("STDERR", "Captured stderr", mkt_normal, captured_stderr);
@@ -418,7 +417,6 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
     {
         Log::get_instance()->message("e.ebuild.postload_eapi.unsupported", ll_debug, lc_context)
             << "ID post-load EAPI '" << id->eapi()->name() << "' not supported";
-        id->set_slot(SlotName("UNKNOWN"));
         if (! captured_stderr.empty())
             id->load_captured_stderr("STDERR", "Captured stderr", mkt_normal, captured_stderr);
         return;
@@ -474,7 +472,7 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
                     << "Package '" << *id << "' set SLOT=\"\", using SLOT=\"0\" instead";
                 slot = "0";
             }
-            id->set_slot(SlotName(slot));
+            id->load_slot(m.slot(), slot);
         }
         catch (const InternalError &)
         {
@@ -485,7 +483,7 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
             Log::get_instance()->message("e.ebuild.bad_slot", ll_warning, lc_context)
                 << "Setting SLOT for '" << *id << "' failed due to exception '"
                 << e.message() << "' (" << e.what() << ")";
-            id->set_slot(SlotName("0"));
+            id->load_slot(m.slot(), "0");
         }
     }
 

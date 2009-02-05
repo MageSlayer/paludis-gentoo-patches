@@ -175,7 +175,7 @@ namespace
             if (-1 != m.run_depend()->flat_list_index() && ! m.run_depend()->name().empty())
                 id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(), lines.at(m.run_depend()->flat_list_index()));
 
-            id->set_slot(SlotName(lines.at(m.slot()->flat_list_index())));
+            id->load_slot(m.slot(), lines.at(m.slot()->flat_list_index()));
 
             if (-1 != m.src_uri()->flat_list_index() && ! m.src_uri()->name().empty())
                 id->load_src_uri(m.src_uri(), lines.at(m.src_uri()->flat_list_index()));
@@ -269,8 +269,6 @@ namespace
                     id->load_remote_ids(m.remote_ids(), value);
             }
         }
-        else
-            id->set_slot(SlotName("UNKNOWN"));
 
         Log::get_instance()->message("e.cache.success", ll_debug, lc_context) << "Successfully loaded cache file";
         return true;
@@ -491,7 +489,7 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
                 if (! m.run_depend()->name().empty())
                     id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(), keys[m.run_depend()->name()]);
 
-                id->set_slot(SlotName(keys[m.slot()->name()]));
+                id->load_slot(m.slot(), keys[m.slot()->name()]);
 
                 if (! m.src_uri()->name().empty())
                     id->load_src_uri(m.src_uri(), keys[m.src_uri()->name()]);
@@ -584,8 +582,6 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
                         id->load_remote_ids(m.remote_ids(), value);
                 }
             }
-            else
-                id->set_slot(SlotName("UNKNOWN"));
 
             Log::get_instance()->message("e.cache.success", ll_debug, lc_context) << "Successfully loaded cache file";
             return true;
@@ -722,7 +718,8 @@ EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
         if (! m.run_depend()->name().empty() && id->run_dependencies_key())
             write_kv(cache, m.run_depend()->name(), flatten(id->run_dependencies_key()->value()));
 
-        write_kv(cache, m.slot()->name(), normalise(id->slot()));
+        if (! m.slot()->name().empty() && id->slot_key())
+            write_kv(cache, m.slot()->name(), normalise(id->slot_key()->value()));
 
         if (! m.src_uri()->name().empty() && id->fetches_key())
             write_kv(cache, m.src_uri()->name(), flatten(id->fetches_key()->value()));

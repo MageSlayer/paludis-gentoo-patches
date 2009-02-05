@@ -606,13 +606,13 @@ namespace paludis
         const std::tr1::shared_ptr<const FakeRepositoryBase> repository;
         const QualifiedPackageName name;
         const VersionSpec version;
-        SlotName slot;
 
         mutable std::tr1::shared_ptr<DependencyLabelSequence> build_dependencies_labels;
         mutable std::tr1::shared_ptr<DependencyLabelSequence> run_dependencies_labels;
         mutable std::tr1::shared_ptr<DependencyLabelSequence> post_dependencies_labels;
         mutable std::tr1::shared_ptr<DependencyLabelSequence> suggested_dependencies_labels;
 
+        std::tr1::shared_ptr<LiteralMetadataValueKey<SlotName> > slot;
         std::tr1::shared_ptr<LiteralMetadataValueKey<std::tr1::shared_ptr<const PackageID> > > package_id;
         std::tr1::shared_ptr<LiteralMetadataValueKey<std::tr1::shared_ptr<const PackageID> > > virtual_for;
         std::tr1::shared_ptr<FakeMetadataKeywordSetKey> keywords;
@@ -636,11 +636,11 @@ namespace paludis
             repository(r),
             name(q),
             version(v),
-            slot("0"),
             build_dependencies_labels(new DependencyLabelSequence),
             run_dependencies_labels(new DependencyLabelSequence),
             post_dependencies_labels(new DependencyLabelSequence),
             suggested_dependencies_labels(new DependencyLabelSequence),
+            slot(new LiteralMetadataValueKey<SlotName>("SLOT", "Slot", mkt_internal, SlotName("0"))),
             keywords(new FakeMetadataKeywordSetKey("KEYWORDS", "Keywords", "test", mkt_normal, id, env)),
             has_masks(false)
         {
@@ -671,13 +671,14 @@ FakePackageID::canonical_form(const PackageIDCanonicalForm f) const
     switch (f)
     {
         case idcf_full:
-            return stringify(_imp->name) + "-" + stringify(_imp->version) + ":" + stringify(slot()) + "::" + stringify(_imp->repository->name());
+            return stringify(_imp->name) + "-" + stringify(_imp->version) + ":" + stringify(_imp->slot->value())
+                + "::" + stringify(_imp->repository->name());
 
         case idcf_version:
             return stringify(_imp->version);
 
         case idcf_no_version:
-            return stringify(_imp->name) + ":" + stringify(slot()) + "::" + stringify(_imp->repository->name());
+            return stringify(_imp->name) + ":" + stringify(_imp->slot->value()) + "::" + stringify(_imp->repository->name());
 
         case last_idcf:
             break;
@@ -696,12 +697,6 @@ const VersionSpec
 FakePackageID::version() const
 {
     return _imp->version;
-}
-
-const SlotName
-FakePackageID::slot() const
-{
-    return _imp->slot;
 }
 
 const std::tr1::shared_ptr<const Repository>
@@ -874,13 +869,13 @@ FakePackageID::from_repositories_key() const
 void
 FakePackageID::set_slot(const SlotName & s)
 {
-    _imp->slot = s;
+    _imp->slot->change_value(s);
 }
 
 bool
 FakePackageID::arbitrary_less_than_comparison(const PackageID & other) const
 {
-    return slot().data() < other.slot().data();
+    return slot_key()->value().data() < (other.slot_key() ? stringify(other.slot_key()->value()) : "");
 }
 
 void
@@ -930,6 +925,7 @@ FakePackageID::need_keys_added() const
 
         _imp->choices.reset(new FakeMetadataChoicesKey(_imp->env, shared_from_this()));
 
+        add_metadata_key(_imp->slot);
         add_metadata_key(_imp->build_dependencies);
         add_metadata_key(_imp->run_dependencies);
         add_metadata_key(_imp->post_dependencies);
@@ -945,7 +941,7 @@ FakePackageID::need_keys_added() const
 std::size_t
 FakePackageID::extra_hash_value() const
 {
-    return Hash<SlotName>()(slot());
+    return Hash<SlotName>()(slot_key()->value());
 }
 
 bool
@@ -1237,6 +1233,13 @@ FakePackageID::choices_key()
 {
     need_keys_added();
     return _imp->choices;
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<SlotName> >
+FakePackageID::slot_key() const
+{
+    need_keys_added();
+    return _imp->slot;
 }
 
 template class FakeMetadataSpecTreeKey<LicenseSpecTree>;

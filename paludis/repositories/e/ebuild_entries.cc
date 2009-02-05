@@ -752,7 +752,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                             value_for<n::loadsaveenv_dir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version())) / "temp"),
                             value_for<n::profiles>(_imp->params.profiles()),
                             value_for<n::root>(o.destination()->installed_root_key() ?  stringify(o.destination()->installed_root_key()->value()) : "/"),
-                            value_for<n::slot>(SlotName(id->slot())),
+                            value_for<n::slot>(id->slot_key() ? stringify(id->slot_key()->value()) : ""),
                             value_for<n::use>(use),
                             value_for<n::use_expand>(join(p->use_expand()->begin(), p->use_expand()->end(), " ")),
                             value_for<n::use_expand_hidden>(join(p->use_expand_hidden()->begin(), p->use_expand_hidden()->end(), " "))

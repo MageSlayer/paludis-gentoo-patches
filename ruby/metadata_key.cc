@@ -34,6 +34,7 @@ namespace
     static VALUE c_metadata_key;
     static VALUE c_metadata_package_id_key;
     static VALUE c_metadata_string_key;
+    static VALUE c_metadata_slot_key;
     static VALUE c_metadata_size_key;
     static VALUE c_metadata_time_key;
     static VALUE c_metadata_contents_key;
@@ -109,6 +110,12 @@ namespace
         void visit(const MetadataValueKey<std::string> &)
         {
             value = Data_Wrap_Struct(c_metadata_string_key, 0, &Common<std::tr1::shared_ptr<const MetadataKey> >::free,
+                    new std::tr1::shared_ptr<const MetadataKey>(mm));
+        }
+
+        void visit(const MetadataValueKey<SlotName> &)
+        {
+            value = Data_Wrap_Struct(c_metadata_slot_key, 0, &Common<std::tr1::shared_ptr<const MetadataKey> >::free,
                     new std::tr1::shared_ptr<const MetadataKey>(mm));
         }
 
@@ -276,6 +283,27 @@ namespace
             std::tr1::shared_ptr<const MetadataKey> * self_ptr;
             Data_Get_Struct(self, std::tr1::shared_ptr<const MetadataKey>, self_ptr);
             return rb_str_new2((std::tr1::static_pointer_cast<const MetadataValueKey<std::string> >(*self_ptr))->value().c_str());
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     value -> String
+     *
+     * Our Value.
+     * */
+    VALUE
+    metadata_slot_key_value(VALUE self)
+    {
+        try
+        {
+            std::tr1::shared_ptr<const MetadataKey> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const MetadataKey>, self_ptr);
+            return rb_str_new2(stringify((std::tr1::static_pointer_cast<const MetadataValueKey<SlotName> >(*self_ptr))->value()).c_str());
         }
         catch (const std::exception & e)
         {
@@ -620,6 +648,14 @@ namespace
          */
         c_metadata_string_key = rb_define_class_under(paludis_module(), "MetadataStringKey", c_metadata_key);
         rb_define_method(c_metadata_string_key, "value", RUBY_FUNC_CAST(&metadata_string_key_value), 0);
+
+        /*
+         * Document-class: Paludis::MetadataSlotNameKey
+         *
+         * Metadata class for SlotNames.
+         */
+        c_metadata_slot_key = rb_define_class_under(paludis_module(), "MetadataSlotNameKey", c_metadata_key);
+        rb_define_method(c_metadata_slot_key, "value", RUBY_FUNC_CAST(&metadata_slot_key_value), 0);
 
         /*
          * Document-class: Paludis::MetadataSizeKey

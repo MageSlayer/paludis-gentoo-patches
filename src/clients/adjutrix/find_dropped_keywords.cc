@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -55,6 +55,14 @@ namespace paludis
 
 namespace
 {
+    std::string slot_as_string(const std::tr1::shared_ptr<const PackageID> & id)
+    {
+        if (id->slot_key())
+            return stringify(id->slot_key()->value());
+        else
+            return "(none)";
+    }
+
     struct VersionsEntry
     {
         NamedValue<n::best_anywhere, VersionSpec> best_anywhere;
@@ -97,7 +105,7 @@ namespace
     };
 
     void
-    write_package(const QualifiedPackageName & package, const SlotName & slot,
+    write_package(const QualifiedPackageName & package, const std::string & slot,
             const VersionSpec & best_keyworded, const VersionSpec & best_anywhere)
     {
         static CategoryNamePart previous_category("not-on-a-boat");
@@ -108,7 +116,7 @@ namespace
         }
 
         std::string p(stringify(package.package()));
-        if (SlotName("0") != slot)
+        if ("0" != slot)
             p += ":" + stringify(slot);
         cout << "  " << std::setw(col_width_package - 2) << p;
 
@@ -130,7 +138,7 @@ namespace
 
         bool is_interesting(false);
         VersionSpec worst_keyworded("99999999");
-        typedef std::map<SlotName, VersionsEntry> VersionsInSlots;
+        typedef std::map<std::string, VersionsEntry> VersionsInSlots;
         VersionsInSlots versions_in_slots;
 
         std::tr1::shared_ptr<const PackageIDSequence> versions(repo.package_ids(package));
@@ -141,7 +149,7 @@ namespace
                 continue;
 
             /* ensure that there's an entry for this SLOT */
-            versions_in_slots.insert(std::make_pair((*v)->slot(), VersionsEntry(
+            versions_in_slots.insert(std::make_pair(slot_as_string(*v), VersionsEntry(
                             make_named_values<VersionsEntry>(
                                 value_for<n::best_anywhere>(VersionSpec("0")),
                                 value_for<n::best_keyworded>(VersionSpec("0"))
@@ -151,15 +159,15 @@ namespace
                     (*v)->keywords_key()->value()->end() != (*v)->keywords_key()->value()->find(KeywordName("~" + stringify(keyword))))
             {
                 is_interesting = true;
-                versions_in_slots.find((*v)->slot())->second.best_keyworded() =
-                    std::max(versions_in_slots.find((*v)->slot())->second.best_keyworded(), (*v)->version());
+                versions_in_slots.find(slot_as_string(*v))->second.best_keyworded() =
+                    std::max(versions_in_slots.find(slot_as_string(*v))->second.best_keyworded(), (*v)->version());
                 worst_keyworded = std::min(worst_keyworded, (*v)->version());
             }
 
             if ((*v)->keywords_key()->value()->end() != std::find_if((*v)->keywords_key()->value()->begin(),
                         (*v)->keywords_key()->value()->end(), IsStableOrUnstableKeyword()))
-                versions_in_slots.find((*v)->slot())->second.best_anywhere() =
-                    std::max(versions_in_slots.find((*v)->slot())->second.best_anywhere(), (*v)->version());
+                versions_in_slots.find(slot_as_string(*v))->second.best_anywhere() =
+                    std::max(versions_in_slots.find(slot_as_string(*v))->second.best_anywhere(), (*v)->version());
         }
 
         if (! is_interesting)

@@ -305,7 +305,7 @@ namespace test_cases
 
             TEST_CHECK(id->short_description_key());
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "");
-            TEST_CHECK_STRINGIFY_EQUAL(id->slot(), "the-slot");
+            TEST_CHECK_STRINGIFY_EQUAL(id->slot_key()->value(), "the-slot");
         }
     } test_metadata_flat_hash_empty_value;
 

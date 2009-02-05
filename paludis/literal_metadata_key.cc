@@ -26,6 +26,7 @@
 #include <paludis/formatter.hh>
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>
+#include <paludis/name.hh>
 #include <tr1/functional>
 
 using namespace paludis;
@@ -95,7 +96,7 @@ namespace paludis
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
-        const T_ value;
+        T_ value;
 
         Implementation(const std::string & r, const std::string & h, const MetadataKeyType t, const T_ & v) :
             raw_name(r),
@@ -264,6 +265,13 @@ LiteralMetadataValueKey<T_>::raw_name() const
 }
 
 template <typename T_>
+void
+LiteralMetadataValueKey<T_>::change_value(const T_ & v)
+{
+    _imp->value = v;
+}
+
+template <typename T_>
 MetadataKeyType
 LiteralMetadataValueKey<T_>::type() const
 {
@@ -335,6 +343,7 @@ LiteralMetadataValueKey<T_>::value() const
 
 template class LiteralMetadataValueKey<FSEntry>;
 template class LiteralMetadataValueKey<std::string>;
+template class LiteralMetadataValueKey<SlotName>;
 template class LiteralMetadataValueKey<bool>;
 template class LiteralMetadataValueKey<long>;
 template class LiteralMetadataValueKey<std::tr1::shared_ptr<const PackageID> >;

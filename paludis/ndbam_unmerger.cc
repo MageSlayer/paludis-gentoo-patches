@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2007 Piotr Jaroszyński
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -37,6 +37,7 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/metadata_key.hh>
 #include <tr1/functional>
 #include <list>
 #include <map>
@@ -131,6 +132,7 @@ NDBAMUnmerger::extend_hook(const Hook & h) const
         std::string pn(stringify(_imp->options.package_id()->name().package()));
         std::string pvr(stringify(_imp->options.package_id()->version()));
         std::string pv(stringify(_imp->options.package_id()->version().remove_revision()));
+        std::string slot(_imp->options.package_id()->slot_key() ? stringify(_imp->options.package_id()->slot_key()->value()) : "");
 
         return result
             ("P", pn + "-" + pv)
@@ -142,7 +144,8 @@ NDBAMUnmerger::extend_hook(const Hook & h) const
             ("PVR", pvr)
             ("PF", pn + "-" + pvr)
             ("PNVR", pn + "-" + pvr)
-            ("SLOT", stringify(_imp->options.package_id()->slot()));
+            ("SLOT", slot)
+            ;
     }
 
     return result;

@@ -51,12 +51,12 @@ namespace paludis
         const Environment * const env;
         const QualifiedPackageName name;
         const VersionSpec version;
-        const SlotName slot;
         const RepositoryName repository_name;
 
         std::tr1::shared_ptr<DependencyLabelSequence> build_dependencies_labels;
         std::tr1::shared_ptr<DependencyLabelSequence> run_dependencies_labels;
 
+        const std::tr1::shared_ptr<LiteralMetadataValueKey<SlotName> > slot_key;
         const std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > fs_location_key;
         const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key;
         const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key;
@@ -76,10 +76,10 @@ namespace paludis
             env(e),
             name(q),
             version(v),
-            slot(s),
             repository_name(n),
             build_dependencies_labels(new DependencyLabelSequence),
             run_dependencies_labels(new DependencyLabelSequence),
+            slot_key(new LiteralMetadataValueKey<SlotName> ("slot", "Slot", mkt_internal, s)),
             fs_location_key(new LiteralMetadataValueKey<FSEntry> ("location", "Location", mkt_normal, l)),
             build_dependencies_key(new UnpackagedDependencyKey(env, "build_dependencies", "Build dependencies", mkt_dependencies,
                         build_dependencies_labels, b)),
@@ -100,6 +100,7 @@ UnpackagedID::UnpackagedID(const Environment * const e, const QualifiedPackageNa
     PrivateImplementationPattern<UnpackagedID>(new Implementation<UnpackagedID>(e, q, v, s, n, l, b, r, d, this)),
     _imp(PrivateImplementationPattern<UnpackagedID>::_imp)
 {
+    add_metadata_key(_imp->slot_key);
     add_metadata_key(_imp->fs_location_key);
     add_metadata_key(_imp->build_dependencies_key);
     add_metadata_key(_imp->run_dependencies_key);
@@ -128,13 +129,13 @@ UnpackagedID::canonical_form(const PackageIDCanonicalForm f) const
     {
         case idcf_full:
             return stringify(_imp->name) + "-" + stringify(_imp->version) + ":" +
-                stringify(slot()) + "::" + stringify(_imp->repository_name);
+                stringify(slot_key()->value()) + "::" + stringify(_imp->repository_name);
 
         case idcf_version:
             return stringify(_imp->version);
 
         case idcf_no_version:
-            return stringify(_imp->name) + ":" + stringify(slot()) + "::" +
+            return stringify(_imp->name) + ":" + stringify(slot_key()->value()) + "::" +
                 stringify(_imp->repository_name);
 
         case last_idcf:
@@ -154,12 +155,6 @@ const VersionSpec
 UnpackagedID::version() const
 {
     return _imp->version;
-}
-
-const SlotName
-UnpackagedID::slot() const
-{
-    return _imp->slot;
 }
 
 const std::tr1::shared_ptr<const Repository>
@@ -268,6 +263,12 @@ const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 UnpackagedID::fs_location_key() const
 {
     return _imp->fs_location_key;
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<SlotName> >
+UnpackagedID::slot_key() const
+{
+    return _imp->slot_key;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<bool> >
@@ -379,13 +380,13 @@ UnpackagedID::breaks_portage() const
 bool
 UnpackagedID::arbitrary_less_than_comparison(const PackageID & other) const
 {
-    return slot().data() < other.slot().data();
+    return slot_key()->value().data() < (other.slot_key() ? stringify(other.slot_key()->value()) : "");
 }
 
 std::size_t
 UnpackagedID::extra_hash_value() const
 {
-    return Hash<SlotName>()(slot());
+    return Hash<SlotName>()(slot_key()->value());
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >

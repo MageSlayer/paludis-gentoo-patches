@@ -134,7 +134,7 @@ namespace test_cases
                                 &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
 
             TEST_CHECK_EQUAL(id1->version(), VersionSpec("1"));
-            TEST_CHECK_EQUAL(id1->slot(), SlotName("0"));
+            TEST_CHECK_EQUAL(id1->slot_key()->value(), SlotName("0"));
             TEST_CHECK_EQUAL(id1->name(), QualifiedPackageName("cat-one/foo"));
             TEST_CHECK_EQUAL(id1->repository()->name(), RepositoryName("installed-unpackaged"));
             TEST_CHECK(id1->fs_location_key());
@@ -152,7 +152,7 @@ namespace test_cases
                                 &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
 
             TEST_CHECK_EQUAL(id2->version(), VersionSpec("2"));
-            TEST_CHECK_EQUAL(id2->slot(), SlotName("1"));
+            TEST_CHECK_EQUAL(id2->slot_key()->value(), SlotName("1"));
             TEST_CHECK_EQUAL(id2->name(), QualifiedPackageName("cat-one/foo"));
             TEST_CHECK_EQUAL(id2->repository()->name(), RepositoryName("installed-unpackaged"));
             TEST_CHECK(id2->fs_location_key());

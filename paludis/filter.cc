@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -235,36 +235,6 @@ namespace
         }
     };
 
-    struct SlotFilterHandler :
-        AllFilterHandlerBase
-    {
-        const SlotName n;
-
-        SlotFilterHandler(const SlotName & nn) :
-            n(nn)
-        {
-        }
-
-        virtual std::tr1::shared_ptr<const PackageIDSet> ids(
-                const Environment * const,
-                const std::tr1::shared_ptr<const PackageIDSet> & id) const
-        {
-            std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
-
-            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
-                    i != i_end ; ++i)
-                if ((*i)->slot() == n)
-                    result->insert(*i);
-
-            return result;
-        }
-
-        virtual std::string as_string() const
-        {
-            return "slot is '" + stringify(n) + "'";
-        }
-    };
-
     struct AndFilterHandler :
         FilterHandler
     {
@@ -312,6 +282,44 @@ namespace
             return stringify(f1) + " filtered through " + stringify(f2);
         }
     };
+
+    struct SameSlotHandler :
+        AllFilterHandlerBase
+    {
+        const std::tr1::shared_ptr<const PackageID> as_id;
+
+        SameSlotHandler(const std::tr1::shared_ptr<const PackageID> & i) :
+            as_id(i)
+        {
+        }
+
+        virtual std::tr1::shared_ptr<const PackageIDSet> ids(
+                const Environment * const,
+                const std::tr1::shared_ptr<const PackageIDSet> & id) const
+        {
+            std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
+
+            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
+                    i != i_end ; ++i)
+                if (as_id->slot_key())
+                {
+                    if ((*i)->slot_key() && (*i)->slot_key()->value() == as_id->slot_key()->value())
+                        result->insert(*i);
+                }
+                else
+                {
+                    if (! (*i)->slot_key())
+                        result->insert(*i);
+                }
+
+            return result;
+        }
+
+        virtual std::string as_string() const
+        {
+            return "not masked";
+        }
+    };
 }
 
 filter::All::All() :
@@ -335,13 +343,13 @@ filter::InstalledAtRoot::InstalledAtRoot(const FSEntry & r) :
 {
 }
 
-filter::Slot::Slot(const SlotName & n) :
-    Filter(make_shared_ptr(new SlotFilterHandler(n)))
+filter::And::And(const Filter & f1, const Filter & f2) :
+    Filter(make_shared_ptr(new AndFilterHandler(f1, f2)))
 {
 }
 
-filter::And::And(const Filter & f1, const Filter & f2) :
-    Filter(make_shared_ptr(new AndFilterHandler(f1, f2)))
+filter::SameSlot::SameSlot(const std::tr1::shared_ptr<const PackageID> & i) :
+    Filter(make_shared_ptr(new SameSlotHandler(i)))
 {
 }
 

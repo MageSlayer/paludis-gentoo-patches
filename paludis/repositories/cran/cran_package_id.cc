@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2006, 2007 Danny van Dyk
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -312,12 +312,6 @@ CRANPackageID::version() const
     return _imp->version;
 }
 
-const SlotName
-CRANPackageID::slot() const
-{
-    return SlotName("0");
-}
-
 const std::tr1::shared_ptr<const Repository>
 CRANPackageID::repository() const
 {
@@ -408,6 +402,12 @@ CRANPackageID::from_repositories_key() const
     return std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >();
 }
 
+const std::tr1::shared_ptr<const MetadataValueKey<SlotName> >
+CRANPackageID::slot_key() const
+{
+    return make_null_shared_ptr();
+}
+
 std::size_t
 CRANPackageID::extra_hash_value() const
 {
@@ -434,13 +434,13 @@ CRANPackageID::canonical_form(const PackageIDCanonicalForm f) const
     switch (f)
     {
         case idcf_full:
-            return stringify(_imp->name) + "-" + stringify(_imp->version) + ":" + stringify(slot()) + "::" + stringify(_imp->repository->name());
+            return stringify(_imp->name) + "-" + stringify(_imp->version) + "::" + stringify(_imp->repository->name());
 
         case idcf_version:
             return stringify(_imp->version);
 
         case idcf_no_version:
-            return stringify(_imp->name) + ":" + stringify(slot()) + "::" + stringify(_imp->repository->name());
+            return stringify(_imp->name) + "::" + stringify(_imp->repository->name());
 
         case last_idcf:
             break;

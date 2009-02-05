@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -57,7 +57,7 @@ namespace paludis
             NamedValue<n::homepage, std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > > homepage;
             NamedValue<n::name, QualifiedPackageName> name;
             NamedValue<n::remote_ids, std::tr1::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > > > remote_ids;
-            NamedValue<n::slot, SlotName> slot;
+            NamedValue<n::slot, std::tr1::shared_ptr<const MetadataValueKey<SlotName> > > slot;
             NamedValue<n::version, VersionSpec> version;
         };
 

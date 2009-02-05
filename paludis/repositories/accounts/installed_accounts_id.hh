@@ -54,12 +54,12 @@ namespace paludis
 
                 virtual const QualifiedPackageName name() const;
                 virtual const VersionSpec version() const;
-                virtual const SlotName slot() const;
                 virtual const std::tr1::shared_ptr<const Repository> repository() const;
 
                 ///\name Specific metadata keys
                 ///\{
 
+                virtual const std::tr1::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > > virtual_for_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const;

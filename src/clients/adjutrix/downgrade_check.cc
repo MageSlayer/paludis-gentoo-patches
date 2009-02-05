@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,6 +33,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
+#include <paludis/metadata_key.hh>
 #include <fstream>
 #include <iostream>
 #include <vector>
@@ -42,23 +43,31 @@ using namespace paludis;
 
 namespace
 {
+    std::string slot_as_string(const PackageID & id)
+    {
+        if (id.slot_key())
+            return stringify(id.slot_key()->value());
+        else
+            return "(none)";
+    }
+
     int
     build_one_list(NoConfigEnvironment & env, std::ostream & f)
     {
         std::tr1::shared_ptr<const PackageIDSequence> matches(env[selection::AllVersionsGroupedBySlot(generator::All() | filter::NotMasked())]);
 
         QualifiedPackageName old_package("dummy/dummy");
-        SlotName old_slot("dummy");
+        std::string old_slot("dummy");
         VersionSpec best_version("0");
         for (IndirectIterator<PackageIDSequence::ConstIterator> m(matches->begin()), m_end(matches->end()) ;
                 m != m_end ; ++m)
         {
-            if (m->name() != old_package || m->slot() != old_slot)
+            if (m->name() != old_package || slot_as_string(*m) != old_slot)
             {
                 f << old_package << " " << old_slot << " " << best_version << std::endl;
 
                 old_package = m->name();
-                old_slot = m->slot();
+                old_slot = slot_as_string(*m);
                 best_version = m->version();
             }
         }
@@ -101,7 +110,7 @@ namespace
     }
 
     void
-    load_list(std::map<std::pair<QualifiedPackageName, SlotName>, VersionSpec> & map, std::istream & f)
+    load_list(std::map<std::pair<QualifiedPackageName, std::string>, VersionSpec> & map, std::istream & f)
     {
         std::string s;
         while (std::getline(f, s))
@@ -112,34 +121,35 @@ namespace
                 throw ConfigurationError("Bad line '" + s + "'");
 
             map.insert(std::make_pair(make_pair(QualifiedPackageName(tokens.at(0)),
-                            SlotName(tokens.at(1))), VersionSpec(tokens.at(2))));
+                            tokens.at(1)), VersionSpec(tokens.at(2))));
         }
     }
 
     int
     check_one_list(NoConfigEnvironment & env, std::istream & f1,
-            std::istream & f2, std::multimap<std::pair<QualifiedPackageName, SlotName>, std::string> & results,
+            std::istream & f2, std::multimap<std::pair<QualifiedPackageName, std::string>, std::string> & results,
             const std::string & desc)
     {
         int exit_status(0);
 
-        std::map<std::pair<QualifiedPackageName, SlotName>, VersionSpec> before, after;
+        std::map<std::pair<QualifiedPackageName, std::string>, VersionSpec> before, after;
 
         load_list(before, f1);
         load_list(after, f2);
 
-        for (std::map<std::pair<QualifiedPackageName, SlotName>, VersionSpec>::const_iterator
+        for (std::map<std::pair<QualifiedPackageName, std::string>, VersionSpec>::const_iterator
                 b(before.begin()), b_end(before.end()) ;
                 b != b_end ; ++b)
         {
-            std::map<std::pair<QualifiedPackageName, SlotName>, VersionSpec>::const_iterator
+            std::map<std::pair<QualifiedPackageName, std::string>, VersionSpec>::const_iterator
                 a(after.find(b->first));
             if (after.end() == a)
             {
-                if (! env[selection::SomeArbitraryVersion(generator::Matches(make_package_dep_spec()
-                                .package(b->first.first)
-                                .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(b->first.second))),
-                                MatchPackageOptions()))]->empty())
+                PartiallyMadePackageDepSpec part_spec;
+                part_spec.package(b->first.first);
+                if ("(none)" != b->first.second)
+                    part_spec.slot_requirement(make_shared_ptr(new UserSlotExactRequirement(SlotName(b->first.second))));
+                if (! env[selection::SomeArbitraryVersion(generator::Matches(part_spec, MatchPackageOptions()))]->empty())
                 {
                     results.insert(std::make_pair(b->first, stringify(b->second) + " -> nothing on " + desc));
                     exit_status |= 2;
@@ -197,7 +207,7 @@ do_downgrade_check(NoConfigEnvironment & env)
     if (! after_dir.is_directory())
         throw ConfigurationError("Second input directory is not a directory");
 
-    std::multimap<std::pair<QualifiedPackageName, SlotName>, std::string> results;
+    std::multimap<std::pair<QualifiedPackageName, std::string>, std::string> results;
 
     for (RepositoryEInterface::ProfilesConstIterator
             p((*env.main_repository()).e_interface()->begin_profiles()),
@@ -223,9 +233,9 @@ do_downgrade_check(NoConfigEnvironment & env)
         }
     }
 
-    std::pair<QualifiedPackageName, SlotName> old_qpns(QualifiedPackageName("dummy/dummmy"),
-            SlotName("dummy"));
-    for (std::multimap<std::pair<QualifiedPackageName, SlotName>, std::string>::const_iterator
+    std::pair<QualifiedPackageName, std::string> old_qpns(QualifiedPackageName("dummy/dummmy"),
+            std::string("dummy"));
+    for (std::multimap<std::pair<QualifiedPackageName, std::string>, std::string>::const_iterator
             r(results.begin()), r_end(results.end()) ;
             r != r_end ; ++r)
     {

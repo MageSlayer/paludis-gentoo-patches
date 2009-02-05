@@ -67,7 +67,6 @@ namespace paludis
      *
      * - A name
      * - A version
-     * - A slot (which will be '0' if slots aren't used)
      * - An owning repository
      *
      * It should be noted that the above together are not sufficient to uniquely
@@ -154,17 +153,20 @@ namespace paludis
             virtual const VersionSpec version() const = 0;
 
             /**
-             * What is our package's slot?
-             */
-            virtual const SlotName slot() const = 0;
-
-            /**
              * What is our owning repository?
              */
             virtual const std::tr1::shared_ptr<const Repository> repository() const = 0;
 
             ///\name Specific metadata keys
             ///\{
+
+            /**
+             * The slot, if specified, controls whether the package can be
+             * installed in parallel with other versions of the same package.
+             *
+             * \since 0.36
+             */
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const = 0;
 
             /**
              * The virtual_for_key, if non-zero, indicates that we are an

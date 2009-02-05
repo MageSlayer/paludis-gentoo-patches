@@ -48,7 +48,6 @@ namespace paludis
 
         const QualifiedPackageName name;
         const VersionSpec version;
-        const SlotName slot;
         const std::tr1::shared_ptr<const Repository> repository;
 
         const std::tr1::shared_ptr<const LiteralMetadataValueKey<FSEntry> > fs_location_key;
@@ -79,7 +78,6 @@ namespace paludis
             env(e),
             name(q),
             version("0"),
-            slot("0"),
             repository(r),
             fs_location_key(new LiteralMetadataValueKey<FSEntry>("location", "Location", mkt_internal, l)),
             from_repositories_key(f),
@@ -243,12 +241,6 @@ AccountsID::version() const
     return _imp->version;
 }
 
-const SlotName
-AccountsID::slot() const
-{
-    return _imp->slot;
-}
-
 const std::tr1::shared_ptr<const Repository>
 AccountsID::repository() const
 {
@@ -261,10 +253,10 @@ AccountsID::canonical_form(const PackageIDCanonicalForm f) const
     switch (f)
     {
         case idcf_full:
-            return stringify(name()) + "-" + stringify(version()) + ":" + stringify(slot()) + "::" + stringify(repository()->name());
+            return stringify(name()) + "-" + stringify(version()) + "::" + stringify(repository()->name());
 
         case idcf_no_version:
-            return stringify(name()) + ":" + stringify(slot()) + "::" + stringify(repository()->name());
+            return stringify(name()) + "::" + stringify(repository()->name());
 
         case idcf_version:
             return stringify(version());
@@ -398,6 +390,12 @@ AccountsID::choices_key() const
     return make_null_shared_ptr();
 }
 
+const std::tr1::shared_ptr<const MetadataValueKey<SlotName> >
+AccountsID::slot_key() const
+{
+    return make_null_shared_ptr();
+}
+
 std::tr1::shared_ptr<const Set<std::string> >
 AccountsID::breaks_portage() const
 {
@@ -405,18 +403,15 @@ AccountsID::breaks_portage() const
 }
 
 bool
-AccountsID::arbitrary_less_than_comparison(const PackageID & other) const
+AccountsID::arbitrary_less_than_comparison(const PackageID &) const
 {
-    if (slot() < other.slot())
-        return true;
-
     return false;
 }
 
 std::size_t
 AccountsID::extra_hash_value() const
 {
-    return Hash<SlotName>()(slot());
+    return 0;
 }
 
 bool

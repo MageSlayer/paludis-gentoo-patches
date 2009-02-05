@@ -36,6 +36,7 @@
 #include <paludis/name.hh>
 #include <paludis/package_id.hh>
 #include <paludis/version_requirements.hh>
+#include <paludis/metadata_key.hh>
 
 #include <src/output/colour.hh>
 
@@ -97,17 +98,17 @@ do_fix_linkage(const std::tr1::shared_ptr<Environment> & env)
             std::cout << std::endl;
         }
 
+        PartiallyMadePackageDepSpec part_spec;
+        part_spec.package((*pkg_it)->name());
+        if ((*pkg_it)->slot_key())
+            part_spec.slot_requirement(make_shared_ptr(new UserSlotExactRequirement((*pkg_it)->slot_key()->value())));
+
         if (CommandLine::get_instance()->a_exact.specified())
-            targets->push_back(stringify(make_package_dep_spec()
-                        .package((*pkg_it)->name())
-                        .version_requirement(make_named_values<VersionRequirement>(
-                                value_for<n::version_operator>(vo_equal),
-                                value_for<n::version_spec>((*pkg_it)->version())))
-                        .slot_requirement(make_shared_ptr(new UserSlotExactRequirement((*pkg_it)->slot())))));
-        else
-            targets->push_back(stringify(make_package_dep_spec()
-                        .package((*pkg_it)->name())
-                        .slot_requirement(make_shared_ptr(new UserSlotExactRequirement((*pkg_it)->slot())))));
+            part_spec.version_requirement(make_named_values<VersionRequirement>(
+                        value_for<n::version_operator>(vo_equal),
+                        value_for<n::version_spec>((*pkg_it)->version())));
+
+        targets->push_back(stringify(PackageDepSpec(part_spec)));
     }
 
     std::tr1::shared_ptr<const PackageID> orphans;

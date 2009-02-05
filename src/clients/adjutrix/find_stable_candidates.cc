@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -97,7 +97,7 @@ namespace
     };
 
     void
-    write_package(const QualifiedPackageName & package, const SlotName & slot,
+    write_package(const QualifiedPackageName & package, const std::string & slot,
             const VersionSpec & our_version, const VersionSpec & best_version)
     {
         static CategoryNamePart previous_category("not-on-a-boat");
@@ -108,7 +108,7 @@ namespace
         }
 
         std::string p(stringify(package.package()));
-        if (SlotName("0") != slot)
+        if ("0" != slot)
             p += ":" + stringify(slot);
         cout << "  " << std::setw(col_width_package - 2) << p;
 
@@ -120,6 +120,14 @@ namespace
         cout << endl;
     }
 
+    std::string slot_as_string(const std::tr1::shared_ptr<const PackageID> & id)
+    {
+        if (id->slot_key())
+            return stringify(id->slot_key()->value());
+        else
+            return "(none)";
+    }
+
     void
     check_one_package(const Environment &, const KeywordName & keyword,
             const Repository & repo, const QualifiedPackageName & package)
@@ -129,7 +137,7 @@ namespace
          * version for us, best stable version for anyone). */
 
         bool is_interesting(false);
-        typedef std::map<SlotName, SlotsEntry> SlotsToVersions;
+        typedef std::map<std::string, SlotsEntry> SlotsToVersions;
         SlotsToVersions slots_to_versions;
 
         std::tr1::shared_ptr<const PackageIDSequence> versions(repo.package_ids(package));
@@ -144,8 +152,8 @@ namespace
                 is_interesting = true;
 
                 /* replace the entry */
-                slots_to_versions.erase((*v)->slot());
-                slots_to_versions.insert(std::make_pair((*v)->slot(),
+                slots_to_versions.erase(slot_as_string(*v));
+                slots_to_versions.insert(std::make_pair(slot_as_string(*v),
                             make_named_values<SlotsEntry>(
                                 value_for<n::best_version>(VersionSpec("0")),
                                 value_for<n::our_version>((*v)->version())
@@ -156,7 +164,7 @@ namespace
                         (*v)->keywords_key()->value()->end(), IsStableKeyword()))
             {
                 /* ensure that an entry exists */
-                slots_to_versions.insert(std::make_pair((*v)->slot(),
+                slots_to_versions.insert(std::make_pair(slot_as_string(*v),
                             make_named_values<SlotsEntry>(
                                 value_for<n::best_version>((*v)->version()),
                                 value_for<n::our_version>(VersionSpec("0"))
@@ -164,8 +172,8 @@ namespace
 
                 /* update the entry to mark our current version as the best
                  * version */
-                if (slots_to_versions.find((*v)->slot())->second.best_version() <= (*v)->version())
-                    slots_to_versions.find((*v)->slot())->second.best_version() = (*v)->version();
+                if (slots_to_versions.find(slot_as_string(*v))->second.best_version() <= (*v)->version())
+                    slots_to_versions.find(slot_as_string(*v))->second.best_version() = (*v)->version();
             }
         }
 

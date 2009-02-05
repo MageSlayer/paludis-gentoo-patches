@@ -109,7 +109,7 @@ module Paludis
         end
 
         def test_members
-            { :name => QualifiedPackageName, :version => VersionSpec, :slot => String, :repository_name => String,
+            { :name => QualifiedPackageName, :version => VersionSpec, :repository_name => String,
                 :keywords_key => MetadataKeywordNameSetKey, :choices_key => MetadataChoicesKey,
                 :short_description_key => MetadataStringKey, :long_description_key => MetadataStringKey,
                 :contents_key => MetadataContentsKey, :installed_time_key => MetadataTimeKey,
@@ -159,7 +159,7 @@ module Paludis
             keys = { "DESCRIPTION" => 1, "INHERITED" => 1, "KEYWORDS" => 1, "EAPI" => 1, "repository_mask" => 1,
                 "profile_mask" => 1, "DEPEND" => 1, "RDEPEND" => 1, "PDEPEND" => 1, "LICENSE" => 1, "PROVIDE" => 1,
                 "RESTRICT" => 1, "SRC_URI" => 1, "HOMEPAGE" => 1, "EBUILD" => 1, "PROPERTIES" => 1, "IUSE" => 1,
-                "PALUDIS_CHOICES" => 1, "DEFINED_PHASES" => 1 }
+                "PALUDIS_CHOICES" => 1, "DEFINED_PHASES" => 1, "SLOT" => 1 }
             pid_testrepo.each_metadata do | key |
                 assert keys.has_key?(key.raw_name), "no key #{key.raw_name}"
                 keys.delete key.raw_name
@@ -215,8 +215,8 @@ module Paludis
         end
 
         def test_slot
-            assert_kind_of String, pid_testrepo.slot
-            assert_equal '0', pid_testrepo.slot
+            assert_kind_of String, pid_testrepo.slot_key.value
+            assert_equal '0', pid_testrepo.slot_key.value
         end
 
         def test_short_description
@@ -290,8 +290,8 @@ module Paludis
         end
 
         def test_slot
-            assert_kind_of String, pid_installed.slot
-            assert_equal 'test_slot', pid_installed.slot
+            assert_kind_of String, pid_installed.slot_key.value
+            assert_equal 'test_slot', pid_installed.slot_key.value
         end
 
         def test_short_description

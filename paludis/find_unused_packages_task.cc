@@ -36,6 +36,17 @@
 
 using namespace paludis;
 
+namespace
+{
+    std::string slot_as_string(const std::tr1::shared_ptr<const PackageID> & id)
+    {
+        if (id->slot_key())
+            return stringify(id->slot_key()->value());
+        else
+            return "(none)";
+    }
+}
+
 FindUnusedPackagesTask::~FindUnusedPackagesTask()
 {
 }
@@ -49,7 +60,7 @@ FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
                 generator::Package(package)
                 )]);
 
-    SlotName old_slot("I_am_a_slot");
+    std::string old_slot("I am not a slot");
     std::set<KeywordName> keywords;
     for (PackageIDSequence::ReverseConstIterator p(packages->rbegin()), p_end(packages->rend()) ;
             p != p_end ; ++p)
@@ -57,10 +68,10 @@ FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
         if (! (*p)->keywords_key())
             continue;
 
-        if ((*p)->slot() != old_slot)
+        if (slot_as_string(*p) != old_slot)
         {
             keywords.clear();
-            old_slot = (*p)->slot();
+            old_slot = slot_as_string(*p);
         }
 
         std::tr1::shared_ptr<const KeywordNameSet> current_keywords((*p)->keywords_key()->value());
@@ -90,3 +101,4 @@ FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
 
     return result;
 }
+

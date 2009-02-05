@@ -311,6 +311,10 @@ namespace
         {
         }
 
+        void visit(const MetadataValueKey<SlotName> &)
+        {
+        }
+
         void visit(const MetadataValueKey<long> &)
         {
         }

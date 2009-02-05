@@ -50,6 +50,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/action-fwd.hh>
+#include <paludis/metadata_key.hh>
 #include <tr1/functional>
 #include <algorithm>
 #include <list>
@@ -181,7 +182,7 @@ namespace
         {
             try
             {
-                if (e.slot() != SlotName(r.slot()))
+                if ((! e.slot_key()) || (e.slot_key()->value() != SlotName(r.slot())))
                     return false;
             }
             catch (const SlotNameError &)
@@ -310,17 +311,15 @@ ERepositorySets::security_set(bool insecurity) const
                     else
                     {
                         Context local_local_local_context("When finding upgrade for '" + stringify(glsa_pkg->name()) + ":"
-                                + stringify((*c)->slot()) + "'");
+                                + ((*c)->slot_key() ? stringify((*c)->slot_key()->value()) : "(none)") + "'");
 
                         /* we need to find the best not vulnerable installable package that isn't masked
                          * that's in the same slot as our vulnerable installed package. */
                         bool ok(false);
                         std::tr1::shared_ptr<const PackageIDSequence> available(
                                 (*_imp->environment)[selection::AllVersionsSorted(
-                                    generator::Matches(make_package_dep_spec()
-                                        .package(glsa_pkg->name())
-                                        .slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement((*c)->slot(), false))),
-                                        MatchPackageOptions()) |
+                                    generator::Package(glsa_pkg->name()) |
+                                    filter::SameSlot(*c) |
                                     filter::SupportsAction<InstallAction>() |
                                     filter::NotMasked())]);
 

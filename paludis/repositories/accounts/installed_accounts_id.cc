@@ -45,7 +45,6 @@ namespace paludis
 
         const QualifiedPackageName name;
         const VersionSpec version;
-        const SlotName slot;
         const std::tr1::shared_ptr<const Repository> repository;
 
         const std::tr1::shared_ptr<const LiteralMetadataValueKey<bool> > transient_key;
@@ -58,7 +57,6 @@ namespace paludis
             env(e),
             name(q),
             version("0"),
-            slot("0"),
             repository(r),
             transient_key(new LiteralMetadataValueKey<bool>("transient", "Transient", mkt_internal, true)),
             is_user(u)
@@ -106,12 +104,6 @@ InstalledAccountsID::version() const
     return _imp->version;
 }
 
-const SlotName
-InstalledAccountsID::slot() const
-{
-    return _imp->slot;
-}
-
 const std::tr1::shared_ptr<const Repository>
 InstalledAccountsID::repository() const
 {
@@ -124,10 +116,10 @@ InstalledAccountsID::canonical_form(const PackageIDCanonicalForm f) const
     switch (f)
     {
         case idcf_full:
-            return stringify(name()) + "-" + stringify(version()) + ":" + stringify(slot()) + "::" + stringify(repository()->name());
+            return stringify(name()) + "-" + stringify(version()) + "::" + stringify(repository()->name());
 
         case idcf_no_version:
-            return stringify(name()) + ":" + stringify(slot()) + "::" + stringify(repository()->name());
+            return stringify(name()) + "::" + stringify(repository()->name());
 
         case idcf_version:
             return stringify(version());
@@ -253,6 +245,12 @@ InstalledAccountsID::choices_key() const
     return make_null_shared_ptr();
 }
 
+const std::tr1::shared_ptr<const MetadataValueKey<SlotName> >
+InstalledAccountsID::slot_key() const
+{
+    return make_null_shared_ptr();
+}
+
 std::tr1::shared_ptr<const Set<std::string> >
 InstalledAccountsID::breaks_portage() const
 {
@@ -260,18 +258,15 @@ InstalledAccountsID::breaks_portage() const
 }
 
 bool
-InstalledAccountsID::arbitrary_less_than_comparison(const PackageID & other) const
+InstalledAccountsID::arbitrary_less_than_comparison(const PackageID &) const
 {
-    if (slot() < other.slot())
-        return true;
-
     return false;
 }
 
 std::size_t
 InstalledAccountsID::extra_hash_value() const
 {
-    return Hash<SlotName>()(slot());
+    return 0;
 }
 
 bool

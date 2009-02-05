@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,6 +29,7 @@
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/unchoices_key.hh>
 
@@ -42,9 +43,9 @@ namespace paludis
     {
         const QualifiedPackageName name;
         const VersionSpec version;
-        const SlotName slot;
         const UnavailableRepository * const repo;
 
+        const std::tr1::shared_ptr<const MetadataValueKey<SlotName> > slot_key;
         const std::tr1::shared_ptr<const MetadataValueKey<std::string> > description_key;
         const std::tr1::shared_ptr<const MetadataValueKey<std::string> > repository_homepage_key, repository_description_key;
         const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key;
@@ -55,8 +56,8 @@ namespace paludis
                 const UnavailableIDParams & e) :
             name(e.name()),
             version(e.version()),
-            slot(e.slot()),
             repo(e.repository()),
+            slot_key(new LiteralMetadataValueKey<SlotName>("SLOT", "Slot", mkt_internal, e.slot())),
             description_key(e.description()),
             repository_homepage_key(e.repository_homepage()),
             repository_description_key(e.repository_description()),
@@ -72,6 +73,7 @@ UnavailableID::UnavailableID(const UnavailableIDParams & entry) :
     PrivateImplementationPattern<UnavailableID>(new Implementation<UnavailableID>(entry)),
     _imp(PrivateImplementationPattern<UnavailableID>::_imp)
 {
+    add_metadata_key(_imp->slot_key);
     add_metadata_key(_imp->description_key);
     add_metadata_key(_imp->from_repositories_key);
     if (_imp->repository_homepage_key)
@@ -102,11 +104,11 @@ UnavailableID::canonical_form(const PackageIDCanonicalForm f) const
     {
         case idcf_full:
             return stringify(_imp->name) + "-" + stringify(_imp->version) +
-                ":" + stringify(_imp->slot) + "::" + stringify(_imp->repo->name()) +
+                ":" + stringify(_imp->slot_key->value()) + "::" + stringify(_imp->repo->name()) +
                 " (in ::" + *_imp->from_repositories_key->value()->begin() + ")";
 
         case idcf_no_version:
-            return stringify(_imp->name) + ":" + stringify(_imp->slot) +
+            return stringify(_imp->name) + ":" + stringify(_imp->slot_key->value()) +
                 "::" + stringify(_imp->repo->name()) +
                 " (in ::" + *_imp->from_repositories_key->value()->begin() + ")";
 
@@ -131,12 +133,6 @@ const VersionSpec
 UnavailableID::version() const
 {
     return _imp->version;
-}
-
-const SlotName
-UnavailableID::slot() const
-{
-    return _imp->slot;
 }
 
 const std::tr1::shared_ptr<const Repository>
@@ -166,9 +162,12 @@ UnavailableID::breaks_portage() const
 bool
 UnavailableID::arbitrary_less_than_comparison(const PackageID & other) const
 {
-    if (slot() < other.slot())
+    if (! other.slot_key())
+        return false;
+
+    if (slot_key()->value() < other.slot_key()->value())
         return true;
-    if (slot() > other.slot())
+    if (slot_key()->value() > other.slot_key()->value())
         return false;
 
     std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string > > > k(other.from_repositories_key());
@@ -184,7 +183,7 @@ std::size_t
 UnavailableID::extra_hash_value() const
 {
     return Hash<std::pair<SlotName, std::string> >()(std::make_pair(
-                slot(), *_imp->from_repositories_key->value()->begin()));
+                slot_key()->value(), *_imp->from_repositories_key->value()->begin()));
 }
 
 const std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
@@ -299,6 +298,12 @@ const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Cho
 UnavailableID::choices_key() const
 {
     return _imp->choices_key;
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<SlotName> >
+UnavailableID::slot_key() const
+{
+    return _imp->slot_key;
 }
 
 template class PrivateImplementationPattern<UnavailableID>;

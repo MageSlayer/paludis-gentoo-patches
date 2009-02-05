@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -287,6 +287,15 @@ namespace
 
         return std::make_pair(uid, gid);
     }
+
+    bool slot_is_same(const std::tr1::shared_ptr<const PackageID> & a,
+            const std::tr1::shared_ptr<const PackageID> & b)
+    {
+        if (a->slot_key())
+            return b->slot_key() && a->slot_key()->value() == b->slot_key()->value();
+        else
+            return ! b->slot_key();
+    }
 }
 
 void
@@ -305,7 +314,7 @@ ExndbamRepository::merge(const MergeParams & m)
                 v != v_end ; ++v)
         {
             if_same_name_id = *v;
-            if ((*v)->version() == m.package_id()->version() && (*v)->slot() == m.package_id()->slot())
+            if ((*v)->version() == m.package_id()->version() && slot_is_same(*v, m.package_id()))
             {
                 if_overwritten_id = *v;
                 break;
@@ -326,7 +335,7 @@ ExndbamRepository::merge(const MergeParams & m)
     }
 
     FSEntry target_ver_dir(uid_dir);
-    target_ver_dir /= (stringify(m.package_id()->version()) + ":" + stringify(m.package_id()->slot()) + ":" + cookie());
+    target_ver_dir /= (stringify(m.package_id()->version()) + ":" + stringify(m.package_id()->slot_key()->value()) + ":" + cookie());
 
     if (target_ver_dir.exists())
         throw InstallActionError("Temporary merge directory '" + stringify(target_ver_dir) + "' already exists, probably "
@@ -394,7 +403,7 @@ ExndbamRepository::merge(const MergeParams & m)
                  it_end(replace_candidates->end()); it_end != it; ++it)
         {
             std::tr1::shared_ptr<const ERepositoryID> candidate(std::tr1::static_pointer_cast<const ERepositoryID>(*it));
-            if (candidate != if_overwritten_id && candidate->slot() == m.package_id()->slot())
+            if (candidate != if_overwritten_id && slot_is_same(candidate, m.package_id()))
                 perform_uninstall(candidate, false, "");
         }
     }

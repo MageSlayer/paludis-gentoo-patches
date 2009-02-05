@@ -316,6 +316,23 @@ namespace paludis
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
+
+        class ESlotKey :
+            public MetadataValueKey<SlotName>,
+            private PrivateImplementationPattern<ESlotKey>
+        {
+            public:
+                ESlotKey(
+                        const std::tr1::shared_ptr<const EAPIMetadataVariable> &,
+                        const std::string &, const MetadataKeyType);
+                ~ESlotKey();
+
+                virtual const SlotName value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
     }
 }
 

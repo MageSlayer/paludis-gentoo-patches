@@ -60,9 +60,9 @@ namespace paludis
 
                 virtual const QualifiedPackageName name() const;
                 virtual const VersionSpec version() const;
-                virtual const SlotName slot() const;
                 virtual const std::tr1::shared_ptr<const Repository> repository() const;
 
+                virtual const std::tr1::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > > virtual_for_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const;
@@ -111,7 +111,6 @@ namespace paludis
                 virtual std::tr1::shared_ptr<const ERepository> e_repository() const;
 
                 void set_eapi(const std::string &) const;
-                void set_slot(const SlotName &) const;
 
                 void load_short_description(const std::string &, const std::string &, const std::string &) const;
                 void load_captured_stderr(const std::string &, const std::string &, const MetadataKeyType, const std::string &) const;
@@ -136,6 +135,7 @@ namespace paludis
                 void load_bugs_to(const std::tr1::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_remote_ids(const std::tr1::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_defined_phases(const std::string &, const std::string &, const std::string &) const;
+                void load_slot(const std::tr1::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
 
                 virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void perform_action(Action &) const;

@@ -74,10 +74,6 @@ void expose_package_id()
                 "[ro] VersionSpec\n"
                 )
 
-        .add_property("slot", &PackageID::slot,
-                "[ro] SlotName\n"
-                )
-
         .add_property("repository", &PackageID::repository,
                 "[ro] Repository\n"
                 )
@@ -200,6 +196,10 @@ void expose_package_id()
                 "The fs_location_key, if not None, indicates the filesystem\n"
                 "location (for example, the ebuild file or VDB directory) that\n"
                 "best describes the location of a PackageID."
+            )
+
+        .def("slot_key", &PackageID::slot_key,
+                "The slot_key, if not None, indicates the package's slot."
             )
 
         .def("__eq__", &py_eq<PackageID>)

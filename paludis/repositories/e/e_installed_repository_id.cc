@@ -75,9 +75,9 @@ namespace paludis
         const FSEntry dir;
         mutable bool has_keys;
 
-        std::tr1::shared_ptr<const SlotName> slot;
         std::tr1::shared_ptr<const EAPI> eapi;
 
+        std::tr1::shared_ptr<const MetadataValueKey<SlotName> > slot;
         std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > fs_location;
         std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use;
         std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > inherited;
@@ -191,6 +191,14 @@ EInstalledRepositoryID::need_keys_added() const
             _imp->raw_use.reset(new EStringSetKey(shared_from_this(), env->env_use(), env->description_use(),
                         file_contents(_imp->dir / env->env_use()), mkt_internal));
             add_metadata_key(_imp->raw_use);
+        }
+
+    if (! vars->slot()->name().empty())
+        if ((_imp->dir / vars->slot()->name()).exists())
+        {
+            _imp->slot.reset(new LiteralMetadataValueKey<SlotName>(vars->slot()->name(), vars->slot()->description(),
+                        mkt_internal, SlotName(file_contents(_imp->dir / vars->slot()->name()))));
+            add_metadata_key(_imp->slot);
         }
 
     if (! vars->inherited()->name().empty())
@@ -534,14 +542,14 @@ EInstalledRepositoryID::canonical_form(const PackageIDCanonicalForm f) const
     {
         case idcf_full:
             if (_imp->slot)
-                return stringify(name()) + "-" + stringify(version()) + ":" + stringify(slot()) + "::" +
+                return stringify(name()) + "-" + stringify(version()) + ":" + stringify(_imp->slot->value()) + "::" +
                     stringify(repository()->name());
 
             return stringify(name()) + "-" + stringify(version()) + "::" + stringify(repository()->name());
 
         case idcf_no_version:
             if (_imp->slot)
-                return stringify(name()) + ":" + stringify(slot()) + "::" +
+                return stringify(name()) + ":" + stringify(_imp->slot->value()) + "::" +
                     stringify(repository()->name());
 
             return stringify(name()) + "::" + stringify(repository()->name());
@@ -566,28 +574,6 @@ const VersionSpec
 EInstalledRepositoryID::version() const
 {
     return _imp->version;
-}
-
-const SlotName
-EInstalledRepositoryID::slot() const
-{
-    Lock l(_imp->mutex);
-
-    if (_imp->slot)
-        return *_imp->slot;
-
-    Context context("When finding SLOT for '" + stringify(name()) + "-" + stringify(version()) + "::"
-            + stringify(repository()->name()) + "':");
-
-    if ((_imp->dir / "SLOT").exists())
-        _imp->slot.reset(new SlotName(file_contents(_imp->dir / "SLOT")));
-    else
-    {
-        Log::get_instance()->message("e.no_slot", ll_warning, lc_context) << "No SLOT entry in '" << _imp->dir << "', pretending '0'";
-        _imp->slot.reset(new SlotName("0"));
-    }
-
-    return *_imp->slot;
 }
 
 const std::tr1::shared_ptr<const Repository>
@@ -953,6 +939,13 @@ const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Pac
 EInstalledRepositoryID::contained_in_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >();
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<SlotName> >
+EInstalledRepositoryID::slot_key() const
+{
+    need_keys_added();
+    return _imp->slot;
 }
 
 std::tr1::shared_ptr<ChoiceValue>

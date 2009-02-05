@@ -70,7 +70,6 @@ namespace paludis
         const Environment * const environment;
         const std::tr1::shared_ptr<const ERepository> repository;
         const FSEntry ebuild;
-        std::tr1::shared_ptr<const SlotName> slot;
         mutable std::tr1::shared_ptr<const EAPI> eapi;
         const std::string guessed_eapi;
         const time_t master_mtime;
@@ -78,6 +77,7 @@ namespace paludis
         mutable bool has_keys;
         mutable bool has_masks;
 
+        mutable std::tr1::shared_ptr<const ESlotKey> slot;
         mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<FSEntry> > fs_location;
         mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > short_description;
         mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > long_description;
@@ -508,14 +508,14 @@ EbuildID::canonical_form(const PackageIDCanonicalForm f) const
     {
         case idcf_full:
             if (_imp->slot)
-                return stringify(name()) + "-" + stringify(version()) + ":" + stringify(*_imp->slot) +
+                return stringify(name()) + "-" + stringify(version()) + ":" + stringify(_imp->slot->value()) +
                     "::" + stringify(repository()->name());
 
             return stringify(name()) + "-" + stringify(version()) + "::" + stringify(repository()->name());
 
         case idcf_no_version:
             if (_imp->slot)
-                return stringify(name()) + ":" + stringify(*_imp->slot) +
+                return stringify(name()) + ":" + stringify(_imp->slot->value()) +
                     "::" + stringify(repository()->name());
 
             return stringify(name()) + "::" + stringify(repository()->name());
@@ -540,20 +540,6 @@ const VersionSpec
 EbuildID::version() const
 {
     return _imp->version;
-}
-
-const SlotName
-EbuildID::slot() const
-{
-    if (_imp->slot)
-        return *_imp->slot;
-
-    need_keys_added();
-
-    if (! _imp->slot)
-        throw InternalError(PALUDIS_HERE, "_imp->slot still not set");
-
-    return *_imp->slot;
 }
 
 const std::tr1::shared_ptr<const Repository>
@@ -777,13 +763,6 @@ EbuildID::set_eapi(const std::string & s) const
     _imp->eapi = EAPIData::get_instance()->eapi_from_string(s);
 }
 
-void
-EbuildID::set_slot(const SlotName & s) const
-{
-    Lock l(_imp->mutex);
-    _imp->slot.reset(new SlotName(s));
-}
-
 std::tr1::shared_ptr<const ERepository>
 EbuildID::e_repository() const
 {
@@ -980,6 +959,14 @@ EbuildID::load_remote_ids(const std::tr1::shared_ptr<const EAPIMetadataVariable>
     add_metadata_key(_imp->remote_ids);
 }
 
+void
+EbuildID::load_slot(const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
+{
+    Lock l(_imp->mutex);
+    _imp->slot.reset(new ESlotKey(m, v, mkt_internal));
+    add_metadata_key(_imp->slot);
+}
+
 namespace
 {
     struct SupportsActionQuery
@@ -1166,6 +1153,13 @@ EbuildID::choices_key() const
 {
     need_keys_added();
     return _imp->choices;
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<SlotName> >
+EbuildID::slot_key() const
+{
+    need_keys_added();
+    return _imp->slot;
 }
 
 std::tr1::shared_ptr<ChoiceValue>

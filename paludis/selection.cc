@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -37,6 +37,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/environment.hh>
+#include <paludis/metadata_key.hh>
 #include <algorithm>
 #include <functional>
 #include <tr1/functional>
@@ -101,6 +102,14 @@ Selection::as_string() const
 
 namespace
 {
+    std::string slot_as_string(const std::tr1::shared_ptr<const PackageID> & id)
+    {
+        if (id->slot_key())
+            return stringify(id->slot_key()->value());
+        else
+            return "(none)";
+    }
+
     class SomeArbitraryVersionSelectionHandler :
         public SelectionHandler
     {
@@ -300,14 +309,14 @@ namespace
 
                 std::tr1::shared_ptr<const PackageIDSet> id(_fg.filter().ids(env, _fg.generator().ids(env, r, p)));
 
-                typedef std::map<std::pair<QualifiedPackageName, SlotName>, std::tr1::shared_ptr<PackageIDSequence> > SlotMap;
+                typedef std::map<std::pair<QualifiedPackageName, std::string>, std::tr1::shared_ptr<PackageIDSequence> > SlotMap;
                 SlotMap by_slot;
                 for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
                         i != i_end ; ++i)
                 {
-                    SlotMap::iterator m(by_slot.find(std::make_pair((*i)->name(), (*i)->slot())));
+                    SlotMap::iterator m(by_slot.find(std::make_pair((*i)->name(), slot_as_string(*i))));
                     if (m == by_slot.end())
-                        m = by_slot.insert(std::make_pair(std::make_pair((*i)->name(), (*i)->slot()),
+                        m = by_slot.insert(std::make_pair(std::make_pair((*i)->name(), slot_as_string(*i)),
                                     make_shared_ptr(new PackageIDSequence))).first;
                     m->second->push_back(*i);
                 }
@@ -366,14 +375,14 @@ namespace
 
                 std::tr1::shared_ptr<const PackageIDSet> id(_fg.filter().ids(env, _fg.generator().ids(env, r, p)));
 
-                typedef std::map<std::pair<QualifiedPackageName, SlotName>, std::tr1::shared_ptr<PackageIDSequence> > SlotMap;
+                typedef std::map<std::pair<QualifiedPackageName, std::string>, std::tr1::shared_ptr<PackageIDSequence> > SlotMap;
                 SlotMap by_slot;
                 for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
                         i != i_end ; ++i)
                 {
-                    SlotMap::iterator m(by_slot.find(std::make_pair((*i)->name(), (*i)->slot())));
+                    SlotMap::iterator m(by_slot.find(std::make_pair((*i)->name(), slot_as_string(*i))));
                     if (m == by_slot.end())
-                        m = by_slot.insert(std::make_pair(std::make_pair((*i)->name(), (*i)->slot()),
+                        m = by_slot.insert(std::make_pair(std::make_pair((*i)->name(), slot_as_string(*i)),
                                     make_shared_ptr(new PackageIDSequence))).first;
                     m->second->push_back(*i);
                 }

@@ -867,15 +867,15 @@ namespace test_cases
 
                 RepositoryProvidesInterface::ProvidesSequence::ConstIterator it(seq->begin());
                 TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/foo");
-                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg1-1::installed");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg1-1:1::installed");
                 TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/foo");
-                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg1-2::installed");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg1-2:2::installed");
                 TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/foo");
-                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg2-1::installed");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg2-1:1::installed");
                 TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/bar");
-                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg2-1::installed");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg2-1:1::installed");
                 TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/bar");
-                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg2-2::installed");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg2-2:2::installed");
             }
 
             vdb_repo->regenerate_cache();
@@ -888,15 +888,15 @@ namespace test_cases
 
                 RepositoryProvidesInterface::ProvidesSequence::ConstIterator it(seq->begin());
                 TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/foo");
-                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg1-1::installed");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg1-1:1::installed");
                 TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/foo");
-                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg1-2::installed");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg1-2:2::installed");
                 TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/foo");
-                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg2-1::installed");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg2-1:1::installed");
                 TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/bar");
-                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg2-1::installed");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg2-1:1::installed");
                 TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/bar");
-                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg2-2::installed");
+                TEST_CHECK_STRINGIFY_EQUAL(*(*it++).provided_by(), "cat1/pkg2-2:2::installed");
             }
         }
 

@@ -100,6 +100,7 @@ namespace paludis
                 MetadataValueKey<long>,
                 MetadataValueKey<bool>,
                 MetadataValueKey<FSEntry>,
+                MetadataValueKey<SlotName>,
                 MetadataValueKey<std::tr1::shared_ptr<const PackageID> >,
                 MetadataValueKey<std::tr1::shared_ptr<const Contents> >,
                 MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> >,

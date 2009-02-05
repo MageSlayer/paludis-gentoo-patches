@@ -54,6 +54,7 @@ namespace paludis
         std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > authors_key;
         std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > rubyforge_project_key;
         std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > fs_location_key;
+        std::tr1::shared_ptr<LiteralMetadataValueKey<SlotName> > slot_key;
 
         std::tr1::shared_ptr<const FSEntry> load_from_file;
 
@@ -272,6 +273,8 @@ GemSpecification::GemSpecification(const Environment * const e, const std::tr1::
     _imp->load_from_file.reset(new FSEntry(f));
     _imp->fs_location_key.reset(new LiteralMetadataValueKey<FSEntry> ("GEM", "Gem Location", mkt_internal, f));
     add_metadata_key(_imp->fs_location_key);
+    _imp->slot_key.reset(new LiteralMetadataValueKey<SlotName>("SLOT", "Slot", mkt_internal, SlotName(stringify(v))));
+    add_metadata_key(_imp->slot_key);
 }
 
 GemSpecification::~GemSpecification()
@@ -314,12 +317,6 @@ const VersionSpec
 GemSpecification::version() const
 {
     return VersionSpec(_imp->version);
-}
-
-const SlotName
-GemSpecification::slot() const
-{
-    return SlotName(_imp->version);
 }
 
 const std::tr1::shared_ptr<const Repository>
@@ -434,6 +431,12 @@ const std::tr1::shared_ptr<const MetadataValueKey<bool> >
 GemSpecification::transient_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<bool> >();
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<SlotName> >
+GemSpecification::slot_key() const
+{
+    return _imp->slot_key;
 }
 
 bool

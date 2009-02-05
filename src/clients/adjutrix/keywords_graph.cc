@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -61,6 +61,14 @@ namespace
         }
     };
 
+    std::string slot_as_string(const PackageID & id)
+    {
+        if (id.slot_key())
+            return stringify(id.slot_key()->value());
+        else
+            return "(none)";
+    }
+
     void
     write_keywords_graph(const Environment & e, const Repository & repo,
             const QualifiedPackageName & package)
@@ -107,10 +115,10 @@ namespace
             return;
         }
 
-        std::set<SlotName> slots;
+        std::set<std::string> slots;
         std::transform(indirect_iterator(packages->begin()), indirect_iterator(packages->end()),
                 std::inserter(slots, slots.begin()),
-                std::tr1::mem_fn(&PackageID::slot));
+                std::tr1::bind(&slot_as_string, std::tr1::placeholders::_1));
 
         unsigned version_specs_columns_width(std::max_element(indirect_iterator(packages->begin()),
                     indirect_iterator(packages->end()),
@@ -123,7 +131,7 @@ namespace
                             arch_flags.end(), CompareByStringLength<std::string>())).length(), static_cast<std::size_t>(6)));
 
         unsigned longest_slot_name(stringify(*std::max_element(slots.begin(),
-                        slots.end(), CompareByStringLength<SlotName>())).length());
+                        slots.end(), CompareByStringLength<std::string>())).length());
 
         for (unsigned h = 0 ; h < tallest_arch_name ; ++h)
         {
@@ -153,15 +161,15 @@ namespace
             << std::string(arch_flags.size() * 2 + 1, '-') << "+"
             << std::string(longest_slot_name + 3, '-') << endl;
 
-        SlotName old_slot("first_slot");
+        std::string old_slot("the first slot");
         for (IndirectIterator<PackageIDSequence::ConstIterator> p(packages->begin()), p_end(packages->end()) ;
                 p != p_end ; ++p)
         {
             if (! p->keywords_key())
                 continue;
 
-            if (p->slot() != old_slot)
-                if (old_slot != SlotName("first_slot"))
+            if (slot_as_string(*p) != old_slot)
+                if (old_slot != "the first slot")
                     cout << std::string(version_specs_columns_width, '-') << "+"
                         << std::string(arch_flags.size() * 2 + 1, '-') << "+"
                         << std::string(longest_slot_name + 3, '-') << endl;
@@ -188,10 +196,10 @@ namespace
             cout << "| " << (indirect_iterator(unused->end()) !=
                     std::find(indirect_iterator(unused->begin()), indirect_iterator(unused->end()), *p) ? "* " : "  ");
 
-            if (p->slot() != old_slot)
+            if (slot_as_string(*p) != old_slot)
             {
-                cout << p->slot();
-                old_slot = p->slot();
+                cout << slot_as_string(*p);
+                old_slot = slot_as_string(*p);
             }
 
             cout << endl;

@@ -41,9 +41,9 @@ namespace paludis
     {
         const QualifiedPackageName name;
         const VersionSpec version;
-        const SlotName slot;
         const UnwrittenRepository * const repo;
 
+        const std::tr1::shared_ptr<const MetadataValueKey<SlotName> > slot_key;
         const std::tr1::shared_ptr<const MetadataValueKey<std::string> > description_key;
         const std::tr1::shared_ptr<const MetadataValueKey<std::string> > added_by_key;
         const std::tr1::shared_ptr<const MetadataValueKey<std::string> > comment_key;
@@ -57,8 +57,8 @@ namespace paludis
                 const UnwrittenIDParams & e) :
             name(e.name()),
             version(e.version()),
-            slot(e.slot()),
             repo(e.repository()),
+            slot_key(e.slot()),
             description_key(e.description()),
             added_by_key(e.added_by()),
             comment_key(e.comment()),
@@ -76,6 +76,8 @@ UnwrittenID::UnwrittenID(const UnwrittenIDParams & entry) :
     PrivateImplementationPattern<UnwrittenID>(new Implementation<UnwrittenID>(entry)),
     _imp(PrivateImplementationPattern<UnwrittenID>::_imp)
 {
+    if (_imp->slot_key)
+        add_metadata_key(_imp->slot_key);
     if (_imp->description_key)
         add_metadata_key(_imp->description_key);
     if (_imp->homepage_key)
@@ -112,10 +114,10 @@ UnwrittenID::canonical_form(const PackageIDCanonicalForm f) const
     {
         case idcf_full:
             return stringify(_imp->name) + "-" + stringify(_imp->version) +
-                ":" + stringify(_imp->slot) + "::" + stringify(_imp->repo->name());
+                ":" + stringify(slot_key()->value()) + "::" + stringify(_imp->repo->name());
 
         case idcf_no_version:
-            return stringify(_imp->name) + ":" + stringify(_imp->slot) +
+            return stringify(_imp->name) + ":" + stringify(slot_key()->value()) +
                 "::" + stringify(_imp->repo->name());
 
         case idcf_version:
@@ -138,12 +140,6 @@ const VersionSpec
 UnwrittenID::version() const
 {
     return _imp->version;
-}
-
-const SlotName
-UnwrittenID::slot() const
-{
-    return _imp->slot;
 }
 
 const std::tr1::shared_ptr<const Repository>
@@ -173,16 +169,13 @@ UnwrittenID::breaks_portage() const
 bool
 UnwrittenID::arbitrary_less_than_comparison(const PackageID & other) const
 {
-    if (slot() < other.slot())
-        return true;
-
-    return false;
+    return slot_key()->value().data() < (other.slot_key() ? stringify(other.slot_key()->value()) : "");
 }
 
 std::size_t
 UnwrittenID::extra_hash_value() const
 {
-    return Hash<SlotName>()(slot());
+    return Hash<SlotName>()(slot_key()->value());
 }
 
 const std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
@@ -249,6 +242,12 @@ const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnwrittenID::suggested_dependencies_key() const
 {
     return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<SlotName> >
+UnwrittenID::slot_key() const
+{
+    return _imp->slot_key;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::string> >

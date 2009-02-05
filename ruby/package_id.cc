@@ -103,26 +103,6 @@ namespace
     }
 
     /*
-     * Document-method: slot
-     *
-     * call-seq:
-     *     slot -> String
-     *
-     * Our slot
-     */
-    template <typename T_, typename S_, const T_ (S_::* m_) () const>
-    struct BaseValue
-    {
-        static VALUE
-        fetch(VALUE self)
-        {
-            std::tr1::shared_ptr<const S_> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<const S_>, self_ptr);
-            return rb_str_new2(stringify(((**self_ptr).*m_)()).c_str());
-        }
-    };
-
-    /*
      * call-seq:
      *     version -> VersionSpec
      *
@@ -410,7 +390,6 @@ namespace
         rb_define_method(c_package_id, "canonical_form", RUBY_FUNC_CAST(&package_id_canonical_form), 1);
         rb_define_method(c_package_id, "name", RUBY_FUNC_CAST(&package_id_name), 0);
         rb_define_method(c_package_id, "version", RUBY_FUNC_CAST(&package_id_version), 0);
-        rb_define_method(c_package_id, "slot", RUBY_FUNC_CAST((&BaseValue<SlotName,PackageID,&PackageID::slot>::fetch)), 0);
         rb_define_method(c_package_id, "repository_name", RUBY_FUNC_CAST(&package_id_repository_name), 0);
         rb_define_method(c_package_id, "==", RUBY_FUNC_CAST(&Common<std::tr1::shared_ptr<const PackageID> >::equal_via_ptr), 1);
         rb_define_method(c_package_id, "[]", RUBY_FUNC_CAST(&package_id_subscript), 1);
@@ -455,6 +434,8 @@ namespace
                         &KeyValue<MetadataSpecTreeKey<FetchableURISpecTree>, &PackageID::fetches_key>::fetch)), 0);
         rb_define_method(c_package_id, "choices_key", RUBY_FUNC_CAST((
                         &KeyValue<MetadataValueKey<std::tr1::shared_ptr<const Choices> >, &PackageID::choices_key>::fetch)), 0);
+        rb_define_method(c_package_id, "slot_key", RUBY_FUNC_CAST((
+                        &KeyValue<MetadataValueKey<SlotName>, &PackageID::slot_key>::fetch)), 0);
 
         /*
          * Document-module: Paludis::PackageIDCanonicalForm

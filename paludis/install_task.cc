@@ -44,6 +44,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -525,14 +526,17 @@ InstallTask::_add_package_id(const std::tr1::shared_ptr<const PackageID> & targe
     if (! _imp->override_target_type)
         _imp->dep_list.options()->target_type() = dl_target_package;
 
-    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec()
-                .package(target->name())
-                .version_requirement(make_named_values<VersionRequirement>(
-                                value_for<n::version_operator>(vo_equal),
-                                value_for<n::version_spec>(target->version())))
-                .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(target->slot())))
-                .in_repository(target->repository()->name())));
+    PartiallyMadePackageDepSpec part_spec;
+    part_spec.package(target->name());
+    part_spec.in_repository(target->repository()->name());
+    part_spec.version_requirement(make_named_values<VersionRequirement>(
+                value_for<n::version_operator>(vo_equal),
+                value_for<n::version_spec>(target->version())));
 
+    if (target->slot_key())
+        part_spec.slot_requirement(make_shared_ptr(new UserSlotExactRequirement(target->slot_key()->value())));
+
+    std::tr1::shared_ptr<PackageDepSpec> spec(make_shared_copy(PackageDepSpec(part_spec)));
     spec->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
     _imp->targets->root()->append(spec);
 
@@ -831,12 +835,10 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
 
     if (dep->destination())
         collision_list = (*_imp->env)[selection::AllVersionsSorted(
-                generator::Matches(make_package_dep_spec()
-                    .package(dep->package_id()->name())
-                    .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(dep->package_id()->slot())))
-                    .in_repository(dep->destination()->name()),
-                    MatchPackageOptions()) |
-                filter::SupportsAction<UninstallAction>())];
+                generator::Package(dep->package_id()->name()) &
+                generator::InRepository(dep->destination()->name()) |
+                filter::SupportsAction<UninstallAction>() |
+                filter::SameSlot(dep->package_id()))];
 
     // don't clean the thing we just installed
     PackageIDSequence clean_list;

@@ -110,7 +110,7 @@ namespace test_cases
                     *env[selection::RequireExactlyOne(generator::All())]->begin());
 
             TEST_CHECK_EQUAL(id->version(), VersionSpec("1.0"));
-            TEST_CHECK_EQUAL(id->slot(), SlotName("foo"));
+            TEST_CHECK_EQUAL(id->slot_key()->value(), SlotName("foo"));
             TEST_CHECK_EQUAL(id->name(), QualifiedPackageName("cat/pkg"));
             TEST_CHECK_EQUAL(id->repository()->name(), RepositoryName("unpackaged"));
             TEST_CHECK(id->fs_location_key());

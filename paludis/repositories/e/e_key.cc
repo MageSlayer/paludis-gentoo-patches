@@ -1120,3 +1120,54 @@ EMTimeKey::type() const
     return _imp->type;
 }
 
+namespace paludis
+{
+    template <>
+    struct Implementation<ESlotKey>
+    {
+        const SlotName value;
+        const std::tr1::shared_ptr<const EAPIMetadataVariable> variable;
+        const MetadataKeyType type;
+
+        Implementation(const SlotName & v, const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const MetadataKeyType t) :
+            value(v),
+            variable(m),
+            type(t)
+        {
+        }
+    };
+}
+
+ESlotKey::ESlotKey(const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v, const MetadataKeyType t) :
+    PrivateImplementationPattern<ESlotKey>(new Implementation<ESlotKey>(SlotName(v), m, t))
+{
+}
+
+ESlotKey::~ESlotKey()
+{
+}
+
+const SlotName
+ESlotKey::value() const
+{
+    return _imp->value;
+}
+
+const std::string
+ESlotKey::raw_name() const
+{
+    return _imp->variable->name();
+}
+
+const std::string
+ESlotKey::human_name() const
+{
+    return _imp->variable->description();
+}
+
+MetadataKeyType
+ESlotKey::type() const
+{
+    return _imp->type;
+}
+

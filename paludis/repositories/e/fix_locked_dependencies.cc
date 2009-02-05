@@ -34,6 +34,7 @@
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
+#include <paludis/metadata_key.hh>
 #include <tr1/functional>
 #include <algorithm>
 #include <list>
@@ -110,9 +111,12 @@ namespace
                 if (matches->empty())
                     break;
 
-                PackageDepSpec new_s(PartiallyMadePackageDepSpec(*node.spec()).slot_requirement(
-                            make_shared_ptr(new ELikeSlotExactRequirement((*matches->last())->slot(), true))));
-                c.reset(new PackageDepSpec(new_s));
+                if ((*matches->last())->slot_key())
+                {
+                    PackageDepSpec new_s(PartiallyMadePackageDepSpec(*node.spec()).slot_requirement(
+                                make_shared_ptr(new ELikeSlotExactRequirement((*matches->last())->slot_key()->value(), true))));
+                    c.reset(new PackageDepSpec(new_s));
+                }
             } while (false);
 
             if (! c)

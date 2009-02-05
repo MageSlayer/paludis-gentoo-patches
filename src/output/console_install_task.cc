@@ -436,14 +436,10 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
 
     std::tr1::shared_ptr<const PackageIDSequence> existing_slot_repo((*environment())[selection::AllVersionsSorted(
                 generator::Matches(repo ?
-                    make_package_dep_spec()
-                    .package(d.package_id()->name())
-                    .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(d.package_id()->slot())))
-                    .in_repository(*repo) :
-                    make_package_dep_spec()
-                    .package(d.package_id()->name())
-                    .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(d.package_id()->slot()))),
-                    MatchPackageOptions()))]);
+                    make_package_dep_spec().package(d.package_id()->name()).in_repository(*repo) :
+                    make_package_dep_spec().package(d.package_id()->name()),
+                    MatchPackageOptions()) |
+                filter::SameSlot(d.package_id()))]);
 
     display_merge_list_entry_start(d, m);
     display_merge_list_entry_package_name(d, m);
@@ -911,10 +907,8 @@ ConsoleInstallTask::display_merge_list_entry_repository(const DepListEntry & d, 
 {
     // XXX fix this once the new resolver's in
     std::tr1::shared_ptr<const PackageIDSequence> inst((*environment())[selection::BestVersionOnly(
-                generator::Matches(make_package_dep_spec()
-                    .package(d.package_id()->name())
-                    .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(d.package_id()->slot()))),
-                    MatchPackageOptions()) |
+                generator::Package(d.package_id()->name()) |
+                filter::SameSlot(d.package_id()) |
                 filter::InstalledAtRoot(environment()->root()))]);
     bool changed(normal_entry == m &&
             ! inst->empty() && (*inst->begin())->from_repositories_key() &&
@@ -932,22 +926,25 @@ ConsoleInstallTask::display_merge_list_entry_repository(const DepListEntry & d, 
 void
 ConsoleInstallTask::display_merge_list_entry_slot(const DepListEntry & d, const DisplayMode m)
 {
-    if (d.package_id()->slot() == SlotName("0"))
+    if (! d.package_id()->slot_key())
+        return;
+
+    if (d.package_id()->slot_key()->value() == SlotName("0"))
         return;
 
     switch (m)
     {
         case normal_entry:
         case suggested_entry:
-            output_no_endl(render_as_slot_name(" :" + stringify(d.package_id()->slot())));
+            output_no_endl(render_as_slot_name(" :" + stringify(d.package_id()->slot_key()->value())));
             break;
 
         case unimportant_entry:
-            output_no_endl(render_as_unimportant(" :" + stringify(d.package_id()->slot())));
+            output_no_endl(render_as_unimportant(" :" + stringify(d.package_id()->slot_key()->value())));
             break;
 
         case error_entry:
-            output_no_endl(render_as_slot_name(" :" + stringify(d.package_id()->slot())));
+            output_no_endl(render_as_slot_name(" :" + stringify(d.package_id()->slot_key()->value())));
             break;
     }
 }

@@ -241,6 +241,15 @@ namespace
 
         return std::make_pair(uid, gid);
     }
+
+    bool slot_is_same(const std::tr1::shared_ptr<const PackageID> & a,
+            const std::tr1::shared_ptr<const PackageID> & b)
+    {
+        if (a->slot_key())
+            return b->slot_key() && a->slot_key()->value() == b->slot_key()->value();
+        else
+            return ! b->slot_key();
+    }
 }
 
 void
@@ -283,7 +292,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
                 v != v_end ; ++v)
         {
             if_same_name_id = *v;
-            if ((*v)->version() == m.package_id()->version() && (*v)->slot() == m.package_id()->slot())
+            if ((*v)->version() == m.package_id()->version() && slot_is_same(*v, m.package_id()))
             {
                 if_overwritten_id = *v;
                 break;
@@ -304,7 +313,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
     }
 
     FSEntry target_ver_dir(uid_dir);
-    target_ver_dir /= (stringify(m.package_id()->version()) + ":" + stringify(m.package_id()->slot()) + ":" + cookie());
+    target_ver_dir /= (stringify(m.package_id()->version()) + ":" + stringify(m.package_id()->slot_key()->value()) + ":" + cookie());
 
     if (target_ver_dir.exists())
         throw InstallActionError("Temporary merge directory '" + stringify(target_ver_dir) + "' already exists, probably "

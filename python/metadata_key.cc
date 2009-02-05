@@ -57,6 +57,11 @@ class MetadataKeySptrToPythonVisitor
             obj = bp::object(std::tr1::static_pointer_cast<const MetadataValueKey<std::string> >(_m_ptr));
         }
 
+        void visit(const MetadataValueKey<SlotName> & k)
+        {
+            obj = bp::object(std::tr1::static_pointer_cast<const MetadataValueKey<SlotName> >(_m_ptr));
+        }
+
         void visit(const MetadataValueKey<long> & k)
         {
             obj = bp::object(std::tr1::static_pointer_cast<const MetadataValueKey<long> >(_m_ptr));
@@ -268,6 +273,52 @@ struct MetadataStringKeyWrapper :
             return f();
         else
             throw PythonMethodNotImplemented("MetadataStringKey", "type");
+    }
+};
+
+struct MetadataSlotNameKeyWrapper :
+    MetadataValueKey<SlotName> ,
+    bp::wrapper<MetadataValueKey<SlotName> >
+{
+    virtual const SlotName value() const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("value"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSlotNameKey", "value");
+    }
+
+    virtual const std::string raw_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("raw_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSlotNameKey", "raw_name");
+    }
+
+    virtual const std::string human_name() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("human_name"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSlotNameKey", "human_name");
+    }
+
+    virtual MetadataKeyType type() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("type"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSlotNameKey", "type");
     }
 };
 
@@ -1126,6 +1177,30 @@ void expose_metadata_key()
         )
         .def("value", bp::pure_virtual(&MetadataValueKey<std::string> ::value),
                 "value() -> string\n"
+                "Fetch our value."
+                )
+        ;
+
+    /**
+     * MetadataSlotNameKey
+     */
+    bp::register_ptr_to_python<std::tr1::shared_ptr<const MetadataValueKey<SlotName> > >();
+    bp::implicitly_convertible<std::tr1::shared_ptr<MetadataSlotNameKeyWrapper>,
+            std::tr1::shared_ptr<MetadataKey> >();
+    bp::class_<MetadataSlotNameKeyWrapper, std::tr1::shared_ptr<MetadataSlotNameKeyWrapper>,
+            bp::bases<MetadataKey>, boost::noncopyable>
+        (
+         "MetadataSlotNameKey",
+         "A MetadataStringKey is a MetadataKey that has a SlotName as its\n"
+         "value.\n\n"
+
+         "This class can be subclassed in Python.",
+         bp::init<>(
+             "__init__()"
+             )
+        )
+        .def("value", bp::pure_virtual(&MetadataValueKey<SlotName> ::value),
+                "value() -> SlotName\n"
                 "Fetch our value."
                 )
         ;

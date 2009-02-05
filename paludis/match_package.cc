@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -47,18 +47,18 @@ namespace
 {
     struct SlotRequirementChecker
     {
-        const SlotName actual;
+        const PackageID & id;
         bool result;
 
-        SlotRequirementChecker(const SlotName & a) :
-            actual(a),
+        SlotRequirementChecker(const PackageID & i) :
+            id(i),
             result(true)
         {
         }
 
         void visit(const SlotExactRequirement & s)
         {
-            result = (actual == s.slot());
+            result = id.slot_key() && id.slot_key()->value() == s.slot();
         }
 
         void visit(const SlotAnyLockedRequirement &)
@@ -190,7 +190,7 @@ paludis::match_package(
 
     if (spec.slot_requirement_ptr())
     {
-        SlotRequirementChecker v(entry.slot());
+        SlotRequirementChecker v(entry);
         spec.slot_requirement_ptr()->accept(v);
         if (! v.result)
             return false;

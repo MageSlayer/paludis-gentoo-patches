@@ -72,7 +72,8 @@ namespace paludis
                             .version_requirement(make_named_values<VersionRequirement>(
                                     value_for<n::version_operator>(vo_equal),
                                     value_for<n::version_spec>(v->version())))
-                            .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(v->slot())))
+                            .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(
+                                        v->slot_key() ? v->slot_key()->value() : SlotName("UNKNOWN"))))
                             .in_repository(v->repository()->name())))
                     :
                     make_shared_ptr(new PackageDepSpec(
@@ -247,12 +248,6 @@ const VersionSpec
 VirtualsPackageID::version() const
 {
     return _imp->version;
-}
-
-const SlotName
-VirtualsPackageID::slot() const
-{
-    return _imp->virtual_for->value()->slot();
 }
 
 const std::tr1::shared_ptr<const Repository>
@@ -525,6 +520,12 @@ const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 VirtualsPackageID::fs_location_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<SlotName> >
+VirtualsPackageID::slot_key() const
+{
+    return _imp->virtual_for->value()->slot_key();
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<bool> >

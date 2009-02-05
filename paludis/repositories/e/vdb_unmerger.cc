@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2007 Piotr Jaroszyński
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -29,6 +29,7 @@ using namespace paludis;
 #include <paludis/hook.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -146,6 +147,7 @@ VDBUnmerger::extend_hook(const Hook & h) const
         std::string pn(stringify(_imp->options.package_id()->name().package()));
         std::string pvr(stringify(_imp->options.package_id()->version()));
         std::string pv(stringify(_imp->options.package_id()->version().remove_revision()));
+        std::string slot(_imp->options.package_id()->slot_key() ? stringify(_imp->options.package_id()->slot_key()->value()) : "");
 
         return result
             ("P", pn + "-" + pv)
@@ -157,7 +159,8 @@ VDBUnmerger::extend_hook(const Hook & h) const
             ("PVR", pvr)
             ("PF", pn + "-" + pvr)
             ("PNVR", pn + "-" + pvr)
-            ("SLOT", stringify(_imp->options.package_id()->slot()));
+            ("SLOT", slot)
+            ;
     }
 
     return result;

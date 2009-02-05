@@ -779,6 +779,18 @@ VDBRepository::category_names_containing_package(const PackageNamePart & p) cons
     return result ? result : Repository::category_names_containing_package(p);
 }
 
+namespace
+{
+    bool slot_is_same(const std::tr1::shared_ptr<const PackageID> & a,
+            const std::tr1::shared_ptr<const PackageID> & b)
+    {
+        if (a->slot_key())
+            return b->slot_key() && a->slot_key()->value() == b->slot_key()->value();
+        else
+            return ! b->slot_key();
+    }
+}
+
 void
 VDBRepository::merge(const MergeParams & m)
 {
@@ -873,7 +885,7 @@ VDBRepository::merge(const MergeParams & m)
                  it_end(replace_candidates->end()); it_end != it; ++it)
         {
             std::tr1::shared_ptr<const ERepositoryID> candidate(std::tr1::static_pointer_cast<const ERepositoryID>(*it));
-            if (candidate != is_replace && candidate->slot() == m.package_id()->slot())
+            if (candidate != is_replace && slot_is_same(candidate, m.package_id()))
                 perform_uninstall(candidate, false, "");
         }
     }

@@ -113,6 +113,14 @@ namespace
         }
     };
 
+    std::string slot_as_string(const std::tr1::shared_ptr<const PackageID> & id)
+    {
+        if (id->slot_key())
+            return stringify(id->slot_key()->value());
+        else
+            return "";
+    }
+
     struct SetDisplayer
     {
         const std::tr1::shared_ptr<const Environment> env;
@@ -380,6 +388,12 @@ namespace
         }
 
         void visit(const MetadataValueKey<std::string> & k)
+        {
+            cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+                    stringify(k.value()), indent, important);
+        }
+
+        void visit(const MetadataValueKey<SlotName> & k)
         {
             cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
                     stringify(k.value()), indent, important);
@@ -708,11 +722,11 @@ namespace
                 if ((*i)->repository()->name() != *r)
                     continue;
 
-                if (slot_name != stringify((*i)->slot()))
+                if (slot_name != slot_as_string(*i))
                 {
                     if (! slot_name.empty())
                         cout << format_general_s(f::show_package_slot(), slot_name);
-                    slot_name = stringify((*i)->slot());
+                    slot_name = slot_as_string(*i);
                 }
 
                 if (need_space)

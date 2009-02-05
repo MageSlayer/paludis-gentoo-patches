@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -57,7 +57,7 @@ namespace paludis
             NamedValue<n::name, QualifiedPackageName> name;
             NamedValue<n::remote_ids, std::tr1::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > > > remote_ids;
             NamedValue<n::repository, const UnwrittenRepository *> repository;
-            NamedValue<n::slot, SlotName> slot;
+            NamedValue<n::slot, std::tr1::shared_ptr<const MetadataValueKey<SlotName> > > slot;
             NamedValue<n::version, VersionSpec> version;
         };
 
@@ -79,11 +79,10 @@ namespace paludis
                  const std::string canonical_form(const PackageIDCanonicalForm) const;
                  const QualifiedPackageName name() const;
                  const VersionSpec version() const;
-                 const SlotName slot() const;
                  const std::tr1::shared_ptr<const Repository> repository() const;
 
-                 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
-                     virtual_for_key() const;
+                 const std::tr1::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;
+                 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > > virtual_for_key() const;
                  const std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const;
                  const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const;
                  const std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> > contains_key() const;

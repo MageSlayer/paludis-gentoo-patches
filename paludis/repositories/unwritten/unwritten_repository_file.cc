@@ -195,7 +195,7 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
 
     CategoryNamePart category("x");
     PackageNamePart package("x");
-    SlotName slot("x");
+    std::tr1::shared_ptr<MetadataValueKey<SlotName> > slot;
     VersionSpec version("0");
     std::tr1::shared_ptr<UnwrittenRepositoryFileEntry> entry;
     while (std::getline(file, line))
@@ -242,7 +242,7 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
                     (+simple_parser::any_of(" \t"))
                     ))
         {
-            slot = SlotName(token);
+            slot.reset(new LiteralMetadataValueKey<SlotName>("SLOT", "Slot", mkt_internal, SlotName(token)));
 
             if (line_parser.consume(
                         (+simple_parser::any_except(" \t") >> token)

@@ -64,6 +64,17 @@ namespace paludis
     };
 }
 
+namespace
+{
+    std::string slot_as_string(const std::tr1::shared_ptr<const PackageID> & id)
+    {
+        if (id->slot_key())
+            return stringify(id->slot_key()->value());
+        else
+            return "(none)";
+    }
+}
+
 ConsoleQueryTask::ConsoleQueryTask(const Environment * const e) :
     PrivateImplementationPattern<ConsoleQueryTask>(new Implementation<ConsoleQueryTask>(e))
 {
@@ -214,7 +225,7 @@ ConsoleQueryTask::display_versions_by_repository(const PackageDepSpec &,
             if ((*e)->repository()->name() == *r)
             {
                 /* show the slot, if we're about to move onto a new slot */
-                std::string slot_name(stringify((*e)->slot()));
+                std::string slot_name(slot_as_string(*e));
                 if (old_slot.empty())
                     old_slot = slot_name;
                 else if (old_slot != slot_name)
@@ -544,6 +555,23 @@ namespace
             }
 
             void visit(const MetadataValueKey<std::string> & k)
+            {
+                if (k.type() == type)
+                {
+                    if (task->want_raw())
+                    {
+                        task->output_left_column(k.raw_name() + ":", in);
+                        task->output_right_column(stringify(k.value()));
+                    }
+                    else
+                    {
+                        task->output_left_column(k.human_name() + ":", in);
+                        task->output_right_column(stringify(k.value()));
+                    }
+                }
+            }
+
+            void visit(const MetadataValueKey<SlotName> & k)
             {
                 if (k.type() == type)
                 {
