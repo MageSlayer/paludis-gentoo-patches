@@ -441,6 +441,7 @@ AccountsID::perform_action(Action & action) const
                             value_for<n::environment_file>(FSEntry("/dev/null")),
                             value_for<n::image_dir>(fs_location_key()->value()),
                             value_for<n::options>(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs),
+                            value_for<n::output_manager>(install_action->options.output_manager()),
                             value_for<n::package_id>(shared_from_this()),
                             value_for<n::used_this_for_config_protect>(install_action->options.used_this_for_config_protect())
                             ));

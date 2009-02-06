@@ -66,6 +66,7 @@ namespace paludis
         struct manifest_interface;
         struct mirrors_interface;
         struct options;
+        struct output_manager;
         struct package_id;
         struct path;
         struct profile;
@@ -160,6 +161,7 @@ namespace paludis
         NamedValue<n::environment_file, FSEntry> environment_file;
         NamedValue<n::image_dir, FSEntry> image_dir;
         NamedValue<n::options, MergerOptions> options;
+        NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
         NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
         NamedValue<n::used_this_for_config_protect, std::tr1::function<void (const std::string &)> > used_this_for_config_protect;
     };
