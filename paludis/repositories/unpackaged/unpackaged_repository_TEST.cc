@@ -33,6 +33,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/standard_output_manager.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -230,6 +231,7 @@ namespace test_cases
 
             InstallAction action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(installed_repo),
+                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
                     ));
@@ -284,6 +286,7 @@ namespace test_cases
 
             InstallAction action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(installed_repo),
+                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
                     ));

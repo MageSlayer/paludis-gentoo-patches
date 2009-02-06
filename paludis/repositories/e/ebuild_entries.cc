@@ -436,13 +436,13 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                 stringify(_imp->e_repository->name()));
         FetchVisitor f(_imp->params.environment(), id, *id->eapi(),
                 _imp->e_repository->params().distdir(), o.fetch_unneeded(), fetch_userpriv_ok, mirrors_name,
-                id->fetches_key()->initial_label(), o.safe_resume(), o.maybe_output_deviant());
+                id->fetches_key()->initial_label(), o.safe_resume(), o.output_manager());
         id->fetches_key()->value()->root()->accept(f);
         CheckFetchedFilesVisitor c(_imp->environment, id, _imp->e_repository->params().distdir(),
                 o.fetch_unneeded(), fetch_restrict,
                 ((_imp->e_repository->layout()->package_directory(id->name())) / "Manifest"),
                 _imp->e_repository->params().use_manifest(),
-                o.maybe_output_deviant(), o.exclude_unmirrorable());
+                o.output_manager(), o.exclude_unmirrorable());
         id->fetches_key()->value()->root()->accept(c);
 
         if (c.need_nofetch())
@@ -483,7 +483,7 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                         value_for<n::a>(archives),
                         value_for<n::aa>(all_archives),
                         value_for<n::expand_vars>(expand_vars),
-                        value_for<n::maybe_output_deviant>(o.maybe_output_deviant()),
+                        value_for<n::output_manager>(o.output_manager()),
                         value_for<n::profiles>(_imp->params.profiles()),
                         value_for<n::root>("/"),
                         value_for<n::use>(use),

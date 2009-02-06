@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -120,7 +120,6 @@ namespace paludis
             LogLevel _log_level;
             LogContext _log_context;
 
-            LogMessageHandler(const LogMessageHandler &);
             LogMessageHandler(Log * const, const std::string &, const LogLevel, const LogContext);
             void operator= (const LogMessageHandler &);
 
@@ -129,6 +128,14 @@ namespace paludis
         public:
             ///\name Basic operations
             ///\{
+
+            /**
+             * Should really be an rvalue ref, use only for returning a newly
+             * constructed message.
+             *
+             * \since 0.36
+             */
+            LogMessageHandler(const LogMessageHandler &);
 
             ~LogMessageHandler();
 

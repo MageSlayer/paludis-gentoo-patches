@@ -32,6 +32,8 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/output_manager.hh>
+#include <paludis/util/standard_output_manager.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
@@ -139,6 +141,7 @@ namespace
 
             InstallAction action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(installed_repo),
+                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
                     ));

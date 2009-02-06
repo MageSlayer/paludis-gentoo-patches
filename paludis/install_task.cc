@@ -49,6 +49,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/standard_output_manager.hh>
 #include <paludis/handled_information.hh>
 #include <tr1/functional>
 #include <sstream>
@@ -116,7 +117,6 @@ namespace paludis
         Environment * const env;
         DepList dep_list;
         FetchActionOptions fetch_options;
-        InstallActionOptions install_options;
 
         std::string config_protect;
 
@@ -153,17 +153,9 @@ namespace paludis
                     make_named_values<FetchActionOptions>(
                         value_for<n::exclude_unmirrorable>(false),
                         value_for<n::fetch_unneeded>(false),
-                        value_for<n::maybe_output_deviant>(make_null_shared_ptr()),
+                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
                         value_for<n::safe_resume>(false)
                         )),
-            install_options(
-                    make_named_values<InstallActionOptions>(
-                        value_for<n::destination>(std::tr1::shared_ptr<Repository>()),
-                        value_for<n::used_this_for_config_protect>(std::tr1::bind(
-                                &Implementation<InstallTask>::assign_config_protect,
-                                this, std::tr1::placeholders::_1)),
-                        value_for<n::want_phase>(std::tr1::function<WantPhase (const std::string &)>())
-                    )),
             config_protect(""),
             targets(new SetSpecTree(make_shared_ptr(new AllDepSpec))),
             destinations(d),
@@ -768,8 +760,16 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
 
         if (! _imp->fetch_only)
         {
+            InstallActionOptions install_options(make_named_values<InstallActionOptions>(
+                        value_for<n::destination>(dep->destination()),
+                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
+                        value_for<n::used_this_for_config_protect>(std::tr1::bind(
+                                &Implementation<InstallTask>::assign_config_protect,
+                                _imp.get(), std::tr1::placeholders::_1)),
+                        value_for<n::want_phase>(std::tr1::function<WantPhase (const std::string &)>())
+                    ));
+
             bool done_any(false);
-            _imp->install_options.destination() = dep->destination();
 
             bool apply_phases(false);
             if (! _imp->abort_at_phases->empty() || ! _imp->skip_phases->empty() || ! _imp->skip_until_phases->empty())
@@ -782,14 +782,14 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
                     apply_phases = true;
             }
             if (apply_phases)
-                _imp->install_options.want_phase() = std::tr1::bind(&want_phase_function, this,
+                install_options.want_phase() = std::tr1::bind(&want_phase_function, this,
                     std::tr1::cref(_imp->abort_at_phases), std::tr1::cref(_imp->skip_phases), std::tr1::cref(_imp->skip_until_phases),
                     std::tr1::ref(done_any), std::tr1::placeholders::_1);
             else
-                _imp->install_options.want_phase() = std::tr1::bind(&want_all_phases_function, this,
+                install_options.want_phase() = std::tr1::bind(&want_all_phases_function, this,
                     std::tr1::ref(done_any), std::tr1::placeholders::_1);
 
-            InstallAction install_action(_imp->install_options);
+            InstallAction install_action(install_options);
             dep->package_id()->perform_action(install_action);
         }
     }

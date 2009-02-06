@@ -65,9 +65,9 @@ namespace paludis
         struct info_vars;
         struct load_environment;
         struct loadsaveenv_dir;
-        struct maybe_output_deviant;
         struct merger_options;
         struct output_directory;
+        struct output_manager;
         struct package_id;
         struct portdir;
         struct profiles;
@@ -124,7 +124,7 @@ namespace paludis
             NamedValue<n::a, std::string> a;
             NamedValue<n::aa, std::string> aa;
             NamedValue<n::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > > expand_vars;
-            NamedValue<n::maybe_output_deviant, std::tr1::shared_ptr<OutputDeviant> > maybe_output_deviant;
+            NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
             NamedValue<n::profiles, std::tr1::shared_ptr<const FSEntrySequence> > profiles;
             NamedValue<n::root, std::string> root;
             NamedValue<n::use, std::string> use;

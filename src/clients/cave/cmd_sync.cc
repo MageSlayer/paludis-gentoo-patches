@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,11 +25,11 @@
 #include <paludis/package_database.hh>
 #include <paludis/util/action_queue.hh>
 #include <paludis/util/mutex.hh>
-#include <paludis/util/output_deviator.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/condition_variable.hh>
 #include <paludis/util/thread.hh>
+#include <paludis/util/output_manager.hh>
 #include <paludis/repository.hh>
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
@@ -50,7 +50,7 @@ namespace paludis
 {
     namespace n
     {
-        struct output_deviant;
+        struct output_manager;
         struct success;
         struct summary;
     }
@@ -58,6 +58,43 @@ namespace paludis
 
 namespace
 {
+    struct TailAndLogOutputManager :
+        OutputManager
+    {
+        TailAndLogOutputManager(const std::string &)
+        {
+        }
+
+        virtual std::ostream & stdout_stream()
+        {
+            return std::cout;
+        }
+
+        virtual std::ostream & stderr_stream()
+        {
+            return std::cerr;
+        }
+
+        virtual LogMessageHandler log_message(const std::string & id, const LogLevel l, const LogContext c)
+        {
+            return Log::get_instance()->message(id, l, c);
+        }
+
+        std::tr1::shared_ptr<const Sequence<std::string> > tail(const bool) const
+        {
+            return make_shared_ptr(new Sequence<std::string>);
+        }
+
+        void discard_log()
+        {
+        }
+
+        const FSEntry log_file_name() const
+        {
+            return FSEntry("/dev/null");
+        }
+    };
+
     struct SyncCommandLine :
         CaveCommandCommandLine
     {
@@ -85,7 +122,7 @@ namespace
 
     struct Message
     {
-        NamedValue<n::output_deviant, std::tr1::shared_ptr<OutputDeviant> > output_deviant;
+        NamedValue<n::output_manager, std::tr1::shared_ptr<TailAndLogOutputManager> > output_manager;
         NamedValue<n::success, bool> success;
         NamedValue<n::summary, std::string> summary;
     };
@@ -94,7 +131,7 @@ namespace
 
     void do_one_sync_notifier(const RepositoryName & r, Mutex & notifier_mutex,
             Mutex & count_mutex, ConditionVariable & notifier_condition, int & np, int & na, int & nd,
-            bool & finished, OutputDeviant & output_deviant)
+            bool & finished, TailAndLogOutputManager & output_manager)
     {
         bool first(true);
         while (true)
@@ -107,7 +144,7 @@ namespace
                 if (! first)
                 {
                     cout << format_general_spad(f::sync_repo_active(), stringify(r), np, na, nd);
-                    std::tr1::shared_ptr<const Sequence<std::string> > tail(output_deviant.tail(true));
+                    std::tr1::shared_ptr<const Sequence<std::string> > tail(output_manager.tail(true));
                     if (tail && tail->begin() != tail->end())
                     {
                         for (Sequence<std::string>::ConstIterator t(tail->begin()), t_end(tail->end()) ;
@@ -124,15 +161,10 @@ namespace
     }
 
     void do_one_sync(const std::tr1::shared_ptr<Environment> & env, const RepositoryName & r, Mutex & mutex,
-            Messages & messages, int & retcode, int & np, int & na, int & nd,
-            OutputDeviator & output_deviator)
+            Messages & messages, int & retcode, int & np, int & na, int & nd)
     {
-        std::tr1::shared_ptr<OutputDeviant> output_deviant;
-
-        {
-            Lock lock(mutex);
-            output_deviant = output_deviator.make_output_deviant("sync-" + stringify(r), 10);
-        }
+        std::tr1::shared_ptr<TailAndLogOutputManager> output_manager(
+                new TailAndLogOutputManager("sync-" + stringify(r)));
 
         bool done_decrement(false);
 
@@ -166,11 +198,11 @@ namespace
                             std::tr1::ref(notifier_mutex), std::tr1::ref(mutex),
                             std::tr1::ref(notifier_condition),
                             std::tr1::ref(np), std::tr1::ref(na), std::tr1::ref(nd),
-                            std::tr1::ref(finished), std::tr1::ref(*output_deviant)));
+                            std::tr1::ref(finished), std::tr1::ref(*output_manager)));
 
                 try
                 {
-                    result = repo->syncable_interface()->sync(output_deviant);
+                    result = repo->syncable_interface()->sync(output_manager);
 
                     {
                         Lock lock(mutex);
@@ -209,7 +241,7 @@ namespace
             {
                 Lock lock(mutex);
                 messages.insert(make_pair(stringify(r), make_named_values<Message>(
-                                value_for<n::output_deviant>(output_deviant),
+                                value_for<n::output_manager>(output_manager),
                                 value_for<n::success>(true),
                                 value_for<n::summary>("success")
                                 )));
@@ -219,7 +251,7 @@ namespace
             {
                 Lock lock(mutex);
                 messages.insert(make_pair(stringify(r), make_named_values<Message>(
-                                value_for<n::output_deviant>(output_deviant),
+                                value_for<n::output_manager>(output_manager),
                                 value_for<n::success>(true),
                                 value_for<n::summary>("no syncing required")
                                 )));
@@ -239,13 +271,13 @@ namespace
 
             retcode |= 1;
             messages.insert(make_pair(stringify(r), make_named_values<Message>(
-                            value_for<n::output_deviant>(output_deviant),
+                            value_for<n::output_manager>(output_manager),
                             value_for<n::success>(false),
                             value_for<n::summary>(e.message() + " (" + e.what() + ")")
                             )));
 
             cout << format_general_spad(f::sync_repo_done_failure(), stringify(r), np, na, nd);
-            std::tr1::shared_ptr<const Sequence<std::string> > tail(output_deviant->tail(true));
+            std::tr1::shared_ptr<const Sequence<std::string> > tail(output_manager->tail(true));
             if (tail && tail->begin() != tail->end())
             {
                 for (Sequence<std::string>::ConstIterator t(tail->begin()), t_end(tail->end()) ;
@@ -281,8 +313,6 @@ SyncCommand::run(
     int retcode(0);
     Messages messages;
 
-    OutputDeviator output_deviator(FSEntry("/tmp"));
-
     std::set<RepositoryName, RepositoryNameComparator> repos;
     if (cmdline.begin_parameters() != cmdline.end_parameters())
         for (SyncCommandLine::ParametersConstIterator p(cmdline.begin_parameters()), p_end(cmdline.end_parameters()) ;
@@ -313,7 +343,7 @@ SyncCommand::run(
                 r != r_end ; ++r)
             actions.enqueue(std::tr1::bind(&do_one_sync, env, *r, std::tr1::ref(mutex),
                         std::tr1::ref(messages), std::tr1::ref(retcode), std::tr1::ref(pending),
-                        std::tr1::ref(active), std::tr1::ref(done), std::tr1::ref(output_deviator)));
+                        std::tr1::ref(active), std::tr1::ref(done)));
     }
 
     if (0 != env->perform_hook(Hook("sync_all_post")
@@ -329,12 +359,12 @@ SyncCommand::run(
         if (m->second.success())
         {
             cout << format_general_kv(f::sync_message_success(), m->first, m->second.summary());
-            m->second.output_deviant()->discard_log();
+            m->second.output_manager()->discard_log();
         }
         else
         {
             cout << format_general_kv(f::sync_message_failure(), m->first, m->second.summary());
-            cout << format_general_kv(f::sync_message_failure_message(), "Log file", stringify(m->second.output_deviant()->log_file_name()));
+            cout << format_general_kv(f::sync_message_failure_message(), "Log file", stringify(m->second.output_manager()->log_file_name()));
         }
     }
     cout << endl;

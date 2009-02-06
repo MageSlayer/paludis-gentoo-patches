@@ -27,6 +27,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/standard_output_manager.hh>
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
@@ -351,6 +352,7 @@ namespace test_cases
 
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(vdb_repo),
+                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
                     ));
@@ -467,6 +469,7 @@ namespace test_cases
 
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(vdb_repo),
+                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
                     ));
@@ -583,6 +586,7 @@ namespace test_cases
 
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(vdb_repo),
+                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
                     ));
@@ -979,6 +983,7 @@ namespace test_cases
 
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(vdb_repo),
+                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
                     ));
@@ -1216,6 +1221,7 @@ namespace test_cases
 
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(vdb_repo),
+                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
                     ));
@@ -1307,6 +1313,7 @@ namespace test_cases
 
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(vdb_repo),
+                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
                     ));

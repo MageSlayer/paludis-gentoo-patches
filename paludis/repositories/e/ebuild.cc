@@ -40,7 +40,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/cookie.hh>
-#include <paludis/util/output_deviator.hh>
+#include <paludis/util/output_manager.hh>
 
 #include <paludis/about.hh>
 #include <paludis/environment.hh>
@@ -675,10 +675,9 @@ EbuildNoFetchCommand::extend_command(const Command & cmd)
             j(fetch_params.expand_vars()->end()) ; i != j ; ++i)
         result.with_setenv(i->first, i->second);
 
-    if (fetch_params.maybe_output_deviant())
-        result
-            .with_captured_stderr_stream(fetch_params.maybe_output_deviant()->stderr_stream())
-            .with_captured_stdout_stream(fetch_params.maybe_output_deviant()->stdout_stream());
+    result
+        .with_captured_stderr_stream(&fetch_params.output_manager()->stderr_stream())
+        .with_captured_stdout_stream(&fetch_params.output_manager()->stdout_stream());
 
     return result;
 }

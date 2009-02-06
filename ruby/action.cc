@@ -22,6 +22,7 @@
 #include <paludis/action.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/standard_output_manager.hh>
 #include <ruby.h>
 
 using namespace paludis;
@@ -256,7 +257,7 @@ namespace
             ptr = new FetchActionOptions(make_named_values<FetchActionOptions>(
                         value_for<n::exclude_unmirrorable>(v_exclude_unmirrorable),
                         value_for<n::fetch_unneeded>(v_fetch_unneeded),
-                        value_for<n::maybe_output_deviant>(make_null_shared_ptr()),
+                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
                         value_for<n::safe_resume>(v_safe_resume)
                     ));
 
@@ -515,6 +516,7 @@ namespace
 
             ptr = new InstallActionOptions(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(v_destination),
+                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
                     ));

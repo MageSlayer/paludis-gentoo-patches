@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2009 Kim Højgaard-Hansen
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,6 +32,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/standard_output_manager.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
@@ -99,7 +100,7 @@ namespace
                     FetchAction a(make_named_values<FetchActionOptions>(
                             value_for<n::exclude_unmirrorable>(false),
                             value_for<n::fetch_unneeded>(true),
-                            value_for<n::maybe_output_deviant>(make_null_shared_ptr()),
+                            value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
                             value_for<n::safe_resume>(true)
                             ));
                     (*i)->perform_action(a);

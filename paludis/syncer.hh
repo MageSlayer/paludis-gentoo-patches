@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_SYNCER_HH 1
 
 #include <paludis/util/exception.hh>
+#include <paludis/util/output_manager-fwd.hh>
 #include <paludis/repository.hh>
 #include <string>
 
@@ -43,8 +44,7 @@ namespace paludis
         struct filter_file;
         struct local;
         struct options;
-        struct output_deviant;
-        struct output_prefix;
+        struct output_manager;
         struct remote;
     }
 
@@ -61,12 +61,9 @@ namespace paludis
         NamedValue<n::options, std::string> options;
 
         /**
-         * May be a zero pointer.
-         * \since 0.32
+         * \since 0.36
          */
-        NamedValue<n::output_deviant, std::tr1::shared_ptr<const OutputDeviant> > output_deviant;
-
-        NamedValue<n::output_prefix, std::string> output_prefix;
+        NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
     };
 
     /**

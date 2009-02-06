@@ -25,6 +25,8 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/standard_output_manager.hh>
 #include <paludis/action.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/generator.hh>
@@ -122,6 +124,7 @@ namespace test_cases
 
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(exndbam_repo),
+                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
                     ));

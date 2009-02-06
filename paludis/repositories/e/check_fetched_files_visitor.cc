@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,7 +31,6 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
@@ -40,13 +39,12 @@
 #include <paludis/util/sha256.hh>
 #include <paludis/util/md5.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/output_deviator.hh>
+#include <paludis/util/output_manager.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <algorithm>
-#include <iostream>
 #include <fstream>
 #include <list>
 #include <set>
@@ -72,8 +70,7 @@ namespace paludis
 
         const std::tr1::shared_ptr<Manifest2Reader> m2r;
         const UseManifest use_manifest;
-        const std::tr1::shared_ptr<OutputDeviant> maybe_output_deviant;
-        std::ostream * out;
+        const std::tr1::shared_ptr<OutputManager> output_manager;
 
         Implementation(
                 const Environment * const e,
@@ -83,7 +80,7 @@ namespace paludis
                 const bool n,
                 const FSEntry & m2,
                 const UseManifest um,
-                const std::tr1::shared_ptr<OutputDeviant> & md,
+                const std::tr1::shared_ptr<OutputManager> & md,
                 const bool x) :
             env(e),
             id(i),
@@ -95,8 +92,7 @@ namespace paludis
             in_nofetch(n),
             m2r(new Manifest2Reader(m2)),
             use_manifest(um),
-            maybe_output_deviant(md),
-            out(md ? maybe_output_deviant->stdout_stream() : &std::cout)
+            output_manager(md)
         {
         }
     };
@@ -110,7 +106,7 @@ CheckFetchedFilesVisitor::CheckFetchedFilesVisitor(
         const bool n,
         const FSEntry & m2,
         const UseManifest um,
-        const std::tr1::shared_ptr<OutputDeviant> & md,
+        const std::tr1::shared_ptr<OutputManager> & md,
         const bool x) :
     PrivateImplementationPattern<CheckFetchedFilesVisitor>(new Implementation<CheckFetchedFilesVisitor>(e, i, d, c, n, m2, um, md, x))
 {
@@ -191,7 +187,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
         {
             case manifest_use:
             case manifest_ignore:
-                Log::get_instance()->message("e.manifest.empty", ll_debug, lc_context) << "Empty or non-existent Manifest file";
+                _imp->output_manager->log_message("e.manifest.empty", ll_debug, lc_context) << "Empty or non-existent Manifest file";
                 return true;
 
             case manifest_require:
@@ -219,14 +215,14 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
             continue;
         found = true;
 
-        Log::get_instance()->message("e.manifest.size", ll_debug, lc_context)
+        _imp->output_manager->log_message("e.manifest.size", ll_debug, lc_context)
             << "Actual size = " << distfile.file_size()
             << "; Manifest file size = " << m->size();
         if (distfile.file_size() != m->size())
         {
-            Log::get_instance()->message("e.manifest.no_size", ll_debug, lc_context)
+            _imp->output_manager->log_message("e.manifest.no_size", ll_debug, lc_context)
                 << "Malformed Manifest: no file size found";
-            *_imp->out << "incorrect size";
+            _imp->output_manager->stdout_stream() << "incorrect size";
             _imp->failures->push_back(make_named_values<FetchActionFailure>(
                     value_for<n::failed_automatic_fetching>(false),
                     value_for<n::failed_integrity_checks>("Incorrect file size"),
@@ -239,7 +235,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
         std::ifstream file_stream(stringify(distfile).c_str());
         if (! file_stream)
         {
-            *_imp->out << "unreadable file";
+            _imp->output_manager->stdout_stream() << "unreadable file";
             _imp->failures->push_back(make_named_values<FetchActionFailure>(
                     value_for<n::failed_automatic_fetching>(false),
                     value_for<n::failed_integrity_checks>("Unreadable file"),
@@ -254,9 +250,9 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
             RMD160 rmd160sum(file_stream);
             if (rmd160sum.hexsum() != m->rmd160())
             {
-                Log::get_instance()->message("e.manifest.rmd160.failure", ll_debug, lc_context)
+                _imp->output_manager->log_message("e.manifest.rmd160.failure", ll_debug, lc_context)
                     << "Malformed Manifest: failed RMD160 checksum";
-                *_imp->out << "failed RMD160";
+                _imp->output_manager->stdout_stream() << "failed RMD160";
                 _imp->failures->push_back(make_named_values<FetchActionFailure>(
                         value_for<n::failed_automatic_fetching>(false),
                         value_for<n::failed_integrity_checks>("Failed RMD160 checksum"),
@@ -265,7 +261,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                         ));
                 return false;
             }
-            Log::get_instance()->message("e.manifest.rmd160.result", ll_debug, lc_context)
+            _imp->output_manager->log_message("e.manifest.rmd160.result", ll_debug, lc_context)
                 << "Actual RMD160 = " << rmd160sum.hexsum();
             file_stream.clear();
             file_stream.seekg(0, std::ios::beg);
@@ -276,9 +272,9 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
             SHA1 sha1sum(file_stream);
             if (sha1sum.hexsum() != m->sha1())
             {
-                Log::get_instance()->message("e.manifest.sha1.failure", ll_debug, lc_context)
+                _imp->output_manager->log_message("e.manifest.sha1.failure", ll_debug, lc_context)
                     << "Malformed Manifest: failed SHA1 checksum";
-                *_imp->out << "failed SHA1";
+                _imp->output_manager->stdout_stream() << "failed SHA1";
                 _imp->failures->push_back(make_named_values<FetchActionFailure>(
                         value_for<n::failed_automatic_fetching>(false),
                         value_for<n::failed_integrity_checks>("Failed SHA1 checksum"),
@@ -287,7 +283,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                         ));
                 return false;
             }
-            Log::get_instance()->message("e.manifest.sha1.result", ll_debug, lc_context)
+            _imp->output_manager->log_message("e.manifest.sha1.result", ll_debug, lc_context)
                 << "Actual SHA1 = " << sha1sum.hexsum();
             file_stream.clear();
             file_stream.seekg(0, std::ios::beg);
@@ -298,9 +294,9 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
             SHA256 sha256sum(file_stream);
             if (sha256sum.hexsum() != m->sha256())
             {
-                Log::get_instance()->message("e.manifest.sha256.failure", ll_debug, lc_context)
+                _imp->output_manager->log_message("e.manifest.sha256.failure", ll_debug, lc_context)
                     << "Malformed Manifest: failed SHA256 checksum";
-                *_imp->out << "failed SHA256";
+                _imp->output_manager->stdout_stream() << "failed SHA256";
                 _imp->failures->push_back(make_named_values<FetchActionFailure>(
                         value_for<n::failed_automatic_fetching>(false),
                         value_for<n::failed_integrity_checks>("Failed SHA256 checksum"),
@@ -309,7 +305,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                         ));
                 return false;
             }
-            Log::get_instance()->message("e.manifest.sha256.result", ll_debug, lc_context)
+            _imp->output_manager->log_message("e.manifest.sha256.result", ll_debug, lc_context)
                 << "Actual SHA256 = " << sha256sum.hexsum();
             file_stream.clear();
             file_stream.seekg(0, std::ios::beg);
@@ -320,9 +316,9 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
             MD5 md5sum(file_stream);
             if (md5sum.hexsum() != m->md5())
             {
-                Log::get_instance()->message("e.manifest.md5.failure", ll_debug, lc_context)
+                _imp->output_manager->log_message("e.manifest.md5.failure", ll_debug, lc_context)
                     << "Malformed Manifest: failed MD5 checksum";
-                *_imp->out << "failed MD5";
+                _imp->output_manager->stdout_stream() << "failed MD5";
                 _imp->failures->push_back(make_named_values<FetchActionFailure>(
                         value_for<n::failed_automatic_fetching>(false),
                         value_for<n::failed_integrity_checks>("Failed MD5 checksum"),
@@ -331,14 +327,14 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                         ));
                 return false;
             }
-            Log::get_instance()->message("e.manifest.md5.result", ll_debug, lc_context)
+            _imp->output_manager->log_message("e.manifest.md5.result", ll_debug, lc_context)
                 << "Actual MD5 = " << md5sum.hexsum();
         }
     }
 
     if (! found)
     {
-        *_imp->out << "not in Manifest";
+        _imp->output_manager->stdout_stream() << "not in Manifest";
         _imp->failures->push_back(make_named_values<FetchActionFailure>(
                     value_for<n::failed_automatic_fetching>(false),
                     value_for<n::failed_integrity_checks>("Not in Manifest"),
@@ -358,13 +354,13 @@ CheckFetchedFilesVisitor::visit(const FetchableURISpecTree::NodeType<FetchableUR
 
     if (_imp->done.end() != _imp->done.find(node.spec()->filename()))
     {
-        Log::get_instance()->message("e.check_fetched_files.already_checked", ll_debug, lc_context)
+        _imp->output_manager->log_message("e.check_fetched_files.already_checked", ll_debug, lc_context)
             << "Already checked '" << node.spec()->filename() << "'";
         return;
     }
     _imp->done.insert(node.spec()->filename());
 
-    *_imp->out << "Checking '" << node.spec()->filename() << "'... " << std::flush;
+    _imp->output_manager->stdout_stream() << "Checking '" << node.spec()->filename() << "'... " << std::flush;
 
     if (! (_imp->distdir / node.spec()->filename()).is_regular_file())
     {
@@ -372,9 +368,9 @@ CheckFetchedFilesVisitor::visit(const FetchableURISpecTree::NodeType<FetchableUR
         {
             if (! _imp->exclude_unmirrorable)
             {
-                Log::get_instance()->message("e.check_fetched_files.requires_manual", ll_debug, lc_context)
+                _imp->output_manager->log_message("e.check_fetched_files.requires_manual", ll_debug, lc_context)
                     << "Manual fetch required for '" << node.spec()->filename() << "'";
-                *_imp->out << "requires manual fetch";
+                _imp->output_manager->stdout_stream() << "requires manual fetch";
                 _imp->need_nofetch = true;
                 _imp->failures->push_back(make_named_values<FetchActionFailure>(
                         value_for<n::failed_automatic_fetching>(false),
@@ -386,9 +382,9 @@ CheckFetchedFilesVisitor::visit(const FetchableURISpecTree::NodeType<FetchableUR
         }
         else
         {
-            Log::get_instance()->message("e.check_fetched_files.does_not_exist", ll_debug, lc_context)
+            _imp->output_manager->log_message("e.check_fetched_files.does_not_exist", ll_debug, lc_context)
                 << "Automatic fetch failed for '" << node.spec()->filename() << "'";
-            *_imp->out << "does not exist";
+            _imp->output_manager->stdout_stream() << "does not exist";
             _imp->failures->push_back(make_named_values<FetchActionFailure>(
                         value_for<n::failed_automatic_fetching>(true),
                         value_for<n::failed_integrity_checks>(""),
@@ -399,8 +395,8 @@ CheckFetchedFilesVisitor::visit(const FetchableURISpecTree::NodeType<FetchableUR
     }
     else if (0 == (_imp->distdir / node.spec()->filename()).file_size())
     {
-        Log::get_instance()->message("e.check_fetched_files.empty", ll_debug, lc_context) << "Empty file for '" << node.spec()->filename() << "'";
-        *_imp->out << "empty file";
+        _imp->output_manager->log_message("e.check_fetched_files.empty", ll_debug, lc_context) << "Empty file for '" << node.spec()->filename() << "'";
+        _imp->output_manager->stdout_stream() << "empty file";
         _imp->failures->push_back(make_named_values<FetchActionFailure>(
                 value_for<n::failed_automatic_fetching>(false),
                 value_for<n::failed_integrity_checks>("SIZE (empty file)"),
@@ -410,16 +406,16 @@ CheckFetchedFilesVisitor::visit(const FetchableURISpecTree::NodeType<FetchableUR
     }
     else if (! check_distfile_manifest(_imp->distdir / node.spec()->filename()))
     {
-        Log::get_instance()->message("e.check_fetched_files.failure", ll_debug, lc_context)
+        _imp->output_manager->log_message("e.check_fetched_files.failure", ll_debug, lc_context)
             << "Manifest check failed for '" << node.spec()->filename() << "'";
     }
     else
     {
-        Log::get_instance()->message("e.check_fetched_files.success", ll_debug, lc_context) << "Success for '" << node.spec()->filename() << "'";
-        *_imp->out << "ok";
+        _imp->output_manager->log_message("e.check_fetched_files.success", ll_debug, lc_context) << "Success for '" << node.spec()->filename() << "'";
+        _imp->output_manager->stdout_stream() << "ok";
     }
 
-    *_imp->out << std::endl;
+    _imp->output_manager->stdout_stream() << std::endl;
 }
 
 const std::tr1::shared_ptr<const Sequence<FetchActionFailure> >

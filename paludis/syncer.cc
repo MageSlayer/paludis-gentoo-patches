@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2006 Stephen Klimaszewski
  * Copyright (c) 2007 David Leverton
  *
@@ -28,7 +28,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/output_deviator.hh>
+#include <paludis/util/output_manager.hh>
 #include <list>
 
 using namespace paludis;
@@ -99,15 +99,9 @@ DefaultSyncer::sync(const SyncOptions & opts) const
             .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
             .with_setenv("PALUDIS_SYNC_FILTER_FILE", stringify(opts.filter_file())));
 
-    if (opts.output_deviant())
-        cmd
-            .with_captured_stderr_stream(opts.output_deviant()->stderr_stream())
-            .with_captured_stdout_stream(opts.output_deviant()->stdout_stream());
-    else if (! opts.output_prefix().empty())
-        cmd
-            .with_stdout_prefix(opts.output_prefix())
-            .with_stderr_prefix(opts.output_prefix())
-            .with_prefix_blank_lines();
+    cmd
+        .with_captured_stderr_stream(&opts.output_manager()->stderr_stream())
+        .with_captured_stdout_stream(&opts.output_manager()->stdout_stream());
 
     if (run_command(cmd))
         throw SyncFailedError(_local, _remote);

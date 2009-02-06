@@ -63,7 +63,7 @@ int main(int argc, char * argv[])
                 FetchAction fetch_action(make_named_values<FetchActionOptions>(
                             value_for<n::exclude_unmirrorable>(false),
                             value_for<n::fetch_unneeded>(false),
-                            value_for<n::maybe_output_deviant>(make_null_shared_ptr()),
+                            value_for<n::output_manager>(new StandardOutputManager()),
                             value_for<n::safe_resume>(true)
                             ));
                 try

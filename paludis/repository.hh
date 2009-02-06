@@ -33,7 +33,7 @@
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/named_value.hh>
-#include <paludis/util/output_deviator-fwd.hh>
+#include <paludis/util/output_manager-fwd.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key-fwd.hh>
 #include <paludis/metadata_key_holder.hh>
@@ -426,10 +426,9 @@ namespace paludis
             /**
              * Sync, if necessary.
              *
-             * \param output_deviant May be an empty pointer, for no deviation.
              * \return True if we synced successfully, false if we skipped sync.
              */
-            virtual bool sync(const std::tr1::shared_ptr<const OutputDeviant> & output_deviant) const = 0;
+            virtual bool sync(const std::tr1::shared_ptr<OutputManager> &) const = 0;
 
             ///\}
 
