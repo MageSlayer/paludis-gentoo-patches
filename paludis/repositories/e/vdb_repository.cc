@@ -69,11 +69,11 @@
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/output_manager.hh>
 
 #include <tr1/unordered_map>
 #include <tr1/functional>
 #include <fstream>
-#include <iostream>
 #include <functional>
 #include <algorithm>
 #include <vector>
@@ -374,7 +374,8 @@ VDBRepositoryKeyReadError::VDBRepositoryKeyReadError(
 
 void
 VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID> & id,
-        bool reinstalling, const std::string & merge_config_protect) const
+        bool reinstalling, const std::string & merge_config_protect,
+        const std::tr1::shared_ptr<OutputManager> & output_manager) const
 {
     Context context("When uninstalling '" + stringify(*id) + (reinstalling ? "' for a reinstall:" : "':"));
 
@@ -399,7 +400,7 @@ VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID>
     {
         if (can_skip_phase(id, *phase))
         {
-            std::cout << "--- No need to do anything for " << phase->equal_option("skipname") << " phase" << std::endl;
+            output_manager->stdout_stream() << "--- No need to do anything for " << phase->equal_option("skipname") << " phase" << std::endl;
             continue;
         }
 
@@ -425,8 +426,8 @@ VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID>
                         value_for<n::config_protect>(final_config_protect),
                         value_for<n::config_protect_mask>(config_protect_mask),
                         value_for<n::contents_file>(pkg_dir / "CONTENTS"),
-
                         value_for<n::environment>(_imp->params.environment()),
+                        value_for<n::output_manager>(output_manager),
                         value_for<n::package_id>(id),
                         value_for<n::root>(installed_root_key()->value())
                     ));
@@ -843,6 +844,7 @@ VDBRepository::merge(const MergeParams & m)
                 value_for<n::environment>(_imp->params.environment()),
                 value_for<n::image>(m.image_dir()),
                 value_for<n::options>(m.options()),
+                value_for<n::output_manager>(m.output_manager()),
                 value_for<n::package_id>(m.package_id()),
                 value_for<n::root>(installed_root_key()->value())
             ));
@@ -876,7 +878,7 @@ VDBRepository::merge(const MergeParams & m)
     merger.merge();
 
     if (is_replace)
-        perform_uninstall(is_replace, true, config_protect);
+        perform_uninstall(is_replace, true, config_protect, m.output_manager());
     if (std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id())
             ->eapi()->supported()->ebuild_phases()->ebuild_new_upgrade_phase_order())
     {
@@ -886,7 +888,7 @@ VDBRepository::merge(const MergeParams & m)
         {
             std::tr1::shared_ptr<const ERepositoryID> candidate(std::tr1::static_pointer_cast<const ERepositoryID>(*it));
             if (candidate != is_replace && slot_is_same(candidate, m.package_id()))
-                perform_uninstall(candidate, false, "");
+                perform_uninstall(candidate, false, "", m.output_manager());
         }
     }
 

@@ -364,6 +364,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
                 value_for<n::image>(m.image_dir()),
                 value_for<n::install_under>(install_under),
                 value_for<n::options>(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs),
+                value_for<n::output_manager>(m.output_manager()),
                 value_for<n::package_id>(m.package_id()),
                 value_for<n::root>(installed_root_key()->value())
             ));
@@ -382,7 +383,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
 
     if (if_overwritten_id)
     {
-        std::tr1::static_pointer_cast<const InstalledUnpackagedID>(if_overwritten_id)->uninstall(true);
+        std::tr1::static_pointer_cast<const InstalledUnpackagedID>(if_overwritten_id)->uninstall(true, m.output_manager());
     }
 }
 

@@ -23,7 +23,6 @@
 #include <paludis/util/graph-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
-#include <iostream>
 #include <fstream>
 
 using namespace paludis;

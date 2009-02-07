@@ -264,7 +264,8 @@ namespace test_cases
             const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::All())]->begin());
 
             UninstallAction action(make_named_values<UninstallActionOptions>(
-                        value_for<n::config_protect>("")
+                        value_for<n::config_protect>(""),
+                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager))
                     ));
             id->perform_action(action);
 
@@ -315,7 +316,8 @@ namespace test_cases
                                 &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
 
             UninstallAction action(make_named_values<UninstallActionOptions>(
-                        value_for<n::config_protect>("")
+                        value_for<n::config_protect>(""),
+                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager))
                     ));
             id->perform_action(action);
 
@@ -556,7 +558,8 @@ namespace test_cases
                 }
 
                 UninstallAction action(make_named_values<UninstallActionOptions>(
-                            value_for<n::config_protect>("")
+                            value_for<n::config_protect>(""),
+                            value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager))
                         ));
                 (*env[selection::RequireExactlyOne(generator::Matches(
                         parse_user_package_dep_spec("cat/pkg4a",
@@ -598,7 +601,8 @@ namespace test_cases
                 }
 
                 UninstallAction action(make_named_values<UninstallActionOptions>(
-                            value_for<n::config_protect>("")
+                            value_for<n::config_protect>(""),
+                            value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager))
                         ));
                 (*env[selection::RequireExactlyOne(generator::Matches(
                         parse_user_package_dep_spec("cat/pkg4b",

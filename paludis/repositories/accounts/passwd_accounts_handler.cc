@@ -25,11 +25,11 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/output_manager.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
-#include <iostream>
 #include <sys/types.h>
 #include <pwd.h>
 #include <grp.h>
@@ -42,14 +42,14 @@ PasswdAccountsHandler::merge(const MergeParams & params)
 {
     Context context("When installing '" + stringify(*params.package_id()) + "':");
 
-    std::cout << ">>> Installing " << *params.package_id() << " using passwd handler" << std::endl;
+    params.output_manager()->stdout_stream() << ">>> Installing " << *params.package_id() << " using passwd handler" << std::endl;
 
     if (params.package_id()->end_metadata() != params.package_id()->find_metadata("groupname"))
         merge_group(params);
     else
         merge_user(params);
 
-    std::cout << ">>> Finished installing " << *params.package_id() << std::endl;
+    params.output_manager()->stdout_stream() << ">>> Finished installing " << *params.package_id() << std::endl;
 }
 
 void
@@ -111,7 +111,7 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
         uid_t uid(destringify<uid_t>(preferred_uid));
         if (getpwuid(uid))
         {
-            std::cout << ">>> Preferred UID " << uid << " already in use, not specifying an ID" << std::endl;
+            params.output_manager()->stdout_stream() << ">>> Preferred UID " << uid << " already in use, not specifying an ID" << std::endl;
             preferred_uid = "";
         }
 
@@ -247,7 +247,7 @@ PasswdAccountsHandler::merge_group(const MergeParams & params)
         uid_t gid(destringify<uid_t>(preferred_gid));
         if (getgrgid(gid))
         {
-            std::cout << ">>> Preferred GID " << gid << " already in use, not specifying an ID" << std::endl;
+            params.output_manager()->stdout_stream() << ">>> Preferred GID " << gid << " already in use, not specifying an ID" << std::endl;
             preferred_gid = "";
         }
 

@@ -75,7 +75,8 @@ namespace
             const std::string & c)
     {
         return new UninstallActionOptions(make_named_values<UninstallActionOptions>(
-                    value_for<n::config_protect>(c)
+                    value_for<n::config_protect>(c),
+                    value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager))
                     ));
     }
 

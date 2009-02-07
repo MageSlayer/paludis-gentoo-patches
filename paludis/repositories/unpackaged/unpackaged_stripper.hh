@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,6 +22,7 @@
 
 #include <paludis/stripper.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/util/output_manager-fwd.hh>
 #include <tr1/memory>
 
 namespace paludis
@@ -30,6 +31,7 @@ namespace paludis
     {
         struct debug_dir;
         struct image_dir;
+        struct output_manager;
         struct package_id;
         struct split;
         struct strip;
@@ -41,6 +43,7 @@ namespace paludis
         {
             NamedValue<n::debug_dir, FSEntry> debug_dir;
             NamedValue<n::image_dir, FSEntry> image_dir;
+            NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
             NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
             NamedValue<n::split, bool> split;
             NamedValue<n::strip, bool> strip;

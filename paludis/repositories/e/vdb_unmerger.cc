@@ -39,12 +39,12 @@ using namespace paludis;
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/output_manager.hh>
 
 #include <list>
 #include <map>
 #include <vector>
 #include <fstream>
-#include <iostream>
 
 namespace paludis
 {
@@ -338,7 +338,7 @@ VDBUnmerger::check_dir(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo> 
 void
 VDBUnmerger::display(const std::string & message) const
 {
-    std::cout << message << std::endl;
+    _imp->options.output_manager()->stdout_stream() << message << std::endl;
 }
 
 VDBUnmergerError::VDBUnmergerError(const std::string & s) throw () :

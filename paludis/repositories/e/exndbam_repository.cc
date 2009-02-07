@@ -36,6 +36,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/output_manager.hh>
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
 #include <paludis/ndbam.hh>
@@ -46,7 +47,6 @@
 #include <paludis/action.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <tr1/functional>
-#include <iostream>
 #include <fstream>
 
 using namespace paludis;
@@ -372,6 +372,7 @@ ExndbamRepository::merge(const MergeParams & m)
             value_for<n::image>(m.image_dir()),
             value_for<n::install_under>(FSEntry("/")),
             value_for<n::options>(m.options()),
+            value_for<n::output_manager>(m.output_manager()),
             value_for<n::package_id>(m.package_id()),
             value_for<n::root>(installed_root_key()->value())
             ));
@@ -393,7 +394,7 @@ ExndbamRepository::merge(const MergeParams & m)
 
     if (if_overwritten_id)
     {
-        perform_uninstall(std::tr1::static_pointer_cast<const ERepositoryID>(if_overwritten_id), true, config_protect);
+        perform_uninstall(std::tr1::static_pointer_cast<const ERepositoryID>(if_overwritten_id), true, config_protect, m.output_manager());
     }
     if (std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id())
             ->eapi()->supported()->ebuild_phases()->ebuild_new_upgrade_phase_order())
@@ -404,7 +405,7 @@ ExndbamRepository::merge(const MergeParams & m)
         {
             std::tr1::shared_ptr<const ERepositoryID> candidate(std::tr1::static_pointer_cast<const ERepositoryID>(*it));
             if (candidate != if_overwritten_id && slot_is_same(candidate, m.package_id()))
-                perform_uninstall(candidate, false, "");
+                perform_uninstall(candidate, false, "", m.output_manager());
         }
     }
 
@@ -418,7 +419,8 @@ ExndbamRepository::merge(const MergeParams & m)
 
 void
 ExndbamRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID> & id,
-        bool replace, const std::string & merge_config_protect) const
+        bool replace, const std::string & merge_config_protect,
+        const std::tr1::shared_ptr<OutputManager> & output_manager) const
 {
     Context context("When uninstalling '" + stringify(*id) + (replace ? "' for a reinstall:" : "':"));
 
@@ -438,7 +440,8 @@ ExndbamRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositor
     {
         if (can_skip_phase(id, *phase))
         {
-            std::cout << "--- No need to do anything for " << phase->equal_option("skipname") << " phase" << std::endl;
+            output_manager->stdout_stream() << "--- No need to do anything for " <<
+                phase->equal_option("skipname") << " phase" << std::endl;
             continue;
         }
 
@@ -466,6 +469,7 @@ ExndbamRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositor
                     value_for<n::contents_file>(ver_dir / "contents"),
                     value_for<n::environment>(_imp->params.environment()),
                     value_for<n::ndbam>(&_imp->ndbam),
+                    value_for<n::output_manager>(output_manager),
                     value_for<n::package_id>(id),
                     value_for<n::root>(installed_root_key()->value())
                     ));

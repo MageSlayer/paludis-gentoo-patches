@@ -116,6 +116,11 @@ namespace paludis
     struct UninstallActionOptions
     {
         NamedValue<n::config_protect, std::string> config_protect;
+
+        /**
+         * \since 0.36
+         */
+        NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
     };
 
     /**

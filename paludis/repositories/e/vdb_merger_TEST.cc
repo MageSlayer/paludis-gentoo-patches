@@ -22,6 +22,8 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/standard_output_manager.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <fstream>
@@ -83,6 +85,7 @@ namespace
                             value_for<n::environment>(&env),
                             value_for<n::image>(FSEntry::cwd() / "vdb_merger_TEST_dir" / what / "image"),
                             value_for<n::options>(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs),
+                            value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
                             value_for<n::package_id>(std::tr1::shared_ptr<PackageID>()),
                             value_for<n::root>(root_dir)
                         ))

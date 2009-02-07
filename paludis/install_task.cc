@@ -876,7 +876,8 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
             {
                 UninstallAction uninstall_action(
                         make_named_values<UninstallActionOptions>(
-                            value_for<n::config_protect>(_imp->config_protect)
+                            value_for<n::config_protect>(_imp->config_protect),
+                            value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager))
                             ));
                 (*c)->perform_action(uninstall_action);
             }

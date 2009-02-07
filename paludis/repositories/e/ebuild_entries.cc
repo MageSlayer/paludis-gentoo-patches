@@ -56,8 +56,8 @@
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/output_manager.hh>
 #include <tr1/functional>
-#include <iostream>
 #include <fstream>
 #include <list>
 #include <set>
@@ -644,7 +644,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
         if (can_skip_phase(id, *phase))
         {
-            std::cout << "--- No need to do anything for " << phase->equal_option("skipname") << " phase" << std::endl;
+            o.output_manager()->stdout_stream() << "--- No need to do anything for " << phase->equal_option("skipname") << " phase" << std::endl;
             continue;
         }
 
@@ -693,6 +693,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                                 stringify(id->name().package()) + "-" + stringify(id->version())) / "image" / "usr" / libdir / "debug"),
                         value_for<n::image_dir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" +
                                 stringify(id->name().package()) + "-" + stringify(id->version())) / "image"),
+                        value_for<n::output_manager>(o.output_manager()),
                         value_for<n::package_id>(id),
                         value_for<n::split>(split_choice && split_choice->enabled()),
                         value_for<n::strip>(strip_choice && strip_choice->enabled())

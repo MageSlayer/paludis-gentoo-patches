@@ -130,7 +130,8 @@ namespace test_cases
                     ));
 
             UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
-                        value_for<n::config_protect>("")
+                        value_for<n::config_protect>(""),
+                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager))
                     ));
 
             TEST_CHECK(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg"))->empty());

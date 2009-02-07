@@ -36,7 +36,6 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/output_manager.hh>
-#include <iostream>
 #include <list>
 
 using namespace paludis;

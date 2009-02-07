@@ -601,7 +601,8 @@ namespace
             }
 
             ptr = new UninstallActionOptions(make_named_values<UninstallActionOptions>(
-                        value_for<n::config_protect>(v_config_protect)
+                        value_for<n::config_protect>(v_config_protect),
+                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager))
                     ));
 
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<UninstallActionOptions>::free, ptr));

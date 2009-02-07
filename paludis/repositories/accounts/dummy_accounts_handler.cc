@@ -18,9 +18,9 @@
  */
 
 #include <paludis/repositories/accounts/dummy_accounts_handler.hh>
+#include <paludis/util/output_manager.hh>
 #include <paludis/package_id.hh>
 #include <paludis/repository.hh>
-#include <iostream>
 
 using namespace paludis;
 using namespace paludis::accounts_repository;
@@ -28,7 +28,7 @@ using namespace paludis::accounts_repository;
 void
 DummyAccountsHandler::merge(const MergeParams & m)
 {
-    std::cout << ">>> Installing " << *m.package_id() << " using dummy handler" << std::endl;
-    std::cout << ">>> Finished installing " << *m.package_id() << std::endl;
+    m.output_manager()->stdout_stream() << ">>> Installing " << *m.package_id() << " using dummy handler" << std::endl;
+    m.output_manager()->stdout_stream() << ">>> Finished installing " << *m.package_id() << std::endl;
 }
 

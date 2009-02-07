@@ -319,6 +319,7 @@ UnpackagedID::perform_action(Action & action) const
                 UnpackagedStripper stripper(make_named_values<UnpackagedStripperOptions>(
                             value_for<n::debug_dir>(fs_location_key()->value() / "usr" / libdir / "debug"),
                             value_for<n::image_dir>(fs_location_key()->value()),
+                            value_for<n::output_manager>(install_action->options.output_manager()),
                             value_for<n::package_id>(shared_from_this()),
                             value_for<n::split>(split_choice && split_choice->enabled()),
                             value_for<n::strip>(strip_choice && strip_choice->enabled())

@@ -29,6 +29,7 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/output_manager.hh>
 #include <paludis/hook.hh>
 #include <paludis/package_id.hh>
 #include <paludis/util/md5.hh>
@@ -36,7 +37,6 @@
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
 #include <fstream>
-#include <iostream>
 #include <iomanip>
 #include <list>
 
@@ -187,7 +187,7 @@ VDBMerger::on_error(bool is_check, const std::string & s)
     make_check_fail();
 
     if (is_check)
-        std::cout << "." << std::endl << "!!! " << s << std::endl;
+        _imp->params.output_manager()->stdout_stream() << "." << std::endl << "!!! " << s << std::endl;
     else
         throw MergerError(s);
 }
@@ -270,9 +270,9 @@ VDBMerger::merge()
 bool
 VDBMerger::check()
 {
-    std::cout << ">>> Checking whether we can merge to " << _imp->params.root() << " ";
+    _imp->params.output_manager()->stdout_stream() << ">>> Checking whether we can merge to " << _imp->params.root() << " ";
     bool result(Merger::check());
-    std::cout << std::endl;
+    _imp->params.output_manager()->stdout_stream() << std::endl;
     return result;
 }
 
@@ -282,7 +282,7 @@ VDBMerger::on_enter_dir(bool is_check, const FSEntry)
     if (! is_check)
         return;
 
-    std::cout << "." << std::flush;
+    _imp->params.output_manager()->stdout_stream() << "." << std::flush;
 }
 
 void
@@ -320,7 +320,7 @@ VDBMerger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
 void
 VDBMerger::display_override(const std::string & message) const
 {
-    std::cout << message << std::endl;
+    _imp->params.output_manager()->stdout_stream() << message << std::endl;
 }
 
 std::string

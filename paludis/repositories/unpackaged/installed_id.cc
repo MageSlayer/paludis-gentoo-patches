@@ -772,9 +772,9 @@ namespace
         {
         }
 
-        void visit(UninstallAction &)
+        void visit(UninstallAction & a)
         {
-            id->uninstall(false);
+            id->uninstall(false, a.options.output_manager());
         }
     };
 }
@@ -819,7 +819,7 @@ InstalledUnpackagedID::extra_hash_value() const
 }
 
 void
-InstalledUnpackagedID::uninstall(const bool replace) const
+InstalledUnpackagedID::uninstall(const bool replace, const std::tr1::shared_ptr<OutputManager> & output_manager) const
 {
     Context context("When uninstalling '" + stringify(*this) + "':");
 
@@ -849,6 +849,7 @@ InstalledUnpackagedID::uninstall(const bool replace) const
                 value_for<n::contents_file>(ver_dir / "contents"),
                 value_for<n::environment>(_imp->env),
                 value_for<n::ndbam>(_imp->ndbam),
+                value_for<n::output_manager>(output_manager),
                 value_for<n::package_id>(shared_from_this()),
                 value_for<n::root>(_imp->root)
             ));

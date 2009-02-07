@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,6 +23,7 @@
 #include <paludis/merger.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/output_manager-fwd.hh>
 
 namespace paludis
 {
@@ -36,6 +37,7 @@ namespace paludis
         struct environment;
         struct image;
         struct options;
+        struct output_manager;
         struct package_id;
         struct root;
     }
@@ -57,6 +59,7 @@ namespace paludis
         NamedValue<n::environment, Environment *> environment;
         NamedValue<n::image, FSEntry> image;
         NamedValue<n::options, MergerOptions> options;
+        NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
         NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
         NamedValue<n::root, FSEntry> root;
     };

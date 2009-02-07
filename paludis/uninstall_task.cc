@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,6 +35,7 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/standard_output_manager.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
 #include <paludis/dep_tag.hh>
@@ -359,7 +360,8 @@ UninstallTask::execute()
         {
             UninstallAction uninstall_action(
                     make_named_values<UninstallActionOptions>(
-                        value_for<n::config_protect>("")
+                        value_for<n::config_protect>(""),
+                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager))
                         ));
             i->package_id()->perform_action(uninstall_action);
         }

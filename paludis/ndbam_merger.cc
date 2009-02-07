@@ -28,6 +28,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/output_manager.hh>
 #include <paludis/hook.hh>
 #include <paludis/package_id.hh>
 #include <paludis/util/md5.hh>
@@ -36,7 +37,6 @@
 #include <paludis/ndbam_merger.hh>
 #include <paludis/metadata_key.hh>
 #include <fstream>
-#include <iostream>
 #include <iomanip>
 #include <list>
 
@@ -206,7 +206,7 @@ NDBAMMerger::on_error(bool is_check, const std::string & s)
     make_check_fail();
 
     if (is_check)
-        std::cout << "." << std::endl << "!!! " << s << std::endl;
+        _imp->params.output_manager()->stdout_stream() << "." << std::endl << "!!! " << s << std::endl;
     else
         throw MergerError(s);
 }
@@ -343,9 +343,9 @@ NDBAMMerger::merge()
 bool
 NDBAMMerger::check()
 {
-    std::cout << ">>> Checking whether we can merge to " << _imp->params.root() << " ";
+    _imp->params.output_manager()->stdout_stream() << ">>> Checking whether we can merge to " << _imp->params.root() << " ";
     bool result(Merger::check());
-    std::cout << std::endl;
+    _imp->params.output_manager()->stdout_stream() << std::endl;
     return result;
 }
 
@@ -355,12 +355,12 @@ NDBAMMerger::on_enter_dir(bool is_check, const FSEntry)
     if (! is_check)
         return;
 
-    std::cout << "." << std::flush;
+    _imp->params.output_manager()->stdout_stream() << "." << std::flush;
 }
 
 void
 NDBAMMerger::display_override(const std::string & message) const
 {
-    std::cout << message << std::endl;
+    _imp->params.output_manager()->stdout_stream() << message << std::endl;
 }
 
