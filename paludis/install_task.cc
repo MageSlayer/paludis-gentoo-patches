@@ -835,8 +835,8 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
 
     if (dep->destination())
         collision_list = (*_imp->env)[selection::AllVersionsSorted(
-                generator::Package(dep->package_id()->name()) &
-                generator::InRepository(dep->destination()->name()) |
+                (generator::Package(dep->package_id()->name()) &
+                generator::InRepository(dep->destination()->name())) |
                 filter::SupportsAction<UninstallAction>() |
                 filter::SameSlot(dep->package_id()))];
 
