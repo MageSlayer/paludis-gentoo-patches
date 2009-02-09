@@ -54,6 +54,11 @@ typedef std::multimap<std::tr1::shared_ptr<const PackageID>, std::string, Packag
 
 namespace
 {
+    std::tr1::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
+    {
+        return make_shared_ptr(new StandardOutputManager);
+    }
+
     FSEntry get_location_and_add_filters()
     {
         Context context("When determining tree location:");
@@ -100,7 +105,7 @@ namespace
                     FetchAction a(make_named_values<FetchActionOptions>(
                             value_for<n::exclude_unmirrorable>(false),
                             value_for<n::fetch_unneeded>(true),
-                            value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
+                            value_for<n::make_output_manager>(&make_standard_output_manager),
                             value_for<n::safe_resume>(true)
                             ));
                     (*i)->perform_action(a);

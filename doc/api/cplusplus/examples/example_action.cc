@@ -23,6 +23,19 @@ using namespace examples;
 using std::cout;
 using std::endl;
 
+namespace
+{
+    /* Some actions need an OutputManager, but to avoid chicken / egg problems
+     * they take a function that creates an OutputManager as a parameter. Here
+     * we just use a StandardOutputManager, which sticks everything to stdout /
+     * stderr. More complex clients may use Environment::create_output_manager
+     * to use the user's preferences for logging etc. */
+    std::tr1::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
+    {
+        return make_shared_ptr(new StandardOutputManager);
+    }
+}
+
 int main(int argc, char * argv[])
 {
     int exit_status(0);
@@ -63,7 +76,7 @@ int main(int argc, char * argv[])
                 FetchAction fetch_action(make_named_values<FetchActionOptions>(
                             value_for<n::exclude_unmirrorable>(false),
                             value_for<n::fetch_unneeded>(false),
-                            value_for<n::output_manager>(new StandardOutputManager()),
+                            value_for<n::make_output_manager>(&make_standard_output_manager),
                             value_for<n::safe_resume>(true)
                             ));
                 try
