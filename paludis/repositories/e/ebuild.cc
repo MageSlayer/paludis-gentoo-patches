@@ -191,6 +191,8 @@ EbuildCommand::operator() ()
                     params.package_id()->eapi()->supported()->tools_options()->unpack_unrecognised_is_fatal() ? "yes" : "")
             .with_setenv("PALUDIS_UNPACK_FIX_PERMISSIONS",
                     params.package_id()->eapi()->supported()->tools_options()->unpack_fix_permissions() ? "yes" : "")
+            .with_setenv("PALUDIS_UNPACK_SUFFIXES",
+                    params.package_id()->eapi()->supported()->tools_options()->unpack_suffixes())
             .with_setenv("PALUDIS_DOMAN_LANG_FILENAMES",
                     params.package_id()->eapi()->supported()->tools_options()->doman_lang_filenames() ? "yes" : "")
             .with_setenv("PALUDIS_DOSYM_NO_MKDIR",
