@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,6 +23,7 @@
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 
 using namespace paludis;
 
@@ -32,4 +33,76 @@ template class WrappedOutputIterator<Sequence<std::string>::InserterTag, std::st
 Environment::~Environment()
 {
 }
+
+namespace paludis
+{
+    template <>
+    struct Implementation<CreateOutputManagerForPackageIDActionInfo>
+    {
+        const std::tr1::shared_ptr<const PackageID> id;
+        const Action & action;
+
+        Implementation(const std::tr1::shared_ptr<const PackageID> & i,
+                const Action & a) :
+            id(i),
+            action(a)
+        {
+        }
+    };
+
+    template <>
+    struct Implementation<CreateOutputManagerForRepositorySyncInfo>
+    {
+        const Repository & repo;
+
+        Implementation(const Repository & r) :
+            repo(r)
+        {
+        }
+    };
+}
+
+CreateOutputManagerForPackageIDActionInfo::CreateOutputManagerForPackageIDActionInfo(
+        const std::tr1::shared_ptr<const PackageID> & i,
+        const Action & a) :
+    PrivateImplementationPattern<CreateOutputManagerForPackageIDActionInfo>(
+            new Implementation<CreateOutputManagerForPackageIDActionInfo>(i, a))
+{
+}
+
+CreateOutputManagerForPackageIDActionInfo::~CreateOutputManagerForPackageIDActionInfo()
+{
+}
+
+const std::tr1::shared_ptr<const PackageID>
+CreateOutputManagerForPackageIDActionInfo::package_id() const
+{
+    return _imp->id;
+}
+
+const Action &
+CreateOutputManagerForPackageIDActionInfo::action() const
+{
+    return _imp->action;
+}
+
+CreateOutputManagerForRepositorySyncInfo::CreateOutputManagerForRepositorySyncInfo(
+        const Repository & r) :
+    PrivateImplementationPattern<CreateOutputManagerForRepositorySyncInfo>(
+            new Implementation<CreateOutputManagerForRepositorySyncInfo>(r))
+{
+}
+
+CreateOutputManagerForRepositorySyncInfo::~CreateOutputManagerForRepositorySyncInfo()
+{
+}
+
+const Repository &
+CreateOutputManagerForRepositorySyncInfo::repository() const
+{
+    return _imp->repo;
+}
+
+template class PrivateImplementationPattern<CreateOutputManagerForRepositorySyncInfo>;
+template class PrivateImplementationPattern<CreateOutputManagerForPackageIDActionInfo>;
 

@@ -35,7 +35,6 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/standard_output_manager.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
 #include <paludis/dep_tag.hh>
@@ -50,6 +49,15 @@
 using namespace paludis;
 
 template class WrappedForwardIterator<AmbiguousUnmergeTargetError::ConstIteratorTag, const std::tr1::shared_ptr<const PackageID> >;
+
+namespace
+{
+    std::tr1::shared_ptr<OutputManager> make_output_manager_for_action(
+            const Environment * const env, const std::tr1::shared_ptr<const PackageID> & id, const Action & a)
+    {
+        return env->create_output_manager(CreateOutputManagerForPackageIDActionInfo(id, a));
+    }
+}
 
 AmbiguousUnmergeTargetError::AmbiguousUnmergeTargetError(const std::string & t,
         const std::tr1::shared_ptr<const PackageIDSequence> m) throw () :
@@ -361,7 +369,8 @@ UninstallTask::execute()
             UninstallAction uninstall_action(
                     make_named_values<UninstallActionOptions>(
                         value_for<n::config_protect>(""),
-                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager))
+                        value_for<n::make_output_manager>(std::tr1::bind(&make_output_manager_for_action,
+                                _imp->env, i->package_id(), std::tr1::placeholders::_1))
                         ));
             i->package_id()->perform_action(uninstall_action);
         }

@@ -137,6 +137,8 @@ namespace paludis
                     ) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            virtual const std::tr1::shared_ptr<OutputManager> create_output_manager(
+                    const CreateOutputManagerInfo &) const;
     };
 }
 

@@ -60,12 +60,17 @@ namespace
         return wp_yes;
     }
 
+    std::tr1::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
+    {
+        return make_shared_ptr(new StandardOutputManager);
+    }
+
     InstallActionOptions * make_install_action_options(
             const std::tr1::shared_ptr<paludis::Repository> & r)
     {
         return new InstallActionOptions(make_named_values<InstallActionOptions>(
                     value_for<n::destination>(r),
-                    value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
+                    value_for<n::make_output_manager>(&make_standard_output_manager),
                     value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                     value_for<n::want_phase>(&want_all_phases)
                     ));
@@ -76,7 +81,7 @@ namespace
     {
         return new UninstallActionOptions(make_named_values<UninstallActionOptions>(
                     value_for<n::config_protect>(c),
-                    value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager))
+                    value_for<n::make_output_manager>(&make_standard_output_manager)
                     ));
     }
 
@@ -89,7 +94,7 @@ namespace
         return new FetchActionOptions(make_named_values<FetchActionOptions>(
                     value_for<n::exclude_unmirrorable>(exclude_unmirrorable),
                     value_for<n::fetch_unneeded>(fetch_unneeded),
-                    value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
+                    value_for<n::make_output_manager>(&make_standard_output_manager),
                     value_for<n::safe_resume>(safe_resume)
                     ));
     }

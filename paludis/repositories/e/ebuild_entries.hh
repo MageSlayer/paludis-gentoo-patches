@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -81,13 +81,15 @@ namespace paludis
                 virtual std::string get_environment_variable(const std::tr1::shared_ptr<const ERepositoryID> &, const std::string & var,
                         const std::tr1::shared_ptr<const ERepositoryProfile> &) const;
 
-                virtual void fetch(const std::tr1::shared_ptr<const ERepositoryID> &, const FetchActionOptions &,
+                virtual void fetch(const std::tr1::shared_ptr<const ERepositoryID> &,
+                        const FetchAction &,
                         const std::tr1::shared_ptr<const ERepositoryProfile> &) const;
 
                 virtual void pretend_fetch(const std::tr1::shared_ptr<const ERepositoryID> &, PretendFetchAction &,
                         const std::tr1::shared_ptr<const ERepositoryProfile> &) const;
 
-                virtual void install(const std::tr1::shared_ptr<const ERepositoryID> &, const InstallActionOptions &,
+                virtual void install(const std::tr1::shared_ptr<const ERepositoryID> &,
+                        const InstallAction &,
                         const std::tr1::shared_ptr<const ERepositoryProfile> &) const;
 
                 virtual bool pretend(const std::tr1::shared_ptr<const ERepositoryID> &,

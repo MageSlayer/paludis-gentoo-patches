@@ -1260,7 +1260,7 @@ ConsoleInstallTask::display_merge_list_entry_distsize(const DepListEntry & d,
     if (! d.package_id()->supports_action(action_test))
         return;
 
-    FindDistfilesSize action(fetch_action_options(), _already_downloaded);
+    FindDistfilesSize action(make_fetch_action_options(d), _already_downloaded);
     d.package_id()->perform_action(action);
 
     if (! action.size)

@@ -168,6 +168,9 @@ namespace paludis
 
             virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
             virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > config_location_key() const;
+
+            virtual const std::tr1::shared_ptr<OutputManager> create_output_manager(
+                    const CreateOutputManagerInfo &) const;
     };
 }
 

@@ -774,7 +774,8 @@ namespace
 
         void visit(UninstallAction & a)
         {
-            id->uninstall(false, a.options.output_manager());
+            std::tr1::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
+            id->uninstall(false, output_manager);
         }
     };
 }

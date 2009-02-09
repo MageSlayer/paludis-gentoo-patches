@@ -215,6 +215,11 @@ namespace
         }
     }
 
+    std::tr1::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
+    {
+        return make_shared_ptr(new StandardOutputManager);
+    }
+
     /*
      * call-seq:
      *     FetchActionOptions.new(exclude_unmirrorable, fetch_unneeded, safe_resume) -> FetchActionOptions
@@ -257,7 +262,7 @@ namespace
             ptr = new FetchActionOptions(make_named_values<FetchActionOptions>(
                         value_for<n::exclude_unmirrorable>(v_exclude_unmirrorable),
                         value_for<n::fetch_unneeded>(v_fetch_unneeded),
-                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
+                        value_for<n::make_output_manager>(&make_standard_output_manager),
                         value_for<n::safe_resume>(v_safe_resume)
                     ));
 
@@ -516,7 +521,7 @@ namespace
 
             ptr = new InstallActionOptions(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(v_destination),
-                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
+                        value_for<n::make_output_manager>(&make_standard_output_manager),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
                     ));
@@ -602,7 +607,7 @@ namespace
 
             ptr = new UninstallActionOptions(make_named_values<UninstallActionOptions>(
                         value_for<n::config_protect>(v_config_protect),
-                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager))
+                        value_for<n::make_output_manager>(&make_standard_output_manager)
                     ));
 
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<UninstallActionOptions>::free, ptr));

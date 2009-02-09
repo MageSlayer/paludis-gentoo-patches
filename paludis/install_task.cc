@@ -67,6 +67,12 @@ template class WrappedForwardIterator<InstallTask::TargetsConstIteratorTag, cons
 
 namespace
 {
+    std::tr1::shared_ptr<OutputManager> make_output_manager_for_action(
+            const Environment * const env, const std::tr1::shared_ptr<const PackageID> & id, const Action & a)
+    {
+        return env->create_output_manager(CreateOutputManagerForPackageIDActionInfo(id, a));
+    }
+
     WantPhase want_all_phases_function(InstallTask * const task, bool & done_any, const std::string & phase)
     {
         task->on_phase_proceed_unconditionally(phase);
@@ -116,7 +122,6 @@ namespace paludis
     {
         Environment * const env;
         DepList dep_list;
-        FetchActionOptions fetch_options;
 
         std::string config_protect;
 
@@ -128,6 +133,7 @@ namespace paludis
         bool pretend;
         bool fetch_only;
         bool preserve_world;
+        bool safe_resume;
 
         bool had_set_targets;
         bool had_package_targets;
@@ -149,19 +155,13 @@ namespace paludis
                 std::tr1::shared_ptr<const DestinationsSet> d) :
             env(e),
             dep_list(e, o),
-            fetch_options(
-                    make_named_values<FetchActionOptions>(
-                        value_for<n::exclude_unmirrorable>(false),
-                        value_for<n::fetch_unneeded>(false),
-                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
-                        value_for<n::safe_resume>(false)
-                        )),
             config_protect(""),
             targets(new SetSpecTree(make_shared_ptr(new AllDepSpec))),
             destinations(d),
             pretend(false),
             fetch_only(false),
             preserve_world(false),
+            safe_resume(false),
             had_set_targets(false),
             had_package_targets(false),
             override_target_type(false),
@@ -754,7 +754,8 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
         SupportsActionTest<FetchAction> test_fetch;
         if (dep->package_id()->supports_action(test_fetch))
         {
-            FetchAction fetch_action(_imp->fetch_options);
+            FetchActionOptions fetch_options(make_fetch_action_options(*dep));
+            FetchAction fetch_action(fetch_options);
             dep->package_id()->perform_action(fetch_action);
         }
 
@@ -762,7 +763,8 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
         {
             InstallActionOptions install_options(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(dep->destination()),
-                        value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
+                        value_for<n::make_output_manager>(std::tr1::bind(&make_output_manager_for_action,
+                                _imp->env, dep->package_id(), std::tr1::placeholders::_1)),
                         value_for<n::used_this_for_config_protect>(std::tr1::bind(
                                 &Implementation<InstallTask>::assign_config_protect,
                                 _imp.get(), std::tr1::placeholders::_1)),
@@ -877,7 +879,8 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
                 UninstallAction uninstall_action(
                         make_named_values<UninstallActionOptions>(
                             value_for<n::config_protect>(_imp->config_protect),
-                            value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager))
+                            value_for<n::make_output_manager>(std::tr1::bind(&make_output_manager_for_action,
+                                    _imp->env, dep->package_id(), std::tr1::placeholders::_1))
                             ));
                 (*c)->perform_action(uninstall_action);
             }
@@ -1267,7 +1270,7 @@ InstallTask::on_installed_paludis()
 void
 InstallTask::set_safe_resume(const bool value)
 {
-    _imp->fetch_options.safe_resume() = value;
+    _imp->safe_resume = value;
 }
 
 HookResult
@@ -1762,12 +1765,6 @@ InstallTask::already_done(const DepListEntry & e) const
     return v.result;
 }
 
-FetchActionOptions &
-InstallTask::fetch_action_options()
-{
-    return _imp->fetch_options;
-}
-
 void
 InstallTask::set_skip_phases(const std::tr1::shared_ptr<const Set<std::string> > & s)
 {
@@ -1802,5 +1799,17 @@ void
 InstallTask::set_phase_options_apply_to_all(const bool b)
 {
     _imp->phase_options_apply_to_all = b;
+}
+
+FetchActionOptions
+InstallTask::make_fetch_action_options(const DepListEntry & dep) const
+{
+    return make_named_values<FetchActionOptions>(
+            value_for<n::exclude_unmirrorable>(false),
+            value_for<n::fetch_unneeded>(false),
+            value_for<n::make_output_manager>(std::tr1::bind(&make_output_manager_for_action,
+                    _imp->env, dep.package_id(), std::tr1::placeholders::_1)),
+            value_for<n::safe_resume>(_imp->safe_resume)
+            );
 }
 

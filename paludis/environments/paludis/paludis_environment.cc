@@ -55,6 +55,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/standard_output_manager.hh>
 
 #include <tr1/functional>
 #include <functional>
@@ -548,5 +549,11 @@ PaludisEnvironment::known_choice_value_names(
         ) const
 {
     return _imp->config->use_conf()->known_choice_value_names(id, choice);
+}
+
+const std::tr1::shared_ptr<OutputManager>
+PaludisEnvironment::create_output_manager(const CreateOutputManagerInfo &) const
+{
+    return make_shared_ptr(new StandardOutputManager);
 }
 

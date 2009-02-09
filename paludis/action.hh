@@ -54,7 +54,7 @@ namespace paludis
         struct failed_automatic_fetching;
         struct failed_integrity_checks;
         struct fetch_unneeded;
-        struct output_manager;
+        struct make_output_manager;
         struct requires_manual_fetching;
         struct safe_resume;
         struct target_file;
@@ -79,9 +79,13 @@ namespace paludis
         NamedValue<n::fetch_unneeded, bool> fetch_unneeded;
 
         /**
+         * This is a function to avoid chicken / egg problems when using
+         * Environment::create_output_manager.
+         *
          * \since 0.36
          */
-        NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
+        NamedValue<n::make_output_manager, std::tr1::function<std::tr1::shared_ptr<OutputManager> (
+                const FetchAction &)> > make_output_manager;
 
         NamedValue<n::safe_resume, bool> safe_resume;
     };
@@ -98,9 +102,13 @@ namespace paludis
         NamedValue<n::destination, std::tr1::shared_ptr<Repository> > destination;
 
         /**
+         * This is a function to avoid chicken / egg problems when using
+         * Environment::create_output_manager.
+         *
          * \since 0.36
          */
-        NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
+        NamedValue<n::make_output_manager, std::tr1::function<std::tr1::shared_ptr<OutputManager> (
+                const InstallAction &)> > make_output_manager;
 
         NamedValue<n::used_this_for_config_protect, std::tr1::function<void (const std::string &)> > used_this_for_config_protect;
         NamedValue<n::want_phase, std::tr1::function<WantPhase (const std::string &)> > want_phase;
@@ -118,9 +126,13 @@ namespace paludis
         NamedValue<n::config_protect, std::string> config_protect;
 
         /**
+         * This is a function to avoid chicken / egg problems when using
+         * Environment::create_output_manager.
+         *
          * \since 0.36
          */
-        NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
+        NamedValue<n::make_output_manager, std::tr1::function<std::tr1::shared_ptr<OutputManager> (
+                const UninstallAction &)> > make_output_manager;
     };
 
     /**

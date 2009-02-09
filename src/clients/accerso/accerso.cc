@@ -49,6 +49,15 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
+namespace
+{
+    std::tr1::shared_ptr<OutputManager> make_output_manager_for_action(
+            const Environment * const env, const std::tr1::shared_ptr<const PackageID> & id, const Action & a)
+    {
+        return env->create_output_manager(CreateOutputManagerForPackageIDActionInfo(id, a));
+    }
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -140,7 +149,8 @@ main(int argc, char *argv[])
                     FetchAction a(make_named_values<FetchActionOptions>(
                                 value_for<n::exclude_unmirrorable>(true),
                                 value_for<n::fetch_unneeded>(true),
-                                value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
+                                value_for<n::make_output_manager>(std::tr1::bind(&make_output_manager_for_action,
+                                        &env, *i, std::tr1::placeholders::_1)),
                                 value_for<n::safe_resume>(true)
                             ));
                     if ((*i)->supports_action(SupportsActionTest<FetchAction>()))

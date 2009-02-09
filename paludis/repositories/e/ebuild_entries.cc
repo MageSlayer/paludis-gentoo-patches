@@ -349,7 +349,7 @@ namespace
 
 void
 EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
-        const FetchActionOptions & o, const std::tr1::shared_ptr<const ERepositoryProfile> & p) const
+        const FetchAction & fetch_action, const std::tr1::shared_ptr<const ERepositoryProfile> & p) const
 {
     using namespace std::tr1::placeholders;
 
@@ -426,6 +426,8 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
     archives = strip_trailing(archives, " ");
     all_archives = strip_trailing(all_archives, " ");
 
+    std::tr1::shared_ptr<OutputManager> output_manager(fetch_action.options.make_output_manager()(fetch_action));
+
     if (id->fetches_key())
     {
         /* always use mirror://gentoo/, where gentoo is the name of our first master repository,
@@ -435,14 +437,16 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                 stringify((*_imp->e_repository->params().master_repositories()->begin())->name()) :
                 stringify(_imp->e_repository->name()));
         FetchVisitor f(_imp->params.environment(), id, *id->eapi(),
-                _imp->e_repository->params().distdir(), o.fetch_unneeded(), fetch_userpriv_ok, mirrors_name,
-                id->fetches_key()->initial_label(), o.safe_resume(), o.output_manager());
+                _imp->e_repository->params().distdir(), fetch_action.options.fetch_unneeded(),
+                fetch_userpriv_ok, mirrors_name,
+                id->fetches_key()->initial_label(), fetch_action.options.safe_resume(),
+                output_manager);
         id->fetches_key()->value()->root()->accept(f);
         CheckFetchedFilesVisitor c(_imp->environment, id, _imp->e_repository->params().distdir(),
-                o.fetch_unneeded(), fetch_restrict,
+                fetch_action.options.fetch_unneeded(), fetch_restrict,
                 ((_imp->e_repository->layout()->package_directory(id->name())) / "Manifest"),
                 _imp->e_repository->params().use_manifest(),
-                o.output_manager(), o.exclude_unmirrorable());
+                output_manager, fetch_action.options.exclude_unmirrorable());
         id->fetches_key()->value()->root()->accept(c);
 
         if (c.need_nofetch())
@@ -483,7 +487,7 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                         value_for<n::a>(archives),
                         value_for<n::aa>(all_archives),
                         value_for<n::expand_vars>(expand_vars),
-                        value_for<n::output_manager>(o.output_manager()),
+                        value_for<n::output_manager>(output_manager),
                         value_for<n::profiles>(_imp->params.profiles()),
                         value_for<n::root>("/"),
                         value_for<n::use>(use),
@@ -520,11 +524,13 @@ EbuildEntries::pretend_fetch(const std::tr1::shared_ptr<const ERepositoryID> & i
 
 void
 EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
-        const InstallActionOptions & o, const std::tr1::shared_ptr<const ERepositoryProfile> & p) const
+        const InstallAction & install_action, const std::tr1::shared_ptr<const ERepositoryProfile> & p) const
 {
     using namespace std::tr1::placeholders;
 
     Context context("When installing '" + stringify(*id) + "':");
+
+    std::tr1::shared_ptr<OutputManager> output_manager(install_action.options.make_output_manager()(install_action));
 
     bool userpriv_restrict, test_restrict, strip_restrict;
     {
@@ -620,7 +626,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
         bool skip(false);
         do
         {
-            switch (o.want_phase()(phase->equal_option("skipname")))
+            switch (install_action.options.want_phase()(phase->equal_option("skipname")))
             {
                 case wp_yes:
                     continue;
@@ -644,27 +650,27 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
         if (can_skip_phase(id, *phase))
         {
-            o.output_manager()->stdout_stream() << "--- No need to do anything for " << phase->equal_option("skipname") << " phase" << std::endl;
+            output_manager->stdout_stream() << "--- No need to do anything for " << phase->equal_option("skipname") << " phase" << std::endl;
             continue;
         }
 
         if (phase->option("merge"))
         {
-            if (! (*o.destination()).destination_interface())
+            if (! (*install_action.options.destination()).destination_interface())
                 throw InstallActionError("Can't install '" + stringify(*id)
-                        + "' to destination '" + stringify(o.destination()->name())
+                        + "' to destination '" + stringify(install_action.options.destination()->name())
                         + "' because destination does not provide destination_interface");
 
-                (*o.destination()).destination_interface()->merge(
+                (*install_action.options.destination()).destination_interface()->merge(
                         make_named_values<MergeParams>(
                             value_for<n::environment_file>(_imp->params.builddir() / (stringify(id->name().category()) + "-" +
                                     stringify(id->name().package()) + "-" + stringify(id->version())) / "temp" / "loadsaveenv"),
                             value_for<n::image_dir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" +
                                     stringify(id->name().package()) + "-" + stringify(id->version())) / "image"),
                             value_for<n::options>(id->eapi()->supported()->merger_options()),
-                            value_for<n::output_manager>(o.output_manager()),
+                            value_for<n::output_manager>(output_manager),
                             value_for<n::package_id>(id),
-                            value_for<n::used_this_for_config_protect>(o.used_this_for_config_protect())
+                            value_for<n::used_this_for_config_protect>(install_action.options.used_this_for_config_protect())
                             ));
         }
         else if (phase->option("strip"))
@@ -672,8 +678,8 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
             if (! strip_restrict)
             {
                 std::string libdir("lib");
-                FSEntry root(o.destination()->installed_root_key() ?
-                        stringify(o.destination()->installed_root_key()->value()) : "/");
+                FSEntry root(install_action.options.destination()->installed_root_key() ?
+                        stringify(install_action.options.destination()->installed_root_key()->value()) : "/");
                 if ((root / "usr" / "lib").is_symbolic_link())
                 {
                     libdir = (root / "usr" / "lib").readlink();
@@ -693,7 +699,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                                 stringify(id->name().package()) + "-" + stringify(id->version())) / "image" / "usr" / libdir / "debug"),
                         value_for<n::image_dir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" +
                                 stringify(id->name().package()) + "-" + stringify(id->version())) / "image"),
-                        value_for<n::output_manager>(o.output_manager()),
+                        value_for<n::output_manager>(output_manager),
                         value_for<n::package_id>(id),
                         value_for<n::split>(split_choice && split_choice->enabled()),
                         value_for<n::strip>(strip_choice && strip_choice->enabled())
@@ -702,8 +708,8 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
             }
         }
         else if ((! phase->option("prepost")) ||
-                ((*o.destination()).destination_interface() &&
-                 (*o.destination()).destination_interface()->want_pre_post_phases()))
+                ((*install_action.options.destination()).destination_interface() &&
+                 (*install_action.options.destination()).destination_interface()->want_pre_post_phases()))
         {
             if (phase->option("optional_tests"))
             {
@@ -753,7 +759,9 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                             value_for<n::expand_vars>(expand_vars),
                             value_for<n::loadsaveenv_dir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version())) / "temp"),
                             value_for<n::profiles>(_imp->params.profiles()),
-                            value_for<n::root>(o.destination()->installed_root_key() ?  stringify(o.destination()->installed_root_key()->value()) : "/"),
+                            value_for<n::root>(install_action.options.destination()->installed_root_key() ?
+                                stringify(install_action.options.destination()->installed_root_key()->value()) :
+                                "/"),
                             value_for<n::slot>(id->slot_key() ? stringify(id->slot_key()->value()) : ""),
                             value_for<n::use>(use),
                             value_for<n::use_expand>(join(p->use_expand()->begin(), p->use_expand()->end(), " ")),
