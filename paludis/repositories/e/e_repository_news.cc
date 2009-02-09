@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,6 +32,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/safe_ofstream.hh>
 #include <paludis/distribution.hh>
 #include <paludis/elike_package_dep_spec.hh>
 #include <paludis/selection.hh>
@@ -39,9 +40,11 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <set>
 #include <ostream>
-#include <fstream>
 #include <list>
 
 using namespace paludis;
@@ -188,15 +191,13 @@ ERepositoryNews::update_news() const
 
             if (show)
             {
-                std::ofstream s(stringify(_imp->skip_file).c_str(),
-                        std::ios::out | std::ios::app);
+                SafeOFStream s(_imp->skip_file, O_CREAT | O_WRONLY | O_APPEND);
                 if (! s)
                     Log::get_instance()->message("e.news.skip_file.append_failure", ll_warning, lc_no_context) <<
                         "Cannot append to news skip file '" << _imp->skip_file <<
                         "', skipping news item '" << *d << "'";
 
-                std::ofstream t(stringify(_imp->unread_file).c_str(),
-                        std::ios::out | std::ios::app);
+                SafeOFStream t(_imp->unread_file, O_CREAT | O_WRONLY | O_APPEND);
                 if (! t)
                     Log::get_instance()->message("e.news.unread_file.append_failure", ll_warning, lc_no_context) <<
                         "Cannot append to unread file '" << _imp->unread_file <<

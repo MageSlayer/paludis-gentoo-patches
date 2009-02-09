@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,13 +25,13 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/tee_output_stream.hh>
 #include <paludis/util/tail_output_stream.hh>
+#include <paludis/util/safe_ofstream.hh>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <ctime>
 #include <unistd.h>
 #include <iostream>
-#include <fstream>
 
 namespace paludis
 {
@@ -51,23 +51,23 @@ namespace paludis
     {
         const FSEntry file_name;
         std::tr1::shared_ptr<TeeOutputStream> tee_stream;
-        std::tr1::shared_ptr<std::ofstream> f_stream;
+        std::tr1::shared_ptr<SafeOFStream> f_stream;
         std::tr1::shared_ptr<TailOutputStream> tail_stream;
 
         Implementation(const FSEntry & f, const unsigned int number_of_tail_lines) :
-            file_name(f),
-            f_stream(new std::ofstream(stringify(file_name).c_str()))
+            file_name(f)
         {
-            if (! *f_stream)
+            try
+            {
+                f_stream.reset(new SafeOFStream(file_name));
+                tail_stream.reset(new TailOutputStream(number_of_tail_lines));
+                tee_stream.reset(new TeeOutputStream(f_stream.get(), tail_stream.get()));
+            }
+            catch (const SafeOFStreamError &)
             {
                 Log::get_instance()->message("output_deviator.open_failed", ll_warning, lc_context) << "Cannot open '"
                     << file_name << + "' for write, sending output to stdout and stderr instead";
                 f_stream.reset();
-            }
-            else
-            {
-                tail_stream.reset(new TailOutputStream(number_of_tail_lines));
-                tee_stream.reset(new TeeOutputStream(f_stream.get(), tail_stream.get()));
             }
         }
     };

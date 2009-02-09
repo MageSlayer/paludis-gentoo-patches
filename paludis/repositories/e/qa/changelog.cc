@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,7 +22,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
-#include <fstream>
+#include <paludis/util/safe_ifstream.hh>
 
 using namespace paludis;
 
@@ -46,7 +46,7 @@ paludis::erepository::changelog_check(
         reporter.message(QAMessage(f, qaml_normal, name, "Not a regular file"));
     else
     {
-        std::ifstream ff(stringify(f).c_str());
+        SafeIFStream ff(f);
         do
         {
             if (! ff)

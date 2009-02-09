@@ -25,6 +25,7 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <paludis/package_database.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/generator.hh>
@@ -33,7 +34,6 @@
 #include <paludis/selection.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
-#include <fstream>
 #include <iterator>
 
 using namespace test;
@@ -66,7 +66,7 @@ namespace test_cases
             parse_fetchable_uri("file:///" + stringify(FSEntry("fetch_visitor_TEST_dir/in/input1").realpath()), &env, id, *eapi)->root()->accept(v);
 
             TEST_CHECK(FSEntry("fetch_visitor_TEST_dir/out/input1").is_regular_file());
-            std::ifstream f(stringify(FSEntry("fetch_visitor_TEST_dir/out/input1")).c_str());
+            SafeIFStream f(FSEntry("fetch_visitor_TEST_dir/out/input1"));
             TEST_CHECK(f);
             std::string s((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
             TEST_CHECK_EQUAL(s, "contents of one\n");

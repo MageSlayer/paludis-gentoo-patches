@@ -58,7 +58,6 @@
 #include <paludis/util/make_named_values.hh>
 #include <tr1/functional>
 #include <iostream>
-#include <fstream>
 #include <list>
 #include <set>
 #include <sys/types.h>

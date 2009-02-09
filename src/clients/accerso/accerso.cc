@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,6 +31,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/safe_ofstream.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
@@ -40,7 +41,6 @@
 #include <cstdlib>
 #include <tr1/functional>
 #include <iostream>
-#include <fstream>
 #include <map>
 
 using namespace paludis;
@@ -192,16 +192,9 @@ main(int argc, char *argv[])
 
             std::cout << std::endl;
 
-            std::tr1::shared_ptr<std::ofstream> outf;
+            std::tr1::shared_ptr<SafeOFStream> outf;
             if (CommandLine::get_instance()->a_report_file.specified())
-            {
-                outf.reset(new std::ofstream(CommandLine::get_instance()->a_report_file.argument().c_str()));
-                if (! *outf)
-                {
-                    std::cerr << "Cannot write to " << CommandLine::get_instance()->a_report_file.argument() << std::endl;
-                    return EXIT_FAILURE;
-                }
-            }
+                outf.reset(new SafeOFStream(FSEntry(CommandLine::get_instance()->a_report_file.argument())));
 
             std::ostream & out(outf ? *outf : cout);
 

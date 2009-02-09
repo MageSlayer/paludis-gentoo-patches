@@ -28,6 +28,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/literal_metadata_key.hh>
@@ -35,7 +36,6 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/formatter.hh>
 #include <list>
-#include <fstream>
 
 using namespace paludis;
 using namespace paludis::unwritten_repository;
@@ -158,9 +158,7 @@ namespace
 void
 UnwrittenRepositoryFile::_load(const FSEntry & f)
 {
-    std::ifstream file(stringify(f).c_str());
-    if (! file)
-        throw UnwrittenRepositoryConfigurationError("Cannot read '" + stringify(f) + "'");
+    SafeIFStream file(f);
 
     std::string line;
     while (std::getline(file, line))

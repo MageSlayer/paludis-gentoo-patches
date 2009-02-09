@@ -27,6 +27,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/safe_ofstream.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/selection.hh>
@@ -35,7 +36,6 @@
 #include <paludis/filtered_generator.hh>
 #include <list>
 #include <vector>
-#include <fstream>
 #include <algorithm>
 
 using namespace paludis;
@@ -401,13 +401,19 @@ SimpleHandler::rewrite() const
 
     Context context("When rewriting simple set file '" + stringify(_p.file_name()) + "':");
 
-    std::ofstream f(stringify(_p.file_name()).c_str());
-    if (! f)
-        throw SetFileError(_p.file_name(), "Cannot write to '" + stringify(_p.file_name()) + "'");
+    try
+    {
+        SafeOFStream f(_p.file_name());
 
-    for (std::list<std::string>::const_iterator i(_lines.begin()), i_end(_lines.end()) ;
-            i != i_end ; ++i)
-        f << *i << std::endl;
+        for (std::list<std::string>::const_iterator i(_lines.begin()), i_end(_lines.end()) ;
+                i != i_end ; ++i)
+            f << *i << std::endl;
+    }
+    catch (const SafeOFStreamError & e)
+    {
+        throw SetFileError(_p.file_name(), "Cannot write to '" + stringify(_p.file_name()) + "': '" + e.message() + "' ("
+                + e.what() + ")");
+    }
 }
 
 PaludisConfHandler::PaludisConfHandler(const SetFileParams & p) :
@@ -473,13 +479,19 @@ PaludisConfHandler::rewrite() const
 
     Lock l(_mutex);
 
-    std::ofstream f(stringify(_p.file_name()).c_str());
-    if (! f)
-        throw SetFileError(_p.file_name(), "Cannot write to '" + stringify(_p.file_name()) + "'");
+    try
+    {
+        SafeOFStream f(_p.file_name());
 
-    for (std::list<std::string>::const_iterator i(_lines.begin()), i_end(_lines.end()) ;
-            i != i_end ; ++i)
-        f << *i << std::endl;
+        for (std::list<std::string>::const_iterator i(_lines.begin()), i_end(_lines.end()) ;
+                i != i_end ; ++i)
+            f << *i << std::endl;
+    }
+    catch (const SafeOFStreamError & e)
+    {
+        throw SetFileError(_p.file_name(), "Cannot write to '" + stringify(_p.file_name()) + "': '" + e.message() + "' ("
+                + e.what() + ")");
+    }
 }
 
 PaludisBashHandler::PaludisBashHandler(const SetFileParams & p) :

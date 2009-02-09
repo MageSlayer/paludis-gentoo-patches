@@ -23,8 +23,12 @@
 #include <paludis/util/graph-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/safe_ofstream.hh>
 #include <iostream>
-#include <fstream>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 using namespace paludis;
 
@@ -45,7 +49,7 @@ namespace
     HookResult
     ordering_run(const Environment *, const Hook &)
     {
-        std::ofstream f("hooker_TEST_dir/ordering.out", std::ios_base::app);
+        SafeOFStream f(FSEntry("hooker_TEST_dir/ordering.out"), O_CREAT | O_WRONLY | O_APPEND);
         f << "sohook" << std::endl;
         return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
     }

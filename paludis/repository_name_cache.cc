@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,10 +29,11 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/safe_ofstream.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <tr1/unordered_map>
 #include <tr1/memory>
 #include <set>
-#include <fstream>
 #include <cstring>
 #include <cerrno>
 
@@ -82,7 +83,7 @@ Implementation<RepositoryNameCache>::find(const PackageNamePart & p) const
         {
             if (location.is_directory() && (location / "_VERSION_").exists())
             {
-                std::ifstream vvf(stringify(location / "_VERSION_").c_str());
+                SafeIFStream vvf(location / "_VERSION_");
                 std::string line;
                 std::getline(vvf, line);
                 if (line != "paludis-2")
@@ -132,10 +133,7 @@ Implementation<RepositoryNameCache>::find(const PackageNamePart & p) const
         FSEntry ff(location / stringify(p));
         if (ff.exists())
         {
-            std::ifstream f(stringify(ff).c_str());
-            if (! f)
-                Log::get_instance()->message("repository.names_cache.read_failed", ll_warning, lc_context)
-                    << "Cannot read '" << ff << "': " << std::strerror(errno);
+            SafeIFStream f(ff);
             std::string line;
             while (std::getline(f, line))
                 r->second.insert(CategoryNamePart(line));
@@ -163,17 +161,20 @@ Implementation<RepositoryNameCache>::update(const PackageNamePart & p, NameCache
         return;
     }
 
-    std::ofstream f(stringify(ff).c_str());
-    if (! f)
+    try
+    {
+        SafeOFStream f(ff);
+
+        for (std::set<CategoryNamePart>::const_iterator it(r->second.begin()),
+                 it_end(r->second.end()); it_end != it; ++it)
+            f << *it << std::endl;
+    }
+    catch (const SafeOFStreamError & e)
     {
         Log::get_instance()->message("repository.names_cache.write_failed", ll_warning, lc_context)
-            << "Cannot write '" << ff << "': " << std::strerror(errno);
+            << "Cannot write '" << ff << "': '" << e.message() << "' (" << e.what() << ")";
         return;
     }
-
-    for (std::set<CategoryNamePart>::const_iterator it(r->second.begin()),
-             it_end(r->second.end()); it_end != it; ++it)
-        f << *it << std::endl;
 }
 
 RepositoryNameCache::RepositoryNameCache(
@@ -242,25 +243,30 @@ RepositoryNameCache::regenerate_cache() const
     for (std::tr1::unordered_map<std::string, std::string, Hash<std::string> >::const_iterator e(m.begin()), e_end(m.end()) ;
             e != e_end ; ++e)
     {
-        std::ofstream f(stringify(_imp->location / stringify(e->first)).c_str());
-        if (! f)
+        try
+        {
+            SafeOFStream f(_imp->location / stringify(e->first));
+            f << e->second;
+        }
+        catch (const SafeOFStreamError & ee)
         {
             Log::get_instance()->message("repository.names_cache.write_failed", ll_warning, lc_context)
-                << "Cannot write to '" << _imp->location << "': " << std::strerror(errno);
+                << "Cannot write to '" << _imp->location << "': '" << ee.message() << "' (" << ee.what() << ")";
             continue;
         }
-        f << e->second;
     }
 
-    std::ofstream f(stringify(_imp->location / "_VERSION_").c_str());
-    if (f)
+    try
     {
+        SafeOFStream f(_imp->location / "_VERSION_");;
         f << "paludis-2" << std::endl;
         f << _imp->repo->name() << std::endl;
     }
-    else
+    catch (const SafeOFStreamError & e)
+    {
         Log::get_instance()->message("repository.names_cache.write_failed", ll_warning, lc_context)
-            << "Cannot write to '" << _imp->location << "': " << std::strerror(errno);
+            << "Cannot write to '" << _imp->location << "': '" << e.message() << "' (" << e.what() << ")";
+    }
 }
 
 void

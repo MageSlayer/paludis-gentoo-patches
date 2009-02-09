@@ -25,13 +25,14 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/safe_ofstream.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/dependencies_rewriter.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <tr1/functional>
-#include <fstream>
 #include <set>
 #include <map>
 #include <list>
@@ -292,315 +293,313 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
 
     Context context("When loading version metadata from '" + stringify(_imp->filename) + "':");
 
-    std::ifstream cache(stringify(_imp->filename).c_str());
-
-    if (cache)
-    {
-        std::vector<std::string> lines;
-        std::string line;
-        while (std::getline(cache, line))
-            lines.push_back(line);
-
-        try
-        {
-            std::map<std::string, std::string> keys;
-            std::string duplicate;
-            for (std::vector<std::string>::const_iterator it(lines.begin()),
-                     it_end(lines.end()); it_end != it; ++it)
-            {
-                std::string::size_type equals(it->find('='));
-                if (std::string::npos == equals)
-                {
-                    Log::get_instance()->message("e.cache.flat_hash.not", ll_debug, lc_context)
-                        << "cache file lacks = on line " << ((it - lines.begin()) + 1) << ", assuming flat_list";
-                    return load_flat_list(id, lines, _imp.get());
-                }
-
-                if (! keys.insert(std::make_pair(it->substr(0, equals), it->substr(equals + 1))).second)
-                    duplicate = it->substr(0, equals);
-            }
-
-            Context ctx("When loading flat_hash format cache file:");
-
-            if (! duplicate.empty())
-            {
-                Log::get_instance()->message("e.cache.flat_hash.broken", ll_warning, lc_context)
-                    << "cache file contains duplicate key '" << duplicate << "'";
-                return false;
-            }
-
-            std::map<std::string, std::string>::const_iterator eapi(keys.find("EAPI"));
-            if (keys.end() == eapi)
-            {
-                Log::get_instance()->message("e.cache.flat_hash.broken", ll_warning, lc_context)
-                    << "cache file contains no 'EAPI' key";
-                return false;
-            }
-            id->set_eapi(eapi->second);
-
-            if (id->eapi()->supported())
-            {
-                const EAPIEbuildMetadataVariables & m(*id->eapi()->supported()->ebuild_metadata_variables());
-                std::vector<std::string> inherited;
-
-                {
-                    std::map<std::string, std::string>::const_iterator mtime_it(keys.find("_mtime_"));
-                    std::time_t cache_time(keys.end() == mtime_it ? _imp->filename.mtime() : destringify<std::time_t>(mtime_it->second));
-                    bool ok(_imp->ebuild.mtime() == cache_time);
-                    if (! ok)
-                        Log::get_instance()->message("e.cache.flat_hash.mtime", ll_debug, lc_context)
-                            << "ebuild has mtime " << _imp->ebuild.mtime() << ", but expected " << cache_time;
-
-                    if (ok && id->eapi()->supported()->ebuild_options()->support_eclasses())
-                    {
-                        std::vector<std::string> eclasses;
-                        tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(keys["_eclasses_"], "\t", "", std::back_inserter(eclasses));
-                        FSEntry eclassdir((id->repository()->location_key()->value() / "eclass").realpath_if_exists());
-                        for (std::vector<std::string>::const_iterator it(eclasses.begin()),
-                                 it_end(eclasses.end()); it_end != it; ++it)
-                        {
-                            std::string eclass_name(*it);
-                            inherited.push_back(eclass_name);
-                            if (eclasses.end() == ++it)
-                            {
-                                Log::get_instance()->message("e.cache.flat_hash.eclass.truncated", ll_warning, lc_context)
-                                    << "_eclasses_ entry is incomplete";
-                                return false;
-                            }
-                            FSEntry eclass_dir(std::string::npos != it->find('/') ? *(it++) : eclassdir);
-                            if (eclasses.end() == it)
-                            {
-                                Log::get_instance()->message("e.cache.flat_hash.eclass.truncated", ll_warning, lc_context)
-                                    << "_eclasses_ entry is incomplete";
-                                return false;
-                            }
-                            std::time_t eclass_mtime(destringify<std::time_t>(*it));
-
-                            const FSEntry * eclass(_imp->eclass_mtimes->eclass(eclass_name));
-                            if (eclass)
-                                Log::get_instance()->message("e.cache.flat_hash.eclass.path", ll_debug, lc_context)
-                                    << "Cache-requested eclass '" << eclass_name << "' maps to '" << *eclass << "'";
-
-                            if (! eclass)
-                            {
-                                Log::get_instance()->message("e.cache.flat_hash.eclass.missing", ll_debug, lc_context)
-                                    << "Can't find cache-requested eclass '" << eclass_name << "'";
-                                ok = false;
-                            }
-
-                            else if (eclass->dirname() != eclass_dir)
-                            {
-                                Log::get_instance()->message("e.cache.flat_hash.eclass.wrong_location", ll_debug, lc_context)
-                                    << "Cache-requested eclass '" << eclass_name << "' was found at '"
-                                    << eclass->dirname() << "', but expected '" << eclass_dir << "'";
-                                ok = false;
-                            }
-
-                            else if (eclass->mtime() != eclass_mtime)
-                            {
-                                Log::get_instance()->message("e.cache.flat_hash.eclass.wrong_mtime", ll_debug, lc_context)
-                                    << "Cache-requested eclass '" << eclass_name << "' has mtime "
-                                    << eclass->mtime() << ", but expected " << eclass_mtime;
-                                ok = false;
-                            }
-
-                            if (! ok)
-                                break;
-                        }
-                    }
-
-                    else if (ok && id->eapi()->supported()->ebuild_options()->support_exlibs())
-                    {
-                        std::vector<std::string> exlibs;
-                        tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(keys["_exlibs_"], "\t", "", std::back_inserter(exlibs));
-                        for (std::vector<std::string>::const_iterator it(exlibs.begin()),
-                                 it_end(exlibs.end()); it_end != it; ++it)
-                        {
-                            std::string exlib_name(*it);
-                            inherited.push_back(exlib_name);
-                            if (exlibs.end() == ++it)
-                            {
-                                Log::get_instance()->message("e.cache.flat_hash.exlib.truncated", ll_warning, lc_context)
-                                    << "_exlibs_ entry is incomplete";
-                                return false;
-                            }
-                            FSEntry exlib_dir(*it);
-                            if (exlibs.end() == ++it)
-                            {
-                                Log::get_instance()->message("e.cache.flat_hash.exlibs.truncated", ll_warning, lc_context)
-                                    << "_exlibs_ entry is incomplete";
-                                return false;
-                            }
-                            std::time_t exlib_mtime(destringify<std::time_t>(*it));
-
-                            const FSEntry * exlib(_imp->eclass_mtimes->exlib(exlib_name, id->name()));
-                            if (exlib)
-                                Log::get_instance()->message("e.cache.flat_hash.exlib.path", ll_debug, lc_context)
-                                    << "Cache-requested exlib '" << exlib_name << "' maps to '" << *exlib << "'";
-
-                            if (! exlib)
-                            {
-                                Log::get_instance()->message("e.cache.flat_hash.exlib.missing", ll_debug, lc_context)
-                                    << "Can't find cache-requested exlib '" << exlib_name << "'";
-                                ok = false;
-                            }
-
-                            else if (exlib->dirname() != exlib_dir)
-                            {
-                                Log::get_instance()->message("e.cache.flat_hash.exlib.wrong_location", ll_debug, lc_context)
-                                    << "Cache-requested exlib '" << exlib_name << "' was found at '"
-                                    << exlib->dirname() << "', but expected '" << exlib_dir << "'";
-                                ok = false;
-                            }
-
-                            else if (exlib->mtime() != exlib_mtime)
-                            {
-                                Log::get_instance()->message("e.cache.flat_hash.exlib.wrong_mtime", ll_debug, lc_context)
-                                    << "Cache-requested exlib '" << exlib_name << "' has mtime "
-                                    << exlib->mtime() << ", but expected " << exlib_mtime;
-                                ok = false;
-                            }
-
-                            if (! ok)
-                                break;
-                        }
-                    }
-
-                    if (! ok)
-                    {
-                        Log::get_instance()->message("e.cache.stale", ll_warning, lc_no_context)
-                            << "Stale cache file at '" << _imp->filename << "'";
-                        return false;
-                    }
-                }
-
-                if (! m.dependencies()->name().empty())
-                {
-                    DependenciesRewriter rewriter;
-                    parse_depend(keys[m.dependencies()->name()], _imp->env, id, *id->eapi())->root()->accept(rewriter);
-                    id->load_build_depend(m.dependencies()->name() + ".DEPEND", m.dependencies()->description() + " (build)", rewriter.depend());
-                    id->load_run_depend(m.dependencies()->name() + ".RDEPEND", m.dependencies()->description() + " (run)", rewriter.rdepend());
-                    id->load_post_depend(m.dependencies()->name() + ".PDEPEND", m.dependencies()->description() + " (post)", rewriter.pdepend());
-                }
-
-                if (! m.build_depend()->name().empty())
-                    id->load_build_depend(m.build_depend()->name(), m.build_depend()->description(), keys[m.build_depend()->name()]);
-
-                if (! m.run_depend()->name().empty())
-                    id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(), keys[m.run_depend()->name()]);
-
-                id->load_slot(m.slot(), keys[m.slot()->name()]);
-
-                if (! m.src_uri()->name().empty())
-                    id->load_src_uri(m.src_uri(), keys[m.src_uri()->name()]);
-
-                if (! m.restrictions()->name().empty())
-                    id->load_restrict(m.restrictions(), keys[m.restrictions()->name()]);
-
-                if (! m.properties()->name().empty())
-                    id->load_properties(m.properties(), keys[m.properties()->name()]);
-
-                if (! m.homepage()->name().empty())
-                    id->load_homepage(m.homepage()->name(), m.homepage()->description(), keys[m.homepage()->name()]);
-
-                if (! m.license()->name().empty())
-                    id->load_license(m.license(), keys[m.license()->name()]);
-
-                if (! m.short_description()->name().empty())
-                        id->load_short_description(m.short_description()->name(),
-                                m.short_description()->description(),
-                                keys[m.short_description()->name()]);
-
-                if (! m.long_description()->name().empty())
-                {
-                    std::string value(keys[m.long_description()->name()]);
-                    if (! value.empty())
-                        id->load_long_description(m.long_description()->name(),
-                                m.long_description()->description(), value);
-                }
-
-                if (! m.keywords()->name().empty())
-                    id->load_keywords(m.keywords()->name(), m.keywords()->description(), keys[m.keywords()->name()]);
-
-                if (! m.inherited()->name().empty())
-                    id->load_inherited(m.inherited()->name(), m.inherited()->description(), join(inherited.begin(), inherited.end(), " "));
-
-                if (! m.defined_phases()->name().empty())
-                    if (! keys[m.defined_phases()->name()].empty())
-                        id->load_defined_phases(m.defined_phases()->name(), m.defined_phases()->description(), keys[m.defined_phases()->name()]);
-
-                if (! m.iuse()->name().empty())
-                    id->load_iuse(m.iuse()->name(), m.iuse()->description(), keys[m.iuse()->name()]);
-
-                if (! m.myoptions()->name().empty())
-                    id->load_myoptions(m.myoptions()->name(), m.myoptions()->description(), keys[m.myoptions()->name()]);
-
-                if (! m.pdepend()->name().empty())
-                    id->load_post_depend(m.pdepend()->name(), m.pdepend()->description(), keys[m.pdepend()->name()]);
-
-                if (! m.provide()->name().empty())
-                    id->load_provide(m.provide()->name(), m.provide()->description(), keys[m.provide()->name()]);
-
-                if (! m.use()->name().empty())
-                    id->load_use(m.use()->name(), m.use()->description(), keys[m.use()->name()]);
-
-                if (! m.upstream_changelog()->name().empty())
-                {
-                    std::string value(keys[m.upstream_changelog()->name()]);
-                    if (! value.empty())
-                        id->load_upstream_changelog(m.upstream_changelog()->name(),
-                                m.upstream_changelog()->description(), value);
-                }
-
-                if (! m.upstream_documentation()->name().empty())
-                {
-                    std::string value(keys[m.upstream_documentation()->name()]);
-                    if (! value.empty())
-                        id->load_upstream_documentation(m.upstream_documentation()->name(),
-                                m.upstream_documentation()->description(), value);
-                }
-
-                if (! m.upstream_release_notes()->name().empty())
-                {
-                    std::string value(keys[m.upstream_release_notes()->name()]);
-                    if (! value.empty())
-                        id->load_upstream_release_notes(m.upstream_release_notes()->name(),
-                                m.upstream_release_notes()->description(), value);
-                }
-
-                if (! m.bugs_to()->name().empty())
-                {
-                    std::string value(keys[m.bugs_to()->name()]);
-                    if (! value.empty())
-                        id->load_bugs_to(m.bugs_to(), value);
-                }
-
-                if (! m.remote_ids()->name().empty())
-                {
-                    std::string value(keys[m.remote_ids()->name()]);
-                    if (! value.empty())
-                        id->load_remote_ids(m.remote_ids(), value);
-                }
-            }
-
-            Log::get_instance()->message("e.cache.success", ll_debug, lc_context) << "Successfully loaded cache file";
-            return true;
-        }
-        catch (const InternalError &)
-        {
-            throw;
-        }
-        catch (const Exception & e)
-        {
-            Log::get_instance()->message("e.cache.failure", ll_warning, lc_no_context) << "Not using cache file at '"
-                << _imp->filename << "' due to exception '" << e.message() << "' (" << e.what() << ")";
-            return false;
-        }
-    }
-    else
+    if (! _imp->filename.exists())
     {
         Log::get_instance()->message("e.cache.failure", _imp->silent ? ll_debug : ll_warning, lc_no_context)
                 << "Couldn't use the cache file at '" << _imp->filename << "': " << std::strerror(errno);
+        return false;
+    }
+
+    SafeIFStream cache(_imp->filename);
+
+    std::vector<std::string> lines;
+    std::string line;
+    while (std::getline(cache, line))
+        lines.push_back(line);
+
+    try
+    {
+        std::map<std::string, std::string> keys;
+        std::string duplicate;
+        for (std::vector<std::string>::const_iterator it(lines.begin()),
+                 it_end(lines.end()); it_end != it; ++it)
+        {
+            std::string::size_type equals(it->find('='));
+            if (std::string::npos == equals)
+            {
+                Log::get_instance()->message("e.cache.flat_hash.not", ll_debug, lc_context)
+                    << "cache file lacks = on line " << ((it - lines.begin()) + 1) << ", assuming flat_list";
+                return load_flat_list(id, lines, _imp.get());
+            }
+
+            if (! keys.insert(std::make_pair(it->substr(0, equals), it->substr(equals + 1))).second)
+                duplicate = it->substr(0, equals);
+        }
+
+        Context ctx("When loading flat_hash format cache file:");
+
+        if (! duplicate.empty())
+        {
+            Log::get_instance()->message("e.cache.flat_hash.broken", ll_warning, lc_context)
+                << "cache file contains duplicate key '" << duplicate << "'";
+            return false;
+        }
+
+        std::map<std::string, std::string>::const_iterator eapi(keys.find("EAPI"));
+        if (keys.end() == eapi)
+        {
+            Log::get_instance()->message("e.cache.flat_hash.broken", ll_warning, lc_context)
+                << "cache file contains no 'EAPI' key";
+            return false;
+        }
+        id->set_eapi(eapi->second);
+
+        if (id->eapi()->supported())
+        {
+            const EAPIEbuildMetadataVariables & m(*id->eapi()->supported()->ebuild_metadata_variables());
+            std::vector<std::string> inherited;
+
+            {
+                std::map<std::string, std::string>::const_iterator mtime_it(keys.find("_mtime_"));
+                std::time_t cache_time(keys.end() == mtime_it ? _imp->filename.mtime() : destringify<std::time_t>(mtime_it->second));
+                bool ok(_imp->ebuild.mtime() == cache_time);
+                if (! ok)
+                    Log::get_instance()->message("e.cache.flat_hash.mtime", ll_debug, lc_context)
+                        << "ebuild has mtime " << _imp->ebuild.mtime() << ", but expected " << cache_time;
+
+                if (ok && id->eapi()->supported()->ebuild_options()->support_eclasses())
+                {
+                    std::vector<std::string> eclasses;
+                    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(keys["_eclasses_"], "\t", "", std::back_inserter(eclasses));
+                    FSEntry eclassdir((id->repository()->location_key()->value() / "eclass").realpath_if_exists());
+                    for (std::vector<std::string>::const_iterator it(eclasses.begin()),
+                             it_end(eclasses.end()); it_end != it; ++it)
+                    {
+                        std::string eclass_name(*it);
+                        inherited.push_back(eclass_name);
+                        if (eclasses.end() == ++it)
+                        {
+                            Log::get_instance()->message("e.cache.flat_hash.eclass.truncated", ll_warning, lc_context)
+                                << "_eclasses_ entry is incomplete";
+                            return false;
+                        }
+                        FSEntry eclass_dir(std::string::npos != it->find('/') ? *(it++) : eclassdir);
+                        if (eclasses.end() == it)
+                        {
+                            Log::get_instance()->message("e.cache.flat_hash.eclass.truncated", ll_warning, lc_context)
+                                << "_eclasses_ entry is incomplete";
+                            return false;
+                        }
+                        std::time_t eclass_mtime(destringify<std::time_t>(*it));
+
+                        const FSEntry * eclass(_imp->eclass_mtimes->eclass(eclass_name));
+                        if (eclass)
+                            Log::get_instance()->message("e.cache.flat_hash.eclass.path", ll_debug, lc_context)
+                                << "Cache-requested eclass '" << eclass_name << "' maps to '" << *eclass << "'";
+
+                        if (! eclass)
+                        {
+                            Log::get_instance()->message("e.cache.flat_hash.eclass.missing", ll_debug, lc_context)
+                                << "Can't find cache-requested eclass '" << eclass_name << "'";
+                            ok = false;
+                        }
+
+                        else if (eclass->dirname() != eclass_dir)
+                        {
+                            Log::get_instance()->message("e.cache.flat_hash.eclass.wrong_location", ll_debug, lc_context)
+                                << "Cache-requested eclass '" << eclass_name << "' was found at '"
+                                << eclass->dirname() << "', but expected '" << eclass_dir << "'";
+                            ok = false;
+                        }
+
+                        else if (eclass->mtime() != eclass_mtime)
+                        {
+                            Log::get_instance()->message("e.cache.flat_hash.eclass.wrong_mtime", ll_debug, lc_context)
+                                << "Cache-requested eclass '" << eclass_name << "' has mtime "
+                                << eclass->mtime() << ", but expected " << eclass_mtime;
+                            ok = false;
+                        }
+
+                        if (! ok)
+                            break;
+                    }
+                }
+
+                else if (ok && id->eapi()->supported()->ebuild_options()->support_exlibs())
+                {
+                    std::vector<std::string> exlibs;
+                    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(keys["_exlibs_"], "\t", "", std::back_inserter(exlibs));
+                    for (std::vector<std::string>::const_iterator it(exlibs.begin()),
+                             it_end(exlibs.end()); it_end != it; ++it)
+                    {
+                        std::string exlib_name(*it);
+                        inherited.push_back(exlib_name);
+                        if (exlibs.end() == ++it)
+                        {
+                            Log::get_instance()->message("e.cache.flat_hash.exlib.truncated", ll_warning, lc_context)
+                                << "_exlibs_ entry is incomplete";
+                            return false;
+                        }
+                        FSEntry exlib_dir(*it);
+                        if (exlibs.end() == ++it)
+                        {
+                            Log::get_instance()->message("e.cache.flat_hash.exlibs.truncated", ll_warning, lc_context)
+                                << "_exlibs_ entry is incomplete";
+                            return false;
+                        }
+                        std::time_t exlib_mtime(destringify<std::time_t>(*it));
+
+                        const FSEntry * exlib(_imp->eclass_mtimes->exlib(exlib_name, id->name()));
+                        if (exlib)
+                            Log::get_instance()->message("e.cache.flat_hash.exlib.path", ll_debug, lc_context)
+                                << "Cache-requested exlib '" << exlib_name << "' maps to '" << *exlib << "'";
+
+                        if (! exlib)
+                        {
+                            Log::get_instance()->message("e.cache.flat_hash.exlib.missing", ll_debug, lc_context)
+                                << "Can't find cache-requested exlib '" << exlib_name << "'";
+                            ok = false;
+                        }
+
+                        else if (exlib->dirname() != exlib_dir)
+                        {
+                            Log::get_instance()->message("e.cache.flat_hash.exlib.wrong_location", ll_debug, lc_context)
+                                << "Cache-requested exlib '" << exlib_name << "' was found at '"
+                                << exlib->dirname() << "', but expected '" << exlib_dir << "'";
+                            ok = false;
+                        }
+
+                        else if (exlib->mtime() != exlib_mtime)
+                        {
+                            Log::get_instance()->message("e.cache.flat_hash.exlib.wrong_mtime", ll_debug, lc_context)
+                                << "Cache-requested exlib '" << exlib_name << "' has mtime "
+                                << exlib->mtime() << ", but expected " << exlib_mtime;
+                            ok = false;
+                        }
+
+                        if (! ok)
+                            break;
+                    }
+                }
+
+                if (! ok)
+                {
+                    Log::get_instance()->message("e.cache.stale", ll_warning, lc_no_context)
+                        << "Stale cache file at '" << _imp->filename << "'";
+                    return false;
+                }
+            }
+
+            if (! m.dependencies()->name().empty())
+            {
+                DependenciesRewriter rewriter;
+                parse_depend(keys[m.dependencies()->name()], _imp->env, id, *id->eapi())->root()->accept(rewriter);
+                id->load_build_depend(m.dependencies()->name() + ".DEPEND", m.dependencies()->description() + " (build)", rewriter.depend());
+                id->load_run_depend(m.dependencies()->name() + ".RDEPEND", m.dependencies()->description() + " (run)", rewriter.rdepend());
+                id->load_post_depend(m.dependencies()->name() + ".PDEPEND", m.dependencies()->description() + " (post)", rewriter.pdepend());
+            }
+
+            if (! m.build_depend()->name().empty())
+                id->load_build_depend(m.build_depend()->name(), m.build_depend()->description(), keys[m.build_depend()->name()]);
+
+            if (! m.run_depend()->name().empty())
+                id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(), keys[m.run_depend()->name()]);
+
+            id->load_slot(m.slot(), keys[m.slot()->name()]);
+
+            if (! m.src_uri()->name().empty())
+                id->load_src_uri(m.src_uri(), keys[m.src_uri()->name()]);
+
+            if (! m.restrictions()->name().empty())
+                id->load_restrict(m.restrictions(), keys[m.restrictions()->name()]);
+
+            if (! m.properties()->name().empty())
+                id->load_properties(m.properties(), keys[m.properties()->name()]);
+
+            if (! m.homepage()->name().empty())
+                id->load_homepage(m.homepage()->name(), m.homepage()->description(), keys[m.homepage()->name()]);
+
+            if (! m.license()->name().empty())
+                id->load_license(m.license(), keys[m.license()->name()]);
+
+            if (! m.short_description()->name().empty())
+                    id->load_short_description(m.short_description()->name(),
+                            m.short_description()->description(),
+                            keys[m.short_description()->name()]);
+
+            if (! m.long_description()->name().empty())
+            {
+                std::string value(keys[m.long_description()->name()]);
+                if (! value.empty())
+                    id->load_long_description(m.long_description()->name(),
+                            m.long_description()->description(), value);
+            }
+
+            if (! m.keywords()->name().empty())
+                id->load_keywords(m.keywords()->name(), m.keywords()->description(), keys[m.keywords()->name()]);
+
+            if (! m.inherited()->name().empty())
+                id->load_inherited(m.inherited()->name(), m.inherited()->description(), join(inherited.begin(), inherited.end(), " "));
+
+            if (! m.defined_phases()->name().empty())
+                if (! keys[m.defined_phases()->name()].empty())
+                    id->load_defined_phases(m.defined_phases()->name(), m.defined_phases()->description(), keys[m.defined_phases()->name()]);
+
+            if (! m.iuse()->name().empty())
+                id->load_iuse(m.iuse()->name(), m.iuse()->description(), keys[m.iuse()->name()]);
+
+            if (! m.myoptions()->name().empty())
+                id->load_myoptions(m.myoptions()->name(), m.myoptions()->description(), keys[m.myoptions()->name()]);
+
+            if (! m.pdepend()->name().empty())
+                id->load_post_depend(m.pdepend()->name(), m.pdepend()->description(), keys[m.pdepend()->name()]);
+
+            if (! m.provide()->name().empty())
+                id->load_provide(m.provide()->name(), m.provide()->description(), keys[m.provide()->name()]);
+
+            if (! m.use()->name().empty())
+                id->load_use(m.use()->name(), m.use()->description(), keys[m.use()->name()]);
+
+            if (! m.upstream_changelog()->name().empty())
+            {
+                std::string value(keys[m.upstream_changelog()->name()]);
+                if (! value.empty())
+                    id->load_upstream_changelog(m.upstream_changelog()->name(),
+                            m.upstream_changelog()->description(), value);
+            }
+
+            if (! m.upstream_documentation()->name().empty())
+            {
+                std::string value(keys[m.upstream_documentation()->name()]);
+                if (! value.empty())
+                    id->load_upstream_documentation(m.upstream_documentation()->name(),
+                            m.upstream_documentation()->description(), value);
+            }
+
+            if (! m.upstream_release_notes()->name().empty())
+            {
+                std::string value(keys[m.upstream_release_notes()->name()]);
+                if (! value.empty())
+                    id->load_upstream_release_notes(m.upstream_release_notes()->name(),
+                            m.upstream_release_notes()->description(), value);
+            }
+
+            if (! m.bugs_to()->name().empty())
+            {
+                std::string value(keys[m.bugs_to()->name()]);
+                if (! value.empty())
+                    id->load_bugs_to(m.bugs_to(), value);
+            }
+
+            if (! m.remote_ids()->name().empty())
+            {
+                std::string value(keys[m.remote_ids()->name()]);
+                if (! value.empty())
+                    id->load_remote_ids(m.remote_ids(), value);
+            }
+        }
+
+        Log::get_instance()->message("e.cache.success", ll_debug, lc_context) << "Successfully loaded cache file";
+        return true;
+    }
+    catch (const InternalError &)
+    {
+        throw;
+    }
+    catch (const Exception & e)
+    {
+        Log::get_instance()->message("e.cache.failure", ll_warning, lc_no_context) << "Not using cache file at '"
+            << _imp->filename << "' due to exception '" << e.message() << "' (" << e.what() << ")";
         return false;
     }
 }
@@ -789,19 +788,19 @@ EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
         return;
     }
 
-    std::ofstream cache_file(stringify(_imp->filename).c_str());
-
-    if (cache_file)
+    try
     {
-        cache_file << cache.str();
-        cache_file.close();
+        {
+            SafeOFStream cache_file(_imp->filename);
+            cache_file << cache.str();
+        }
         struct ::utimbuf times = { _imp->ebuild.mtime(), _imp->ebuild.mtime() };
         _imp->filename.utime(&times);
     }
-    else
+    catch (const SafeOFStreamError & e)
     {
         Log::get_instance()->message("e.cache.save.failure", ll_warning, lc_no_context) << "Couldn't write cache file to '"
-            << _imp->filename << "': " << std::strerror(errno);
+            << _imp->filename << "': " << e.message() + " (" + e.what() + ")";
     }
 }
 

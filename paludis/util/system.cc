@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,7 +27,7 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/strip.hh>
-#include <paludis/util/fd_output_stream.hh>
+#include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/pipe.hh>
 
 #include <sys/utsname.h>
@@ -575,7 +575,7 @@ paludis::run_command(const Command & cmd)
             }
 
             {
-                FDOutputStream stream(internal_command_reader->write_fd());
+                SafeOFStream stream(internal_command_reader->write_fd());
                 stream << "EXIT " << ret << std::endl;
             }
         }

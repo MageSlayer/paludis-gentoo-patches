@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,15 +17,16 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_UTIL_FD_OUTPUT_STREAM_HH
-#define PALUDIS_GUARD_PALUDIS_UTIL_FD_OUTPUT_STREAM_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_UTIL_SAFE_OFSTREAM_HH
+#define PALUDIS_GUARD_PALUDIS_UTIL_SAFE_OFSTREAM_HH 1
 
+#include <paludis/util/attributes.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/util/fs_entry-fwd.hh>
 #include <ostream>
-#include <unistd.h>
-#include <cstdio>
 
 /** \file
- * Declarations for FDOutputStreamBuf.
+ * Declarations for SafeOFStream.
  *
  * \ingroup g_fs
  *
@@ -37,94 +38,94 @@
 namespace paludis
 {
     /**
-     * Output stream buffer class that's opened via an FD.
+     * Output stream buffer class that can be opened via an FD, and that doesn't
+     * do retarded things when given a non-file.
      *
      * See \ref TCppSL Ch. 13.13 for what we're doing here. The buffer code is
      * based upon the "io/outbuf2.hpp" example in section 13.13.3.
      *
      * \ingroup g_fs
-     * \nosubgrouping
+     * \since 0.34.3
      */
-    class PALUDIS_VISIBLE FDOutputStreamBuf :
+    class PALUDIS_VISIBLE SafeOFStreamBuf :
         public std::streambuf
     {
         protected:
-            /// Our file descriptor.
-            int fd;
-
             virtual int_type
-            overflow(int_type c)
-            {
-                if (c != traits_type::eof())
-                {
-                    char z = c;
-                    if (1 != write(fd, &z, 1))
-                        return traits_type::eof();
-                }
-                return c;
-            }
+            overflow(int_type c);
 
             virtual std::streamsize
-            xsputn(const char * s, std::streamsize num)
-            {
-                return write(fd, s, num);
-            }
+            xsputn(const char * s, std::streamsize num);
 
         public:
             ///\name Basic operations
             ///\{
 
-            FDOutputStreamBuf(const int f) :
-                fd(f)
-            {
-            }
+            SafeOFStreamBuf(const int f);
 
             ///\}
+
+            /// Our file descriptor.
+            int fd;
     };
 
     /**
-     * Member from base initialisation for FDOutputStream.
+     * Member from base initialisation for SafeOFStream.
      *
      * \ingroup g_fs
+     * \since 0.34.3
      */
-    class PALUDIS_VISIBLE FDOutputStreamBase
+    class PALUDIS_VISIBLE SafeOFStreamBase
     {
         protected:
             /// Our buffer.
-            FDOutputStreamBuf buf;
+            SafeOFStreamBuf buf;
 
         public:
             ///\name Basic operations
             ///\{
 
-            FDOutputStreamBase(const int fd) :
-                buf(fd)
-            {
-            }
+            SafeOFStreamBase(const int fd);
 
             ///\}
     };
 
     /**
-     * Output stream buffer class that's opened via an FD.
+     * Output stream buffer class that can be opened via an FD, and that doesn't
+     * do retarded things when given a non-file.
      *
      * \ingroup g_fs
+     * \since 0.34.3
      */
-    class PALUDIS_VISIBLE FDOutputStream :
-        protected FDOutputStreamBase,
+    class PALUDIS_VISIBLE SafeOFStream :
+        protected SafeOFStreamBase,
         public std::ostream
     {
+        private:
+            const bool _close;
+
         public:
             ///\name Basic operations
             ///\{
 
-            FDOutputStream(const int fd) :
-                FDOutputStreamBase(fd),
-                std::ostream(&buf)
-            {
-            }
+            SafeOFStream(const int fd);
+            SafeOFStream(const FSEntry &, const int open_flags = -1);
+            ~SafeOFStream();
 
             ///\}
+    };
+
+    /**
+     * Thrown by SafeOFStream if an error occurs.
+     *
+     * \ingroup g_fs
+     * \since 0.34.3
+     */
+    class PALUDIS_VISIBLE SafeOFStreamError :
+        public Exception
+    {
+        public:
+            SafeOFStreamError(const std::string &) throw ();
     };
 }
 

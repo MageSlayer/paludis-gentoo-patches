@@ -49,7 +49,6 @@
 #include <tr1/unordered_map>
 #include <functional>
 #include <algorithm>
-#include <fstream>
 
 using namespace paludis;
 
@@ -279,7 +278,7 @@ CRANInstalledRepository::do_contents(const Package ID & id) const
         return result;
     }
 
-    std::ifstream ff(stringify(f).c_str());
+    SafeIFStream ff(f);
     if (! ff)
         throw ConfigurationError("Could not read '" + stringify(f) + "'");
 

@@ -39,12 +39,12 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/thread_pool.hh>
 #include <paludis/util/destringify.hh>
+#include <paludis/util/safe_ofstream.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
 #include <tr1/functional>
 #include <iostream>
-#include <fstream>
 #include <map>
 
 using namespace paludis;
@@ -352,16 +352,9 @@ main(int argc, char *argv[])
 
         std::cout << std::endl;
 
-        std::tr1::shared_ptr<std::ofstream> outf;
+        std::tr1::shared_ptr<SafeOFStream> outf;
         if (CommandLine::get_instance()->a_report_file.specified())
-        {
-            outf.reset(new std::ofstream(CommandLine::get_instance()->a_report_file.argument().c_str()));
-            if (! *outf)
-            {
-                std::cerr << "Cannot write to " << CommandLine::get_instance()->a_report_file.argument() << std::endl;
-                return EXIT_FAILURE;
-            }
-        }
+            outf.reset(new SafeOFStream(FSEntry(CommandLine::get_instance()->a_report_file.argument())));
 
         std::ostream & out(outf ? *outf : cout);
 

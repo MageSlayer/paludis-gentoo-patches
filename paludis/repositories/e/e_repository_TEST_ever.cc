@@ -47,7 +47,6 @@
 #include <test/test_runner.hh>
 #include <tr1/functional>
 #include <set>
-#include <fstream>
 #include <string>
 
 #include "config.h"

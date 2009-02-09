@@ -36,6 +36,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
 #include <paludis/ndbam.hh>
@@ -47,7 +48,6 @@
 #include <paludis/literal_metadata_key.hh>
 #include <tr1/functional>
 #include <iostream>
-#include <fstream>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -355,10 +355,10 @@ ExndbamRepository::merge(const MergeParams & m)
     /* load CONFIG_PROTECT, CONFIG_PROTECT_MASK back */
     std::string config_protect, config_protect_mask;
     {
-        std::ifstream c(stringify(target_ver_dir / "CONFIG_PROTECT").c_str());
+        SafeIFStream c(target_ver_dir / "CONFIG_PROTECT");
         config_protect = std::string((std::istreambuf_iterator<char>(c)), std::istreambuf_iterator<char>());
 
-        std::ifstream c_m(stringify(target_ver_dir / "CONFIG_PROTECT_MASK").c_str());
+        SafeIFStream c_m(target_ver_dir / "CONFIG_PROTECT_MASK");
         config_protect_mask = std::string((std::istreambuf_iterator<char>(c_m)), std::istreambuf_iterator<char>());
     }
 
@@ -447,11 +447,11 @@ ExndbamRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositor
             /* load CONFIG_PROTECT, CONFIG_PROTECT_MASK from vdb, supplement with env */
             std::string config_protect, config_protect_mask;
             {
-                std::ifstream c(stringify(ver_dir / "CONFIG_PROTECT").c_str());
+                SafeIFStream c(ver_dir / "CONFIG_PROTECT");
                 config_protect = std::string((std::istreambuf_iterator<char>(c)), std::istreambuf_iterator<char>()) +
                     " " + getenv_with_default("CONFIG_PROTECT", "");
 
-                std::ifstream c_m(stringify(ver_dir / "CONFIG_PROTECT_MASK").c_str());
+                SafeIFStream c_m(ver_dir / "CONFIG_PROTECT_MASK");
                 config_protect_mask = std::string((std::istreambuf_iterator<char>(c_m)), std::istreambuf_iterator<char>()) +
                     " " + getenv_with_default("CONFIG_PROTECT_MASK", "");
             }

@@ -69,10 +69,11 @@
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/safe_ofstream.hh>
+#include <paludis/util/safe_ifstream.hh>
 
 #include <tr1/unordered_map>
 #include <tr1/functional>
-#include <fstream>
 #include <iostream>
 #include <functional>
 #include <algorithm>
@@ -408,11 +409,11 @@ VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID>
             /* load CONFIG_PROTECT, CONFIG_PROTECT_MASK from vdb, supplement with env */
             std::string config_protect, config_protect_mask;
             {
-                std::ifstream c(stringify(pkg_dir / "CONFIG_PROTECT").c_str());
+                SafeIFStream c(pkg_dir / "CONFIG_PROTECT");
                 config_protect = std::string((std::istreambuf_iterator<char>(c)), std::istreambuf_iterator<char>()) +
                     " " + getenv_with_default("CONFIG_PROTECT", "");
 
-                std::ifstream c_m(stringify(pkg_dir / "CONFIG_PROTECT_MASK").c_str());
+                SafeIFStream c_m(pkg_dir / "CONFIG_PROTECT_MASK");
                 config_protect_mask = std::string((std::istreambuf_iterator<char>(c_m)), std::istreambuf_iterator<char>()) +
                     " " + getenv_with_default("CONFIG_PROTECT_MASK", "");
             }
@@ -562,7 +563,7 @@ VDBRepository::load_provided_using_cache() const
         return false;
     }
 
-    std::ifstream provides_cache(stringify(_imp->params.provides_cache()).c_str());
+    SafeIFStream provides_cache(_imp->params.provides_cache());
 
     std::string version;
     std::getline(provides_cache, version);
@@ -714,25 +715,28 @@ VDBRepository::write_provides_cache() const
 {
     Context context("When saving provides cache to '" + stringify(_imp->params.provides_cache()) + "':");
 
-    std::ofstream f(stringify(_imp->params.provides_cache()).c_str());
-    if (! f)
+    try
+    {
+        SafeOFStream f(_imp->params.provides_cache());
+
+        f << "paludis-3" << std::endl;
+        f << name() << std::endl;
+
+        for (ProvidesMap::const_iterator it(_imp->provides_map->begin()),
+                 it_end(_imp->provides_map->end()); it_end != it; ++it)
+        {
+            f << it->first.first << " " << it->first.second;
+            for (Sequence<QualifiedPackageName>::ConstIterator it2(it->second->begin()),
+                     it2_end(it->second->end()); it2_end != it2; ++it2)
+                f << " " << *it2;
+            f << std::endl;
+        }
+    }
+    catch (const SafeOFStreamError & e)
     {
         Log::get_instance()->message("e.vdb.provides.write_failed", ll_warning, lc_context) << "Cannot write to '" <<
-                _imp->params.provides_cache() << "': " << std::strerror(errno);
+                _imp->params.provides_cache() << "': '" << e.message() << "' (" << e.what() << ")";
         return;
-    }
-
-    f << "paludis-3" << std::endl;
-    f << name() << std::endl;
-
-    for (ProvidesMap::const_iterator it(_imp->provides_map->begin()),
-             it_end(_imp->provides_map->end()); it_end != it; ++it)
-    {
-        f << it->first.first << " " << it->first.second;
-        for (Sequence<QualifiedPackageName>::ConstIterator it2(it->second->begin()),
-                 it2_end(it->second->end()); it2_end != it2; ++it2)
-            f << " " << *it2;
-        f << std::endl;
     }
 }
 
@@ -824,10 +828,10 @@ VDBRepository::merge(const MergeParams & m)
     /* load CONFIG_PROTECT, CONFIG_PROTECT_MASK from vdb */
     std::string config_protect, config_protect_mask;
     {
-        std::ifstream c(stringify(tmp_vdb_dir / "CONFIG_PROTECT").c_str());
+        SafeIFStream c(tmp_vdb_dir / "CONFIG_PROTECT");
         config_protect = std::string((std::istreambuf_iterator<char>(c)), std::istreambuf_iterator<char>());
 
-        std::ifstream c_m(stringify(tmp_vdb_dir / "CONFIG_PROTECT_MASK").c_str());
+        SafeIFStream c_m(tmp_vdb_dir / "CONFIG_PROTECT_MASK");
         config_protect_mask = std::string((std::istreambuf_iterator<char>(c_m)), std::istreambuf_iterator<char>());
     }
 

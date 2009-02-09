@@ -46,11 +46,11 @@
 #include <paludis/environment.hh>
 #include <paludis/stringify_formatter-impl.hh>
 #include <paludis/dep_spec_flattener.hh>
+#include <paludis/util/safe_ifstream.hh>
 
 #include <tr1/functional>
 #include <list>
 #include <vector>
-#include <fstream>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -989,9 +989,7 @@ EContentsKey::value() const
         return _imp->value;
     }
 
-    std::ifstream ff(stringify(f).c_str());
-    if (! ff)
-        throw ConfigurationError("Could not read '" + stringify(f) + "'");
+    SafeIFStream ff(f);
 
     std::string line;
     unsigned line_number(0);

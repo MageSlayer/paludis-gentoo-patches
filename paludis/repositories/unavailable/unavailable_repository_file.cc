@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,11 +25,11 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/simple_parser.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <list>
-#include <fstream>
 
 using namespace paludis;
 using namespace paludis::unavailable_repository;
@@ -69,9 +69,7 @@ UnavailableRepositoryFile::end() const
 void
 UnavailableRepositoryFile::_load(const FSEntry & f)
 {
-    std::ifstream file(stringify(f).c_str());
-    if (! file)
-        throw UnavailableRepositoryConfigurationError("Cannot read '" + stringify(f) + "'");
+    SafeIFStream file(f);
 
     std::string line;
     while (std::getline(file, line))

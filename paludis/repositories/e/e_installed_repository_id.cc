@@ -41,9 +41,9 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <iterator>
-#include <fstream>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -53,10 +53,7 @@ namespace
     std::string file_contents(const FSEntry & f)
     {
         Context c("When reading '" + stringify(f) + "':");
-        std::ifstream i(stringify(f).c_str());
-        if (! i)
-            throw ConfigurationError("Cannot open '" + stringify(f) + "' for read");
-
+        SafeIFStream i(f);
         return strip_trailing(std::string((std::istreambuf_iterator<char>(i)), std::istreambuf_iterator<char>()), "\r\n");
     }
 }

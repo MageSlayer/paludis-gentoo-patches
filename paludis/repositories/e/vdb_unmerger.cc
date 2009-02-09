@@ -39,11 +39,11 @@ using namespace paludis;
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/safe_ifstream.hh>
 
 #include <list>
 #include <map>
 #include <vector>
-#include <fstream>
 #include <iostream>
 
 namespace paludis
@@ -205,7 +205,7 @@ VDBUnmerger::make_tidy(const FSEntry & f) const
 void
 VDBUnmerger::populate_unmerge_set()
 {
-    std::ifstream c(stringify(_imp->options.contents_file()).c_str());
+    SafeIFStream c(_imp->options.contents_file());
     if (! c)
         throw VDBUnmergerError("Cannot read '" + stringify(_imp->options.contents_file()) + "'");
 
@@ -266,19 +266,22 @@ VDBUnmerger::check_file(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo>
         display("--- [!time] " + stringify(f));
     else
     {
-        std::ifstream md5_file(stringify(_imp->options.root() / f).c_str());
-        if (! md5_file)
+        try
+        {
+            SafeIFStream md5_file(_imp->options.root() / f);
+            if (MD5(md5_file).hexsum() != fie->_md5sum)
+                display("--- [!md5 ] " + stringify(f));
+            else if (config_protected(_imp->options.root() / f))
+                display("--- [cfgpr] " + stringify(f));
+            else
+                return true;
+        }
+        catch (const SafeIFStreamError &)
         {
             Log::get_instance()->message("e.vdb.contents.md5_failed", ll_warning, lc_no_context)
                 << "Cannot get md5 for '" << (_imp->options.root() / f) << "'";
             display("--- [!md5?] " + stringify(f));
         }
-        else if (MD5(md5_file).hexsum() != fie->_md5sum)
-            display("--- [!md5 ] " + stringify(f));
-        else if (config_protected(_imp->options.root() / f))
-            display("--- [cfgpr] " + stringify(f));
-        else
-            return true;
     }
 
     return false;
