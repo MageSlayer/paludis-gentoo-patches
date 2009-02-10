@@ -408,14 +408,25 @@ VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID>
         {
             /* load CONFIG_PROTECT, CONFIG_PROTECT_MASK from vdb, supplement with env */
             std::string config_protect, config_protect_mask;
+
+            try
             {
                 SafeIFStream c(pkg_dir / "CONFIG_PROTECT");
                 config_protect = std::string((std::istreambuf_iterator<char>(c)), std::istreambuf_iterator<char>()) +
                     " " + getenv_with_default("CONFIG_PROTECT", "");
+            }
+            catch (const SafeIFStreamError &)
+            {
+            }
 
+            try
+            {
                 SafeIFStream c_m(pkg_dir / "CONFIG_PROTECT_MASK");
                 config_protect_mask = std::string((std::istreambuf_iterator<char>(c_m)), std::istreambuf_iterator<char>()) +
                     " " + getenv_with_default("CONFIG_PROTECT_MASK", "");
+            }
+            catch (const SafeIFStreamError &)
+            {
             }
 
             std::string final_config_protect(config_protect + " " + merge_config_protect);
@@ -827,12 +838,22 @@ VDBRepository::merge(const MergeParams & m)
 
     /* load CONFIG_PROTECT, CONFIG_PROTECT_MASK from vdb */
     std::string config_protect, config_protect_mask;
+    try
     {
         SafeIFStream c(tmp_vdb_dir / "CONFIG_PROTECT");
         config_protect = std::string((std::istreambuf_iterator<char>(c)), std::istreambuf_iterator<char>());
+    }
+    catch (const SafeIFStreamError &)
+    {
+    }
 
+    try
+    {
         SafeIFStream c_m(tmp_vdb_dir / "CONFIG_PROTECT_MASK");
         config_protect_mask = std::string((std::istreambuf_iterator<char>(c_m)), std::istreambuf_iterator<char>());
+    }
+    catch (const SafeIFStreamError &)
+    {
     }
 
     FSEntry vdb_dir(_imp->params.location());

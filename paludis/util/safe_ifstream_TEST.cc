@@ -21,6 +21,8 @@
 #include <paludis/util/fs_entry.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
+#include <unistd.h>
+#include <sys/types.h>
 
 using namespace test;
 using namespace paludis;
@@ -84,6 +86,11 @@ namespace test_cases
     struct ExistingPermTest : TestCase
     {
         ExistingPermTest() : TestCase("existing unreadable file") { }
+
+        bool skip() const
+        {
+            return 0 == getuid();
+        }
 
         void run()
         {
