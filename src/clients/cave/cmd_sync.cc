@@ -93,6 +93,10 @@ namespace
         {
             return FSEntry("/dev/null");
         }
+
+        void succeeded()
+        {
+        }
     };
 
     struct SyncCommandLine :
