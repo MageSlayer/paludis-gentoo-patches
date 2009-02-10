@@ -37,6 +37,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <paludis/action.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
@@ -45,7 +46,6 @@
 #include <paludis/hook.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/user_dep_spec.hh>
-#include <fstream>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -224,9 +224,7 @@ EInstalledRepository::get_environment_variable(
 
     if ((ver_dir / var).is_regular_file_or_symlink_to_regular_file())
     {
-        std::ifstream f(stringify(ver_dir / var).c_str());
-        if (! f)
-            throw ActionError("Could not read '" + stringify(ver_dir / var) + "'");
+        SafeIFStream f(ver_dir / var);
         return strip_trailing_string(
                 std::string((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>()), "\n");
     }

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,6 +29,7 @@
 #include <paludis/util/config_file.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/safe_ofstream.hh>
 #include <paludis/ndbam.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
@@ -38,7 +39,6 @@
 #include <functional>
 #include <vector>
 #include <map>
-#include <fstream>
 
 using namespace paludis;
 
@@ -125,7 +125,7 @@ NDBAM::NDBAM(const FSEntry & l,
         (l / "indices" / "categories").mkdir();
         (l / "indices" / "packages").mkdir();
         (l / "data").mkdir();
-        std::ofstream n(stringify(l / "ndbam.conf").c_str());
+        SafeOFStream n(l / "ndbam.conf");
         n << "ndbam_format = 1" << std::endl;
         n << "repository_format = " << preferred_format << std::endl;
         if (! n)

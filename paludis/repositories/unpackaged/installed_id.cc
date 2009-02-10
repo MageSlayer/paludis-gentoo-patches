@@ -33,6 +33,7 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/package_database.hh>
@@ -42,7 +43,6 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
 #include <tr1/functional>
-#include <fstream>
 
 using namespace paludis;
 using namespace paludis::unpackaged_repositories;
@@ -209,12 +209,9 @@ namespace
                 Lock l(_mutex);
                 if (_v)
                     return *_v;
-                std::ifstream f(stringify(_f).c_str());
-                if (! f)
-                {
-                    Context context("When reading '" + stringify(_f) + "' as an InstalledUnpackagedStringKey:");
-                    throw FSError("Couldn't open '" + stringify(_f) + "' for read");
-                }
+
+                Context context("When reading '" + stringify(_f) + "' as an InstalledUnpackagedStringKey:");
+                SafeIFStream f(_f);
                 _v.reset(new std::string(
                             strip_trailing(std::string((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>()), "\n")));
                 return *_v;
@@ -271,12 +268,7 @@ namespace
                 for (FSEntrySequence::ConstIterator a(_f.begin()), a_end(_f.end()) ;
                         a != a_end ; ++a)
                 {
-                    std::ifstream f(stringify(*a).c_str());
-                    if (! f)
-                    {
-                        Context context("When reading '" + stringify(*a) + "' as an InstalledUnpackagedStringKey:");
-                        throw FSError("Couldn't open '" + stringify(*a) + "' for read");
-                    }
+                    SafeIFStream f(*a);
                     _v->insert(strip_trailing(std::string((std::istreambuf_iterator<char>(f)),
                                     std::istreambuf_iterator<char>()), "\n"));
                 }
@@ -340,10 +332,7 @@ namespace
 
                 Context context("When reading '" + stringify(_f) + "' as an InstalledUnpackagedDependencyKey:");
 
-                std::ifstream f(stringify(_f).c_str());
-                if (! f)
-                    throw FSError("Couldn't open '" + stringify(_f) + "' for read");
-
+                SafeIFStream f(_f);
                 _v = DepParser::parse(_env, strip_trailing(
                             std::string((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>()), "\n"));
                 return _v;

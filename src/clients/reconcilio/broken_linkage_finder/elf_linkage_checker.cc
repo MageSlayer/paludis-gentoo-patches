@@ -36,11 +36,11 @@
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/safe_ifstream.hh>
 
 #include <algorithm>
 #include <cerrno>
 #include <cstring>
-#include <fstream>
 #include <map>
 #include <set>
 #include <vector>
@@ -125,7 +125,7 @@ namespace paludis
 
         std::vector<FSEntry> extra_lib_dirs;
 
-        template <typename> bool check_elf(const FSEntry &, std::ifstream &);
+        template <typename> bool check_elf(const FSEntry &, std::istream &);
         void handle_library(const FSEntry &, const ElfArchitecture &);
         template <typename> bool check_extra_elf(const FSEntry &, std::istream &, std::set<ElfArchitecture> &);
 
@@ -155,16 +155,13 @@ ElfLinkageChecker::check_file(const FSEntry & file)
            file.has_permission(fs_ug_owner, fs_perm_execute)))
         return false;
 
-    std::ifstream stream(stringify(file).c_str());
-    if (! stream)
-        throw FSError("Error opening file '" + stringify(file) + "': " + std::strerror(errno));
-
+    SafeIFStream stream(file);
     return _imp->check_elf<Elf32Type>(file, stream) || _imp->check_elf<Elf64Type>(file, stream);
 }
 
 template <typename ElfType_>
 bool
-Implementation<ElfLinkageChecker>::check_elf(const FSEntry & file, std::ifstream & stream)
+Implementation<ElfLinkageChecker>::check_elf(const FSEntry & file, std::istream & stream)
 {
     if (! ElfObject<ElfType_>::is_valid_elf(stream))
         return false;
@@ -312,18 +309,21 @@ ElfLinkageChecker::need_breakage_added(
                 continue;
             }
 
-            std::ifstream stream(stringify(file).c_str());
-            if (! stream)
+            try
+            {
+                SafeIFStream stream(file);
+
+                if (! (_imp->check_extra_elf<Elf32Type>(file, stream, missing_it->second) ||
+                       _imp->check_extra_elf<Elf64Type>(file, stream, missing_it->second)))
+                    Log::get_instance()->message("reconcilio.broken_linkage_finder.not_an_elf", ll_debug, lc_no_context)
+                        << "'" << file << "' is not an ELF file";
+            }
+            catch (const SafeIFStreamError & e)
             {
                 Log::get_instance()->message("reconcilio.broken_linkage_finder.failure", ll_warning, lc_no_context)
-                    << "Error opening '" << file << "': " << std::strerror(errno);
+                    << "Error opening '" << file << "': '" << e.message() << "' (" << e.what() << ")";
                 continue;
             }
-
-            if (! (_imp->check_extra_elf<Elf32Type>(file, stream, missing_it->second) ||
-                   _imp->check_extra_elf<Elf64Type>(file, stream, missing_it->second)))
-                Log::get_instance()->message("reconcilio.broken_linkage_finder.not_an_elf", ll_debug, lc_no_context)
-                    << "'" << file << "' is not an ELF file";
         }
     }
 

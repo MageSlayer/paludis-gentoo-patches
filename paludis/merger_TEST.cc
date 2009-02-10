@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,10 +23,10 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <paludis/hook.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include <fstream>
 #include <iterator>
 #include <list>
 
@@ -375,7 +375,7 @@ namespace test_cases
             merger.merge();
 
             TEST_CHECK((root_dir / "file").is_regular_file());
-            std::ifstream f(stringify(root_dir / "file").c_str());
+            SafeIFStream f(root_dir / "file");
             TEST_CHECK(f);
             std::string fs(std::string((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>()));
             TEST_CHECK_EQUAL(fs, "image contents\n");
@@ -389,7 +389,7 @@ namespace test_cases
         void run()
         {
             TEST_CHECK((root_dir / "file").is_regular_file());
-            std::ifstream b(stringify(root_dir / "file").c_str());
+            SafeIFStream b(root_dir / "file");
             TEST_CHECK(b);
             std::string bs((std::istreambuf_iterator<char>(b)), std::istreambuf_iterator<char>());
             TEST_CHECK_EQUAL(bs, "root contents\n");
@@ -398,7 +398,7 @@ namespace test_cases
             merger.merge();
 
             TEST_CHECK((root_dir / "file").is_regular_file());
-            std::ifstream f(stringify(root_dir / "file").c_str());
+            SafeIFStream f(root_dir / "file");
             TEST_CHECK(f);
             std::string fs((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
             TEST_CHECK_EQUAL(fs, "image contents\n");
@@ -419,19 +419,19 @@ namespace test_cases
             merger.merge();
 
             TEST_CHECK((root_dir / "file1").is_regular_file());
-            std::ifstream f(stringify(root_dir / "file1").c_str());
+            SafeIFStream f(root_dir / "file1");
             TEST_CHECK(f);
             std::string fs((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
             TEST_CHECK_EQUAL(fs, "image 1 contents\n");
 
             TEST_CHECK((root_dir / "file2").is_regular_file());
-            std::ifstream f2(stringify(root_dir / "file2").c_str());
+            SafeIFStream f2(root_dir / "file2");
             TEST_CHECK(f2);
             std::string fs2((std::istreambuf_iterator<char>(f2)), std::istreambuf_iterator<char>());
             TEST_CHECK_EQUAL(fs2, "image 2 contents\n");
 
             TEST_CHECK((root_dir / "file3").is_regular_file());
-            std::ifstream f3(stringify(root_dir / "file3").c_str());
+            SafeIFStream f3(root_dir / "file3");
             TEST_CHECK(f3);
             std::string fs3((std::istreambuf_iterator<char>(f3)), std::istreambuf_iterator<char>());
             TEST_CHECK_EQUAL(fs3, "image 3 contents\n");

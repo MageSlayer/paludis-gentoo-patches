@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,9 +20,9 @@
 #include "repo_name.hh"
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <paludis/repository.hh>
 #include <paludis/qa.hh>
-#include <fstream>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -37,7 +37,7 @@ paludis::erepository::repo_name_check(
         reporter.message(QAMessage(dir / "profiles" / "repo_name", qaml_normal, name, "No 'profiles/repo_name' file"));
     else
     {
-        std::ifstream f(stringify(dir / "profiles" / "repo_name").c_str());
+        SafeIFStream f(dir / "profiles" / "repo_name");
         if (! f)
             reporter.message(QAMessage(dir / "profiles" / "repo_name", qaml_normal, name, "repo_name file unreadable"));
         else

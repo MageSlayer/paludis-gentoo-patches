@@ -29,7 +29,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/set-impl.hh>
-#include <paludis/util/fd_output_stream.hh>
+#include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/simple_visitor_cast.hh>
@@ -1834,7 +1834,7 @@ ConsoleInstallTask::show_resume_command(const std::string & resume_command_templ
             if (-1 != fd)
             {
                 ::fchmod(fd, 0644);
-                FDOutputStream resume_command_file(fd);
+                SafeOFStream resume_command_file(fd);
                 resume_command_file << resume_command << endl;
 
                 if (resume_command_file)

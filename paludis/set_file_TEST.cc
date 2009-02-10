@@ -25,7 +25,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/environments/test/test_environment.hh>
-#include <fstream>
+#include <paludis/util/safe_ifstream.hh>
 
 using namespace test;
 using namespace paludis;
@@ -93,7 +93,7 @@ namespace test_cases
             f.rewrite();
 
             {
-                std::ifstream ff("set_file_TEST_dir/simple1");
+                SafeIFStream ff(FSEntry("set_file_TEST_dir/simple1"));
                 TEST_CHECK(ff);
                 std::string g((std::istreambuf_iterator<char>(ff)), std::istreambuf_iterator<char>());
                 TEST_CHECK_EQUAL(g, "# this is a comment\n\nfoo/bar\n>=bar/baz-1.23\n\n# the end\nmoo/oink\n");
@@ -111,7 +111,7 @@ namespace test_cases
             f.rewrite();
 
             {
-                std::ifstream ff("set_file_TEST_dir/simple1");
+                SafeIFStream ff(FSEntry("set_file_TEST_dir/simple1"));
                 TEST_CHECK(ff);
                 std::string g((std::istreambuf_iterator<char>(ff)), std::istreambuf_iterator<char>());
                 TEST_CHECK_EQUAL(g, "# this is a comment\n\nfoo/bar\n\n# the end\nmoo/oink\n");
@@ -162,7 +162,7 @@ namespace test_cases
             f.rewrite();
 
             {
-                std::ifstream ff("set_file_TEST_dir/paludisconf1");
+                SafeIFStream ff(FSEntry("set_file_TEST_dir/paludisconf1"));
                 TEST_CHECK(ff);
                 std::string g((std::istreambuf_iterator<char>(ff)), std::istreambuf_iterator<char>());
                 TEST_CHECK_EQUAL(g, "# this is a comment\n\n? foo/bar\n* >=bar/baz-1.23\n\n* set\n? settee\n\n# the end\n* moo/oink\n* couch\n");
@@ -181,7 +181,7 @@ namespace test_cases
             f.rewrite();
 
             {
-                std::ifstream ff("set_file_TEST_dir/paludisconf1");
+                SafeIFStream ff(FSEntry("set_file_TEST_dir/paludisconf1"));
                 TEST_CHECK(ff);
                 std::string g((std::istreambuf_iterator<char>(ff)), std::istreambuf_iterator<char>());
                 TEST_CHECK_EQUAL(g, "# this is a comment\n\n? foo/bar\n\n? settee\n\n# the end\n* moo/oink\n* couch\n");

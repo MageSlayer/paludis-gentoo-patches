@@ -34,13 +34,13 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/indirect_iterator.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/safe_ofstream.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/literal_metadata_key.hh>
-#include <fstream>
 #include <sstream>
 #include <sys/time.h>
 
@@ -321,36 +321,28 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
     target_ver_dir.mkdir();
 
     {
-        std::ofstream source_repository_file(stringify(target_ver_dir / "source_repository").c_str());
+        SafeOFStream source_repository_file(target_ver_dir / "source_repository");
         source_repository_file << m.package_id()->repository()->name() << std::endl;
-        if (! source_repository_file)
-            throw InstallActionError("Could not write to '" + stringify(target_ver_dir / "source_repository") + "'");
     }
 
     if (m.package_id()->short_description_key())
     {
-        std::ofstream description_file(stringify(target_ver_dir / "description").c_str());
+        SafeOFStream description_file(target_ver_dir / "description");
         description_file << m.package_id()->short_description_key()->value() << std::endl;
-        if (! description_file)
-            throw InstallActionError("Could not write to '" + stringify(target_ver_dir / "description") + "'");
     }
 
     if (m.package_id()->build_dependencies_key())
     {
-        std::ofstream build_dependencies_file(stringify(target_ver_dir / "build_dependencies").c_str());
+        SafeOFStream build_dependencies_file(target_ver_dir / "build_dependencies");
         StringifyFormatter f;
         build_dependencies_file << m.package_id()->build_dependencies_key()->pretty_print_flat(f) << std::endl;
-        if (! build_dependencies_file)
-            throw InstallActionError("Could not write to '" + stringify(target_ver_dir / "build_dependencies") + "'");
     }
 
     if (m.package_id()->run_dependencies_key())
     {
-        std::ofstream run_dependencies_file(stringify(target_ver_dir / "run_dependencies").c_str());
+        SafeOFStream run_dependencies_file(target_ver_dir / "run_dependencies");
         StringifyFormatter f;
         run_dependencies_file << m.package_id()->run_dependencies_key()->pretty_print_flat(f) << std::endl;
-        if (! run_dependencies_file)
-            throw InstallActionError("Could not write to '" + stringify(target_ver_dir / "run_dependencies") + "'");
     }
 
     NDBAMMerger merger(

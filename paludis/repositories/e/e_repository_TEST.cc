@@ -33,6 +33,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/standard_output_manager.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
@@ -48,7 +49,6 @@
 #include <test/test_runner.hh>
 #include <tr1/functional>
 #include <set>
-#include <fstream>
 #include <string>
 
 #include "config.h"
@@ -876,8 +876,8 @@ namespace test_cases
             repo->make_manifest(QualifiedPackageName("category/package"));
 
             std::multiset<std::string> made_manifest, reference_manifest;
-            std::ifstream made_manifest_stream("e_repository_TEST_dir/repo11/category/package/Manifest"),
-                reference_manifest_stream("e_repository_TEST_dir/repo11/Manifest_correct");
+            SafeIFStream made_manifest_stream(FSEntry("e_repository_TEST_dir/repo11/category/package/Manifest")),
+                reference_manifest_stream(FSEntry("e_repository_TEST_dir/repo11/Manifest_correct"));
 
             std::string line;
 
@@ -888,7 +888,7 @@ namespace test_cases
 
             TEST_CHECK(made_manifest == reference_manifest);
 
-            TEST_CHECK_THROWS(repo->make_manifest(QualifiedPackageName("category/package-b")), ERepositoryConfigurationError);
+            TEST_CHECK_THROWS(repo->make_manifest(QualifiedPackageName("category/package-b")), SafeIFStreamError);
         }
     } test_e_repository_manifest;
 

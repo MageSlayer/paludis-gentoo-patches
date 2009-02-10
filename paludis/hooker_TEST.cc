@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,9 +23,9 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
-#include <fstream>
 #include <iterator>
 
 using namespace test;
@@ -80,7 +80,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(result.max_exit_status(), 0);
             TEST_CHECK_EQUAL(result.output(), "");
 
-            std::ifstream f(stringify(FSEntry("hooker_TEST_dir/ordering.out")).c_str());
+            SafeIFStream f(FSEntry("hooker_TEST_dir/ordering.out"));
             std::string line((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 
 #ifdef ENABLE_PYTHON_HOOKS
@@ -108,7 +108,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(result.max_exit_status(), 123);
             TEST_CHECK_EQUAL(result.output(), "");
 
-            std::ifstream f(stringify(FSEntry("hooker_TEST_dir/bad_hooks.out")).c_str());
+            SafeIFStream f(FSEntry("hooker_TEST_dir/bad_hooks.out"));
             std::string line((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 
             TEST_CHECK_EQUAL(line, "one\nthree\n");
@@ -131,7 +131,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(result.max_exit_status(), 0);
             TEST_CHECK_EQUAL(result.output(), "");
 
-            std::ifstream f(stringify(FSEntry("hooker_TEST_dir/cycles.out")).c_str());
+            SafeIFStream f(FSEntry("hooker_TEST_dir/cycles.out"));
             std::string line((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 
             TEST_CHECK_EQUAL(line, "b\na\ng\nf\ni\n");
@@ -194,7 +194,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(result.output(), "");
             TEST_CHECK_EQUAL(result.max_exit_status(), 0);
 
-            std::ifstream f(stringify(FSEntry("hooker_TEST_dir/several_output.out")).c_str());
+            SafeIFStream f(FSEntry("hooker_TEST_dir/several_output.out"));
             std::string line((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 
             TEST_CHECK_EQUAL(line, "one\none\none\ntwo\none\ntwo\nthree\n");
@@ -220,7 +220,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(result.output(), "two");
             TEST_CHECK_EQUAL(result.max_exit_status(), 99);
 
-            std::ifstream f(stringify(FSEntry("hooker_TEST_dir/several_output_bad.out")).c_str());
+            SafeIFStream f(FSEntry("hooker_TEST_dir/several_output_bad.out"));
             std::string line((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 
             TEST_CHECK_EQUAL(line, "one\ntwo\nthree\n");

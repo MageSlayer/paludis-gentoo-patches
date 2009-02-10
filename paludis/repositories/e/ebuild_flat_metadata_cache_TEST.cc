@@ -31,9 +31,11 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/fs_entry.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include <fstream>
+#include <iterator>
 
 using namespace test;
 using namespace paludis;
@@ -1079,8 +1081,8 @@ namespace test_cases
 
         std::string contents(const std::string & filename)
         {
-            std::ifstream s(filename.c_str());
-            return std::string(std::istreambuf_iterator<char>(s), std::istreambuf_iterator<char>());
+            SafeIFStream s(FSEntry(filename).realpath());
+            return std::string((std::istreambuf_iterator<char>(s)), std::istreambuf_iterator<char>());
         }
 
         void run()
@@ -1115,8 +1117,8 @@ namespace test_cases
 
         std::string contents(const std::string & filename)
         {
-            std::ifstream s(filename.c_str());
-            return std::string(std::istreambuf_iterator<char>(s), std::istreambuf_iterator<char>());
+            SafeIFStream s(FSEntry(filename).realpath());
+            return std::string((std::istreambuf_iterator<char>(s)), std::istreambuf_iterator<char>());
         }
 
         void run()
@@ -1153,8 +1155,8 @@ namespace test_cases
 
         std::string contents(const std::string & filename)
         {
-            std::ifstream s(filename.c_str());
-            return std::string(std::istreambuf_iterator<char>(s), std::istreambuf_iterator<char>());
+            SafeIFStream s(FSEntry(filename).realpath());
+            return std::string((std::istreambuf_iterator<char>(s)), std::istreambuf_iterator<char>());
         }
 
         void run()

@@ -38,12 +38,12 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/output_manager.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <paludis/metadata_key.hh>
 #include <tr1/functional>
 #include <list>
 #include <map>
 #include <vector>
-#include <fstream>
 
 using namespace paludis;
 
@@ -229,7 +229,7 @@ NDBAMUnmerger::check_file(const FSEntry & f, const std::tr1::shared_ptr<ExtraInf
         display("--- [!time] " + stringify(f));
     else
     {
-        std::ifstream md5_file(stringify(_imp->options.root() / f).c_str());
+        SafeIFStream md5_file(_imp->options.root() / f);
         if (! md5_file)
         {
             Log::get_instance()->message("ndbam.unmerger.md5_failed", ll_warning, lc_no_context) << "Cannot get md5 for '" <<

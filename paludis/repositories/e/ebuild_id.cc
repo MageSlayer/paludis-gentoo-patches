@@ -53,7 +53,6 @@
 
 #include <set>
 #include <iterator>
-#include <fstream>
 
 using namespace paludis;
 using namespace paludis::erepository;

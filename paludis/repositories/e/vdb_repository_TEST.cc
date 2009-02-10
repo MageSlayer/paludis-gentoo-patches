@@ -28,6 +28,7 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/standard_output_manager.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
@@ -41,7 +42,6 @@
 #include <test/test_runner.hh>
 #include <tr1/functional>
 #include <algorithm>
-#include <fstream>
 #include <functional>
 #include <iterator>
 #include <vector>
@@ -827,7 +827,7 @@ namespace test_cases
 
         std::string read_file(const FSEntry & f)
         {
-            std::ifstream s(stringify(f).c_str());
+            SafeIFStream s(f);
             std::stringstream ss;
             std::copy(std::istreambuf_iterator<char>(s), std::istreambuf_iterator<char>(),
                       std::ostreambuf_iterator<char>(ss));
@@ -914,7 +914,7 @@ namespace test_cases
 
         std::string read_file(const FSEntry & f)
         {
-            std::ifstream s(stringify(f).c_str());
+            SafeIFStream s(f);
             std::stringstream ss;
             std::copy(std::istreambuf_iterator<char>(s), std::istreambuf_iterator<char>(),
                       std::ostreambuf_iterator<char>(ss));
@@ -1159,7 +1159,7 @@ namespace test_cases
 
         std::string read_file(const FSEntry & f)
         {
-            std::ifstream s(stringify(f).c_str());
+            SafeIFStream s(f);
             std::stringstream ss;
             std::copy(std::istreambuf_iterator<char>(s), std::istreambuf_iterator<char>(),
                       std::ostreambuf_iterator<char>(ss));

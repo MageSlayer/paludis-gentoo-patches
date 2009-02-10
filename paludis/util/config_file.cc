@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2006 Danny van Dyk
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -27,8 +27,8 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/simple_parser.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/safe_ifstream.hh>
 
-#include <fstream>
 #include <istream>
 #include <list>
 #include <map>
@@ -61,12 +61,17 @@ namespace paludis
         Implementation(const FSEntry & f) :
             filename(stringify(f))
         {
-            std::ifstream ff(stringify(f).c_str());
-            if (! ff)
-                throw ConfigFileError(filename, "Could not read file");
-            std::tr1::shared_ptr<std::string> t(new std::string);
-            std::copy((std::istreambuf_iterator<char>(ff)), std::istreambuf_iterator<char>(), std::back_inserter(*t));
-            text = t;
+            try
+            {
+                SafeIFStream ff(f);
+                std::tr1::shared_ptr<std::string> t(new std::string);
+                std::copy((std::istreambuf_iterator<char>(ff)), std::istreambuf_iterator<char>(), std::back_inserter(*t));
+                text = t;
+            }
+            catch (const SafeIFStreamError & e)
+            {
+                throw ConfigFileError(filename, "Error reading file: '" + e.message() + "' (" + e.what() + ")");
+            }
         }
 
         Implementation(const std::string & s) :

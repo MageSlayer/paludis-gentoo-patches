@@ -24,11 +24,11 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/safe_ofstream.hh>
 #include <paludis/set_file.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/dep_tag.hh>
 #include <tr1/functional>
-#include <fstream>
 
 using namespace paludis;
 using namespace paludis::paludis_environment;
@@ -103,11 +103,14 @@ World::_add_string_to_world(const std::string & n) const
 
     if (! _imp->maybe_world_file->exists())
     {
-        std::ofstream f(stringify(*_imp->maybe_world_file).c_str());
-        if (! f)
+        try
+        {
+            SafeOFStream f(*_imp->maybe_world_file);
+        }
+        catch (const SafeOFStreamError & e)
         {
             Log::get_instance()->message("paludis_environment.world.cannot_create", ll_warning, lc_no_context)
-                << "Cannot create world file '" << *_imp->maybe_world_file << "'";
+                << "Cannot create world file '" << *_imp->maybe_world_file << "': '" << e.message() << "' (" << e.what() << ")";
             return;
         }
     }

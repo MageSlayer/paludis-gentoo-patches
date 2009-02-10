@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,13 +33,13 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <paludis/action.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
 #include <tr1/unordered_map>
-#include <fstream>
 
 using namespace paludis;
 
@@ -243,9 +243,7 @@ GemsRepository::need_ids() const
 
     Context context("When loading gems yaml file:");
 
-    std::ifstream yaml_file(stringify(_imp->params.location() / "yaml").c_str());
-    if (! yaml_file)
-        throw ConfigurationError("Gems yaml file '" + stringify(_imp->params.location() / "yaml") + "' not readable");
+    SafeIFStream yaml_file(_imp->params.location() / "yaml");
 
     std::string output((std::istreambuf_iterator<char>(yaml_file)), std::istreambuf_iterator<char>());
     yaml::Document master_doc(output);

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,10 +31,10 @@
 #include <paludis/util/action_queue.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <paludis/qa.hh>
 #include <paludis/metadata_key.hh>
 #include <tr1/functional>
-#include <fstream>
 #include <unistd.h>
 #include <algorithm>
 #include <list>
@@ -229,7 +229,7 @@ QAController::_check_eclasses(const FSEntry & dir, const std::string & type)
         for (DirIterator it(dir), it_end; it_end != it; ++it)
             if (is_file_with_extension(*it, type, IsFileWithOptions()))
             {
-                std::ifstream f(stringify(*it).c_str());
+                SafeIFStream f(*it);
                 std::string content((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 
                 if (! f)
@@ -355,7 +355,7 @@ QAController::_check_id(const std::tr1::shared_ptr<const PackageID> & i)
                             _1, i->fs_location_key()->value(), std::tr1::ref(_imp->reporter),
                             _imp->env, _imp->repo, std::tr1::static_pointer_cast<const ERepositoryID>(i))));
 
-            std::ifstream f(stringify(i->fs_location_key()->value()).c_str());
+            SafeIFStream f(i->fs_location_key()->value());
             std::string content((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
             if (! f)
                 _imp->reporter.message(

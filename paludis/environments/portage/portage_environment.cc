@@ -38,6 +38,7 @@
 #include <paludis/util/tribool.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/standard_output_manager.hh>
+#include <paludis/util/safe_ofstream.hh>
 #include <paludis/hooker.hh>
 #include <paludis/hook.hh>
 #include <paludis/mask.hh>
@@ -58,7 +59,6 @@
 #include <map>
 #include <vector>
 #include <list>
-#include <fstream>
 #include "config.h"
 
 using namespace paludis;
@@ -904,11 +904,14 @@ PortageEnvironment::_add_string_to_world(const std::string & s) const
 
     if (! _imp->world_file.exists())
     {
-        std::ofstream f(stringify(_imp->world_file).c_str());
-        if (! f)
+        try
+        {
+            SafeOFStream f(_imp->world_file);
+        }
+        catch (const SafeOFStreamError & e)
         {
             Log::get_instance()->message("portage_environment.world.write_failed", ll_warning, lc_no_context)
-                << "Cannot create world file '" << _imp->world_file << "'";
+                << "Cannot create world file '" << _imp->world_file << "': '" << e.message() << "' (" << e.what() << ")";
             return;
         }
     }

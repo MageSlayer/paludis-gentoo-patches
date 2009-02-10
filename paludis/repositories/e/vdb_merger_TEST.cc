@@ -24,9 +24,9 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/standard_output_manager.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include <fstream>
 
 using namespace paludis;
 using namespace test;
@@ -105,13 +105,18 @@ namespace test_cases
             if (! f.is_regular_file())
                 return "";
 
-            std::ifstream stream(stringify(f).c_str());
-            if (! stream)
-                return "";
+            try
+            {
+                SafeIFStream stream(f);
 
-            std::string contents;
-            stream >> contents;
-            return contents;
+                std::string contents;
+                stream >> contents;
+                return contents;
+            }
+            catch (const SafeIFStreamError &)
+            {
+                return "";
+            }
         }
 
         void run()

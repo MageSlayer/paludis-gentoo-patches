@@ -42,7 +42,6 @@
 #include <paludis/package_database.hh>
 #include <tr1/functional>
 #include <iostream>
-#include <fstream>
 #include <map>
 
 using namespace paludis;

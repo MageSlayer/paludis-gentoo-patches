@@ -43,7 +43,9 @@
 
 #include <paludis/util/config_file.hh>
 #include <paludis/util/create_iterator-impl.hh>
+#include <paludis/util/safe_ofstream.hh>
 #include <paludis/distribution.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/environment.hh>
@@ -91,7 +93,6 @@
 #include <algorithm>
 #include <vector>
 #include <list>
-#include <fstream>
 
 #include <strings.h>
 #include <ctype.h>
@@ -1151,8 +1152,7 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
     FSEntry package_dir = _imp->layout->package_directory(qpn);
 
     FSEntry(package_dir / "Manifest").unlink();
-    std::ofstream manifest(stringify(FSEntry(package_dir 
-                    / "Manifest")).c_str());
+    SafeOFStream manifest(FSEntry(package_dir / "Manifest"));
     if (! manifest)
         throw ERepositoryConfigurationError("Couldn't open Manifest for writing.");
 
@@ -1170,9 +1170,7 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
             filename = stringify(file).substr(stringify(package_dir / "files").length()+1);
         }
 
-        std::ifstream file_stream(stringify(file).c_str());
-        if (! file_stream)
-            throw ERepositoryConfigurationError("Couldn't read " + stringify(file));
+        SafeIFStream file_stream(file);
 
         RMD160 rmd160sum(file_stream);
         manifest << file_type << " " << filename << " "
@@ -1213,10 +1211,7 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
 
             FSEntry f(params().distdir() / *d);
 
-            std::ifstream file_stream(stringify(f).c_str());
-            if (! file_stream)
-                throw ERepositoryConfigurationError("Couldn't read "
-                        + stringify(f));
+            SafeIFStream file_stream(f);
 
             RMD160 rmd160sum(file_stream);
             manifest << "DIST " << f.basename() << " "

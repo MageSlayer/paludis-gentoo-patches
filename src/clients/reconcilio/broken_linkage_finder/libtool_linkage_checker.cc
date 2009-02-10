@@ -29,11 +29,11 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/safe_ifstream.hh>
 
 #include <algorithm>
 #include <cstring>
 #include <cerrno>
-#include <fstream>
 #include <functional>
 #include <vector>
 
@@ -90,9 +90,7 @@ LibtoolLinkageChecker::check_file(const FSEntry & file)
 
     Context ctx("When checking '" + stringify(file) + "' as a libtool library:");
 
-    std::ifstream stream(stringify(file).c_str());
-    if (! stream)
-        throw FSError("Error opening file '" + stringify(file) + "': " + std::strerror(errno));
+    SafeIFStream stream(file);
 
     KeyValueConfigFileOptions opts;
     opts += kvcfo_disallow_space_around_equals;

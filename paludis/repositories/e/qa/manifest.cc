@@ -32,10 +32,10 @@
 #include <paludis/util/sha256.hh>
 #include <paludis/util/rmd160.hh>
 #include <paludis/util/md5.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/layout.hh>
 #include <paludis/repositories/e/manifest2_reader.hh>
-#include <fstream>
 #include <set>
 #include <map>
 
@@ -148,7 +148,7 @@ namespace
 
             if (! entry.sha1().empty())
             {
-                std::ifstream s(stringify(file).c_str());
+                SafeIFStream s(file);
                 SHA1 sha1(s);
                 if (entry.sha1() != sha1.hexsum())
                     reporter.message(QAMessage(file, qaml_normal, name, "File SHA1 is '" + sha1.hexsum() + "', but Manifest lists '" + entry.sha1() + "'"));
@@ -157,7 +157,7 @@ namespace
 
             if (! entry.sha256().empty())
             {
-                std::ifstream s(stringify(file).c_str());
+                SafeIFStream s(file);
                 SHA256 sha256(s);
                 if (entry.sha256() != sha256.hexsum())
                     reporter.message(QAMessage(file, qaml_normal, name, "File SHA256 is '" + sha256.hexsum() + "', but Manifest lists '" + entry.sha256() + "'"));
@@ -166,7 +166,7 @@ namespace
 
             if (! entry.rmd160().empty())
             {
-                std::ifstream s(stringify(file).c_str());
+                SafeIFStream s(file);
                 RMD160 rmd160(s);
                 if (entry.rmd160() != rmd160.hexsum())
                     reporter.message(QAMessage(file, qaml_normal, name, "File RMD160 is '" + rmd160.hexsum() + "', but Manifest lists '" + entry.rmd160() + "'"));
@@ -175,7 +175,7 @@ namespace
 
             if (! entry.md5().empty())
             {
-                std::ifstream s(stringify(file).c_str());
+                SafeIFStream s(file);
                 MD5 md5(s);
                 if (entry.md5() != md5.hexsum())
                     reporter.message(QAMessage(file, qaml_normal, name, "File MD5 is '" + md5.hexsum() + "', but Manifest lists '" + entry.md5() + "'"));
@@ -258,16 +258,18 @@ paludis::erepository::manifest_check(
 
         bool is_signed(false);
         {
-            std::ifstream ff(stringify(manifest).c_str());
-            if (! ff)
+            try
+            {
+                SafeIFStream ff(manifest);
+                std::string s;
+                if (std::getline(ff, s))
+                    is_signed = (0 == s.compare("-----BEGIN PGP SIGNED MESSAGE-----"));
+            }
+            catch (const SafeIFStreamError &)
             {
                 reporter.message(QAMessage(manifest, qaml_normal, name, "Can't read Manifest file"));
                 return true;
             }
-
-            std::string s;
-            if (std::getline(ff, s))
-                is_signed = (0 == s.compare("-----BEGIN PGP SIGNED MESSAGE-----"));
         }
 
         if (is_signed)
