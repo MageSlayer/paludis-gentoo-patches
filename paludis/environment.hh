@@ -39,7 +39,7 @@
 #include <paludis/selection-fwd.hh>
 #include <paludis/metadata_key_holder.hh>
 #include <paludis/choice-fwd.hh>
-#include <paludis/action-fwd.hh>
+#include <paludis/create_output_manager_info-fwd.hh>
 
 /** \file
  * Declarations for the Environment class.
@@ -53,67 +53,6 @@
 
 namespace paludis
 {
-    /**
-     * Information for Environment::create_output_manager.
-     *
-     * \since 0.36
-     * \ingroup g_environment
-     * \see Environment::create_output_manager
-     */
-    class PALUDIS_VISIBLE CreateOutputManagerInfo :
-        public virtual DeclareAbstractAcceptMethods<CreateOutputManagerInfo, MakeTypeList<
-            CreateOutputManagerForPackageIDActionInfo,
-            CreateOutputManagerForRepositorySyncInfo
-        >::Type>
-    {
-    };
-
-    /**
-     * Information for Environment::create_output_manager, if we're performing a
-     * PackageID action.
-     *
-     * \since 0.36
-     * \ingroup g_environment
-     * \see Environment::create_output_manager
-     */
-    class PALUDIS_VISIBLE CreateOutputManagerForPackageIDActionInfo :
-        private PrivateImplementationPattern<CreateOutputManagerForPackageIDActionInfo>,
-        public CreateOutputManagerInfo,
-        public ImplementAcceptMethods<CreateOutputManagerInfo, CreateOutputManagerForPackageIDActionInfo>
-    {
-        public:
-            CreateOutputManagerForPackageIDActionInfo(
-                    const std::tr1::shared_ptr<const PackageID> & id,
-                    const Action & action);
-
-            ~CreateOutputManagerForPackageIDActionInfo();
-
-            const std::tr1::shared_ptr<const PackageID> package_id() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            const Action & action() const PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
-
-    /**
-     * Information for Environment::create_output_manager, if we're performing a
-     * Repository sync.
-     *
-     * \since 0.36
-     * \ingroup g_environment
-     * \see Environment::create_output_manager
-     */
-    class PALUDIS_VISIBLE CreateOutputManagerForRepositorySyncInfo :
-        private PrivateImplementationPattern<CreateOutputManagerForRepositorySyncInfo>,
-        public CreateOutputManagerInfo,
-        public ImplementAcceptMethods<CreateOutputManagerInfo, CreateOutputManagerForRepositorySyncInfo>
-    {
-        public:
-            CreateOutputManagerForRepositorySyncInfo(
-                    const Repository & repo);
-
-            ~CreateOutputManagerForRepositorySyncInfo();
-
-            const Repository & repository() const PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
-
     /**
      * Represents a working environment, which contains an available packages
      * database and provides various methods for querying package visibility

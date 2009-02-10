@@ -33,6 +33,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/standard_output_manager.hh>
 #include <paludis/util/safe_ofstream.hh>
+#include <paludis/create_output_manager_info.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>

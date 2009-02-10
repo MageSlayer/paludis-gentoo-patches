@@ -39,6 +39,7 @@
 #include <paludis/hook.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/repository.hh>
+#include <paludis/create_output_manager_info.hh>
 #include <tr1/functional>
 #include <map>
 #include <set>

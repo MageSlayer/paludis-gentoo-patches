@@ -51,6 +51,7 @@
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/standard_output_manager.hh>
 #include <paludis/handled_information.hh>
+#include <paludis/create_output_manager_info.hh>
 #include <tr1/functional>
 #include <sstream>
 #include <functional>
