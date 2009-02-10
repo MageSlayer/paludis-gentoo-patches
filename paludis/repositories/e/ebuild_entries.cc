@@ -502,6 +502,8 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
         if (! c.failures()->empty())
             throw FetchActionError("Fetch of '" + stringify(*id) + "' failed", c.failures());
     }
+
+    output_manager->succeeded();
 }
 
 void
@@ -771,6 +773,8 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
             cmd();
         }
     }
+
+    output_manager->succeeded();
 }
 
 void

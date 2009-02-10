@@ -765,6 +765,7 @@ namespace
         {
             std::tr1::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
             id->uninstall(false, output_manager);
+            output_manager->succeeded();
         }
     };
 }

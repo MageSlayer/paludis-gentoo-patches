@@ -37,6 +37,8 @@ namespace paludis
 
             virtual LogMessageHandler log_message(const std::string & id, const LogLevel, const LogContext)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual void succeeded();
     };
 }
 

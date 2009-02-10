@@ -366,6 +366,8 @@ UnpackagedID::perform_action(Action & action) const
         case last_wp:
             throw InternalError(PALUDIS_HERE, "bad WantPhase");
     }
+
+    output_manager->succeeded();
 }
 
 void

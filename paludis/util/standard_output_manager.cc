@@ -48,3 +48,8 @@ StandardOutputManager::log_message(const std::string & id, const LogLevel l, con
     return Log::get_instance()->message(id, l, c);
 }
 
+void
+StandardOutputManager::succeeded()
+{
+}
+

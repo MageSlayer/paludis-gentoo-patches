@@ -37,6 +37,19 @@ namespace paludis
 
             virtual LogMessageHandler log_message(const std::string & id, const LogLevel, const LogContext)
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * Called if an action succeeds. This can be used to, for example,
+             * unlink the files behind a to-disk logged output manager.
+             *
+             * If an OutputManager is destroyed without having had this method
+             * called, it should assume failure. This might mean keeping rather
+             * than removing log files, for example.
+             *
+             * Further messages and output may occur even after a call to this
+             * method.
+             */
+            virtual void succeeded() = 0;
     };
 }
 
