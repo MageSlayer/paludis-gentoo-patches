@@ -207,7 +207,7 @@ pkg_setup() {
 END
 mkdir -p "packages/cat/exarray"
 cat <<'END' > packages/cat/exarray/foo.exlib || exit 1
-myexparam bar
+myexparam bar[]
 
 check_foo() {
     exparam bar[#] | grep -q ^3$ || die "Bad bar[#]"
@@ -233,7 +233,7 @@ pkg_setup() {
 END
 mkdir -p "packages/cat/exarray-spaces"
 cat <<'END' > packages/cat/exarray-spaces/foo.exlib || exit 1
-myexparam bar
+myexparam bar[]
 
 check_foo() {
     exparam bar[#] | grep -q ^3$ || die "Bad bar[#]"
@@ -331,6 +331,30 @@ require foo [ bar=[ ]
 
 pkg_setup() {
     [[ ${SUMMARY} == "[" ]] || die "Bad SUMMARY"
+}
+END
+mkdir -p "packages/cat/scalar-required"
+cat <<'END' > packages/cat/scalar-required/foo.exlib || exit 1
+myexparam bar
+SUMMARY=$(exparam bar)
+END
+cat <<'END' > packages/cat/scalar-required/scalar-required-1.ebuild || exit 1
+require foo [ bar=[ baz ] ]
+
+pkg_setup() {
+    [[ ${SUMMARY} == "baz" ]] || die "Bad SUMMARY"
+}
+END
+mkdir -p "packages/cat/array-required"
+cat <<'END' > packages/cat/array-required/foo.exlib || exit 1
+myexparam bar[]
+SUMMARY=$(exparam bar)
+END
+cat <<'END' > packages/cat/array-required/array-required-1.ebuild || exit 1
+require foo [ bar=baz ]
+
+pkg_setup() {
+    [[ ${SUMMARY} == "baz" ]] || die "Bad SUMMARY"
 }
 END
 cd ..

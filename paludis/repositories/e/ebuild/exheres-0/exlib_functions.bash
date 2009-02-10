@@ -43,9 +43,9 @@ exparam_var_name()
 exparam_internal()
 {
     local v=$(exparam_var_name ${1})__ALLDECLS__
-    has ${2%\[*} ${!v} || die "${1}.exlib has no ${2%\[*} parameter"
     if [[ ${2} == *\[*\] ]]; then
         [[ ${#} -eq 2 ]] || die "exparam with an index requires exactly one argument"
+        has "${2%\[*}[]" ${!v} || die "${1}.exlib has no ${2%\[*} array"
         v=$(exparam_var_name ${1})_${2%\[*}
         local i=${2%\]}
         i=${i#*\[}
@@ -60,6 +60,11 @@ exparam_internal()
         fi
     else
         [[ ${#} -eq 2 || ${#} -eq 3 ]] || die "exparam requires exactly one or two arguments"
+        if [[ ${#} -eq 3 ]]; then
+            has "${2%\[*}[]" ${!v} || die "${1}.exlib has no ${2%\[*} array"
+        else
+            has ${2%\[*} ${!v} || die "${1}.exlib has no ${2%\[*} parameter"
+        fi
         v=$(exparam_var_name ${1})_${2}
         if [[ -n ${3} ]]; then
             eval "${3}=( \"\${${v}[@]}\" )"
@@ -73,10 +78,11 @@ myexparam()
 {
     [[ -z "${CURRENT_EXLIB}" ]] && die "myexparam called but CURRENT_EXLIB undefined"
 
-    local v="$(exparam_var_name ${CURRENT_EXLIB})__ALLDECLS__"
-    printf -v "${v}" "%s %s" "${!v}" "${1%%=*}"
+    local v=${1%%=*} a_v="$(exparam_var_name ${CURRENT_EXLIB})__ALLDECLS__"
+    [[ ${1} == *=\[ && ${#} -gt 1 ]] && v+="[]"
+    printf -v "${a_v}" "%s %s" "${!a_v}" "${v}"
 
-    v=$(exparam_var_name ${CURRENT_EXLIB})_${1%%=*}
+    v=$(exparam_var_name ${CURRENT_EXLIB})_${v%\[\]}
     if [[ -z ${!v+set} && ${1} == *=* ]]; then
         if [[ ${1} == *=\[ && ${#} -gt 1 ]]; then
             shift
@@ -96,7 +102,7 @@ myexparam()
 require()
 {
     ebuild_notice "debug" "Command 'require ${@}', using EXLIBSDIRS '${EXLIBSDIRS}'"
-    local exlibs e ee p a=() location v v_qa
+    local exlibs e ee p a=() location v a_v v_qa
     # parse exlib parameters
     while [[ -n $@ ]]; do
         if [[ ${1} == +(\[) ]]; then
@@ -104,10 +110,9 @@ require()
             p=${1}
             shift
             while [[ -n ${1} && ${1} != ${p//\[/\]} ]]; do
-                v="$(exparam_var_name ${e})__ALL__"
-                printf -v "${v}" "%s %s" "${!v}" "${1%%=*}"
+                v="${1%%=*}"
                 if [[ ${1#*=} == ${p} ]]; then
-                    v=${1%%=*}
+                    v+="[]"
                     a=()
                     shift
                     while [[ -n ${1} && ${1} != ${p//\[/\]} ]]; do
@@ -115,10 +120,12 @@ require()
                         shift
                     done
                     [[ ${1} == ${p//\[/\]} ]] || die "\"${p}\" encountered with no closing \"${p//[/]}\" for array ${v}"
-                    eval "$(exparam_var_name ${e})_${v}=( \"\${a[@]}\" )"
+                    eval "$(exparam_var_name ${e})_${v%\[\]}=( \"\${a[@]}\" )"
                 else
                     printf -v "$(exparam_var_name ${e})_${1%%=*}" "%s" "${1#*=}"
                 fi
+                a_v="$(exparam_var_name ${e})__ALL__"
+                printf -v "${a_v}" "%s %s" "${!a_v}" "${v}"
                 shift
             done
             [[ ${1} == ${p//\[/\]} ]] || die "\"${p}\" encountered with no closing \"${p//[/]}\""
@@ -185,11 +192,20 @@ require()
             fi
         done
 
-        # die on required exlib parameters that hasn't been supplied
-        local a_v=$(exparam_var_name ${CURRENT_EXLIB})__ALLDECLS__ c_v v
+        # die on required exlib parameters that haven't been supplied
+        local c_v v
+        a_v=$(exparam_var_name ${CURRENT_EXLIB})__ALLDECLS__
         for v in ${!a_v}; do
-            c_v=$(exparam_var_name ${CURRENT_EXLIB})_${v}
-            [[ -n ${!c_v+set} ]] || die "${CURRENT_EXLIB}.exlib requires a ${v} parameter"
+            c_v=$(exparam_var_name ${CURRENT_EXLIB})_${v%\[\]}
+            if [[ -n ${!c_v+set} ]]; then
+                if [[ $(eval "declare -p ${c_v}") == declare\ -a\ ${c_v}=* ]]; then
+                    [[ ${v} == *\[\] ]] || die "${CURRENT_EXLIB}.exlib requires a scalar ${v} parameter but got an array"
+                else
+                    [[ ${v} != *\[\] ]] || die "${CURRENT_EXLIB}.exlib requires an array ${v} but got a scalar"
+                fi
+            else
+                die "${CURRENT_EXLIB}.exlib requires a ${v} parameter"
+            fi
         done
 
         # die on supplied exlib parameters which haven't been declared
