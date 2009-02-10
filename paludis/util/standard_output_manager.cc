@@ -42,12 +42,6 @@ StandardOutputManager::stderr_stream()
     return std::cerr;
 }
 
-LogMessageHandler
-StandardOutputManager::log_message(const std::string & id, const LogLevel l, const LogContext c)
-{
-    return Log::get_instance()->message(id, l, c);
-}
-
 void
 StandardOutputManager::succeeded()
 {

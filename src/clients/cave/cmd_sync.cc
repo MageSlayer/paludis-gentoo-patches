@@ -75,11 +75,6 @@ namespace
             return std::cerr;
         }
 
-        virtual LogMessageHandler log_message(const std::string & id, const LogLevel l, const LogContext c)
-        {
-            return Log::get_instance()->message(id, l, c);
-        }
-
         std::tr1::shared_ptr<const Sequence<std::string> > tail(const bool) const
         {
             return make_shared_ptr(new Sequence<std::string>);

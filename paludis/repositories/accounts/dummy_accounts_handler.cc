@@ -21,6 +21,7 @@
 #include <paludis/util/output_manager.hh>
 #include <paludis/package_id.hh>
 #include <paludis/repository.hh>
+#include <ostream>
 
 using namespace paludis;
 using namespace paludis::accounts_repository;

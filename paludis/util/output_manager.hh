@@ -21,7 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_OUTPUT_MANAGER_HH 1
 
 #include <paludis/util/output_manager-fwd.hh>
-#include <paludis/util/log.hh>
+#include <paludis/util/attributes.hh>
+#include <paludis/util/instantiation_policy.hh>
 #include <iosfwd>
 
 namespace paludis
@@ -34,9 +35,6 @@ namespace paludis
 
             virtual std::ostream & stdout_stream() PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
             virtual std::ostream & stderr_stream() PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            virtual LogMessageHandler log_message(const std::string & id, const LogLevel, const LogContext)
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Called if an action succeeds. This can be used to, for example,

@@ -35,9 +35,6 @@ namespace paludis
             virtual std::ostream & stdout_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual std::ostream & stderr_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual LogMessageHandler log_message(const std::string & id, const LogLevel, const LogContext)
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
             virtual void succeeded();
     };
 }

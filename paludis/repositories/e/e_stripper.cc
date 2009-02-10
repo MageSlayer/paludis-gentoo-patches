@@ -22,6 +22,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/output_manager.hh>
+#include <ostream>
 
 using namespace paludis;
 using namespace paludis::erepository;
