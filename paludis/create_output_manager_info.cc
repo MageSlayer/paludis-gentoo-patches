@@ -19,8 +19,13 @@
 
 #include <paludis/create_output_manager_info.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/exception.hh>
+#include <ostream>
 
 using namespace paludis;
+
+#include <paludis/create_output_manager_info-se.cc>
 
 namespace paludis
 {
@@ -29,11 +34,13 @@ namespace paludis
     {
         const std::tr1::shared_ptr<const PackageID> id;
         const Action & action;
+        const OutputExclusivity output_exclusivity;
 
         Implementation(const std::tr1::shared_ptr<const PackageID> & i,
-                const Action & a) :
+                const Action & a, const OutputExclusivity e) :
             id(i),
-            action(a)
+            action(a),
+            output_exclusivity(e)
         {
         }
     };
@@ -42,9 +49,11 @@ namespace paludis
     struct Implementation<CreateOutputManagerForRepositorySyncInfo>
     {
         const Repository & repo;
+        const OutputExclusivity output_exclusivity;
 
-        Implementation(const Repository & r) :
-            repo(r)
+        Implementation(const Repository & r, const OutputExclusivity e) :
+            repo(r),
+            output_exclusivity(e)
         {
         }
     };
@@ -52,9 +61,10 @@ namespace paludis
 
 CreateOutputManagerForPackageIDActionInfo::CreateOutputManagerForPackageIDActionInfo(
         const std::tr1::shared_ptr<const PackageID> & i,
-        const Action & a) :
+        const Action & a,
+        const OutputExclusivity e) :
     PrivateImplementationPattern<CreateOutputManagerForPackageIDActionInfo>(
-            new Implementation<CreateOutputManagerForPackageIDActionInfo>(i, a))
+            new Implementation<CreateOutputManagerForPackageIDActionInfo>(i, a, e))
 {
 }
 
@@ -74,10 +84,16 @@ CreateOutputManagerForPackageIDActionInfo::action() const
     return _imp->action;
 }
 
+const OutputExclusivity
+CreateOutputManagerForPackageIDActionInfo::output_exclusivity() const
+{
+    return _imp->output_exclusivity;
+}
+
 CreateOutputManagerForRepositorySyncInfo::CreateOutputManagerForRepositorySyncInfo(
-        const Repository & r) :
+        const Repository & r, const OutputExclusivity e) :
     PrivateImplementationPattern<CreateOutputManagerForRepositorySyncInfo>(
-            new Implementation<CreateOutputManagerForRepositorySyncInfo>(r))
+            new Implementation<CreateOutputManagerForRepositorySyncInfo>(r, e))
 {
 }
 
@@ -91,7 +107,12 @@ CreateOutputManagerForRepositorySyncInfo::repository() const
     return _imp->repo;
 }
 
+const OutputExclusivity
+CreateOutputManagerForRepositorySyncInfo::output_exclusivity() const
+{
+    return _imp->output_exclusivity;
+}
+
 template class PrivateImplementationPattern<CreateOutputManagerForRepositorySyncInfo>;
 template class PrivateImplementationPattern<CreateOutputManagerForPackageIDActionInfo>;
-
 

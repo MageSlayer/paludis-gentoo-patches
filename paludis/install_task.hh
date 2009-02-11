@@ -29,6 +29,7 @@
 #include <paludis/repository-fwd.hh>
 #include <paludis/action-fwd.hh>
 #include <paludis/package_database-fwd.hh>
+#include <paludis/output_manager_from_environment-fwd.hh>
 
 /** \file
  * Declarations for InstallTask.
@@ -82,7 +83,8 @@ namespace paludis
 
             bool already_done(const DepListEntry &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            FetchActionOptions make_fetch_action_options(const DepListEntry &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            FetchActionOptions make_fetch_action_options(const DepListEntry &,
+                    OutputManagerFromEnvironment & o) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
             ///\name Basic operations

@@ -36,6 +36,8 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/create_output_manager_info.hh>
+#include <paludis/output_manager_from_environment.hh>
+#include <paludis/output_manager.hh>
 #include <iostream>
 #include <iomanip>
 #include <set>
@@ -206,12 +208,6 @@ namespace
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << endl;
         }
     };
-
-    std::tr1::shared_ptr<OutputManager> make_output_manager_for_action(
-            const Environment * const env, const std::tr1::shared_ptr<const PackageID> & id, const Action & a)
-    {
-        return env->create_output_manager(CreateOutputManagerForPackageIDActionInfo(id, a));
-    }
 }
 
 int do_one_info(
@@ -247,9 +243,9 @@ int do_one_info(
     for (PackageIDSequence::ConstIterator p(to_show_entries->begin()), p_end(to_show_entries->end()) ;
             p != p_end ; ++p)
     {
+        OutputManagerFromEnvironment output_manager_holder(env.get(), *p, oe_exclusive);
         InfoActionOptions options(make_named_values<InfoActionOptions>(
-                    value_for<n::make_output_manager>(std::tr1::bind(&make_output_manager_for_action,
-                            env.get(), *p, std::tr1::placeholders::_1))
+                    value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
                     ));
         InfoAction a(options);
 
@@ -259,6 +255,9 @@ int do_one_info(
             cout << endl;
             (*p)->perform_action(a);
             cout << endl;
+
+            if (output_manager_holder.output_manager_if_constructed())
+                output_manager_holder.output_manager_if_constructed()->succeeded();
         }
         catch (const UnsupportedActionError &)
         {

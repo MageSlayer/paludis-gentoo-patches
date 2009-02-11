@@ -46,25 +46,21 @@ namespace
         }
     };
 
-    std::tr1::shared_ptr<OutputManager> make_output_manager_for_action(
-            const Environment * const env, const std::tr1::shared_ptr<const PackageID> & id, const Action & a)
-    {
-        return env->create_output_manager(CreateOutputManagerForPackageIDActionInfo(id, a));
-    }
-
     int
     do_one_config_entry(const Environment * const env, const std::tr1::shared_ptr<const PackageID> & p)
     {
         int return_code(0);
 
+        OutputManagerFromEnvironment output_manager_holder(env, p, oe_exclusive);
         ConfigActionOptions options(make_named_values<ConfigActionOptions>(
-                    value_for<n::make_output_manager>(std::tr1::bind(&make_output_manager_for_action,
-                            env, p, std::tr1::placeholders::_1))
+                    value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
                     ));
         ConfigAction a(options);
         try
         {
             p->perform_action(a);
+            if (output_manager_holder.output_manager_if_constructed())
+                output_manager_holder.output_manager_if_constructed()->succeeded();
         }
         catch (const UnsupportedActionError &)
         {

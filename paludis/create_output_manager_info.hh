@@ -62,12 +62,14 @@ namespace paludis
         public:
             CreateOutputManagerForPackageIDActionInfo(
                     const std::tr1::shared_ptr<const PackageID> & id,
-                    const Action & action);
+                    const Action & action,
+                    const OutputExclusivity output_exclusivity);
 
             ~CreateOutputManagerForPackageIDActionInfo();
 
             const std::tr1::shared_ptr<const PackageID> package_id() const PALUDIS_ATTRIBUTE((warn_unused_result));
             const Action & action() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const OutputExclusivity output_exclusivity() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -84,11 +86,14 @@ namespace paludis
         public ImplementAcceptMethods<CreateOutputManagerInfo, CreateOutputManagerForRepositorySyncInfo>
     {
         public:
-            CreateOutputManagerForRepositorySyncInfo(const Repository & repo);
+            CreateOutputManagerForRepositorySyncInfo(
+                    const Repository & repo,
+                    const OutputExclusivity);
 
             ~CreateOutputManagerForRepositorySyncInfo();
 
             const Repository & repository() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const OutputExclusivity output_exclusivity() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

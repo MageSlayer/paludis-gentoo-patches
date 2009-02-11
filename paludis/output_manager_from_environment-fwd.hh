@@ -17,20 +17,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_CREATE_OUTPUT_MANAGER_INFO_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_CREATE_OUTPUT_MANAGER_INFO_FWD_HH 1
-
-#include <paludis/util/attributes.hh>
-#include <iosfwd>
+#ifndef PALUDIS_GUARD_PALUDIS_OUTPUT_MANAGER_FROM_ENVIRONMENT_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_OUTPUT_MANAGER_FROM_ENVIRONMENT_FWD_HH 1
 
 namespace paludis
 {
-    class CreateOutputManagerInfo;
-    class CreateOutputManagerForPackageIDActionInfo;
-    class CreateOutputManagerForRepositorySyncInfo;
-
-#include <paludis/create_output_manager_info-se.hh>
-
+    class OutputManagerFromEnvironment;
 }
 
 #endif

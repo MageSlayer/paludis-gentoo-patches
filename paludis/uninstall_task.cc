@@ -39,7 +39,8 @@
 #include <paludis/hook.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/repository.hh>
-#include <paludis/create_output_manager_info.hh>
+#include <paludis/output_manager_from_environment.hh>
+#include <paludis/output_manager.hh>
 #include <tr1/functional>
 #include <map>
 #include <set>
@@ -50,15 +51,6 @@
 using namespace paludis;
 
 template class WrappedForwardIterator<AmbiguousUnmergeTargetError::ConstIteratorTag, const std::tr1::shared_ptr<const PackageID> >;
-
-namespace
-{
-    std::tr1::shared_ptr<OutputManager> make_output_manager_for_action(
-            const Environment * const env, const std::tr1::shared_ptr<const PackageID> & id, const Action & a)
-    {
-        return env->create_output_manager(CreateOutputManagerForPackageIDActionInfo(id, a));
-    }
-}
 
 AmbiguousUnmergeTargetError::AmbiguousUnmergeTargetError(const std::string & t,
         const std::tr1::shared_ptr<const PackageIDSequence> m) throw () :
@@ -367,13 +359,16 @@ UninstallTask::execute()
 
         try
         {
+            OutputManagerFromEnvironment output_manager_holder(_imp->env, i->package_id(), oe_exclusive);
             UninstallAction uninstall_action(
                     make_named_values<UninstallActionOptions>(
                         value_for<n::config_protect>(""),
-                        value_for<n::make_output_manager>(std::tr1::bind(&make_output_manager_for_action,
-                                _imp->env, i->package_id(), std::tr1::placeholders::_1))
+                        value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
                         ));
             i->package_id()->perform_action(uninstall_action);
+
+            if (output_manager_holder.output_manager_if_constructed())
+                output_manager_holder.output_manager_if_constructed()->succeeded();
         }
         catch (const UninstallActionError & e)
         {

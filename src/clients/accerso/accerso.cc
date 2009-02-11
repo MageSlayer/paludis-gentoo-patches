@@ -40,6 +40,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/package_database.hh>
+#include <paludis/output_manager_from_environment.hh>
 #include <cstdlib>
 #include <tr1/functional>
 #include <iostream>
@@ -49,15 +50,6 @@ using namespace paludis;
 using std::cout;
 using std::cerr;
 using std::endl;
-
-namespace
-{
-    std::tr1::shared_ptr<OutputManager> make_output_manager_for_action(
-            const Environment * const env, const std::tr1::shared_ptr<const PackageID> & id, const Action & a)
-    {
-        return env->create_output_manager(CreateOutputManagerForPackageIDActionInfo(id, a));
-    }
-}
 
 int
 main(int argc, char *argv[])
@@ -147,17 +139,19 @@ main(int argc, char *argv[])
 
                 try
                 {
-                    FetchAction a(make_named_values<FetchActionOptions>(
-                                value_for<n::exclude_unmirrorable>(true),
-                                value_for<n::fetch_unneeded>(true),
-                                value_for<n::make_output_manager>(std::tr1::bind(&make_output_manager_for_action,
-                                        &env, *i, std::tr1::placeholders::_1)),
-                                value_for<n::safe_resume>(true)
-                            ));
                     if ((*i)->supports_action(SupportsActionTest<FetchAction>()))
                     {
+                        OutputManagerFromEnvironment output_manager_holder(&env, *i, oe_exclusive);
+                        FetchAction a(make_named_values<FetchActionOptions>(
+                                    value_for<n::exclude_unmirrorable>(true),
+                                    value_for<n::fetch_unneeded>(true),
+                                    value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),
+                                    value_for<n::safe_resume>(true)
+                                    ));
                         (*i)->perform_action(a);
                         ++success;
+                        if (output_manager_holder.output_manager_if_constructed())
+                            output_manager_holder.output_manager_if_constructed()->succeeded();
                     }
                     else
                         results.insert(std::make_pair(*i, "Does not support fetching"));

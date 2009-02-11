@@ -51,6 +51,8 @@
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/handled_information.hh>
 #include <paludis/create_output_manager_info.hh>
+#include <paludis/output_manager_from_environment.hh>
+#include <paludis/output_manager.hh>
 #include <tr1/functional>
 #include <sstream>
 #include <functional>
@@ -67,12 +69,6 @@ template class WrappedForwardIterator<InstallTask::TargetsConstIteratorTag, cons
 
 namespace
 {
-    std::tr1::shared_ptr<OutputManager> make_output_manager_for_action(
-            const Environment * const env, const std::tr1::shared_ptr<const PackageID> & id, const Action & a)
-    {
-        return env->create_output_manager(CreateOutputManagerForPackageIDActionInfo(id, a));
-    }
-
     WantPhase want_all_phases_function(InstallTask * const task, bool & done_any, const std::string & phase)
     {
         task->on_phase_proceed_unconditionally(phase);
@@ -686,9 +682,9 @@ InstallTask::_pretend()
         {
             on_pretend_pre(*dep);
 
+            OutputManagerFromEnvironment output_manager_holder(_imp->env, dep->package_id(), oe_exclusive);
             PretendActionOptions options(make_named_values<PretendActionOptions>(
-                        value_for<n::make_output_manager>(std::tr1::bind(&make_output_manager_for_action,
-                                _imp->env, dep->package_id(), std::tr1::placeholders::_1))
+                        value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
                         ));
             PretendAction pretend_action(options);
             dep->package_id()->perform_action(pretend_action);
@@ -696,6 +692,11 @@ InstallTask::_pretend()
             {
                 pretend_failed = true;
                 dep->handled().reset(new DepListEntryHandledFailed);
+            }
+            else
+            {
+                if (output_manager_holder.output_manager_if_constructed())
+                    output_manager_holder.output_manager_if_constructed()->succeeded();
             }
 
             on_pretend_post(*dep);
@@ -758,17 +759,21 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
         SupportsActionTest<FetchAction> test_fetch;
         if (dep->package_id()->supports_action(test_fetch))
         {
-            FetchActionOptions fetch_options(make_fetch_action_options(*dep));
+            OutputManagerFromEnvironment output_manager_holder(_imp->env, dep->package_id(), oe_exclusive);
+            FetchActionOptions fetch_options(make_fetch_action_options(*dep, output_manager_holder));
             FetchAction fetch_action(fetch_options);
             dep->package_id()->perform_action(fetch_action);
+            if (output_manager_holder.output_manager_if_constructed())
+                output_manager_holder.output_manager_if_constructed()->succeeded();
         }
 
         if (! _imp->fetch_only)
         {
+            OutputManagerFromEnvironment output_manager_holder(_imp->env, dep->package_id(), oe_exclusive);
+
             InstallActionOptions install_options(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(dep->destination()),
-                        value_for<n::make_output_manager>(std::tr1::bind(&make_output_manager_for_action,
-                                _imp->env, dep->package_id(), std::tr1::placeholders::_1)),
+                        value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),
                         value_for<n::used_this_for_config_protect>(std::tr1::bind(
                                 &Implementation<InstallTask>::assign_config_protect,
                                 _imp.get(), std::tr1::placeholders::_1)),
@@ -797,6 +802,9 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
 
             InstallAction install_action(install_options);
             dep->package_id()->perform_action(install_action);
+
+            if (output_manager_holder.output_manager_if_constructed())
+                output_manager_holder.output_manager_if_constructed()->succeeded();
         }
     }
     catch (const InstallActionError & e)
@@ -880,13 +888,15 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
 
             try
             {
+                OutputManagerFromEnvironment output_manager_holder(_imp->env, dep->package_id(), oe_exclusive);
                 UninstallAction uninstall_action(
                         make_named_values<UninstallActionOptions>(
                             value_for<n::config_protect>(_imp->config_protect),
-                            value_for<n::make_output_manager>(std::tr1::bind(&make_output_manager_for_action,
-                                    _imp->env, dep->package_id(), std::tr1::placeholders::_1))
+                            value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
                             ));
                 (*c)->perform_action(uninstall_action);
+                if (output_manager_holder.output_manager_if_constructed())
+                    output_manager_holder.output_manager_if_constructed()->succeeded();
             }
             catch (const UninstallActionError & e)
             {
@@ -1806,13 +1816,12 @@ InstallTask::set_phase_options_apply_to_all(const bool b)
 }
 
 FetchActionOptions
-InstallTask::make_fetch_action_options(const DepListEntry & dep) const
+InstallTask::make_fetch_action_options(const DepListEntry &, OutputManagerFromEnvironment & o) const
 {
     return make_named_values<FetchActionOptions>(
             value_for<n::exclude_unmirrorable>(false),
             value_for<n::fetch_unneeded>(false),
-            value_for<n::make_output_manager>(std::tr1::bind(&make_output_manager_for_action,
-                    _imp->env, dep.package_id(), std::tr1::placeholders::_1)),
+            value_for<n::make_output_manager>(std::tr1::ref(o)),
             value_for<n::safe_resume>(_imp->safe_resume)
             );
 }
