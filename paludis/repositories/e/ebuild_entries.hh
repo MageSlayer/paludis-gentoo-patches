@@ -23,7 +23,7 @@
 #include <paludis/repositories/e/e_repository_entries.hh>
 #include <paludis/repositories/e/e_repository_params.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/output_manager-fwd.hh>
+#include <paludis/output_manager-fwd.hh>
 
 /** \file
  * Declaration for the EbuildEntries class.

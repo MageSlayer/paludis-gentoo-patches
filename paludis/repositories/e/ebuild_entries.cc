@@ -56,7 +56,7 @@
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/output_manager.hh>
+#include <paludis/output_manager.hh>
 #include <tr1/functional>
 #include <list>
 #include <set>

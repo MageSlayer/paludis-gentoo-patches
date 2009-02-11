@@ -17,12 +17,16 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_UTIL_STANDARD_OUTPUT_MANAGER_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_UTIL_STANDARD_OUTPUT_MANAGER_FWD_HH 1
+#include <paludis/output_manager.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/exception.hh>
+#include <ostream>
 
-namespace paludis
+using namespace paludis;
+
+#include <paludis/output_manager-se.cc>
+
+OutputManager::~OutputManager()
 {
-    class StandardOutputManager;
 }
 
-#endif

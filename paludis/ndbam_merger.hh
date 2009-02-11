@@ -23,7 +23,7 @@
 #include <paludis/merger.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/named_value.hh>
-#include <paludis/util/output_manager-fwd.hh>
+#include <paludis/output_manager-fwd.hh>
 #include <tr1/functional>
 
 namespace paludis

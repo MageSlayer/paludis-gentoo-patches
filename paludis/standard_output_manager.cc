@@ -17,16 +17,38 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/util/output_manager.hh>
-#include <paludis/util/stringify.hh>
-#include <paludis/util/exception.hh>
-#include <ostream>
+#include <paludis/standard_output_manager.hh>
+#include <iostream>
 
 using namespace paludis;
 
-#include <paludis/util/output_manager-se.cc>
+StandardOutputManager::StandardOutputManager()
+{
+}
 
-OutputManager::~OutputManager()
+StandardOutputManager::~StandardOutputManager()
+{
+}
+
+std::ostream &
+StandardOutputManager::stdout_stream()
+{
+    return std::cout;
+}
+
+std::ostream &
+StandardOutputManager::stderr_stream()
+{
+    return std::cerr;
+}
+
+void
+StandardOutputManager::succeeded()
+{
+}
+
+void
+StandardOutputManager::message(const MessageType, const std::string &)
 {
 }
 

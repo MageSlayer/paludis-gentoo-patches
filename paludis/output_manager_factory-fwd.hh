@@ -17,27 +17,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_UTIL_STANDARD_OUTPUT_MANAGER_HH
-#define PALUDIS_GUARD_PALUDIS_UTIL_STANDARD_OUTPUT_MANAGER_HH 1
-
-#include <paludis/util/standard_output_manager-fwd.hh>
-#include <paludis/util/output_manager.hh>
+#ifndef PALUDIS_GUARD_PALUDIS_OUTPUT_MANAGER_FACTORY_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_OUTPUT_MANAGER_FACTORY_FWD_HH 1
 
 namespace paludis
 {
-    class PALUDIS_VISIBLE StandardOutputManager :
-        public OutputManager
-    {
-        public:
-            StandardOutputManager();
-            ~StandardOutputManager();
-
-            virtual std::ostream & stdout_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual std::ostream & stderr_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual void succeeded();
-            virtual void message(const MessageType, const std::string &);
-    };
+    class OutputManagerFactory;
 }
 
 #endif

@@ -33,7 +33,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/standard_output_manager.hh>
+#include <paludis/standard_output_manager.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <algorithm>

@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/util/output_manager_factory.hh>
+#include <paludis/output_manager_factory.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/member_iterator-impl.hh>

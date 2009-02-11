@@ -32,7 +32,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/standard_output_manager.hh>
+#include <paludis/standard_output_manager.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>

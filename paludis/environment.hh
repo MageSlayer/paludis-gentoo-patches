@@ -26,7 +26,7 @@
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/tribool-fwd.hh>
 #include <paludis/util/simple_visitor.hh>
-#include <paludis/util/output_manager-fwd.hh>
+#include <paludis/output_manager-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/hook-fwd.hh>

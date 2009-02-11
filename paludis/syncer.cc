@@ -28,7 +28,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/output_manager.hh>
+#include <paludis/output_manager.hh>
 #include <list>
 
 using namespace paludis;

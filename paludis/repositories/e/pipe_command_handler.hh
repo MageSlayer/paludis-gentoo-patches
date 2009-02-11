@@ -22,7 +22,7 @@
 
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
-#include <paludis/util/output_manager-fwd.hh>
+#include <paludis/output_manager-fwd.hh>
 #include <tr1/functional>
 #include <string>
 

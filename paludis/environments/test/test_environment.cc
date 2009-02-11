@@ -29,7 +29,7 @@
 #include <paludis/util/destringify.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/standard_output_manager.hh>
+#include <paludis/standard_output_manager.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/hook.hh>

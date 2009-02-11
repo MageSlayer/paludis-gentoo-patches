@@ -33,7 +33,7 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/indirect_iterator.hh>
-#include <paludis/util/output_manager.hh>
+#include <paludis/output_manager.hh>
 #include <paludis/package_id.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>

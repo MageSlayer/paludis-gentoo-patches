@@ -37,7 +37,7 @@
 #include <paludis/util/config_file.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/standard_output_manager.hh>
+#include <paludis/standard_output_manager.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/hooker.hh>
 #include <paludis/hook.hh>

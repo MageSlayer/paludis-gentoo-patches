@@ -46,7 +46,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/output_manager.hh>
+#include <paludis/output_manager.hh>
 #include <paludis/syncer.hh>
 #include <tr1/unordered_map>
 #include <tr1/functional>

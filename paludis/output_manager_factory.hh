@@ -17,15 +17,15 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_UTIL_OUTPUT_MANAGER_FACTORY_HH
-#define PALUDIS_GUARD_PALUDIS_UTIL_OUTPUT_MANAGER_FACTORY_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_OUTPUT_MANAGER_FACTORY_HH
+#define PALUDIS_GUARD_PALUDIS_OUTPUT_MANAGER_FACTORY_HH 1
 
-#include <paludis/util/output_manager_factory-fwd.hh>
+#include <paludis/output_manager_factory-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
-#include <paludis/util/output_manager-fwd.hh>
+#include <paludis/output_manager-fwd.hh>
 #include <paludis/util/set-fwd.hh>
 #include <tr1/functional>
 #include <tr1/memory>

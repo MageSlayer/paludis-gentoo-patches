@@ -45,7 +45,7 @@
 #include <paludis/util/indirect_iterator.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/safe_ifstream.hh>
-#include <paludis/util/output_manager.hh>
+#include <paludis/output_manager.hh>
 #include <algorithm>
 #include <list>
 #include <set>

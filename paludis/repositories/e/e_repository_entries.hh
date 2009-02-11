@@ -27,7 +27,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/output_manager-fwd.hh>
+#include <paludis/output_manager-fwd.hh>
 #include <paludis/repositories/e/e_repository_profile.hh>
 #include <paludis/repositories/e/e_repository_params.hh>
 #include <paludis/repositories/e/e_repository_id.hh>

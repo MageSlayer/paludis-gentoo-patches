@@ -40,7 +40,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/cookie.hh>
-#include <paludis/util/output_manager.hh>
+#include <paludis/output_manager.hh>
 
 #include <paludis/about.hh>
 #include <paludis/environment.hh>

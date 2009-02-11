@@ -25,7 +25,7 @@
 #include <paludis/action-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/output_manager-fwd.hh>
+#include <paludis/output_manager-fwd.hh>
 #include <paludis/ndbam-fwd.hh>
 #include <tr1/memory>
 

@@ -28,7 +28,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/output_manager.hh>
+#include <paludis/output_manager.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/hook.hh>

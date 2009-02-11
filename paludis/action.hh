@@ -30,7 +30,7 @@
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/util/output_manager-fwd.hh>
+#include <paludis/output_manager-fwd.hh>
 #include <paludis/util/type_list.hh>
 #include <tr1/functional>
 

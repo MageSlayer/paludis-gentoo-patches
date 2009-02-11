@@ -27,7 +27,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/standard_output_manager.hh>
+#include <paludis/standard_output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>

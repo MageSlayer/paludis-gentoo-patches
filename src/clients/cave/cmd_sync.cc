@@ -29,7 +29,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/condition_variable.hh>
 #include <paludis/util/thread.hh>
-#include <paludis/util/output_manager.hh>
+#include <paludis/output_manager.hh>
 #include <paludis/repository.hh>
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>

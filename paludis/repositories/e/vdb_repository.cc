@@ -69,7 +69,7 @@
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/output_manager.hh>
+#include <paludis/output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <tr1/unordered_map>

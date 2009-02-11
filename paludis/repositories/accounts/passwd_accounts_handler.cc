@@ -25,7 +25,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/output_manager.hh>
+#include <paludis/output_manager.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
 #include <paludis/metadata_key.hh>

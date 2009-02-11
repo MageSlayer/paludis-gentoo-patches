@@ -33,7 +33,7 @@
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/named_value.hh>
-#include <paludis/util/output_manager-fwd.hh>
+#include <paludis/output_manager-fwd.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key-fwd.hh>
 #include <paludis/metadata_key_holder.hh>

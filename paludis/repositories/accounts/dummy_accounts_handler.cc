@@ -18,7 +18,7 @@
  */
 
 #include <paludis/repositories/accounts/dummy_accounts_handler.hh>
-#include <paludis/util/output_manager.hh>
+#include <paludis/output_manager.hh>
 #include <paludis/package_id.hh>
 #include <paludis/repository.hh>
 #include <ostream>

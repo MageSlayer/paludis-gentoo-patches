@@ -36,8 +36,8 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
+#include <paludis/output_manager.hh>
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
 #include <paludis/ndbam.hh>

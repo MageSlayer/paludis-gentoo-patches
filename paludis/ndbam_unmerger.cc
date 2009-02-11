@@ -37,7 +37,7 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/output_manager.hh>
+#include <paludis/output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/metadata_key.hh>
 #include <tr1/functional>

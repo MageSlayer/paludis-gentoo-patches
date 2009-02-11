@@ -23,7 +23,7 @@
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/output_manager-fwd.hh>
+#include <paludis/output_manager-fwd.hh>
 #include <paludis/unmerger.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>

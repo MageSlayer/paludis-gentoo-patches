@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_SYNCER_HH 1
 
 #include <paludis/util/exception.hh>
-#include <paludis/util/output_manager-fwd.hh>
+#include <paludis/output_manager-fwd.hh>
 #include <paludis/repository.hh>
 #include <string>
 

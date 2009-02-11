@@ -17,38 +17,27 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/util/standard_output_manager.hh>
-#include <iostream>
+#ifndef PALUDIS_GUARD_PALUDIS_STANDARD_OUTPUT_MANAGER_HH
+#define PALUDIS_GUARD_PALUDIS_STANDARD_OUTPUT_MANAGER_HH 1
 
-using namespace paludis;
+#include <paludis/standard_output_manager-fwd.hh>
+#include <paludis/output_manager.hh>
 
-StandardOutputManager::StandardOutputManager()
+namespace paludis
 {
+    class PALUDIS_VISIBLE StandardOutputManager :
+        public OutputManager
+    {
+        public:
+            StandardOutputManager();
+            ~StandardOutputManager();
+
+            virtual std::ostream & stdout_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual std::ostream & stderr_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual void succeeded();
+            virtual void message(const MessageType, const std::string &);
+    };
 }
 
-StandardOutputManager::~StandardOutputManager()
-{
-}
-
-std::ostream &
-StandardOutputManager::stdout_stream()
-{
-    return std::cout;
-}
-
-std::ostream &
-StandardOutputManager::stderr_stream()
-{
-    return std::cerr;
-}
-
-void
-StandardOutputManager::succeeded()
-{
-}
-
-void
-StandardOutputManager::message(const MessageType, const std::string &)
-{
-}
-
+#endif

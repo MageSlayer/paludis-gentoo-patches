@@ -25,7 +25,7 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/standard_output_manager.hh>
+#include <paludis/standard_output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/package_database.hh>
 #include <paludis/user_dep_spec.hh>

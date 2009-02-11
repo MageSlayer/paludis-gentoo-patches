@@ -24,7 +24,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/util/output_manager-fwd.hh>
+#include <paludis/output_manager-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/package_id-fwd.hh>

@@ -26,7 +26,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/standard_output_manager.hh>
+#include <paludis/standard_output_manager.hh>
 #include <paludis/action.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/generator.hh>

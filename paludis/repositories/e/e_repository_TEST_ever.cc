@@ -32,8 +32,8 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/output_manager.hh>
-#include <paludis/util/standard_output_manager.hh>
+#include <paludis/output_manager.hh>
+#include <paludis/standard_output_manager.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
