@@ -85,6 +85,27 @@ namespace
                     ));
     }
 
+    InfoActionOptions * make_info_action_options()
+    {
+        return new InfoActionOptions(make_named_values<InfoActionOptions>(
+                    value_for<n::make_output_manager>(&make_standard_output_manager)
+                    ));
+    }
+
+    ConfigActionOptions * make_config_action_options()
+    {
+        return new ConfigActionOptions(make_named_values<ConfigActionOptions>(
+                    value_for<n::make_output_manager>(&make_standard_output_manager)
+                    ));
+    }
+
+    PretendActionOptions * make_pretend_action_options()
+    {
+        return new PretendActionOptions(make_named_values<PretendActionOptions>(
+                    value_for<n::make_output_manager>(&make_standard_output_manager)
+                    ));
+    }
+
     FetchActionOptions * make_fetch_action_options(
             const bool exclude_unmirrorable,
             const bool fetch_unneeded,
@@ -167,6 +188,54 @@ void expose_action()
                 &named_values_setter<UninstallActionOptions, n::config_protect, std::string, &UninstallActionOptions::config_protect>,
                 "[rw] String"
                 )
+        ;
+
+    /**
+     * ConfigActionOptions
+     */
+    bp::class_<ConfigActionOptions>
+        (
+         "ConfigActionOptions",
+         "Options for ConfigAction.",
+         bp::no_init
+        )
+
+        .def("__init__",
+                bp::make_constructor(&make_config_action_options),
+                "__init__()"
+            )
+        ;
+
+    /**
+     * InfoActionOptions
+     */
+    bp::class_<InfoActionOptions>
+        (
+         "InfoActionOptions",
+         "Options for InfoAction.",
+         bp::no_init
+        )
+
+        .def("__init__",
+                bp::make_constructor(&make_info_action_options),
+                "__init__()"
+            )
+        ;
+
+    /**
+     * PretendActionOptions
+     */
+    bp::class_<PretendActionOptions>
+        (
+         "PretendActionOptions",
+         "Options for PretendAction.",
+         bp::no_init
+        )
+
+        .def("__init__",
+                bp::make_constructor(&make_pretend_action_options),
+                "__init__()"
+            )
         ;
 
     /**
@@ -265,7 +334,7 @@ void expose_action()
          "PretendAction",
          "A PretendAction is used by InstallTask to handle install-pretend-phase\n"
          "checks on a PackageID.",
-         bp::init<>("__init__()")
+         bp::init<const PretendActionOptions &>("__init__(PretendActionOptions)")
         )
         .add_property("failed", &PretendAction::failed,
                 "[ro] bool\n"
@@ -282,7 +351,7 @@ void expose_action()
          "A ConfigAction is used via PackageID::perform_action to execute\n"
          "post-install configuration (for example, via 'paludis --config')\n"
          "on a PackageID.",
-         bp::init<>("__init__()")
+         bp::init<ConfigActionOptions>("__init__(ConfigActionOptions)")
         );
 
     /**
@@ -294,7 +363,7 @@ void expose_action()
          "An InfoAction is used via PackageID::perform_action to execute\n"
          "additional information (for example, via 'paludis --info')\n"
          "on a PackageID.",
-         bp::init<>("__init__()")
+         bp::init<InfoActionOptions>("__init__(InfoActionOptions)")
         );
 
     /**
