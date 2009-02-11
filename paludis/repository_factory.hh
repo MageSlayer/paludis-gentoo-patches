@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -131,14 +131,14 @@ namespace paludis
              * \param formats must have at least one value, and no value may be
              * specified more than once across all invocations.
              *
-             * \param name_function is used to implement RepositoryMaker::name.
+             * \param name_function is used to implement RepositoryFactory::name.
              *
-             * \param importance_function is used to implement RepositoryMaker::importance.
+             * \param importance_function is used to implement RepositoryFactory::importance.
              *
-             * \param create_function is used to implement RepositoryMaker::create.
+             * \param create_function is used to implement RepositoryFactory::create.
              *
              * \param dependencies_function is used to implement
-             * RepositoryMaker::dependencies.
+             * RepositoryFactory::dependencies.
              */
             void add_repository_format(
                     const std::tr1::shared_ptr<const Set<std::string> > & formats,
