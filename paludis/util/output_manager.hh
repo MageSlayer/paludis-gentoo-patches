@@ -37,6 +37,15 @@ namespace paludis
             virtual std::ostream & stderr_stream() PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
+             * An out of band message that might want to be logged or handled
+             * in a special way.
+             *
+             * The caller must still also display the message to
+             * stdout_stream() as appropriate.
+             */
+            virtual void message(const MessageType, const std::string &) = 0;
+
+            /**
              * Called if an action succeeds. This can be used to, for example,
              * unlink the files behind a to-disk logged output manager.
              *

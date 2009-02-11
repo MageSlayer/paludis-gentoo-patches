@@ -36,6 +36,7 @@ namespace paludis
             virtual std::ostream & stderr_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void succeeded();
+            virtual void message(const MessageType, const std::string &);
     };
 }
 

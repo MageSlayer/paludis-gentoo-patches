@@ -47,3 +47,8 @@ StandardOutputManager::succeeded()
 {
 }
 
+void
+StandardOutputManager::message(const MessageType, const std::string &)
+{
+}
+

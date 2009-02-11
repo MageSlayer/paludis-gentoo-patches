@@ -92,6 +92,10 @@ namespace
         void succeeded()
         {
         }
+
+        virtual void message(const MessageType, const std::string &)
+        {
+        }
     };
 
     struct SyncCommandLine :

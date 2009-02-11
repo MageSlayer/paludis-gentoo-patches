@@ -18,8 +18,13 @@
  */
 
 #include <paludis/util/output_manager.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/exception.hh>
+#include <ostream>
 
 using namespace paludis;
+
+#include <paludis/util/output_manager-se.cc>
 
 OutputManager::~OutputManager()
 {

@@ -20,8 +20,14 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_OUTPUT_MANAGER_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_OUTPUT_MANAGER_FWD_HH 1
 
+#include <paludis/util/attributes.hh>
+#include <iosfwd>
+
 namespace paludis
 {
+
+#include <paludis/util/output_manager-se.hh>
+
     class OutputManager;
 }
 
