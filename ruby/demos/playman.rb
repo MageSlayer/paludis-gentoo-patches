@@ -149,7 +149,7 @@ end
 repositories = $env.package_database.repositories
 
 begin
-    req = Net::HTTP::Get.new($laymanglobal_url.path)
+    req = Net::HTTP::Get.new($laymanglobal_url.request_uri)
     proxy_host = $proxy_url.host if $proxy_url and $proxy_url.host
     proxy_port = $proxy_url.port if $proxy_url and $proxy_url.port
     proxy_user, proxy_pass = $proxy_url.userinfo.split(/:/) if $proxy_url and $proxy_url.userinfo
