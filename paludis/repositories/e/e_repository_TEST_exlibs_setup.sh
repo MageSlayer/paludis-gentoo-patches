@@ -215,7 +215,13 @@ check_foo() {
     exparam bar[1] | grep -q ^2$ || die "Bad bar[1]"
     exparam bar[2] | grep -q ^3$ || die "Bad bar[2]"
     exparam bar[3] | grep -q ^$ || die "Bad bar[3]"
-    exparam bar FOO
+    exparam -v FOOA  bar[@]
+    exparam -v FOO   bar
+    exparam -v FOO0  bar[0]
+    exparam -v FOO1  bar[1]
+    exparam -v FOO2  bar[2]
+    exparam -v FOO3  bar[3]
+    exparam -v FOOC  bar[#]
 }
 END
 cat <<'END' > packages/cat/exarray/exarray-1.ebuild || exit 1
@@ -224,11 +230,17 @@ PLATFORMS="test"
 
 pkg_setup() {
     check_foo || die "check_foo returned errror"
-    [[ ${#FOO[@]} -eq 3 ]] || die "Wrong number of elements in FOO[@]"
-    [[ ${FOO[0]} == 1 ]] || die "Bad FOO[0]"
-    [[ ${FOO[1]} == 2 ]] || die "Bad FOO[1]"
-    [[ ${FOO[2]} == 3 ]] || die "Bad FOO[2]"
-    [[ ${FOO[@]} == "1 2 3" ]] || die "FOO[@] != 1 2 3"
+    [[ ${#FOOA[@]} -eq 3 ]] || die "Wrong number of elements, ${#FOOA[@]} in FOOA[@]"
+    [[ ${FOOA[0]} == 1 ]] || die "Bad FOOA[0]"
+    [[ ${FOOA[1]} == 2 ]] || die "Bad FOOA[1]"
+    [[ ${FOOA[2]} == 3 ]] || die "Bad FOOA[2]"
+    [[ ${FOOA[@]} == "1 2 3" ]] || die "FOOA[@] != 1 2 3"
+    [[ ${FOO} == 1 ]] || die "Bad FOO"
+    [[ ${FOO0} == 1 ]] || die "Bad FOO0"
+    [[ ${FOO1} == 2 ]] || die "Bad FOO1"
+    [[ ${FOO2} == 3 ]] || die "Bad FOO2"
+    [[ -z ${FOO3} ]] || die "Bad FOO3"
+    [[ ${FOOC} -eq 3 ]] || die "Bad FOOC"
 }
 END
 mkdir -p "packages/cat/exarray-spaces"
@@ -241,7 +253,7 @@ check_foo() {
     exparam bar[1] | grep -q '^2 2$' || die "Bad bar[1]"
     exparam bar[2] | grep -q '^3 3$' || die "Bad bar[2]"
     exparam bar[3] | grep -q ^$ || die "Bad bar[3]"
-    exparam bar FOO
+    exparam -v FOO bar[@]
 }
 END
 cat <<'END' > packages/cat/exarray-spaces/exarray-spaces-1.ebuild || exit 1
@@ -250,7 +262,7 @@ PLATFORMS="test"
 
 pkg_setup() {
     check_foo || die "check_foo returned errror"
-    [[ ${#FOO[@]} -eq 3 ]] || die "Wrong number of elements in FOO[@]"
+    [[ ${#FOO[@]} -eq 3 ]] || die "Wrong number of elements, ${#FOO[@]} in FOO[@]"
     [[ ${FOO[0]} == "1 1" ]] || die "Bad FOO[0]"
     [[ ${FOO[1]} == "2 2" ]] || die "Bad FOO[1]"
     [[ ${FOO[2]} == "3 3" ]] || die "Bad FOO[2]"
@@ -267,7 +279,7 @@ check_foo() {
     exparam bar[1] | grep -q ^2$ || die "Bad bar[1]"
     exparam bar[2] | grep -q ^3$ || die "Bad bar[2]"
     exparam bar[3] | grep -q ^$ || die "Bad bar[3]"
-    exparam bar FOO
+    exparam -v FOO bar[@]
 }
 END
 cat <<'END' > packages/cat/exarray-default/exarray-default-1.ebuild || exit 1
@@ -276,7 +288,7 @@ PLATFORMS="test"
 
 pkg_setup() {
     check_foo || die "check_foo returned errror"
-    [[ ${#FOO[@]} -eq 3 ]] || die "Wrong number of elements in FOO[@]"
+    [[ ${#FOO[@]} -eq 3 ]] || die "Wrong number of elements, ${#FOO[@]} in FOO[@]"
     [[ ${FOO[0]} == 1 ]] || die "Bad FOO[0]"
     [[ ${FOO[1]} == 2 ]] || die "Bad FOO[1]"
     [[ ${FOO[2]} == 3 ]] || die "Bad FOO[2]"
@@ -293,7 +305,7 @@ check_foo() {
     exparam bar[1] | grep -q '^2 2$' || die "Bad bar[1]"
     exparam bar[2] | grep -q '^3 3$' || die "Bad bar[2]"
     exparam bar[3] | grep -q ^$ || die "Bad bar[3]"
-    exparam bar FOO
+    exparam -v FOO bar[@]
 }
 END
 cat <<'END' > packages/cat/exarray-default-spaces/exarray-default-spaces-1.ebuild || exit 1
@@ -302,7 +314,7 @@ PLATFORMS="test"
 
 pkg_setup() {
     check_foo || die "check_foo returned errror"
-    [[ ${#FOO[@]} -eq 3 ]] || die "Wrong number of elements in FOO[@]"
+    [[ ${#FOO[@]} -eq 3 ]] || die "Wrong number of elements, ${#FOO[@]} in FOO[@]"
     [[ ${FOO[0]} == "1 1" ]] || die "Bad FOO[0]"
     [[ ${FOO[1]} == "2 2" ]] || die "Bad FOO[1]"
     [[ ${FOO[2]} == "3 3" ]] || die "Bad FOO[2]"

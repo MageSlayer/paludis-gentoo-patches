@@ -40,37 +40,41 @@ exparam_var_name()
     echo EXPARAMVAR_${1//-/__dash__}
 }
 
+exparam_print()
+{
+    case "${1}" in
+        -a) eval "${2}=( \"\${${3}}\" )" ;;
+        -v) eval "${2}=\"\${${3}}\""      ;;
+        *)  eval "echo \"\${${1}}\""     ;;
+    esac
+}
+
 exparam_internal()
 {
-    local v=$(exparam_var_name ${1})__ALLDECLS__
-    if [[ ${2} == *\[*\] ]]; then
-        [[ ${#} -eq 2 ]] || die "exparam with an index requires exactly one argument"
-        has "${2%\[*}[]" ${!v} || die "${1}.exlib has no ${2%\[*} array"
-        v=$(exparam_var_name ${1})_${2%\[*}
-        local i=${2%\]}
-        i=${i#*\[}
-        if [[ ${i} == "#" ]]; then
-            eval "echo \"\${#${v}[*]}\""
-        elif [[ ${i} == "*" ]]; then
-            eval "echo \"\${${v}[*]}\""
-        elif [[ ${i} == +([[:digit:]]) ]]; then
-            eval "echo \"\${${v}[${i}]}\""
-        else
-            die "Invalid index in exparam ${2}"
-        fi
+    local i e=${1} a to_var v a_v=$(exparam_var_name ${1})__ALLDECLS__
+    shift
+    if [[ ${1} == -v ]]; then
+        [[ ${#} -eq 3 ]] || die "exparam ${1} requires exactly three arguments"
+        a=${1}
+        to_var=${2}
+        shift 2
     else
-        [[ ${#} -eq 2 || ${#} -eq 3 ]] || die "exparam requires exactly one or two arguments"
-        if [[ ${#} -eq 3 ]]; then
-            has "${2%\[*}[]" ${!v} || die "${1}.exlib has no ${2%\[*} array"
-        else
-            has ${2%\[*} ${!v} || die "${1}.exlib has no ${2%\[*} parameter"
-        fi
-        v=$(exparam_var_name ${1})_${2}
-        if [[ -n ${3} ]]; then
-            eval "${3}=( \"\${${v}[@]}\" )"
-        else
-            echo "${!v}"
-        fi
+        [[ ${#} -eq 1 ]] || die "exparam requires exactly one argument"
+    fi
+    v=$(exparam_var_name ${e})_${1%\[*}
+    if [[ ${1} == *\[*\] ]]; then
+        has "${1%\[*}[]" ${!a_v} || die "${e}.exlib has no ${1%\[*} array"
+        i=${1#*\[}
+        i=${i%\]}
+        case "${i}" in
+            "#")            exparam_print ${to_var:+-v "${to_var}"} "#${v}[*]"   ;;
+            "*"|"@")        exparam_print ${to_var:+-a "${to_var}"} "${v}[${i}]"    ;;
+            +([[:digit:]])) exparam_print ${to_var:+-v "${to_var}"} "${v}[${i}]" ;;
+            *)              die "Invalid index in exparam ${1}"          ;;
+        esac
+    else
+        has "${1}" ${!a_v%\[\]} || die "${e}.exlib has no ${1} parameter"
+        exparam_print ${to_var:+-v "${to_var}"} "${v}"
     fi
 }
 
