@@ -687,7 +687,11 @@ InstallTask::_pretend()
         {
             on_pretend_pre(*dep);
 
-            PretendAction pretend_action;
+            PretendActionOptions options(make_named_values<PretendActionOptions>(
+                        value_for<n::make_output_manager>(std::tr1::bind(&make_output_manager_for_action,
+                                _imp->env, dep->package_id(), std::tr1::placeholders::_1))
+                        ));
+            PretendAction pretend_action(options);
             dep->package_id()->perform_action(pretend_action);
             if (pretend_action.failed())
             {

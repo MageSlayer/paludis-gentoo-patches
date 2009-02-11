@@ -473,6 +473,7 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                         value_for<n::environment>(_imp->params.environment()),
                         value_for<n::exlibsdirs>(exlibsdirs),
                         value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
+                        value_for<n::maybe_output_manager>(output_manager),
                         value_for<n::package_id>(id),
                         value_for<n::portdir>(
                             (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
@@ -486,7 +487,6 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                         value_for<n::a>(archives),
                         value_for<n::aa>(all_archives),
                         value_for<n::expand_vars>(expand_vars),
-                        value_for<n::output_manager>(output_manager),
                         value_for<n::profiles>(_imp->params.profiles()),
                         value_for<n::root>("/"),
                         value_for<n::use>(use),
@@ -743,6 +743,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                     value_for<n::environment>(_imp->params.environment()),
                     value_for<n::exlibsdirs>(exlibsdirs),
                     value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
+                    value_for<n::maybe_output_manager>(output_manager),
                     value_for<n::package_id>(id),
                     value_for<n::portdir>(
                         (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
@@ -779,11 +780,14 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
 void
 EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
+        const InfoAction & a,
         const std::tr1::shared_ptr<const ERepositoryProfile> & p) const
 {
     using namespace std::tr1::placeholders;
 
     Context context("When infoing '" + stringify(*id) + "':");
+
+    std::tr1::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
 
     bool userpriv_restrict;
     {
@@ -827,6 +831,7 @@ EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
                 value_for<n::environment>(_imp->params.environment()),
                 value_for<n::exlibsdirs>(exlibsdirs),
                 value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
+                value_for<n::maybe_output_manager>(output_manager),
                 value_for<n::package_id>(id),
                 value_for<n::portdir>(
                     (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
@@ -855,7 +860,8 @@ EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
 }
 
 std::string
-EbuildEntries::get_environment_variable(const std::tr1::shared_ptr<const ERepositoryID> & id,
+EbuildEntries::get_environment_variable(
+        const std::tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & var, const std::tr1::shared_ptr<const ERepositoryProfile> &) const
 {
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_variable());
@@ -894,6 +900,7 @@ EbuildEntries::get_environment_variable(const std::tr1::shared_ptr<const EReposi
             value_for<n::environment>(_imp->params.environment()),
             value_for<n::exlibsdirs>(exlibsdirs),
             value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
+            value_for<n::maybe_output_manager>(make_null_shared_ptr()),
             value_for<n::package_id>(id),
             value_for<n::portdir>(
                 (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
@@ -942,6 +949,7 @@ EbuildEntries::merge(const MergeParams & m)
             value_for<n::environment>(_imp->params.environment()),
             value_for<n::environment_file>(m.environment_file()),
             value_for<n::image>(m.image_dir()),
+            value_for<n::maybe_output_manager>(m.output_manager()),
             value_for<n::merger_options>(std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id())->eapi()->supported()->merger_options()),
             value_for<n::package_id>(std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id()))
             ));
@@ -976,7 +984,9 @@ EbuildEntries::extract_package_file_version(const QualifiedPackageName & n, cons
 }
 
 bool
-EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
+EbuildEntries::pretend(
+        const std::tr1::shared_ptr<const ERepositoryID> & id,
+        const PretendAction & a,
         const std::tr1::shared_ptr<const ERepositoryProfile> & p) const
 {
     using namespace std::tr1::placeholders;
@@ -985,6 +995,8 @@ EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
     if (! id->eapi()->supported())
         return false;
+
+    std::tr1::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
 
     bool result(true);
 
@@ -1037,6 +1049,7 @@ EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
                             value_for<n::environment>(_imp->params.environment()),
                             value_for<n::exlibsdirs>(exlibsdirs),
                             value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
+                            value_for<n::maybe_output_manager>(output_manager),
                             value_for<n::package_id>(id),
                             value_for<n::portdir>(
                                 (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
@@ -1084,6 +1097,7 @@ EbuildEntries::pretend(const std::tr1::shared_ptr<const ERepositoryID> & id,
                 value_for<n::environment>(_imp->params.environment()),
                 value_for<n::exlibsdirs>(exlibsdirs),
                 value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
+                value_for<n::maybe_output_manager>(output_manager),
                 value_for<n::package_id>(id),
                 value_for<n::portdir>(
                     (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?

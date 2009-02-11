@@ -116,7 +116,9 @@ EbuildCommand::operator() ()
     }
 
     using namespace std::tr1::placeholders;
-    cmd.with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params.environment(), params.package_id(), _1));
+
+    cmd.with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params.environment(),
+                params.package_id(), _1, params.maybe_output_manager()));
 
     std::tr1::shared_ptr<const FSEntrySequence> syncers_dirs(params.environment()->syncers_dirs());
     std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(params.environment()->bashrc_files());
@@ -246,6 +248,11 @@ EbuildCommand::operator() ()
 
     if (params.package_id()->eapi()->supported()->ebuild_options()->want_portage_emulation_vars())
         cmd = add_portage_vars(cmd);
+
+    if (params.maybe_output_manager())
+        cmd
+            .with_captured_stderr_stream(&params.maybe_output_manager()->stderr_stream())
+            .with_captured_stdout_stream(&params.maybe_output_manager()->stdout_stream());
 
     if (do_run_command(cmd))
         return success();
@@ -677,10 +684,6 @@ EbuildNoFetchCommand::extend_command(const Command & cmd)
             j(fetch_params.expand_vars()->end()) ; i != j ; ++i)
         result.with_setenv(i->first, i->second);
 
-    result
-        .with_captured_stderr_stream(&fetch_params.output_manager()->stderr_stream())
-        .with_captured_stdout_stream(&fetch_params.output_manager()->stdout_stream());
-
     return result;
 }
 
@@ -876,7 +879,8 @@ WriteVDBEntryCommand::operator() ()
                     params.package_id()->eapi()->supported()->ebuild_options()->ignore_pivot_env_variables())
             .with_setenv("PALUDIS_EBUILD_MODULE_SUFFIXES",
                     params.package_id()->eapi()->supported()->ebuild_options()->ebuild_module_suffixes())
-            .with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params.environment(), params.package_id(), _1))
+            .with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params.environment(),
+                        params.package_id(), _1, params.maybe_output_manager()))
             );
 
     std::string defined_phases(params.package_id()->eapi()->supported()->ebuild_metadata_variables()->defined_phases()->name());
@@ -1093,7 +1097,8 @@ WriteBinaryEbuildCommand::operator() ()
                         + params.package_id()->eapi()->exported_name())->supported()->ebuild_environment_variables()->env_distdir())
             .with_setenv("PALUDIS_EBUILD_MODULE_SUFFIXES",
                     params.package_id()->eapi()->supported()->ebuild_options()->ebuild_module_suffixes())
-            .with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params.environment(), params.package_id(), _1))
+            .with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params.environment(),
+                        params.package_id(), _1, params.maybe_output_manager()))
             );
 
     if (0 != (run_command(cmd)))

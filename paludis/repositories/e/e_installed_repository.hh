@@ -97,13 +97,18 @@ namespace paludis
                 ///\name For use by EInstalledRepositoryID
                 ///\{
 
-                virtual void perform_uninstall(const std::tr1::shared_ptr<const erepository::ERepositoryID> & id,
-                        bool reinstalling, const std::string & merge_config_protect,
-                        const std::tr1::shared_ptr<OutputManager> &) const = 0;
+                virtual void perform_uninstall(
+                        const std::tr1::shared_ptr<const erepository::ERepositoryID> & id,
+                        const UninstallAction &,
+                        bool reinstalling) const = 0;
 
-                virtual void perform_config(const std::tr1::shared_ptr<const erepository::ERepositoryID> & id) const;
+                virtual void perform_config(
+                        const std::tr1::shared_ptr<const erepository::ERepositoryID> & id,
+                        const ConfigAction &) const;
 
-                virtual void perform_info(const std::tr1::shared_ptr<const erepository::ERepositoryID> & id) const;
+                virtual void perform_info(
+                        const std::tr1::shared_ptr<const erepository::ERepositoryID> & id,
+                        const InfoAction &) const;
 
                 ///\}
         };

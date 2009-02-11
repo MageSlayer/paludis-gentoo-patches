@@ -65,9 +65,9 @@ namespace paludis
         struct info_vars;
         struct load_environment;
         struct loadsaveenv_dir;
+        struct maybe_output_manager;
         struct merger_options;
         struct output_directory;
-        struct output_manager;
         struct package_id;
         struct portdir;
         struct profiles;
@@ -106,6 +106,7 @@ namespace paludis
             NamedValue<n::environment, const Environment *> environment;
             NamedValue<n::exlibsdirs, std::tr1::shared_ptr<const FSEntrySequence> > exlibsdirs;
             NamedValue<n::files_dir, FSEntry> files_dir;
+            NamedValue<n::maybe_output_manager, std::tr1::shared_ptr<OutputManager> > maybe_output_manager;
             NamedValue<n::package_id, std::tr1::shared_ptr<const erepository::ERepositoryID> > package_id;
             NamedValue<n::portdir, FSEntry> portdir;
             NamedValue<n::sandbox, bool> sandbox;
@@ -124,7 +125,6 @@ namespace paludis
             NamedValue<n::a, std::string> a;
             NamedValue<n::aa, std::string> aa;
             NamedValue<n::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > > expand_vars;
-            NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
             NamedValue<n::profiles, std::tr1::shared_ptr<const FSEntrySequence> > profiles;
             NamedValue<n::root, std::string> root;
             NamedValue<n::use, std::string> use;
@@ -249,6 +249,7 @@ namespace paludis
         {
             NamedValue<n::environment, const Environment *> environment;
             NamedValue<n::environment_file, FSEntry> environment_file;
+            NamedValue<n::maybe_output_manager, std::tr1::shared_ptr<OutputManager> > maybe_output_manager;
             NamedValue<n::output_directory, FSEntry> output_directory;
             NamedValue<n::package_id, std::tr1::shared_ptr<const erepository::ERepositoryID> > package_id;
         };
@@ -269,6 +270,7 @@ namespace paludis
             NamedValue<n::environment, const Environment *> environment;
             NamedValue<n::environment_file, FSEntry> environment_file;
             NamedValue<n::image, FSEntry> image;
+            NamedValue<n::maybe_output_manager, std::tr1::shared_ptr<OutputManager> > maybe_output_manager;
             NamedValue<n::merger_options, MergerOptions> merger_options;
             NamedValue<n::package_id, std::tr1::shared_ptr<const erepository::ERepositoryID> > package_id;
         };

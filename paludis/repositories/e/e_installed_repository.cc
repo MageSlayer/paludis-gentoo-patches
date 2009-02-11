@@ -246,13 +246,17 @@ EInstalledRepository::get_environment_variable(
 }
 
 void
-EInstalledRepository::perform_config(const std::tr1::shared_ptr<const ERepositoryID> & id) const
+EInstalledRepository::perform_config(
+        const std::tr1::shared_ptr<const ERepositoryID> & id,
+        const ConfigAction & a) const
 {
     Context context("When configuring '" + stringify(*id) + "':");
 
     if (! _imp->params.root().is_directory())
         throw InstallActionError("Couldn't configure '" + stringify(*id) +
                 "' because root ('" + stringify(_imp->params.root()) + "') is not a directory");
+
+    std::tr1::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
 
     FSEntry ver_dir(id->fs_location_key()->value());
 
@@ -275,6 +279,7 @@ EInstalledRepository::perform_config(const std::tr1::shared_ptr<const ERepositor
                     value_for<n::environment>(_imp->params.environment()),
                     value_for<n::exlibsdirs>(make_shared_ptr(new FSEntrySequence)),
                     value_for<n::files_dir>(ver_dir),
+                    value_for<n::maybe_output_manager>(output_manager),
                     value_for<n::package_id>(id),
                     value_for<n::portdir>(ver_dir),
                     value_for<n::sandbox>(phase->option("sandbox")),
@@ -291,13 +296,17 @@ EInstalledRepository::perform_config(const std::tr1::shared_ptr<const ERepositor
 }
 
 void
-EInstalledRepository::perform_info(const std::tr1::shared_ptr<const ERepositoryID> & id) const
+EInstalledRepository::perform_info(
+        const std::tr1::shared_ptr<const ERepositoryID> & id,
+        const InfoAction & a) const
 {
     Context context("When infoing '" + stringify(*id) + "':");
 
     if (! _imp->params.root().is_directory())
         throw InstallActionError("Couldn't info '" + stringify(*id) +
                 "' because root ('" + stringify(_imp->params.root()) + "') is not a directory");
+
+    std::tr1::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
 
     FSEntry ver_dir(id->fs_location_key()->value());
 
@@ -374,6 +383,7 @@ EInstalledRepository::perform_info(const std::tr1::shared_ptr<const ERepositoryI
                     value_for<n::environment>(_imp->params.environment()),
                     value_for<n::exlibsdirs>(make_shared_ptr(new FSEntrySequence)),
                     value_for<n::files_dir>(ver_dir),
+                    value_for<n::maybe_output_manager>(output_manager),
                     value_for<n::package_id>(id),
                     value_for<n::portdir>(ver_dir),
                     value_for<n::sandbox>(phase->option("sandbox")),

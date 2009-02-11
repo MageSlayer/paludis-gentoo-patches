@@ -111,16 +111,19 @@ namespace paludis
     struct Implementation<PretendAction>
     {
         bool failed;
+        const PretendActionOptions options;
 
-        Implementation() :
-            failed(false)
+        Implementation(const PretendActionOptions & o) :
+            failed(false),
+            options(o)
         {
         }
     };
 }
 
-PretendAction::PretendAction() :
-    PrivateImplementationPattern<PretendAction>(new Implementation<PretendAction>)
+PretendAction::PretendAction(const PretendActionOptions & o) :
+    PrivateImplementationPattern<PretendAction>(new Implementation<PretendAction>(o)),
+    options(_imp->options)
 {
 }
 
@@ -161,6 +164,54 @@ PretendFetchAction::PretendFetchAction(const FetchActionOptions & o) :
 }
 
 PretendFetchAction::~PretendFetchAction()
+{
+}
+
+namespace paludis
+{
+    template <>
+    struct Implementation<InfoAction>
+    {
+        const InfoActionOptions options;
+
+        Implementation(const InfoActionOptions & o) :
+            options(o)
+        {
+        }
+    };
+}
+
+InfoAction::InfoAction(const InfoActionOptions & o) :
+    PrivateImplementationPattern<InfoAction>(new Implementation<InfoAction>(o)),
+    options(_imp->options)
+{
+}
+
+InfoAction::~InfoAction()
+{
+}
+
+namespace paludis
+{
+    template <>
+    struct Implementation<ConfigAction>
+    {
+        const ConfigActionOptions options;
+
+        Implementation(const ConfigActionOptions & o) :
+            options(o)
+        {
+        }
+    };
+}
+
+ConfigAction::ConfigAction(const ConfigActionOptions & o) :
+    PrivateImplementationPattern<ConfigAction>(new Implementation<ConfigAction>(o)),
+    options(_imp->options)
+{
+}
+
+ConfigAction::~ConfigAction()
 {
 }
 
@@ -283,6 +334,8 @@ template class PrivateImplementationPattern<InstallAction>;
 template class PrivateImplementationPattern<PretendAction>;
 template class PrivateImplementationPattern<PretendFetchAction>;
 template class PrivateImplementationPattern<UninstallAction>;
+template class PrivateImplementationPattern<InfoAction>;
+template class PrivateImplementationPattern<ConfigAction>;
 
 template class Sequence<FetchActionFailure>;
 template class WrappedForwardIterator<Sequence<FetchActionFailure>::ConstIteratorTag, const FetchActionFailure>;

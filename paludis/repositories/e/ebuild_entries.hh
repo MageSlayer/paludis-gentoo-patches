@@ -23,6 +23,7 @@
 #include <paludis/repositories/e/e_repository_entries.hh>
 #include <paludis/repositories/e/e_repository_params.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/output_manager-fwd.hh>
 
 /** \file
  * Declaration for the EbuildEntries class.
@@ -93,9 +94,11 @@ namespace paludis
                         const std::tr1::shared_ptr<const ERepositoryProfile> &) const;
 
                 virtual bool pretend(const std::tr1::shared_ptr<const ERepositoryID> &,
+                        const PretendAction &,
                         const std::tr1::shared_ptr<const ERepositoryProfile> &) const;
 
                 virtual void info(const std::tr1::shared_ptr<const ERepositoryID> &,
+                        const InfoAction &,
                         const std::tr1::shared_ptr<const ERepositoryProfile> &) const;
 
                 virtual std::string get_package_file_manifest_key(const FSEntry &, const QualifiedPackageName &) const;

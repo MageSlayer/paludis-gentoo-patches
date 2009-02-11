@@ -27,6 +27,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/output_manager-fwd.hh>
 #include <paludis/repositories/e/e_repository_profile.hh>
 #include <paludis/repositories/e/e_repository_params.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
@@ -102,12 +103,14 @@ namespace paludis
                  * Handle a pretend.
                  */
                 virtual bool pretend(const std::tr1::shared_ptr<const ERepositoryID> &,
+                        const PretendAction &,
                         const std::tr1::shared_ptr<const ERepositoryProfile> &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 /**
                  * Handle an info.
                  */
                 virtual void info(const std::tr1::shared_ptr<const ERepositoryID> &,
+                        const InfoAction &,
                         const std::tr1::shared_ptr<const ERepositoryProfile> &) const = 0;
 
                 /**

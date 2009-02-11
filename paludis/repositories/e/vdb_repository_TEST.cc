@@ -367,8 +367,16 @@ namespace test_cases
                         value_for<n::make_output_manager>(&make_standard_output_manager)
                     ));
 
-            InfoAction info_action;
-            ConfigAction config_action;
+            InfoActionOptions info_action_options(make_named_values<InfoActionOptions>(
+                        value_for<n::make_output_manager>(&make_standard_output_manager)
+                        ));
+
+            ConfigActionOptions config_action_options(make_named_values<ConfigActionOptions>(
+                        value_for<n::make_output_manager>(&make_standard_output_manager)
+                        ));
+
+            InfoAction info_action(info_action_options);
+            ConfigAction config_action(config_action_options);
 
             {
                 TestMessageSuffix suffix("install", true);
@@ -485,8 +493,16 @@ namespace test_cases
                         value_for<n::make_output_manager>(&make_standard_output_manager)
                     ));
 
-            InfoAction info_action;
-            ConfigAction config_action;
+            InfoActionOptions info_action_options(make_named_values<InfoActionOptions>(
+                        value_for<n::make_output_manager>(&make_standard_output_manager)
+                        ));
+
+            ConfigActionOptions config_action_options(make_named_values<ConfigActionOptions>(
+                        value_for<n::make_output_manager>(&make_standard_output_manager)
+                        ));
+
+            InfoAction info_action(info_action_options);
+            ConfigAction config_action(config_action_options);
 
             {
                 TestMessageSuffix suffix("vars", true);

@@ -1703,7 +1703,10 @@ namespace test_cases
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
             env.package_database()->add_repository(2, installed_repo);
 
-            InfoAction action;
+            InfoActionOptions options(make_named_values<InfoActionOptions>(
+                        value_for<n::make_output_manager>(&make_standard_output_manager)
+                        ));
+            InfoAction action(options);
 
             {
                 TestMessageSuffix suffix("info success kdebuild-1", true);

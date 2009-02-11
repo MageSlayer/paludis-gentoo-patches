@@ -55,6 +55,9 @@ namespace paludis
              *
              * Further messages and output may occur even after a call to this
              * method.
+             *
+             * Calls to this method are done by the caller, not by whatever
+             * carries out the action in question.
              */
             virtual void succeeded() = 0;
     };

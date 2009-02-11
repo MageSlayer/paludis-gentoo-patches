@@ -25,6 +25,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
@@ -34,6 +35,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
+#include <paludis/create_output_manager_info.hh>
 #include <iostream>
 #include <iomanip>
 #include <set>
@@ -204,6 +206,12 @@ namespace
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << endl;
         }
     };
+
+    std::tr1::shared_ptr<OutputManager> make_output_manager_for_action(
+            const Environment * const env, const std::tr1::shared_ptr<const PackageID> & id, const Action & a)
+    {
+        return env->create_output_manager(CreateOutputManagerForPackageIDActionInfo(id, a));
+    }
 }
 
 int do_one_info(
@@ -239,7 +247,12 @@ int do_one_info(
     for (PackageIDSequence::ConstIterator p(to_show_entries->begin()), p_end(to_show_entries->end()) ;
             p != p_end ; ++p)
     {
-        InfoAction a;
+        InfoActionOptions options(make_named_values<InfoActionOptions>(
+                    value_for<n::make_output_manager>(std::tr1::bind(&make_output_manager_for_action,
+                            env.get(), *p, std::tr1::placeholders::_1))
+                    ));
+        InfoAction a(options);
+
         try
         {
             cout << "Package " << colour(cl_package_name, **p) << ":" << endl;

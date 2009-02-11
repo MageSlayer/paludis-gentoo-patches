@@ -876,24 +876,22 @@ namespace
 
         void visit(const UninstallAction & a)
         {
-            std::tr1::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
             std::tr1::static_pointer_cast<const EInstalledRepository>(id->repository())->perform_uninstall(
-                    id, false, a.options.config_protect(), output_manager);
-            output_manager->succeeded();
+                    id, a, false);
         }
 
         void visit(const InstalledAction &)
         {
         }
 
-        void visit(const ConfigAction &)
+        void visit(const ConfigAction & a)
         {
-            std::tr1::static_pointer_cast<const EInstalledRepository>(id->repository())->perform_config(id);
+            std::tr1::static_pointer_cast<const EInstalledRepository>(id->repository())->perform_config(id, a);
         }
 
-        void visit(const InfoAction &)
+        void visit(const InfoAction & a)
         {
-            std::tr1::static_pointer_cast<const EInstalledRepository>(id->repository())->perform_info(id);
+            std::tr1::static_pointer_cast<const EInstalledRepository>(id->repository())->perform_info(id, a);
         }
 
         void visit(const InstallAction & a) PALUDIS_ATTRIBUTE((noreturn));

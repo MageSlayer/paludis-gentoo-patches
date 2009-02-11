@@ -115,9 +115,10 @@ namespace paludis
             ///\name For use by ExndbamID
             ///\{
 
-            void perform_uninstall(const std::tr1::shared_ptr<const erepository::ERepositoryID> & id,
-                    bool reinstalling, const std::string & merge_config_protect,
-                    const std::tr1::shared_ptr<OutputManager> &) const;
+            void perform_uninstall(
+                    const std::tr1::shared_ptr<const erepository::ERepositoryID> & id,
+                    const UninstallAction &,
+                    bool reinstalling) const;
 
             ///\}
 
