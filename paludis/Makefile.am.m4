@@ -200,7 +200,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_PC_SLOT=@PALUDIS_PC_SLOT@ \
 	PYTHONPATH="$(top_builddir)/python/" \
 	PALUDIS_PYTHON_DIR="$(top_srcdir)/python/" \
-	PALUDIS_DEFAULT_OUTPUT_CONF="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/paludis/default_output.conf`" \
+	PALUDIS_DEFAULT_OUTPUT_CONF="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/paludis/tests_output.conf`" \
 	PALUDIS_OUTPUT_MANAGERS_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/paludis/output_managers/`" \
 	LD_LIBRARY_PATH="`echo $$LD_LIBRARY_PATH: | sed -e 's,^:,,'`` \
 		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/.libs/ \

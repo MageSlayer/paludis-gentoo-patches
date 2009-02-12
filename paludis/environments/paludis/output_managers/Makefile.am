@@ -1,5 +1,5 @@
 SUBDIRS = .
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail .keep
 BUILT_SOURCES =
 MAINTAINERCLEANFILES = Makefile.in
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
@@ -12,7 +12,16 @@ DEFS= \
 shareenvpaludisdir = $(sharedir)/paludis/environments/paludis/output_managers
 
 dist_shareenvpaludis_DATA = \
-	standard.conf
+	standard.conf \
+	logged.conf \
+	logged_only.conf
+
+logdir = /var/log/paludis
+
+log_DATA = .keep
+
+.keep :
+	touch $@
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done

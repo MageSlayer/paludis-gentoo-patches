@@ -63,7 +63,8 @@ namespace paludis
             void _display_task_list();
             bool _pretend();
             void _main_actions();
-            void _one(const DepList::Iterator, const int, const int, const int, const int, const bool is_first, const bool is_last);
+            void _one(const DepList::Iterator, const int, const int, const int, const int, const bool is_first, const bool is_last,
+                    std::tr1::shared_ptr<OutputManagerFromEnvironment> &);
             void _display_failure_summary();
 
             void _add_target(const std::string &);
@@ -207,8 +208,8 @@ namespace paludis
             virtual void on_had_both_package_and_set_targets_error(const HadBothPackageAndSetTargets &) = 0;
             virtual void on_multiple_set_targets_specified(const MultipleSetTargetsSpecified &) = 0;
 
-            virtual void on_install_action_error(const InstallActionError &) = 0;
-            virtual void on_fetch_action_error(const FetchActionError &) = 0;
+            virtual void on_install_action_error(const std::tr1::shared_ptr<OutputManager> &, const InstallActionError &) = 0;
+            virtual void on_fetch_action_error(const std::tr1::shared_ptr<OutputManager> &, const FetchActionError &) = 0;
 
             virtual void on_phase_skip(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase) = 0;
             virtual void on_phase_abort(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase) = 0;

@@ -53,6 +53,7 @@
 #include <paludis/create_output_manager_info.hh>
 #include <paludis/output_manager_from_environment.hh>
 #include <paludis/output_manager.hh>
+#include <paludis/standard_output_manager.hh>
 #include <tr1/functional>
 #include <sstream>
 #include <functional>
@@ -725,7 +726,8 @@ InstallTask::_pretend()
 }
 
 void
-InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const int s, const int f, const bool is_first, const bool is_last)
+InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const int s, const int f, const bool is_first, const bool is_last,
+        std::tr1::shared_ptr<OutputManagerFromEnvironment> & output_manager_holder)
 {
     std::string cpvr(stringify(*dep->package_id()));
 
@@ -765,21 +767,22 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
         SupportsActionTest<FetchAction> test_fetch;
         if (dep->package_id()->supports_action(test_fetch))
         {
-            OutputManagerFromEnvironment output_manager_holder(_imp->env, dep->package_id(), oe_exclusive);
-            FetchActionOptions fetch_options(make_fetch_action_options(*dep, output_manager_holder));
+            output_manager_holder.reset(new OutputManagerFromEnvironment(_imp->env, dep->package_id(), oe_exclusive));
+            FetchActionOptions fetch_options(make_fetch_action_options(*dep, *output_manager_holder));
             FetchAction fetch_action(fetch_options);
             dep->package_id()->perform_action(fetch_action);
-            if (output_manager_holder.output_manager_if_constructed())
-                output_manager_holder.output_manager_if_constructed()->succeeded();
+            if (output_manager_holder->output_manager_if_constructed())
+                output_manager_holder->output_manager_if_constructed()->succeeded();
+            output_manager_holder.reset();
         }
 
         if (! _imp->fetch_only)
         {
-            OutputManagerFromEnvironment output_manager_holder(_imp->env, dep->package_id(), oe_exclusive);
+            output_manager_holder.reset(new OutputManagerFromEnvironment(_imp->env, dep->package_id(), oe_exclusive));
 
             InstallActionOptions install_options(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(dep->destination()),
-                        value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),
+                        value_for<n::make_output_manager>(std::tr1::ref(*output_manager_holder)),
                         value_for<n::used_this_for_config_protect>(std::tr1::bind(
                                 &Implementation<InstallTask>::assign_config_protect,
                                 _imp.get(), std::tr1::placeholders::_1)),
@@ -799,18 +802,20 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
                     apply_phases = true;
             }
             if (apply_phases)
-                install_options.want_phase() = std::tr1::bind(&want_phase_function, this, std::tr1::ref(output_manager_holder),
+                install_options.want_phase() = std::tr1::bind(&want_phase_function, this, std::tr1::ref(*output_manager_holder),
                     std::tr1::cref(_imp->abort_at_phases), std::tr1::cref(_imp->skip_phases), std::tr1::cref(_imp->skip_until_phases),
                     std::tr1::ref(done_any), std::tr1::placeholders::_1);
             else
-                install_options.want_phase() = std::tr1::bind(&want_all_phases_function, this, std::tr1::ref(output_manager_holder),
+                install_options.want_phase() = std::tr1::bind(&want_all_phases_function, this, std::tr1::ref(*output_manager_holder),
                     std::tr1::ref(done_any), std::tr1::placeholders::_1);
 
             InstallAction install_action(install_options);
             dep->package_id()->perform_action(install_action);
 
-            if (output_manager_holder.output_manager_if_constructed())
-                output_manager_holder.output_manager_if_constructed()->succeeded();
+            if (output_manager_holder->output_manager_if_constructed())
+                output_manager_holder->output_manager_if_constructed()->succeeded();
+
+            output_manager_holder.reset();
         }
     }
     catch (const InstallActionError & e)
@@ -894,15 +899,16 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
 
             try
             {
-                OutputManagerFromEnvironment output_manager_holder(_imp->env, dep->package_id(), oe_exclusive);
+                output_manager_holder.reset(new OutputManagerFromEnvironment(_imp->env, dep->package_id(), oe_exclusive));
                 UninstallAction uninstall_action(
                         make_named_values<UninstallActionOptions>(
                             value_for<n::config_protect>(_imp->config_protect),
-                            value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
+                            value_for<n::make_output_manager>(std::tr1::ref(*output_manager_holder))
                             ));
                 (*c)->perform_action(uninstall_action);
-                if (output_manager_holder.output_manager_if_constructed())
-                    output_manager_holder.output_manager_if_constructed()->succeeded();
+                if (output_manager_holder->output_manager_if_constructed())
+                    output_manager_holder->output_manager_if_constructed()->succeeded();
+                output_manager_holder.reset();
             }
             catch (const UninstallActionError & e)
             {
@@ -1039,20 +1045,27 @@ InstallTask::_main_actions()
             }
         }
 
+        std::tr1::shared_ptr<OutputManagerFromEnvironment> output_manager_holder;
         try
         {
-            _one(dep, x, y, s, f, is_first, is_last);
+            _one(dep, x, y, s, f, is_first, is_last, output_manager_holder);
         }
         catch (const InstallActionError & e)
         {
             dep->handled().reset(new DepListEntryHandledFailed);
-            on_install_action_error(e);
+            if (output_manager_holder && output_manager_holder->output_manager_if_constructed())
+                on_install_action_error(output_manager_holder->output_manager_if_constructed(), e);
+            else
+                on_install_action_error(make_shared_ptr(new StandardOutputManager), e);
             ++f;
         }
         catch (const FetchActionError & e)
         {
             dep->handled().reset(new DepListEntryHandledFailed);
-            on_fetch_action_error(e);
+            if (output_manager_holder && output_manager_holder->output_manager_if_constructed())
+                on_fetch_action_error(output_manager_holder->output_manager_if_constructed(), e);
+            else
+                on_fetch_action_error(make_shared_ptr(new StandardOutputManager), e);
             ++f;
         }
 

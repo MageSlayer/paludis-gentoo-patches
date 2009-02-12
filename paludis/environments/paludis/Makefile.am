@@ -31,7 +31,8 @@ libpaludispaludisenvironment_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSI
 shareenvpaludisdir = $(sharedir)/paludis/environments/paludis/
 
 dist_shareenvpaludis_DATA = \
-	default_output.conf
+	default_output.conf \
+	tests_output.conf
 
 if ! MONOLITHIC
 
@@ -91,7 +92,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
 	PALUDIS_NO_CHOWN="yes" \
 	PALUDIS_TESTS_KEEP_STDERR="yes" \
-	PALUDIS_DEFAULT_OUTPUT_CONF="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/paludis/default_output.conf`" \
+	PALUDIS_DEFAULT_OUTPUT_CONF="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/paludis/tests_output.conf`" \
 	PALUDIS_OUTPUT_MANAGERS_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/paludis/output_managers/`" \
 	LD_LIBRARY_PATH="`echo $$LD_LIBRARY_PATH: | sed -e 's,^:,,'`` \
 		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/`:` \

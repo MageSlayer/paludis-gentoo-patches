@@ -1525,60 +1525,60 @@ ConsoleInstallTask::on_ambiguous_package_name_error(const AmbiguousPackageNameEr
 }
 
 void
-ConsoleInstallTask::on_install_action_error(const InstallActionError & e)
+ConsoleInstallTask::on_install_action_error(const std::tr1::shared_ptr<OutputManager> & output_manager, const InstallActionError & e)
 {
-    output_stream() << endl;
-    output_stream() << "Install error:" << endl;
-    output_stream() << "  * " << e.backtrace("\n  * ");
-    output_stream() << e.message() << endl;
-    output_stream() << endl;
-    output_stream() << endl;
+    output_manager->stdout_stream() << endl;
+    output_manager->stdout_stream() << "Install error:" << endl;
+    output_manager->stdout_stream() << "  * " << e.backtrace("\n  * ");
+    output_manager->stdout_stream() << e.message() << endl;
+    output_manager->stdout_stream() << endl;
+    output_manager->stdout_stream() << endl;
 }
 
 void
-ConsoleInstallTask::on_fetch_action_error(const FetchActionError & e)
+ConsoleInstallTask::on_fetch_action_error(const std::tr1::shared_ptr<OutputManager> & output_manager, const FetchActionError & e)
 {
-    output_stream() << endl;
-    output_stream() << "Fetch error:" << endl;
-    output_stream() << "  * " << e.backtrace("\n  * ");
-    output_stream() << e.message() << endl;
-    output_stream() << endl;
+    output_manager->stdout_stream() << endl;
+    output_manager->stdout_stream() << "Fetch error:" << endl;
+    output_manager->stdout_stream() << "  * " << e.backtrace("\n  * ");
+    output_manager->stdout_stream() << e.message() << endl;
+    output_manager->stdout_stream() << endl;
 
     if (e.failures())
     {
         for (Sequence<FetchActionFailure>::ConstIterator f(e.failures()->begin()), f_end(e.failures()->end()) ;
                 f != f_end ; ++f)
         {
-            output_stream() << "  * File '" << (*f).target_file() << "': ";
+            output_manager->stdout_stream() << "  * File '" << (*f).target_file() << "': ";
 
             bool need_comma(false);
             if ((*f).requires_manual_fetching())
             {
-                output_stream() << "requires manual fetching";
+                output_manager->stdout_stream() << "requires manual fetching";
                 need_comma = true;
             }
 
             if ((*f).failed_automatic_fetching())
             {
                 if (need_comma)
-                    output_stream() << ", ";
-                output_stream() << "failed automatic fetching";
+                    output_manager->stdout_stream() << ", ";
+                output_manager->stdout_stream() << "failed automatic fetching";
                 need_comma = true;
             }
 
             if (! (*f).failed_integrity_checks().empty())
             {
                 if (need_comma)
-                    output_stream() << ", ";
-                output_stream() << "failed integrity checks: " << (*f).failed_integrity_checks();
+                    output_manager->stdout_stream() << ", ";
+                output_manager->stdout_stream() << "failed integrity checks: " << (*f).failed_integrity_checks();
                 need_comma = true;
             }
 
-            output_stream() << endl;
+            output_manager->stdout_stream() << endl;
         }
     }
 
-    output_stream() << endl;
+    output_manager->stdout_stream() << endl;
 }
 
 void
