@@ -188,6 +188,9 @@ namespace
                     rule.output_exclusivity_requirement() != i.output_exclusivity())
                 return false;
 
+            if (rule.matches_requirement())
+                return false;
+
             return true;
         }
 
