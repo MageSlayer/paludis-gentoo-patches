@@ -177,7 +177,7 @@ e_repository_TEST_ever_LDADD = \
 
 e_repository_TEST_ever_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
-e_repository_TEST_exlibs = e_repository_TEST_exlibs.cc
+e_repository_TEST_exlibs_SOURCES = e_repository_TEST_exlibs.cc
 
 e_repository_TEST_exlibs_LDADD = \
 	libpaludiserepository_@PALUDIS_PC_SLOT@.la \
