@@ -65,8 +65,8 @@ StandardOutputManager::factory_managers()
 const std::tr1::shared_ptr<OutputManager>
 StandardOutputManager::factory_create(
         const OutputManagerFactory::KeyFunction &,
-        const OutputManagerFactory::CreateChildFunction &
-        )
+        const OutputManagerFactory::CreateChildFunction &,
+        const OutputManagerFactory::ReplaceVarsFunc &)
 {
     return make_shared_ptr(new StandardOutputManager);
 }

@@ -560,8 +560,8 @@ PaludisEnvironment::create_output_manager(const CreateOutputManagerInfo & i) con
 }
 
 const std::tr1::shared_ptr<OutputManager>
-PaludisEnvironment::create_named_output_manager(const std::string & s) const
+PaludisEnvironment::create_named_output_manager(const std::string & s, const CreateOutputManagerInfo & i) const
 {
-    return _imp->config->output_managers()->create_named_output_manager(s);
+    return _imp->config->output_managers()->create_named_output_manager(s, i);
 }
 

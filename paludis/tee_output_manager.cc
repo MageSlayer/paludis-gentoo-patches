@@ -101,7 +101,8 @@ TeeOutputManager::factory_managers()
 const std::tr1::shared_ptr<OutputManager>
 TeeOutputManager::factory_create(
         const OutputManagerFactory::KeyFunction & key_func,
-        const OutputManagerFactory::CreateChildFunction & create_child)
+        const OutputManagerFactory::CreateChildFunction & create_child,
+        const OutputManagerFactory::ReplaceVarsFunc &)
 {
     std::tr1::shared_ptr<OutputManagerSequence> children(new OutputManagerSequence);
 

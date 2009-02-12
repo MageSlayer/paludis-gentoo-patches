@@ -44,12 +44,16 @@ namespace paludis
 
         public:
             typedef std::tr1::function<std::string (const std::string &)> KeyFunction;
+
             typedef std::tr1::function<const std::tr1::shared_ptr<OutputManager> (
                     const std::string &)> CreateChildFunction;
 
+            typedef std::tr1::function<std::string (const std::string &)> ReplaceVarsFunc;
+
             typedef std::tr1::function<const std::tr1::shared_ptr<OutputManager>(
                     const KeyFunction &,
-                    const CreateChildFunction &
+                    const CreateChildFunction &,
+                    const ReplaceVarsFunc &
                     )> CreateFunction;
 
             /**
@@ -63,10 +67,16 @@ namespace paludis
              * \param create_child_function is used by, for example,
              * TeeOutputManager to create child streams. Given a single string,
              * this function returns the appropriate child.
+             *
+             * \param replace_vars_func should replace '%{vars}' with their
+             * expanded forms. Variables include 'name', 'action' etc. This is
+             * used by, for example, FileOutputManager to allow the user to
+             * specify the output file names.
              */
             const std::tr1::shared_ptr<OutputManager> create(
                     const KeyFunction & key_function,
-                    const CreateChildFunction & create_child_function
+                    const CreateChildFunction & create_child_function,
+                    const ReplaceVarsFunc & replace_vars_func
                     ) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**

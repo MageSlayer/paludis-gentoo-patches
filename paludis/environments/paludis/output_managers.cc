@@ -78,7 +78,7 @@ OutputManagers::add(const FSEntry & filename)
 }
 
 const std::tr1::shared_ptr<OutputManager>
-OutputManagers::create_named_output_manager(const std::string & s) const
+OutputManagers::create_named_output_manager(const std::string & s, const CreateOutputManagerInfo & n) const
 {
     Context context("When creating output manager named '" + s + "':");
 
@@ -88,8 +88,17 @@ OutputManagers::create_named_output_manager(const std::string & s) const
 
     return OutputManagerFactory::get_instance()->create(
             std::tr1::bind(&from_kv, i->second, std::tr1::placeholders::_1),
-            std::tr1::bind(&OutputManagers::create_named_output_manager, this, std::tr1::placeholders::_1)
+            std::tr1::bind(&OutputManagers::create_named_output_manager, this, std::tr1::placeholders::_1, std::tr1::cref(n)),
+            std::tr1::bind(&OutputManagers::replace_vars, this, std::tr1::placeholders::_1, std::tr1::cref(n))
             );
+}
+
+std::string
+OutputManagers::replace_vars(
+        const std::string & s,
+        const CreateOutputManagerInfo &) const
+{
+    return s;
 }
 
 template class PrivateImplementationPattern<paludis_environment::OutputManagers>;

@@ -308,7 +308,7 @@ OutputConf::create_output_manager(const CreateOutputManagerInfo & i) const
     for (RuleList::const_reverse_iterator r(_imp->rules.rbegin()), r_end(_imp->rules.rend()) ;
             r != r_end ; ++r)
         if (match_rule(_imp->env, *r, i))
-            return _imp->env->create_named_output_manager(r->manager());
+            return _imp->env->create_named_output_manager(r->manager(), i);
 
     throw PaludisConfigError("No matching output manager rule specified");
 }

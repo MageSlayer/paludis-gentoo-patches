@@ -34,6 +34,7 @@
 #include <tr1/unordered_map>
 #include <list>
 
+#include <paludis/file_output_manager.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/tee_output_manager.hh>
 
@@ -84,6 +85,7 @@ OutputManagerFactory::OutputManagerFactory() :
     PrivateImplementationPattern<OutputManagerFactory>(new Implementation<OutputManagerFactory>)
 {
     /* we might want to make this plugin loadable at some point */
+    add_manager(FileOutputManager::factory_managers(), FileOutputManager::factory_create);
     add_manager(StandardOutputManager::factory_managers(), StandardOutputManager::factory_create);
     add_manager(TeeOutputManager::factory_managers(), TeeOutputManager::factory_create);
 }
@@ -95,11 +97,12 @@ OutputManagerFactory::~OutputManagerFactory()
 const std::tr1::shared_ptr<OutputManager>
 OutputManagerFactory::create(
         const KeyFunction & key_function,
-        const CreateChildFunction & create_child_function
+        const CreateChildFunction & create_child_function,
+        const ReplaceVarsFunc & replace_vars_func
         ) const
 {
     Context context("When creating output manager:");
-    return fetch(_imp->keys, key_function("handler")).create_function()(key_function, create_child_function);
+    return fetch(_imp->keys, key_function("handler")).create_function()(key_function, create_child_function, replace_vars_func);
 }
 
 OutputManagerFactory::ConstIterator

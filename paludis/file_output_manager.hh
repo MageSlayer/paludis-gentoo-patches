@@ -17,27 +17,27 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_TEE_OUTPUT_MANAGER_HH
-#define PALUDIS_GUARD_PALUDIS_TEE_OUTPUT_MANAGER_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_FILE_OUTPUT_MANAGER_HH
+#define PALUDIS_GUARD_PALUDIS_FILE_OUTPUT_MANAGER_HH 1
 
-#include <paludis/tee_output_manager-fwd.hh>
+#include <paludis/file_output_manager-fwd.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/output_manager_factory.hh>
 #include <paludis/util/set-fwd.hh>
-#include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/fs_entry-fwd.hh>
 #include <tr1/memory>
 #include <tr1/functional>
 
 namespace paludis
 {
-    class PALUDIS_VISIBLE TeeOutputManager :
-        private PrivateImplementationPattern<TeeOutputManager>,
+    class PALUDIS_VISIBLE FileOutputManager :
+        private PrivateImplementationPattern<FileOutputManager>,
         public OutputManager
     {
         public:
-            TeeOutputManager(const std::tr1::shared_ptr<const OutputManagerSequence> &);
-            ~TeeOutputManager();
+            FileOutputManager(const FSEntry &, const FSEntry &, const bool keep_on_success);
+            ~FileOutputManager();
 
             virtual std::ostream & stdout_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual std::ostream & stderr_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -56,7 +56,7 @@ namespace paludis
     };
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
-    extern template class PrivateImplementationPattern<TeeOutputManager>;
+    extern template class PrivateImplementationPattern<FileOutputManager>;
 #endif
 }
 

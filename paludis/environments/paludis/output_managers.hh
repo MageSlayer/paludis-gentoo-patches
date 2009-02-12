@@ -25,6 +25,7 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/output_manager-fwd.hh>
+#include <paludis/create_output_manager_info-fwd.hh>
 #include <tr1/memory>
 
 namespace paludis
@@ -51,7 +52,13 @@ namespace paludis
                  */
                 void add(const FSEntry &);
 
-                const std::tr1::shared_ptr<OutputManager> create_named_output_manager(const std::string &) const;
+                const std::tr1::shared_ptr<OutputManager> create_named_output_manager(
+                        const std::string &,
+                        const CreateOutputManagerInfo &) const;
+
+                std::string replace_vars(
+                        const std::string &,
+                        const CreateOutputManagerInfo &) const;
         };
     }
 

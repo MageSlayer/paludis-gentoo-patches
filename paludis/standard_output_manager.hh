@@ -47,7 +47,8 @@ namespace paludis
 
             static const std::tr1::shared_ptr<OutputManager> factory_create(
                     const OutputManagerFactory::KeyFunction &,
-                    const OutputManagerFactory::CreateChildFunction &)
+                    const OutputManagerFactory::CreateChildFunction &,
+                    const OutputManagerFactory::ReplaceVarsFunc &)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
