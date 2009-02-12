@@ -883,6 +883,11 @@ WriteVDBEntryCommand::operator() ()
                         params.package_id(), _1, params.maybe_output_manager()))
             );
 
+    if (params.maybe_output_manager())
+        cmd
+            .with_captured_stderr_stream(&params.maybe_output_manager()->stderr_stream())
+            .with_captured_stdout_stream(&params.maybe_output_manager()->stdout_stream());
+
     std::string defined_phases(params.package_id()->eapi()->supported()->ebuild_metadata_variables()->defined_phases()->name());
     if (! defined_phases.empty())
         if (params.package_id()->defined_phases_key())
