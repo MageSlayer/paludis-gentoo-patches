@@ -25,6 +25,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/stringify.hh>
 
 using namespace paludis;
 
@@ -37,17 +38,19 @@ namespace paludis
         FSEntry stderr_file;
         std::tr1::shared_ptr<SafeOFStream> stdout_stream;
         std::tr1::shared_ptr<SafeOFStream> stderr_stream;
-        const bool keep_on_success;
+        const bool keep_on_success, keep_on_empty;
 
         Implementation(
                 const FSEntry & o,
                 const FSEntry & e,
-                const bool k
+                const bool k,
+                const bool l
                 ) :
             stdout_file(o),
             stderr_file(e),
             stdout_stream(new SafeOFStream(o)),
-            keep_on_success(k)
+            keep_on_success(k),
+            keep_on_empty(l)
         {
             if (o == e)
                 stderr_stream = stdout_stream;
@@ -57,13 +60,28 @@ namespace paludis
     };
 }
 
-FileOutputManager::FileOutputManager(const FSEntry & o, const FSEntry & e, const bool k) :
-    PrivateImplementationPattern<FileOutputManager>(new Implementation<FileOutputManager>(o, e, k))
+FileOutputManager::FileOutputManager(const FSEntry & o, const FSEntry & e, const bool k, const bool l) :
+    PrivateImplementationPattern<FileOutputManager>(new Implementation<FileOutputManager>(o, e, k, l))
 {
 }
 
 FileOutputManager::~FileOutputManager()
 {
+    if (! _imp->keep_on_empty)
+    {
+        *_imp->stdout_stream << std::flush;
+        *_imp->stderr_stream << std::flush;
+
+        FSEntry stdout_file_now(stringify(_imp->stdout_file)), stderr_file_now(stringify(_imp->stderr_file));
+        if (stdout_file_now.exists() && 0 == stdout_file_now.file_size())
+            _imp->stdout_file.unlink();
+
+        if (stdout_file_now != stderr_file_now)
+        {
+            if (stderr_file_now.exists() && 0 == stderr_file_now.file_size())
+                _imp->stderr_file.unlink();
+        }
+    }
 }
 
 std::ostream &
@@ -107,7 +125,8 @@ FileOutputManager::factory_create(
         const OutputManagerFactory::CreateChildFunction &,
         const OutputManagerFactory::ReplaceVarsFunc & replace_vars_func)
 {
-    std::string o_s(key_func("stdout")), e_s(key_func("stderr")), k_s(key_func("keep_on_success"));
+    std::string o_s(key_func("stdout")), e_s(key_func("stderr")), k_s(key_func("keep_on_success")),
+        l_s(key_func("keep_on_empty"));
 
     if (o_s.empty())
         throw ConfigurationError("Key 'stdout' not specified when creating a file output manager");
@@ -120,7 +139,11 @@ FileOutputManager::factory_create(
     if (k_s.empty())
         throw ConfigurationError("Key 'keep_on_success' not specified when creating a file output manager");
 
-    return make_shared_ptr(new FileOutputManager(FSEntry(o_s), FSEntry(e_s), destringify<bool>(k_s)));
+    if (l_s.empty())
+        throw ConfigurationError("Key 'keep_on_empty' not specified when creating a file output manager");
+
+    return make_shared_ptr(new FileOutputManager(FSEntry(o_s), FSEntry(e_s), destringify<bool>(k_s),
+                destringify<bool>(l_s)));
 }
 
 template class PrivateImplementationPattern<FileOutputManager>;
