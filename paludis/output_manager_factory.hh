@@ -53,7 +53,7 @@ namespace paludis
              * Construct a given OutputManager, or throw ConfigurationError.
              *
              * \param key_function should return the value for a given key. The
-             * 'manager' key must return a value (e.g. 'standard'), which is used
+             * 'handler' key must return a value (e.g. 'standard'), which is used
              * to select the return type. Other key names are manager defined,
              * but typically include things like 'location' and 'keep_on_success'.
              */

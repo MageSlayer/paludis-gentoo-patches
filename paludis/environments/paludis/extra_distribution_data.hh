@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,6 +33,8 @@ namespace paludis
         struct licenses_filename_part;
         struct mandatory_userpriv;
         struct mirrors_filename_part;
+        struct output_filename_part;
+        struct output_managers_directory;
         struct package_mask_filename_part;
         struct package_unmask_filename_part;
         struct repositories_directory;
@@ -49,6 +51,8 @@ namespace paludis
             NamedValue<n::licenses_filename_part, std::string> licenses_filename_part;
             NamedValue<n::mandatory_userpriv, bool> mandatory_userpriv;
             NamedValue<n::mirrors_filename_part, std::string> mirrors_filename_part;
+            NamedValue<n::output_filename_part, std::string> output_filename_part;
+            NamedValue<n::output_managers_directory, std::string> output_managers_directory;
             NamedValue<n::package_mask_filename_part, std::string> package_mask_filename_part;
             NamedValue<n::package_unmask_filename_part, std::string> package_unmask_filename_part;
             NamedValue<n::repositories_directory, std::string> repositories_directory;

@@ -33,8 +33,8 @@
 #include <paludis/about.hh>
 #include <tr1/unordered_map>
 #include <list>
-#include <dlfcn.h>
-#include <stdint.h>
+
+#include <paludis/standard_output_manager.hh>
 
 using namespace paludis;
 
@@ -58,7 +58,7 @@ namespace
     const Funcs & fetch(const Keys & keys, const std::string & key)
     {
         if (key.empty())
-            throw ConfigurationError("Key 'manager' not specified when creating an output manager");
+            throw ConfigurationError("Key 'handler' not specified when creating an output manager");
 
         Keys::const_iterator i(keys.find(key));
         if (i == keys.end())
@@ -82,6 +82,8 @@ namespace paludis
 OutputManagerFactory::OutputManagerFactory() :
     PrivateImplementationPattern<OutputManagerFactory>(new Implementation<OutputManagerFactory>)
 {
+    /* we might want to make this plugin loadable at some point */
+    add_manager(StandardOutputManager::factory_managers(), StandardOutputManager::factory_create);
 }
 
 OutputManagerFactory::~OutputManagerFactory()
@@ -94,7 +96,7 @@ OutputManagerFactory::create(
         ) const
 {
     Context context("When creating output manager:");
-    return fetch(_imp->keys, key_function("manager")).create_function()(key_function);
+    return fetch(_imp->keys, key_function("handler")).create_function()(key_function);
 }
 
 OutputManagerFactory::ConstIterator

@@ -22,6 +22,9 @@
 
 #include <paludis/standard_output_manager-fwd.hh>
 #include <paludis/output_manager.hh>
+#include <paludis/util/set-fwd.hh>
+#include <tr1/memory>
+#include <tr1/functional>
 
 namespace paludis
 {
@@ -37,6 +40,13 @@ namespace paludis
 
             virtual void succeeded();
             virtual void message(const MessageType, const std::string &);
+
+            static const std::tr1::shared_ptr<const Set<std::string> > factory_managers()
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            static const std::tr1::shared_ptr<OutputManager> factory_create(
+                    const std::tr1::function<std::string (const std::string &)> &)
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

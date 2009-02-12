@@ -1,3 +1,4 @@
+SUBDIRS = output_managers .
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 BUILT_SOURCES = $(DISTCLEANFILES)
 MAINTAINERCLEANFILES = Makefile.in
@@ -6,7 +7,8 @@ DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DDATADIR=\"$(datadir)\" \
-	-DLIBDIR=\"$(libdir)\"
+	-DLIBDIR=\"$(libdir)\" \
+	-DSHAREDIR=\"$(sharedir)\"
 
 libpaludispaludisenvironment_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	bashable_conf.cc       bashable_conf.hh \
@@ -15,6 +17,8 @@ libpaludispaludisenvironment_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	package_mask_conf.cc   package_mask_conf.hh \
 	use_conf.cc            use_conf.hh \
 	mirrors_conf.cc        mirrors_conf.hh \
+	output_conf.cc         output_conf.hh \
+	output_managers.cc     output_managers.hh \
 	world.cc               world.hh \
 	paludis_config.cc      paludis_config.hh \
 	paludis_environment.cc paludis_environment.hh \
@@ -22,6 +26,11 @@ libpaludispaludisenvironment_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	registration.cc
 
 libpaludispaludisenvironment_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+
+shareenvpaludisdir = $(sharedir)/paludis/environments/paludis/
+
+dist_shareenvpaludis_DATA = \
+	default_output.conf
 
 if ! MONOLITHIC
 
@@ -81,6 +90,8 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
 	PALUDIS_NO_CHOWN="yes" \
 	PALUDIS_TESTS_KEEP_STDERR="yes" \
+	PALUDIS_DEFAULT_OUTPUT_CONF="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/paludis/default_output.conf`" \
+	PALUDIS_OUTPUT_MANAGERS_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/paludis/output_managers/`" \
 	LD_LIBRARY_PATH="`echo $$LD_LIBRARY_PATH: | sed -e 's,^:,,'`` \
 		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/`:` \
 		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/.libs/`" \

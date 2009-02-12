@@ -9,6 +9,8 @@ make_enum_OutputExclusivity()
     key oe_with_others              "Other things may be running at the same time"
     key oe_exclusive                "We are the only thing running"
 
+    want_destringify
+
     doxygen_comment << "END"
         /**
          * Options telling most CreateOutputManagerInfo subclasses whether we

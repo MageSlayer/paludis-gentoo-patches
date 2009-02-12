@@ -18,6 +18,8 @@
  */
 
 #include <paludis/standard_output_manager.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <iostream>
 
 using namespace paludis;
@@ -50,5 +52,19 @@ StandardOutputManager::succeeded()
 void
 StandardOutputManager::message(const MessageType, const std::string &)
 {
+}
+
+const std::tr1::shared_ptr<const Set<std::string> >
+StandardOutputManager::factory_managers()
+{
+    std::tr1::shared_ptr<Set<std::string> > result(new Set<std::string>);
+    result->insert("standard");
+    return result;
+}
+
+const std::tr1::shared_ptr<OutputManager>
+StandardOutputManager::factory_create(const std::tr1::function<std::string (const std::string &)> &)
+{
+    return make_shared_ptr(new StandardOutputManager);
 }
 

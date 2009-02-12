@@ -33,6 +33,8 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_DISTRIBUTION="gentoo" \
 	PALUDIS_OPTIONS="" \
 	PALUDIS_REPOSITORY_SO_DIR="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories`" \
+	PALUDIS_DEFAULT_OUTPUT_CONF="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/paludis/default_output.conf`" \
+	PALUDIS_OUTPUT_MANAGERS_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/paludis/output_managers/`" \
 	SYSCONFDIR="$(sysconfdir)" \
 	LD_LIBRARY_PATH="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/.libs`" \
 	bash $(top_srcdir)/test/run_test.sh "ruby -I ../.libs/"
