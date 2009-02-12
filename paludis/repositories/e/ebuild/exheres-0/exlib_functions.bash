@@ -2,6 +2,7 @@
 # vim: set sw=4 sts=4 et :
 
 # Copyright (c) 2007, 2008 Ciaran McCreesh
+# Copyright (c) 2009 Bo Ørsted Andresen
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,17 +30,124 @@ export_exlib_phases()
     done
 }
 
+exparam()
+{
+    die "exparam is banned outside exlibs"
+}
+
+exparam_var_name()
+{
+    echo EXPARAMVAR_${1//-/__dash__}
+}
+
+exparam_print()
+{
+    case "${1}" in
+        -a) eval "${2}=( \"\${${3}}\" )" ;;
+        -v) eval "${2}=\"\${${3}}\""      ;;
+        *)  eval "echo \"\${${1}}\""     ;;
+    esac
+}
+
+exparam_internal()
+{
+    local i e=${1} a to_var v a_v=$(exparam_var_name ${1})__ALLDECLS__
+    shift
+    if [[ ${1} == -v ]]; then
+        [[ ${#} -eq 3 ]] || die "exparam ${1} requires exactly three arguments"
+        a=${1}
+        to_var=${2}
+        shift 2
+    else
+        [[ ${#} -eq 1 ]] || die "exparam requires exactly one argument"
+    fi
+    v=$(exparam_var_name ${e})_${1%\[*}
+    if [[ ${1} == *\[*\] ]]; then
+        has "${1%\[*}[]" ${!a_v} || die "${e}.exlib has no ${1%\[*} array"
+        i=${1#*\[}
+        i=${i%\]}
+        case "${i}" in
+            "#")            exparam_print ${to_var:+-v "${to_var}"} "#${v}[*]"   ;;
+            "*"|"@")        exparam_print ${to_var:+-a "${to_var}"} "${v}[${i}]"    ;;
+            +([[:digit:]])) exparam_print ${to_var:+-v "${to_var}"} "${v}[${i}]" ;;
+            *)              die "Invalid index in exparam ${1}"          ;;
+        esac
+    else
+        has "${1}" ${!a_v%\[\]} || die "${e}.exlib has no ${1} parameter"
+        exparam_print ${to_var:+-v "${to_var}"} "${v}"
+    fi
+}
+
+myexparam()
+{
+    [[ -z "${CURRENT_EXLIB}" ]] && die "myexparam called but CURRENT_EXLIB undefined"
+
+    local v=${1%%=*} a_v="$(exparam_var_name ${CURRENT_EXLIB})__ALLDECLS__"
+    [[ ${1} == *=\[ && ${#} -gt 1 ]] && v+="[]"
+    printf -v "${a_v}" "%s %s" "${!a_v}" "${v}"
+
+    v=$(exparam_var_name ${CURRENT_EXLIB})_${v%\[\]}
+    if [[ -z ${!v+set} && ${1} == *=* ]]; then
+        if [[ ${1} == *=\[ && ${#} -gt 1 ]]; then
+            shift
+            local i a=()
+            while [[ ${#} -gt 1 ]]; do
+                a+=( "${1}" )
+                shift
+            done
+            [[ ${1} == \] ]] || die "Array encountered with no closing ]"
+            eval "${v}=( \"\${a[@]}\" )"
+        else
+            printf -v "${v}" "%s" "${1#*=}"
+        fi
+    fi
+}
+
 require()
 {
     ebuild_notice "debug" "Command 'require ${@}', using EXLIBSDIRS '${EXLIBSDIRS}'"
-    local e ee location v v_qa
-    for e in "$@" ; do
+    local exlibs e ee p a=() location v a_v v_qa
+    # parse exlib parameters
+    while [[ -n $@ ]]; do
+        if [[ ${1} == +(\[) ]]; then
+            [[ -z ${e} ]] && die "\"${1}\" encountered with no preceding exlib"
+            p=${1}
+            shift
+            while [[ -n ${1} && ${1} != ${p//\[/\]} ]]; do
+                v="${1%%=*}"
+                if [[ ${1#*=} == ${p} ]]; then
+                    v+="[]"
+                    a=()
+                    shift
+                    while [[ -n ${1} && ${1} != ${p//\[/\]} ]]; do
+                        a+=( "${1}" )
+                        shift
+                    done
+                    [[ ${1} == ${p//\[/\]} ]] || die "\"${p}\" encountered with no closing \"${p//[/]}\" for array ${v}"
+                    eval "$(exparam_var_name ${e})_${v%\[\]}=( \"\${a[@]}\" )"
+                else
+                    printf -v "$(exparam_var_name ${e})_${1%%=*}" "%s" "${1#*=}"
+                fi
+                a_v="$(exparam_var_name ${e})__ALL__"
+                printf -v "${a_v}" "%s %s" "${!a_v}" "${v}"
+                shift
+            done
+            [[ ${1} == ${p//\[/\]} ]] || die "\"${p}\" encountered with no closing \"${p//[/]}\""
+        else
+            e=${1}
+            exlibs+=" ${e}"
+        fi
+        shift
+    done
+    # source exlibs
+    for e in ${exlibs}; do
         location=
         for ee in ${EXLIBSDIRS} ; do
             [[ -f "${ee}/${e}.exlib" ]] && location="${ee}/${e}.exlib"
         done
         local old_CURRENT_EXLIB="${CURRENT_EXLIB}"
         export CURRENT_EXLIB="${e}"
+        alias exparam="exparam_internal ${CURRENT_EXLIB}"
 
         for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ${PALUDIS_BRACKET_MERGED_VARIABLES} ; do
             local c_v="current_${v}" u_v="unset_${v}"
@@ -88,7 +196,32 @@ require()
             fi
         done
 
+        # die on required exlib parameters that haven't been supplied
+        local c_v v
+        a_v=$(exparam_var_name ${CURRENT_EXLIB})__ALLDECLS__
+        for v in ${!a_v}; do
+            c_v=$(exparam_var_name ${CURRENT_EXLIB})_${v%\[\]}
+            if [[ $(eval "declare -p ${c_v}") == declare\ -a\ ${c_v}=* ]]; then
+                [[ ${v} == *\[\] ]] || die "${CURRENT_EXLIB}.exlib requires a scalar ${v} parameter but got an array"
+            elif [[ -n ${!c_v+set} ]]; then
+                [[ ${v} != *\[\] ]] || die "${CURRENT_EXLIB}.exlib requires an array ${v} but got a scalar"
+            else
+                die "${CURRENT_EXLIB}.exlib requires a ${v} parameter"
+            fi
+        done
+
+        # die on supplied exlib parameters which haven't been declared
+        v=$(exparam_var_name ${CURRENT_EXLIB})__ALL__
+        for v in ${!v}; do
+            has ${v} ${!a_v} || die "${CURRENT_EXLIB}.exlib takes no ${v} parameter"
+        done
+
         export CURRENT_EXLIB="${old_CURRENT_EXLIB}"
+        if [[ -n ${CURRENT_EXLIB} ]]; then
+            alias exparam="exparam_internal ${CURRENT_EXLIB}"
+        else
+            unalias exparam
+        fi
     done
 }
 
