@@ -100,9 +100,13 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
         }
         else if (tokens[0] == "MESSAGE")
         {
-            if (tokens.size() != 4)
+            if (tokens.size() < 4)
             {
                 Log::get_instance()->message("e.pipe_commands.message.bad", ll_warning, lc_context) << "Got bad MESSAGE pipe command";
+                return "Ebad MESSAGE command";
+            }
+            else
+            {
                 MessageType m;
                 if (tokens[2] == "einfo" || tokens[2] == "einfon")
                     m = mt_info;
@@ -116,13 +120,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     return "EUnknown message type " + tokens[2] + "";
 
                 if (maybe_output_manager)
-                    maybe_output_manager->message(m, tokens[3]);
-                return "O0;";
-            }
-            else
-            {
-                Log::get_instance()->message("e.child.message", destringify<LogLevel>(tokens[2]), lc_context)
-                    << join(next(next(next(tokens.begin()))), tokens.end(), " ");
+                    maybe_output_manager->message(m, join(next(next(next(tokens.begin()))), tokens.end(), " "));
                 return "O0;";
             }
         }
