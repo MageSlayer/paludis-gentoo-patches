@@ -108,7 +108,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
             else
             {
                 MessageType m;
-                if (tokens[2] == "einfo" || tokens[2] == "einfon")
+                if (tokens[2] == "einfo" || tokens[2] == "einfon" || tokens[2] == "ebegin")
                     m = mt_info;
                 else if (tokens[2] == "ewarn")
                     m = mt_warn;
