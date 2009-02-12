@@ -1908,25 +1908,25 @@ ConsoleInstallTask::perform_hook(const Hook & hook) const
 void
 ConsoleInstallTask::on_phase_skip(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase)
 {
-    output_manager->stdout_stream() << "+++ Skipping phase '" + phase + "' as instructed";
+    output_manager->stdout_stream() << "+++ Skipping phase '" + phase + "' as instructed" << endl;
 }
 
 void
 ConsoleInstallTask::on_phase_abort(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase)
 {
-    output_manager->stdout_stream() << "+++ Aborting at phase '" + phase + "' as instructed";
+    output_manager->stdout_stream() << "+++ Aborting at phase '" + phase + "' as instructed" << endl;
 }
 
 void
 ConsoleInstallTask::on_phase_skip_until(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase)
 {
-    output_manager->stdout_stream() << "+++ Skipping phase '" + phase + "' as instructed since it is before a start phase";
+    output_manager->stdout_stream() << "+++ Skipping phase '" + phase + "' as instructed since it is before a start phase" << endl;
 }
 
 void
 ConsoleInstallTask::on_phase_proceed_conditionally(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase)
 {
-    output_manager->stdout_stream() << "+++ Executing phase '" + phase + "' as instructed";
+    output_manager->stdout_stream() << "+++ Executing phase '" + phase + "' as instructed" << endl;
 }
 
 void
