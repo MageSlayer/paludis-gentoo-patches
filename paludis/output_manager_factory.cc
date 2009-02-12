@@ -35,6 +35,7 @@
 #include <list>
 
 #include <paludis/standard_output_manager.hh>
+#include <paludis/tee_output_manager.hh>
 
 using namespace paludis;
 
@@ -84,6 +85,7 @@ OutputManagerFactory::OutputManagerFactory() :
 {
     /* we might want to make this plugin loadable at some point */
     add_manager(StandardOutputManager::factory_managers(), StandardOutputManager::factory_create);
+    add_manager(TeeOutputManager::factory_managers(), TeeOutputManager::factory_create);
 }
 
 OutputManagerFactory::~OutputManagerFactory()
@@ -92,11 +94,12 @@ OutputManagerFactory::~OutputManagerFactory()
 
 const std::tr1::shared_ptr<OutputManager>
 OutputManagerFactory::create(
-        const KeyFunction & key_function
+        const KeyFunction & key_function,
+        const CreateChildFunction & create_child_function
         ) const
 {
     Context context("When creating output manager:");
-    return fetch(_imp->keys, key_function("handler")).create_function()(key_function);
+    return fetch(_imp->keys, key_function("handler")).create_function()(key_function, create_child_function);
 }
 
 OutputManagerFactory::ConstIterator

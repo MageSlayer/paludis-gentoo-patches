@@ -81,6 +81,7 @@ add(`stripper',                          `hh', `cc', `fwd', `test', `testscript'
 add(`syncer',                            `hh', `cc')
 add(`sync_task',                         `hh', `cc')
 add(`tasks_exceptions',                  `hh', `cc')
+add(`tee_output_manager',                `hh', `cc', `fwd')
 add(`unchoices_key',                     `hh', `cc', `fwd')
 add(`uninstall_list',                    `hh', `cc', `se', `test')
 add(`uninstall_task',                    `hh', `cc')

@@ -63,7 +63,10 @@ StandardOutputManager::factory_managers()
 }
 
 const std::tr1::shared_ptr<OutputManager>
-StandardOutputManager::factory_create(const std::tr1::function<std::string (const std::string &)> &)
+StandardOutputManager::factory_create(
+        const OutputManagerFactory::KeyFunction &,
+        const OutputManagerFactory::CreateChildFunction &
+        )
 {
     return make_shared_ptr(new StandardOutputManager);
 }

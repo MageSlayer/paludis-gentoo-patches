@@ -44,9 +44,12 @@ namespace paludis
 
         public:
             typedef std::tr1::function<std::string (const std::string &)> KeyFunction;
+            typedef std::tr1::function<const std::tr1::shared_ptr<OutputManager> (
+                    const std::string &)> CreateChildFunction;
 
             typedef std::tr1::function<const std::tr1::shared_ptr<OutputManager>(
-                    const KeyFunction &
+                    const KeyFunction &,
+                    const CreateChildFunction &
                     )> CreateFunction;
 
             /**
@@ -56,9 +59,14 @@ namespace paludis
              * 'handler' key must return a value (e.g. 'standard'), which is used
              * to select the return type. Other key names are manager defined,
              * but typically include things like 'location' and 'keep_on_success'.
+             *
+             * \param create_child_function is used by, for example,
+             * TeeOutputManager to create child streams. Given a single string,
+             * this function returns the appropriate child.
              */
             const std::tr1::shared_ptr<OutputManager> create(
-                    const KeyFunction & key_function
+                    const KeyFunction & key_function,
+                    const CreateChildFunction & create_child_function
                     ) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**

@@ -86,8 +86,10 @@ OutputManagers::create_named_output_manager(const std::string & s) const
     if (i == _imp->store.end())
         throw PaludisConfigError("No output manager named '" + s + "' exists");
 
-    return OutputManagerFactory::get_instance()->create(std::tr1::bind(&from_kv, i->second,
-                std::tr1::placeholders::_1));
+    return OutputManagerFactory::get_instance()->create(
+            std::tr1::bind(&from_kv, i->second, std::tr1::placeholders::_1),
+            std::tr1::bind(&OutputManagers::create_named_output_manager, this, std::tr1::placeholders::_1)
+            );
 }
 
 template class PrivateImplementationPattern<paludis_environment::OutputManagers>;

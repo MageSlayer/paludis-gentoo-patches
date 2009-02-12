@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,55 +22,33 @@
 
 #include <paludis/util/tee_output_stream-fwd.hh>
 #include <paludis/util/attributes.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 #include <ostream>
 
 namespace paludis
 {
     class PALUDIS_VISIBLE TeeOutputStreamBuf :
-        public std::streambuf
+        public std::streambuf,
+        private PrivateImplementationPattern<TeeOutputStreamBuf>
     {
-        private:
-            std::ostream * const s1;
-            std::ostream * const s2;
-
         protected:
             virtual int_type
-            overflow(int_type c)
-            {
-                if (c != traits_type::eof())
-                {
-                    s1->put(c);
-                    s2->put(c);
-                }
-                return c;
-            }
+            overflow(int_type c);
 
             virtual std::streamsize
-            xsputn(const char * s, std::streamsize num)
-            {
-                s1->write(s, num);
-                s2->write(s, num);
-                return num;
-            }
+            xsputn(const char * s, std::streamsize num);
 
         public:
-            TeeOutputStreamBuf(std::ostream * const b1, std::ostream * const b2) :
-                s1(b1),
-                s2(b2)
-            {
-            }
+            TeeOutputStreamBuf();
+            ~TeeOutputStreamBuf();
+
+            void add_stream(std::ostream * const);
     };
 
     class PALUDIS_VISIBLE TeeOutputStreamBase
     {
         protected:
             TeeOutputStreamBuf buf;
-
-        public:
-            TeeOutputStreamBase(std::ostream * const b1, std::ostream * const b2) :
-                buf(b1, b2)
-            {
-            }
     };
 
     class PALUDIS_VISIBLE TeeOutputStream :
@@ -81,14 +59,16 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            TeeOutputStream(std::ostream * const b1, std::ostream * const b2) :
-                TeeOutputStreamBase(b1, b2),
-                std::ostream(&buf)
-            {
-            }
+            TeeOutputStream();
 
             ///\}
+
+            void add_stream(std::ostream * const);
     };
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class PrivateImplementationPattern<TeeOutputStreamBuf>;
+#endif
 }
 
 #endif
