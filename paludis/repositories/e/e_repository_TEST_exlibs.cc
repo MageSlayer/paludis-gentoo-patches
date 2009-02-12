@@ -174,6 +174,7 @@ namespace test_cases
     ExlibsTest test_exarray_spaces("exarray-spaces", success);
     ExlibsTest test_exarray_default("exarray-default", success);
     ExlibsTest test_exarray_default_spaces("exarray-default-spaces", success);
+    ExlibsTest test_exarray_empty("exarray-empty", success);
     ExlibsTest test_noarray("noarray", success);
     ExlibsTest test_noarray_bad("noarray-bad", throws_UnsupportedActionError);
     ExlibsTest test_scalar_required("scalar-required", throws_UnsupportedActionError);

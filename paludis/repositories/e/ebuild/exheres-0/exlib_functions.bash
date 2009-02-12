@@ -201,12 +201,10 @@ require()
         a_v=$(exparam_var_name ${CURRENT_EXLIB})__ALLDECLS__
         for v in ${!a_v}; do
             c_v=$(exparam_var_name ${CURRENT_EXLIB})_${v%\[\]}
-            if [[ -n ${!c_v+set} ]]; then
-                if [[ $(eval "declare -p ${c_v}") == declare\ -a\ ${c_v}=* ]]; then
-                    [[ ${v} == *\[\] ]] || die "${CURRENT_EXLIB}.exlib requires a scalar ${v} parameter but got an array"
-                else
-                    [[ ${v} != *\[\] ]] || die "${CURRENT_EXLIB}.exlib requires an array ${v} but got a scalar"
-                fi
+            if [[ $(eval "declare -p ${c_v}") == declare\ -a\ ${c_v}=* ]]; then
+                [[ ${v} == *\[\] ]] || die "${CURRENT_EXLIB}.exlib requires a scalar ${v} parameter but got an array"
+            elif [[ -n ${!c_v+set} ]]; then
+                [[ ${v} != *\[\] ]] || die "${CURRENT_EXLIB}.exlib requires an array ${v} but got a scalar"
             else
                 die "${CURRENT_EXLIB}.exlib requires a ${v} parameter"
             fi
