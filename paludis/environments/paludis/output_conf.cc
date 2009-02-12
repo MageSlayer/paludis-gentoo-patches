@@ -21,6 +21,7 @@
 #include <paludis/environments/paludis/bashable_conf.hh>
 #include <paludis/environments/paludis/paludis_config.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>
+#include <paludis/environments/paludis/action_to_string.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tokeniser.hh>
@@ -111,55 +112,6 @@ namespace
             rule.action_requirement() = v;
         else
             throw PaludisConfigError("Unknown rule '" + k + "'");
-    }
-
-    struct ActionToString
-    {
-        std::string visit(const InstallAction &) const
-        {
-            return "install";
-        }
-
-        std::string visit(const PretendFetchAction &) const
-        {
-            return "pretend-fetch";
-        }
-
-        std::string visit(const UninstallAction &) const
-        {
-            return "uninstall";
-        }
-
-        std::string visit(const FetchAction &) const
-        {
-            return "fetch";
-        }
-
-        std::string visit(const PretendAction &) const
-        {
-            return "pretend";
-        }
-
-        std::string visit(const InfoAction &) const
-        {
-            return "info";
-        }
-
-        std::string visit(const ConfigAction &) const
-        {
-            return "config";
-        }
-
-        std::string visit(const InstalledAction &) const
-        {
-            return "installed";
-        }
-    };
-
-    std::string action_to_string(const Action & a)
-    {
-        ActionToString v;
-        return a.accept_returning<std::string>(v);
     }
 
     struct MatchRuleVisitor

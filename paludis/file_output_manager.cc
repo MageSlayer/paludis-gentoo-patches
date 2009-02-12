@@ -33,6 +33,8 @@ namespace paludis
     template <>
     struct Implementation<FileOutputManager>
     {
+        FSEntry stdout_file;
+        FSEntry stderr_file;
         std::tr1::shared_ptr<SafeOFStream> stdout_stream;
         std::tr1::shared_ptr<SafeOFStream> stderr_stream;
         const bool keep_on_success;
@@ -42,6 +44,8 @@ namespace paludis
                 const FSEntry & e,
                 const bool k
                 ) :
+            stdout_file(o),
+            stderr_file(e),
             stdout_stream(new SafeOFStream(o)),
             keep_on_success(k)
         {
@@ -77,6 +81,11 @@ FileOutputManager::stderr_stream()
 void
 FileOutputManager::succeeded()
 {
+    if (! _imp->keep_on_success)
+    {
+        _imp->stdout_file.unlink();
+        _imp->stderr_file.unlink();
+    }
 }
 
 void

@@ -21,13 +21,22 @@
 #include <paludis/environments/paludis/bashable_conf.hh>
 #include <paludis/environments/paludis/paludis_config.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>
+#include <paludis/environments/paludis/action_to_string.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/simple_parser.hh>
 #include <paludis/output_manager_factory.hh>
+#include <paludis/create_output_manager_info.hh>
+#include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
+#include <algorithm>
 #include <tr1/unordered_map>
+#include <sys/types.h>
+#include <unistd.h>
+#include <time.h>
 
 using namespace paludis;
 using namespace paludis::paludis_environment;
@@ -93,14 +102,93 @@ OutputManagers::create_named_output_manager(const std::string & s, const CreateO
             );
 }
 
+namespace
+{
+    std::string escape(const std::string & s)
+    {
+        std::string result(s);
+        std::replace(result.begin(), result.end(), ' ', '_');
+        std::replace(result.begin(), result.end(), '/', '_');
+        return result;
+    }
+
+    struct CreateVarsFromInfo
+    {
+        std::tr1::unordered_map<std::string, std::string> & m;
+
+        CreateVarsFromInfo(std::tr1::unordered_map<std::string, std::string> & mm) :
+            m(mm)
+        {
+        }
+
+        void visit(const CreateOutputManagerForRepositorySyncInfo & i)
+        {
+            m["type"] = "repository";
+            m["action"] = "sync";
+            m["name"] = stringify(i.repository().name());
+            m["pid"] = stringify(getpid());
+            m["time"] = stringify(time(0));
+        }
+
+        void visit(const CreateOutputManagerForPackageIDActionInfo & i)
+        {
+            m["type"] = "package";
+            m["action"] = action_to_string(i.action());
+            m["name"] = stringify(i.package_id()->name());
+            m["id"] = escape(stringify(*i.package_id()));
+            if (i.package_id()->slot_key())
+                m["slot"] = stringify(i.package_id()->slot_key()->value());
+            m["version"] = stringify(i.package_id()->version());
+            m["repository"] = stringify(i.package_id()->repository()->name());
+            m["category"] = stringify(i.package_id()->name().category());
+            m["package"] = stringify(i.package_id()->name().package());
+            m["pid"] = stringify(getpid());
+            m["time"] = stringify(time(0));
+        }
+    };
+
+    void create_vars_from_info(const CreateOutputManagerInfo & i,
+            std::tr1::unordered_map<std::string, std::string> & m)
+    {
+        CreateVarsFromInfo v(m);
+        i.accept(v);
+    }
+}
+
 std::string
 OutputManagers::replace_vars(
         const std::string & s,
-        const CreateOutputManagerInfo &) const
+        const CreateOutputManagerInfo & i) const
 {
-    return s;
+    Context context("When expanding variables in '" + s + "':");
+
+    SimpleParser parser(s);
+    std::string result, token;
+    std::tr1::unordered_map<std::string, std::string> m;
+    create_vars_from_info(i, m);
+
+    while (! parser.eof())
+    {
+        if (parser.consume((+simple_parser::any_except("%")) >> token))
+            result.append(token);
+        else if (parser.consume(simple_parser::exact("%%")))
+            result.append("%");
+        else if (parser.consume(simple_parser::exact("%{") &
+                    ((+simple_parser::any_except("} \t\r\n%")) >> token) &
+                    simple_parser::exact("}")))
+        {
+            std::tr1::unordered_map<std::string, std::string>::const_iterator j(m.find(token));
+            if (j == m.end())
+                throw PaludisConfigError("No variable named '" + token + "' in var string '" + s + "'");
+            else
+                result.append(j->second);
+        }
+        else
+            throw PaludisConfigError("Invalid var string '" + s + "'");
+    }
+
+    return result;
 }
 
 template class PrivateImplementationPattern<paludis_environment::OutputManagers>;
-
 
