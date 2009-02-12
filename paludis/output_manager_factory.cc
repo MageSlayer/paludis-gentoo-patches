@@ -35,6 +35,7 @@
 #include <list>
 
 #include <paludis/file_output_manager.hh>
+#include <paludis/messages_to_stdout_output_handler.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/tee_output_manager.hh>
 
@@ -86,6 +87,7 @@ OutputManagerFactory::OutputManagerFactory() :
 {
     /* we might want to make this plugin loadable at some point */
     add_manager(FileOutputManager::factory_managers(), FileOutputManager::factory_create);
+    add_manager(MessagesToStdoutOutputManager::factory_managers(), MessagesToStdoutOutputManager::factory_create);
     add_manager(StandardOutputManager::factory_managers(), StandardOutputManager::factory_create);
     add_manager(TeeOutputManager::factory_managers(), TeeOutputManager::factory_create);
 }
