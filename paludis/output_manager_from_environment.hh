@@ -45,6 +45,8 @@ namespace paludis
             const std::tr1::shared_ptr<OutputManager> operator() (const Action &);
 
             const std::tr1::shared_ptr<OutputManager> output_manager_if_constructed();
+
+            void construct_standard_if_unconstructed();
     };
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE

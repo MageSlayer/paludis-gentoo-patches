@@ -19,8 +19,10 @@
 
 #include <paludis/output_manager_from_environment.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/log.hh>
 #include <paludis/environment.hh>
 #include <paludis/create_output_manager_info.hh>
+#include <paludis/standard_output_manager.hh>
 
 using namespace paludis;
 
@@ -69,6 +71,17 @@ const std::tr1::shared_ptr<OutputManager>
 OutputManagerFromEnvironment::output_manager_if_constructed()
 {
     return _imp->result;
+}
+
+void
+OutputManagerFromEnvironment::construct_standard_if_unconstructed()
+{
+    if (! _imp->result)
+    {
+        Log::get_instance()->message("output_manager_from_environment.constructed_standard", ll_warning, lc_context)
+            << "No output manager available, creating a standard output manager. This is probably a bug.";
+        _imp->result.reset(new StandardOutputManager);
+    }
 }
 
 template class PrivateImplementationPattern<OutputManagerFromEnvironment>;

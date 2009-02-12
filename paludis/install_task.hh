@@ -210,11 +210,11 @@ namespace paludis
             virtual void on_install_action_error(const InstallActionError &) = 0;
             virtual void on_fetch_action_error(const FetchActionError &) = 0;
 
-            virtual void on_phase_skip(const std::string & phase) = 0;
-            virtual void on_phase_abort(const std::string & phase) = 0;
-            virtual void on_phase_skip_until(const std::string & phase) = 0;
-            virtual void on_phase_proceed_conditionally(const std::string & phase) = 0;
-            virtual void on_phase_proceed_unconditionally(const std::string & phase) = 0;
+            virtual void on_phase_skip(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase) = 0;
+            virtual void on_phase_abort(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase) = 0;
+            virtual void on_phase_skip_until(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase) = 0;
+            virtual void on_phase_proceed_conditionally(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase) = 0;
+            virtual void on_phase_proceed_unconditionally(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase) = 0;
 
             ///\}
 

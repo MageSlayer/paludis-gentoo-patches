@@ -69,23 +69,29 @@ template class WrappedForwardIterator<InstallTask::TargetsConstIteratorTag, cons
 
 namespace
 {
-    WantPhase want_all_phases_function(InstallTask * const task, bool & done_any, const std::string & phase)
+    WantPhase want_all_phases_function(
+            InstallTask * const task,
+            OutputManagerFromEnvironment & output_manager_holder,
+            bool & done_any, const std::string & phase)
     {
-        task->on_phase_proceed_unconditionally(phase);
+        output_manager_holder.construct_standard_if_unconstructed();
+        task->on_phase_proceed_unconditionally(output_manager_holder.output_manager_if_constructed(), phase);
         done_any = true;
         return wp_yes;
     }
 
     WantPhase want_phase_function(
             InstallTask * const task,
+            OutputManagerFromEnvironment & output_manager_holder,
             const std::tr1::shared_ptr<const Set<std::string> > & abort_at_phases,
             const std::tr1::shared_ptr<const Set<std::string> > & skip_phases,
             const std::tr1::shared_ptr<const Set<std::string> > & skip_until_phases,
             bool & done_any, const std::string & phase)
     {
+        output_manager_holder.construct_standard_if_unconstructed();
         if (abort_at_phases->end() != abort_at_phases->find(phase))
         {
-            task->on_phase_abort(phase);
+            task->on_phase_abort(output_manager_holder.output_manager_if_constructed(), phase);
             return wp_abort;
         }
 
@@ -93,7 +99,7 @@ namespace
             if (! done_any)
                 if (skip_until_phases->end() == skip_until_phases->find(phase))
                 {
-                    task->on_phase_skip_until(phase);
+                    task->on_phase_skip_until(output_manager_holder.output_manager_if_constructed(), phase);
                     return wp_skip;
                 }
 
@@ -102,11 +108,11 @@ namespace
 
         if (skip_phases->end() != skip_phases->find(phase))
         {
-            task->on_phase_skip(phase);
+            task->on_phase_skip(output_manager_holder.output_manager_if_constructed(), phase);
             return wp_skip;
         }
 
-        task->on_phase_proceed_conditionally(phase);
+        task->on_phase_proceed_conditionally(output_manager_holder.output_manager_if_constructed(), phase);
         return wp_yes;
     }
 }
@@ -793,11 +799,11 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
                     apply_phases = true;
             }
             if (apply_phases)
-                install_options.want_phase() = std::tr1::bind(&want_phase_function, this,
+                install_options.want_phase() = std::tr1::bind(&want_phase_function, this, std::tr1::ref(output_manager_holder),
                     std::tr1::cref(_imp->abort_at_phases), std::tr1::cref(_imp->skip_phases), std::tr1::cref(_imp->skip_until_phases),
                     std::tr1::ref(done_any), std::tr1::placeholders::_1);
             else
-                install_options.want_phase() = std::tr1::bind(&want_all_phases_function, this,
+                install_options.want_phase() = std::tr1::bind(&want_all_phases_function, this, std::tr1::ref(output_manager_holder),
                     std::tr1::ref(done_any), std::tr1::placeholders::_1);
 
             InstallAction install_action(install_options);
