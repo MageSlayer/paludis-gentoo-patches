@@ -996,8 +996,6 @@ EbuildEntries::pretend(
     if (! id->eapi()->supported())
         return false;
 
-    std::tr1::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
-
     bool result(true);
 
     if (! id->raw_myoptions_key())
@@ -1025,6 +1023,8 @@ EbuildEntries::pretend(
 
     std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
+    std::tr1::shared_ptr<OutputManager> output_manager;
+
     if (id->raw_myoptions_key())
     {
         MyOptionsRequirementsVerifier verifier(id);
@@ -1039,6 +1039,9 @@ EbuildEntries::pretend(
             for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
                     phase != phase_end ; ++phase)
             {
+                if (! output_manager)
+                    output_manager = a.options.make_output_manager()(a);
+
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                             value_for<n::builddir>(_imp->params.builddir()),
                             value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
@@ -1086,6 +1089,9 @@ EbuildEntries::pretend(
     {
         if (can_skip_phase(id, *phase))
             continue;
+
+        if (! output_manager)
+            output_manager = a.options.make_output_manager()(a);
 
         EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                 value_for<n::builddir>(_imp->params.builddir()),
