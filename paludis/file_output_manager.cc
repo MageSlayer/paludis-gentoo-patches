@@ -39,18 +39,32 @@ namespace paludis
         std::tr1::shared_ptr<SafeOFStream> stdout_stream;
         std::tr1::shared_ptr<SafeOFStream> stderr_stream;
         const bool keep_on_success, keep_on_empty;
+        const std::tr1::shared_ptr<OutputManager> summary_output_manager;
+        const std::string summary_output_stdout_message;
+        const std::string summary_output_stderr_message;
+
+        bool succeeded, unlinked_stdout, unlinked_stderr;
 
         Implementation(
                 const FSEntry & o,
                 const FSEntry & e,
                 const bool k,
-                const bool l
+                const bool l,
+                const std::tr1::shared_ptr<OutputManager> & m,
+                const std::string & s,
+                const std::string & t
                 ) :
             stdout_file(o),
             stderr_file(e),
             stdout_stream(new SafeOFStream(o)),
             keep_on_success(k),
-            keep_on_empty(l)
+            keep_on_empty(l),
+            summary_output_manager(m),
+            summary_output_stdout_message(s),
+            summary_output_stderr_message(t),
+            succeeded(false),
+            unlinked_stdout(false),
+            unlinked_stderr(false)
         {
             if (o == e)
                 stderr_stream = stdout_stream;
@@ -60,8 +74,9 @@ namespace paludis
     };
 }
 
-FileOutputManager::FileOutputManager(const FSEntry & o, const FSEntry & e, const bool k, const bool l) :
-    PrivateImplementationPattern<FileOutputManager>(new Implementation<FileOutputManager>(o, e, k, l))
+FileOutputManager::FileOutputManager(const FSEntry & o, const FSEntry & e, const bool k, const bool l,
+        const std::tr1::shared_ptr<OutputManager> & m, const std::string & s, const std::string & t) :
+    PrivateImplementationPattern<FileOutputManager>(new Implementation<FileOutputManager>(o, e, k, l, m, s, t))
 {
 }
 
@@ -74,12 +89,36 @@ FileOutputManager::~FileOutputManager()
 
         FSEntry stdout_file_now(stringify(_imp->stdout_file)), stderr_file_now(stringify(_imp->stderr_file));
         if (stdout_file_now.exists() && 0 == stdout_file_now.file_size())
+        {
             _imp->stdout_file.unlink();
+            _imp->unlinked_stdout = true;
+        }
 
         if (stdout_file_now != stderr_file_now)
         {
             if (stderr_file_now.exists() && 0 == stderr_file_now.file_size())
+            {
                 _imp->stderr_file.unlink();
+                _imp->unlinked_stderr = true;
+            }
+        }
+    }
+
+    if (_imp->summary_output_manager)
+    {
+        if ((! _imp->unlinked_stdout) && (! _imp->summary_output_stdout_message.empty()))
+        {
+            _imp->summary_output_manager->stdout_stream()
+                << _imp->summary_output_stdout_message
+                << std::endl;
+        }
+
+        if (_imp->stdout_file != _imp->stderr_file)
+        {
+            if ((! _imp->unlinked_stderr) && (! _imp->summary_output_stderr_message.empty()))
+                _imp->summary_output_manager->stdout_stream()
+                    << _imp->summary_output_stderr_message
+                    << std::endl;
         }
     }
 }
@@ -99,10 +138,14 @@ FileOutputManager::stderr_stream()
 void
 FileOutputManager::succeeded()
 {
+    _imp->succeeded = true;
+
     if (! _imp->keep_on_success)
     {
         _imp->stdout_file.unlink();
         _imp->stderr_file.unlink();
+        _imp->unlinked_stdout = true;
+        _imp->unlinked_stderr = true;
     }
 }
 
@@ -122,28 +165,40 @@ FileOutputManager::factory_managers()
 const std::tr1::shared_ptr<OutputManager>
 FileOutputManager::factory_create(
         const OutputManagerFactory::KeyFunction & key_func,
-        const OutputManagerFactory::CreateChildFunction &,
+        const OutputManagerFactory::CreateChildFunction & create_child_function,
         const OutputManagerFactory::ReplaceVarsFunc & replace_vars_func)
 {
-    std::string o_s(key_func("stdout")), e_s(key_func("stderr")), k_s(key_func("keep_on_success")),
-        l_s(key_func("keep_on_empty"));
+    std::string stdout_s(key_func("stdout")), stderr_s(key_func("stderr")),
+        keep_on_success_s(key_func("keep_on_success")), keep_on_empty_s(key_func("keep_on_empty")),
+        summary_output_manager_s(key_func("summary_output_manager")),
+        summary_output_stdout_message_s(key_func("summary_output_stdout_message")),
+        summary_output_stderr_message_s(key_func("summary_output_stderr_message"));
 
-    if (o_s.empty())
+    if (stdout_s.empty())
         throw ConfigurationError("Key 'stdout' not specified when creating a file output manager");
-    o_s = replace_vars_func(o_s);
+    stdout_s = replace_vars_func(stdout_s);
 
-    if (e_s.empty())
+    if (stderr_s.empty())
         throw ConfigurationError("Key 'stderr' not specified when creating a file output manager");
-    e_s = replace_vars_func(e_s);
+    stderr_s = replace_vars_func(stderr_s);
 
-    if (k_s.empty())
-        throw ConfigurationError("Key 'keep_on_success' not specified when creating a file output manager");
+    if (keep_on_success_s.empty())
+        keep_on_success_s = "true";
 
-    if (l_s.empty())
-        throw ConfigurationError("Key 'keep_on_empty' not specified when creating a file output manager");
+    if (keep_on_empty_s.empty())
+        keep_on_empty_s = "true";
 
-    return make_shared_ptr(new FileOutputManager(FSEntry(o_s), FSEntry(e_s), destringify<bool>(k_s),
-                destringify<bool>(l_s)));
+    std::tr1::shared_ptr<OutputManager> summary_output_manager;
+    if (! summary_output_manager_s.empty())
+        summary_output_manager = create_child_function(summary_output_manager_s);
+
+    summary_output_stdout_message_s = replace_vars_func(summary_output_stdout_message_s);
+    summary_output_stderr_message_s = replace_vars_func(summary_output_stderr_message_s);
+
+    return make_shared_ptr(new FileOutputManager(FSEntry(stdout_s), FSEntry(stderr_s),
+                destringify<bool>(keep_on_success_s), destringify<bool>(keep_on_empty_s),
+                summary_output_manager, summary_output_stdout_message_s,
+                summary_output_stderr_message_s));
 }
 
 template class PrivateImplementationPattern<FileOutputManager>;

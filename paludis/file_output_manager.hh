@@ -37,7 +37,9 @@ namespace paludis
     {
         public:
             FileOutputManager(const FSEntry &, const FSEntry &, const bool keep_on_success,
-                    const bool keep_on_empty);
+                    const bool keep_on_empty, const std::tr1::shared_ptr<OutputManager> & summary_output_manager,
+                    const std::string & summary_output_stdout_message,
+                    const std::string & summary_output_stderr_message);
             ~FileOutputManager();
 
             virtual std::ostream & stdout_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
