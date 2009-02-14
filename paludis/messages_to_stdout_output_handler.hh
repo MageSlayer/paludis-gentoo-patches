@@ -36,7 +36,15 @@ namespace paludis
         public OutputManager
     {
         public:
-            MessagesToStdoutOutputManager(const std::tr1::shared_ptr<OutputManager> &);
+            MessagesToStdoutOutputManager(
+                    const std::tr1::shared_ptr<OutputManager> &,
+                    const OutputManagerFactory::ReplaceVarsFunc &,
+                    const std::string & f_debug,
+                    const std::string & f_info,
+                    const std::string & f_warn,
+                    const std::string & f_error,
+                    const std::string & f_log);
+
             ~MessagesToStdoutOutputManager();
 
             virtual std::ostream & stdout_stream() PALUDIS_ATTRIBUTE((warn_unused_result));

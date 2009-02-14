@@ -24,6 +24,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/map-fwd.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/create_output_manager_info-fwd.hh>
 #include <tr1/memory>
@@ -34,6 +35,11 @@ namespace paludis
 
     namespace paludis_environment
     {
+        const std::string replace_percent_vars(
+                const std::string &,
+                const std::tr1::shared_ptr<const Map<std::string, std::string> > & vars,
+                const std::tr1::shared_ptr<const Map<std::string, std::string> > & override_vars);
+
         class OutputManagers :
             private PrivateImplementationPattern<OutputManagers>,
             private InstantiationPolicy<OutputManagers, instantiation_method::NonCopyableTag>
@@ -56,8 +62,7 @@ namespace paludis
                         const std::string &,
                         const CreateOutputManagerInfo &) const;
 
-                std::string replace_vars(
-                        const std::string &,
+                const std::tr1::shared_ptr<Map<std::string, std::string> > vars_from_create_output_manager_info(
                         const CreateOutputManagerInfo &) const;
         };
     }

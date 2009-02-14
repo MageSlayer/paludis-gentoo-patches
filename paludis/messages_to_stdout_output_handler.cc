@@ -25,7 +25,8 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/exception.hh>
-#include <sstream>
+#include <paludis/util/map.hh>
+#include <paludis/util/stringify.hh>
 
 using namespace paludis;
 
@@ -36,17 +37,43 @@ namespace paludis
     {
         DiscardOutputStream output_stream;
         const std::tr1::shared_ptr<OutputManager> child;
+        const OutputManagerFactory::ReplaceVarsFunc replace_vars_func;
+        const std::string f_debug;
+        const std::string f_info;
+        const std::string f_warn;
+        const std::string f_error;
+        const std::string f_log;
 
-        Implementation(const std::tr1::shared_ptr<OutputManager> & c) :
-            child(c)
+        Implementation(
+                const std::tr1::shared_ptr<OutputManager> & c,
+                const OutputManagerFactory::ReplaceVarsFunc & r,
+                const std::string & f_d,
+                const std::string & f_i,
+                const std::string & f_w,
+                const std::string & f_e,
+                const std::string & f_l) :
+            child(c),
+            replace_vars_func(r),
+            f_debug(f_d),
+            f_info(f_i),
+            f_warn(f_w),
+            f_error(f_e),
+            f_log(f_l)
         {
         }
     };
 }
 
 MessagesToStdoutOutputManager::MessagesToStdoutOutputManager(
-        const std::tr1::shared_ptr<OutputManager> & s) :
-    PrivateImplementationPattern<MessagesToStdoutOutputManager>(new Implementation<MessagesToStdoutOutputManager>(s))
+        const std::tr1::shared_ptr<OutputManager> & s,
+        const OutputManagerFactory::ReplaceVarsFunc & replace_vars_func,
+        const std::string & f_debug,
+        const std::string & f_info,
+        const std::string & f_warn,
+        const std::string & f_error,
+        const std::string & f_log) :
+    PrivateImplementationPattern<MessagesToStdoutOutputManager>(new Implementation<MessagesToStdoutOutputManager>(s, replace_vars_func,
+                f_debug, f_info, f_warn, f_error, f_log))
 {
 }
 
@@ -75,9 +102,44 @@ MessagesToStdoutOutputManager::succeeded()
 void
 MessagesToStdoutOutputManager::message(const MessageType t, const std::string & s)
 {
-    std::ostringstream m;
-    m << t << " " << s << std::endl;
-    _imp->child->stdout_stream() << m.str();
+    std::string msg;
+    std::tr1::shared_ptr<Map<std::string, std::string> > x(new Map<std::string, std::string>);
+    x->insert("message", s);
+
+    do
+    {
+        switch (t)
+        {
+            case mt_debug:
+                msg = _imp->replace_vars_func(_imp->f_debug, x);
+                continue;
+
+            case mt_info:
+                msg = _imp->replace_vars_func(_imp->f_info, x);
+                continue;
+
+            case mt_warn:
+                msg = _imp->replace_vars_func(_imp->f_warn, x);
+                continue;
+
+            case mt_error:
+                msg = _imp->replace_vars_func(_imp->f_error, x);
+                continue;
+
+            case mt_log:
+                msg = _imp->replace_vars_func(_imp->f_log, x);
+                continue;
+
+            case last_mt:
+                break;
+        }
+
+        throw InternalError(PALUDIS_HERE, "bad MessageType");
+    }
+    while (false);
+
+    if (! msg.empty())
+        _imp->child->stdout_stream() << msg << std::endl;
 }
 
 const std::tr1::shared_ptr<const Set<std::string> >
@@ -92,13 +154,17 @@ const std::tr1::shared_ptr<OutputManager>
 MessagesToStdoutOutputManager::factory_create(
         const OutputManagerFactory::KeyFunction & key_func,
         const OutputManagerFactory::CreateChildFunction & create_child,
-        const OutputManagerFactory::ReplaceVarsFunc &)
+        const OutputManagerFactory::ReplaceVarsFunc & replace_vars_func)
 {
     std::string child(key_func("child"));
     if (child.empty())
         throw ConfigurationError("No child specified for MessagesToStdoutOutputManager");
 
-    return make_shared_ptr(new MessagesToStdoutOutputManager(create_child(child)));
+    std::string f_d(key_func("format_debug")), f_i(key_func("format_info")), f_w(key_func("format_warn")),
+        f_e(key_func("format_error")), f_l(key_func("format_log"));
+
+    return make_shared_ptr(new MessagesToStdoutOutputManager(create_child(child), replace_vars_func,
+                f_d, f_i, f_w, f_e, f_l));
 }
 
 template class PrivateImplementationPattern<MessagesToStdoutOutputManager>;

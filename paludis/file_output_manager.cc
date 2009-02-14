@@ -21,6 +21,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/destringify.hh>
@@ -176,11 +177,11 @@ FileOutputManager::factory_create(
 
     if (stdout_s.empty())
         throw ConfigurationError("Key 'stdout' not specified when creating a file output manager");
-    stdout_s = replace_vars_func(stdout_s);
+    stdout_s = replace_vars_func(stdout_s, make_shared_ptr(new Map<std::string, std::string>));
 
     if (stderr_s.empty())
         throw ConfigurationError("Key 'stderr' not specified when creating a file output manager");
-    stderr_s = replace_vars_func(stderr_s);
+    stderr_s = replace_vars_func(stderr_s, make_shared_ptr(new Map<std::string, std::string>));
 
     if (keep_on_success_s.empty())
         keep_on_success_s = "true";
@@ -192,8 +193,8 @@ FileOutputManager::factory_create(
     if (! summary_output_manager_s.empty())
         summary_output_manager = create_child_function(summary_output_manager_s);
 
-    summary_output_stdout_message_s = replace_vars_func(summary_output_stdout_message_s);
-    summary_output_stderr_message_s = replace_vars_func(summary_output_stderr_message_s);
+    summary_output_stdout_message_s = replace_vars_func(summary_output_stdout_message_s, make_shared_ptr(new Map<std::string, std::string>));
+    summary_output_stderr_message_s = replace_vars_func(summary_output_stderr_message_s, make_shared_ptr(new Map<std::string, std::string>));
 
     return make_shared_ptr(new FileOutputManager(FSEntry(stdout_s), FSEntry(stderr_s),
                 destringify<bool>(keep_on_success_s), destringify<bool>(keep_on_empty_s),

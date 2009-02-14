@@ -25,6 +25,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/map-fwd.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/util/set-fwd.hh>
 #include <tr1/functional>
@@ -48,7 +49,9 @@ namespace paludis
             typedef std::tr1::function<const std::tr1::shared_ptr<OutputManager> (
                     const std::string &)> CreateChildFunction;
 
-            typedef std::tr1::function<std::string (const std::string &)> ReplaceVarsFunc;
+            typedef std::tr1::function<std::string (
+                    const std::string & pattern,
+                    const std::tr1::shared_ptr<const Map<std::string, std::string> > & extra_vars)> ReplaceVarsFunc;
 
             typedef std::tr1::function<const std::tr1::shared_ptr<OutputManager>(
                     const KeyFunction &,

@@ -95,10 +95,11 @@ OutputManagers::create_named_output_manager(const std::string & s, const CreateO
     if (i == _imp->store.end())
         throw PaludisConfigError("No output manager named '" + s + "' exists");
 
+    std::tr1::shared_ptr<Map<std::string, std::string> > vars(vars_from_create_output_manager_info(n));
     return OutputManagerFactory::get_instance()->create(
             std::tr1::bind(&from_kv, i->second, std::tr1::placeholders::_1),
             std::tr1::bind(&OutputManagers::create_named_output_manager, this, std::tr1::placeholders::_1, std::tr1::cref(n)),
-            std::tr1::bind(&OutputManagers::replace_vars, this, std::tr1::placeholders::_1, std::tr1::cref(n))
+            std::tr1::bind(replace_percent_vars, std::tr1::placeholders::_1, vars, std::tr1::placeholders::_2)
             );
 }
 
@@ -114,59 +115,58 @@ namespace
 
     struct CreateVarsFromInfo
     {
-        std::tr1::unordered_map<std::string, std::string> & m;
+        std::tr1::shared_ptr<Map<std::string, std::string> > m;
 
-        CreateVarsFromInfo(std::tr1::unordered_map<std::string, std::string> & mm) :
+        CreateVarsFromInfo(std::tr1::shared_ptr<Map<std::string, std::string> > & mm) :
             m(mm)
         {
         }
 
         void visit(const CreateOutputManagerForRepositorySyncInfo & i)
         {
-            m["type"] = "repository";
-            m["action"] = "sync";
-            m["name"] = stringify(i.repository().name());
-            m["pid"] = stringify(getpid());
-            m["time"] = stringify(time(0));
+            m->insert("type", "repository");
+            m->insert("action", "sync");
+            m->insert("name", stringify(i.repository().name()));
+            m->insert("pid", stringify(getpid()));
+            m->insert("time", stringify(time(0)));
         }
 
         void visit(const CreateOutputManagerForPackageIDActionInfo & i)
         {
-            m["type"] = "package";
-            m["action"] = action_to_string(i.action());
-            m["name"] = stringify(i.package_id()->name());
-            m["id"] = escape(stringify(*i.package_id()));
+            m->insert("type", "package");
+            m->insert("action", action_to_string(i.action()));
+            m->insert("name", stringify(i.package_id()->name()));
+            m->insert("id", escape(stringify(*i.package_id())));
             if (i.package_id()->slot_key())
-                m["slot"] = stringify(i.package_id()->slot_key()->value());
-            m["version"] = stringify(i.package_id()->version());
-            m["repository"] = stringify(i.package_id()->repository()->name());
-            m["category"] = stringify(i.package_id()->name().category());
-            m["package"] = stringify(i.package_id()->name().package());
-            m["pid"] = stringify(getpid());
-            m["time"] = stringify(time(0));
+                m->insert("slot", stringify(i.package_id()->slot_key()->value()));
+            m->insert("version", stringify(i.package_id()->version()));
+            m->insert("repository", stringify(i.package_id()->repository()->name()));
+            m->insert("category", stringify(i.package_id()->name().category()));
+            m->insert("package", stringify(i.package_id()->name().package()));
+            m->insert("pid", stringify(getpid()));
+            m->insert("time", stringify(time(0)));
         }
     };
-
-    void create_vars_from_info(const CreateOutputManagerInfo & i,
-            std::tr1::unordered_map<std::string, std::string> & m)
-    {
-        CreateVarsFromInfo v(m);
-        i.accept(v);
-    }
 }
 
-std::string
-OutputManagers::replace_vars(
-        const std::string & s,
+const std::tr1::shared_ptr<Map<std::string, std::string> >
+OutputManagers::vars_from_create_output_manager_info(
         const CreateOutputManagerInfo & i) const
 {
-    Context context("When expanding variables in '" + s + "':");
+    std::tr1::shared_ptr<Map<std::string, std::string> > result(new Map<std::string, std::string>);
+    CreateVarsFromInfo v(result);
+    i.accept(v);
+    return result;
+}
 
-    SimpleParser parser(s);
+const std::string
+paludis::paludis_environment::replace_percent_vars(
+        const std::string & s,
+        const std::tr1::shared_ptr<const Map<std::string, std::string> > & vars,
+        const std::tr1::shared_ptr<const Map<std::string, std::string> > & override_vars)
+{
     std::string result, token;
-    std::tr1::unordered_map<std::string, std::string> m;
-    create_vars_from_info(i, m);
-
+    SimpleParser parser(s);
     while (! parser.eof())
     {
         if (parser.consume((+simple_parser::any_except("%")) >> token))
@@ -177,11 +177,13 @@ OutputManagers::replace_vars(
                     ((+simple_parser::any_except("} \t\r\n%")) >> token) &
                     simple_parser::exact("}")))
         {
-            std::tr1::unordered_map<std::string, std::string>::const_iterator j(m.find(token));
-            if (j == m.end())
+            Map<std::string, std::string>::ConstIterator v(override_vars->find(token));
+            if (v == override_vars->end())
+                v = vars->find(token);
+            if (v == vars->end())
                 throw PaludisConfigError("No variable named '" + token + "' in var string '" + s + "'");
-            else
-                result.append(j->second);
+
+            result.append(v->second);
         }
         else
             throw PaludisConfigError("Invalid var string '" + s + "'");
