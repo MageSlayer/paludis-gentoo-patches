@@ -100,6 +100,12 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
         }
         else if (tokens[0] == "MESSAGE")
         {
+            if (tokens.size() == 3)
+            {
+                /* don't barf on empty messages */
+                tokens.push_back(" ");
+            }
+
             if (tokens.size() < 4)
             {
                 Log::get_instance()->message("e.pipe_commands.message.bad", ll_warning, lc_context) << "Got bad MESSAGE pipe command";
