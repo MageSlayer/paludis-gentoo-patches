@@ -12,13 +12,13 @@ DEFS= \
 shareenvpaludisdir = $(sharedir)/paludis/environments/paludis/output_managers
 
 dist_shareenvpaludis_DATA = \
-	keep_messages.conf \
-	keep_stdout_as_messages.conf \
 	logged.conf \
-	logged_only.conf \
 	quiet.conf \
-	show_messages.conf \
-	standard.conf
+	standard.conf \
+	keep_messages.part.conf \
+	keep_stdout_as_messages.part.conf \
+	logged_only.part.conf \
+	show_messages.part.conf
 
 logdir = /var/log/paludis
 
