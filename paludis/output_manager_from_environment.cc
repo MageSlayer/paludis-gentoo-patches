@@ -63,7 +63,10 @@ const std::tr1::shared_ptr<OutputManager>
 OutputManagerFromEnvironment::operator() (const Action & a)
 {
     if (! _imp->result)
-        _imp->result = _imp->env->create_output_manager(CreateOutputManagerForPackageIDActionInfo(_imp->id, a, _imp->output_exclusivity));
+    {
+        CreateOutputManagerForPackageIDActionInfo info(_imp->id, a, _imp->output_exclusivity);
+        _imp->result = _imp->env->create_output_manager(info);
+    }
     return _imp->result;
 }
 
