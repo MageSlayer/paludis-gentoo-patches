@@ -53,6 +53,9 @@ CommandLine::CommandLine() :
 {
     add_usage_line("--generate-cache [ at least one of --repository-dir /dir or --output-dir /dir ]");
 
+    add_description_line("instruo is configured purely from the command line. It does not use any user "
+            "configuration files.");
+
     add_environment_variable("INSTRUO_OPTIONS", "Default command-line options.");
     add_environment_variable("INSTRUO_THREADS", "Number of threads to use. Default: 5");
 }
