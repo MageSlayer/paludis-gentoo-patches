@@ -144,8 +144,7 @@ done
 [[ -z ${PALUDIS_EBUILD_FUNCTIONS} ]] && PALUDIS_EBUILD_FUNCTIONS="
     builtin_infovars builtin_init builtin_initrm builtin_initmisc
     builtin_loadenv builtin_metadata builtin_killold builtin_killoldrm
-    builtin_killoldmisc builtin_saveenv builtin_tidyup builtin_tidyuprm
-    builtin_tidyupmisc builtin_variable
+    builtin_saveenv builtin_tidyup builtin_tidyuprm builtin_variable
     pkg_config pkg_info pkg_nofetch pkg_postinst pkg_postrm
     pkg_preinst pkg_prerm pkg_pretend pkg_setup pkg_bad_options
     src_compile src_configure src_install src_prepare src_test src_unpack"
