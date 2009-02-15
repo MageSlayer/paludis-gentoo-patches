@@ -244,6 +244,7 @@ EbuildID::need_keys_added() const
                     value_for<n::exlibsdirs>(_imp->repository->layout()->exlibsdirs(name())),
                     value_for<n::files_dir>(_imp->repository->layout()->package_directory(name()) / "files"),
                     value_for<n::maybe_output_manager>(make_null_shared_ptr()),
+                    value_for<n::package_builddir>(_imp->repository->params().builddir() / (stringify(name().category()) + "-" + stringify(name().package()) + "-" + stringify(version()) + "-metadata")),
                     value_for<n::package_id>(shared_from_this()),
                     value_for<n::portdir>(
                         (_imp->repository->params().master_repositories() && ! _imp->repository->params().master_repositories()->empty()) ?

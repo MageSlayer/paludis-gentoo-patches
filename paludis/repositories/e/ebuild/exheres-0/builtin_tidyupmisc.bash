@@ -18,13 +18,18 @@
 
 builtin_tidyupmisc()
 {
-    if [[ -e "${PALUDIS_TMPDIR}/${CATEGORY}-${PNVR}-misc" ]] ; then
+    local a
+    for a in PALUDIS_PACKAGE_BUILDDIR  ; do
+        [[ -z "${!a}" ]] && die "\$${a} unset or empty"
+    done
+
+    if [[ -e "${PALUDIS_PACKAGE_BUILDDIR}" ]] ; then
         if type -p chflags &>/dev/null; then
-            echo chflags -R 0 "${PALUDIS_TMPDIR}/${CATEGORY}-${PNVR}-misc" 1>&2
-            chflags -R 0 "${PALUDIS_TMPDIR}/${CATEGORY}-${PNVR}-misc" || die "Couldn't remove flags from workdir"
+            echo chflags -R 0 "${PALUDIS_PACKAGE_BUILDDIR}" 1>&2
+            chflags -R 0 "${PALUDIS_PACKAGE_BUILDDIR}" || die "Couldn't remove flags from workdir"
         fi
-        echo rm -fr "${PALUDIS_TMPDIR}/${CATEGORY}-${PNVR}-misc" 1>&2
-        rm -fr "${PALUDIS_TMPDIR}/${CATEGORY}-${PNVR}-misc" || die "Couldn't remove work"
+        echo rm -fr "${PALUDIS_PACKAGE_BUILDDIR}" 1>&2
+        rm -fr "${PALUDIS_PACKAGE_BUILDDIR}" || die "Couldn't remove work"
     fi
 }
 

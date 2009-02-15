@@ -52,14 +52,14 @@ builtin_initmisc()
         fi
     done
 
-    if [[ -e "${PALUDIS_TMPDIR}/${CATEGORY}-${PNVR}-misc" ]] ; then
+    if [[ -e "${PALUDIS_PACKAGE_BUILDDIR}" ]] ; then
         if type -p chflags &>/dev/null; then
-            chflags -R 0 "${PALUDIS_TMPDIR}/${CATEGORY}-${PNVR}-misc" || die "Couldn't remove flags from workdir"
+            chflags -R 0 "${PALUDIS_PACKAGE_BUILDDIR}" || die "Couldn't remove flags from workdir"
         fi
-        rm -fr "${PALUDIS_TMPDIR}/${CATEGORY}-${PNVR}-misc" || die "Couldn't remove previous work"
+        rm -fr "${PALUDIS_PACKAGE_BUILDDIR}" || die "Couldn't remove previous work"
     fi
 
-    export TEMP="${PALUDIS_TMPDIR}/${CATEGORY}-${PNVR}-misc/temp/"
+    export TEMP="${PALUDIS_PACKAGE_BUILDDIR}/temp/"
     mkdir -p "${TEMP}" || die "Couldn't create \$TEMP (\"${TEMP}\")"
     declare -r TEMP="${TEMP}"
     export HOME="${TEMP}"

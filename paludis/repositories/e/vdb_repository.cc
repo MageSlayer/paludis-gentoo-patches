@@ -461,6 +461,7 @@ VDBRepository::perform_uninstall(
                     value_for<n::exlibsdirs>(make_shared_ptr(new FSEntrySequence)),
                     value_for<n::files_dir>(pkg_dir),
                     value_for<n::maybe_output_manager>(output_manager),
+                    value_for<n::package_builddir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-uninstall")),
                     value_for<n::package_id>(id),
                     value_for<n::portdir>(_imp->params.location()),
                     value_for<n::sandbox>(phase->option("sandbox")),

@@ -68,6 +68,7 @@ namespace paludis
         struct maybe_output_manager;
         struct merger_options;
         struct output_directory;
+        struct package_builddir;
         struct package_id;
         struct portdir;
         struct profiles;
@@ -107,6 +108,7 @@ namespace paludis
             NamedValue<n::exlibsdirs, std::tr1::shared_ptr<const FSEntrySequence> > exlibsdirs;
             NamedValue<n::files_dir, FSEntry> files_dir;
             NamedValue<n::maybe_output_manager, std::tr1::shared_ptr<OutputManager> > maybe_output_manager;
+            NamedValue<n::package_builddir, FSEntry> package_builddir;
             NamedValue<n::package_id, std::tr1::shared_ptr<const erepository::ERepositoryID> > package_id;
             NamedValue<n::portdir, FSEntry> portdir;
             NamedValue<n::sandbox, bool> sandbox;

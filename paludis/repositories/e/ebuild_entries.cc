@@ -474,6 +474,7 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                         value_for<n::exlibsdirs>(exlibsdirs),
                         value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
                         value_for<n::maybe_output_manager>(output_manager),
+                        value_for<n::package_builddir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-nofetch")),
                         value_for<n::package_id>(id),
                         value_for<n::portdir>(
                             (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
@@ -620,6 +621,9 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
             check_userpriv(FSEntry(_imp->params.distdir()),  _imp->environment, id->eapi()->supported()->userpriv_cannot_use_root()) &&
             check_userpriv(FSEntry(_imp->params.builddir()), _imp->environment, id->eapi()->supported()->userpriv_cannot_use_root()));
 
+    FSEntry package_builddir(_imp->params.builddir() / (stringify(id->name().category()) + "-" +
+            stringify(id->name().package()) + "-" + stringify(id->version())));
+
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_install());
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
@@ -664,10 +668,8 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
                 (*install_action.options.destination()).destination_interface()->merge(
                         make_named_values<MergeParams>(
-                            value_for<n::environment_file>(_imp->params.builddir() / (stringify(id->name().category()) + "-" +
-                                    stringify(id->name().package()) + "-" + stringify(id->version())) / "temp" / "loadsaveenv"),
-                            value_for<n::image_dir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" +
-                                    stringify(id->name().package()) + "-" + stringify(id->version())) / "image"),
+                            value_for<n::environment_file>(package_builddir / "temp" / "loadsaveenv"),
+                            value_for<n::image_dir>(package_builddir / "image"),
                             value_for<n::options>(id->eapi()->supported()->merger_options()),
                             value_for<n::output_manager>(output_manager),
                             value_for<n::package_id>(id),
@@ -696,10 +698,8 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                             ELikeSplitChoiceValue::canonical_name_with_prefix()));
 
                 EStripper stripper(make_named_values<EStripperOptions>(
-                        value_for<n::debug_dir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" +
-                                stringify(id->name().package()) + "-" + stringify(id->version())) / "image" / "usr" / libdir / "debug"),
-                        value_for<n::image_dir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" +
-                                stringify(id->name().package()) + "-" + stringify(id->version())) / "image"),
+                        value_for<n::debug_dir>(package_builddir / "image" / "usr" / libdir / "debug"),
+                        value_for<n::image_dir>(package_builddir / "image"),
                         value_for<n::output_manager>(output_manager),
                         value_for<n::package_id>(id),
                         value_for<n::split>(split_choice && split_choice->enabled()),
@@ -744,6 +744,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                     value_for<n::exlibsdirs>(exlibsdirs),
                     value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
                     value_for<n::maybe_output_manager>(output_manager),
+                    value_for<n::package_builddir>(package_builddir),
                     value_for<n::package_id>(id),
                     value_for<n::portdir>(
                         (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
@@ -759,7 +760,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                             value_for<n::config_protect>(_imp->e_repository->profile_variable("CONFIG_PROTECT")),
                             value_for<n::config_protect_mask>(_imp->e_repository->profile_variable("CONFIG_PROTECT_MASK")),
                             value_for<n::expand_vars>(expand_vars),
-                            value_for<n::loadsaveenv_dir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version())) / "temp"),
+                            value_for<n::loadsaveenv_dir>(package_builddir / "temp"),
                             value_for<n::profiles>(_imp->params.profiles()),
                             value_for<n::root>(install_action.options.destination()->installed_root_key() ?
                                 stringify(install_action.options.destination()->installed_root_key()->value()) :
@@ -832,6 +833,7 @@ EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
                 value_for<n::exlibsdirs>(exlibsdirs),
                 value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
                 value_for<n::maybe_output_manager>(output_manager),
+                value_for<n::package_builddir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-info")),
                 value_for<n::package_id>(id),
                 value_for<n::portdir>(
                     (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
@@ -901,6 +903,7 @@ EbuildEntries::get_environment_variable(
             value_for<n::exlibsdirs>(exlibsdirs),
             value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
             value_for<n::maybe_output_manager>(make_null_shared_ptr()),
+            value_for<n::package_builddir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-variable")),
             value_for<n::package_id>(id),
             value_for<n::portdir>(
                 (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
@@ -1053,6 +1056,7 @@ EbuildEntries::pretend(
                             value_for<n::exlibsdirs>(exlibsdirs),
                             value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
                             value_for<n::maybe_output_manager>(output_manager),
+                            value_for<n::package_builddir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-bad_options")),
                             value_for<n::package_id>(id),
                             value_for<n::portdir>(
                                 (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
@@ -1104,6 +1108,7 @@ EbuildEntries::pretend(
                 value_for<n::exlibsdirs>(exlibsdirs),
                 value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
                 value_for<n::maybe_output_manager>(output_manager),
+                value_for<n::package_builddir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-pretend")),
                 value_for<n::package_id>(id),
                 value_for<n::portdir>(
                     (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?

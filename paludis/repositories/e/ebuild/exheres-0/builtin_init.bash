@@ -52,24 +52,24 @@ builtin_init()
         fi
     done
 
-    if [[ -e "${PALUDIS_TMPDIR}/${CATEGORY}-${PNVR}" ]] ; then
+    if [[ -e "${PALUDIS_PACKAGE_BUILDDIR}" ]] ; then
         if type -p chflags &>/dev/null; then
-            chflags -R 0 "${PALUDIS_TMPDIR}/${CATEGORY}-${PNVR}" || die "Couldn't remove flags from workdir"
+            chflags -R 0 "${PALUDIS_PACKAGE_BUILDDIR}" || die "Couldn't remove flags from workdir"
         fi
-        rm -fr "${PALUDIS_TMPDIR}/${CATEGORY}-${PNVR}" || die "Couldn't remove previous work"
+        rm -fr "${PALUDIS_PACKAGE_BUILDDIR}" || die "Couldn't remove previous work"
     fi
 
-    export WORKBASE="${PALUDIS_TMPDIR}/${CATEGORY}-${PNVR}/work"
+    export WORKBASE="${PALUDIS_PACKAGE_BUILDDIR}/work"
     mkdir -p "${WORKBASE}" || die "Couldn't create \$WORKBASE (\"${WORKBASE}\")"
     declare -r WORKBASE="${WORKBASE}"
 
-    export TEMP="${PALUDIS_TMPDIR}/${CATEGORY}-${PNVR}/temp/"
+    export TEMP="${PALUDIS_PACKAGE_BUILDDIR}/temp/"
     mkdir -p "${TEMP}" || die "Couldn't create \$TEMP (\"${TEMP}\")"
     declare -r TEMP="${TEMP}"
     export HOME="${TEMP}"
     export TMPDIR="${TEMP}"
 
-    export IMAGE="${PALUDIS_TMPDIR}/${CATEGORY}-${PNVR}/image/"
+    export IMAGE="${PALUDIS_PACKAGE_BUILDDIR}/image/"
     export IMAGE="${IMAGE//+(\/)//}"
     mkdir -p "${IMAGE}" || die "Couldn't create \$IMAGE (\"${IMAGE}\")"
     declare -r IMAGE="${IMAGE}"

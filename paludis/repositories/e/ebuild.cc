@@ -139,6 +139,7 @@ EbuildCommand::operator() ()
                 (std::string(PALUDIS_GIT_HEAD).empty() ?
                  std::string("") : "-git-" + std::string(PALUDIS_GIT_HEAD)))
             .with_setenv("PALUDIS_TMPDIR", stringify(params.builddir()))
+            .with_setenv("PALUDIS_PACKAGE_BUILDDIR", stringify(params.package_builddir()))
             .with_setenv("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
             .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
             .with_setenv("PALUDIS_HOOK_DIRS", join(hook_dirs->begin(), hook_dirs->end(), " "))
@@ -272,10 +273,7 @@ EbuildCommand::add_portage_vars(const Command & cmd) const
     return Command(cmd)
         .with_setenv("PORTAGE_ACTUAL_DISTDIR", stringify(params.distdir()))
         .with_setenv("PORTAGE_BASHRC", "/dev/null")
-        .with_setenv("PORTAGE_BUILDDIR", stringify(params.builddir()) + "/" +
-             stringify(params.package_id()->name().category()) + "-" +
-             stringify(params.package_id()->name().package()) + "-" +
-             stringify(params.package_id()->version()))
+        .with_setenv("PORTAGE_BUILDDIR", stringify(params.package_builddir()))
         .with_setenv("PORTAGE_CALLER", params.environment()->paludis_command())
         .with_setenv("PORTAGE_GID", "0")
         .with_setenv("PORTAGE_INST_GID", "0")
