@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -60,6 +60,10 @@ namespace paludis
                 virtual void usage_line(const std::string & name, const std::string & line) = 0;
 
                 virtual void start_description(const std::string & description) = 0;
+                virtual void extra_description(const std::string & description) = 0;
+                virtual void end_description() = 0;
+
+                virtual void start_options() = 0;
                 virtual void start_arg_group(const std::string & name, const std::string & description) = 0;
                 virtual void arg_group_item(const char & short_name, const std::string & long_name,
                         const std::string & negated_long_name, const std::string & description) = 0;
@@ -69,7 +73,7 @@ namespace paludis
                 virtual void extra_arg_string_set(const std::string & first, const std::string & second) = 0;
                 virtual void end_extra_arg() = 0;
                 virtual void end_arg_group() = 0;
-                virtual void end_description() = 0;
+                virtual void end_options() = 0;
 
                 virtual void start_environment() = 0;
                 virtual void environment_line(const std::string & first, const std::string & second) = 0;
@@ -116,6 +120,10 @@ namespace paludis
                 void usage_line(const std::string & name, const std::string & line);
 
                 void start_description(const std::string & description);
+                void extra_description(const std::string & description);
+                void end_description();
+
+                void start_options();
                 void start_arg_group(const std::string & name, const std::string & description);
                 void arg_group_item(const char & short_name, const std::string & long_name,
                         const std::string & negated_long_name, const std::string & description);
@@ -125,7 +133,7 @@ namespace paludis
                 void extra_arg_string_set(const std::string & first, const std::string & second);
                 void end_extra_arg();
                 void end_arg_group();
-                void end_description();
+                void end_options();
 
                 void start_environment();
                 void environment_line(const std::string & first, const std::string & second);
@@ -170,6 +178,10 @@ namespace paludis
                 void usage_line(const std::string & name, const std::string & line);
 
                 void start_description(const std::string & description);
+                void extra_description(const std::string & description);
+                void end_description();
+
+                void start_options();
                 void start_arg_group(const std::string & name, const std::string & description);
                 void arg_group_item(const char & short_name, const std::string & long_name,
                         const std::string & negated_long_name, const std::string & description);
@@ -179,7 +191,7 @@ namespace paludis
                 void extra_arg_string_set(const std::string & first, const std::string & second);
                 void end_extra_arg();
                 void end_arg_group();
-                void end_description();
+                void end_options();
 
                 void start_environment();
                 void environment_line(const std::string & first, const std::string & second);

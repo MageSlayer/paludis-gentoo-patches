@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -43,6 +43,7 @@ template class WrappedForwardIterator<ArgsHandler::ExamplesConstIteratorTag,
          const std::pair<std::string, std::string> >;
 template class WrappedForwardIterator<ArgsHandler::ArgsGroupsConstIteratorTag, ArgsGroup * const>;
 template class WrappedForwardIterator<ArgsHandler::NotesIteratorTag, const std::string>;
+template class WrappedForwardIterator<ArgsHandler::DescriptionLineConstIterator, const std::string>;
 
 namespace paludis
 {
@@ -60,6 +61,7 @@ namespace paludis
         std::list<std::pair<std::string, std::string> > environment_lines;
         std::list<std::pair<std::string, std::string> > example_lines;
         std::list<std::string> notes;
+        std::list<std::string> descriptions;
 
         std::map<std::string, ArgsOption *> longopts;
         std::map<char, ArgsOption *> shortopts;
@@ -329,5 +331,23 @@ ArgsHandler::ArgsGroupsConstIterator
 ArgsHandler::end_args_groups() const
 {
     return ArgsGroupsConstIterator(_imp->groups.end());
+}
+
+ArgsHandler::DescriptionLineConstIterator
+ArgsHandler::begin_description_lines() const
+{
+    return DescriptionLineConstIterator(_imp->descriptions.begin());
+}
+
+ArgsHandler::DescriptionLineConstIterator
+ArgsHandler::end_description_lines() const
+{
+    return DescriptionLineConstIterator(_imp->descriptions.end());
+}
+
+void
+ArgsHandler::add_description_line(const std::string & e)
+{
+    _imp->descriptions.push_back(e);
 }
 

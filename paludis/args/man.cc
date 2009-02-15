@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -109,7 +109,13 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
     }
 
     dw.start_description(h->app_description());
+    for (ArgsHandler::DescriptionLineConstIterator u(h->begin_description_lines()),
+            u_end(h->end_description_lines()) ;
+            u != u_end ; ++u)
+        dw.extra_description(*u);
+    dw.end_description();
 
+    dw.start_options();
     for (ArgsHandler::ArgsGroupsConstIterator a(h->begin_args_groups()),
             a_end(h->end_args_groups()) ; a != a_end ; ++a)
     {
@@ -128,11 +134,11 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
             ExtraText t(dw);
             (*b)->accept(t);
 
-            dw.end_arg_group();
         }
 
-        dw.end_description();
+        dw.end_arg_group();
     }
+    dw.end_options();
 
     if (h->begin_environment_lines() != h->end_environment_lines())
     {
@@ -198,6 +204,11 @@ HtmlWriter::start_description(const std::string & description)
 {
     _os << "<h2>Description</h2>" << endl;
     _os << "<p>" << description << "</p>" << endl;
+}
+
+void
+HtmlWriter::start_options()
+{
     _os << "<h2>Options</h2>" << endl;
 }
 
@@ -256,13 +267,23 @@ HtmlWriter::end_extra_arg()
 void
 HtmlWriter::end_arg_group()
 {
-    _os << "</dd>" << endl;
+    _os << "</dl>" << endl;
+}
+
+void
+HtmlWriter::extra_description(const std::string & s)
+{
+    _os << "<p>" << s << "</p>" << endl;
 }
 
 void
 HtmlWriter::end_description()
 {
-    _os << "</dl>" << endl;
+}
+
+void
+HtmlWriter::end_options()
+{
 }
 
 void
@@ -370,6 +391,11 @@ ManWriter::start_description(const std::string & description)
 {
     _os << ".SH DESCRIPTION" << endl;
     _os << description << endl;
+}
+
+void
+ManWriter::start_options()
+{
     _os << ".SH OPTIONS" << endl;
 }
 
@@ -454,6 +480,11 @@ ManWriter::end_description()
 }
 
 void
+ManWriter::end_options()
+{
+}
+
+void
 ManWriter::start_environment()
 {
     _os << ".SH ENVIRONMENT" << endl;
@@ -496,6 +527,12 @@ ManWriter::example(const std::string & first, const std::string & second)
     escape(_os, first);
     _os << endl;
     _os << ungroff(second) << endl << endl;
+}
+
+void
+ManWriter::extra_description(const std::string & s)
+{
+    _os << endl << ungroff(s) << endl;
 }
 
 void
