@@ -55,7 +55,7 @@ for info_path in ${regen_info_dirs} ; do
 
     [[ -e "${info_path}"/dir ]] && mv -f "${info_path}/"dir{,.old}
 
-    for d in ${regen_info_dirs}/* ; do
+    for d in ${info_path}/* ; do
         [[ -f "${d}" ]] || continue
         [[ "${d}" != "${d%dir}" ]] && continue
         [[ "${d}" != "${d%dir.old}" ]] && continue
