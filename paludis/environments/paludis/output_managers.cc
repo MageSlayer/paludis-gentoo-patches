@@ -127,6 +127,7 @@ namespace
             m->insert("type", "repository");
             m->insert("action", "sync");
             m->insert("name", stringify(i.repository().name()));
+            m->insert("full_name", stringify(i.repository().name()));
             m->insert("pid", stringify(getpid()));
             m->insert("time", stringify(time(0)));
         }
@@ -137,6 +138,7 @@ namespace
             m->insert("action", action_to_string(i.action()));
             m->insert("name", stringify(i.package_id()->name()));
             m->insert("id", escape(stringify(*i.package_id())));
+            m->insert("full_name", escape(stringify(*i.package_id())));
             if (i.package_id()->slot_key())
                 m->insert("slot", stringify(i.package_id()->slot_key()->value()));
             m->insert("version", stringify(i.package_id()->version()));
