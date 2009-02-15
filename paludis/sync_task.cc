@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,6 +27,8 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
+#include <paludis/create_output_manager_info.hh>
+#include <paludis/output_manager.hh>
 #include <tr1/functional>
 #include <algorithm>
 #include <list>
@@ -113,7 +115,9 @@ namespace
                 }
 
                 std::tr1::shared_ptr<const Repository> rr(env->package_database()->fetch_repository(r));
-                if ((*rr).syncable_interface() && (*rr).syncable_interface()->sync(make_null_shared_ptr()))
+                std::tr1::shared_ptr<OutputManager> output_manager(env->create_output_manager(
+                                CreateOutputManagerForRepositorySyncInfo(*rr, oe_exclusive)));
+                if ((*rr).syncable_interface() && (*rr).syncable_interface()->sync(output_manager))
                 {
                     Lock l(mutex);
                     task->on_sync_succeed(r);
@@ -123,6 +127,7 @@ namespace
                     Lock l(mutex);
                     task->on_sync_skip(r);
                 }
+                output_manager->succeeded();
 
                 {
                     Lock l(mutex);
