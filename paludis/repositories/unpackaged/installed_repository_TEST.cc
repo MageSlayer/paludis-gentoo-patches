@@ -33,6 +33,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/standard_output_manager.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <algorithm>
@@ -43,6 +44,11 @@ using namespace paludis;
 
 namespace
 {
+    std::tr1::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
+    {
+        return make_shared_ptr(new StandardOutputManager);
+    }
+
     struct ContentsDumper
     {
         std::stringstream s;
@@ -263,7 +269,8 @@ namespace test_cases
             const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::All())]->begin());
 
             UninstallAction action(make_named_values<UninstallActionOptions>(
-                        value_for<n::config_protect>("")
+                        value_for<n::config_protect>(""),
+                        value_for<n::make_output_manager>(&make_standard_output_manager)
                     ));
             id->perform_action(action);
 
@@ -314,7 +321,8 @@ namespace test_cases
                                 &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
 
             UninstallAction action(make_named_values<UninstallActionOptions>(
-                        value_for<n::config_protect>("")
+                        value_for<n::config_protect>(""),
+                        value_for<n::make_output_manager>(&make_standard_output_manager)
                     ));
             id->perform_action(action);
 
@@ -398,6 +406,7 @@ namespace test_cases
 
                 InstallAction action(make_named_values<InstallActionOptions>(
                             value_for<n::destination>(repo),
+                            value_for<n::make_output_manager>(&make_standard_output_manager),
                             value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                             value_for<n::want_phase>(&want_all_phases)
                         ));
@@ -453,6 +462,7 @@ namespace test_cases
 
                 InstallAction action(make_named_values<InstallActionOptions>(
                             value_for<n::destination>(repo),
+                            value_for<n::make_output_manager>(&make_standard_output_manager),
                             value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                             value_for<n::want_phase>(&want_all_phases)
                         ));
@@ -511,6 +521,7 @@ namespace test_cases
 
                 InstallAction action(make_named_values<InstallActionOptions>(
                             value_for<n::destination>(repo),
+                            value_for<n::make_output_manager>(&make_standard_output_manager),
                             value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                             value_for<n::want_phase>(&want_all_phases)
                         ));
@@ -552,7 +563,8 @@ namespace test_cases
                 }
 
                 UninstallAction action(make_named_values<UninstallActionOptions>(
-                            value_for<n::config_protect>("")
+                            value_for<n::config_protect>(""),
+                            value_for<n::make_output_manager>(&make_standard_output_manager)
                         ));
                 (*env[selection::RequireExactlyOne(generator::Matches(
                         parse_user_package_dep_spec("cat/pkg4a",
@@ -594,7 +606,8 @@ namespace test_cases
                 }
 
                 UninstallAction action(make_named_values<UninstallActionOptions>(
-                            value_for<n::config_protect>("")
+                            value_for<n::config_protect>(""),
+                            value_for<n::make_output_manager>(&make_standard_output_manager)
                         ));
                 (*env[selection::RequireExactlyOne(generator::Matches(
                         parse_user_package_dep_spec("cat/pkg4b",

@@ -25,6 +25,7 @@
 #include <paludis/action-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/output_manager-fwd.hh>
 #include <paludis/ndbam-fwd.hh>
 #include <tr1/memory>
 
@@ -87,7 +88,7 @@ namespace paludis
                 virtual std::size_t extra_hash_value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                void uninstall(const bool replace) const;
+                void uninstall(const bool replace, const std::tr1::shared_ptr<OutputManager> & output_manager) const;
         };
     }
 }

@@ -29,6 +29,7 @@
 #include <paludis/repository-fwd.hh>
 #include <paludis/action-fwd.hh>
 #include <paludis/package_database-fwd.hh>
+#include <paludis/output_manager_from_environment-fwd.hh>
 
 /** \file
  * Declarations for InstallTask.
@@ -62,7 +63,8 @@ namespace paludis
             void _display_task_list();
             bool _pretend();
             void _main_actions();
-            void _one(const DepList::Iterator, const int, const int, const int, const int, const bool is_first, const bool is_last);
+            void _one(const DepList::Iterator, const int, const int, const int, const int, const bool is_first, const bool is_last,
+                    std::tr1::shared_ptr<OutputManagerFromEnvironment> &);
             void _display_failure_summary();
 
             void _add_target(const std::string &);
@@ -81,7 +83,9 @@ namespace paludis
             ///\}
 
             bool already_done(const DepListEntry &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-            FetchActionOptions & fetch_action_options() PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            FetchActionOptions make_fetch_action_options(const DepListEntry &,
+                    OutputManagerFromEnvironment & o) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
             ///\name Basic operations
@@ -204,14 +208,14 @@ namespace paludis
             virtual void on_had_both_package_and_set_targets_error(const HadBothPackageAndSetTargets &) = 0;
             virtual void on_multiple_set_targets_specified(const MultipleSetTargetsSpecified &) = 0;
 
-            virtual void on_install_action_error(const InstallActionError &) = 0;
-            virtual void on_fetch_action_error(const FetchActionError &) = 0;
+            virtual void on_install_action_error(const std::tr1::shared_ptr<OutputManager> &, const InstallActionError &) = 0;
+            virtual void on_fetch_action_error(const std::tr1::shared_ptr<OutputManager> &, const FetchActionError &) = 0;
 
-            virtual void on_phase_skip(const std::string & phase) = 0;
-            virtual void on_phase_abort(const std::string & phase) = 0;
-            virtual void on_phase_skip_until(const std::string & phase) = 0;
-            virtual void on_phase_proceed_conditionally(const std::string & phase) = 0;
-            virtual void on_phase_proceed_unconditionally(const std::string & phase) = 0;
+            virtual void on_phase_skip(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase) = 0;
+            virtual void on_phase_abort(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase) = 0;
+            virtual void on_phase_skip_until(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase) = 0;
+            virtual void on_phase_proceed_conditionally(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase) = 0;
+            virtual void on_phase_proceed_unconditionally(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase) = 0;
 
             ///\}
 

@@ -24,6 +24,8 @@
 #include <paludis/environments/paludis/package_mask_conf.hh>
 #include <paludis/environments/paludis/licenses_conf.hh>
 #include <paludis/environments/paludis/mirrors_conf.hh>
+#include <paludis/environments/paludis/output_conf.hh>
+#include <paludis/environments/paludis/output_managers.hh>
 #include <paludis/environments/paludis/world.hh>
 
 #include <paludis/util/config_file.hh>
@@ -55,6 +57,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/standard_output_manager.hh>
 
 #include <tr1/functional>
 #include <functional>
@@ -548,5 +551,17 @@ PaludisEnvironment::known_choice_value_names(
         ) const
 {
     return _imp->config->use_conf()->known_choice_value_names(id, choice);
+}
+
+const std::tr1::shared_ptr<OutputManager>
+PaludisEnvironment::create_output_manager(const CreateOutputManagerInfo & i) const
+{
+    return _imp->config->output_conf()->create_output_manager(i);
+}
+
+const std::tr1::shared_ptr<OutputManager>
+PaludisEnvironment::create_named_output_manager(const std::string & s, const CreateOutputManagerInfo & i) const
+{
+    return _imp->config->output_managers()->create_named_output_manager(s, i);
 }
 

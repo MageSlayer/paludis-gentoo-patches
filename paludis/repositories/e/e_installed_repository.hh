@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -97,12 +97,18 @@ namespace paludis
                 ///\name For use by EInstalledRepositoryID
                 ///\{
 
-                virtual void perform_uninstall(const std::tr1::shared_ptr<const erepository::ERepositoryID> & id,
-                        bool reinstalling, const std::string & merge_config_protect) const = 0;
+                virtual void perform_uninstall(
+                        const std::tr1::shared_ptr<const erepository::ERepositoryID> & id,
+                        const UninstallAction &,
+                        bool reinstalling) const = 0;
 
-                virtual void perform_config(const std::tr1::shared_ptr<const erepository::ERepositoryID> & id) const;
+                virtual void perform_config(
+                        const std::tr1::shared_ptr<const erepository::ERepositoryID> & id,
+                        const ConfigAction &) const;
 
-                virtual void perform_info(const std::tr1::shared_ptr<const erepository::ERepositoryID> & id) const;
+                virtual void perform_info(
+                        const std::tr1::shared_ptr<const erepository::ERepositoryID> & id,
+                        const InfoAction &) const;
 
                 ///\}
         };

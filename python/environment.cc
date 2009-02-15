@@ -35,6 +35,7 @@
 #include <paludis/util/tribool.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/standard_output_manager.hh>
 
 using namespace paludis;
 using namespace paludis::python;
@@ -426,6 +427,12 @@ class EnvironmentImplementationWrapper :
                 ) const
         {
             throw PythonMethodNotImplemented("EnvironmentImplementation", "known_choice_value_names");
+        }
+
+        virtual const std::tr1::shared_ptr<OutputManager> create_output_manager(
+                const CreateOutputManagerInfo &) const
+        {
+            return make_shared_ptr(new StandardOutputManager);
         }
 };
 

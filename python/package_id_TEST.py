@@ -84,9 +84,9 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assert_(isinstance(self.pid.find_metadata("DEPEND"), MetadataDependencySpecTreeKey))
 
     def test_10_perform_action(self):
-        self.pid.perform_action(PretendAction())
-        self.assertRaises(UnsupportedActionError, self.pid.perform_action, ConfigAction())
-        self.assertRaises(UnsupportedActionError, self.ipid.perform_action, PretendAction())
+        self.pid.perform_action(PretendAction(PretendActionOptions()))
+        self.assertRaises(UnsupportedActionError, self.pid.perform_action, ConfigAction(ConfigActionOptions()))
+        self.assertRaises(UnsupportedActionError, self.ipid.perform_action, PretendAction(PretendActionOptions()))
 
     def test_11_supports_action(self):
         self.assert_(self.pid.supports_action(SupportsFetchActionTest()))

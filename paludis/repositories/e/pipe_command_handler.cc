@@ -33,6 +33,7 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/indirect_iterator.hh>
+#include <paludis/output_manager.hh>
 #include <paludis/package_id.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
@@ -58,7 +59,8 @@ namespace
 
 std::string
 paludis::erepository::pipe_command_handler(const Environment * const environment,
-        const std::tr1::shared_ptr<const PackageID> & package_id, const std::string & s)
+        const std::tr1::shared_ptr<const PackageID> & package_id, const std::string & s,
+        const std::tr1::shared_ptr<OutputManager> & maybe_output_manager)
 {
     Context context("In ebuild pipe command handler for '" + s + "':");
 
@@ -93,7 +95,39 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
             {
                 Log::get_instance()->message("e.child.message", destringify<LogLevel>(tokens[2]), lc_context)
                     << join(next(next(next(tokens.begin()))), tokens.end(), " ");
-                return "O";
+                return "O0;";
+            }
+        }
+        else if (tokens[0] == "MESSAGE")
+        {
+            if (tokens.size() == 3)
+            {
+                /* don't barf on empty messages */
+                tokens.push_back(" ");
+            }
+
+            if (tokens.size() < 4)
+            {
+                Log::get_instance()->message("e.pipe_commands.message.bad", ll_warning, lc_context) << "Got bad MESSAGE pipe command";
+                return "Ebad MESSAGE command";
+            }
+            else
+            {
+                MessageType m;
+                if (tokens[2] == "einfo" || tokens[2] == "einfon" || tokens[2] == "ebegin")
+                    m = mt_info;
+                else if (tokens[2] == "ewarn")
+                    m = mt_warn;
+                else if (tokens[2] == "eerror")
+                    m = mt_error;
+                else if (tokens[2] == "elog")
+                    m = mt_log;
+                else
+                    return "EUnknown message type " + tokens[2] + "";
+
+                if (maybe_output_manager)
+                    maybe_output_manager->message(m, join(next(next(next(tokens.begin()))), tokens.end(), " "));
+                return "O0;";
             }
         }
         else if (tokens[0] == "BEST_VERSION")

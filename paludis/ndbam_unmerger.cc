@@ -37,13 +37,13 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/metadata_key.hh>
 #include <tr1/functional>
 #include <list>
 #include <map>
 #include <vector>
-#include <iostream>
 
 using namespace paludis;
 
@@ -291,7 +291,7 @@ NDBAMUnmerger::check_dir(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo
 void
 NDBAMUnmerger::display(const std::string & message) const
 {
-    std::cout << message << std::endl;
+    _imp->options.output_manager()->stdout_stream() << message << std::endl;
 }
 
 NDBAMUnmergerError::NDBAMUnmergerError(const std::string & s) throw () :

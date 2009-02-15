@@ -25,6 +25,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
@@ -34,6 +35,9 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
+#include <paludis/create_output_manager_info.hh>
+#include <paludis/output_manager_from_environment.hh>
+#include <paludis/output_manager.hh>
 #include <iostream>
 #include <iomanip>
 #include <set>
@@ -239,13 +243,21 @@ int do_one_info(
     for (PackageIDSequence::ConstIterator p(to_show_entries->begin()), p_end(to_show_entries->end()) ;
             p != p_end ; ++p)
     {
-        InfoAction a;
+        OutputManagerFromEnvironment output_manager_holder(env.get(), *p, oe_exclusive);
+        InfoActionOptions options(make_named_values<InfoActionOptions>(
+                    value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
+                    ));
+        InfoAction a(options);
+
         try
         {
             cout << "Package " << colour(cl_package_name, **p) << ":" << endl;
             cout << endl;
             (*p)->perform_action(a);
             cout << endl;
+
+            if (output_manager_holder.output_manager_if_constructed())
+                output_manager_holder.output_manager_if_constructed()->succeeded();
         }
         catch (const UnsupportedActionError &)
         {

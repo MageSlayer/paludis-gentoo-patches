@@ -25,6 +25,9 @@
 #include <paludis/util/options-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/tribool-fwd.hh>
+#include <paludis/util/simple_visitor.hh>
+#include <paludis/output_manager-fwd.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/hook-fwd.hh>
 #include <paludis/repository-fwd.hh>
@@ -36,6 +39,7 @@
 #include <paludis/selection-fwd.hh>
 #include <paludis/metadata_key_holder.hh>
 #include <paludis/choice-fwd.hh>
+#include <paludis/create_output_manager_info-fwd.hh>
 
 /** \file
  * Declarations for the Environment class.
@@ -365,7 +369,26 @@ namespace paludis
             virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > config_location_key() const = 0;
 
             ///\}
+
+            ///\name Output management
+            ///\{
+
+            /**
+             * Create an output manager.
+             *
+             * \since 0.36
+             */
+            virtual const std::tr1::shared_ptr<OutputManager> create_output_manager(
+                    const CreateOutputManagerInfo &) const = 0;
+
+            ///\}
     };
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class PrivateImplementationPattern<CreateOutputManagerForRepositorySyncInfo>;
+    extern template class PrivateImplementationPattern<CreateOutputManagerForPackageIDActionInfo>;
+#endif
+
 }
 
 #endif

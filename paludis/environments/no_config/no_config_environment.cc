@@ -35,6 +35,7 @@
 #include <paludis/util/graph-impl.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/member_iterator-impl.hh>
+#include <paludis/standard_output_manager.hh>
 #include <paludis/distribution.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
@@ -630,5 +631,11 @@ NoConfigEnvironment::known_choice_value_names(
         ) const
 {
     return make_shared_ptr(new Set<UnprefixedChoiceName>);
+}
+
+const std::tr1::shared_ptr<OutputManager>
+NoConfigEnvironment::create_output_manager(const CreateOutputManagerInfo &) const
+{
+    return make_shared_ptr(new StandardOutputManager);
 }
 

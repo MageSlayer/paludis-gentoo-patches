@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,7 +24,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/util/output_deviator-fwd.hh>
+#include <paludis/output_manager-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/package_id-fwd.hh>
@@ -51,7 +51,7 @@ namespace paludis
                         const bool fetch_restrict,
                         const FSEntry & m2,
                         const UseManifest um,
-                        const std::tr1::shared_ptr<OutputDeviant> & maybe_output_deviant,
+                        const std::tr1::shared_ptr<OutputManager> & output_manager,
                         const bool exclude_unmirrorable);
 
                 ~CheckFetchedFilesVisitor();

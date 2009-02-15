@@ -30,6 +30,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/output_manager.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/package_database.hh>
@@ -295,6 +296,8 @@ UnpackagedID::perform_action(Action & action) const
                 + "' to destination '" + stringify(install_action->options.destination()->name())
                 + "' because destination does not provide destination_interface");
 
+    std::tr1::shared_ptr<OutputManager> output_manager(install_action->options.make_output_manager()(*install_action));
+
     std::string libdir("lib");
     FSEntry root(install_action->options.destination()->installed_root_key() ?
             stringify(install_action->options.destination()->installed_root_key()->value()) : "/");
@@ -319,6 +322,7 @@ UnpackagedID::perform_action(Action & action) const
                 UnpackagedStripper stripper(make_named_values<UnpackagedStripperOptions>(
                             value_for<n::debug_dir>(fs_location_key()->value() / "usr" / libdir / "debug"),
                             value_for<n::image_dir>(fs_location_key()->value()),
+                            value_for<n::output_manager>(output_manager),
                             value_for<n::package_id>(shared_from_this()),
                             value_for<n::split>(split_choice && split_choice->enabled()),
                             value_for<n::strip>(strip_choice && strip_choice->enabled())
@@ -347,6 +351,7 @@ UnpackagedID::perform_action(Action & action) const
                             value_for<n::environment_file>(FSEntry("/dev/null")),
                             value_for<n::image_dir>(fs_location_key()->value()),
                             value_for<n::options>(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs),
+                            value_for<n::output_manager>(output_manager),
                             value_for<n::package_id>(shared_from_this()),
                             value_for<n::used_this_for_config_protect>(install_action->options.used_this_for_config_protect())
                             ));
@@ -362,6 +367,8 @@ UnpackagedID::perform_action(Action & action) const
         case last_wp:
             throw InternalError(PALUDIS_HERE, "bad WantPhase");
     }
+
+    output_manager->succeeded();
 }
 
 void

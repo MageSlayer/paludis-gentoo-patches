@@ -33,7 +33,7 @@
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/named_value.hh>
-#include <paludis/util/output_deviator-fwd.hh>
+#include <paludis/output_manager-fwd.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key-fwd.hh>
 #include <paludis/metadata_key_holder.hh>
@@ -66,6 +66,7 @@ namespace paludis
         struct manifest_interface;
         struct mirrors_interface;
         struct options;
+        struct output_manager;
         struct package_id;
         struct path;
         struct profile;
@@ -160,6 +161,7 @@ namespace paludis
         NamedValue<n::environment_file, FSEntry> environment_file;
         NamedValue<n::image_dir, FSEntry> image_dir;
         NamedValue<n::options, MergerOptions> options;
+        NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
         NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
         NamedValue<n::used_this_for_config_protect, std::tr1::function<void (const std::string &)> > used_this_for_config_protect;
     };
@@ -426,10 +428,9 @@ namespace paludis
             /**
              * Sync, if necessary.
              *
-             * \param output_deviant May be an empty pointer, for no deviation.
              * \return True if we synced successfully, false if we skipped sync.
              */
-            virtual bool sync(const std::tr1::shared_ptr<const OutputDeviant> & output_deviant) const = 0;
+            virtual bool sync(const std::tr1::shared_ptr<OutputManager> &) const = 0;
 
             ///\}
 

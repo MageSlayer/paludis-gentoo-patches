@@ -84,15 +84,15 @@ class TestCase_07_InstalledAction(unittest.TestCase):
 
 class TestCase_08_PretendAction(unittest.TestCase):
     def test_01_create(self):
-        PretendAction()
+        PretendAction(PretendActionOptions())
 
 class TestCase_09_ConfigAction(unittest.TestCase):
     def test_01_create(self):
-        ConfigAction()
+        ConfigAction(ConfigActionOptions())
 
 class TestCase_10_InfoAction(unittest.TestCase):
     def test_01_create(self):
-        InfoAction()
+        InfoAction(InfoActionOptions())
 
 class TestCase_10_SupportsActionTests(unittest.TestCase):
     def test_01_create(self):

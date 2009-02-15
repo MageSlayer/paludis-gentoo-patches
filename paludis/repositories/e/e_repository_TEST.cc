@@ -32,6 +32,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
+#include <paludis/standard_output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
@@ -57,6 +58,11 @@ using namespace paludis;
 
 namespace
 {
+    std::tr1::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
+    {
+        return make_shared_ptr(new StandardOutputManager);
+    }
+
     std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
             const std::string & k)
     {
@@ -922,7 +928,7 @@ namespace test_cases
             FetchAction action(make_named_values<FetchActionOptions>(
                         value_for<n::exclude_unmirrorable>(false),
                         value_for<n::fetch_unneeded>(false),
-                        value_for<n::maybe_output_deviant>(make_null_shared_ptr()),
+                        value_for<n::make_output_manager>(&make_standard_output_manager),
                         value_for<n::safe_resume>(true)
                     ));
 
@@ -1027,7 +1033,7 @@ namespace test_cases
             FetchAction action(make_named_values<FetchActionOptions>(
                         value_for<n::exclude_unmirrorable>(false),
                         value_for<n::fetch_unneeded>(false),
-                        value_for<n::maybe_output_deviant>(make_null_shared_ptr()),
+                        value_for<n::make_output_manager>(&make_standard_output_manager),
                         value_for<n::safe_resume>(true)
                     ));
 
@@ -1099,6 +1105,7 @@ namespace test_cases
 
             InstallAction action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(installed_repo),
+                        value_for<n::make_output_manager>(&make_standard_output_manager),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
                     ));
@@ -1354,6 +1361,7 @@ namespace test_cases
 
             InstallAction action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(installed_repo),
+                        value_for<n::make_output_manager>(&make_standard_output_manager),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
                     ));
@@ -1448,6 +1456,7 @@ namespace test_cases
 
             InstallAction action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(installed_repo),
+                        value_for<n::make_output_manager>(&make_standard_output_manager),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
                     ));
@@ -1572,6 +1581,7 @@ namespace test_cases
 
             InstallAction action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(installed_repo),
+                        value_for<n::make_output_manager>(&make_standard_output_manager),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
                         ));
@@ -1693,7 +1703,10 @@ namespace test_cases
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
             env.package_database()->add_repository(2, installed_repo);
 
-            InfoAction action;
+            InfoActionOptions options(make_named_values<InfoActionOptions>(
+                        value_for<n::make_output_manager>(&make_standard_output_manager)
+                        ));
+            InfoAction action(options);
 
             {
                 TestMessageSuffix suffix("info success kdebuild-1", true);
@@ -1774,6 +1787,7 @@ namespace test_cases
 
             InstallAction action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(installed_repo),
+                        value_for<n::make_output_manager>(&make_standard_output_manager),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
                     ));
@@ -2356,6 +2370,7 @@ namespace test_cases
 
             InstallAction action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(installed_repo),
+                        value_for<n::make_output_manager>(&make_standard_output_manager),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
                     ));

@@ -22,6 +22,7 @@
 #include <paludis/action.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/standard_output_manager.hh>
 #include <ruby.h>
 
 using namespace paludis;
@@ -214,6 +215,11 @@ namespace
         }
     }
 
+    std::tr1::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
+    {
+        return make_shared_ptr(new StandardOutputManager);
+    }
+
     /*
      * call-seq:
      *     FetchActionOptions.new(exclude_unmirrorable, fetch_unneeded, safe_resume) -> FetchActionOptions
@@ -256,7 +262,7 @@ namespace
             ptr = new FetchActionOptions(make_named_values<FetchActionOptions>(
                         value_for<n::exclude_unmirrorable>(v_exclude_unmirrorable),
                         value_for<n::fetch_unneeded>(v_fetch_unneeded),
-                        value_for<n::maybe_output_deviant>(make_null_shared_ptr()),
+                        value_for<n::make_output_manager>(&make_standard_output_manager),
                         value_for<n::safe_resume>(v_safe_resume)
                     ));
 
@@ -461,8 +467,33 @@ namespace
      *
      * Create new PretendAction
      */
-    template <typename A_>
+    template <typename A_, typename O_>
     struct EasyActionNew
+    {
+        static VALUE
+        easy_action_new(VALUE self)
+        {
+            O_ options(make_named_values<O_>(
+                        value_for<n::make_output_manager>(&make_standard_output_manager)
+                        ));
+
+            std::tr1::shared_ptr<Action> * a(new std::tr1::shared_ptr<Action>(new A_(options)));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<Action> >::free, a));
+            rb_obj_call_init(tdata, 1, &self);
+            return tdata;
+        }
+    };
+
+    /*
+     * Document-method InstalledAction.new
+     *
+     * call-seq:
+     *     InstalledAction.new -> InstalledAction
+     *
+     * Create new InstalledAction
+     */
+    template <typename A_>
+    struct ReallyEasyActionNew
     {
         static VALUE
         easy_action_new(VALUE self)
@@ -515,6 +546,7 @@ namespace
 
             ptr = new InstallActionOptions(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(v_destination),
+                        value_for<n::make_output_manager>(&make_standard_output_manager),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
                     ));
@@ -599,7 +631,8 @@ namespace
             }
 
             ptr = new UninstallActionOptions(make_named_values<UninstallActionOptions>(
-                        value_for<n::config_protect>(v_config_protect)
+                        value_for<n::config_protect>(v_config_protect),
+                        value_for<n::make_output_manager>(&make_standard_output_manager)
                     ));
 
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<UninstallActionOptions>::free, ptr));
@@ -763,7 +796,7 @@ namespace
          */
         c_info_action = rb_define_class_under(paludis_module(), "InfoAction", c_action);
         rb_define_singleton_method(c_info_action, "new",
-                RUBY_FUNC_CAST((&EasyActionNew<InfoAction>::easy_action_new)), 0);
+                RUBY_FUNC_CAST((&EasyActionNew<InfoAction, InfoActionOptions>::easy_action_new)), 0);
         rb_define_method(c_info_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
 
         /*
@@ -773,7 +806,7 @@ namespace
          */
         c_config_action = rb_define_class_under(paludis_module(), "ConfigAction", c_action);
         rb_define_singleton_method(c_config_action, "new",
-                RUBY_FUNC_CAST((&EasyActionNew<ConfigAction>::easy_action_new)), 0);
+                RUBY_FUNC_CAST((&EasyActionNew<ConfigAction, ConfigActionOptions>::easy_action_new)), 0);
         rb_define_method(c_config_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
 
         /*
@@ -824,7 +857,7 @@ namespace
          */
         c_installed_action = rb_define_class_under(paludis_module(), "InstalledAction", c_action);
         rb_define_singleton_method(c_installed_action, "new",
-                RUBY_FUNC_CAST((&EasyActionNew<InstalledAction>::easy_action_new)), 0);
+                RUBY_FUNC_CAST((&ReallyEasyActionNew<InstalledAction>::easy_action_new)), 0);
         rb_define_method(c_installed_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
 
         /*
@@ -834,7 +867,7 @@ namespace
          */
         c_pretend_action = rb_define_class_under(paludis_module(), "PretendAction", c_action);
         rb_define_singleton_method(c_pretend_action, "new",
-                RUBY_FUNC_CAST((&EasyActionNew<PretendAction>::easy_action_new)), 0);
+                RUBY_FUNC_CAST((&EasyActionNew<PretendAction, PretendActionOptions>::easy_action_new)), 0);
         rb_define_method(c_pretend_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
         rb_define_method(c_pretend_action, "failed?", RUBY_FUNC_CAST(&pretend_action_failed), 0);
         rb_define_method(c_pretend_action, "set_failed", RUBY_FUNC_CAST(&pretend_action_set_failed), 0);

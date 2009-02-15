@@ -44,9 +44,9 @@
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/output_deviator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/output_manager.hh>
 #include <paludis/syncer.hh>
 #include <tr1/unordered_map>
 #include <tr1/functional>
@@ -368,7 +368,7 @@ CRANRepository::sets_list() const
 }
 
 bool
-CRANRepository::sync(const std::tr1::shared_ptr<const OutputDeviant> & output_deviant) const
+CRANRepository::sync(const std::tr1::shared_ptr<OutputManager> & output_manager) const
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
     Lock l(*_imp->big_nasty_mutex);
@@ -378,17 +378,10 @@ CRANRepository::sync(const std::tr1::shared_ptr<const OutputDeviant> & output_de
 
     Command command1(Command(cmd).with_chdir(_imp->params.location()));
 
-    if (output_deviant)
-        command1
-            .with_captured_stdout_stream(output_deviant->stdout_stream())
-            .with_captured_stderr_stream(output_deviant->stderr_stream())
-            ;
-    else
-        command1
-            .with_stdout_prefix("sync " + stringify(name()) + "> ")
-            .with_stderr_prefix("sync " + stringify(name()) + "> ")
-            .with_prefix_blank_lines()
-            ;
+    command1
+        .with_captured_stdout_stream(&output_manager->stdout_stream())
+        .with_captured_stderr_stream(&output_manager->stderr_stream())
+        ;
 
     if (0 != run_command(command1))
         throw SyncFailedError(stringify(_imp->params.location()), _imp->params.sync());
@@ -397,17 +390,10 @@ CRANRepository::sync(const std::tr1::shared_ptr<const OutputDeviant> & output_de
 
     Command command2(Command(cmd).with_chdir(_imp->params.location()));
 
-    if (output_deviant)
-        command2
-            .with_captured_stdout_stream(output_deviant->stdout_stream())
-            .with_captured_stderr_stream(output_deviant->stderr_stream())
-            ;
-    else
-        command2
-            .with_stdout_prefix("sync " + stringify(name()) + "> ")
-            .with_stderr_prefix("sync " + stringify(name()) + "> ")
-            .with_prefix_blank_lines()
-            ;
+    command2
+        .with_captured_stdout_stream(&output_manager->stdout_stream())
+        .with_captured_stderr_stream(&output_manager->stderr_stream())
+        ;
 
     if (0 != run_command(command2))
         throw SyncFailedError(stringify(_imp->params.location()), _imp->params.sync());
@@ -416,17 +402,10 @@ CRANRepository::sync(const std::tr1::shared_ptr<const OutputDeviant> & output_de
 
     Command command3(Command(cmd).with_chdir(_imp->params.location()));
 
-    if (output_deviant)
-        command3
-            .with_captured_stdout_stream(output_deviant->stdout_stream())
-            .with_captured_stderr_stream(output_deviant->stderr_stream())
-            ;
-    else
-        command3
-            .with_stdout_prefix("sync " + stringify(name()) + "> ")
-            .with_stderr_prefix("sync " + stringify(name()) + "> ")
-            .with_prefix_blank_lines()
-            ;
+    command3
+        .with_captured_stdout_stream(&output_manager->stdout_stream())
+        .with_captured_stderr_stream(&output_manager->stderr_stream())
+        ;
 
     if (0 != run_command(command3))
         throw SyncFailedError(stringify(_imp->params.location()), _imp->params.sync());

@@ -184,8 +184,8 @@ namespace paludis
             virtual void on_had_both_package_and_set_targets_error(const HadBothPackageAndSetTargets &);
             virtual void on_multiple_set_targets_specified(const MultipleSetTargetsSpecified &);
 
-            virtual void on_install_action_error(const InstallActionError &);
-            virtual void on_fetch_action_error(const FetchActionError &);
+            virtual void on_install_action_error(const std::tr1::shared_ptr<OutputManager> &, const InstallActionError &);
+            virtual void on_fetch_action_error(const std::tr1::shared_ptr<OutputManager> &, const FetchActionError &);
 
             virtual void on_display_failure_summary_pre();
             virtual void on_display_failure_summary_success(const DepListEntry &);
@@ -195,11 +195,11 @@ namespace paludis
             virtual void on_display_failure_summary_totals(const int, const int, const int, const int, const int);
             virtual void on_display_failure_summary_post();
 
-            virtual void on_phase_skip(const std::string & phase);
-            virtual void on_phase_abort(const std::string & phase);
-            virtual void on_phase_skip_until(const std::string & phase);
-            virtual void on_phase_proceed_conditionally(const std::string & phase);
-            virtual void on_phase_proceed_unconditionally(const std::string & phase);
+            virtual void on_phase_skip(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase);
+            virtual void on_phase_abort(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase);
+            virtual void on_phase_skip_until(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase);
+            virtual void on_phase_proceed_conditionally(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase);
+            virtual void on_phase_proceed_unconditionally(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase);
 
             ///\name More granular display routines
             ///\{

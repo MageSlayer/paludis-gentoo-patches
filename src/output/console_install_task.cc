@@ -52,6 +52,9 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/choice.hh>
+#include <paludis/output_manager_from_environment.hh>
+#include <paludis/output_manager.hh>
+#include <paludis/dep_list.hh>
 
 #include <tr1/functional>
 #include <algorithm>
@@ -1260,8 +1263,11 @@ ConsoleInstallTask::display_merge_list_entry_distsize(const DepListEntry & d,
     if (! d.package_id()->supports_action(action_test))
         return;
 
-    FindDistfilesSize action(fetch_action_options(), _already_downloaded);
+    OutputManagerFromEnvironment output_manager_holder(environment(), d.package_id(), oe_exclusive);
+    FindDistfilesSize action(make_fetch_action_options(d, output_manager_holder), _already_downloaded);
     d.package_id()->perform_action(action);
+    if (output_manager_holder.output_manager_if_constructed())
+        output_manager_holder.output_manager_if_constructed()->succeeded();
 
     if (! action.size)
         return;
@@ -1519,60 +1525,60 @@ ConsoleInstallTask::on_ambiguous_package_name_error(const AmbiguousPackageNameEr
 }
 
 void
-ConsoleInstallTask::on_install_action_error(const InstallActionError & e)
+ConsoleInstallTask::on_install_action_error(const std::tr1::shared_ptr<OutputManager> & output_manager, const InstallActionError & e)
 {
-    output_stream() << endl;
-    output_stream() << "Install error:" << endl;
-    output_stream() << "  * " << e.backtrace("\n  * ");
-    output_stream() << e.message() << endl;
-    output_stream() << endl;
-    output_stream() << endl;
+    output_manager->stdout_stream() << endl;
+    output_manager->stdout_stream() << "Install error:" << endl;
+    output_manager->stdout_stream() << "  * " << e.backtrace("\n  * ");
+    output_manager->stdout_stream() << e.message() << endl;
+    output_manager->stdout_stream() << endl;
+    output_manager->stdout_stream() << endl;
 }
 
 void
-ConsoleInstallTask::on_fetch_action_error(const FetchActionError & e)
+ConsoleInstallTask::on_fetch_action_error(const std::tr1::shared_ptr<OutputManager> & output_manager, const FetchActionError & e)
 {
-    output_stream() << endl;
-    output_stream() << "Fetch error:" << endl;
-    output_stream() << "  * " << e.backtrace("\n  * ");
-    output_stream() << e.message() << endl;
-    output_stream() << endl;
+    output_manager->stdout_stream() << endl;
+    output_manager->stdout_stream() << "Fetch error:" << endl;
+    output_manager->stdout_stream() << "  * " << e.backtrace("\n  * ");
+    output_manager->stdout_stream() << e.message() << endl;
+    output_manager->stdout_stream() << endl;
 
     if (e.failures())
     {
         for (Sequence<FetchActionFailure>::ConstIterator f(e.failures()->begin()), f_end(e.failures()->end()) ;
                 f != f_end ; ++f)
         {
-            output_stream() << "  * File '" << (*f).target_file() << "': ";
+            output_manager->stdout_stream() << "  * File '" << (*f).target_file() << "': ";
 
             bool need_comma(false);
             if ((*f).requires_manual_fetching())
             {
-                output_stream() << "requires manual fetching";
+                output_manager->stdout_stream() << "requires manual fetching";
                 need_comma = true;
             }
 
             if ((*f).failed_automatic_fetching())
             {
                 if (need_comma)
-                    output_stream() << ", ";
-                output_stream() << "failed automatic fetching";
+                    output_manager->stdout_stream() << ", ";
+                output_manager->stdout_stream() << "failed automatic fetching";
                 need_comma = true;
             }
 
             if (! (*f).failed_integrity_checks().empty())
             {
                 if (need_comma)
-                    output_stream() << ", ";
-                output_stream() << "failed integrity checks: " << (*f).failed_integrity_checks();
+                    output_manager->stdout_stream() << ", ";
+                output_manager->stdout_stream() << "failed integrity checks: " << (*f).failed_integrity_checks();
                 need_comma = true;
             }
 
-            output_stream() << endl;
+            output_manager->stdout_stream() << endl;
         }
     }
 
-    output_stream() << endl;
+    output_manager->stdout_stream() << endl;
 }
 
 void
@@ -1900,31 +1906,31 @@ ConsoleInstallTask::perform_hook(const Hook & hook) const
 }
 
 void
-ConsoleInstallTask::on_phase_skip(const std::string & phase)
+ConsoleInstallTask::on_phase_skip(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase)
 {
-    output_starred_item("Skipping phase '" + phase + "' as instructed");
+    output_manager->stdout_stream() << "+++ Skipping phase '" + phase + "' as instructed" << endl;
 }
 
 void
-ConsoleInstallTask::on_phase_abort(const std::string & phase)
+ConsoleInstallTask::on_phase_abort(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase)
 {
-    output_starred_item("Aborting at phase '" + phase + "' as instructed");
+    output_manager->stdout_stream() << "+++ Aborting at phase '" + phase + "' as instructed" << endl;
 }
 
 void
-ConsoleInstallTask::on_phase_skip_until(const std::string & phase)
+ConsoleInstallTask::on_phase_skip_until(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase)
 {
-    output_starred_item("Skipping phase '" + phase + "' as instructed since it is before a start phase");
+    output_manager->stdout_stream() << "+++ Skipping phase '" + phase + "' as instructed since it is before a start phase" << endl;
 }
 
 void
-ConsoleInstallTask::on_phase_proceed_conditionally(const std::string & phase)
+ConsoleInstallTask::on_phase_proceed_conditionally(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase)
 {
-    output_starred_item("Executing phase '" + phase + "' as instructed");
+    output_manager->stdout_stream() << "+++ Executing phase '" + phase + "' as instructed" << endl;
 }
 
 void
-ConsoleInstallTask::on_phase_proceed_unconditionally(const std::string &)
+ConsoleInstallTask::on_phase_proceed_unconditionally(const std::tr1::shared_ptr<OutputManager> &, const std::string &)
 {
 }
 

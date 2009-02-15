@@ -69,12 +69,11 @@
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/safe_ofstream.hh>
+#include <paludis/output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
-
+#include <paludis/util/safe_ofstream.hh>
 #include <tr1/unordered_map>
 #include <tr1/functional>
-#include <iostream>
 #include <functional>
 #include <algorithm>
 #include <vector>
@@ -374,14 +373,18 @@ VDBRepositoryKeyReadError::VDBRepositoryKeyReadError(
 }
 
 void
-VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID> & id,
-        bool reinstalling, const std::string & merge_config_protect) const
+VDBRepository::perform_uninstall(
+        const std::tr1::shared_ptr<const ERepositoryID> & id,
+        const UninstallAction & a,
+        bool reinstalling) const
 {
     Context context("When uninstalling '" + stringify(*id) + (reinstalling ? "' for a reinstall:" : "':"));
 
     if (! _imp->params.root().is_directory())
         throw InstallActionError("Couldn't uninstall '" + stringify(*id) +
                 "' because root ('" + stringify(_imp->params.root()) + "') is not a directory");
+
+    std::tr1::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
 
     std::string reinstalling_str(reinstalling ? "-reinstalling-" : "");
 
@@ -400,7 +403,7 @@ VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID>
     {
         if (can_skip_phase(id, *phase))
         {
-            std::cout << "--- No need to do anything for " << phase->equal_option("skipname") << " phase" << std::endl;
+            output_manager->stdout_stream() << "--- No need to do anything for " << phase->equal_option("skipname") << " phase" << std::endl;
             continue;
         }
 
@@ -429,7 +432,7 @@ VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID>
             {
             }
 
-            std::string final_config_protect(config_protect + " " + merge_config_protect);
+            std::string final_config_protect(config_protect + " " + a.options.config_protect());
 
             /* unmerge */
             VDBUnmerger unmerger(
@@ -437,8 +440,8 @@ VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID>
                         value_for<n::config_protect>(final_config_protect),
                         value_for<n::config_protect_mask>(config_protect_mask),
                         value_for<n::contents_file>(pkg_dir / "CONTENTS"),
-
                         value_for<n::environment>(_imp->params.environment()),
+                        value_for<n::output_manager>(output_manager),
                         value_for<n::package_id>(id),
                         value_for<n::root>(installed_root_key()->value())
                     ));
@@ -457,6 +460,7 @@ VDBRepository::perform_uninstall(const std::tr1::shared_ptr<const ERepositoryID>
                     value_for<n::environment>(_imp->params.environment()),
                     value_for<n::exlibsdirs>(make_shared_ptr(new FSEntrySequence)),
                     value_for<n::files_dir>(pkg_dir),
+                    value_for<n::maybe_output_manager>(output_manager),
                     value_for<n::package_id>(id),
                     value_for<n::portdir>(_imp->params.location()),
                     value_for<n::sandbox>(phase->option("sandbox")),
@@ -804,6 +808,11 @@ namespace
         else
             return ! b->slot_key();
     }
+
+    std::tr1::shared_ptr<OutputManager> this_output_manager(const std::tr1::shared_ptr<OutputManager> & o, const Action &)
+    {
+        return o;
+    }
 }
 
 void
@@ -830,6 +839,7 @@ VDBRepository::merge(const MergeParams & m)
             make_named_values<WriteVDBEntryParams>(
                 value_for<n::environment>(_imp->params.environment()),
                 value_for<n::environment_file>(m.environment_file()),
+                value_for<n::maybe_output_manager>(m.output_manager()),
                 value_for<n::output_directory>(tmp_vdb_dir),
                 value_for<n::package_id>(std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id()))
             ));
@@ -868,6 +878,7 @@ VDBRepository::merge(const MergeParams & m)
                 value_for<n::environment>(_imp->params.environment()),
                 value_for<n::image>(m.image_dir()),
                 value_for<n::options>(m.options()),
+                value_for<n::output_manager>(m.output_manager()),
                 value_for<n::package_id>(m.package_id()),
                 value_for<n::root>(installed_root_key()->value())
             ));
@@ -901,7 +912,14 @@ VDBRepository::merge(const MergeParams & m)
     merger.merge();
 
     if (is_replace)
-        perform_uninstall(is_replace, true, config_protect);
+    {
+        UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
+                    value_for<n::config_protect>(config_protect),
+                    value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1))
+                    ));
+        perform_uninstall(is_replace, uo, true);
+    }
+
     if (std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id())
             ->eapi()->supported()->ebuild_phases()->ebuild_new_upgrade_phase_order())
     {
@@ -911,7 +929,13 @@ VDBRepository::merge(const MergeParams & m)
         {
             std::tr1::shared_ptr<const ERepositoryID> candidate(std::tr1::static_pointer_cast<const ERepositoryID>(*it));
             if (candidate != is_replace && slot_is_same(candidate, m.package_id()))
-                perform_uninstall(candidate, false, "");
+            {
+                UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
+                            value_for<n::config_protect>(config_protect),
+                            value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1))
+                            ));
+                perform_uninstall(candidate, uo, false);
+            }
         }
     }
 

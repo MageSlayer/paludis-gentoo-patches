@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,6 +22,7 @@
 
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/output_manager-fwd.hh>
 #include <tr1/functional>
 #include <string>
 
@@ -31,7 +32,8 @@ namespace paludis
     {
         std::string pipe_command_handler(const Environment * const,
                 const std::tr1::shared_ptr<const PackageID> &,
-                const std::string & s);
+                const std::string & s,
+                const std::tr1::shared_ptr<OutputManager> & maybe_output_manager);
     }
 }
 

@@ -243,6 +243,7 @@ EbuildID::need_keys_added() const
                     value_for<n::environment>(_imp->environment),
                     value_for<n::exlibsdirs>(_imp->repository->layout()->exlibsdirs(name())),
                     value_for<n::files_dir>(_imp->repository->layout()->package_directory(name()) / "files"),
+                    value_for<n::maybe_output_manager>(make_null_shared_ptr()),
                     value_for<n::package_id>(shared_from_this()),
                     value_for<n::portdir>(
                         (_imp->repository->params().master_repositories() && ! _imp->repository->params().master_repositories()->empty()) ?
@@ -1058,14 +1059,16 @@ namespace
         {
             if (! std::tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->pretend(
                         std::tr1::static_pointer_cast<const ERepositoryID>(id),
+                        action,
                         std::tr1::static_pointer_cast<const ERepository>(id->repository())->profile()))
                 action.set_failed();
         }
 
-        void visit(InfoAction &)
+        void visit(InfoAction & action)
         {
             std::tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->info(
                     std::tr1::static_pointer_cast<const ERepositoryID>(id),
+                    action,
                     std::tr1::static_pointer_cast<const ERepository>(id->repository())->profile());
         }
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -254,7 +254,7 @@ UnavailableRepository::some_ids_might_support_action(const SupportsActionTestBas
 }
 
 bool
-UnavailableRepository::sync(const std::tr1::shared_ptr<const OutputDeviant> & output_deviant) const
+UnavailableRepository::sync(const std::tr1::shared_ptr<OutputManager> & output_manager) const
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
 
@@ -276,8 +276,7 @@ UnavailableRepository::sync(const std::tr1::shared_ptr<const OutputDeviant> & ou
         SyncOptions opts(make_named_values<SyncOptions>(
                     value_for<n::filter_file>(FSEntry("/dev/null")),
                     value_for<n::options>(_imp->params.sync_options()),
-                    value_for<n::output_deviant>(output_deviant),
-                    value_for<n::output_prefix>("sync " + stringify(name()) + "> ")
+                    value_for<n::output_manager>(output_manager)
                     ));
         try
         {

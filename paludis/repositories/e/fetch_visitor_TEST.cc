@@ -25,6 +25,7 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/standard_output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/package_database.hh>
 #include <paludis/user_dep_spec.hh>
@@ -62,7 +63,7 @@ namespace test_cases
                                 &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin(),
                     *eapi, FSEntry("fetch_visitor_TEST_dir/out"),
                     false, false, "test", make_shared_ptr(new URIListedThenMirrorsLabel("listed-then-mirrors")), false,
-                    make_null_shared_ptr());
+                    make_shared_ptr(new StandardOutputManager));
             parse_fetchable_uri("file:///" + stringify(FSEntry("fetch_visitor_TEST_dir/in/input1").realpath()), &env, id, *eapi)->root()->accept(v);
 
             TEST_CHECK(FSEntry("fetch_visitor_TEST_dir/out/input1").is_regular_file());

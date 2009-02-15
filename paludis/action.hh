@@ -30,7 +30,7 @@
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/util/output_deviator-fwd.hh>
+#include <paludis/output_manager-fwd.hh>
 #include <paludis/util/type_list.hh>
 #include <tr1/functional>
 
@@ -54,7 +54,7 @@ namespace paludis
         struct failed_automatic_fetching;
         struct failed_integrity_checks;
         struct fetch_unneeded;
-        struct maybe_output_deviant;
+        struct make_output_manager;
         struct requires_manual_fetching;
         struct safe_resume;
         struct target_file;
@@ -79,10 +79,13 @@ namespace paludis
         NamedValue<n::fetch_unneeded, bool> fetch_unneeded;
 
         /**
-         * May be an empty pointer, for no deviation.
-         * \since 0.32
+         * This is a function to avoid chicken / egg problems when using
+         * Environment::create_output_manager.
+         *
+         * \since 0.36
          */
-        NamedValue<n::maybe_output_deviant, std::tr1::shared_ptr<OutputDeviant> > maybe_output_deviant;
+        NamedValue<n::make_output_manager, std::tr1::function<std::tr1::shared_ptr<OutputManager> (
+                const FetchAction &)> > make_output_manager;
 
         NamedValue<n::safe_resume, bool> safe_resume;
     };
@@ -97,6 +100,16 @@ namespace paludis
     struct InstallActionOptions
     {
         NamedValue<n::destination, std::tr1::shared_ptr<Repository> > destination;
+
+        /**
+         * This is a function to avoid chicken / egg problems when using
+         * Environment::create_output_manager.
+         *
+         * \since 0.36
+         */
+        NamedValue<n::make_output_manager, std::tr1::function<std::tr1::shared_ptr<OutputManager> (
+                const InstallAction &)> > make_output_manager;
+
         NamedValue<n::used_this_for_config_protect, std::tr1::function<void (const std::string &)> > used_this_for_config_protect;
         NamedValue<n::want_phase, std::tr1::function<WantPhase (const std::string &)> > want_phase;
     };
@@ -111,6 +124,15 @@ namespace paludis
     struct UninstallActionOptions
     {
         NamedValue<n::config_protect, std::string> config_protect;
+
+        /**
+         * This is a function to avoid chicken / egg problems when using
+         * Environment::create_output_manager.
+         *
+         * \since 0.36
+         */
+        NamedValue<n::make_output_manager, std::tr1::function<std::tr1::shared_ptr<OutputManager> (
+                const UninstallAction &)> > make_output_manager;
     };
 
     /**
@@ -244,6 +266,25 @@ namespace paludis
     };
 
     /**
+     * Options for a PretendAction.
+     *
+     * \see PretendAction
+     * \ingroup g_actions
+     * \since 0.36
+     */
+    struct PretendActionOptions
+    {
+        /**
+         * This is a function to avoid chicken / egg problems when using
+         * Environment::create_output_manager.
+         *
+         * \since 0.36
+         */
+        NamedValue<n::make_output_manager, std::tr1::function<std::tr1::shared_ptr<OutputManager> (
+                const PretendAction &)> > make_output_manager;
+    };
+
+    /**
      * A PretendAction is used by InstallTask to handle install-pretend-phase
      * checks on a PackageID.
      *
@@ -260,7 +301,10 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            PretendAction();
+            /**
+             * \since 0.36
+             */
+            PretendAction(const PretendActionOptions &);
             ~PretendAction();
 
             ///\}
@@ -270,6 +314,11 @@ namespace paludis
 
             /// Mark the action as failed.
             void set_failed();
+
+            /**
+             * \since 0.36
+             */
+            const PretendActionOptions & options;
     };
 
     /**
@@ -302,6 +351,25 @@ namespace paludis
     };
 
     /**
+     * Options for a ConfigAction.
+     *
+     * \see ConfigAction
+     * \ingroup g_actions
+     * \since 0.36
+     */
+    struct ConfigActionOptions
+    {
+        /**
+         * This is a function to avoid chicken / egg problems when using
+         * Environment::create_output_manager.
+         *
+         * \since 0.36
+         */
+        NamedValue<n::make_output_manager, std::tr1::function<std::tr1::shared_ptr<OutputManager> (
+                const ConfigAction &)> > make_output_manager;
+    };
+
+    /**
      * A ConfigAction is used via PackageID::perform_action to execute
      * post-install configuration (for example, via 'paludis --config')
      * on a PackageID.
@@ -312,8 +380,44 @@ namespace paludis
      */
     class PALUDIS_VISIBLE ConfigAction :
         public Action,
+        private PrivateImplementationPattern<ConfigAction>,
         public ImplementAcceptMethods<Action, ConfigAction>
     {
+        public:
+            ///\name Basic operations
+            ///\{
+
+            /**
+             * \since 0.36
+             */
+            ConfigAction(const ConfigActionOptions &);
+            ~ConfigAction();
+
+            ///\}
+
+            /**
+             * \since 0.36
+             */
+            const ConfigActionOptions & options;
+    };
+
+    /**
+     * Options for an InfoAction.
+     *
+     * \see InfoAction
+     * \ingroup g_actions
+     * \since 0.36
+     */
+    struct InfoActionOptions
+    {
+        /**
+         * This is a function to avoid chicken / egg problems when using
+         * Environment::create_output_manager.
+         *
+         * \since 0.36
+         */
+        NamedValue<n::make_output_manager, std::tr1::function<std::tr1::shared_ptr<OutputManager> (
+                const InfoAction &)> > make_output_manager;
     };
 
     /**
@@ -331,8 +435,26 @@ namespace paludis
      */
     class PALUDIS_VISIBLE InfoAction:
         public Action,
+        private PrivateImplementationPattern<InfoAction>,
         public ImplementAcceptMethods<Action, InfoAction>
     {
+        public:
+            ///\name Basic operations
+            ///\{
+
+            /**
+             * \since 0.36
+             */
+            InfoAction(const InfoActionOptions &);
+
+            ~InfoAction();
+
+            ///\}
+
+            /**
+             * \since 0.36
+             */
+            const InfoActionOptions & options;
     };
 
     /**
@@ -535,6 +657,8 @@ namespace paludis
     extern template class PrivateImplementationPattern<PretendAction>;
     extern template class PrivateImplementationPattern<PretendFetchAction>;
     extern template class PrivateImplementationPattern<UninstallAction>;
+    extern template class PrivateImplementationPattern<InfoAction>;
+    extern template class PrivateImplementationPattern<ConfigAction>;
 #endif
 }
 

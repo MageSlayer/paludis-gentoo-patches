@@ -29,6 +29,7 @@
 #include <paludis/util/destringify.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/standard_output_manager.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/hook.hh>
@@ -274,5 +275,11 @@ TestEnvironment::known_choice_value_names(
         ) const
 {
     return make_shared_ptr(new Set<UnprefixedChoiceName>);
+}
+
+const std::tr1::shared_ptr<OutputManager>
+TestEnvironment::create_output_manager(const CreateOutputManagerInfo &) const
+{
+    return make_shared_ptr(new StandardOutputManager);
 }
 

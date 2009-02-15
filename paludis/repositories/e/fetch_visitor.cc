@@ -35,8 +35,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/output_deviator.hh>
-#include <iostream>
+#include <paludis/output_manager.hh>
 #include <list>
 
 using namespace paludis;
@@ -56,7 +55,7 @@ namespace paludis
         const std::string mirrors_name;
         std::tr1::shared_ptr<const URILabel> default_label;
         const bool safe_resume;
-        const std::tr1::shared_ptr<OutputDeviant> maybe_output_deviant;
+        const std::tr1::shared_ptr<OutputManager> output_manager;
 
         std::list<const URILabel *> labels;
 
@@ -70,7 +69,7 @@ namespace paludis
                 const std::string & m,
                 const std::tr1::shared_ptr<const URILabel> & n,
                 const bool sr,
-                const std::tr1::shared_ptr<OutputDeviant> & md) :
+                const std::tr1::shared_ptr<OutputManager> & md) :
             env(e),
             id(i),
             eapi(p),
@@ -80,7 +79,7 @@ namespace paludis
             mirrors_name(m),
             default_label(n),
             safe_resume(sr),
-            maybe_output_deviant(md)
+            output_manager(md)
         {
             labels.push_front(default_label.get());
         }
@@ -97,7 +96,7 @@ FetchVisitor::FetchVisitor(
         const std::string & m,
         const std::tr1::shared_ptr<const URILabel> & n,
         const bool sr,
-        const std::tr1::shared_ptr<OutputDeviant> & md) :
+        const std::tr1::shared_ptr<OutputManager> & md) :
     PrivateImplementationPattern<FetchVisitor>(new Implementation<FetchVisitor>(e, i, p, d, f, u, m, n, sr, md))
 {
 }
@@ -236,13 +235,12 @@ FetchVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::T
                     cmd
                         .with_setenv("PALUDIS_USE_SAFE_RESUME", "yesplease");
 
-                if (_imp->maybe_output_deviant)
-                    cmd
-                        .with_captured_stderr_stream(_imp->maybe_output_deviant->stderr_stream())
-                        .with_captured_stdout_stream(_imp->maybe_output_deviant->stdout_stream());
+                cmd
+                    .with_captured_stderr_stream(&_imp->output_manager->stderr_stream())
+                    .with_captured_stdout_stream(&_imp->output_manager->stdout_stream());
 
-                (_imp->maybe_output_deviant ? *_imp->maybe_output_deviant->stdout_stream() : std::cout)
-                    << "Trying to fetch '" << i->first << "' to '" << i->second << "'..." << std::endl;
+                _imp->output_manager->stdout_stream() << "Trying to fetch '" << i->first << "' to '" <<
+                    i->second << "'..." << std::endl;
 
                 if (0 != run_command(cmd))
                     destination.unlink();

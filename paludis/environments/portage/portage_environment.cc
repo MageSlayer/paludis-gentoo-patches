@@ -37,6 +37,7 @@
 #include <paludis/util/config_file.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/standard_output_manager.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/hooker.hh>
 #include <paludis/hook.hh>
@@ -1007,5 +1008,11 @@ PortageEnvironment::set_names() const
     std::tr1::shared_ptr<SetNameSet> result(new SetNameSet);
     result->insert(SetName("world"));
     return result;
+}
+
+const std::tr1::shared_ptr<OutputManager>
+PortageEnvironment::create_output_manager(const CreateOutputManagerInfo &) const
+{
+    return make_shared_ptr(new StandardOutputManager);
 }
 

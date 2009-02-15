@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_OutputExclusivity()
+{
+    prefix oe
+
+    key oe_background               "Run in the background, produce no output"
+    key oe_with_others              "Other things may be running at the same time"
+    key oe_exclusive                "We are the only thing running"
+
+    want_destringify
+
+    doxygen_comment << "END"
+        /**
+         * Options telling most CreateOutputManagerInfo subclasses whether we
+         * will be run exclusively or with other tasks.
+         *
+         * \see CreateOutputManagerInfo
+         */
+END
+}
+

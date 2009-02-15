@@ -24,7 +24,6 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/safe_ofstream.hh>
-#include <iostream>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>

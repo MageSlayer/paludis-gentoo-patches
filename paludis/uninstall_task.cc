@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -39,6 +39,8 @@
 #include <paludis/hook.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/repository.hh>
+#include <paludis/output_manager_from_environment.hh>
+#include <paludis/output_manager.hh>
 #include <tr1/functional>
 #include <map>
 #include <set>
@@ -357,11 +359,16 @@ UninstallTask::execute()
 
         try
         {
+            OutputManagerFromEnvironment output_manager_holder(_imp->env, i->package_id(), oe_exclusive);
             UninstallAction uninstall_action(
                     make_named_values<UninstallActionOptions>(
-                        value_for<n::config_protect>("")
+                        value_for<n::config_protect>(""),
+                        value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
                         ));
             i->package_id()->perform_action(uninstall_action);
+
+            if (output_manager_holder.output_manager_if_constructed())
+                output_manager_holder.output_manager_if_constructed()->succeeded();
         }
         catch (const UninstallActionError & e)
         {

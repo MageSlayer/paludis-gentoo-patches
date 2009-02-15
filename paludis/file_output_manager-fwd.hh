@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,13 +17,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_UTIL_OUTPUT_DEVIATOR_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_UTIL_OUTPUT_DEVIATOR_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_FILE_OUTPUT_MANAGER_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_FILE_OUTPUT_MANAGER_FWD_HH 1
 
 namespace paludis
 {
-    class OutputDeviator;
-    class OutputDeviant;
+    class FileOutputManager;
 }
 
 #endif

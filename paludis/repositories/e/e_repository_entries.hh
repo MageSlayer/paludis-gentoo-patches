@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,6 +27,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
+#include <paludis/output_manager-fwd.hh>
 #include <paludis/repositories/e/e_repository_profile.hh>
 #include <paludis/repositories/e/e_repository_params.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
@@ -82,13 +83,14 @@ namespace paludis
                 /**
                  * Handle an install.
                  */
-                virtual void install(const std::tr1::shared_ptr<const ERepositoryID> &, const InstallActionOptions &,
+                virtual void install(const std::tr1::shared_ptr<const ERepositoryID> &, const InstallAction &,
                         const std::tr1::shared_ptr<const ERepositoryProfile> &) const = 0;
 
                 /**
                  * Handle a fetch.
                  */
-                virtual void fetch(const std::tr1::shared_ptr<const ERepositoryID> &, const FetchActionOptions &,
+                virtual void fetch(const std::tr1::shared_ptr<const ERepositoryID> &,
+                        const FetchAction &,
                         const std::tr1::shared_ptr<const ERepositoryProfile> &) const = 0;
 
                 /**
@@ -101,12 +103,14 @@ namespace paludis
                  * Handle a pretend.
                  */
                 virtual bool pretend(const std::tr1::shared_ptr<const ERepositoryID> &,
+                        const PretendAction &,
                         const std::tr1::shared_ptr<const ERepositoryProfile> &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 /**
                  * Handle an info.
                  */
                 virtual void info(const std::tr1::shared_ptr<const ERepositoryID> &,
+                        const InfoAction &,
                         const std::tr1::shared_ptr<const ERepositoryProfile> &) const = 0;
 
                 /**

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,7 +21,8 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/make_named_values.hh>
-#include <iostream>
+#include <paludis/output_manager.hh>
+#include <ostream>
 
 using namespace paludis;
 using namespace paludis::unpackaged_repositories;
@@ -59,20 +60,20 @@ UnpackagedStripper::~UnpackagedStripper()
 void
 UnpackagedStripper::on_strip(const FSEntry & f)
 {
-    std::cout << "str " << f.strip_leading(_imp->options.image_dir()) << std::endl;
+    _imp->options.output_manager()->stdout_stream() << "str " << f.strip_leading(_imp->options.image_dir()) << std::endl;
 }
 
 void
 UnpackagedStripper::on_split(const FSEntry & f, const FSEntry & g)
 {
-    std::cout << "spl " << f.strip_leading(_imp->options.image_dir()) <<
+    _imp->options.output_manager()->stdout_stream() << "spl " << f.strip_leading(_imp->options.image_dir()) <<
         " -> " << g.strip_leading(_imp->options.image_dir()) << std::endl;
 }
 
 void
 UnpackagedStripper::on_unknown(const FSEntry & f)
 {
-    std::cout << "--- " << f.strip_leading(_imp->options.image_dir()) << std::endl;
+    _imp->options.output_manager()->stdout_stream() << "--- " << f.strip_leading(_imp->options.image_dir()) << std::endl;
 }
 
 void
@@ -88,7 +89,7 @@ UnpackagedStripper::on_leave_dir(const FSEntry &)
 void
 UnpackagedStripper::strip()
 {
-    std::cout << ">>> Stripping inside " << _imp->options.image_dir() << std::endl;
+    _imp->options.output_manager()->stdout_stream() << ">>> Stripping inside " << _imp->options.image_dir() << std::endl;
     Stripper::strip();
 }
 

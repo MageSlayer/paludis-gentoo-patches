@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -47,14 +47,20 @@ namespace
     };
 
     int
-    do_one_config_entry(const std::tr1::shared_ptr<const PackageID> & p)
+    do_one_config_entry(const Environment * const env, const std::tr1::shared_ptr<const PackageID> & p)
     {
         int return_code(0);
 
-        ConfigAction a;
+        OutputManagerFromEnvironment output_manager_holder(env, p, oe_exclusive);
+        ConfigActionOptions options(make_named_values<ConfigActionOptions>(
+                    value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
+                    ));
+        ConfigAction a(options);
         try
         {
             p->perform_action(a);
+            if (output_manager_holder.output_manager_if_constructed())
+                output_manager_holder.output_manager_if_constructed()->succeeded();
         }
         catch (const UnsupportedActionError &)
         {
@@ -83,7 +89,7 @@ namespace
         if (next(entries->begin()) != entries->end())
             throw AmbiguousConfigTarget(entries);
 
-        return do_one_config_entry(*entries->begin());
+        return do_one_config_entry(env.get(), *entries->begin());
     }
 }
 

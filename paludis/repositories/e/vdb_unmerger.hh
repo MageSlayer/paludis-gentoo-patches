@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2007 Piotr Jaroszyński
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -36,6 +36,7 @@ namespace paludis
         struct config_protect_mask;
         struct contents_file;
         struct environment;
+        struct output_manager;
         struct package_id;
         struct root;
     }
@@ -53,6 +54,7 @@ namespace paludis
         NamedValue<n::config_protect_mask, std::string> config_protect_mask;
         NamedValue<n::contents_file, FSEntry> contents_file;
         NamedValue<n::environment, Environment *> environment;
+        NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
         NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
         NamedValue<n::root, FSEntry> root;
     };
