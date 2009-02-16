@@ -1,14 +1,19 @@
 <!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
 
-<h1>use.conf</h1>
+<h1>use.conf / options.conf</h1>
 
 ###PALUDISENVIRONMENTONLY###
 
-<p>The <code>use.conf</code> file controls which use flags are and are not enabled. It is a standard configuration
-file which may be a bash file (<code>use.bash</code>) and which may use the <code>use.conf.d/</code> directory.</p>
+<p>On Gentoo and derived distributions, the <code>use.conf</code> file controls which use flags are and are not enabled.
+It is a standard configuration file which may be a bash file (<code>use.bash</code>) and which may use the
+<code>use.conf.d/</code> directory.</p>
 
-<p>Each line in the file consists of a specification followed by one or more use flags and labels. A specification may be
-any of:</p>
+<p>On Exherbo, the <code>options.conf</code> file controls which options are and are not enabled.  It is a standard
+configuration file which may be a bash file (<code>options.bash</code>) and which may use the
+<code>options.conf.d/</code> directory.</p>
+
+<p>Each line in the file consists of a specification followed by one or more use or option flags and labels. A
+specification may be any of:</p>
 
 <ul>
     <li>The special specification <code>*/*</code>, which matches all packages. Nearly all users will have at least one
@@ -25,15 +30,15 @@ any of:</p>
 <ul>
     <li><code>flag</code>, which enables that flag.</li>
     <li><code>-flag</code>, which disables that flag.</li>
-    <li><code>label:</code>, which marks any subsequent flags on that line as applying to a particular use expand label.
-    Common examples of use expand labels are <code>VIDEO_CARDS</code>, <code>LINGUAS</code> and
-    <code>INPUT_DEVICES</code>, as well as the special <code>BUILD_OPTIONS</code> label described below. Labels
-    are <em>not</em> case sensitive.</li>
+    <li><code>label:</code>, which marks any subsequent flags on that line as applying to a particular use expand
+    (Gentoo) or suboption (Exherbo) label. Common examples of use expand labels are <code>VIDEO_CARDS</code>,
+    <code>LINGUAS</code> and <code>INPUT_DEVICES</code>, as well as the special <code>BUILD_OPTIONS</code> label
+    described below. Labels are <em>not</em> case sensitive.</li>
     <li><code>-*</code>, which disables all flags for the current label, or all flags that are not a label if there is
     no current label.</li>
 </ul>
 
-<p>Use flag settings are cumulative. This applies to expanded use flags too, so if you do not wish to inherit, say,
+<p>Flag settings are cumulative. This applies to expanded flags too, so if you do not wish to inherit, say,
 default <code>VIDEO_CARDS</code> from your profile, you will need to use <code>*/* VIDEO_CARDS: -* radeon</code>.</p>
 
 <h2>Special Flags</h2>
