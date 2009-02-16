@@ -55,6 +55,7 @@ namespace paludis
         struct failed_integrity_checks;
         struct fetch_unneeded;
         struct make_output_manager;
+        struct replacing;
         struct requires_manual_fetching;
         struct safe_resume;
         struct target_file;
@@ -109,6 +110,13 @@ namespace paludis
          */
         NamedValue<n::make_output_manager, std::tr1::function<std::tr1::shared_ptr<OutputManager> (
                 const InstallAction &)> > make_output_manager;
+
+        /**
+         * We must replace these.
+         *
+         * \since 0.36
+         */
+        NamedValue<n::replacing, std::tr1::shared_ptr<const PackageIDSequence> > replacing;
 
         NamedValue<n::used_this_for_config_protect, std::tr1::function<void (const std::string &)> > used_this_for_config_protect;
         NamedValue<n::want_phase, std::tr1::function<WantPhase (const std::string &)> > want_phase;

@@ -23,6 +23,7 @@
 #include <paludis/action.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/repository.hh>
 #include <tr1/memory>
@@ -71,6 +72,7 @@ namespace
         return new InstallActionOptions(make_named_values<InstallActionOptions>(
                     value_for<n::destination>(r),
                     value_for<n::make_output_manager>(&make_standard_output_manager),
+                    value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
                     value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                     value_for<n::want_phase>(&want_all_phases)
                     ));

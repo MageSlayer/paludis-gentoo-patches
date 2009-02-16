@@ -780,9 +780,12 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
         {
             output_manager_holder.reset(new OutputManagerFromEnvironment(_imp->env, dep->package_id(), oe_exclusive));
 
+            std::tr1::shared_ptr<PackageIDSequence> replacing(new PackageIDSequence);
+
             InstallActionOptions install_options(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(dep->destination()),
                         value_for<n::make_output_manager>(std::tr1::ref(*output_manager_holder)),
+                        value_for<n::replacing>(replacing),
                         value_for<n::used_this_for_config_protect>(std::tr1::bind(
                                 &Implementation<InstallTask>::assign_config_protect,
                                 _imp.get(), std::tr1::placeholders::_1)),
