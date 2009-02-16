@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -61,32 +61,22 @@ namespace
 
         void visit(const ContentsFileEntry & e)
         {
-            handle(e.name());
+            handle(stringify(e.location_key()->value()));
         }
 
         void visit(const ContentsDirEntry & e)
         {
-            handle(e.name());
+            handle(stringify(e.location_key()->value()));
         }
 
         void visit(const ContentsSymEntry & e)
         {
-            handle(e.name());
+            handle(stringify(e.location_key()->value()));
         }
 
-        void visit(const ContentsMiscEntry & e)
+        void visit(const ContentsOtherEntry & e)
         {
-            handle(e.name());
-        }
-
-        void visit(const ContentsFifoEntry & e)
-        {
-            handle(e.name());
-        }
-
-        void visit(const ContentsDevEntry & e)
-        {
-            handle(e.name());
+            handle(stringify(e.location_key()->value()));
         }
     };
 }

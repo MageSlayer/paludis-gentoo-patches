@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,60 +20,88 @@
 #include <paludis/contents.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/literal_metadata_key.hh>
 #include <list>
 
 using namespace paludis;
 
-ContentsEntry::ContentsEntry(const std::string & n) :
-    _name(n)
+namespace paludis
 {
+    template <>
+    struct Implementation<ContentsEntry>
+    {
+        const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
+
+        Implementation(const FSEntry & n) :
+            location_key(make_shared_ptr(new LiteralMetadataValueKey<FSEntry>("location", "location", mkt_significant, n)))
+        {
+        }
+    };
+}
+
+ContentsEntry::ContentsEntry(const FSEntry & n) :
+    PrivateImplementationPattern<ContentsEntry>(new Implementation<ContentsEntry>(n)),
+    _imp(PrivateImplementationPattern<ContentsEntry>::_imp)
+{
+    add_metadata_key(_imp->location_key);
 }
 
 ContentsEntry::~ContentsEntry()
 {
 }
 
-std::string
-ContentsEntry::name() const
+void
+ContentsEntry::need_keys_added() const
 {
-    return _name;
 }
 
-ContentsFileEntry::ContentsFileEntry(const std::string & our_name) :
+const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+ContentsEntry::location_key() const
+{
+    return _imp->location_key;
+}
+
+ContentsFileEntry::ContentsFileEntry(const FSEntry & our_name) :
     ContentsEntry(our_name)
 {
 }
 
-ContentsDirEntry::ContentsDirEntry(const std::string & our_name) :
+ContentsDirEntry::ContentsDirEntry(const FSEntry & our_name) :
     ContentsEntry(our_name)
 {
 }
 
-ContentsMiscEntry::ContentsMiscEntry(const std::string & our_name) :
+ContentsOtherEntry::ContentsOtherEntry(const FSEntry & our_name) :
     ContentsEntry(our_name)
 {
 }
 
-ContentsFifoEntry::ContentsFifoEntry(const std::string & our_name) :
-    ContentsEntry(our_name)
+namespace paludis
 {
+    template <>
+    struct Implementation<ContentsSymEntry>
+    {
+        const std::tr1::shared_ptr<const MetadataValueKey<std::string> > target_key;
+
+        Implementation(const std::string & t) :
+            target_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("target", "target", mkt_normal, t)))
+        {
+        }
+    };
 }
 
-ContentsDevEntry::ContentsDevEntry(const std::string & our_name) :
-    ContentsEntry(our_name)
-{
-}
-
-ContentsSymEntry::ContentsSymEntry(const std::string & our_name, const std::string & our_target) :
+ContentsSymEntry::ContentsSymEntry(const FSEntry & our_name, const std::string & our_target) :
+    PrivateImplementationPattern<ContentsSymEntry>(new Implementation<ContentsSymEntry>(our_target)),
     ContentsEntry(our_name),
-    _target(our_target)
+    _imp(PrivateImplementationPattern<ContentsSymEntry>::_imp)
 {
+    add_metadata_key(_imp->target_key);
 }
 
-std::string
-ContentsSymEntry::target() const
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+ContentsSymEntry::target_key() const
 {
-    return _target;
+    return _imp->target_key;
 }
 
 namespace paludis
@@ -112,29 +140,11 @@ Contents::end() const
     return ConstIterator(_imp->c.end());
 }
 
-std::ostream &
-paludis::operator<< (std::ostream & s, const ContentsEntry & e)
-{
-    s << e.as_string();
-    return s;
-}
-
-const std::string
-ContentsEntry::as_string() const
-{
-    return name();
-}
-
-const std::string
-ContentsSymEntry::as_string() const
-{
-    return name() + " -> " + target();
-}
-
-template class InstantiationPolicy<ContentsEntry, instantiation_method::NonCopyableTag>;
 template class InstantiationPolicy<Contents, instantiation_method::NonCopyableTag>;
 
 template class PrivateImplementationPattern<Contents>;
+template class PrivateImplementationPattern<ContentsEntry>;
+template class PrivateImplementationPattern<ContentsSymEntry>;
 
 template class WrappedForwardIterator<Contents::ConstIteratorTag, const std::tr1::shared_ptr<const ContentsEntry> >;
 

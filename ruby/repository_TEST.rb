@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
 # Copyright (c) 2006, 2007, 2008 Richard Brown
 #
 # This file is part of the Paludis package manager. Paludis is free software;
@@ -259,23 +259,20 @@ module Paludis
         def test_first_entry
             assert_kind_of ContentsEntry, entries[0]
             assert_kind_of ContentsDirEntry, entries[0]
-            assert_equal '//test', entries[0].to_s
-            assert_equal '//test', entries[0].name
+            assert_equal '/test', entries[0].location_key.value
         end
 
         def test_second_entry
             assert_kind_of ContentsEntry, entries[1]
             assert_kind_of ContentsFileEntry, entries[1]
-            assert_equal '/test/test_file', entries[1].to_s
-            assert_equal '/test/test_file', entries[1].name
+            assert_equal '/test/test_file', entries[1].location_key.value
         end
 
         def test_third_entry
             assert_kind_of ContentsEntry, entries[2]
             assert_kind_of ContentsSymEntry, entries[2]
-            assert_equal '/test/test_link -> /test/test_file', entries[2].to_s
-            assert_equal '/test/test_file', entries[2].target
-            assert_equal '/test/test_link', entries[2].name
+            assert_equal '/test/test_file', entries[2].target_key.value
+            assert_equal '/test/test_link', entries[2].location_key.value
         end
     end
 

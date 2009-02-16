@@ -349,7 +349,7 @@ Implementation<BrokenLinkageFinder>::gather_package(const std::tr1::shared_ptr<c
         if (0 != file)
         {
             Lock l(mutex);
-            files.insert(std::make_pair(file->name(), pkg));
+            files.insert(std::make_pair(stringify(file->location_key()->value()), pkg));
         }
     }
 }

@@ -37,8 +37,10 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/output_manager.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/set.hh>
+#include <paludis/output_manager.hh>
 #include <paludis/metadata_key.hh>
 #include <tr1/functional>
 #include <list>
@@ -65,42 +67,6 @@ namespace paludis
         }
     };
 }
-
-class NDBAMUnmerger::FileExtraInfo :
-    public Unmerger::ExtraInfo
-{
-    public:
-        std::string _md5sum;
-        time_t _mtime;
-
-        FileExtraInfo(std::string md5sum, time_t mtime) :
-            _md5sum(md5sum),
-            _mtime(mtime)
-        {
-        }
-
-        virtual ~FileExtraInfo()
-        {
-        }
-};
-
-class NDBAMUnmerger::SymlinkExtraInfo :
-    public Unmerger::ExtraInfo
-{
-    public:
-        std::string _dest;
-        time_t _mtime;
-
-        SymlinkExtraInfo(std::string dest, time_t mtime) :
-            _dest(dest),
-            _mtime(mtime)
-        {
-        }
-
-        virtual ~SymlinkExtraInfo()
-        {
-        }
-};
 
 NDBAMUnmerger::NDBAMUnmerger(const NDBAMUnmergerOptions & o) :
     Unmerger(make_named_values<UnmergerOptions>(
@@ -188,21 +154,21 @@ NDBAMUnmerger::make_tidy(const FSEntry & f) const
 }
 
 void
-NDBAMUnmerger::_add_file(const FSEntry & f, const std::string & md5, const time_t mtime)
+NDBAMUnmerger::_add_file(const std::tr1::shared_ptr<const ContentsEntry> & e)
 {
-    add_unmerge_entry(stringify(f), et_file, make_shared_ptr(new FileExtraInfo(md5, mtime)));
+    add_unmerge_entry(et_file, e);
 }
 
 void
-NDBAMUnmerger::_add_dir(const FSEntry & f)
+NDBAMUnmerger::_add_dir(const std::tr1::shared_ptr<const ContentsEntry> & e)
 {
-    add_unmerge_entry(stringify(f), et_dir, std::tr1::shared_ptr<ExtraInfo>());
+    add_unmerge_entry(et_dir, e);
 }
 
 void
-NDBAMUnmerger::_add_sym(const FSEntry & f, const std::string & target, const time_t mtime)
+NDBAMUnmerger::_add_sym(const std::tr1::shared_ptr<const ContentsEntry> & e)
 {
-    add_unmerge_entry(stringify(f), et_sym, make_shared_ptr(new SymlinkExtraInfo(target, mtime)));
+    add_unmerge_entry(et_sym, e);
 }
 
 void
@@ -210,22 +176,39 @@ NDBAMUnmerger::populate_unmerge_set()
 {
     using namespace std::tr1::placeholders;
     _imp->options.ndbam()->parse_contents(*_imp->options.package_id(),
-            std::tr1::bind(&NDBAMUnmerger::_add_file, this, _1, _2, _3),
+            std::tr1::bind(&NDBAMUnmerger::_add_file, this, _1),
             std::tr1::bind(&NDBAMUnmerger::_add_dir, this, _1),
-            std::tr1::bind(&NDBAMUnmerger::_add_sym, this, _1, _2, _3)
+            std::tr1::bind(&NDBAMUnmerger::_add_sym, this, _1)
             );
 }
 
-bool
-NDBAMUnmerger::check_file(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo> & ei) const
+namespace
 {
-    std::tr1::shared_ptr<FileExtraInfo> fie(std::tr1::static_pointer_cast<FileExtraInfo>(ei));
+    template <typename T_>
+    const T_ & require_key(const MetadataKeyHolder & h, const std::string & r)
+    {
+        MetadataKeyHolder::MetadataConstIterator m(h.find_metadata(r));
+        if (m == h.end_metadata())
+            throw InternalError(PALUDIS_HERE, "Expected key '" + r + "' not found");
+
+        const T_ * const c(simple_visitor_cast<const T_>(**m));
+        if (! c)
+            throw InternalError(PALUDIS_HERE, "Key '" + r + "' is of wrong type");
+
+        return *c;
+    }
+}
+
+bool
+NDBAMUnmerger::check_file(const std::tr1::shared_ptr<const ContentsEntry> & e) const
+{
+    const FSEntry f(e->location_key()->value());
 
     if (! (_imp->options.root() / f).exists())
         display("--- [gone ] " + stringify(f));
     else if (! (_imp->options.root() / f).is_regular_file())
         display("--- [!type] " + stringify(f));
-    else if ((_imp->options.root() / f).mtime() != fie->_mtime)
+    else if ((_imp->options.root() / f).mtime() != require_key<MetadataTimeKey>(*e, "mtime").value())
         display("--- [!time] " + stringify(f));
     else
     {
@@ -236,7 +219,7 @@ NDBAMUnmerger::check_file(const FSEntry & f, const std::tr1::shared_ptr<ExtraInf
                 (_imp->options.root() / f) << "'";
             display("--- [!md5?] " + stringify(f));
         }
-        else if (MD5(md5_file).hexsum() != fie->_md5sum)
+        else if (MD5(md5_file).hexsum() != require_key<MetadataValueKey<std::string> >(*e, "md5").value())
             display("--- [!md5 ] " + stringify(f));
         else if (config_protected(_imp->options.root() / f))
             display("--- [cfgpr] " + stringify(f));
@@ -248,18 +231,17 @@ NDBAMUnmerger::check_file(const FSEntry & f, const std::tr1::shared_ptr<ExtraInf
 }
 
 bool
-NDBAMUnmerger::check_sym(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo> & ei) const
+NDBAMUnmerger::check_sym(const std::tr1::shared_ptr<const ContentsEntry> & e) const
 {
-    std::tr1::shared_ptr<SymlinkExtraInfo> sie(std::tr1::static_pointer_cast<SymlinkExtraInfo>(ei));
-
+    const FSEntry f(e->location_key()->value());
 
     if (! (_imp->options.root() / f).exists())
         display("--- [gone ] " + stringify(f));
     else if (! (_imp->options.root() / f).is_symbolic_link())
         display("--- [!type] " + stringify(f));
-    else if ((_imp->options.root() / f).mtime() != sie->_mtime)
+    else if ((_imp->options.root() / f).mtime() != require_key<MetadataTimeKey>(*e, "mtime").value())
         display("--- [!time] " + stringify(f));
-    else if ((_imp->options.root() / f).readlink() != sie->_dest)
+    else if ((_imp->options.root() / f).readlink() != require_key<MetadataValueKey<std::string> >(*e, "target").value())
         display("--- [!dest] " + stringify(f));
     else
         return true;
@@ -268,14 +250,16 @@ NDBAMUnmerger::check_sym(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo
 }
 
 bool
-NDBAMUnmerger::check_misc(const FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const
+NDBAMUnmerger::check_misc(const std::tr1::shared_ptr<const ContentsEntry> &) const
 {
     return false;
 }
 
 bool
-NDBAMUnmerger::check_dir(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo> &) const
+NDBAMUnmerger::check_dir(const std::tr1::shared_ptr<const ContentsEntry> & e) const
 {
+    const FSEntry f(e->location_key()->value());
+
     if (! (_imp->options.root() / f).exists())
         display("--- [gone ] " + stringify(f));
     else if (! (_imp->options.root() / f).is_directory())

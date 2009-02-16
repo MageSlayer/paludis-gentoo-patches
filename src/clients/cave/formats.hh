@@ -71,10 +71,8 @@ namespace paludis
 
             const std::string show_contents_file();
             const std::string show_contents_dir();
-            const std::string show_contents_misc();
-            const std::string show_contents_dev();
-            const std::string show_contents_fifo();
             const std::string show_contents_sym();
+            const std::string show_contents_other();
 
             const std::string show_choice_forced_enabled();
             const std::string show_choice_enabled();

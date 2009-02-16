@@ -169,44 +169,30 @@ namespace test_cases
             void visit(const ContentsFileEntry & e)
             {
                 _str += "file\n";
-                _str += stringify(e.name());
+                _str += stringify(e.location_key()->value());
                 _str += '\n';
             }
 
             void visit(const ContentsDirEntry & e)
             {
                 _str += "directory\n";
-                _str += stringify(e.name());
+                _str += stringify(e.location_key()->value());
                 _str += '\n';
             }
 
             void visit(const ContentsSymEntry & e)
             {
                 _str += "symlink\n";
-                _str += stringify(e.name());
+                _str += stringify(e.location_key()->value());
                 _str += '\n';
-                _str += stringify(e.target());
-                _str += '\n';
-            }
-
-            void visit(const ContentsMiscEntry & e)
-            {
-                _str += "miscellaneous\n";
-                _str += stringify(e.name());
+                _str += stringify(e.target_key()->value());
                 _str += '\n';
             }
 
-            void visit(const ContentsFifoEntry & e)
+            void visit(const ContentsOtherEntry & e)
             {
-                _str += "fifo\n";
-                _str += stringify(e.name());
-                _str += '\n';
-            }
-
-            void visit(const ContentsDevEntry & e)
-            {
-                _str += "device\n";
-                _str += stringify(e.name());
+                _str += "other\n";
+                _str += stringify(e.location_key()->value());
                 _str += '\n';
             }
         };
@@ -250,15 +236,15 @@ namespace test_cases
                              "symlink\n/symlink\ntarget with trailing space \n"
                              "symlink\n/symlink\n target with leading space\n"
                              "symlink\n/symlink with trailing space \ntarget\n"
-                             "fifo\n/fifo\n"
-                             "fifo\n/fifo with spaces\n"
-                             "fifo\n/fifo  with  consecutive  spaces\n"
-                             "device\n/device\n"
-                             "device\n/device with spaces\n"
-                             "device\n/device  with  consecutive  spaces\n"
-                             "miscellaneous\n/miscellaneous\n"
-                             "miscellaneous\n/miscellaneous with spaces\n"
-                             "miscellaneous\n/miscellaneous  with  consecutive  spaces\n");
+                             "other\n/fifo\n"
+                             "other\n/fifo with spaces\n"
+                             "other\n/fifo  with  consecutive  spaces\n"
+                             "other\n/device\n"
+                             "other\n/device with spaces\n"
+                             "other\n/device  with  consecutive  spaces\n"
+                             "other\n/miscellaneous\n"
+                             "other\n/miscellaneous with spaces\n"
+                             "other\n/miscellaneous  with  consecutive  spaces\n");
         }
     } vdb_repository_contents_test;
 

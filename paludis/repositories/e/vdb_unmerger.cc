@@ -39,6 +39,8 @@ using namespace paludis;
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/set.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
 
@@ -64,58 +66,6 @@ namespace paludis
         }
     };
 }
-
-class VDBUnmerger::FileExtraInfo :
-    public Unmerger::ExtraInfo
-{
-    public:
-        std::string _md5sum;
-        time_t _mtime;
-
-        FileExtraInfo(std::string md5sum, time_t mtime) :
-            _md5sum(md5sum),
-            _mtime(mtime)
-        {
-        }
-
-        virtual ~FileExtraInfo()
-        {
-        }
-};
-
-class VDBUnmerger::SymlinkExtraInfo :
-    public Unmerger::ExtraInfo
-{
-    public:
-        std::string _dest;
-        time_t _mtime;
-
-        SymlinkExtraInfo(std::string dest, time_t mtime) :
-            _dest(dest),
-            _mtime(mtime)
-        {
-        }
-
-        virtual ~SymlinkExtraInfo()
-        {
-        }
-};
-
-class VDBUnmerger::MiscExtraInfo :
-    public Unmerger::ExtraInfo
-{
-    public:
-        std::string _type;
-
-        MiscExtraInfo(std::string type) :
-            _type(type)
-        {
-        }
-
-        virtual ~MiscExtraInfo()
-        {
-        }
-};
 
 VDBUnmerger::VDBUnmerger(const VDBUnmergerOptions & o) :
     Unmerger(make_named_values<UnmergerOptions>(
@@ -202,74 +152,83 @@ VDBUnmerger::make_tidy(const FSEntry & f) const
     return f_str.substr(root_str.length());
 }
 
+namespace
+{
+    struct GetET
+    {
+        EntryType visit(const ContentsFileEntry &) const
+        {
+            return et_file;
+        }
+
+        EntryType visit(const ContentsDirEntry &) const
+        {
+            return et_dir;
+        }
+
+        EntryType visit(const ContentsSymEntry &) const
+        {
+            return et_sym;
+        }
+
+        EntryType visit(const ContentsOtherEntry &) const
+        {
+            return et_misc;
+        }
+    };
+
+    EntryType get_et(const ContentsEntry & e)
+    {
+        GetET v;
+        return e.accept_returning<EntryType>(v);
+    }
+}
+
 void
 VDBUnmerger::populate_unmerge_set()
 {
-    SafeIFStream c(_imp->options.contents_file());
-    if (! c)
-        throw VDBUnmergerError("Cannot read '" + stringify(_imp->options.contents_file()) + "'");
+    if (! _imp->options.package_id()->contents_key()->value())
+        throw VDBUnmergerError("Id '" + stringify(*_imp->options.package_id()) + "' has no contents key");
 
-    std::string line;
-    while (std::getline(c, line))
+    std::tr1::shared_ptr<const Contents> contents(_imp->options.package_id()->contents_key()->value());
+    for (Contents::ConstIterator c(contents->begin()), c_end(contents->end()) ;
+            c != c_end ; ++c)
+        add_unmerge_entry(get_et(**c), *c);
+}
+
+namespace
+{
+    template <typename T_>
+    const T_ & require_key(const MetadataKeyHolder & h, const std::string & r)
     {
-        std::vector<std::string> tokens;
-        if (! erepository::VDBContentsTokeniser::tokenise(line, std::back_inserter(tokens)))
-        {
-            Log::get_instance()->message("e.vdb.contents.malformed", ll_warning, lc_no_context) << "Malformed VDB entry '" << line << "'";
-            continue;
-        }
+        MetadataKeyHolder::MetadataConstIterator m(h.find_metadata(r));
+        if (m == h.end_metadata())
+            throw InternalError(PALUDIS_HERE, "Expected key '" + r + "' not found");
 
-        if ("obj" == tokens.at(0))
-        {
-            std::string md5sum(tokens.at(2));
-            time_t mtime(destringify<time_t>(tokens.at(3)));
-            std::tr1::shared_ptr<ExtraInfo> extra(new FileExtraInfo(md5sum, mtime));
-            add_unmerge_entry(tokens.at(1), et_file, extra);
+        const T_ * const c(simple_visitor_cast<const T_>(**m));
+        if (! c)
+            throw InternalError(PALUDIS_HERE, "Key '" + r + "' is of wrong type");
 
-        }
-        else if ("sym" == tokens.at(0))
-        {
-            std::string dest(tokens.at(2));
-            time_t mtime(destringify<time_t>(tokens.at(3)));
-            std::tr1::shared_ptr<ExtraInfo> extra(new SymlinkExtraInfo(dest, mtime));
-            add_unmerge_entry(tokens.at(1), et_sym, extra);
-        }
-        else if ("misc" == tokens.at(0))
-        {
-        }
-        else if ("fif" == tokens.at(0) || "dev" == tokens.at(0))
-        {
-            std::string type(tokens.at(0));
-            std::tr1::shared_ptr<ExtraInfo> extra(new MiscExtraInfo(type));
-            add_unmerge_entry(tokens.at(1), et_misc, extra);
-        }
-        else if ("dir" == tokens.at(0))
-        {
-            add_unmerge_entry(tokens.at(1), et_dir, std::tr1::shared_ptr<ExtraInfo>());
-        }
-        else
-            Log::get_instance()->message("e.vdb.contents.malformed", ll_warning, lc_no_context)
-                << "Malformed VDB entry '" << line << "'";
+        return *c;
     }
 }
 
 bool
-VDBUnmerger::check_file(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo> & ei) const
+VDBUnmerger::check_file(const std::tr1::shared_ptr<const ContentsEntry> & e) const
 {
-    std::tr1::shared_ptr<FileExtraInfo> fie(std::tr1::static_pointer_cast<FileExtraInfo>(ei));
-
+    const FSEntry f(e->location_key()->value());
     if (! (_imp->options.root() / f).exists())
         display("--- [gone ] " + stringify(f));
     else if (! (_imp->options.root() / f).is_regular_file())
         display("--- [!type] " + stringify(f));
-    else if ((_imp->options.root() / f).mtime() != fie->_mtime)
+    else if ((_imp->options.root() / f).mtime() != require_key<MetadataTimeKey>(*e, "mtime").value())
         display("--- [!time] " + stringify(f));
     else
     {
         try
         {
             SafeIFStream md5_file(_imp->options.root() / f);
-            if (MD5(md5_file).hexsum() != fie->_md5sum)
+            if (MD5(md5_file).hexsum() != require_key<MetadataValueKey<std::string> >(*e, "md5").value())
                 display("--- [!md5 ] " + stringify(f));
             else if (config_protected(_imp->options.root() / f))
                 display("--- [cfgpr] " + stringify(f));
@@ -288,17 +247,17 @@ VDBUnmerger::check_file(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo>
 }
 
 bool
-VDBUnmerger::check_sym(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo> & ei) const
+VDBUnmerger::check_sym(const std::tr1::shared_ptr<const ContentsEntry> & e) const
 {
-    std::tr1::shared_ptr<SymlinkExtraInfo> sie(std::tr1::static_pointer_cast<SymlinkExtraInfo>(ei));
+    const FSEntry f(e->location_key()->value());
 
     if (! (_imp->options.root() / f).exists())
         display("--- [gone ] " + stringify(f));
     else if (! (_imp->options.root() / f).is_symbolic_link())
         display("--- [!type] " + stringify(f));
-    else if ((_imp->options.root() / f).mtime() != sie->_mtime)
+    else if ((_imp->options.root() / f).mtime() != require_key<MetadataTimeKey>(*e, "mtime").value())
         display("--- [!time] " + stringify(f));
-    else if ((_imp->options.root() / f).readlink() != sie->_dest)
+    else if ((_imp->options.root() / f).readlink() != require_key<MetadataValueKey<std::string> >(*e, "target").value())
         display("--- [!dest] " + stringify(f));
     else
         return true;
@@ -307,25 +266,20 @@ VDBUnmerger::check_sym(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo> 
 }
 
 bool
-VDBUnmerger::check_misc(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo> & ei) const
+VDBUnmerger::check_misc(const std::tr1::shared_ptr<const ContentsEntry> & e) const
 {
-    std::tr1::shared_ptr<MiscExtraInfo> mie(std::tr1::static_pointer_cast<MiscExtraInfo>(ei));
+    const FSEntry f(e->location_key()->value());
 
     if (! (_imp->options.root() / f).exists())
         display("--- [gone ] " + stringify(f));
-    else if ("fif" == mie->_type && ! (_imp->options.root() / f).is_fifo())
-        display("--- [!type] " + stringify(f));
-    else if ("dev" == mie->_type && ! (_imp->options.root() / f).is_device())
-        display("--- [!type] " + stringify(f));
-    else
-        return true;
-
     return false;
 }
 
 bool
-VDBUnmerger::check_dir(const FSEntry & f, const std::tr1::shared_ptr<ExtraInfo> &) const
+VDBUnmerger::check_dir(const std::tr1::shared_ptr<const ContentsEntry> & e) const
 {
+    const FSEntry f(e->location_key()->value());
+
     if (! (_imp->options.root() / f).exists())
         display("--- [gone ] " + stringify(f));
     else if (! (_imp->options.root() / f).is_directory())

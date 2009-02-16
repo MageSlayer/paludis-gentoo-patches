@@ -40,13 +40,15 @@
 #include <paludis/util/tribool.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/destringify.hh>
 
 #include <paludis/contents.hh>
 #include <paludis/repository.hh>
 #include <paludis/environment.hh>
 #include <paludis/stringify_formatter-impl.hh>
 #include <paludis/dep_spec_flattener.hh>
-#include <paludis/util/safe_ifstream.hh>
+#include <paludis/literal_metadata_key.hh>
 
 #include <tr1/functional>
 #include <list>
@@ -1006,17 +1008,25 @@ EContentsKey::value() const
         }
 
         if ("obj" == tokens.at(0))
-            _imp->value->add(std::tr1::shared_ptr<ContentsEntry>(new ContentsFileEntry(tokens.at(1))));
+        {
+            std::tr1::shared_ptr<ContentsEntry> e(new ContentsFileEntry(tokens.at(1)));
+            e->add_metadata_key(make_shared_ptr(new LiteralMetadataTimeKey("mtime", "mtime", mkt_normal, destringify<time_t>(tokens.at(3)))));
+            e->add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("md5", "md5", mkt_normal, tokens.at(2))));
+            _imp->value->add(e);
+        }
         else if ("dir" == tokens.at(0))
-            _imp->value->add(std::tr1::shared_ptr<ContentsEntry>(new ContentsDirEntry(tokens.at(1))));
-        else if ("misc" == tokens.at(0))
-            _imp->value->add(std::tr1::shared_ptr<ContentsEntry>(new ContentsMiscEntry(tokens.at(1))));
-        else if ("fif" == tokens.at(0))
-            _imp->value->add(std::tr1::shared_ptr<ContentsEntry>(new ContentsFifoEntry(tokens.at(1))));
-        else if ("dev" == tokens.at(0))
-            _imp->value->add(std::tr1::shared_ptr<ContentsEntry>(new ContentsDevEntry(tokens.at(1))));
+        {
+            std::tr1::shared_ptr<ContentsEntry> e(new ContentsDirEntry(tokens.at(1)));
+            _imp->value->add(e);
+        }
         else if ("sym" == tokens.at(0))
-            _imp->value->add(std::tr1::shared_ptr<ContentsEntry>(new ContentsSymEntry(tokens.at(1), tokens.at(2))));
+        {
+            std::tr1::shared_ptr<ContentsEntry> e(new ContentsSymEntry(tokens.at(1), tokens.at(2)));
+            e->add_metadata_key(make_shared_ptr(new LiteralMetadataTimeKey("mtime", "mtime", mkt_normal, destringify<time_t>(tokens.at(3)))));
+            _imp->value->add(e);
+        }
+        else if ("misc" == tokens.at(0) || "fif" == tokens.at(0) || "dev" == tokens.at(0))
+            _imp->value->add(std::tr1::shared_ptr<ContentsEntry>(new ContentsOtherEntry(tokens.at(1))));
     }
 
     return _imp->value;

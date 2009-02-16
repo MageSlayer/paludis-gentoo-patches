@@ -54,17 +54,12 @@ module Paludis
 
         def test_respond_to
             ce = get_ce
-            assert_respond_to ce, :name
+            assert_respond_to ce, :location_key
         end
 
         def test_name
             ce = get_ce
-            assert_equal 'test', ce.name
-        end
-
-        def test_to_s
-            ce = get_ce
-            assert_equal 'test', ce.to_s
+            assert_equal 'test', ce.location_key.value
         end
     end
 
@@ -93,23 +88,18 @@ module Paludis
 
         def test_respond_to
             ce = get_ce
-            assert_respond_to ce, :name
+            assert_respond_to ce, :location_key
         end
 
         def test_name
             ce = get_ce
-            assert_equal 'test', ce.name
-        end
-
-        def test_to_s
-            ce = get_ce
-            assert_equal 'test', ce.to_s
+            assert_equal 'test', ce.location_key.value
         end
     end
 
-    class TestCase_ContentsMiscEntry < Test::Unit::TestCase
+    class TestCase_ContentsOtherEntry < Test::Unit::TestCase
         def get_ce
-            ContentsMiscEntry.new('test')
+            ContentsOtherEntry.new('test')
         end
 
         def test_create
@@ -118,31 +108,26 @@ module Paludis
 
         def test_create_error
             assert_raise ArgumentError do
-                ContentsMiscEntry.new
+                ContentsOtherEntry.new
             end
 
             assert_raise ArgumentError do
-                ContentsMiscEntry.new('a','b')
+                ContentsOtherEntry.new('a','b')
             end
 
             assert_raise TypeError do
-                ContentsMiscEntry.new(1)
+                ContentsOtherEntry.new(1)
             end
         end
 
         def test_respond_to
             ce = get_ce
-            assert_respond_to ce, :name
+            assert_respond_to ce, :location_key
         end
 
         def test_name
             ce = get_ce
-            assert_equal 'test', ce.name
-        end
-
-        def test_to_s
-            ce = get_ce
-            assert_equal 'test', ce.to_s
+            assert_equal 'test', ce.location_key.value
         end
     end
 
@@ -179,23 +164,18 @@ module Paludis
 
         def test_respond_to
             ce = get_ce
-            assert_respond_to ce, :name
-            assert_respond_to ce, :target
+            assert_respond_to ce, :location_key
+            assert_respond_to ce, :target_key
         end
 
         def test_name
             ce = get_ce
-            assert_equal 'test_name', ce.name
+            assert_equal 'test_name', ce.location_key.value
         end
 
         def test_target
             ce = get_ce
-            assert_equal 'test_target', ce.target
-        end
-
-        def test_to_s
-            ce = get_ce
-            assert_equal "test_name -> test_target", ce.to_s
+            assert_equal 'test_target', ce.target_key.value
         end
     end
     class TestCase_Contents < Test::Unit::TestCase
@@ -236,13 +216,13 @@ module Paludis
             c.add(cfe)
 
             assert_equal 1, c.entries.length
-            assert_equal cfe.to_s, c.entries.first.to_s
+            assert_equal cfe.location_key.value, c.entries.first.location_key.value
 
             c.add(cse)
 
             assert_equal 2, c.entries.length
-            assert_equal cfe.to_s, c.entries.first.to_s
-            assert_equal cse.to_s, c.entries.last.to_s
+            assert_equal cfe.location_key.value, c.entries.first.location_key.value
+            assert_equal cse.location_key.value, c.entries.last.location_key.value
 
         end
     end

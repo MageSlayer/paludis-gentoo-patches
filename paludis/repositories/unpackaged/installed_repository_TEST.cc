@@ -55,32 +55,22 @@ namespace
 
         void visit(const ContentsFileEntry & f)
         {
-            s << "file<" << f.name() << ">";
+            s << "file<" << f.location_key()->value() << ">";
         }
 
         void visit(const ContentsDirEntry & f)
         {
-            s << "dir<" << f.name() << ">";
+            s << "dir<" << f.location_key()->value() << ">";
         }
 
         void visit(const ContentsSymEntry & f)
         {
-            s << "sym<" << f.name() << "=" << f.target() << ">";
-        }
+            s << "sym<" << f.location_key()->value() << "=" << f.target_key()->value() << ">";
 
-        void visit(const ContentsMiscEntry & f)
-        {
-            s << "misc<" << f.name() << ">";
         }
-
-        void visit(const ContentsDevEntry & f)
+        void visit(const ContentsOtherEntry & f)
         {
-            s << "dev<" << f.name() << ">";
-        }
-
-        void visit(const ContentsFifoEntry & f)
-        {
-            s << "fifo<" << f.name() << ">";
+            s << "other<" << f.location_key()->value() << ">";
         }
     };
 

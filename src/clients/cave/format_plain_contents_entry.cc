@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,6 +24,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/contents.hh>
+#include <paludis/metadata_key.hh>
 #include <sstream>
 
 using namespace paludis;
@@ -47,18 +48,10 @@ namespace
 
         void visit(const ContentsSymEntry & c)
         {
-            target = c.target();
+            target = c.target_key()->value();
         }
 
-        void visit(const ContentsMiscEntry &)
-        {
-        }
-
-        void visit(const ContentsDevEntry &)
-        {
-        }
-
-        void visit(const ContentsFifoEntry &)
+        void visit(const ContentsOtherEntry &)
         {
         }
     };
@@ -82,12 +75,12 @@ paludis::cave::format_plain_contents_entry(
     c->accept(v);
 
     std::tr1::shared_ptr<Map<char, std::string> > m(new Map<char, std::string>);
-    m->insert('n', c->name());
-    m->insert('d', stringify(FSEntry(c->name()).dirname()));
-    m->insert('b', stringify(FSEntry(c->name()).basename()));
+    m->insert('n', stringify(c->location_key()->value()));
+    m->insert('d', stringify(c->location_key()->value().dirname()));
+    m->insert('b', stringify(c->location_key()->value().basename()));
     m->insert('t', v.target);
     m->insert('a', v.target.empty() ? "" : " -> ");
-    m->insert('i', std::string(number_of_parents(FSEntry(c->name())), ' '));
+    m->insert('i', std::string(number_of_parents(c->location_key()->value()), ' '));
     m->insert('/', v.slash);
 
     return format_string(f, m);

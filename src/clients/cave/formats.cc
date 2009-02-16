@@ -359,25 +359,13 @@ paludis::cave::f::show_contents_file()
 }
 
 const std::string
-paludis::cave::f::show_contents_dev()
-{
-    return "%{if b}%{column 30}%{endif}%r%{if b}\\n%{else} %{endif}";
-}
-
-const std::string
-paludis::cave::f::show_contents_misc()
+paludis::cave::f::show_contents_other()
 {
     return "%{if b}%{column 30}%{endif}%r%{if b}\\n%{else} %{endif}";
 }
 
 const std::string
 paludis::cave::f::show_contents_dir()
-{
-    return "%{if b}%{column 30}%{endif}%r%{if b}\\n%{else} %{endif}";
-}
-
-const std::string
-paludis::cave::f::show_contents_fifo()
 {
     return "%{if b}%{column 30}%{endif}%r%{if b}\\n%{else} %{endif}";
 }
