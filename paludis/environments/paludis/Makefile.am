@@ -8,7 +8,7 @@ DEFS= \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\" \
-	-DSHAREDIR=\"$(sharedir)\"
+	-DSHAREDIR=\"$(datarootdir)\"
 
 libpaludispaludisenvironment_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	action_to_string.cc    action_to_string.hh \
@@ -28,7 +28,7 @@ libpaludispaludisenvironment_@PALUDIS_PC_SLOT@_la_SOURCES = \
 
 libpaludispaludisenvironment_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
-shareenvpaludisdir = $(sharedir)/paludis/environments/paludis/
+shareenvpaludisdir = $(datarootdir)/paludis/environments/paludis/
 
 dist_shareenvpaludis_DATA = \
 	default_output.conf \

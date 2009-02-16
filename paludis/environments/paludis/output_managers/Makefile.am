@@ -9,7 +9,7 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-shareenvpaludisdir = $(sharedir)/paludis/environments/paludis/output_managers
+shareenvpaludisdir = $(datarootdir)/paludis/environments/paludis/output_managers
 
 dist_shareenvpaludis_DATA = \
 	logged.conf \
