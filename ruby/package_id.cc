@@ -165,7 +165,7 @@ namespace
             if (Qnil != val)
                 rb_yield(val);
         }
-            return Qnil;
+        return Qnil;
     }
 
     /*
