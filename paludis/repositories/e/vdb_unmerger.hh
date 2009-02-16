@@ -34,7 +34,6 @@ namespace paludis
     {
         struct config_protect;
         struct config_protect_mask;
-        struct contents_file;
         struct environment;
         struct output_manager;
         struct package_id;
@@ -52,7 +51,6 @@ namespace paludis
     {
         NamedValue<n::config_protect, std::string> config_protect;
         NamedValue<n::config_protect_mask, std::string> config_protect_mask;
-        NamedValue<n::contents_file, FSEntry> contents_file;
         NamedValue<n::environment, Environment *> environment;
         NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
         NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
@@ -90,9 +88,6 @@ namespace paludis
     {
         private:
             Implementation<VDBUnmerger> * _imp;
-            class FileExtraInfo;
-            class SymlinkExtraInfo;
-            class MiscExtraInfo;
 
         protected:
             bool config_protected(const FSEntry &) const;
@@ -102,10 +97,10 @@ namespace paludis
 
             void display(const std::string &) const;
 
-            bool check_file(const FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const;
-            bool check_dir(const FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const;
-            bool check_sym(const FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const;
-            bool check_misc(const FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const;
+            bool check_file(const std::tr1::shared_ptr<const ContentsEntry> &) const;
+            bool check_dir(const std::tr1::shared_ptr<const ContentsEntry> &) const;
+            bool check_sym(const std::tr1::shared_ptr<const ContentsEntry> &) const;
+            bool check_misc(const std::tr1::shared_ptr<const ContentsEntry> &) const;
 
         public:
             ///\name Basic operations

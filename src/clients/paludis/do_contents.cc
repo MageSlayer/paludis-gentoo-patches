@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -36,32 +36,22 @@ namespace
     {
         void visit(const ContentsFileEntry & e)
         {
-            cout << "    " << colour(cl_file, e.name()) << endl;
+            cout << "    " << colour(cl_file, stringify(e.location_key()->value())) << endl;
         }
 
         void visit(const ContentsDirEntry & e)
         {
-            cout << "    " << colour(cl_dir, e.name()) << endl;
+            cout << "    " << colour(cl_dir, stringify(e.location_key()->value()) )<< endl;
         }
 
         void visit(const ContentsSymEntry & e)
         {
-            cout << "    " << colour(cl_sym, e.name()) << " -> " << e.target() << endl;
+            cout << "    " << colour(cl_sym, stringify(e.location_key()->value())) << " -> " << e.target_key()->value() << endl;
         }
 
-        void visit(const ContentsMiscEntry & e)
+        void visit(const ContentsOtherEntry & e)
         {
-            cout << "    " << colour(cl_misc, e.name()) << endl;
-        }
-
-        void visit(const ContentsFifoEntry & e)
-        {
-            cout << "    " << colour(cl_fifo, e.name()) << endl;
-        }
-
-        void visit(const ContentsDevEntry & e)
-        {
-            cout << "    " << colour(cl_dev, e.name()) << endl;
+            cout << "    " << colour(cl_other, stringify(e.location_key()->value())) << endl;
         }
     };
 }

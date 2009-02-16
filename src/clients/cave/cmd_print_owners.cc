@@ -87,17 +87,17 @@ namespace
 
     bool handle_full(const std::string & q, const std::tr1::shared_ptr<const ContentsEntry> & e)
     {
-        return q == e->name();
+        return q == stringify(e->location_key()->value());
     }
 
     bool handle_basename(const std::string & q, const std::tr1::shared_ptr<const ContentsEntry> & e)
     {
-        return q == FSEntry(e->name()).basename();
+        return q == e->location_key()->value().basename();
     }
 
     bool handle_partial(const std::string & q, const std::tr1::shared_ptr<const ContentsEntry> & e)
     {
-        return std::string::npos != e->name().find(q);
+        return std::string::npos != stringify(e->location_key()->value()).find(q);
     }
 }
 

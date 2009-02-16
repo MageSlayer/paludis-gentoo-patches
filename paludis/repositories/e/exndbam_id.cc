@@ -32,23 +32,8 @@ using namespace paludis::erepository;
 
 namespace
 {
-    void create_file(Contents & c, const FSEntry & f)
-    {
-        c.add(make_shared_ptr(new ContentsFileEntry(stringify(f))));
-    }
-
-    void create_dir(Contents & c, const FSEntry & f)
-    {
-        c.add(make_shared_ptr(new ContentsDirEntry(stringify(f))));
-    }
-
-    void create_sym(Contents & c, const FSEntry & f, const FSEntry & t)
-    {
-        c.add(make_shared_ptr(new ContentsSymEntry(stringify(f), stringify(t))));
-    }
-
     class ExndbamContentsKey :
-        public MetadataValueKey<std::tr1::shared_ptr<const Contents> > 
+        public MetadataValueKey<std::tr1::shared_ptr<const Contents> >
     {
         private:
             const PackageID * const _id;
@@ -72,9 +57,9 @@ namespace
                 using namespace std::tr1::placeholders;
                 _v.reset(new Contents);
                 _db->parse_contents(*_id,
-                        std::tr1::bind(&create_file, std::tr1::ref(*_v), _1),
-                        std::tr1::bind(&create_dir, std::tr1::ref(*_v), _1),
-                        std::tr1::bind(&create_sym, std::tr1::ref(*_v), _1, _2)
+                        std::tr1::bind(&Contents::add, _v.get(), std::tr1::placeholders::_1),
+                        std::tr1::bind(&Contents::add, _v.get(), std::tr1::placeholders::_1),
+                        std::tr1::bind(&Contents::add, _v.get(), std::tr1::placeholders::_1)
                         );
                 return _v;
             }
@@ -92,6 +77,12 @@ namespace
             virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result))
             {
                 return mkt_internal;
+            }
+
+            virtual void invalidate() const
+            {
+                Lock l(_mutex);
+                _v.reset();
             }
     };
 }

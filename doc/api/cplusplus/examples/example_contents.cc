@@ -32,35 +32,27 @@ namespace
     class ContentsPrinter
     {
         public:
-            void visit(const ContentsDevEntry & d)
-            {
-                cout << left << setw(10) << "device" << d.name() << endl;
-            }
-
-            void visit(const ContentsMiscEntry & d)
-            {
-                cout << left << setw(10) << "misc" << d.name() << endl;
-            }
-
             void visit(const ContentsFileEntry & d)
             {
-                cout << left << setw(10) << "file" << d.name() << endl;
+                cout << left << setw(10) << "file" << d.location_key()->value() << endl;
             }
 
             void visit(const ContentsDirEntry & d)
             {
-                cout << left << setw(10) << "dir" << d.name() << endl;
-            }
-
-            void visit(const ContentsFifoEntry & d)
-            {
-                cout << left << setw(10) << "fifo" << d.name() << endl;
+                cout << left << setw(10) << "dir" << d.location_key()->value() << endl;
             }
 
             void visit(const ContentsSymEntry & d)
             {
-                cout << left << setw(10) << "sym" << d.name() << " -> " << d.target() << endl;
+                cout << left << setw(10) << "sym" << d.location_key()->value()
+                    << " -> " << d.target_key()->value() << endl;
             }
+
+            void visit(const ContentsOtherEntry & d)
+            {
+                cout << left << setw(10) << "other" << d.location_key()->value() << endl;
+            }
+
     };
 }
 

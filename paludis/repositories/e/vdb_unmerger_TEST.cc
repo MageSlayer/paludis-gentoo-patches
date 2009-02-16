@@ -17,20 +17,41 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "vdb_unmerger.hh"
+#include <paludis/repositories/e/vdb_unmerger.hh>
+#include <paludis/repositories/e/vdb_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/standard_output_manager.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/map.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/standard_output_manager.hh>
+#include <paludis/user_dep_spec.hh>
+#include <paludis/package_database.hh>
+#include <paludis/generator.hh>
+#include <paludis/selection.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/filter.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
+#include <algorithm>
 
 using namespace paludis;
 using namespace test;
 
 namespace
 {
+    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+            const std::string & k)
+    {
+        Map<std::string, std::string>::ConstIterator mm(m->find(k));
+        if (m->end() == mm)
+            return "";
+        else
+            return mm->second;
+    }
+
     class VDBUnmergerNoDisplay :
         public VDBUnmerger
     {
@@ -48,15 +69,24 @@ namespace
             }
     };
 
+    std::string fix(const std::string & s)
+    {
+        std::string result(s);
+        std::replace(result.begin(), result.end(), ' ', '_');
+        std::replace(result.begin(), result.end(), '\t', '_');
+        return result;
+    }
+
     class VDBUnmergerTest :
         public TestCase
     {
         public:
-
+            const std::string what;
             FSEntry root_dir;
             std::string target;
             TestEnvironment env;
-            VDBUnmergerNoDisplay unmerger;
+            std::tr1::shared_ptr<Repository> repo;
+            std::tr1::shared_ptr<VDBUnmergerNoDisplay> unmerger;
 
             bool repeatable() const
             {
@@ -64,21 +94,41 @@ namespace
             }
 
         protected:
-
-            VDBUnmergerTest(const std::string & what) :
-                TestCase("unmerge '" + what + "' test"),
+            VDBUnmergerTest(const std::string & w) :
+                TestCase("unmerge '" + w + "' test"),
+                what(w),
                 root_dir("vdb_unmerger_TEST_dir/root"),
-                target(what),
-                unmerger(make_named_values<VDBUnmergerOptions>(
-                            value_for<n::config_protect>("/protected_file /protected_dir"),
-                            value_for<n::config_protect_mask>("/protected_dir/unprotected_file /protected_dir/unprotected_dir"),
-                            value_for<n::contents_file>("vdb_unmerger_TEST_dir/CONTENTS/" + what),
-                            value_for<n::environment>(&env),
-                            value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
-                            value_for<n::package_id>(std::tr1::shared_ptr<PackageID>()),
-                            value_for<n::root>(root_dir)
-                        ))
+                target(w)
             {
+            }
+
+            virtual void main_run() = 0;
+
+        public:
+            void run()
+            {
+                env.set_paludis_command("/bin/false");
+                std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+                keys->insert("format", "vdb");
+                keys->insert("names_cache", "/var/empty");
+                keys->insert("provides_cache", "/var/empty");
+                keys->insert("location", stringify(FSEntry::cwd() / "vdb_unmerger_TEST_dir" / "repo"));
+                keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_unmerger_TEST_dir" / "build"));
+                repo = VDBRepository::repository_factory_create(&env, std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1));
+                env.package_database()->add_repository(0, repo);
+
+                unmerger.reset(new VDBUnmergerNoDisplay(make_named_values<VDBUnmergerOptions>(
+                                value_for<n::config_protect>("/protected_file /protected_dir"),
+                                value_for<n::config_protect_mask>("/protected_dir/unprotected_file /protected_dir/unprotected_dir"),
+                                value_for<n::environment>(&env),
+                                value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
+                                value_for<n::package_id>(*env[selection::RequireExactlyOne(generator::Matches(
+                                            parse_user_package_dep_spec("cat/" + fix(what), &env, UserPackageDepSpecOptions()),
+                                            MatchPackageOptions()))]->begin()),
+                                value_for<n::root>(root_dir)
+                                )));
+
+                main_run();
             }
     };
 }
@@ -89,11 +139,11 @@ namespace test_cases
     {
         VDBUnmergerTestFileOk() : VDBUnmergerTest("file_ok") { }
 
-        void run()
+        void main_run()
         {
             TEST_CHECK((root_dir / target).is_regular_file());
 
-            unmerger.unmerge();
+            unmerger->unmerge();
 
             TEST_CHECK(! (root_dir / target).exists());
         }
@@ -103,11 +153,11 @@ namespace test_cases
     {
         VDBUnmergerTestFileWithSpaces() : VDBUnmergerTest("file_ with spaces") { }
 
-        void run()
+        void main_run()
         {
             TEST_CHECK((root_dir / target).is_regular_file());
 
-            unmerger.unmerge();
+            unmerger->unmerge();
 
             TEST_CHECK(! (root_dir / target).exists());
         }
@@ -117,11 +167,11 @@ namespace test_cases
     {
         VDBUnmergerTestFileWithLotsOfSpaces() : VDBUnmergerTest("file_ with lots  of   spaces") { }
 
-        void run()
+        void main_run()
         {
             TEST_CHECK((root_dir / target).is_regular_file());
 
-            unmerger.unmerge();
+            unmerger->unmerge();
 
             TEST_CHECK(! (root_dir / target).exists());
         }
@@ -131,11 +181,11 @@ namespace test_cases
     {
         VDBUnmergerTestFileWithTrailingSpace() : VDBUnmergerTest("file_ with trailing  space\t ") { }
 
-        void run()
+        void main_run()
         {
             TEST_CHECK((root_dir / target).is_regular_file());
 
-            unmerger.unmerge();
+            unmerger->unmerge();
 
             TEST_CHECK(! (root_dir / target).exists());
         }
@@ -145,11 +195,11 @@ namespace test_cases
     {
         VDBUnmergerTestFileBadType() : VDBUnmergerTest("file_bad_type") { }
 
-        void run()
+        void main_run()
         {
             TEST_CHECK((root_dir / target).is_directory());
 
-            unmerger.unmerge();
+            unmerger->unmerge();
 
             TEST_CHECK((root_dir / target).is_directory());
         }
@@ -159,11 +209,11 @@ namespace test_cases
     {
         VDBUnmergerTestFileBadMd5sum() : VDBUnmergerTest("file_bad_md5sum") { }
 
-        void run()
+        void main_run()
         {
             TEST_CHECK((root_dir / target).is_regular_file());
 
-            unmerger.unmerge();
+            unmerger->unmerge();
 
             TEST_CHECK((root_dir / target).is_regular_file());
         }
@@ -173,11 +223,11 @@ namespace test_cases
     {
         VDBUnmergerTestFileBadMtime() : VDBUnmergerTest("file_bad_mtime") { }
 
-        void run()
+        void main_run()
         {
             TEST_CHECK((root_dir / target).is_regular_file());
 
-            unmerger.unmerge();
+            unmerger->unmerge();
 
             TEST_CHECK((root_dir / target).is_regular_file());
         }
@@ -187,9 +237,9 @@ namespace test_cases
     {
         VDBUnmergerTestFileReplacesDirectory() : VDBUnmergerTest("file_replaces_dir") { }
 
-        void run()
+        void main_run()
         {
-            unmerger.unmerge();
+            unmerger->unmerge();
         }
     } test_vdb_unmerger_file_replaces_directory;
 
@@ -197,11 +247,11 @@ namespace test_cases
     {
         VDBUnmergerTestDirOk() : VDBUnmergerTest("dir_ok") { }
 
-        void run()
+        void main_run()
         {
             TEST_CHECK((root_dir / target).is_directory());
 
-            unmerger.unmerge();
+            unmerger->unmerge();
 
             TEST_CHECK(! (root_dir / target).exists());
         }
@@ -211,11 +261,11 @@ namespace test_cases
     {
         VDBUnmergerTestDirWithSpaces() : VDBUnmergerTest("dir_ with spaces") { }
 
-        void run()
+        void main_run()
         {
             TEST_CHECK((root_dir / target).is_directory());
 
-            unmerger.unmerge();
+            unmerger->unmerge();
 
             TEST_CHECK(! (root_dir / target).exists());
         }
@@ -225,11 +275,11 @@ namespace test_cases
     {
         VDBUnmergerTestDirWithLotsOfSpaces() : VDBUnmergerTest("dir_ with lots  of   spaces") { }
 
-        void run()
+        void main_run()
         {
             TEST_CHECK((root_dir / target).is_directory());
 
-            unmerger.unmerge();
+            unmerger->unmerge();
 
             TEST_CHECK(! (root_dir / target).exists());
         }
@@ -239,11 +289,11 @@ namespace test_cases
     {
         VDBUnmergerTestDirBadType() : VDBUnmergerTest("dir_bad_type") { }
 
-        void run()
+        void main_run()
         {
             TEST_CHECK((root_dir / target).is_regular_file());
 
-            unmerger.unmerge();
+            unmerger->unmerge();
 
             TEST_CHECK((root_dir / target).is_regular_file());
         }
@@ -253,11 +303,11 @@ namespace test_cases
     {
         VDBUnmergerTestDirNotEmpty() : VDBUnmergerTest("dir_not_empty") { }
 
-        void run()
+        void main_run()
         {
             TEST_CHECK((root_dir / target).is_directory());
 
-            unmerger.unmerge();
+            unmerger->unmerge();
 
             TEST_CHECK((root_dir / target).is_directory());
         }
@@ -267,11 +317,11 @@ namespace test_cases
     {
         VDBUnmergerTestSymOk() : VDBUnmergerTest("sym_ok") { }
 
-        void run()
+        void main_run()
         {
             TEST_CHECK((root_dir / target).is_symbolic_link());
 
-            unmerger.unmerge();
+            unmerger->unmerge();
 
             TEST_CHECK(! (root_dir / target).exists());
         }
@@ -281,11 +331,11 @@ namespace test_cases
     {
         VDBUnmergerTestSymWithSpaces() : VDBUnmergerTest("sym_ with spaces") { }
 
-        void run()
+        void main_run()
         {
             TEST_CHECK((root_dir / target).is_symbolic_link());
 
-            unmerger.unmerge();
+            unmerger->unmerge();
 
             TEST_CHECK(! (root_dir / target).exists());
         }
@@ -295,11 +345,11 @@ namespace test_cases
     {
         VDBUnmergerTestSymWithLotsOfSpaces() : VDBUnmergerTest("sym_ with lots  of   spaces") { }
 
-        void run()
+        void main_run()
         {
             TEST_CHECK((root_dir / target).is_symbolic_link());
 
-            unmerger.unmerge();
+            unmerger->unmerge();
 
             TEST_CHECK(! (root_dir / target).exists());
         }
@@ -309,11 +359,11 @@ namespace test_cases
     {
         VDBUnmergerTestSymWithManyArrows() : VDBUnmergerTest("sym with many arrows") { }
 
-        void run()
+        void main_run()
         {
             TEST_CHECK((root_dir / target).is_symbolic_link());
 
-            unmerger.unmerge();
+            unmerger->unmerge();
 
             TEST_CHECK(! (root_dir / target).exists());
         }
@@ -323,11 +373,11 @@ namespace test_cases
     {
         VDBUnmergerTestSymBadType() : VDBUnmergerTest("sym_bad_type") { }
 
-        void run()
+        void main_run()
         {
             TEST_CHECK((root_dir / target).is_regular_file());
 
-            unmerger.unmerge();
+            unmerger->unmerge();
 
             TEST_CHECK((root_dir / target).is_regular_file());
         }
@@ -337,12 +387,12 @@ namespace test_cases
     {
         VDBUnmergerTestSymBadDst() : VDBUnmergerTest("sym_bad_dst") { }
 
-        void run()
+        void main_run()
         {
             TEST_CHECK((root_dir / target).is_symbolic_link());
             TEST_CHECK(! (root_dir / "sym_dst_bad").exists());
 
-            unmerger.unmerge();
+            unmerger->unmerge();
 
             TEST_CHECK((root_dir / target).is_symbolic_link());
         }
@@ -352,11 +402,11 @@ namespace test_cases
     {
         VDBUnmergerTestSymBadMtime() : VDBUnmergerTest("sym_bad_mtime") { }
 
-        void run()
+        void main_run()
         {
             TEST_CHECK((root_dir / target).is_symbolic_link());
 
-            unmerger.unmerge();
+            unmerger->unmerge();
 
             TEST_CHECK((root_dir / target).is_symbolic_link());
 
@@ -367,11 +417,11 @@ namespace test_cases
     {
         VDBUnmergerTestSymBadEntry1() : VDBUnmergerTest("sym_bad_entry_1") { }
 
-        void run()
+        void main_run()
         {
             TEST_CHECK((root_dir / target).is_symbolic_link());
 
-            unmerger.unmerge();
+            unmerger->unmerge();
 
             TEST_CHECK((root_dir / target).is_symbolic_link());
         }
@@ -381,63 +431,21 @@ namespace test_cases
     {
         VDBUnmergerTestSymBadEntry2() : VDBUnmergerTest("sym_bad_entry_2") { }
 
-        void run()
+        void main_run()
         {
             TEST_CHECK((root_dir / target).is_symbolic_link());
 
-            unmerger.unmerge();
+            unmerger->unmerge();
 
             TEST_CHECK((root_dir / target).is_symbolic_link());
         }
     } test_vdb_unmerger_sym_bad_entry_2;
 
-    struct VDBUnmergerTestFifoOk : VDBUnmergerTest
-    {
-        VDBUnmergerTestFifoOk() : VDBUnmergerTest("fifo_ok") { }
-
-        void run()
-        {
-            TEST_CHECK((root_dir / target).is_fifo());
-
-            unmerger.unmerge();
-
-            TEST_CHECK(! (root_dir / target).exists());
-        }
-    } test_vdb_unmerger_fifo_ok;
-
-    struct VDBUnmergerTestFifoWithSpaces : VDBUnmergerTest
-    {
-        VDBUnmergerTestFifoWithSpaces() : VDBUnmergerTest("fifo_ with spaces") { }
-
-        void run()
-        {
-            TEST_CHECK((root_dir / target).is_fifo());
-
-            unmerger.unmerge();
-
-            TEST_CHECK(! (root_dir / target).exists());
-        }
-    } test_vdb_unmerger_fifo_with_spaces;
-
-    struct VDBUnmergerTestFifoBadType : VDBUnmergerTest
-    {
-        VDBUnmergerTestFifoBadType() : VDBUnmergerTest("fifo_bad_type") { }
-
-        void run()
-        {
-            TEST_CHECK((root_dir / target).is_regular_file());
-
-            unmerger.unmerge();
-
-            TEST_CHECK((root_dir / target).is_regular_file());
-        }
-    } test_vdb_unmerger_fifo_bad_type;
-
     struct VDBUnmergerTestConfigProtect : VDBUnmergerTest
     {
         VDBUnmergerTestConfigProtect() : VDBUnmergerTest("config_protect") { }
 
-        void run()
+        void main_run()
         {
             TEST_CHECK((root_dir / "protected_file").is_regular_file());
             TEST_CHECK((root_dir / "unprotected_file").is_regular_file());
@@ -453,7 +461,7 @@ namespace test_cases
 
             TEST_CHECK((root_dir / "protected_dir_not_really/unprotected_file").is_regular_file());
 
-            unmerger.unmerge();
+            unmerger->unmerge();
 
             TEST_CHECK((root_dir / "protected_file").exists());
             TEST_CHECK(! (root_dir / "unprotected_file").exists());

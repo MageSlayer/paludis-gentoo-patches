@@ -34,6 +34,8 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/name.hh>
+#include <paludis/contents.hh>
+#include <paludis/literal_metadata_key.hh>
 #include <tr1/functional>
 #include <tr1/unordered_map>
 #include <functional>
@@ -355,9 +357,9 @@ NDBAM::entries(const QualifiedPackageName & q)
 
 void
 NDBAM::parse_contents(const PackageID & id,
-        const std::tr1::function<void (const FSEntry &, const std::string & md5, const time_t mtime)> & on_file,
-        const std::tr1::function<void (const FSEntry &)> & on_dir,
-        const std::tr1::function<void (const FSEntry &, const std::string & target, const time_t mtime)> & on_sym
+        const std::tr1::function<void (const std::tr1::shared_ptr<const ContentsEntry> &)> & on_file,
+        const std::tr1::function<void (const std::tr1::shared_ptr<const ContentsEntry> &)> & on_dir,
+        const std::tr1::function<void (const std::tr1::shared_ptr<const ContentsEntry> &)> & on_sym
         ) const
 {
     Context c("When fetching contents for '" + stringify(id) + "':");
@@ -473,11 +475,15 @@ NDBAM::parse_contents(const PackageID & id,
             }
             time_t mtime(destringify<time_t>(tokens.find("mtime")->second));
 
-            on_file(path, md5, mtime);
+            std::tr1::shared_ptr<ContentsFileEntry> entry(make_shared_ptr(new ContentsFileEntry(path)));
+            entry->add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("md5", "md5", mkt_normal, md5)));
+            entry->add_metadata_key(make_shared_ptr(new LiteralMetadataTimeKey("mtime", "mtime", mkt_normal, mtime)));
+            on_file(entry);
         }
         else if ("dir" == type)
         {
-            on_dir(path);
+            std::tr1::shared_ptr<ContentsDirEntry> entry(make_shared_ptr(new ContentsDirEntry(path)));
+            on_dir(entry);
         }
         else if ("sym" == type)
         {
@@ -497,7 +503,9 @@ NDBAM::parse_contents(const PackageID & id,
             }
             time_t mtime(destringify<time_t>(tokens.find("mtime")->second));
 
-            on_sym(path, target, mtime);
+            std::tr1::shared_ptr<ContentsSymEntry> entry(make_shared_ptr(new ContentsSymEntry(path, target)));
+            entry->add_metadata_key(make_shared_ptr(new LiteralMetadataTimeKey("mtime", "mtime", mkt_normal, mtime)));
+            on_sym(entry);
         }
         else
             Log::get_instance()->message("ndbam.contents.unknown_type", ll_warning, lc_context) <<

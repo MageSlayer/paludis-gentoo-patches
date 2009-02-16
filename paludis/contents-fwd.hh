@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,18 +35,9 @@ namespace paludis
     struct ContentsFileEntry;
     struct ContentsDirEntry;
     struct ContentsSymEntry;
-    struct ContentsFifoEntry;
-    struct ContentsDevEntry;
-    struct ContentsMiscEntry;
+    struct ContentsOtherEntry;
 
     struct Contents;
-
-    /**
-     * Write a ContentsEntry to a stream.
-     *
-     * \ingroup g_contents
-     */
-    std::ostream & operator<< (std::ostream &, const ContentsEntry &) PALUDIS_VISIBLE;
 }
 
 #endif

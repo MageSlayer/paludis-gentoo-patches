@@ -213,38 +213,26 @@ namespace
 
         void visit(const ContentsFileEntry & e)
         {
-            s << format_general_rhvib(f::show_contents_file(), e.name(), FSEntry(e.name()).basename(),
+            s << format_general_rhvib(f::show_contents_file(), stringify(e.location_key()->value()), e.location_key()->value().basename(),
                     "", indent, indent);
         }
 
         void visit(const ContentsDirEntry & e)
         {
-            s << format_general_rhvib(f::show_contents_dir(), e.name(), FSEntry(e.name()).basename(),
-                    "", indent, indent);
-        }
-
-        void visit(const ContentsMiscEntry & e)
-        {
-            s << format_general_rhvib(f::show_contents_misc(), e.name(), FSEntry(e.name()).basename(),
-                    "", indent, indent);
-        }
-
-        void visit(const ContentsDevEntry & e)
-        {
-            s << format_general_rhvib(f::show_contents_dev(), e.name(), FSEntry(e.name()).basename(),
-                    "", indent, indent);
-        }
-
-        void visit(const ContentsFifoEntry & e)
-        {
-            s << format_general_rhvib(f::show_contents_fifo(), e.name(), FSEntry(e.name()).basename(),
+            s << format_general_rhvib(f::show_contents_dir(), stringify(e.location_key()->value()), e.location_key()->value().basename(),
                     "", indent, indent);
         }
 
         void visit(const ContentsSymEntry & e)
         {
-            s << format_general_rhvib(f::show_contents_sym(), e.name(), FSEntry(e.name()).basename(),
-                    e.target(), indent, indent);
+            s << format_general_rhvib(f::show_contents_sym(), stringify(e.location_key()->value()), e.location_key()->value().basename(),
+                    e.target_key()->value(), indent, indent);
+        }
+
+        void visit(const ContentsOtherEntry & e)
+        {
+            s << format_general_rhvib(f::show_contents_other(), stringify(e.location_key()->value()), e.location_key()->value().basename(),
+                    "", indent, indent);
         }
     };
 

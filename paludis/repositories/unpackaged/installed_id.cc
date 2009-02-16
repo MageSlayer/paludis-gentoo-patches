@@ -128,9 +128,9 @@ namespace
                 using namespace std::tr1::placeholders;
                 _v.reset(new Contents);
                 _db->parse_contents(*_id,
-                        std::tr1::bind(&create_file, std::tr1::ref(*_v), _1),
-                        std::tr1::bind(&create_dir, std::tr1::ref(*_v), _1),
-                        std::tr1::bind(&create_sym, std::tr1::ref(*_v), _1, _2)
+                        std::tr1::bind(&Contents::add, _v.get(), std::tr1::placeholders::_1),
+                        std::tr1::bind(&Contents::add, _v.get(), std::tr1::placeholders::_1),
+                        std::tr1::bind(&Contents::add, _v.get(), std::tr1::placeholders::_1)
                         );
                 return _v;
             }

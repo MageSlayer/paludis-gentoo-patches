@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -109,9 +109,9 @@ namespace paludis
              * Parse the contents file for a given ID, using the provided callbacks.
              */
             void parse_contents(const PackageID &,
-                    const std::tr1::function<void (const FSEntry &, const std::string & md5, const time_t mtime)> & on_file,
-                    const std::tr1::function<void (const FSEntry &)> & on_dir,
-                    const std::tr1::function<void (const FSEntry &, const std::string & target, const time_t mtime)> & on_sym
+                    const std::tr1::function<void (const std::tr1::shared_ptr<const ContentsEntry> &)> & on_file,
+                    const std::tr1::function<void (const std::tr1::shared_ptr<const ContentsEntry> &)> & on_dir,
+                    const std::tr1::function<void (const std::tr1::shared_ptr<const ContentsEntry> &)> & on_sym
                     ) const;
 
             /**

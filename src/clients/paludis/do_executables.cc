@@ -62,8 +62,8 @@ namespace
 
             void visit(const ContentsFileEntry & e)
             {
-                if (is_file_in_path(FSEntry(e.name())))
-                    cout << "    " << colour(cl_file, e.name()) << endl;
+                if (is_file_in_path(e.location_key()->value()))
+                    cout << "    " << colour(cl_file, e.location_key()->value()) << endl;
             }
 
             void visit(const ContentsDirEntry &)
@@ -72,22 +72,14 @@ namespace
 
             void visit(const ContentsSymEntry & e)
             {
-                FSEntry sym(e.name());
+                FSEntry sym(e.location_key()->value());
                 FSEntry real(sym.realpath_if_exists());
                 if (sym != real)
                     if (is_file_in_path(sym))
-                        cout << "    " << colour(cl_sym, e.name()) << endl;
+                        cout << "    " << colour(cl_sym, e.location_key()->value()) << endl;
             }
 
-            void visit(const ContentsMiscEntry &)
-            {
-            }
-
-            void visit(const ContentsFifoEntry &)
-            {
-            }
-
-            void visit(const ContentsDevEntry &)
+            void visit(const ContentsOtherEntry &)
             {
             }
     };

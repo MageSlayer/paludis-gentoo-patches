@@ -439,7 +439,6 @@ VDBRepository::perform_uninstall(
                     make_named_values<VDBUnmergerOptions>(
                         value_for<n::config_protect>(final_config_protect),
                         value_for<n::config_protect_mask>(config_protect_mask),
-                        value_for<n::contents_file>(pkg_dir / "CONTENTS"),
                         value_for<n::environment>(_imp->params.environment()),
                         value_for<n::output_manager>(output_manager),
                         value_for<n::package_id>(id),
@@ -895,6 +894,9 @@ VDBRepository::merge(const MergeParams & m)
 
     if (is_replace)
     {
+        /* hack: before we nuke its vdb dir, preload CONTENTS */
+        is_replace->contents_key()->value();
+
         FSEntry old_vdb_dir(_imp->params.location());
         old_vdb_dir /= stringify(is_replace->name().category());
         old_vdb_dir /= (stringify(is_replace->name().package()) + "-" + stringify(is_replace->version()));

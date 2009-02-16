@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,6 +26,8 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/metadata_key_holder.hh>
 #include <tr1/memory>
 #include <string>
 
@@ -44,42 +46,57 @@ namespace paludis
     /**
      * Base class for a contents entry.
      *
+     * \since 0.36 for MetadataKeyHolder methods.
+     *
      * \ingroup g_contents
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ContentsEntry :
-        private InstantiationPolicy<ContentsEntry, instantiation_method::NonCopyableTag>,
+        private PrivateImplementationPattern<ContentsEntry>,
+        public MetadataKeyHolder,
         public virtual DeclareAbstractAcceptMethods<ContentsEntry, MakeTypeList<
-            ContentsFileEntry, ContentsDirEntry, ContentsSymEntry, ContentsFifoEntry, ContentsDevEntry, ContentsMiscEntry>::Type>
+            ContentsFileEntry, ContentsDirEntry, ContentsSymEntry, ContentsOtherEntry>::Type>
     {
-        friend std::ostream & operator<< (std::ostream &, const ContentsEntry &);
-
         private:
-            std::string _name;
+            PrivateImplementationPattern<ContentsEntry>::ImpPtr & _imp;
 
         protected:
-            ///\name Basic operations
-            ///\{
-
-            ContentsEntry(const std::string & our_name);
-
-            /**
-             * Used to implement the ostream operator<<.
-             */
-            virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            ///\}
+            virtual void need_keys_added() const;
 
         public:
             ///\name Basic operations
             ///\{
 
-            virtual ~ContentsEntry();
+            ContentsEntry(const FSEntry & path);
+            virtual ~ContentsEntry() = 0;
 
             ///\}
 
-            /// Our name.
-            std::string name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            ///\name Metadata key operations
+            ///\{
+
+            /**
+             * Must be called straight after construction.
+             *
+             * \since 0.36
+             */
+            using MetadataKeyHolder::add_metadata_key;
+
+            ///\}
+
+            ///\name Specific metadata keys
+            ///\{
+
+            /**
+             * Our path on disk. Must not be zero. Not modified for root.
+             *
+             * \since 0.36
+             */
+            const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
+
+            ///\}
+
+            ///\}
     };
 
     /**
@@ -96,7 +113,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            ContentsFileEntry(const std::string & name);
+            ContentsFileEntry(const FSEntry &);
 
             ///\}
     };
@@ -115,64 +132,27 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            ContentsDirEntry(const std::string & name);
+            ContentsDirEntry(const FSEntry &);
 
             ///\}
     };
 
     /**
-     * A misc contents entry.
+     * An 'other' contents entry, which we can't handle.
      *
+     * \since 0.36
      * \ingroup g_contents
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE ContentsMiscEntry :
+    class PALUDIS_VISIBLE ContentsOtherEntry :
         public ContentsEntry,
-        public ImplementAcceptMethods<ContentsEntry, ContentsMiscEntry>
+        public ImplementAcceptMethods<ContentsEntry, ContentsOtherEntry>
     {
         public:
             ///\name Basic operations
             ///\{
 
-            ContentsMiscEntry(const std::string & name);
-
-            ///\}
-    };
-
-    /**
-     * A fifo contents entry.
-     *
-     * \ingroup g_contents
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE ContentsFifoEntry :
-        public ContentsEntry,
-        public ImplementAcceptMethods<ContentsEntry, ContentsFifoEntry>
-    {
-        public:
-            ///\name Basic operations
-            ///\{
-
-            ContentsFifoEntry(const std::string & name);
-
-            ///\}
-    };
-
-    /**
-     * A device contents entry.
-     *
-     * \ingroup g_contents
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE ContentsDevEntry :
-        public ContentsEntry,
-        public ImplementAcceptMethods<ContentsEntry, ContentsDevEntry>
-    {
-        public:
-            ///\name Basic operations
-            ///\{
-
-            ContentsDevEntry(const std::string & name);
+            ContentsOtherEntry(const FSEntry &);
 
             ///\}
     };
@@ -184,25 +164,32 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ContentsSymEntry :
+        private PrivateImplementationPattern<ContentsSymEntry>,
         public ContentsEntry,
         public ImplementAcceptMethods<ContentsEntry, ContentsSymEntry>
     {
         private:
-            std::string _target;
-
-        protected:
-            virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            PrivateImplementationPattern<ContentsSymEntry>::ImpPtr & _imp;
 
         public:
             ///\name Basic operations
             ///\{
 
-            ContentsSymEntry(const std::string & name, const std::string & target);
+            ContentsSymEntry(const FSEntry &, const std::string & target);
 
             ///\}
 
-            /// Our target (as per readlink).
-            std::string target() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            ///\name Specific metadata keys
+            ///\{
+
+            /**
+             * Our target, as per readlink. Must not be zero.
+             *
+             * \since 0.36
+             */
+            const std::tr1::shared_ptr<const MetadataValueKey<std::string> > target_key() const;
+
+            ///\}
     };
 
     /**
@@ -243,9 +230,10 @@ namespace paludis
     };
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
-    extern template class InstantiationPolicy<ContentsEntry, instantiation_method::NonCopyableTag>;
     extern template class InstantiationPolicy<Contents, instantiation_method::NonCopyableTag>;
     extern template class PrivateImplementationPattern<Contents>;
+    extern template class PrivateImplementationPattern<ContentsEntry>;
+    extern template class PrivateImplementationPattern<ContentsSymEntry>;
 #endif
 }
 

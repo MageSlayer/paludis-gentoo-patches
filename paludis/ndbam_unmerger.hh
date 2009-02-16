@@ -75,12 +75,10 @@ namespace paludis
     {
         private:
             Implementation<NDBAMUnmerger> * _imp;
-            class FileExtraInfo;
-            class SymlinkExtraInfo;
 
-            void _add_file(const FSEntry & f, const std::string & md5, const time_t mtime);
-            void _add_dir(const FSEntry & f);
-            void _add_sym(const FSEntry & f, const std::string & target, const time_t mtime);
+            void _add_file(const std::tr1::shared_ptr<const ContentsEntry> &);
+            void _add_dir(const std::tr1::shared_ptr<const ContentsEntry> &);
+            void _add_sym(const std::tr1::shared_ptr<const ContentsEntry> &);
 
         protected:
             bool config_protected(const FSEntry &) const;
@@ -90,10 +88,10 @@ namespace paludis
 
             void display(const std::string &) const;
 
-            bool check_file(const FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const;
-            bool check_dir(const FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const;
-            bool check_sym(const FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const;
-            bool check_misc(const FSEntry &, const std::tr1::shared_ptr<ExtraInfo> &) const;
+            bool check_file(const std::tr1::shared_ptr<const ContentsEntry> &) const;
+            bool check_dir(const std::tr1::shared_ptr<const ContentsEntry> &) const;
+            bool check_sym(const std::tr1::shared_ptr<const ContentsEntry> &) const;
+            bool check_misc(const std::tr1::shared_ptr<const ContentsEntry> &) const;
 
         public:
             ///\name Basic operations
