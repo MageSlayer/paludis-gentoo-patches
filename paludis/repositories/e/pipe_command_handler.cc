@@ -67,7 +67,20 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
     try
     {
         std::vector<std::string> tokens;
-        tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(s, stringify('\2'), "", std::back_inserter(tokens));
+        if (std::string::npos == s.find('\2'))
+            tokenise_whitespace(s, std::back_inserter(tokens));
+        else
+        {
+            std::string t(s);
+            std::string::size_type p(t.find('\2'));
+            while (std::string::npos != p)
+            {
+                tokens.push_back(t.substr(0, p));
+                t.erase(0, p + 1);
+                p = t.find('\2');
+            }
+        }
+
         if (tokens.empty())
         {
             Log::get_instance()->message("e.pipe_commands.empty", ll_warning, lc_context) << "Got empty pipe command";
