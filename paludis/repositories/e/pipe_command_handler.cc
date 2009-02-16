@@ -67,7 +67,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
     try
     {
         std::vector<std::string> tokens;
-        tokenise_whitespace(s, std::back_inserter(tokens));
+        tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(s, stringify('\2'), "", std::back_inserter(tokens));
         if (tokens.empty())
         {
             Log::get_instance()->message("e.pipe_commands.empty", ll_warning, lc_context) << "Got empty pipe command";
@@ -78,7 +78,8 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
         {
             if (tokens.size() != 3)
             {
-                Log::get_instance()->message("e.pipe_commands.ping.bad", ll_warning, lc_context) << "Got bad PING command";
+                Log::get_instance()->message("e.pipe_commands.ping.bad", ll_warning, lc_context) << "Got bad PING command, tokens are { '"
+                    << join(tokens.begin(), tokens.end(), "', '") << "' }";
                 return "Ebad PING command";
             }
             else

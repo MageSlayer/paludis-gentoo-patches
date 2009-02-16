@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -65,7 +65,7 @@ main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    /* append null to the pipe read buffer */
+    /* append an 'end' marker to the pipe read buffer */
     buf[0] = '\0';
     while (((w = write(write_fd, buf, 1))) == 0)
         sleep(0);
