@@ -20,10 +20,10 @@ builtin_tidyup()
 {
     if [[ -z ${PALUDIS_PACKAGE_BUILDDIR} ]]; then
         local a
-        for a in PALUDIS_TMPDIR CATEGORY PF  ; do
+        for a in PALUDIS_TMPDIR CATEGORY PNVR  ; do
             [[ -z "${!a}" ]] && die "\$${a} unset or empty"
         done
-        PALUDIS_PACKAGE_BUILDDIR=${PALUDIS_TMPDIR}/${CATEGORY}-${PF}
+        PALUDIS_PACKAGE_BUILDDIR=${PALUDIS_TMPDIR}/${CATEGORY}-${PNVR}
     fi
 
     if [[ -e "${PALUDIS_PACKAGE_BUILDDIR}" ]] ; then
