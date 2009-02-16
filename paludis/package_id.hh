@@ -141,14 +141,14 @@ namespace paludis
             /**
              * What is our package name?
              *
-             * Use canonical_form instead for outputtting.
+             * Use canonical_form instead for outputting.
              */
             virtual const QualifiedPackageName name() const = 0;
 
             /**
              * What is our package version?
              *
-             * Use canonical_form instead for outputtting.
+             * Use canonical_form instead for outputting.
              */
             virtual const VersionSpec version() const = 0;
 
