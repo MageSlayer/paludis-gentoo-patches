@@ -20,7 +20,7 @@ dist_shareenvpaludis_DATA = \
 	logged_only.part.conf \
 	show_messages.part.conf
 
-logdir = /var/log/paludis
+logdir = @HACKED_LOG_DIR@
 
 log_DATA = .keep
 

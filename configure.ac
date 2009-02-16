@@ -1473,6 +1473,19 @@ for m in env news ; do
 done
 dnl }}}
 
+dnl {{{ path hacks for distcheck
+AC_ARG_WITH([hacked-log-dir],
+	AS_HELP_STRING([--with-hacked-log-dir=dir], [Hack the log dir (for distcheck only)]),
+	HACKED_LOG_DIR=`eval echo $withval`,
+	HACKED_LOG_DIR=)
+AC_MSG_CHECKING([for hacked log dir for distcheck])
+if test "x$HACKED_LOG_DIR" = "x" ; then
+	HACKED_LOG_DIR=/var/log/paludis
+fi
+AC_MSG_RESULT([$HACKED_LOG_DIR])
+AC_SUBST([HACKED_LOG_DIR])
+dnl }}}
+
 dnl {{{ pkg-config
 AC_SUBST([PALUDIS_PC_CFLAGS])
 AC_SUBST([PALUDIS_PC_LIBS])
