@@ -18,7 +18,8 @@
  */
 
 #include <python/paludis_python.hh>
-#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/fs_entry.hh>
 #include <paludis/contents.hh>
 
 using namespace paludis;
@@ -55,12 +56,21 @@ void expose_contents()
          "Base class for a contents entry.",
          bp::no_init
         )
-        .add_property("name", &ContentsEntry::name,
-                "[ro] string\n"
-                "Our name."
+
+        .add_property("metadata", bp::range(&ContentsEntry::begin_metadata, &ContentsEntry::end_metadata),
+                "[ro] Iterable of MetadataKey\n"
+                "NEED_DOC"
                 )
 
-        .def(bp::self_ns::str(bp::self))
+        .def("find_metadata", &ContentsEntry::find_metadata,
+                "find_metadata(string) -> MetadataKey\n"
+                "NEED_DOC"
+            )
+
+        .def("location_key", &ContentsEntry::location_key,
+                "The location_key, which will not be None, provides the path on the filesystem\n"
+                "of the entry. It is not modified for root."
+            )
         ;
 
     /**
@@ -70,7 +80,7 @@ void expose_contents()
         (
          "ContentsFileEntry",
          "A file contents entry.",
-         bp::init<const std::string &>("__init__(name_string)")
+         bp::init<const FSEntry &>("__init__(location)")
         );
 
     /**
@@ -80,37 +90,17 @@ void expose_contents()
         (
          "ContentsDirEntry",
          "A directory contents entry.",
-         bp::init<const std::string &>("__init__(name_string)")
+         bp::init<const FSEntry &>("__init__(location)")
         );
 
     /**
-     * ContentsMiscEntry
+     * ContentsOtherEntry
      */
-    class_contents<ContentsMiscEntry>
+    class_contents<ContentsOtherEntry>
         (
-         "ContentsMiscEntry",
-         "A misc contents entry.",
-         bp::init<const std::string &>("__init__(name_string)")
-        );
-
-    /**
-     * ContentsFifoEntry
-     */
-    class_contents<ContentsFifoEntry>
-        (
-         "ContentsFifoEntry",
-         "A fifo contents entry.",
-         bp::init<const std::string &>("__init__(name_string)")
-        );
-
-    /**
-     * ContentsDevEntry
-     */
-    class_contents<ContentsDevEntry>
-        (
-         "ContentsDevEntry",
-         "A dev contents entry.",
-         bp::init<const std::string &>("__init__(name_string)")
+         "ContentsOtherEntry",
+         "An 'other' contents entry.",
+         bp::init<const FSEntry &>("__init__(location)")
         );
 
     /**
@@ -120,14 +110,12 @@ void expose_contents()
         (
          "ContentsSymEntry",
          "A sym contents entry.",
-         bp::init<const std::string &, const std::string &>("__init__(name_string, target_string)")
+         bp::init<const FSEntry &, const std::string &>("__init__(location, target_string)")
         )
-        .add_property("target", &ContentsSymEntry::target,
-                "[ro] string\n"
-                "Our target (as per readlink)."
-                )
 
-        .def(bp::self_ns::str(bp::self))
+        .def("target_key", &ContentsSymEntry::target_key,
+                "The target_key, which will not be None, holds the symlink's target (as per readlink)."
+            )
         ;
 
     /**

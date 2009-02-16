@@ -29,63 +29,44 @@ class TestCase_Contents(unittest.TestCase):
         e = ContentsFileEntry("/foo")
 
         self.assert_(isinstance(e, ContentsEntry))
-        self.assertEquals(str(e), "/foo")
-        self.assertEquals(e.name, "/foo")
+        self.assertEquals(e.location_key().value(), "/foo")
 
     def test_03_dir_entry(self):
         e = ContentsDirEntry("/foo")
 
         self.assert_(isinstance(e, ContentsEntry))
-        self.assertEquals(str(e), "/foo")
-        self.assertEquals(e.name, "/foo")
+        self.assertEquals(e.location_key().value(), "/foo")
 
-    def test_04_misc_entry(self):
-        e = ContentsMiscEntry("/foo")
-
-        self.assert_(isinstance(e, ContentsEntry))
-        self.assertEquals(str(e), "/foo")
-        self.assertEquals(e.name, "/foo")
-
-    def test_05_fifo_entry(self):
-        e = ContentsFifoEntry("/foo")
+    def test_04_other_entry(self):
+        e = ContentsOtherEntry("/foo")
 
         self.assert_(isinstance(e, ContentsEntry))
-        self.assertEquals(str(e), "/foo")
-        self.assertEquals(e.name, "/foo")
-
-    def test_06_dev_entry(self):
-        e = ContentsDevEntry("/foo")
-
-        self.assert_(isinstance(e, ContentsEntry))
-        self.assertEquals(str(e), "/foo")
-        self.assertEquals(e.name, "/foo")
+        self.assertEquals(e.location_key().value(), "/foo")
 
     def test_07_sym_entry(self):
         e = ContentsSymEntry("/foo", "/blah")
 
         self.assert_(isinstance(e, ContentsEntry))
-        self.assertEquals(str(e), "/foo -> /blah")
-        self.assertEquals(e.name, "/foo")
-        self.assertEquals(e.target, "/blah")
+        self.assertEquals(e.location_key().value(), "/foo")
+        self.assertEquals(e.target_key().value(), "/blah")
 
     def test_08_contents(self):
         entries = []
         entries.append(ContentsSymEntry("/foo", "/blah"))
         entries.append(ContentsFileEntry("/foo"))
-        entries.append(ContentsDevEntry("/dev/foo"))
+        entries.append(ContentsOtherEntry("/dev/foo"))
         entries.append(ContentsDirEntry("/bar"))
-        entries.append(ContentsFifoEntry("/baz"))
 
         c = Contents()
         for entry in entries:
             c.add(entry)
 
         for (i, entry) in enumerate(c):
-            self.assertEquals(entry.name, entries[i].name)
+            self.assertEquals(entry.location_key().value(), entries[i].location_key().value())
             self.assertEquals(type(entry), type(entries[i]))
             if i==0:
-                self.assertEquals(entry.target, entries[i].target)
-            if i>4:
+                self.assertEquals(entry.target_key().value(), entries[i].target_key().value())
+            if i>3:
                 self.assertEquals("TOO MANY ENTRIES", "OK")
 
 if __name__ == "__main__":
