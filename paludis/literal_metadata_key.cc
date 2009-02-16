@@ -341,6 +341,61 @@ LiteralMetadataValueKey<T_>::value() const
     return _imp->value;
 }
 
+namespace paludis
+{
+    template <>
+    struct Implementation<LiteralMetadataTimeKey>
+    {
+        const std::string raw_name;
+        const std::string human_name;
+        const MetadataKeyType type;
+        const time_t value;
+
+        Implementation(const std::string & r, const std::string & h, const MetadataKeyType t, const time_t v) :
+            raw_name(r),
+            human_name(h),
+            type(t),
+            value(v)
+        {
+        }
+    };
+}
+
+LiteralMetadataTimeKey::LiteralMetadataTimeKey(
+        const std::string & r, const std::string & h, const MetadataKeyType k, const time_t v) :
+    PrivateImplementationPattern<LiteralMetadataTimeKey>(new Implementation<LiteralMetadataTimeKey>(r, h, k, v)),
+    _imp(PrivateImplementationPattern<LiteralMetadataTimeKey>::_imp)
+{
+}
+
+LiteralMetadataTimeKey::~LiteralMetadataTimeKey()
+{
+}
+
+const std::string
+LiteralMetadataTimeKey::human_name() const
+{
+    return _imp->human_name;
+}
+
+const std::string
+LiteralMetadataTimeKey::raw_name() const
+{
+    return _imp->raw_name;
+}
+
+MetadataKeyType
+LiteralMetadataTimeKey::type() const
+{
+    return _imp->type;
+}
+
+time_t
+LiteralMetadataTimeKey::value() const
+{
+    return _imp->value;
+}
+
 template class LiteralMetadataValueKey<FSEntry>;
 template class LiteralMetadataValueKey<std::string>;
 template class LiteralMetadataValueKey<SlotName>;

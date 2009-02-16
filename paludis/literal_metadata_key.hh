@@ -240,6 +240,36 @@ namespace paludis
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
+
+    /**
+     * A LiteralMetadataTimeKey is a MetadataTimeKey whose value is known at
+     * construction time.
+     *
+     * \ingroup g_literal_metadata_key
+     * \since 0.36
+     */
+    class PALUDIS_VISIBLE LiteralMetadataTimeKey :
+        public MetadataTimeKey,
+        private PrivateImplementationPattern<LiteralMetadataTimeKey>
+    {
+        private:
+            PrivateImplementationPattern<LiteralMetadataTimeKey>::ImpPtr & _imp;
+
+        public:
+            ///\name Basic operations
+            ///\{
+
+            LiteralMetadataTimeKey(const std::string &, const std::string &, const MetadataKeyType, const time_t);
+            ~LiteralMetadataTimeKey();
+
+            ///\}
+
+            virtual time_t value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
 }
 
 #endif
