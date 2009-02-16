@@ -36,6 +36,7 @@
 #include "cmd_print_owners.hh"
 #include "cmd_print_packages.hh"
 #include "cmd_print_repositories.hh"
+#include "cmd_print_repository_formats.hh"
 #include "cmd_print_sets.hh"
 #include "cmd_print_sync_protocols.hh"
 #include "cmd_show.hh"
@@ -77,6 +78,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("print-owners", make_command<PrintOwnersCommand>));
     _imp->handlers.insert(std::make_pair("print-packages", make_command<PrintPackagesCommand>));
     _imp->handlers.insert(std::make_pair("print-repositories", make_command<PrintRepositoriesCommand>));
+    _imp->handlers.insert(std::make_pair("print-repository-formats", make_command<PrintRepositoryFormatsCommand>));
     _imp->handlers.insert(std::make_pair("print-sets", make_command<PrintSetsCommand>));
     _imp->handlers.insert(std::make_pair("print-sync-protocols", make_command<PrintSyncProtocolsCommand>));
     _imp->handlers.insert(std::make_pair("show", make_command<ShowCommand>));
