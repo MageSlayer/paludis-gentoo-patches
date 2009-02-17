@@ -17,10 +17,10 @@ def get_contents(repo, files, root)
                 next if pid.contents_key.nil?
                 contents = pid.contents_key.value
                 contents.each do |entry|
-                    next if entry.kind_of? ContentsMiscEntry
+                    next if entry.kind_of? ContentsOtherEntry
                     files.each do |file|
-                        if (root + entry.name)[0,file.length] == file
-                            in_contents << root + entry.name
+                        if (root + entry.location_key.value)[0,file.length] == file
+                            in_contents << root + entry.location_key.value
                             break;
                         end
                     end
