@@ -211,6 +211,7 @@ EbuildCommand::operator() ()
             .with_setenv("PALUDIS_NAME_VERSION_REVISION_VAR",
                     params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_pf())
             .with_setenv("PALUDIS_PIPE_COMMANDS_SUPPORTED", "yes")
+            .with_setenv("PALUDIS_PIPE_COMMAND_DELIM", "\2")
             )
         .with_setenv("SLOT", "")
         .with_setenv("PALUDIS_PROFILE_DIR", "")
