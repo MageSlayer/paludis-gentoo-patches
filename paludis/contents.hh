@@ -176,6 +176,7 @@ namespace paludis
             ///\{
 
             ContentsSymEntry(const FSEntry &, const std::string & target);
+            ~ContentsSymEntry();
 
             ///\}
 

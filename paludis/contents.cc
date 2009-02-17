@@ -98,6 +98,10 @@ ContentsSymEntry::ContentsSymEntry(const FSEntry & our_name, const std::string &
     add_metadata_key(_imp->target_key);
 }
 
+ContentsSymEntry::~ContentsSymEntry()
+{
+}
+
 const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 ContentsSymEntry::target_key() const
 {
