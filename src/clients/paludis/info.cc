@@ -360,6 +360,9 @@ do_info(const std::tr1::shared_ptr<const Environment> & env)
         cout << "available (Paludis can display detailed information for both installed and" << endl;
         cout << "installable packages)." << endl;
         cout << endl;
+        cout << colour(cl_bold_pink, "So if you're reporting a bug in cat/pkg, use '") <<
+            "paludis --info cat/pkg" << colour(cl_bold_pink, "' instead.") << endl;
+        cout << endl;
     }
     else
     {
