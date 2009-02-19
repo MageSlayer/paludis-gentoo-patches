@@ -1,6 +1,6 @@
 MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~ dohttp dohttps doftp .keep *.epicfail
-SUBDIRS = .
+SUBDIRS = . demos
 
 .keep :
 	touch $@

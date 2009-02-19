@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et :
+
+# Curl fetcher for paludis
+# Create a symbolic link to this file under SHAREDIR/paludis/fetchers/, where
+# SHAREDIR is probably /usr/share, with the name doftp, dohttp or dohttps
+# depending on the protocols you want to use it with.
+# Set EXTRA_CURL in paludis' bashrc for extra options for curl.
+
+export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/utils/ ):${PATH}"
+source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
+
+old_set=$-
+set -a
+for f in ${PALUDIS_BASHRC_FILES}; do
+    [[ -f "${f}" ]] && source "${f}"
+done
+[[ "${old_set}" == *a* ]] || set +a
+
+if [[ -n "${PALUDIS_USE_SAFE_RESUME}" ]] ; then
+
+    if [[ -f "${2}.-PARTIAL-" ]] ; then
+        if [[ $(wrapped_getfsize "${2}".-PARTIAL- ) -ge 123456 ]] ; then
+            einfo_unhooked "Attempting resume using ${2}.-PARTIAL-"
+        else
+            einfo_unhooked "Not attempting resume using ${2}.-PARTIAL- (too small)"
+            echo rm -f "${2}".-PARTIAL-
+            rm -f "${2}".-PARTIAL-
+        fi
+    fi
+
+    echo ${CURL_WRAPPER} ${LOCAL_CURL:-curl} ${EXTRA_CURL} --connect-timeout 30 --retry 1 -C - -o "${2}".-PARTIAL- "${1}" 1>&2
+    if ${CURL_WRAPPER} ${LOCAL_CURL:-curl} ${EXTRA_CURL} --connect-timeout 30 --retry 1 -C - -o "${2}".-PARTIAL- "${1}" ; then
+        echo mv -f "${2}".-PARTIAL- "${2}"
+        mv -f "${2}".-PARTIAL- "${2}"
+        exit 0
+    else
+        rm -f "${2}"
+        exit 1
+    fi
+
+else
+    echo ${CURL_WRAPPER} ${LOCAL_CURL:-curl} ${EXTRA_CURL} --connect-timeout 30 --retry 1 -o "${2}" "${1}" 1>&2
+    if ${CURL_WRAPPER} ${LOCAL_CURL:-curl} ${EXTRA_CURL} --connect-timeout 30 --retry 1 -o "${2}" "${1}" ; then
+        exit 0
+    else
+        rm -f "${2}"
+        exit 1
+    fi
+
+fi
+

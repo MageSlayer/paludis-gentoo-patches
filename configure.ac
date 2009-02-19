@@ -1540,6 +1540,7 @@ AC_OUTPUT(
 	paludis/environments/portage/Makefile
 	paludis/environments/test/Makefile
 	paludis/fetchers/Makefile
+	paludis/fetchers/demos/Makefile
 	paludis/repositories/Makefile
 	paludis/repositories/accounts/Makefile
 	paludis/repositories/cran/Makefile
