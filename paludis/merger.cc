@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2008 Fernando J. Pereda
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -968,7 +968,9 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
         if ( !S_ISDIR(sb.st_mode))
             throw MergerError("The directory that we just created is not a directory anymore");
         if (! _imp->params.no_chown())
-            ::fchown(dst_fd, src.owner(), src.group());
+            if (-1 == ::fchown(dst_fd, src.owner(), src.group()))
+                throw MergerError("Could not fchown the directory '" + stringify(dst) + "' that we just created: "
+                        + stringify(::strerror(errno)));
         /* pick up set*id bits */
         ::fchmod(dst_fd, mode);
         try_to_copy_xattrs(src, dst_fd, result);
