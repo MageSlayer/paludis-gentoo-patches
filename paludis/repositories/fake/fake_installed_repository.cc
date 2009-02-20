@@ -41,18 +41,20 @@ namespace paludis
     {
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
         std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key;
+        const bool supports_uninstall;
 
-        Implementation() :
+        Implementation(const bool s) :
             format_key(new LiteralMetadataValueKey<std::string> (
                         "format", "format", mkt_significant, "installed_fake")),
             installed_root_key(new LiteralMetadataValueKey<FSEntry> (
-                        "installed_root", "installed_root", mkt_normal, FSEntry("/")))
+                        "installed_root", "installed_root", mkt_normal, FSEntry("/"))),
+            supports_uninstall(s)
         {
         }
     };
 }
 
-FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, const RepositoryName & our_name) :
+FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, const RepositoryName & our_name, const bool supports_uninstall) :
     FakeRepositoryBase(e, our_name, make_named_values<RepositoryCapabilities>(
                 value_for<n::destination_interface>(this),
                 value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
@@ -67,7 +69,7 @@ FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, co
                 value_for<n::syncable_interface>(static_cast<RepositorySyncableInterface *>(0)),
                 value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
                 )),
-    PrivateImplementationPattern<FakeInstalledRepository>(new Implementation<FakeInstalledRepository>),
+    PrivateImplementationPattern<FakeInstalledRepository>(new Implementation<FakeInstalledRepository>(supports_uninstall)),
     _imp(PrivateImplementationPattern<FakeInstalledRepository>::_imp)
 {
     add_metadata_key(_imp->format_key);
@@ -140,6 +142,13 @@ namespace
 {
     struct SupportsActionQuery
     {
+        const bool supports_uninstall;
+
+        SupportsActionQuery(const bool s) :
+            supports_uninstall(s)
+        {
+        }
+
         bool visit(const SupportsActionTest<InstalledAction> &) const
         {
             return true;
@@ -177,7 +186,7 @@ namespace
 
         bool visit(const SupportsActionTest<UninstallAction> &) const
         {
-            return false;
+            return supports_uninstall;
         }
     };
 }
@@ -185,7 +194,7 @@ namespace
 bool
 FakeInstalledRepository::some_ids_might_support_action(const SupportsActionTestBase & a) const
 {
-    SupportsActionQuery q;
+    SupportsActionQuery q(_imp->supports_uninstall);
     return a.accept_returning<bool>(q);
 }
 

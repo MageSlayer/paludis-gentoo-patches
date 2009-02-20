@@ -61,7 +61,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            FakeInstalledRepository(const Environment * const, const RepositoryName &);
+            FakeInstalledRepository(const Environment * const, const RepositoryName &, const bool supports_uninstall = true);
             ~FakeInstalledRepository();
 
             ///\}
