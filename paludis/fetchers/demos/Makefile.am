@@ -4,7 +4,7 @@ DEMOS = \
 	docurl
 
 MAINTAINERCLEANFILES = Makefile.in
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.o *.so $(DEMOS) *.epicfail
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.o *.so *.epicfail
 
 fetchersdemosdir = $(datadir)/paludis/fetchers/demos/
 fetchersdemos_SCRIPTS = $(DEMOS)
