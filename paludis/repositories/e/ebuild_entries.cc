@@ -530,7 +530,10 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
 {
     using namespace std::tr1::placeholders;
 
-    Context context("When installing '" + stringify(*id) + "':");
+    Context context("When installing '" + stringify(*id) + "'" +
+            (install_action.options.replacing()->empty() ? "" : " replacing { '"
+             + join(indirect_iterator(install_action.options.replacing()->begin()),
+                 indirect_iterator(install_action.options.replacing()->end()), "', '") + "' }") + ":");
 
     std::tr1::shared_ptr<OutputManager> output_manager(install_action.options.make_output_manager()(install_action));
 
@@ -777,6 +780,16 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
     }
 
     output_manager->succeeded();
+
+    for (PackageIDSequence::ConstIterator i(install_action.options.replacing()->begin()), i_end(install_action.options.replacing()->end()) ;
+            i != i_end ; ++i)
+    {
+        Context local_context("When cleaning '" + stringify(**i) + "':");
+        if ((*i)->name() == id->name() && (*i)->version() == id->version())
+            continue;
+
+        install_action.options.perform_uninstall()(*i);
+    }
 }
 
 void

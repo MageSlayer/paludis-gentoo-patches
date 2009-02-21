@@ -284,6 +284,18 @@ UnpackagedID::supports_action(const SupportsActionTestBase & test) const
     return simple_visitor_cast<const SupportsActionTest<InstallAction> >(test);
 }
 
+namespace
+{
+    bool slot_is_same(const std::tr1::shared_ptr<const PackageID> & a,
+            const PackageID * const b)
+    {
+        if (a->slot_key())
+            return b->slot_key() && a->slot_key()->value() == b->slot_key()->value();
+        else
+            return ! b->slot_key();
+    }
+}
+
 void
 UnpackagedID::perform_action(Action & action) const
 {
@@ -369,6 +381,16 @@ UnpackagedID::perform_action(Action & action) const
     }
 
     output_manager->succeeded();
+
+    for (PackageIDSequence::ConstIterator i(install_action->options.replacing()->begin()), i_end(install_action->options.replacing()->end()) ;
+            i != i_end ; ++i)
+    {
+        Context local_context("When cleaning '" + stringify(**i) + "':");
+        if ((*i)->name() == name() && (*i)->version() == version() && slot_is_same(*i, this))
+            continue;
+
+        install_action->options.perform_uninstall()(*i);
+    }
 }
 
 void

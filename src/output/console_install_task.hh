@@ -126,9 +126,6 @@ namespace paludis
             virtual void on_build_deplist_pre();
             virtual void on_build_deplist_post();
 
-            virtual void on_build_cleanlist_pre(const DepListEntry &);
-            virtual void on_build_cleanlist_post(const DepListEntry &);
-
             virtual void on_display_merge_list_pre();
             virtual void on_display_merge_list_post();
             virtual void on_not_continuing_due_to_errors();
@@ -156,17 +153,12 @@ namespace paludis
                     const int x, const int y, const int s, const int f);
             virtual void on_skip_already_done(const DepListEntry &, const int, const int, const int, const int);
 
-            virtual void on_no_clean_needed(const DepListEntry &);
-            virtual void on_clean_all_pre(const DepListEntry &,
-                    const PackageIDSequence &);
             virtual void on_clean_pre(const DepListEntry &,
                     const PackageID &, const int x, const int y, const int s, const int f);
             virtual void on_clean_post(const DepListEntry &,
                     const PackageID &, const int x, const int y, const int s, const int f);
             virtual void on_clean_fail(const DepListEntry &,
                     const PackageID &, const int x, const int y, const int s, const int f);
-            virtual void on_clean_all_post(const DepListEntry &,
-                    const PackageIDSequence &);
 
             virtual void on_update_world_pre();
             virtual void on_update_world(const PackageDepSpec &);
@@ -203,13 +195,6 @@ namespace paludis
 
             ///\name More granular display routines
             ///\{
-
-            virtual void display_clean_all_pre_list_start(const DepListEntry &,
-                    const PackageIDSequence &);
-            virtual void display_one_clean_all_pre_list_entry(
-                    const PackageID &);
-            virtual void display_clean_all_pre_list_end(const DepListEntry &,
-                    const PackageIDSequence &);
 
             virtual void display_merge_list_post_counts();
             virtual void display_merge_list_post_tags();

@@ -55,6 +55,7 @@ namespace paludis
         struct failed_integrity_checks;
         struct fetch_unneeded;
         struct make_output_manager;
+        struct perform_uninstall;
         struct replacing;
         struct requires_manual_fetching;
         struct safe_resume;
@@ -110,6 +111,16 @@ namespace paludis
          */
         NamedValue<n::make_output_manager, std::tr1::function<std::tr1::shared_ptr<OutputManager> (
                 const InstallAction &)> > make_output_manager;
+        /**
+         * Callback to carry out an uninstall, for replacing.
+         *
+         * Won't necessarily be used. Some repositories have special code paths
+         * for reinstalls, and in some cases (e.g. accounts) an upgrade doesn't
+         * remove the old version at all.
+         *
+         * \since 0.36
+         */
+        NamedValue<n::perform_uninstall, std::tr1::function<void (const std::tr1::shared_ptr<const PackageID> &)> > perform_uninstall;
 
         /**
          * We must replace these.

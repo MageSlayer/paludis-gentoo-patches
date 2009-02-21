@@ -51,6 +51,12 @@ using namespace paludis;
 
 namespace
 {
+    void cannot_uninstall(const std::tr1::shared_ptr<const PackageID> & id)
+    {
+        if (id)
+            throw InternalError(PALUDIS_HERE, "cannot uninstall");
+    }
+
     std::tr1::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
         return make_shared_ptr(new StandardOutputManager);
@@ -344,6 +350,7 @@ namespace test_cases
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(vdb_repo),
                         value_for<n::make_output_manager>(&make_standard_output_manager),
+                        value_for<n::perform_uninstall>(&cannot_uninstall),
                         value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
@@ -471,6 +478,7 @@ namespace test_cases
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(vdb_repo),
                         value_for<n::make_output_manager>(&make_standard_output_manager),
+                        value_for<n::perform_uninstall>(&cannot_uninstall),
                         value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
@@ -598,6 +606,7 @@ namespace test_cases
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(vdb_repo),
                         value_for<n::make_output_manager>(&make_standard_output_manager),
+                        value_for<n::perform_uninstall>(&cannot_uninstall),
                         value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
@@ -997,6 +1006,7 @@ namespace test_cases
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(vdb_repo),
                         value_for<n::make_output_manager>(&make_standard_output_manager),
+                        value_for<n::perform_uninstall>(&cannot_uninstall),
                         value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
@@ -1237,6 +1247,7 @@ namespace test_cases
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(vdb_repo),
                         value_for<n::make_output_manager>(&make_standard_output_manager),
+                        value_for<n::perform_uninstall>(&cannot_uninstall),
                         value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
@@ -1330,6 +1341,7 @@ namespace test_cases
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(vdb_repo),
                         value_for<n::make_output_manager>(&make_standard_output_manager),
+                        value_for<n::perform_uninstall>(&cannot_uninstall),
                         value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
                         value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)

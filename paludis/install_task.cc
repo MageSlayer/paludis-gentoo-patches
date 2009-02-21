@@ -726,6 +726,45 @@ InstallTask::_pretend()
 }
 
 void
+InstallTask::_clean(
+        const DepList::Iterator dep,
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::string & cpvr,
+        const int x, const int y, const int s, const int f)
+{
+    /* clean one item */
+    if (0 != perform_hook(Hook("clean_pre")("TARGET", stringify(*id))
+                 ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status())
+        throw InstallActionError("Clean of '" + cpvr + "' aborted by hook");
+    on_clean_pre(*dep, *id, x, y, s, f);
+
+    try
+    {
+        OutputManagerFromEnvironment output_manager_holder(_imp->env, id, oe_exclusive);
+        UninstallAction uninstall_action(
+                make_named_values<UninstallActionOptions>(
+                    value_for<n::config_protect>(_imp->config_protect),
+                    value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
+                    ));
+        id->perform_action(uninstall_action);
+        if (output_manager_holder.output_manager_if_constructed())
+            output_manager_holder.output_manager_if_constructed()->succeeded();
+    }
+    catch (const UninstallActionError & e)
+    {
+        on_clean_fail(*dep, *id, x, y, s, f);
+        HookResult PALUDIS_ATTRIBUTE((unused)) dummy(perform_hook(Hook("clean_fail")
+                    ("TARGET", stringify(*id))("MESSAGE", e.message())));
+        throw;
+    }
+
+    on_clean_post(*dep, *id, x, y, s, f);
+    if (0 != perform_hook(Hook("clean_post")("TARGET", stringify(*id))
+                 ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status())
+        throw InstallActionError("Clean of '" + cpvr + "' aborted by hook");
+}
+
+void
 InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const int s, const int f, const bool is_first, const bool is_last,
         std::tr1::shared_ptr<OutputManagerFromEnvironment> & output_manager_holder)
 {
@@ -780,11 +819,23 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
         {
             output_manager_holder.reset(new OutputManagerFromEnvironment(_imp->env, dep->package_id(), oe_exclusive));
 
-            std::tr1::shared_ptr<PackageIDSequence> replacing(new PackageIDSequence);
+            std::tr1::shared_ptr<PackageIDSequence> replacing;
+
+            // look for packages with the same name in the same slot in the destination repos
+            if (dep->destination())
+                replacing = (*_imp->env)[selection::AllVersionsSorted(
+                        (generator::Package(dep->package_id()->name()) &
+                        generator::InRepository(dep->destination()->name())) |
+                        filter::SupportsAction<UninstallAction>() |
+                        filter::SameSlot(dep->package_id()))];
+            else
+                replacing.reset(new PackageIDSequence);
 
             InstallActionOptions install_options(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(dep->destination()),
                         value_for<n::make_output_manager>(std::tr1::ref(*output_manager_holder)),
+                        value_for<n::perform_uninstall>(std::tr1::bind(&InstallTask::_clean, this, dep,
+                                std::tr1::placeholders::_1, cpvr, x, y, s, f)),
                         value_for<n::replacing>(replacing),
                         value_for<n::used_this_for_config_protect>(std::tr1::bind(
                                 &Implementation<InstallTask>::assign_config_protect,
@@ -850,89 +901,10 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
     if (_imp->fetch_only || ! live_destination)
         return;
 
-    /* figure out whether we need to unmerge (clean) anything */
-    on_build_cleanlist_pre(*dep);
-
     // manually invalidate repos, they're probably wrong now
     for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
             r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
         (*r)->invalidate();
-
-    // look for packages with the same name in the same slot in the destination repos
-    std::tr1::shared_ptr<const PackageIDSequence> collision_list;
-
-    if (dep->destination())
-        collision_list = (*_imp->env)[selection::AllVersionsSorted(
-                (generator::Package(dep->package_id()->name()) &
-                generator::InRepository(dep->destination()->name())) |
-                filter::SupportsAction<UninstallAction>() |
-                filter::SameSlot(dep->package_id()))];
-
-    // don't clean the thing we just installed
-    PackageIDSequence clean_list;
-    if (collision_list)
-        for (PackageIDSequence::ConstIterator c(collision_list->begin()),
-                c_end(collision_list->end()) ; c != c_end ; ++c)
-            if (dep->package_id()->version() != (*c)->version())
-                clean_list.push_back(*c);
-    /* no need to sort clean_list here, although if the above is
-     * changed then check that this still holds... */
-
-    on_build_cleanlist_post(*dep);
-
-    /* ok, we have the cleanlist. we're about to clean */
-    if (clean_list.empty())
-        on_no_clean_needed(*dep);
-    else
-    {
-        if (0 != perform_hook(Hook("clean_all_pre")
-                    ("TARGETS", join(indirect_iterator(clean_list.begin()), indirect_iterator(clean_list.end()), " "))
-                    ).max_exit_status())
-            throw InstallActionError("Clean aborted by hook");
-        on_clean_all_pre(*dep, clean_list);
-
-        for (PackageIDSequence::ConstIterator c(clean_list.begin()),
-                c_end(clean_list.end()) ; c != c_end ; ++c)
-        {
-            /* clean one item */
-            if (0 != perform_hook(Hook("clean_pre")("TARGET", stringify(**c))
-                         ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status())
-                throw InstallActionError("Clean of '" + cpvr + "' aborted by hook");
-            on_clean_pre(*dep, **c, x, y, s, f);
-
-            try
-            {
-                output_manager_holder.reset(new OutputManagerFromEnvironment(_imp->env, dep->package_id(), oe_exclusive));
-                UninstallAction uninstall_action(
-                        make_named_values<UninstallActionOptions>(
-                            value_for<n::config_protect>(_imp->config_protect),
-                            value_for<n::make_output_manager>(std::tr1::ref(*output_manager_holder))
-                            ));
-                (*c)->perform_action(uninstall_action);
-                if (output_manager_holder->output_manager_if_constructed())
-                    output_manager_holder->output_manager_if_constructed()->succeeded();
-                output_manager_holder.reset();
-            }
-            catch (const UninstallActionError & e)
-            {
-                on_clean_fail(*dep, **c, x, y, s, f);
-                HookResult PALUDIS_ATTRIBUTE((unused)) dummy(perform_hook(Hook("clean_fail")
-                            ("TARGET", stringify(**c))("MESSAGE", e.message())));
-                throw;
-            }
-
-            on_clean_post(*dep, **c, x, y, s, f);
-            if (0 != perform_hook(Hook("clean_post")("TARGET", stringify(**c))
-                         ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status())
-                throw InstallActionError("Clean of '" + cpvr + "' aborted by hook");
-        }
-
-        /* we're done cleaning */
-        if (0 != perform_hook(Hook("clean_all_post")("TARGETS", join(
-                             indirect_iterator(clean_list.begin()), indirect_iterator(clean_list.end()), " "))).max_exit_status())
-            throw InstallActionError("Clean aborted by hook");
-        on_clean_all_post(*dep, clean_list);
-    }
 
     dep->handled().reset(new DepListEntryHandledSuccess);
 

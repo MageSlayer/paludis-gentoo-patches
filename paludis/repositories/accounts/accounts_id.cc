@@ -463,5 +463,16 @@ AccountsID::perform_action(Action & action) const
     }
 
     output_manager->succeeded();
+
+    for (PackageIDSequence::ConstIterator i(install_action->options.replacing()->begin()), i_end(install_action->options.replacing()->end()) ;
+            i != i_end ; ++i)
+    {
+        Context local_context("When cleaning '" + stringify(**i) + "':");
+        if ((*i)->repository()->format_key() && (*i)->repository()->format_key()->value() == "installed-accounts"
+                && (*i)->name() == name())
+            continue;
+        else
+            install_action->options.perform_uninstall()(*i);
+    }
 }
 
