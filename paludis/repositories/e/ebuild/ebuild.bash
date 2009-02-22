@@ -20,20 +20,29 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-if [[ -e ${ROOT}/etc/profile.env ]] && ! source "${ROOT}"/etc/profile.env; then
-    echo "error sourcing ${ROOT}/etc/profile.env" >&2
-    exit 123
-fi
-
-# Force a few more things into PATH, since some users have crazy setups.
-# See ticket:374.
-export PATH="/bin:/sbin:/usr/bin:/usr/sbin:${PATH}"
-
 unalias -a
 set +C
-unset GZIP BZIP BZIP2 CDPATH GREP_OPTIONS GREP_COLOR GLOBIGNORE
-eval unset LANG ${!LC_*}
-export LC_ALL=C
+
+ebuild_sanitise_envvars()
+{
+    # Force a few more things into PATH, since some users have crazy setups.
+    # See ticket:374.
+    export PATH="/bin:/sbin:/usr/bin:/usr/sbin${PATH:+:${PATH}}"
+
+    if [[ -n "${PALUDIS_EBUILD_DIR_FALLBACK}" ]] ; then
+        export PATH="${PALUDIS_EBUILD_DIR_FALLBACK}/utils:${PATH}"
+    fi
+    export PATH="${PALUDIS_EBUILD_DIR}/utils:${PATH}"
+    local p
+    for p in ${PALUDIS_UTILITY_PATH_SUFFIXES} ; do
+        export PATH="${PALUDIS_EBUILD_DIR}/utils/${p}:${PATH}"
+    done
+
+    unset GZIP BZIP BZIP2 CDPATH GREP_OPTIONS GREP_COLOR GLOBIGNORE
+    unset LANG ${!LC_*}
+    export LC_ALL=C
+}
+ebuild_sanitise_envvars
 
 # The list below should include all variables from all EAPIs, along with any
 # fancy fake variables
@@ -43,10 +52,8 @@ EBUILD_METADATA_VARIABLES="DEPEND RDEPEND PDEPEND IUSE SRC_URI DOWNLOADS RESTRIC
     MYOPTIONS E_MYOPTIONS E_DEPENDENCIES BINARY_KEYWORDS BINARY_URI \
     GENERATED_USING GENERATED_TIME BINARY_PLATFORMS REMOTE_IDS \
     SUMMARY BUGS_TO UPSTREAM_DOCUMENTATION UPSTREAM_CHANGELOG \
-    UPSTREAM_RELEASE_NOTES PROPERTIES PALUDIS_DECLARED_FUNCTIONS"
-unset -v ${EBUILD_METADATA_VARIABLES} ${PALUDIS_EBUILD_MUST_NOT_SET_VARIABLES}
-# These can be set by C++
-EBUILD_METADATA_VARIABLES="${EBUILD_METADATA_VARIABLES} SLOT EAPI OPTIONS USE"
+    UPSTREAM_RELEASE_NOTES PROPERTIES PALUDIS_DECLARED_FUNCTIONS SLOT EAPI OPTIONS USE"
+EBUILD_METADATA_VARIABLES_FROM_CPLUSPLUS="SLOT EAPI OPTIONS USE"
 
 if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] ; then
     export SANDBOX_PREDICT="${SANDBOX_PREDICT+${SANDBOX_PREDICT}:}"
@@ -66,14 +73,6 @@ shopt -s extglob
 export ROOT="${ROOT%+(/)}/"
 
 export EBUILD_PROGRAM_NAME="$0"
-
-if [[ -n "${PALUDIS_EBUILD_DIR_FALLBACK}" ]] ; then
-    export PATH="${PALUDIS_EBUILD_DIR_FALLBACK}/utils:${PATH}"
-fi
-export PATH="${PALUDIS_EBUILD_DIR}/utils:${PATH}"
-for p in ${PALUDIS_UTILITY_PATH_SUFFIXES} ; do
-    export PATH="${PALUDIS_EBUILD_DIR}/utils/${p}:${PATH}"
-done
 
 EBUILD_MODULES_DIR=$(canonicalise $(dirname $0 ) )
 if ! [[ -d ${EBUILD_MODULES_DIR} ]] ; then
@@ -172,7 +171,7 @@ ebuild_source_profile()
         done <${1}/parent
     fi
 
-    local old_set=$-
+    local paludis_old_set=$-
     set -a
 
     if [[ -f ${1}/make.defaults ]] ; then
@@ -183,78 +182,14 @@ ebuild_source_profile()
         source ${1}/bashrc || die "Couldn't source ${1}/bashrc"
     fi
 
-    [[ "${old_set}" == *a* ]] || set +a
+    [[ ${paludis_old_set} == *a* ]] || set +a
 }
-
-export CONFIG_PROTECT="${PALUDIS_CONFIG_PROTECT}"
-export CONFIG_PROTECT_MASK="${PALUDIS_CONFIG_PROTECT_MASK}"
-save_vars="$(eval echo ${PALUDIS_SAVE_VARIABLES} )"
-save_base_vars="$(eval echo ${PALUDIS_SAVE_BASE_VARIABLES} )"
-save_unmodifiable_vars="$(eval echo ${PALUDIS_SAVE_UNMODIFIABLE_VARIABLES} )"
-check_save_vars="${save_vars}"
-check_base_vars="${save_base_vars}"
-check_unmodifiable_vars="${save_unmodifiable_vars}"
-
-for var in ${save_vars} ${default_save_vars} ${save_base_vars} ${save_unmodifiable_vars} ; do
-    eval "export save_var_${var}='${!var}'"
-done
-
-if [[ -n "${PALUDIS_PROFILE_DIRS}" ]] ; then
-    for var in ${PALUDIS_PROFILE_DIRS} ; do
-        ebuild_source_profile $(canonicalise "${var}")
-    done
-elif [[ -n "${PALUDIS_PROFILE_DIR}" ]] ; then
-    ebuild_source_profile $(canonicalise "${PALUDIS_PROFILE_DIR}")
-fi
-
-unset ${save_vars} ${save_base_vars}
-
-for f in ${PALUDIS_BASHRC_FILES} ; do
-    if [[ -f ${f} ]] ; then
-        ebuild_notice "debug" "Loading bashrc file ${f}"
-        old_set=$-
-        set -a
-        source ${f}
-        [[ "${old_set}" == *a* ]] || set +a
-    else
-        ebuild_notice "debug" "Skipping bashrc file ${f}"
-    fi
-
-    for var in ${check_save_vars} ; do
-        if [[ -n ${!var} ]] ; then
-            die "${f} attempted to set \$${var}, which must not be set in bashrc."
-        fi
-    done
-
-    for var in ${check_save_unmodifiable_vars} ; do
-        s_var=save_var_${var}
-        if [[ "${!s_var}" != "${!var}" ]] ; then
-            die "${f} attempted to modify \$${var}, which must not be modified in bashrc."
-        fi
-    done
-done
-
-for var in ${save_vars} ; do
-    eval "export ${var}=\${save_var_${var}}"
-done
-
-for var in ${save_base_vars} ; do
-    eval "export ${var}=\"\${save_var_${var}} \$$(echo ${var})\""
-done
-
-if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] ; then
-    [[ -n "${CCACHE_DIR}" ]] && export SANDBOX_WRITE="${SANDBOX_WRITE}:${CCACHE_DIR}"
-fi
-
-[[ -z "${CBUILD}" ]] && export CBUILD="${CHOST}"
-export REAL_CHOST="${CHOST}"
 
 ebuild_scrub_environment()
 {
-    local save_LD_LIBRARY_PATH="${LD_LIBRARY_PATH}"
     (
         ebuild_safe_source "${1}" PATH PALUDIS_SOURCE_MERGED_VARIABLES \
-            PALUDIS_BRACKET_MERGED_VARIABLES || exit 1
+            PALUDIS_BRACKET_MERGED_VARIABLES LD_LIBRARY_PATH || exit 1
 
         unset -f diefunc perform_hook inherit builtin_loadenv builtin_saveenv
         unset -f ebuild_safe_source portageq best_version has_version paludis_pipe_command
@@ -276,8 +211,11 @@ ebuild_scrub_environment()
             PALUDIS_CLIENT_UPPER=$(echo ${PALUDIS_CLIENT} | tr a-z A-Z)
             echo "\${!${PALUDIS_CLIENT_UPPER}_CMDLINE_*} ${PALUDIS_CLIENT_UPPER}_OPTIONS" )
 
-        unset -v CATEGORY PN PV P PNV PVR PF PNVR ${!LD_*}
-
+        unset -v CATEGORY PN PV P PNV PVR PF PNVR
+        unset -v $(
+            for v in ${!LD_*}; do
+                [[ ${v} != LD_LIBRARY_PATH ]] && echo ${v}
+            done )
         unset -v ebuild EBUILD
         unset -v $(
             for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ${PALUDIS_BRACKET_MERGED_VARIABLES} ; do
@@ -298,7 +236,7 @@ ebuild_scrub_environment()
             done )
 
         set >"${1}"
-        LD_LIBRARY_PATH="${save_LD_LIBRARY_PATH}" print_exports >>"${1}"
+        print_exports >>"${1}"
     )
 }
 
@@ -345,45 +283,135 @@ ebuild_load_environment()
     fi
 }
 
+ebuild_unset_all_except()
+{
+    local ${2}
+    unset -v ${1}
+}
+
 ebuild_load_ebuild()
 {
-    unset ${SOURCE_MERGED_VARIABLES} ${BRACKET_MERGED_VARIABLES}
+    local paludis_v paludis_e_v
+    ebuild_unset_all_except "${EBUILD_METADATA_VARIABLES}" "${EBUILD_METADATA_VARIABLES_FROM_CPLUSPLUS}"
+    unset -v ${PALUDIS_EBUILD_MUST_NOT_SET_VARIABLES}
+    unset -v ${PALUDIS_SOURCE_MERGED_VARIABLES} ${PALUDIS_BRACKET_MERGED_VARIABLES}
 
-    local v e_v
-    for v in ${PALUDIS_MUST_NOT_CHANGE_VARIABLES} ; do
-        e_v=saved_${v}
-        local ${e_v}="${!v}"
+    for paludis_v in ${PALUDIS_MUST_NOT_CHANGE_VARIABLES} ; do
+        local paludis_saved_${paludis_v}
+        eval paludis_saved_${paludis_v}='${!paludis_v}'
     done
 
-    [[ -f "${1}" ]] || die "Ebuild '${1}' is not a file"
+    [[ -f ${1} ]] || die "Ebuild '${1}' is not a file"
     source ${1} || die "Error sourcing ebuild '${1}'"
 
-    if [[ -n "${PALUDIS_RDEPEND_DEFAULTS_TO_DEPEND}" ]] ; then
-        [[ ${RDEPEND-unset} == "unset" ]] && RDEPEND="${DEPEND}"
+    if [[ -n ${PALUDIS_RDEPEND_DEFAULTS_TO_DEPEND} ]] ; then
+        [[ ${RDEPEND+set} != set ]] && RDEPEND=${DEPEND}
     fi
 
-    for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ; do
-        e_v=E_${v}
-        export -n ${v}="${!v} ${!e_v}"
+    for paludis_v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ; do
+        paludis_e_v=E_${paludis_v}
+        eval ${paludis_v}='"${!paludis_v} ${!paludis_e_v}"'
     done
 
-    for v in ${PALUDIS_BRACKET_MERGED_VARIABLES} ; do
-        e_v=E_${v}
-        export -n ${v}="( ${!v} ) ${!e_v}"
+    for paludis_v in ${PALUDIS_BRACKET_MERGED_VARIABLES} ; do
+        paludis_e_v=E_${paludis_v}
+        eval ${paludis_v}='"( ${!paludis_v} ) ${!paludis_e_v}"'
     done
 
-    for v in ${PALUDIS_MUST_NOT_CHANGE_VARIABLES} ; do
-        s_v="saved_${v}"
-        if [[ -n "${!s_v}" ]] && [[ "${!v}" != "${!s_v}" ]] ; then
+    for paludis_v in ${PALUDIS_MUST_NOT_CHANGE_VARIABLES} ; do
+        local paludis_s_v=paludis_saved_${paludis_v}
+        if [[ -n ${!paludis_s_v} ]] && [[ ${!paludis_v} != ${!paludis_s_v} ]] ; then
             ebuild_notice "qa" \
-                "Ebuild ${1} illegally tried to change ${v} from '${!s_v}' to '${!v}'"
-            export ${v}="${!s_v}"
+                "Ebuild ${1} illegally tried to change ${paludis_v} from '${!paludis_s_v}' to '${!paludis_v}'"
+            eval ${paludis_v}='${!paludis_s_v}'
         fi
     done
 
-    export PALUDIS_DECLARED_FUNCTIONS=$(declare -F | while read v ; do
-        echo -n ${v/declare -f } " "
+    PALUDIS_DECLARED_FUNCTIONS=$(declare -F | while read paludis_v ; do
+        echo -n ${paludis_v#declare -f } " "
     done )
+}
+
+ebuild_load_em_up_dan()
+{
+    export CONFIG_PROTECT=${PALUDIS_CONFIG_PROTECT}
+    export CONFIG_PROTECT_MASK=${PALUDIS_CONFIG_PROTECT_MASK}
+    local paludis_save_vars=$(eval echo ${PALUDIS_SAVE_VARIABLES} )
+    local paludis_save_base_vars=$(eval echo ${PALUDIS_SAVE_BASE_VARIABLES} )
+    local paludis_save_unmodifiable_vars=$(eval echo ${PALUDIS_SAVE_UNMODIFIABLE_VARIABLES} )
+    local paludis_check_save_vars=${paludis_save_vars}
+    local paludis_check_base_vars=${paludis_save_base_vars}
+    local paludis_check_unmodifiable_vars=${paludis_save_unmodifiable_vars}
+
+    local paludis_var
+    for paludis_var in ${paludis_save_vars} ${paludis_save_base_vars} ${paludis_save_unmodifiable_vars} ; do
+        local paludis_save_var_${paludis_var}
+        eval paludis_save_var_${paludis_var}='${!paludis_var}'
+    done
+
+    if [[ -e ${ROOT}/etc/profile.env ]] && ! source "${ROOT}"/etc/profile.env; then
+        echo "error sourcing ${ROOT}/etc/profile.env" >&2
+        exit 123
+    fi
+    ebuild_sanitise_envvars
+
+    if [[ -n ${PALUDIS_PROFILE_DIRS} ]] ; then
+        for paludis_var in ${PALUDIS_PROFILE_DIRS} ; do
+            ebuild_source_profile "$(canonicalise "${paludis_var}")"
+        done
+    elif [[ -n ${PALUDIS_PROFILE_DIR} ]] ; then
+        ebuild_source_profile "$(canonicalise "${PALUDIS_PROFILE_DIR}")"
+    fi
+
+    unset ${paludis_save_vars} ${paludis_save_base_vars}
+
+    local paludis_f
+    for paludis_f in ${PALUDIS_BASHRC_FILES} ; do
+        if [[ -f ${paludis_f} ]] ; then
+            ebuild_notice "debug" "Loading bashrc file ${paludis_f}"
+            local paludis_old_set=${-}
+            set -a
+            source ${paludis_f}
+            [[ ${paludis_old_set} == *a* ]] || set +a
+        else
+            ebuild_notice "debug" "Skipping bashrc file ${paludis_f}"
+        fi
+
+        for paludis_var in ${paludis_check_save_vars} ; do
+            if [[ -n ${!paludis_var} ]] ; then
+                die "${paludis_f} attempted to set \$${paludis_var}, which must not be set in bashrc"
+            fi
+        done
+
+        for paludis_var in ${paludis_check_save_unmodifiable_vars} ; do
+            local paludis_s_var=paludis_save_var_${paludis_var}
+            if [[ "${!paludis_s_var}" != "${!paludis_var}" ]] ; then
+                die "${paludis_f} attempted to modify \$${var}, which must not be modified in bashrc"
+            fi
+        done
+    done
+
+    for paludis_var in ${paludis_save_vars} ; do
+        local paludis_s_var=paludis_save_var_${paludis_var}
+        eval ${paludis_var}='${!paludis_s_var}'
+    done
+
+    for paludis_var in ${paludis_save_base_vars} ; do
+        local paludis_s_var=paludis_save_var_${paludis_var}
+        eval ${paludis_var}='"${!paludis_s_var} $(echo ${!paludis_var})"'
+    done
+
+    if [[ -z ${PALUDIS_DO_NOTHING_SANDBOXY} ]] ; then
+        [[ -n ${CCACHE_DIR} ]] && export SANDBOX_WRITE=${SANDBOX_WRITE}:${CCACHE_DIR}
+    fi
+
+    [[ -z ${CBUILD} ]] && export CBUILD=${CHOST}
+    export REAL_CHOST=${CHOST}
+
+    ebuild_load_environment
+    if [[ ${EBUILD} != - ]] ; then
+        ebuild_load_ebuild "${EBUILD}"
+    fi
 }
 
 perform_hook()
@@ -459,15 +487,16 @@ ebuild_main()
             [[ $1 == bad_options ]] ; then
         export EBUILD_PHASE="${1}"
         perform_hook ebuild_${action}_pre
-        if [[ $1 != variable ]] || [[ -n "${EBUILD}" ]] ; then
+        if [[ $1 == metadata ]]; then
             for f in cut tr date ; do
-                eval "export ebuild_real_${f}=\"$(which $f )\""
-                eval "${f}() { ebuild_notice qa 'global scope ${f}' ; $(which $f ) \"\$@\" ; }"
+                eval "${f}() { ebuild_notice qa 'global scope ${f}' ; $(type -P ${f} ) \"\$@\" ; }"
             done
             for f in locked_pipe_command ; do
-                eval "${f}() { $(which $f ) \"\$@\" ; }"
+                eval "${f}() { $(type -P ${f} ) \"\$@\" ; }"
             done
             PATH="" ebuild_load_ebuild "${EBUILD}"
+        else
+            ebuild_load_em_up_dan
         fi
         if ! ${PALUDIS_F_FUNCTION_PREFIX:-ebuild_f}_${1} ; then
             perform_hook ebuild_${action}_fail

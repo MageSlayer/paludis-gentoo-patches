@@ -136,6 +136,14 @@ namespace paludis
             Command & with_setenv(const std::string &, const std::string &);
 
             /**
+             * Remove (most) existing environment variables before
+             * setting those added with with_setenv.
+             *
+             * \since 0.36
+             */
+            Command & with_clearenv();
+
+            /**
              * Run our command sandboxed.
              */
             Command & with_sandbox();
@@ -255,6 +263,13 @@ namespace paludis
              * \since 0.30
              */
             std::ostream * captured_stderr_stream() const;
+
+            /**
+             * Should we clear existing environment variables?
+             *
+             * \since 0.36
+             */
+            bool clearenv() const;
 
             ///\}
 

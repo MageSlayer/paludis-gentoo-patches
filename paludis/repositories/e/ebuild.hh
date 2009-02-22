@@ -48,6 +48,7 @@ namespace paludis
         struct binary_distdir;
         struct binary_ebuild_location;
         struct builddir;
+        struct clearenv;
         struct commands;
         struct config_protect;
         struct config_protect_mask;
@@ -99,6 +100,7 @@ namespace paludis
         struct EbuildCommandParams
         {
             NamedValue<n::builddir, FSEntry> builddir;
+            NamedValue<n::clearenv, bool> clearenv;
             NamedValue<n::commands, std::string> commands;
             NamedValue<n::distdir, FSEntry> distdir;
             NamedValue<n::ebuild_dir, FSEntry> ebuild_dir;

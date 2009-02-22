@@ -19,11 +19,6 @@
 builtin_initmisc()
 {
     local a
-    for a in PALUDIS_NON_EMPTY_VARIABLES ${PALUDIS_NON_EMPTY_VARIABLES} ; do
-        [[ "${a#build:}" != "${a}" ]] && continue
-        [[ -z "${!a}" ]] && die "\$${a} unset or empty"
-        declare -r ${a}="${!a}"
-    done
 
     for a in ${PALUDIS_DIRECTORY_VARIABLES} ; do
         [[ "${a#build:}" != "${a}" ]] && continue
@@ -61,13 +56,17 @@ builtin_initmisc()
 
     export T="${PALUDIS_PACKAGE_BUILDDIR}"
     mkdir -p "${T}" || die "Couldn't create \$T (\"${T}\")"
-    declare -r T="${T}"
     export HOME="${T}"
     export TMPDIR="${T}"
 
-    if [[ "${EBUILD}" != "-" ]] ; then
-        ebuild_load_ebuild "${EBUILD}"
-    fi
+    ebuild_load_em_up_dan
+    declare -r T="${T}"
+
+    for a in PALUDIS_NON_EMPTY_VARIABLES ${PALUDIS_NON_EMPTY_VARIABLES} ; do
+        [[ "${a#build:}" != "${a}" ]] && continue
+        [[ -z "${!a}" ]] && die "\$${a} unset or empty"
+        declare -r ${a}="${!a}"
+    done
 }
 
 ebuild_f_initmisc()

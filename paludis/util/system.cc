@@ -150,6 +150,7 @@ namespace paludis
     struct Implementation<Command>
     {
         std::string command;
+        bool clearenv;
         std::map<std::string, std::string> setenv_values;
         std::string chdir;
         bool echo_to_stderr;
@@ -174,6 +175,7 @@ namespace paludis
                 std::ostream * cs = 0,
                 std::ostream * ds = 0) :
             command(c),
+            clearenv(false),
             setenv_values(s),
             chdir(d),
             echo_to_stderr(e),
@@ -252,6 +254,13 @@ Command::with_setenv(const std::string & k, const std::string & v)
 }
 
 Command &
+Command::with_clearenv()
+{
+    _imp->clearenv = true;
+    return *this;
+}
+
+Command &
 Command::with_uid_gid(const uid_t u, const gid_t g)
 {
     _imp->uid.reset(new uid_t(u));
@@ -323,6 +332,9 @@ paludis::run_command(const Command & cmd)
 
     if (! cmd.chdir().empty())
         extras.append(" [chdir " + cmd.chdir() + "]");
+
+    if (cmd.clearenv())
+        extras.append(" [clearenv]");
 
     for (Command::ConstIterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
         extras.append(" [setenv " + s->first + "=" + s->second + "]");
@@ -418,6 +430,24 @@ paludis::run_command(const Command & cmd)
                 if (! cmd.chdir().empty())
                     if (-1 == chdir(stringify(cmd.chdir()).c_str()))
                         throw RunCommandError("chdir failed: " + stringify(strerror(errno)));
+
+                if (cmd.clearenv())
+                {
+                    std::map<std::string, std::string> setenvs;
+                    for (const char * const * it(environ); 0 != it; ++it)
+                    {
+                        std::string var(*it);
+                        if (std::string::npos != var.find('=') &&
+                            ("PALUDIS_" == var.substr(0, 8) ||
+                             "PATH=" == var.substr(0, 5) ||
+                             "LD_LIBRARY_PATH=" == var.substr(0, 16)))
+                            setenvs.insert(std::make_pair(var.substr(0, var.find('=')), var.substr(var.find('=') + 1)));
+                    }
+                    clearenv();
+                    for (std::map<std::string, std::string>::const_iterator it(setenvs.begin()),
+                             it_end(setenvs.end()); it_end != it; ++it)
+                        setenv(it->first.c_str(), it->second.c_str(), 1);
+                }
 
                 for (Command::ConstIterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
                     setenv(s->first.c_str(), s->second.c_str(), 1);
@@ -777,6 +807,12 @@ std::string
 Command::chdir() const
 {
     return _imp->chdir;
+}
+
+bool
+Command::clearenv() const
+{
+    return _imp->clearenv;
 }
 
 Command::ConstIterator

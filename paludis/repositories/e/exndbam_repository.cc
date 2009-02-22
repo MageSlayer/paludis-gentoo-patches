@@ -523,6 +523,7 @@ ExndbamRepository::perform_uninstall(
             EbuildCommandParams params(
                     make_named_values<EbuildCommandParams>(
                         value_for<n::builddir>(_imp->params.builddir()),
+                        value_for<n::clearenv>(phase->option("clearenv")),
                         value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
                         value_for<n::distdir>(ver_dir),
                         value_for<n::ebuild_dir>(ver_dir),

@@ -19,11 +19,6 @@
 builtin_init()
 {
     local a
-    for a in PALUDIS_NON_EMPTY_VARIABLES ${PALUDIS_NON_EMPTY_VARIABLES} ; do
-        a=${a#build:}
-        [[ -z "${!a}" ]] && die "\$${a} unset or empty"
-        declare -r ${a}="${!a}"
-    done
 
     for a in ${PALUDIS_DIRECTORY_VARIABLES} ; do
         a=${a#build:}
@@ -79,9 +74,13 @@ builtin_init()
 
     export S="${WORKDIR}/${P}"
 
-    if [[ "${EBUILD}" != "-" ]] ; then
-        ebuild_load_ebuild "${EBUILD}"
-    fi
+    ebuild_load_em_up_dan
+
+    for a in PALUDIS_NON_EMPTY_VARIABLES ${PALUDIS_NON_EMPTY_VARIABLES} ; do
+        a=${a#build:}
+        [[ -z "${!a}" ]] && die "\$${a} unset or empty"
+        declare -r ${a}="${!a}"
+    done
 }
 
 ebuild_f_init()

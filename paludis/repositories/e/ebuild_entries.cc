@@ -465,6 +465,7 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
             {
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                         value_for<n::builddir>(_imp->params.builddir()),
+                        value_for<n::clearenv>(phase->option("clearenv")),
                         value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
                         value_for<n::distdir>(_imp->params.distdir()),
                         value_for<n::ebuild_dir>(_imp->e_repository->layout()->package_directory(id->name())),
@@ -764,6 +765,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
             EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                     value_for<n::builddir>(_imp->params.builddir()),
+                    value_for<n::clearenv>(phase->option("clearenv")),
                     value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
                     value_for<n::distdir>(_imp->params.distdir()),
                     value_for<n::ebuild_dir>(_imp->e_repository->layout()->package_directory(id->name())),
@@ -872,6 +874,7 @@ EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
         EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                 value_for<n::builddir>(_imp->params.builddir()),
+                value_for<n::clearenv>(phase->option("clearenv")),
                 value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
                 value_for<n::distdir>(_imp->params.distdir()),
                 value_for<n::ebuild_dir>(_imp->e_repository->layout()->package_directory(id->name())),
@@ -942,6 +945,7 @@ EbuildEntries::get_environment_variable(
 
     EbuildVariableCommand cmd(make_named_values<EbuildCommandParams>(
             value_for<n::builddir>(_imp->params.builddir()),
+            value_for<n::clearenv>(phases.begin_phases()->option("clearenv")),
             value_for<n::commands>(join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " ")),
             value_for<n::distdir>(_imp->params.distdir()),
             value_for<n::ebuild_dir>(_imp->e_repository->layout()->package_directory(id->name())),
@@ -1095,6 +1099,7 @@ EbuildEntries::pretend(
 
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                             value_for<n::builddir>(_imp->params.builddir()),
+                            value_for<n::clearenv>(phase->option("clearenv")),
                             value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
                             value_for<n::distdir>(_imp->params.distdir()),
                             value_for<n::ebuild_dir>(_imp->e_repository->layout()->package_directory(id->name())),
@@ -1147,6 +1152,7 @@ EbuildEntries::pretend(
 
         EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                 value_for<n::builddir>(_imp->params.builddir()),
+                value_for<n::clearenv>(phase->option("clearenv")),
                 value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
                 value_for<n::distdir>(_imp->params.distdir()),
                 value_for<n::ebuild_dir>(_imp->e_repository->layout()->package_directory(id->name())),

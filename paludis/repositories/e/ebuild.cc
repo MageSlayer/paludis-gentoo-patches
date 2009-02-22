@@ -100,6 +100,9 @@ EbuildCommand::operator() ()
     if (! params.package_id()->eapi()->supported())
         throw InternalError(PALUDIS_HERE, "Tried to run EbuildCommand on an unsupported EAPI");
 
+    if (params.clearenv())
+        cmd.with_clearenv();
+
     if (params.sandbox())
         cmd.with_sandbox();
 
