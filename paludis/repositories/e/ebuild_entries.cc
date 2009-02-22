@@ -524,6 +524,18 @@ EbuildEntries::pretend_fetch(const std::tr1::shared_ptr<const ERepositoryID> & i
     }
 }
 
+namespace
+{
+    bool slot_is_same(const std::tr1::shared_ptr<const PackageID> & a,
+            const std::tr1::shared_ptr<const PackageID> & b)
+    {
+        if (a->slot_key())
+            return b->slot_key() && a->slot_key()->value() == b->slot_key()->value();
+        else
+            return ! b->slot_key();
+    }
+}
+
 void
 EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
         const InstallAction & install_action, const std::tr1::shared_ptr<const ERepositoryProfile> & p) const
@@ -787,6 +799,10 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
         Context local_context("When cleaning '" + stringify(**i) + "':");
         if ((*i)->name() == id->name() && (*i)->version() == id->version())
             continue;
+
+        if (id->eapi()->supported()->ebuild_phases()->ebuild_new_upgrade_phase_order())
+            if ((*i)->name() == id->name() && slot_is_same(*i, id))
+                continue;
 
         install_action.options.perform_uninstall()(*i);
     }
