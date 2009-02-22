@@ -294,6 +294,16 @@ namespace
         else
             return ! b->slot_key();
     }
+
+    void used_this_for_config_protect(std::string & s, const std::string & v)
+    {
+        s = v;
+    }
+
+    std::tr1::shared_ptr<OutputManager> this_output_manager(const std::tr1::shared_ptr<OutputManager> & o, const Action &)
+    {
+        return o;
+    }
 }
 
 void
@@ -326,6 +336,8 @@ UnpackagedID::perform_action(Action & action) const
                 ELikeStripChoiceValue::canonical_name_with_prefix()));
     std::tr1::shared_ptr<const ChoiceValue> split_choice(choices_key()->value()->find_by_name_with_prefix(
                 ELikeSplitChoiceValue::canonical_name_with_prefix()));
+
+    std::string used_config_protect;
 
     switch (install_action->options.want_phase()("strip"))
     {
@@ -365,7 +377,9 @@ UnpackagedID::perform_action(Action & action) const
                             value_for<n::options>(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs),
                             value_for<n::output_manager>(output_manager),
                             value_for<n::package_id>(shared_from_this()),
-                            value_for<n::used_this_for_config_protect>(install_action->options.used_this_for_config_protect())
+                            value_for<n::perform_uninstall>(install_action->options.perform_uninstall()),
+                            value_for<n::used_this_for_config_protect>(std::tr1::bind(
+                                    &used_this_for_config_protect, std::tr1::ref(used_config_protect), std::tr1::placeholders::_1))
                             ));
             }
             break;
@@ -380,8 +394,6 @@ UnpackagedID::perform_action(Action & action) const
             throw InternalError(PALUDIS_HERE, "bad WantPhase");
     }
 
-    output_manager->succeeded();
-
     for (PackageIDSequence::ConstIterator i(install_action->options.replacing()->begin()), i_end(install_action->options.replacing()->end()) ;
             i != i_end ; ++i)
     {
@@ -389,8 +401,15 @@ UnpackagedID::perform_action(Action & action) const
         if ((*i)->name() == name() && (*i)->version() == version() && slot_is_same(*i, this))
             continue;
 
-        install_action->options.perform_uninstall()(*i);
+        UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
+                    value_for<n::config_protect>(used_config_protect),
+                    value_for<n::is_overwrite>(false),
+                    value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, output_manager, std::tr1::placeholders::_1))
+                    ));
+        install_action->options.perform_uninstall()(*i, uo);
     }
+
+    output_manager->succeeded();
 }
 
 void

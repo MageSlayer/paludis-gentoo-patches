@@ -375,10 +375,9 @@ VDBRepositoryKeyReadError::VDBRepositoryKeyReadError(
 void
 VDBRepository::perform_uninstall(
         const std::tr1::shared_ptr<const ERepositoryID> & id,
-        const UninstallAction & a,
-        bool reinstalling) const
+        const UninstallAction & a) const
 {
-    Context context("When uninstalling '" + stringify(*id) + (reinstalling ? "' for a reinstall:" : "':"));
+    Context context("When uninstalling '" + stringify(*id) + (a.options.is_overwrite() ? "' for an overwrite:" : "':"));
 
     if (! _imp->params.root().is_directory())
         throw InstallActionError("Couldn't uninstall '" + stringify(*id) +
@@ -386,7 +385,7 @@ VDBRepository::perform_uninstall(
 
     std::tr1::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
 
-    std::string reinstalling_str(reinstalling ? "-reinstalling-" : "");
+    std::string reinstalling_str(a.options.is_overwrite() ? "-reinstalling-" : "");
 
     std::tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
     eclassdirs->push_back(FSEntry(_imp->params.location() / stringify(id->name().category()) /
@@ -484,7 +483,7 @@ VDBRepository::perform_uninstall(
         FSEntry(*d).unlink();
     pkg_dir.rmdir();
 
-    if (! reinstalling)
+    if (! a.options.is_overwrite())
     {
         std::tr1::shared_ptr<const PackageIDSequence> ids(package_ids(id->name()));
         bool only(true);
@@ -918,9 +917,10 @@ VDBRepository::merge(const MergeParams & m)
     {
         UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                     value_for<n::config_protect>(config_protect),
+                    value_for<n::is_overwrite>(true),
                     value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1))
                     ));
-        perform_uninstall(is_replace, uo, true);
+        m.perform_uninstall()(is_replace, uo);
     }
 
     if (std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id())
@@ -935,9 +935,10 @@ VDBRepository::merge(const MergeParams & m)
             {
                 UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                             value_for<n::config_protect>(config_protect),
+                            value_for<n::is_overwrite>(false),
                             value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1))
                             ));
-                perform_uninstall(candidate, uo, false);
+                m.perform_uninstall()(candidate, uo);
             }
         }
     }

@@ -44,7 +44,7 @@ using namespace paludis;
 
 namespace
 {
-    void cannot_uninstall(const std::tr1::shared_ptr<const PackageID> & id)
+    void cannot_uninstall(const std::tr1::shared_ptr<const PackageID> & id, const UninstallActionOptions &)
     {
         if (id)
             throw InternalError(PALUDIS_HERE, "cannot uninstall");
@@ -79,10 +79,6 @@ namespace
             s << "other<" << f.location_key()->value() << ">";
         }
     };
-
-    void dummy_used_this_for_config_protect(const std::string &)
-    {
-    }
 
     WantPhase want_all_phases(const std::string &)
     {
@@ -266,6 +262,7 @@ namespace test_cases
 
             UninstallAction action(make_named_values<UninstallActionOptions>(
                         value_for<n::config_protect>(""),
+                        value_for<n::is_overwrite>(false),
                         value_for<n::make_output_manager>(&make_standard_output_manager)
                     ));
             id->perform_action(action);
@@ -318,6 +315,7 @@ namespace test_cases
 
             UninstallAction action(make_named_values<UninstallActionOptions>(
                         value_for<n::config_protect>(""),
+                        value_for<n::is_overwrite>(false),
                         value_for<n::make_output_manager>(&make_standard_output_manager)
                     ));
             id->perform_action(action);
@@ -405,7 +403,6 @@ namespace test_cases
                             value_for<n::make_output_manager>(&make_standard_output_manager),
                             value_for<n::perform_uninstall>(&cannot_uninstall),
                             value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
-                            value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                             value_for<n::want_phase>(&want_all_phases)
                         ));
                 (*env[selection::RequireExactlyOne(generator::InRepository(RepositoryName("unpackaged")))]->begin())->perform_action(action);
@@ -463,7 +460,6 @@ namespace test_cases
                             value_for<n::make_output_manager>(&make_standard_output_manager),
                             value_for<n::perform_uninstall>(&cannot_uninstall),
                             value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
-                            value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                             value_for<n::want_phase>(&want_all_phases)
                         ));
                 (*env[selection::RequireExactlyOne(generator::InRepository(RepositoryName("unpackaged")))]->begin())->perform_action(action);
@@ -524,7 +520,6 @@ namespace test_cases
                             value_for<n::make_output_manager>(&make_standard_output_manager),
                             value_for<n::perform_uninstall>(&cannot_uninstall),
                             value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
-                            value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                             value_for<n::want_phase>(&want_all_phases)
                         ));
                 (*env[selection::RequireExactlyOne(generator::InRepository(RepositoryName("unpackaged")))]->begin())->perform_action(action);
@@ -566,6 +561,7 @@ namespace test_cases
 
                 UninstallAction action(make_named_values<UninstallActionOptions>(
                             value_for<n::config_protect>(""),
+                            value_for<n::is_overwrite>(false),
                             value_for<n::make_output_manager>(&make_standard_output_manager)
                         ));
                 (*env[selection::RequireExactlyOne(generator::Matches(
@@ -609,6 +605,7 @@ namespace test_cases
 
                 UninstallAction action(make_named_values<UninstallActionOptions>(
                             value_for<n::config_protect>(""),
+                            value_for<n::is_overwrite>(false),
                             value_for<n::make_output_manager>(&make_standard_output_manager)
                         ));
                 (*env[selection::RequireExactlyOne(generator::Matches(

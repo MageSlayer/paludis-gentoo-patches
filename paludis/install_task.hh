@@ -66,6 +66,7 @@ namespace paludis
             void _one(const DepList::Iterator, const int, const int, const int, const int, const bool is_first, const bool is_last,
                     std::tr1::shared_ptr<OutputManagerFromEnvironment> &);
             void _clean(const DepList::Iterator, const std::tr1::shared_ptr<const PackageID> & id,
+                    const UninstallActionOptions &,
                     const std::string & cpvr, const int x, const int y, const int s, const int f);
             void _display_failure_summary();
 

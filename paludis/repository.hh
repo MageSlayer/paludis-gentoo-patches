@@ -69,6 +69,7 @@ namespace paludis
         struct output_manager;
         struct package_id;
         struct path;
+        struct perform_uninstall;
         struct profile;
         struct provided_by;
         struct provided_by_spec;
@@ -163,6 +164,17 @@ namespace paludis
         NamedValue<n::options, MergerOptions> options;
         NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
         NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
+
+        /**
+         * Some merges need to do an uninstall mid-way through the merge process.
+         *
+         * \see InstallActionOptions::perform_uninstall
+         * \since 0.36
+         */
+        NamedValue<n::perform_uninstall, std::tr1::function<void (
+                const std::tr1::shared_ptr<const PackageID> &,
+                const UninstallActionOptions &)> > perform_uninstall;
+
         NamedValue<n::used_this_for_config_protect, std::tr1::function<void (const std::string &)> > used_this_for_config_protect;
     };
 

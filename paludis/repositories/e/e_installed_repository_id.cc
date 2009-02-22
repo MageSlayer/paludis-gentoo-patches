@@ -876,8 +876,7 @@ namespace
 
         void visit(const UninstallAction & a)
         {
-            std::tr1::static_pointer_cast<const EInstalledRepository>(id->repository())->perform_uninstall(
-                    id, a, false);
+            std::tr1::static_pointer_cast<const EInstalledRepository>(id->repository())->perform_uninstall(id, a);
         }
 
         void visit(const InstalledAction &)

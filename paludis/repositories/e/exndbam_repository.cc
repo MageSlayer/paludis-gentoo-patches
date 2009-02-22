@@ -412,9 +412,10 @@ ExndbamRepository::merge(const MergeParams & m)
     {
         UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                     value_for<n::config_protect>(config_protect),
+                    value_for<n::is_overwrite>(true),
                     value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1))
                     ));
-        perform_uninstall(std::tr1::static_pointer_cast<const ERepositoryID>(if_overwritten_id), uo, true);
+        m.perform_uninstall()(if_overwritten_id, uo);
     }
 
     if (std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id())
@@ -429,9 +430,10 @@ ExndbamRepository::merge(const MergeParams & m)
             {
                 UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                             value_for<n::config_protect>(config_protect),
+                            value_for<n::is_overwrite>(false),
                             value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1))
                             ));
-                perform_uninstall(candidate, uo, false);
+                m.perform_uninstall()(candidate, uo);
             }
         }
     }
@@ -447,10 +449,9 @@ ExndbamRepository::merge(const MergeParams & m)
 void
 ExndbamRepository::perform_uninstall(
         const std::tr1::shared_ptr<const ERepositoryID> & id,
-        const UninstallAction & a,
-        bool replace) const
+        const UninstallAction & a) const
 {
-    Context context("When uninstalling '" + stringify(*id) + (replace ? "' for a reinstall:" : "':"));
+    Context context("When uninstalling '" + stringify(*id) + (a.options.is_overwrite() ? "' for an overwrite:" : "':"));
 
     if (! _imp->params.root().is_directory())
         throw InstallActionError("Couldn't uninstall '" + stringify(*id) +

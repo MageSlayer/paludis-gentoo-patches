@@ -126,8 +126,6 @@ namespace paludis
         Environment * const env;
         DepList dep_list;
 
-        std::string config_protect;
-
         std::list<std::string> raw_targets;
         std::tr1::shared_ptr<SetSpecTree> targets;
         std::tr1::shared_ptr<std::string> add_to_world_spec;
@@ -158,7 +156,6 @@ namespace paludis
                 std::tr1::shared_ptr<const DestinationsSet> d) :
             env(e),
             dep_list(e, o),
-            config_protect(""),
             targets(new SetSpecTree(make_shared_ptr(new AllDepSpec))),
             destinations(d),
             pretend(false),
@@ -177,11 +174,6 @@ namespace paludis
             phase_options_apply_to_all(false),
             had_resolution_failures(false)
         {
-        }
-
-        void assign_config_protect(const std::string & s)
-        {
-            config_protect = s;
         }
     };
 }
@@ -729,6 +721,7 @@ void
 InstallTask::_clean(
         const DepList::Iterator dep,
         const std::tr1::shared_ptr<const PackageID> & id,
+        const UninstallActionOptions & options,
         const std::string & cpvr,
         const int x, const int y, const int s, const int f)
 {
@@ -740,15 +733,8 @@ InstallTask::_clean(
 
     try
     {
-        OutputManagerFromEnvironment output_manager_holder(_imp->env, id, oe_exclusive);
-        UninstallAction uninstall_action(
-                make_named_values<UninstallActionOptions>(
-                    value_for<n::config_protect>(_imp->config_protect),
-                    value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
-                    ));
+        UninstallAction uninstall_action(options);
         id->perform_action(uninstall_action);
-        if (output_manager_holder.output_manager_if_constructed())
-            output_manager_holder.output_manager_if_constructed()->succeeded();
     }
     catch (const UninstallActionError & e)
     {
@@ -835,11 +821,8 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
                         value_for<n::destination>(dep->destination()),
                         value_for<n::make_output_manager>(std::tr1::ref(*output_manager_holder)),
                         value_for<n::perform_uninstall>(std::tr1::bind(&InstallTask::_clean, this, dep,
-                                std::tr1::placeholders::_1, cpvr, x, y, s, f)),
+                                std::tr1::placeholders::_1, std::tr1::placeholders::_2, cpvr, x, y, s, f)),
                         value_for<n::replacing>(replacing),
-                        value_for<n::used_this_for_config_protect>(std::tr1::bind(
-                                &Implementation<InstallTask>::assign_config_protect,
-                                _imp.get(), std::tr1::placeholders::_1)),
                         value_for<n::want_phase>(std::tr1::function<WantPhase (const std::string &)>())
                     ));
 

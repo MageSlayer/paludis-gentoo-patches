@@ -42,7 +42,7 @@ using namespace paludis;
 
 namespace
 {
-    void cannot_uninstall(const std::tr1::shared_ptr<const PackageID> & id)
+    void cannot_uninstall(const std::tr1::shared_ptr<const PackageID> & id, const UninstallActionOptions &)
     {
         if (id)
             throw InternalError(PALUDIS_HERE, "cannot uninstall");
@@ -245,7 +245,6 @@ namespace test_cases
                         value_for<n::make_output_manager>(&make_standard_output_manager),
                         value_for<n::perform_uninstall>(&cannot_uninstall),
                         value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
-                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
                     ));
             id->perform_action(action);
@@ -302,7 +301,6 @@ namespace test_cases
                         value_for<n::make_output_manager>(&make_standard_output_manager),
                         value_for<n::perform_uninstall>(&cannot_uninstall),
                         value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
-                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
                         value_for<n::want_phase>(&want_all_phases)
                     ));
             id->perform_action(action);
