@@ -35,7 +35,6 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
-#include <paludis/action.hh>
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
@@ -233,8 +232,6 @@ UninstallList::collect_all_installed() const
             i_end(_imp->env->package_database()->end_repositories()) ; i != i_end ; ++i)
     {
         if (! (*i)->installed_root_key())
-            continue;
-        if (! (*i)->some_ids_might_support_action(SupportsActionTest<UninstallAction>()))
             continue;
 
         std::tr1::shared_ptr<const CategoryNamePartSet> cats((*i)->category_names());

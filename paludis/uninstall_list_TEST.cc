@@ -499,45 +499,5 @@ namespace test_cases
                 );
         }
     } uninstall_list_slots_test;
-
-    struct UninstallListNotUninstallableTest :
-        UninstallListTestCaseBase
-    {
-        std::tr1::shared_ptr<FakeInstalledRepository> installed_not_uninstallable_repo;
-
-        UninstallListNotUninstallableTest() :
-            UninstallListTestCaseBase("not uninstallable"),
-            installed_not_uninstallable_repo(new FakeInstalledRepository(&env, RepositoryName("installed_not_uninstallable"), false))
-        {
-            env.package_database()->add_repository(2, installed_not_uninstallable_repo);
-            std::tr1::shared_ptr<SetSpecTree> world(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
-            installed_repo->add_package_set(SetName("world"), world);
-        }
-
-        void populate_targets()
-        {
-            add_unused_target();
-        }
-
-        void populate_repo()
-        {
-            installed_repo->add_version("cat", "needs-grp", "1")->run_dependencies_key()->set_from_string("group/grp");
-            installed_not_uninstallable_repo->add_version("group", "grp", "0");
-        }
-
-        void populate_expected()
-        {
-            expected.push_back("cat/needs-grp-1:0::installed");
-        }
-
-        UninstallListOptions options()
-        {
-            return make_named_values<UninstallListOptions>(
-                value_for<n::with_dependencies_as_errors>(false),
-                value_for<n::with_dependencies_included>(false),
-                value_for<n::with_unused_dependencies>(false)
-                );
-        }
-    } uninstall_list_not_uninstallable;
 }
 
