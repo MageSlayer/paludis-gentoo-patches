@@ -210,36 +210,6 @@ ConsoleInstallTask::on_build_deplist_post()
 }
 
 void
-ConsoleInstallTask::on_build_cleanlist_pre(const DepListEntry & d)
-{
-    output_heading("Cleaning stale versions after installing " + stringify(*d.package_id()));
-}
-
-void
-ConsoleInstallTask::on_build_cleanlist_post(const DepListEntry &)
-{
-}
-
-void
-ConsoleInstallTask::on_clean_all_pre(const DepListEntry & d,
-        const PackageIDSequence & c)
-{
-    display_clean_all_pre_list_start(d, c);
-
-    using namespace std::tr1::placeholders;
-    std::for_each(indirect_iterator(c.begin()), indirect_iterator(c.end()),
-            std::tr1::bind(std::tr1::mem_fn(&ConsoleInstallTask::display_one_clean_all_pre_list_entry), this, _1));
-
-    display_clean_all_pre_list_end(d, c);
-}
-
-void
-ConsoleInstallTask::on_no_clean_needed(const DepListEntry &)
-{
-    output_starred_item("No cleaning required");
-}
-
-void
 ConsoleInstallTask::on_clean_pre(const DepListEntry &,
         const PackageID & c, const int x, const int y, const int s, const int f)
 {
@@ -259,12 +229,6 @@ ConsoleInstallTask::on_clean_fail(const DepListEntry &,
         const PackageID & c, const int x, const int y, const int s, const int f)
 {
     output_xterm_title("(" + make_x_of_y(x, y, s, f) + ") Failed cleaning " + stringify(c));
-}
-
-void
-ConsoleInstallTask::on_clean_all_post(const DepListEntry &,
-        const PackageIDSequence &)
-{
 }
 
 void
@@ -622,25 +586,6 @@ ConsoleInstallTask::on_preserve_world()
 {
     output_heading("Updating world file");
     output_starred_item("--preserve-world was specified, skipping world changes");
-}
-
-void
-ConsoleInstallTask::display_clean_all_pre_list_start(const DepListEntry &,
-        const PackageIDSequence &)
-{
-}
-
-void
-ConsoleInstallTask::display_one_clean_all_pre_list_entry(
-        const PackageID & c)
-{
-    output_starred_item(render_as_package_name(stringify(c)));
-}
-
-void
-ConsoleInstallTask::display_clean_all_pre_list_end(const DepListEntry &,
-        const PackageIDSequence &)
-{
 }
 
 void

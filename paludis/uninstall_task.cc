@@ -363,6 +363,7 @@ UninstallTask::execute()
             UninstallAction uninstall_action(
                     make_named_values<UninstallActionOptions>(
                         value_for<n::config_protect>(""),
+                        value_for<n::is_overwrite>(false),
                         value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
                         ));
             i->package_id()->perform_action(uninstall_action);

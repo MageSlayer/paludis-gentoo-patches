@@ -54,11 +54,13 @@ namespace paludis
         struct failed_automatic_fetching;
         struct failed_integrity_checks;
         struct fetch_unneeded;
+        struct is_overwrite;
         struct make_output_manager;
+        struct perform_uninstall;
+        struct replacing;
         struct requires_manual_fetching;
         struct safe_resume;
         struct target_file;
-        struct used_this_for_config_protect;
         struct want_phase;
     }
 
@@ -109,8 +111,27 @@ namespace paludis
          */
         NamedValue<n::make_output_manager, std::tr1::function<std::tr1::shared_ptr<OutputManager> (
                 const InstallAction &)> > make_output_manager;
+        /**
+         * Callback to carry out an uninstall, for replacing.
+         *
+         * Won't necessarily be used. Some repositories have special code paths
+         * for reinstalls, and in some cases (e.g. accounts) an upgrade doesn't
+         * remove the old version at all.
+         *
+         * \since 0.36
+         */
+        NamedValue<n::perform_uninstall, std::tr1::function<void (
+                const std::tr1::shared_ptr<const PackageID> &,
+                const UninstallActionOptions &
+                )> > perform_uninstall;
 
-        NamedValue<n::used_this_for_config_protect, std::tr1::function<void (const std::string &)> > used_this_for_config_protect;
+        /**
+         * We must replace these.
+         *
+         * \since 0.36
+         */
+        NamedValue<n::replacing, std::tr1::shared_ptr<const PackageIDSequence> > replacing;
+
         NamedValue<n::want_phase, std::tr1::function<WantPhase (const std::string &)> > want_phase;
     };
 
@@ -124,6 +145,14 @@ namespace paludis
     struct UninstallActionOptions
     {
         NamedValue<n::config_protect, std::string> config_protect;
+
+        /**
+         * Some repositories need to do special handlings for direct overwrites
+         * (foo-1.2 replacing foo-1.2). Clients should set this to false.
+         *
+         * \since 0.36
+         */
+        NamedValue<n::is_overwrite, bool> is_overwrite;
 
         /**
          * This is a function to avoid chicken / egg problems when using

@@ -524,13 +524,38 @@ EbuildEntries::pretend_fetch(const std::tr1::shared_ptr<const ERepositoryID> & i
     }
 }
 
+namespace
+{
+    bool slot_is_same(const std::tr1::shared_ptr<const PackageID> & a,
+            const std::tr1::shared_ptr<const PackageID> & b)
+    {
+        if (a->slot_key())
+            return b->slot_key() && a->slot_key()->value() == b->slot_key()->value();
+        else
+            return ! b->slot_key();
+    }
+
+    void used_this_for_config_protect(std::string & s, const std::string & v)
+    {
+        s = v;
+    }
+
+    std::tr1::shared_ptr<OutputManager> this_output_manager(const std::tr1::shared_ptr<OutputManager> & o, const Action &)
+    {
+        return o;
+    }
+}
+
 void
 EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
         const InstallAction & install_action, const std::tr1::shared_ptr<const ERepositoryProfile> & p) const
 {
     using namespace std::tr1::placeholders;
 
-    Context context("When installing '" + stringify(*id) + "':");
+    Context context("When installing '" + stringify(*id) + "'" +
+            (install_action.options.replacing()->empty() ? "" : " replacing { '"
+             + join(indirect_iterator(install_action.options.replacing()->begin()),
+                 indirect_iterator(install_action.options.replacing()->end()), "', '") + "' }") + ":");
 
     std::tr1::shared_ptr<OutputManager> output_manager(install_action.options.make_output_manager()(install_action));
 
@@ -624,6 +649,8 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
     FSEntry package_builddir(_imp->params.builddir() / (stringify(id->name().category()) + "-" +
             stringify(id->name().package()) + "-" + stringify(id->version())));
 
+    std::string used_config_protect;
+
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_install());
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
@@ -673,7 +700,9 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                             value_for<n::options>(id->eapi()->supported()->merger_options()),
                             value_for<n::output_manager>(output_manager),
                             value_for<n::package_id>(id),
-                            value_for<n::used_this_for_config_protect>(install_action.options.used_this_for_config_protect())
+                            value_for<n::perform_uninstall>(install_action.options.perform_uninstall()),
+                            value_for<n::used_this_for_config_protect>(std::tr1::bind(
+                                    &used_this_for_config_protect, std::tr1::ref(used_config_protect), std::tr1::placeholders::_1))
                             ));
         }
         else if (phase->option("strip"))
@@ -774,6 +803,25 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
             EbuildInstallCommand cmd(command_params, install_params);
             cmd();
         }
+    }
+
+    for (PackageIDSequence::ConstIterator i(install_action.options.replacing()->begin()), i_end(install_action.options.replacing()->end()) ;
+            i != i_end ; ++i)
+    {
+        Context local_context("When cleaning '" + stringify(**i) + "':");
+        if ((*i)->name() == id->name() && (*i)->version() == id->version())
+            continue;
+
+        if (id->eapi()->supported()->ebuild_phases()->ebuild_new_upgrade_phase_order())
+            if ((*i)->name() == id->name() && slot_is_same(*i, id))
+                continue;
+
+        UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
+                    value_for<n::config_protect>(used_config_protect),
+                    value_for<n::is_overwrite>(false),
+                    value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, output_manager, std::tr1::placeholders::_1))
+                    ));
+        install_action.options.perform_uninstall()(*i, uo);
     }
 
     output_manager->succeeded();

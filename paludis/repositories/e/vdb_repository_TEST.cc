@@ -51,6 +51,12 @@ using namespace paludis;
 
 namespace
 {
+    void do_uninstall(const std::tr1::shared_ptr<const PackageID> & id, const UninstallActionOptions & u)
+    {
+        UninstallAction a(u);
+        id->perform_action(a);
+    }
+
     std::tr1::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
         return make_shared_ptr(new StandardOutputManager);
@@ -64,10 +70,6 @@ namespace
             return "";
         else
             return mm->second;
-    }
-
-    void dummy_used_this_for_config_protect(const std::string &)
-    {
     }
 
     WantPhase want_all_phases(const std::string &)
@@ -344,12 +346,14 @@ namespace test_cases
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(vdb_repo),
                         value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
+                        value_for<n::perform_uninstall>(&do_uninstall),
+                        value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
                         value_for<n::want_phase>(&want_all_phases)
                     ));
 
             UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
                         value_for<n::config_protect>(""),
+                        value_for<n::is_overwrite>(false),
                         value_for<n::make_output_manager>(&make_standard_output_manager)
                     ));
 
@@ -470,12 +474,14 @@ namespace test_cases
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(vdb_repo),
                         value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
+                        value_for<n::perform_uninstall>(&do_uninstall),
+                        value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
                         value_for<n::want_phase>(&want_all_phases)
                     ));
 
             UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
                         value_for<n::config_protect>(""),
+                        value_for<n::is_overwrite>(false),
                         value_for<n::make_output_manager>(&make_standard_output_manager)
                     ));
 
@@ -596,12 +602,14 @@ namespace test_cases
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(vdb_repo),
                         value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
+                        value_for<n::perform_uninstall>(&do_uninstall),
+                        value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
                         value_for<n::want_phase>(&want_all_phases)
                     ));
 
             UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
                         value_for<n::config_protect>(""),
+                        value_for<n::is_overwrite>(false),
                         value_for<n::make_output_manager>(&make_standard_output_manager)
                     ));
 
@@ -994,12 +1002,14 @@ namespace test_cases
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(vdb_repo),
                         value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
+                        value_for<n::perform_uninstall>(&do_uninstall),
+                        value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
                         value_for<n::want_phase>(&want_all_phases)
                     ));
 
             UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
                         value_for<n::config_protect>(""),
+                        value_for<n::is_overwrite>(false),
                         value_for<n::make_output_manager>(&make_standard_output_manager)
                     ));
 
@@ -1233,7 +1243,8 @@ namespace test_cases
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(vdb_repo),
                         value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
+                        value_for<n::perform_uninstall>(&do_uninstall),
+                        value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
                         value_for<n::want_phase>(&want_all_phases)
                     ));
 
@@ -1325,12 +1336,14 @@ namespace test_cases
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(vdb_repo),
                         value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
+                        value_for<n::perform_uninstall>(&do_uninstall),
+                        value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
                         value_for<n::want_phase>(&want_all_phases)
                     ));
 
             UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
                         value_for<n::config_protect>(""),
+                        value_for<n::is_overwrite>(false),
                         value_for<n::make_output_manager>(&make_standard_output_manager)
                     ));
 

@@ -121,8 +121,7 @@ namespace paludis
 
             virtual void perform_uninstall(
                     const std::tr1::shared_ptr<const erepository::ERepositoryID> & id,
-                    const UninstallAction &,
-                    bool reinstalling) const;
+                    const UninstallAction &) const;
 
             /* RepositoryProvidesInterface */
 

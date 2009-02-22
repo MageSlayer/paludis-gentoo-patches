@@ -65,6 +65,9 @@ namespace paludis
             void _main_actions();
             void _one(const DepList::Iterator, const int, const int, const int, const int, const bool is_first, const bool is_last,
                     std::tr1::shared_ptr<OutputManagerFromEnvironment> &);
+            void _clean(const DepList::Iterator, const std::tr1::shared_ptr<const PackageID> & id,
+                    const UninstallActionOptions &,
+                    const std::string & cpvr, const int x, const int y, const int s, const int f);
             void _display_failure_summary();
 
             void _add_target(const std::string &);
@@ -136,9 +139,6 @@ namespace paludis
             virtual void on_build_deplist_pre() = 0;
             virtual void on_build_deplist_post() = 0;
 
-            virtual void on_build_cleanlist_pre(const DepListEntry &) = 0;
-            virtual void on_build_cleanlist_post(const DepListEntry &) = 0;
-
             virtual void on_display_merge_list_pre() = 0;
             virtual void on_display_merge_list_post() = 0;
             virtual void on_display_merge_list_entry(const DepListEntry &) = 0;
@@ -175,9 +175,6 @@ namespace paludis
                     const int x, const int y, const int s, const int f) = 0;
             virtual void on_skip_already_done(const DepListEntry &, const int, const int, const int, const int) = 0;
 
-            virtual void on_no_clean_needed(const DepListEntry &) = 0;
-            virtual void on_clean_all_pre(const DepListEntry &,
-                    const PackageIDSequence &) = 0;
             virtual void on_clean_pre(const DepListEntry &,
                     const PackageID &,
                     const int x, const int y, const int s, const int f) = 0;
@@ -187,8 +184,6 @@ namespace paludis
             virtual void on_clean_fail(const DepListEntry &,
                     const PackageID &,
                     const int x, const int y, const int s, const int f) = 0;
-            virtual void on_clean_all_post(const DepListEntry &,
-                    const PackageIDSequence &) = 0;
 
             virtual void on_update_world_pre() = 0;
             virtual void on_update_world(const PackageDepSpec &) = 0;

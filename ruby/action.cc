@@ -30,13 +30,6 @@ using namespace paludis::ruby;
 
 namespace
 {
-    void dummy_used_this_for_config_protect(const std::string &)
-    {
-    }
-}
-
-namespace
-{
     static VALUE c_supports_action_test;
 
     static VALUE c_action;
@@ -510,6 +503,11 @@ namespace
         return wp_yes;
     }
 
+    void cannot_perform_uninstall(const std::tr1::shared_ptr<const PackageID> & id, const UninstallActionOptions &)
+    {
+        throw InternalError(PALUDIS_HERE, "Can't uninstall '" + stringify(*id) + "'");
+    }
+
     /*
      * call-seq:
      *     InstallActionOptions.new(destination) -> InstallActionOptions
@@ -547,7 +545,8 @@ namespace
             ptr = new InstallActionOptions(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(v_destination),
                         value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::used_this_for_config_protect>(&dummy_used_this_for_config_protect),
+                        value_for<n::perform_uninstall>(&cannot_perform_uninstall),
+                        value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
                         value_for<n::want_phase>(&want_all_phases)
                     ));
 
@@ -632,6 +631,7 @@ namespace
 
             ptr = new UninstallActionOptions(make_named_values<UninstallActionOptions>(
                         value_for<n::config_protect>(v_config_protect),
+                        value_for<n::is_overwrite>(false),
                         value_for<n::make_output_manager>(&make_standard_output_manager)
                     ));
 
