@@ -73,6 +73,8 @@ namespace paludis
         struct package_id;
         struct portdir;
         struct profiles;
+        struct replaced_by;
+        struct replacing_ids;
         struct root;
         struct sandbox;
         struct slot;
@@ -152,6 +154,7 @@ namespace paludis
             NamedValue<n::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > > expand_vars;
             NamedValue<n::loadsaveenv_dir, FSEntry> loadsaveenv_dir;
             NamedValue<n::profiles, std::tr1::shared_ptr<const FSEntrySequence> > profiles;
+            NamedValue<n::replacing_ids, std::tr1::shared_ptr<const PackageIDSequence> > replacing_ids;
             NamedValue<n::root, std::string> root;
             NamedValue<n::slot, std::string> slot;
             NamedValue<n::use, std::string> use;
@@ -205,6 +208,7 @@ namespace paludis
         {
             NamedValue<n::load_environment, const FSEntry *> load_environment;
             NamedValue<n::loadsaveenv_dir, FSEntry> loadsaveenv_dir;
+            NamedValue<n::replaced_by, std::tr1::shared_ptr<const PackageID> > replaced_by;
             NamedValue<n::root, std::string> root;
             NamedValue<n::unmerge_only, bool> unmerge_only;
         };

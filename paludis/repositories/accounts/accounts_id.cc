@@ -490,6 +490,7 @@ AccountsID::perform_action(Action & action) const
         {
             UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                         value_for<n::config_protect>(used_config_protect),
+                        value_for<n::if_for_install_id>(shared_from_this()),
                         value_for<n::is_overwrite>(false),
                         value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, output_manager, std::tr1::placeholders::_1))
                         ));

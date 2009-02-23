@@ -793,6 +793,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                             value_for<n::expand_vars>(expand_vars),
                             value_for<n::loadsaveenv_dir>(package_builddir / "temp"),
                             value_for<n::profiles>(_imp->params.profiles()),
+                            value_for<n::replacing_ids>(install_action.options.replacing()),
                             value_for<n::root>(install_action.options.destination()->installed_root_key() ?
                                 stringify(install_action.options.destination()->installed_root_key()->value()) :
                                 "/"),
@@ -820,6 +821,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
         UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                     value_for<n::config_protect>(used_config_protect),
+                    value_for<n::if_for_install_id>(id),
                     value_for<n::is_overwrite>(false),
                     value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, output_manager, std::tr1::placeholders::_1))
                     ));

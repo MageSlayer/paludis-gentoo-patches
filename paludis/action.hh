@@ -54,6 +54,7 @@ namespace paludis
         struct failed_automatic_fetching;
         struct failed_integrity_checks;
         struct fetch_unneeded;
+        struct if_for_install_id;
         struct is_overwrite;
         struct make_output_manager;
         struct perform_uninstall;
@@ -145,6 +146,14 @@ namespace paludis
     struct UninstallActionOptions
     {
         NamedValue<n::config_protect, std::string> config_protect;
+
+        /**
+         * If we're being uninstalled as part of an install, this is the ID
+         * that's being installed. Otherwise null.
+         *
+         * \since 0.36
+         */
+        NamedValue<n::if_for_install_id, std::tr1::shared_ptr<const PackageID> > if_for_install_id;
 
         /**
          * Some repositories need to do special handlings for direct overwrites

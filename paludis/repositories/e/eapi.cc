@@ -84,6 +84,8 @@ namespace
                         value_for<n::env_p>(check_get(k, "env_p")),
                         value_for<n::env_pf>(check_get(k, "env_pf")),
                         value_for<n::env_portdir>(check_get(k, "env_portdir")),
+                        value_for<n::env_replaced_by_id>(check_get(k, "env_replaced_by_id")),
+                        value_for<n::env_replacing_ids>(check_get(k, "env_replacing_ids")),
                         value_for<n::env_t>(check_get(k, "env_t")),
                         value_for<n::env_use>(check_get(k, "env_use")),
                         value_for<n::env_use_expand>(check_get(k, "env_use_expand")),

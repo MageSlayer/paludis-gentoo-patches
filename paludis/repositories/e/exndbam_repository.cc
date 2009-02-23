@@ -412,6 +412,7 @@ ExndbamRepository::merge(const MergeParams & m)
     {
         UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                     value_for<n::config_protect>(config_protect),
+                    value_for<n::if_for_install_id>(m.package_id()),
                     value_for<n::is_overwrite>(true),
                     value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1))
                     ));
@@ -430,6 +431,7 @@ ExndbamRepository::merge(const MergeParams & m)
             {
                 UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                             value_for<n::config_protect>(config_protect),
+                            value_for<n::if_for_install_id>(m.package_id()),
                             value_for<n::is_overwrite>(false),
                             value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1))
                             ));
@@ -544,6 +546,7 @@ ExndbamRepository::perform_uninstall(
                     make_named_values<EbuildUninstallCommandParams>(
                         value_for<n::load_environment>(load_env.get()),
                         value_for<n::loadsaveenv_dir>(ver_dir),
+                        value_for<n::replaced_by>(a.options.if_for_install_id()),
                         value_for<n::root>(stringify(_imp->params.root())),
                         value_for<n::unmerge_only>(false)
                     ));

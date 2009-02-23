@@ -86,6 +86,8 @@ namespace paludis
         struct env_p;
         struct env_pf;
         struct env_portdir;
+        struct env_replaced_by_id;
+        struct env_replacing_ids;
         struct env_t;
         struct env_use;
         struct env_use_expand;
@@ -272,6 +274,8 @@ namespace paludis
             NamedValue<n::env_p, std::string> env_p;
             NamedValue<n::env_pf, std::string> env_pf;
             NamedValue<n::env_portdir, std::string> env_portdir;
+            NamedValue<n::env_replaced_by_id, std::string> env_replaced_by_id;
+            NamedValue<n::env_replacing_ids, std::string> env_replacing_ids;
             NamedValue<n::env_t, std::string> env_t;
             NamedValue<n::env_use, std::string> env_use;
             NamedValue<n::env_use_expand, std::string> env_use_expand;

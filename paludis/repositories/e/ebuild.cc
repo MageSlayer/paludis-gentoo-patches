@@ -738,6 +738,10 @@ EbuildInstallCommand::extend_command(const Command & cmd)
     if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand_hidden().empty())
         result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand_hidden(),
                 install_params.use_expand_hidden());
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_replacing_ids().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_replacing_ids(),
+                join(indirect_iterator(install_params.replacing_ids()->begin()),
+                    indirect_iterator(install_params.replacing_ids()->end()), " "));
 
     for (Map<std::string, std::string>::ConstIterator
             i(install_params.expand_vars()->begin()),
@@ -784,6 +788,11 @@ EbuildUninstallCommand::extend_command(const Command & cmd)
         result
             .with_setenv("PALUDIS_LOAD_ENVIRONMENT", stringify(*uninstall_params.load_environment()))
             .with_setenv("PALUDIS_SKIP_INHERIT", "yes");
+
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_replaced_by_id().empty())
+        if (uninstall_params.replaced_by())
+            result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_replaced_by_id(),
+                stringify(*uninstall_params.replaced_by()));
 
     return result;
 }
