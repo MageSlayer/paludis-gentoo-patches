@@ -172,6 +172,8 @@ EInstalledRepositoryID::need_keys_added() const
 
     Context context("When loading ID keys from '" + stringify(_imp->dir) + "':");
 
+    add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("EAPI", "EAPI", mkt_internal, eapi()->name())));
+
     if (! eapi()->supported())
     {
         Log::get_instance()->message("e.eapi.unsupported", ll_debug, lc_context)
