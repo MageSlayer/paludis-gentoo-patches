@@ -30,6 +30,7 @@ namespace paludis
     namespace n
     {
         struct description;
+        struct environment;
         struct from_repositories;
         struct mask;
         struct name;
@@ -45,6 +46,7 @@ namespace paludis
         struct UnavailableIDParams
         {
             NamedValue<n::description, std::tr1::shared_ptr<const MetadataValueKey<std::string> > > description;
+            NamedValue<n::environment, const Environment *> environment;
             NamedValue<n::from_repositories, std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > > from_repositories;
             NamedValue<n::mask, std::tr1::shared_ptr<const Mask> > mask;
             NamedValue<n::name, QualifiedPackageName> name;
@@ -74,6 +76,7 @@ namespace paludis
                  const QualifiedPackageName name() const;
                  const VersionSpec version() const;
                  const std::tr1::shared_ptr<const Repository> repository() const;
+                 virtual PackageDepSpec uniquely_identifying_spec() const;
 
                  const std::tr1::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;
                  const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >

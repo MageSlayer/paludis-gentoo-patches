@@ -28,6 +28,7 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/choice.hh>
+#include <paludis/user_dep_spec.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -685,6 +686,14 @@ FakePackageID::canonical_form(const PackageIDCanonicalForm f) const
     }
 
     throw InternalError(PALUDIS_HERE, "Bad PackageIDCanonicalForm");
+}
+
+PackageDepSpec
+FakePackageID::uniquely_identifying_spec() const
+{
+    return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
+            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository()->name()),
+            _imp->env, UserPackageDepSpecOptions());
 }
 
 const QualifiedPackageName

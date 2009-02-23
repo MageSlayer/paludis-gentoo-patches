@@ -57,6 +57,7 @@ namespace paludis
                 ~EbuildID();
 
                 virtual const std::string canonical_form(const PackageIDCanonicalForm) const;
+                virtual PackageDepSpec uniquely_identifying_spec() const;
 
                 virtual const QualifiedPackageName name() const;
                 virtual const VersionSpec version() const;

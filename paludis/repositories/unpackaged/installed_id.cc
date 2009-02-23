@@ -43,6 +43,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
+#include <paludis/user_dep_spec.hh>
 #include <tr1/functional>
 
 using namespace paludis;
@@ -511,6 +512,14 @@ InstalledUnpackagedID::canonical_form(const PackageIDCanonicalForm f) const
     }
 
     throw InternalError(PALUDIS_HERE, "Bad PackageIDCanonicalForm");
+}
+
+PackageDepSpec
+InstalledUnpackagedID::uniquely_identifying_spec() const
+{
+    return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
+            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository()->name()),
+            _imp->env, UserPackageDepSpecOptions());
 }
 
 const QualifiedPackageName

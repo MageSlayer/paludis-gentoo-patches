@@ -35,6 +35,7 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/repository.hh>
 #include <paludis/action.hh>
+#include <paludis/user_dep_spec.hh>
 #include <algorithm>
 
 using namespace paludis;
@@ -267,6 +268,13 @@ AccountsID::canonical_form(const PackageIDCanonicalForm f) const
     }
 
     throw InternalError(PALUDIS_HERE, "Bad PackageIDCanonicalForm");
+}
+
+PackageDepSpec
+AccountsID::uniquely_identifying_spec() const
+{
+    return parse_user_package_dep_spec(stringify(name()) + "::" + stringify(repository()->name()),
+            _imp->env, UserPackageDepSpecOptions());
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >

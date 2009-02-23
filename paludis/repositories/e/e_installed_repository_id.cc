@@ -44,6 +44,7 @@
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <paludis/user_dep_spec.hh>
 #include <iterator>
 
 using namespace paludis;
@@ -562,6 +563,14 @@ EInstalledRepositoryID::canonical_form(const PackageIDCanonicalForm f) const
     }
 
     throw InternalError(PALUDIS_HERE, "Bad PackageIDCanonicalForm");
+}
+
+PackageDepSpec
+EInstalledRepositoryID::uniquely_identifying_spec() const
+{
+    return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
+            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository()->name()),
+            _imp->environment, UserPackageDepSpecOptions());
 }
 
 const QualifiedPackageName

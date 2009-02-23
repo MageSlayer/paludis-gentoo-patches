@@ -39,6 +39,7 @@
 #include <paludis/action.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/elike_choices.hh>
+#include <paludis/user_dep_spec.hh>
 
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
@@ -530,6 +531,14 @@ EbuildID::canonical_form(const PackageIDCanonicalForm f) const
     }
 
     throw InternalError(PALUDIS_HERE, "Bad PackageIDCanonicalForm");
+}
+
+PackageDepSpec
+EbuildID::uniquely_identifying_spec() const
+{
+    return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
+            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository()->name()),
+            _imp->environment, UserPackageDepSpecOptions());
 }
 
 const QualifiedPackageName

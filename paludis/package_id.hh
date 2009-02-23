@@ -127,6 +127,9 @@ namespace paludis
 
             ///\}
 
+            ///\name Name related operations
+            ///\{
+
             /**
              * Return our canonical string representation.
              *
@@ -156,6 +159,18 @@ namespace paludis
              * What is our owning repository?
              */
             virtual const std::tr1::shared_ptr<const Repository> repository() const = 0;
+
+            /**
+             * Return a PackageDepSpec that uniquely identifies us.
+             *
+             * When stringified, can be turned back into an equivalent unique
+             * PackageDepSpec by using parse_user_package_dep_spec.
+             *
+             * \since 0.36
+             */
+            virtual PackageDepSpec uniquely_identifying_spec() const = 0;
+
+            ///\}
 
             ///\name Specific metadata keys
             ///\{

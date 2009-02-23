@@ -32,6 +32,7 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/unchoices_key.hh>
+#include <paludis/user_dep_spec.hh>
 
 using namespace paludis;
 using namespace paludis::unavailable_repository;
@@ -41,6 +42,7 @@ namespace paludis
     template <>
     struct Implementation<UnavailableID>
     {
+        const Environment * const env;
         const QualifiedPackageName name;
         const VersionSpec version;
         const UnavailableRepository * const repo;
@@ -54,6 +56,7 @@ namespace paludis
 
         Implementation(
                 const UnavailableIDParams & e) :
+            env(e.environment()),
             name(e.name()),
             version(e.version()),
             repo(e.repository()),
@@ -121,6 +124,15 @@ UnavailableID::canonical_form(const PackageIDCanonicalForm f) const
     }
 
     throw InternalError(PALUDIS_HERE, "Bad PackageIDCanonicalForm");
+}
+
+PackageDepSpec
+UnavailableID::uniquely_identifying_spec() const
+{
+    return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
+            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository()->name()) +
+            "[." + _imp->from_repositories_key->raw_name() + "=" + *_imp->from_repositories_key->value()->begin() + "]",
+            _imp->env, UserPackageDepSpecOptions());
 }
 
 const QualifiedPackageName

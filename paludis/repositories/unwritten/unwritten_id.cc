@@ -30,6 +30,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/unchoices_key.hh>
+#include <paludis/user_dep_spec.hh>
 
 using namespace paludis;
 using namespace paludis::unwritten_repository;
@@ -39,6 +40,7 @@ namespace paludis
     template <>
     struct Implementation<UnwrittenID>
     {
+        const Environment * const env;
         const QualifiedPackageName name;
         const VersionSpec version;
         const UnwrittenRepository * const repo;
@@ -55,6 +57,7 @@ namespace paludis
 
         Implementation(
                 const UnwrittenIDParams & e) :
+            env(e.environment()),
             name(e.name()),
             version(e.version()),
             repo(e.repository()),
@@ -128,6 +131,14 @@ UnwrittenID::canonical_form(const PackageIDCanonicalForm f) const
     }
 
     throw InternalError(PALUDIS_HERE, "Bad PackageIDCanonicalForm");
+}
+
+PackageDepSpec
+UnwrittenID::uniquely_identifying_spec() const
+{
+    return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
+            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository()->name()),
+            _imp->env, UserPackageDepSpecOptions());
 }
 
 const QualifiedPackageName

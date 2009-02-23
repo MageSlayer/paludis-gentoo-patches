@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -95,7 +95,7 @@ UnwrittenRepositoryStore::_populate(const Environment * const env, const FSEntry
 }
 
 void
-UnwrittenRepositoryStore::_populate_one(const Environment * const, const FSEntry & f)
+UnwrittenRepositoryStore::_populate_one(const Environment * const env, const FSEntry & f)
 {
     if (! is_file_with_extension(f, ".conf", IsFileWithOptions()))
         return;
@@ -138,6 +138,7 @@ UnwrittenRepositoryStore::_populate_one(const Environment * const, const FSEntry
                             value_for<n::bug_ids>((*i).bug_ids()),
                             value_for<n::comment>((*i).comment()),
                             value_for<n::description>((*i).description()),
+                            value_for<n::environment>(env),
                             value_for<n::homepage>((*i).homepage()),
                             value_for<n::mask>(mask),
                             value_for<n::name>((*i).name()),

@@ -33,6 +33,7 @@ namespace paludis
         struct bug_ids;
         struct comment;
         struct description;
+        struct environment;
         struct homepage;
         struct mask;
         struct name;
@@ -52,6 +53,7 @@ namespace paludis
             NamedValue<n::bug_ids, std::tr1::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > > > bug_ids;
             NamedValue<n::comment, std::tr1::shared_ptr<const MetadataValueKey<std::string> > > comment;
             NamedValue<n::description, std::tr1::shared_ptr<const MetadataValueKey<std::string> > > description;
+            NamedValue<n::environment, const Environment *> environment;
             NamedValue<n::homepage, std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > > homepage;
             NamedValue<n::mask, std::tr1::shared_ptr<const Mask> > mask;
             NamedValue<n::name, QualifiedPackageName> name;
@@ -80,6 +82,7 @@ namespace paludis
                  const QualifiedPackageName name() const;
                  const VersionSpec version() const;
                  const std::tr1::shared_ptr<const Repository> repository() const;
+                 virtual PackageDepSpec uniquely_identifying_spec() const;
 
                  const std::tr1::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;
                  const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > > virtual_for_key() const;
