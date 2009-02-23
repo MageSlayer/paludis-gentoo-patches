@@ -218,6 +218,11 @@ namespace test_cases
 
             PackageDepSpec o(parse_user_package_dep_spec("=foo/bar---1.2.3", &env, UserPackageDepSpecOptions()));
             check_spec(o, "foo/bar--", "", "", "=1.2.3", "", "", "", "", "");
+
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("=foo/bar[.foo]", &env, UserPackageDepSpecOptions()), PackageDepSpecError);
+
+            PackageDepSpec p(parse_user_package_dep_spec("foo/bar[.key=value]", &env, UserPackageDepSpecOptions()));
+            check_spec(p, "foo/bar", "", "", "", "", "", "", "", "[.key=value]");
         }
     } test_user_package_dep_spec;
 

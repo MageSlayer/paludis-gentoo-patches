@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,10 +26,15 @@
 #include <paludis/version_requirements.hh>
 #include <paludis/package_database.hh>
 #include <paludis/filter.hh>
+#include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
 
 using namespace paludis;
 
@@ -168,6 +173,13 @@ namespace
                                     value_for<n::version_spec>(vs)));
                         had_bracket_version_requirements = true;
                     }
+                }
+                break;
+
+            case '.':
+                {
+                    std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req(new UserKeyRequirement(flag.substr(1)));
+                    result.additional_requirement(req);
                 }
                 break;
 
@@ -312,4 +324,188 @@ GotASetNotAPackageDepSpec::GotASetNotAPackageDepSpec(const std::string & s) thro
     Exception("'" + s + "' is a set, not a package")
 {
 }
+
+namespace paludis
+{
+    template <>
+    struct Implementation<UserKeyRequirement>
+    {
+        std::string key;
+        std::string value;
+
+        Implementation(const std::string & s)
+        {
+            std::string::size_type p(s.find('='));
+            if (std::string::npos == p)
+                throw PackageDepSpecError("Expected an = inside '[." + s + "]'");
+
+            key = s.substr(0, p);
+            value = s.substr(p + 1);
+        }
+    };
+}
+
+UserKeyRequirement::UserKeyRequirement(const std::string & s) :
+    PrivateImplementationPattern<UserKeyRequirement>(new Implementation<UserKeyRequirement>(s))
+{
+}
+
+UserKeyRequirement::~UserKeyRequirement()
+{
+}
+
+namespace
+{
+    struct KeyComparator
+    {
+        const std::string pattern;
+
+        KeyComparator(const std::string & p) :
+            pattern(p)
+        {
+        }
+
+        bool visit(const MetadataSectionKey &) const
+        {
+            return false;
+        }
+
+        bool visit(const MetadataTimeKey & k) const
+        {
+            return pattern == stringify(k.value());
+        }
+
+        bool visit(const MetadataValueKey<std::string> & k) const
+        {
+            return pattern == stringify(k.value());
+        }
+
+        bool visit(const MetadataValueKey<SlotName> & k) const
+        {
+            return pattern == stringify(k.value());
+        }
+
+        bool visit(const MetadataValueKey<FSEntry> & k) const
+        {
+            return pattern == stringify(k.value());
+        }
+
+        bool visit(const MetadataValueKey<bool> & k) const
+        {
+            return pattern == stringify(k.value());
+        }
+
+        bool visit(const MetadataValueKey<long> & k) const
+        {
+            return pattern == stringify(k.value());
+        }
+
+        bool visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > &) const
+        {
+            return false;
+        }
+
+        bool visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > &) const
+        {
+            return false;
+        }
+
+        bool visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > &) const
+        {
+            return false;
+        }
+
+        bool visit(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & k) const
+        {
+            return pattern == stringify(*k.value());
+        }
+
+        bool visit(const MetadataSpecTreeKey<DependencySpecTree> &) const
+        {
+            return false;
+        }
+
+        bool visit(const MetadataSpecTreeKey<SetSpecTree> &) const
+        {
+            return false;
+        }
+
+        bool visit(const MetadataSpecTreeKey<PlainTextSpecTree> &) const
+        {
+            return false;
+        }
+
+        bool visit(const MetadataSpecTreeKey<ProvideSpecTree> &) const
+        {
+            return false;
+        }
+
+        bool visit(const MetadataSpecTreeKey<SimpleURISpecTree> &) const
+        {
+            return false;
+        }
+
+        bool visit(const MetadataSpecTreeKey<FetchableURISpecTree> &) const
+        {
+            return false;
+        }
+
+        bool visit(const MetadataSpecTreeKey<LicenseSpecTree> &) const
+        {
+            return false;
+        }
+
+        bool visit(const MetadataCollectionKey<FSEntrySequence> & s) const
+        {
+            return pattern == join(s.value()->begin(), s.value()->end(), " ");
+        }
+
+        bool visit(const MetadataCollectionKey<PackageIDSequence> & s) const
+        {
+            return pattern == join(indirect_iterator(s.value()->begin()), indirect_iterator(s.value()->end()), " ");
+        }
+
+        bool visit(const MetadataCollectionKey<Sequence<std::string> > & s) const
+        {
+            return pattern == join(s.value()->begin(), s.value()->end(), " ");
+        }
+
+        bool visit(const MetadataCollectionKey<Set<std::string> > & s) const
+        {
+            return pattern == join(s.value()->begin(), s.value()->end(), " ");
+        }
+
+        bool visit(const MetadataCollectionKey<KeywordNameSet> & s) const
+        {
+            return pattern == join(s.value()->begin(), s.value()->end(), " ");
+        }
+    };
+}
+
+bool
+UserKeyRequirement::requirement_met(const Environment * const, const PackageID & id) const
+{
+    Context context("When working out whether '" + stringify(id) + "' matches " + as_raw_string() + ":");
+
+    PackageID::MetadataConstIterator m(id.find_metadata(_imp->key));
+    if (m == id.end_metadata())
+        return false;
+
+    KeyComparator c(_imp->value);
+    return (*m)->accept_returning<bool>(c);
+}
+
+const std::string
+UserKeyRequirement::as_human_string() const
+{
+    return "Key '" + _imp->key + "' has simple string value '" + _imp->value + "'";
+}
+
+const std::string
+UserKeyRequirement::as_raw_string() const
+{
+    return "[." + _imp->key + "=" + _imp->value + "]";
+}
+
+template class PrivateImplementationPattern<UserKeyRequirement>;
 
