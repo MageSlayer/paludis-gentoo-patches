@@ -146,6 +146,7 @@ SLOT="0"
 MYOPTIONS=""
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 BUGS_TO="fred@example.com joe@example.com"
 UPSTREAM_CHANGELOG="http://example.com/foo"
 UPSTREAM_RELEASE_NOTES="http://example.com/bar"
@@ -340,7 +341,7 @@ echo "cat" >> metadata/categories.conf || exit 1
 cat <<END > profiles/profile/make.defaults
 END
 mkdir -p packages/cat/no-files
-cat <<END > packages/cat/no-files/no-files-1.exheres-0 || exit 1
+cat <<'END' > packages/cat/no-files/no-files-1.exheres-0 || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -349,10 +350,11 @@ SLOT="0"
 MYOPTIONS=""
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 DEPENDENCIES=""
 END
 mkdir -p packages/cat/fetched-files
-cat <<END > packages/cat/fetched-files/fetched-files-1.exheres-0 || exit 1
+cat <<'END' > packages/cat/fetched-files/fetched-files-1.exheres-0 || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -361,6 +363,7 @@ SLOT="0"
 MYOPTIONS=""
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 DEPENDENCIES=""
 END
 mkdir -p packages/cat/fetchable-files
@@ -385,10 +388,11 @@ SLOT="0"
 MYOPTIONS=""
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="\${WORKBASE}"
 DEPENDENCIES=""
 END
 mkdir -p packages/cat/unfetchable-files
-cat <<END > packages/cat/unfetchable-files/unfetchable-files-1.exheres-0 || exit 1
+cat <<'END' > packages/cat/unfetchable-files/unfetchable-files-1.exheres-0 || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -397,10 +401,11 @@ SLOT="0"
 MYOPTIONS=""
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 DEPENDENCIES=""
 END
 mkdir -p packages/cat/no-files-restricted
-cat <<END > packages/cat/no-files-restricted/no-files-restricted-1.exheres-0 || exit 1
+cat <<'END' > packages/cat/no-files-restricted/no-files-restricted-1.exheres-0 || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -409,10 +414,11 @@ SLOT="0"
 MYOPTIONS=""
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 DEPENDENCIES=""
 END
 mkdir -p packages/cat/fetched-files-restricted
-cat <<END > packages/cat/fetched-files-restricted/fetched-files-restricted-1.exheres-0 || exit 1
+cat <<'END' > packages/cat/fetched-files-restricted/fetched-files-restricted-1.exheres-0 || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -421,6 +427,7 @@ SLOT="0"
 MYOPTIONS=""
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 DEPENDENCIES=""
 END
 mkdir -p packages/cat/fetchable-files-restricted
@@ -433,6 +440,7 @@ SLOT="0"
 MYOPTIONS=""
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="\${WORKBASE}"
 DEPENDENCIES=""
 END
 cd ..
@@ -469,7 +477,7 @@ pkg_setup() {
 }
 END
 mkdir -p "cat/in-subshell-die"
-cat <<END > cat/in-subshell-die/in-subshell-die-1.ebuild || exit 1
+cat <<'END' > cat/in-subshell-die/in-subshell-die-1.ebuild || exit 1
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -479,7 +487,7 @@ LICENSE="GPL-2"
 KEYWORDS="test"
 
 pkg_setup() {
-    ( hasq test \$KEYWORDS && die "boom" )
+    ( hasq test $KEYWORDS && die "boom" )
 }
 END
 mkdir -p "cat/success"
@@ -1210,7 +1218,7 @@ USERLAND="GNU"
 OPTIONS="weasel spinach"
 END
 mkdir -p "packages/cat/in-ebuild-die"
-cat <<END > packages/cat/in-ebuild-die/in-ebuild-die-1.ebuild || exit 1
+cat <<'END' > packages/cat/in-ebuild-die/in-ebuild-die-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1219,13 +1227,14 @@ SLOT="0"
 MYOPTIONS=""
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 pkg_setup() {
     die "boom"
 }
 END
 mkdir -p "packages/cat/in-subshell-die"
-cat <<END > packages/cat/in-subshell-die/in-subshell-die-1.ebuild || exit 1
+cat <<'END' > packages/cat/in-subshell-die/in-subshell-die-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1234,13 +1243,14 @@ SLOT="0"
 MYOPTIONS=""
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 pkg_setup() {
-    ( hasq test \$PLATFORMS && die "boom" )
+    ( hasq test $PLATFORMS && die "boom" )
 }
 END
 mkdir -p "packages/cat/success"
-cat <<END > packages/cat/success/success-1.ebuild || exit 1
+cat <<'END' > packages/cat/success/success-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1249,13 +1259,14 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 pkg_setup() {
     optionq spork && die "boom"
 }
 END
 mkdir -p "packages/cat/expatch-success"
-cat <<"END" > packages/cat/expatch-success/expatch-success-1.ebuild || exit 1
+cat <<'END' > packages/cat/expatch-success/expatch-success-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1264,6 +1275,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_unpack() {
     echo foo > bar
@@ -1274,7 +1286,7 @@ src_prepare() {
 }
 END
 mkdir -p "packages/cat/expatch-die"
-cat <<END > packages/cat/expatch-die/expatch-die-1.ebuild || exit 1
+cat <<'END' > packages/cat/expatch-die/expatch-die-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1283,13 +1295,14 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_prepare() {
     expatch monkey.patch
 }
 END
 mkdir -p "packages/cat/nonfatal-expatch-fail"
-cat <<END > packages/cat/nonfatal-expatch-fail/nonfatal-expatch-fail-1.ebuild || exit 1
+cat <<'END' > packages/cat/nonfatal-expatch-fail/nonfatal-expatch-fail-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1298,13 +1311,14 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_prepare() {
     nonfatal expatch monkey.patch
 }
 END
 mkdir -p "packages/cat/nonfatal-expatch-die"
-cat <<END > packages/cat/nonfatal-expatch-die/nonfatal-expatch-die-1.ebuild || exit 1
+cat <<'END' > packages/cat/nonfatal-expatch-die/nonfatal-expatch-die-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1313,13 +1327,14 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_prepare() {
     nonfatal expatch monkey.patch || die
 }
 END
 mkdir -p "packages/cat/unpack-die"
-cat <<END > packages/cat/unpack-die/unpack-die-1.ebuild || exit 1
+cat <<'END' > packages/cat/unpack-die/unpack-die-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1328,6 +1343,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_unpack() {
     echo "123" > f.bz2
@@ -1335,7 +1351,7 @@ src_unpack() {
 }
 END
 mkdir -p "packages/cat/nonfatal-unpack-fail"
-cat <<END > packages/cat/nonfatal-unpack-fail/nonfatal-unpack-fail-1.ebuild || exit 1
+cat <<'END' > packages/cat/nonfatal-unpack-fail/nonfatal-unpack-fail-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1344,6 +1360,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_unpack() {
     echo "123" > f.bz2
@@ -1351,7 +1368,7 @@ src_unpack() {
 }
 END
 mkdir -p "packages/cat/nonfatal-unpack-die"
-cat <<END > packages/cat/nonfatal-unpack-die/nonfatal-unpack-die-1.ebuild || exit 1
+cat <<'END' > packages/cat/nonfatal-unpack-die/nonfatal-unpack-die-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1360,6 +1377,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_unpack() {
     echo "123" > f.bz2
@@ -1367,7 +1385,7 @@ src_unpack() {
 }
 END
 mkdir -p "packages/cat/econf-fail"
-cat <<END > packages/cat/econf-fail/econf-fail-1.ebuild || exit 1
+cat <<'END' > packages/cat/econf-fail/econf-fail-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1376,13 +1394,14 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_configure() {
     econf
 }
 END
 mkdir -p "packages/cat/nonfatal-econf"
-cat <<END > packages/cat/nonfatal-econf/nonfatal-econf-1.ebuild || exit 1
+cat <<'END' > packages/cat/nonfatal-econf/nonfatal-econf-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1391,13 +1410,14 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_configure() {
     nonfatal econf
 }
 END
 mkdir -p "packages/cat/nonfatal-econf-die"
-cat <<END > packages/cat/nonfatal-econf-die/nonfatal-econf-die-1.ebuild || exit 1
+cat <<'END' > packages/cat/nonfatal-econf-die/nonfatal-econf-die-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1406,13 +1426,14 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_configure() {
     nonfatal econf || die
 }
 END
 mkdir -p "packages/cat/emake-fail"
-cat <<END > packages/cat/emake-fail/emake-fail-1.ebuild || exit 1
+cat <<'END' > packages/cat/emake-fail/emake-fail-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1421,13 +1442,14 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_compile() {
     emake monkey
 }
 END
 mkdir -p "packages/cat/nonfatal-emake"
-cat <<END > packages/cat/nonfatal-emake/nonfatal-emake-1.ebuild || exit 1
+cat <<'END' > packages/cat/nonfatal-emake/nonfatal-emake-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1436,13 +1458,14 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_compile() {
     nonfatal emake monkey
 }
 END
 mkdir -p "packages/cat/nonfatal-emake-die"
-cat <<END > packages/cat/nonfatal-emake-die/nonfatal-emake-die-1.ebuild || exit 1
+cat <<'END' > packages/cat/nonfatal-emake-die/nonfatal-emake-die-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1451,13 +1474,14 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_compile() {
     nonfatal emake monkey || die
 }
 END
 mkdir -p "packages/cat/keepdir-success"
-cat <<END > packages/cat/keepdir-success/keepdir-success-1.ebuild || exit 1
+cat <<'END' > packages/cat/keepdir-success/keepdir-success-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1466,13 +1490,14 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     keepdir /usr/share/monkey
 }
 END
 mkdir -p "packages/cat/keepdir-fail"
-cat <<"END" > packages/cat/keepdir-fail/keepdir-fail-1.ebuild || exit 1
+cat <<'END' > packages/cat/keepdir-fail/keepdir-fail-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1481,6 +1506,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     dodir /usr/share
@@ -1489,7 +1515,7 @@ src_install() {
 }
 END
 mkdir -p "packages/cat/nonfatal-keepdir"
-cat <<"END" > packages/cat/nonfatal-keepdir/nonfatal-keepdir-1.ebuild || exit 1
+cat <<'END' > packages/cat/nonfatal-keepdir/nonfatal-keepdir-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1498,6 +1524,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     dodir /usr/share
@@ -1506,7 +1533,7 @@ src_install() {
 }
 END
 mkdir -p "packages/cat/nonfatal-keepdir-die"
-cat <<"END" > packages/cat/nonfatal-keepdir-die/nonfatal-keepdir-die-1.ebuild || exit 1
+cat <<'END' > packages/cat/nonfatal-keepdir-die/nonfatal-keepdir-die-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1515,6 +1542,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     dodir /usr/share
@@ -1523,7 +1551,7 @@ src_install() {
 }
 END
 mkdir -p "packages/cat/einstall-fail"
-cat <<END > packages/cat/einstall-fail/einstall-fail-1.ebuild || exit 1
+cat <<'END' > packages/cat/einstall-fail/einstall-fail-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1532,13 +1560,14 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     einstall
 }
 END
 mkdir -p "packages/cat/nonfatal-einstall"
-cat <<END > packages/cat/nonfatal-einstall/nonfatal-einstall-1.ebuild || exit 1
+cat <<'END' > packages/cat/nonfatal-einstall/nonfatal-einstall-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1547,13 +1576,14 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     nonfatal einstall
 }
 END
 mkdir -p "packages/cat/nonfatal-einstall-die"
-cat <<END > packages/cat/nonfatal-einstall-die/nonfatal-einstall-die-1.ebuild || exit 1
+cat <<'END' > packages/cat/nonfatal-einstall-die/nonfatal-einstall-die-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1562,13 +1592,14 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     nonfatal einstall || die
 }
 END
 mkdir -p "packages/cat/dobin-success"
-cat <<END > packages/cat/dobin-success/dobin-success-1.ebuild || exit 1
+cat <<'END' > packages/cat/dobin-success/dobin-success-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1577,6 +1608,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_compile() {
     touch foo
@@ -1587,7 +1619,7 @@ src_install() {
 }
 END
 mkdir -p "packages/cat/dobin-fail"
-cat <<END > packages/cat/dobin-fail/dobin-fail-1.ebuild || exit 1
+cat <<'END' > packages/cat/dobin-fail/dobin-fail-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1596,13 +1628,14 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     dobin monkey
 }
 END
 mkdir -p "packages/cat/nonfatal-dobin-success"
-cat <<END > packages/cat/nonfatal-dobin-success/nonfatal-dobin-success-1.ebuild || exit 1
+cat <<'END' > packages/cat/nonfatal-dobin-success/nonfatal-dobin-success-1.ebuild || exit 1
 DESCRIPTION="The Lnog Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1611,6 +1644,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_compile() {
     touch foo
@@ -1621,7 +1655,7 @@ src_install() {
 }
 END
 mkdir -p "packages/cat/nonfatal-dobin-fail"
-cat <<END > packages/cat/nonfatal-dobin-fail/nonfatal-dobin-fail-1.ebuild || exit 1
+cat <<'END' > packages/cat/nonfatal-dobin-fail/nonfatal-dobin-fail-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1630,13 +1664,14 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     nonfatal dobin monkey
 }
 END
 mkdir -p "packages/cat/nonfatal-dobin-die"
-cat <<END > packages/cat/nonfatal-dobin-die/nonfatal-dobin-die-1.ebuild || exit 1
+cat <<'END' > packages/cat/nonfatal-dobin-die/nonfatal-dobin-die-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1645,13 +1680,14 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     nonfatal dobin monkey || die
 }
 END
 mkdir -p "packages/cat/herebin-success"
-cat <<END > packages/cat/herebin-success/herebin-success-1.ebuild || exit 1
+cat <<'END' > packages/cat/herebin-success/herebin-success-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1660,6 +1696,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     herebin foo <<EOF
@@ -1668,7 +1705,7 @@ EOF
 }
 END
 mkdir -p "packages/cat/herebin-fail"
-cat <<END > packages/cat/herebin-fail/herebin-fail-1.ebuild || exit 1
+cat <<'END' > packages/cat/herebin-fail/herebin-fail-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1677,6 +1714,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     herebin <<EOF
@@ -1685,7 +1723,7 @@ EOF
 }
 END
 mkdir -p "packages/cat/hereconfd-success"
-cat <<END > packages/cat/hereconfd-success/hereconfd-success-1.ebuild || exit 1
+cat <<'END' > packages/cat/hereconfd-success/hereconfd-success-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1694,6 +1732,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     hereconfd foo <<EOF
@@ -1702,7 +1741,7 @@ EOF
 }
 END
 mkdir -p "packages/cat/hereconfd-fail"
-cat <<END > packages/cat/hereconfd-fail/hereconfd-fail-1.ebuild || exit 1
+cat <<'END' > packages/cat/hereconfd-fail/hereconfd-fail-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1711,6 +1750,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     hereconfd <<EOF
@@ -1719,7 +1759,7 @@ EOF
 }
 END
 mkdir -p "packages/cat/hereenvd-success"
-cat <<END > packages/cat/hereenvd-success/hereenvd-success-1.ebuild || exit 1
+cat <<'END' > packages/cat/hereenvd-success/hereenvd-success-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1728,6 +1768,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     hereenvd foo <<EOF
@@ -1736,7 +1777,7 @@ EOF
 }
 END
 mkdir -p "packages/cat/hereenvd-fail"
-cat <<END > packages/cat/hereenvd-fail/hereenvd-fail-1.ebuild || exit 1
+cat <<'END' > packages/cat/hereenvd-fail/hereenvd-fail-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1745,6 +1786,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     hereenvd <<EOF
@@ -1753,7 +1795,7 @@ EOF
 }
 END
 mkdir -p "packages/cat/hereinitd-success"
-cat <<END > packages/cat/hereinitd-success/hereinitd-success-1.ebuild || exit 1
+cat <<'END' > packages/cat/hereinitd-success/hereinitd-success-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1762,6 +1804,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     hereinitd foo <<EOF
@@ -1770,7 +1813,7 @@ EOF
 }
 END
 mkdir -p "packages/cat/hereinitd-fail"
-cat <<END > packages/cat/hereinitd-fail/hereinitd-fail-1.ebuild || exit 1
+cat <<'END' > packages/cat/hereinitd-fail/hereinitd-fail-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1779,6 +1822,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     hereinitd <<EOF
@@ -1787,7 +1831,7 @@ EOF
 }
 END
 mkdir -p "packages/cat/hereins-success"
-cat <<END > packages/cat/hereins-success/hereins-success-1.ebuild || exit 1
+cat <<'END' > packages/cat/hereins-success/hereins-success-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1796,6 +1840,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     hereins foo <<EOF
@@ -1804,7 +1849,7 @@ EOF
 }
 END
 mkdir -p "packages/cat/hereins-fail"
-cat <<END > packages/cat/hereins-fail/hereins-fail-1.ebuild || exit 1
+cat <<'END' > packages/cat/hereins-fail/hereins-fail-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1813,6 +1858,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     hereins <<EOF
@@ -1821,7 +1867,7 @@ EOF
 }
 END
 mkdir -p "packages/cat/heresbin-success"
-cat <<END > packages/cat/heresbin-success/heresbin-success-1.ebuild || exit 1
+cat <<'END' > packages/cat/heresbin-success/heresbin-success-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1830,6 +1876,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     heresbin foo <<EOF
@@ -1838,7 +1885,7 @@ EOF
 }
 END
 mkdir -p "packages/cat/heresbin-fail"
-cat <<END > packages/cat/heresbin-fail/heresbin-fail-1.ebuild || exit 1
+cat <<'END' > packages/cat/heresbin-fail/heresbin-fail-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1847,6 +1894,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     heresbin <<EOF
@@ -1855,7 +1903,7 @@ EOF
 }
 END
 mkdir -p "packages/cat/fperms-success"
-cat <<END > packages/cat/fperms-success/fperms-success-1.ebuild || exit 1
+cat <<'END' > packages/cat/fperms-success/fperms-success-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1864,6 +1912,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_compile() {
     touch foo
@@ -1874,7 +1923,7 @@ src_install() {
 }
 END
 mkdir -p "packages/cat/fperms-fail"
-cat <<END > packages/cat/fperms-fail/fperms-fail-1.ebuild || exit 1
+cat <<'END' > packages/cat/fperms-fail/fperms-fail-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1883,13 +1932,14 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     fperms 755 monkey
 }
 END
 mkdir -p "packages/cat/nonfatal-fperms-success"
-cat <<END > packages/cat/nonfatal-fperms-success/nonfatal-fperms-success-1.ebuild || exit 1
+cat <<'END' > packages/cat/nonfatal-fperms-success/nonfatal-fperms-success-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1898,6 +1948,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_compile() {
     touch foo
@@ -1908,7 +1959,7 @@ src_install() {
 }
 END
 mkdir -p "packages/cat/nonfatal-fperms-fail"
-cat <<END > packages/cat/nonfatal-fperms-fail/nonfatal-fperms-fail-1.ebuild || exit 1
+cat <<'END' > packages/cat/nonfatal-fperms-fail/nonfatal-fperms-fail-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1917,13 +1968,14 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     nonfatal fperms 755 monkey
 }
 END
 mkdir -p "packages/cat/nonfatal-fperms-die"
-cat <<END > packages/cat/nonfatal-fperms-die/nonfatal-fperms-die-1.ebuild || exit 1
+cat <<'END' > packages/cat/nonfatal-fperms-die/nonfatal-fperms-die-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -1932,6 +1984,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     nonfatal fperms 755 monkey || die
@@ -1947,6 +2000,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 pkg_setup() {
     if ! best_version cat/pretend-installed >/dev/null ; then
@@ -1991,6 +2045,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 pkg_setup() {
     if ! has_version cat/pretend-installed ; then
@@ -2012,6 +2067,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 pkg_setup() {
     portageq match "${ROOT}" cat/foo | while read a ; do
@@ -2030,6 +2086,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_unpack() {
     mkdir ${WORK}
@@ -2052,6 +2109,7 @@ SLOT="0"
 MYOPTIONS="enabled-hamster gerbil dormouse"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 DEFAULT_SRC_CONFIGURE_PARAMS=( --nice-juicy-steak )
 DEFAULT_SRC_CONFIGURE_OPTION_ENABLES=( enabled-hamster gerbil )
@@ -2080,6 +2138,7 @@ SLOT="0"
 MYOPTIONS="enabled-weasel broccoli linguas: enabled-en_GB"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 pkg_setup() {
     [[ ${OPTIONS%%+( )} == "enabled-weasel linguas:enabled-en_GB" ]] || die "OPTIONS=$OPTIONS is wrong"
@@ -2087,7 +2146,7 @@ pkg_setup() {
 }
 END
 mkdir -p "packages/cat/doman-success"
-cat <<END > packages/cat/doman-success/doman-success-0.ebuild || exit 1
+cat <<'END' > packages/cat/doman-success/doman-success-0.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -2096,45 +2155,46 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_compile() {
-    echo \${PNVR} >foo.1
+    echo ${PNVR} >foo.1
     mkdir dir
-    echo \${PNVR} >dir/foo.2
-    echo \${PNVR} >foo.3x
-    echo \${PNVR} >foo.4.gz
-    echo \${PNVR} >foo.5f.bz2
-    echo \${PNVR} >foo.6.Z
-    echo \${PNVR} >foo.en.7
-    echo \${PNVR} >foo.en_GB.8
-    echo \${PNVR} >foo.e.9
-    echo \${PNVR} >foo.enn.n
-    echo \${PNVR} >foo.EN.1
-    echo \${PNVR} >foo.en-GB.2
-    echo \${PNVR} >foo.en_gb.3
-    echo \${PNVR} >foo.en_G.4
-    echo \${PNVR} >foo.en_GBB.5
-    echo \${PNVR} >foo.nonkey
+    echo ${PNVR} >dir/foo.2
+    echo ${PNVR} >foo.3x
+    echo ${PNVR} >foo.4.gz
+    echo ${PNVR} >foo.5f.bz2
+    echo ${PNVR} >foo.6.Z
+    echo ${PNVR} >foo.en.7
+    echo ${PNVR} >foo.en_GB.8
+    echo ${PNVR} >foo.e.9
+    echo ${PNVR} >foo.enn.n
+    echo ${PNVR} >foo.EN.1
+    echo ${PNVR} >foo.en-GB.2
+    echo ${PNVR} >foo.en_gb.3
+    echo ${PNVR} >foo.en_G.4
+    echo ${PNVR} >foo.en_GBB.5
+    echo ${PNVR} >foo.nonkey
     touch foo.1x
-    echo \${PNVR} >baz.6
-    echo \${PNVR} >baz.en_US.7
+    echo ${PNVR} >baz.6
+    echo ${PNVR} >baz.en_US.7
 }
 
 src_install() {
     doman foo.* dir/foo.* || die
     doman -i18n=en_GB baz.* || die
     keepdir /meh || die
-    cd "\${IMAGE}"/meh || die
+    cd "${IMAGE}"/meh || die
     doman .keep* || die
-    rm "\${IMAGE}"/usr/share/man/{man1/foo.1,man2/foo.2,man3/foo.3x,man4/foo.4.gz,man5/foo.5f.bz2} || die
-    rm "\${IMAGE}"/usr/share/man/{man6/foo.6.Z,en/man7/foo.7,en_GB/man8/foo.8,man9/foo.e.9,mann/foo.enn.n} || die
-    rm "\${IMAGE}"/usr/share/man/{man1/foo.EN.1,man2/foo.en-GB.2,man3/foo.en_gb.3,man4/foo.en_G.4} || die
-    rm "\${IMAGE}"/usr/share/man/{man5/foo.en_GBB.5,mann/foo.nonkey,en_GB/man6/baz.6,en_US/man7/baz.7} || die
-    rmdir "\${IMAGE}"/usr/share/man/{man1,man2,man3,man4,man5,man6,man9,mann,en/man7,en_GB/man6,en_GB/man8,en_US/man7,en,en_GB,en_US,} || die
+    rm "${IMAGE}"/usr/share/man/{man1/foo.1,man2/foo.2,man3/foo.3x,man4/foo.4.gz,man5/foo.5f.bz2} || die
+    rm "${IMAGE}"/usr/share/man/{man6/foo.6.Z,en/man7/foo.7,en_GB/man8/foo.8,man9/foo.e.9,mann/foo.enn.n} || die
+    rm "${IMAGE}"/usr/share/man/{man1/foo.EN.1,man2/foo.en-GB.2,man3/foo.en_gb.3,man4/foo.en_G.4} || die
+    rm "${IMAGE}"/usr/share/man/{man5/foo.en_GBB.5,mann/foo.nonkey,en_GB/man6/baz.6,en_US/man7/baz.7} || die
+    rmdir "${IMAGE}"/usr/share/man/{man1,man2,man3,man4,man5,man6,man9,mann,en/man7,en_GB/man6,en_GB/man8,en_US/man7,en,en_GB,en_US,} || die
 }
 END
 mkdir -p "packages/cat/doman-failure"
-cat <<END > packages/cat/doman-failure/doman-failure-0.ebuild || exit 1
+cat <<'END' > packages/cat/doman-failure/doman-failure-0.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -2143,9 +2203,10 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_compile() {
-    echo \${PNVR} >bar.m
+    echo ${PNVR} >bar.m
 }
 
 src_install() {
@@ -2153,7 +2214,7 @@ src_install() {
 }
 END
 mkdir -p "packages/cat/doman-nonfatal"
-cat <<END > packages/cat/doman-nonfatal/doman-nonfatal-0.ebuild || exit 1
+cat <<'END' > packages/cat/doman-nonfatal/doman-nonfatal-0.ebuild || exit 1
 DESCRIPTION="The Long Description"
 SUMMARY="The Short Description"
 HOMEPAGE="http://example.com/"
@@ -2162,6 +2223,7 @@ SLOT="0"
 MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 
 src_install() {
     nonfatal doman bar.1 && die

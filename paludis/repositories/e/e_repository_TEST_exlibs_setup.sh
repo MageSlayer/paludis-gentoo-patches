@@ -41,6 +41,7 @@ foo_src_unpack() {
 END
 cat <<'END' > packages/cat/require-success/require-success-1.ebuild || exit 1
 require foo
+WORK="${WORKBASE}"
 PLATFORMS="test"
 FOO=true
 
@@ -52,6 +53,7 @@ END
 mkdir -p "packages/cat/require-fail"
 cat <<'END' > packages/cat/require-fail/require-fail-1.ebuild || exit 1
 require non-existant
+WORK="${WORKBASE}"
 PLATFORMS="test"
 END
 mkdir -p "exlibs"
@@ -76,6 +78,7 @@ END
 mkdir -p "packages/cat/require-param"
 cat <<'END' > packages/cat/require-param/require-param-1.ebuild || exit 1
 require foo-bar [ bar=baz ]
+WORK="${WORKBASE}"
 PLATFORMS="test"
 
 pkg_setup() {
@@ -85,6 +88,7 @@ END
 mkdir -p "packages/cat/require-param-empty"
 cat <<'END' > packages/cat/require-param-empty/require-param-empty-1.ebuild || exit 1
 require foo-bar [ bar= ]
+WORK="${WORKBASE}"
 PLATFORMS="test"
 
 pkg_setup() {
@@ -94,16 +98,19 @@ END
 mkdir -p "packages/cat/require-param-missing"
 cat <<'END' > packages/cat/require-param-missing/require-param-missing-1.ebuild || exit 1
 require foo-bar
+WORK="${WORKBASE}"
 PLATFORMS="test"
 END
 mkdir -p "packages/cat/require-param-undeclared"
 cat <<'END' > packages/cat/require-param-undeclared/require-param-undeclared-1.ebuild || exit 1
 require foo [ bar=baz ]
+WORK="${WORKBASE}"
 PLATFORMS="test"
 END
 mkdir -p "packages/cat/require-params"
 cat <<'END' > packages/cat/require-params/require-params-1.ebuild || exit 1
 require foo-bar [[[ bar=baz ]]] monkey [ blah=bleh ]
+WORK="${WORKBASE}"
 PLATFORMS="test"
 
 pkg_setup() {
@@ -114,6 +121,7 @@ END
 mkdir -p "packages/cat/require-params-unaligned"
 cat <<'END' > packages/cat/require-params-unaligned/require-params-unaligned-1.ebuild || exit 1
 require foo-bar [[[ bar=baz ] monkey [ blah=bleh ]
+WORK="${WORKBASE}"
 PLATFORMS="test"
 
 pkg_setup() {
@@ -129,6 +137,7 @@ SUMMARY=$(exparam foo)$(exparam bar)
 END
 cat <<'END' > packages/cat/require-multiple-params/require-multiple-params-1.ebuild || exit 1
 require foo [ foo=1 bar=2 ]
+WORK="${WORKBASE}"
 PLATFORMS="test"
 
 pkg_setup() {
@@ -143,6 +152,7 @@ SUMMARY=$(exparam foo)-$(exparam bar)
 END
 cat <<'END' > packages/cat/require-multiple-params-spaces/require-multiple-params-spaces-1.ebuild || exit 1
 require foo [ foo="f o o " bar=" b a r" ]
+WORK="${WORKBASE}"
 PLATFORMS="test"
 
 pkg_setup() {
@@ -152,6 +162,7 @@ END
 mkdir -p "packages/cat/require-param-default"
 cat <<'END' > packages/cat/require-param-default/require-param-default-1.ebuild || exit 1
 require foo-bar-baz
+WORK="${WORKBASE}"
 PLATFORMS="test"
 
 pkg_setup() {
@@ -166,6 +177,7 @@ SUMMARY=$(exparam foo)-$(exparam bar)
 END
 cat <<'END' > packages/cat/require-multiple-params-default-spaces/require-multiple-params-default-spaces-1.ebuild || exit 1
 require foo
+WORK="${WORKBASE}"
 PLATFORMS="test"
 
 pkg_setup() {
@@ -175,6 +187,7 @@ END
 mkdir -p "packages/cat/exparam-banned"
 cat <<'END' > packages/cat/exparam-banned/exparam-banned-1.ebuild || exit 1
 PLATFORMS="test"
+WORK="${WORKBASE}"
 exparam foo
 END
 mkdir -p "packages/cat/exparam-undeclared"
@@ -185,6 +198,7 @@ get_bar() {
 END
 cat <<'END' > packages/cat/exparam-undeclared/exparam-undeclared-1.ebuild || exit 1
 require foo
+WORK="${WORKBASE}"
 PLATFORMS="test"
 
 pkg_setup() {
@@ -200,6 +214,7 @@ check_bar() {
 END
 cat <<'END' > packages/cat/exparam-subshell/exparam-subshell-1.ebuild || exit 1
 require foo [ bar=baz ]
+WORK="${WORKBASE}"
 
 pkg_setup() {
     check_bar
@@ -226,6 +241,7 @@ check_foo() {
 END
 cat <<'END' > packages/cat/exarray/exarray-1.ebuild || exit 1
 require foo [ bar=[ 1 2 3 ] ]
+WORK="${WORKBASE}"
 PLATFORMS="test"
 
 pkg_setup() {
@@ -258,6 +274,7 @@ check_foo() {
 END
 cat <<'END' > packages/cat/exarray-spaces/exarray-spaces-1.ebuild || exit 1
 require foo [ bar=[ "1 1" "2 2" "3 3" ] ]
+WORK="${WORKBASE}"
 PLATFORMS="test"
 
 pkg_setup() {
@@ -284,6 +301,7 @@ check_foo() {
 END
 cat <<'END' > packages/cat/exarray-default/exarray-default-1.ebuild || exit 1
 require foo
+WORK="${WORKBASE}"
 PLATFORMS="test"
 
 pkg_setup() {
@@ -310,6 +328,7 @@ check_foo() {
 END
 cat <<'END' > packages/cat/exarray-default-spaces/exarray-default-spaces-1.ebuild || exit 1
 require foo
+WORK="${WORKBASE}"
 PLATFORMS="test"
 
 pkg_setup() {
@@ -334,6 +353,7 @@ check_foo() {
 END
 cat <<'END' > packages/cat/exarray-empty/exarray-empty-1.ebuild || exit 1
 require foo
+WORK="${WORKBASE}"
 PLATFORMS="test"
 
 pkg_setup() {
@@ -350,6 +370,7 @@ SUMMARY=$(exparam bar)
 END
 cat <<'END' > packages/cat/noarray/noarray-1.ebuild || exit 1
 require foo [[ bar=[ ]]
+WORK="${WORKBASE}"
 
 pkg_setup() {
     [[ ${SUMMARY} == "[" ]] || die "Bad SUMMARY"
@@ -362,6 +383,7 @@ SUMMARY=$(exparam bar)
 END
 cat <<'END' > packages/cat/noarray-bad/noarray-bad-1.ebuild || exit 1
 require foo [ bar=[ ]
+WORK="${WORKBASE}"
 
 pkg_setup() {
     [[ ${SUMMARY} == "[" ]] || die "Bad SUMMARY"
@@ -374,6 +396,7 @@ SUMMARY=$(exparam bar)
 END
 cat <<'END' > packages/cat/scalar-required/scalar-required-1.ebuild || exit 1
 require foo [ bar=[ baz ] ]
+WORK="${WORKBASE}"
 
 pkg_setup() {
     [[ ${SUMMARY} == "baz" ]] || die "Bad SUMMARY"
@@ -386,6 +409,7 @@ SUMMARY=$(exparam bar)
 END
 cat <<'END' > packages/cat/array-required/array-required-1.ebuild || exit 1
 require foo [ bar=baz ]
+WORK="${WORKBASE}"
 
 pkg_setup() {
     [[ ${SUMMARY} == "baz" ]] || die "Bad SUMMARY"

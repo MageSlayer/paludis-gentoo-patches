@@ -150,6 +150,7 @@ SLOT="0"
 MYOPTIONS=""
 LICENCES="GPL-2"
 PLATFORMS="test"
+WORK="${WORKBASE}"
 DEPENDENCIES=""
 
 src_install() {
