@@ -1279,10 +1279,42 @@ WORK="${WORKBASE}"
 
 src_unpack() {
     echo foo > bar
+    echo -e 'foo\nbar\nbaz' > baz
 }
 
 src_prepare() {
     expatch "${FETCHEDDIR}"/${PNV}.patch
+    diff bar baz || die "expatch failed"
+}
+END
+mkdir -p "packages/cat/expatch-success-dir/files/expatch-success-dir"
+cat <<END > packages/cat/expatch-success-dir/files/expatch-success-dir/foo.patch || exit 1
+--- a/bar
++++ b/bar
+@@ -1 +1,3 @@
+ foo
++bar
++baz
+END
+cat <<'END' > packages/cat/expatch-success-dir/expatch-success-dir-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+WORK="${WORKBASE}"
+
+src_unpack() {
+    echo foo > bar
+    echo -e 'foo\nbar\nbaz' > baz
+}
+
+src_prepare() {
+    expatch "${FILES}"/${PN}/
+    diff bar baz || die "expatch failed"
 }
 END
 mkdir -p "packages/cat/expatch-die"
@@ -1299,6 +1331,36 @@ WORK="${WORKBASE}"
 
 src_prepare() {
     expatch monkey.patch
+}
+END
+mkdir -p "packages/cat/expatch-unrecognised/files/expatch-unrecognised"
+cat <<END > packages/cat/expatch-unrecognised/files/expatch-unrecognised/foo || exit 1
+--- a/bar
++++ b/bar
+@@ -1 +1,3 @@
+ foo
++bar
++baz
+END
+cat <<'END' > packages/cat/expatch-unrecognised/expatch-unrecognised-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+WORK="${WORKBASE}"
+
+src_unpack() {
+    echo foo > bar
+    echo foo > baz
+}
+
+src_prepare() {
+    expatch "${FILES}"/${PN}/
+    diff bar baz || die "expatch applied unrecognised patch"
 }
 END
 mkdir -p "packages/cat/nonfatal-expatch-fail"

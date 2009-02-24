@@ -73,6 +73,7 @@ expatch()
                 ;;
                 *)
                 if [[ -n ${recognise} ]]; then
+                    shift
                     continue
                 else
                     cmd="cat"
