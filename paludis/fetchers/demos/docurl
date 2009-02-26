@@ -29,8 +29,8 @@ if [[ -n "${PALUDIS_USE_SAFE_RESUME}" ]] ; then
         fi
     fi
 
-    echo ${CURL_WRAPPER} ${LOCAL_CURL:-curl} ${EXTRA_CURL} --connect-timeout 30 --retry 1 --fail -C - -o "${2}".-PARTIAL- "${1}" 1>&2
-    if ${CURL_WRAPPER} ${LOCAL_CURL:-curl} ${EXTRA_CURL} --connect-timeout 30 --retry 1 --fail -C - -o "${2}".-PARTIAL- "${1}" ; then
+    echo ${CURL_WRAPPER} ${LOCAL_CURL:-curl} ${EXTRA_CURL} --connect-timeout 30 --retry 1 --fail -L -C - -o "${2}".-PARTIAL- "${1}" 1>&2
+    if ${CURL_WRAPPER} ${LOCAL_CURL:-curl} ${EXTRA_CURL} --connect-timeout 30 --retry 1 --fail -L -C - -o "${2}".-PARTIAL- "${1}" ; then
         echo mv -f "${2}".-PARTIAL- "${2}"
         mv -f "${2}".-PARTIAL- "${2}"
         exit 0
@@ -40,8 +40,8 @@ if [[ -n "${PALUDIS_USE_SAFE_RESUME}" ]] ; then
     fi
 
 else
-    echo ${CURL_WRAPPER} ${LOCAL_CURL:-curl} ${EXTRA_CURL} --connect-timeout 30 --retry 1 --fail -o "${2}" "${1}" 1>&2
-    if ${CURL_WRAPPER} ${LOCAL_CURL:-curl} ${EXTRA_CURL} --connect-timeout 30 --retry 1 --fail -o "${2}" "${1}" ; then
+    echo ${CURL_WRAPPER} ${LOCAL_CURL:-curl} ${EXTRA_CURL} --connect-timeout 30 --retry 1 --fail -L -o "${2}" "${1}" 1>&2
+    if ${CURL_WRAPPER} ${LOCAL_CURL:-curl} ${EXTRA_CURL} --connect-timeout 30 --retry 1 --fail -L -o "${2}" "${1}" ; then
         exit 0
     else
         rm -f "${2}"
