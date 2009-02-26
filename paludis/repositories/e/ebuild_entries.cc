@@ -435,17 +435,23 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                 (_imp->e_repository->params().master_repositories() && ! _imp->e_repository->params().master_repositories()->empty()) ?
                 stringify((*_imp->e_repository->params().master_repositories()->begin())->name()) :
                 stringify(_imp->e_repository->name()));
-        FetchVisitor f(_imp->params.environment(), id, *id->eapi(),
-                _imp->e_repository->params().distdir(), fetch_action.options.fetch_unneeded(),
-                fetch_userpriv_ok, mirrors_name,
-                id->fetches_key()->initial_label(), fetch_action.options.safe_resume(),
-                output_manager);
-        id->fetches_key()->value()->root()->accept(f);
+
+        if (! fetch_action.options.ignore_unfetched())
+        {
+            FetchVisitor f(_imp->params.environment(), id, *id->eapi(),
+                    _imp->e_repository->params().distdir(), fetch_action.options.fetch_unneeded(),
+                    fetch_userpriv_ok, mirrors_name,
+                    id->fetches_key()->initial_label(), fetch_action.options.safe_resume(),
+                    output_manager);
+            id->fetches_key()->value()->root()->accept(f);
+        }
+
         CheckFetchedFilesVisitor c(_imp->environment, id, _imp->e_repository->params().distdir(),
                 fetch_action.options.fetch_unneeded(), fetch_restrict,
                 ((_imp->e_repository->layout()->package_directory(id->name())) / "Manifest"),
                 _imp->e_repository->params().use_manifest(),
-                output_manager, fetch_action.options.exclude_unmirrorable());
+                output_manager, fetch_action.options.exclude_unmirrorable(),
+                fetch_action.options.ignore_unfetched());
         id->fetches_key()->value()->root()->accept(c);
 
         if (c.need_nofetch())

@@ -15,6 +15,7 @@ dist_shareenvpaludis_DATA = \
 	logged.conf \
 	quiet.conf \
 	standard.conf \
+	standard_on_failure.conf \
 	keep_messages.part.conf \
 	keep_stdout_as_messages.part.conf \
 	logged_only.part.conf \

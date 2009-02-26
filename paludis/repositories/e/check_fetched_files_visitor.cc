@@ -63,6 +63,7 @@ namespace paludis
         const FSEntry distdir;
         const bool check_unneeded;
         const bool exclude_unmirrorable;
+        const bool ignore_unfetched;
 
         std::set<std::string> done;
         const std::tr1::shared_ptr<Sequence<FetchActionFailure> > failures;
@@ -82,12 +83,14 @@ namespace paludis
                 const FSEntry & m2,
                 const UseManifest um,
                 const std::tr1::shared_ptr<OutputManager> & md,
-                const bool x) :
+                const bool x,
+                const bool u) :
             env(e),
             id(i),
             distdir(d),
             check_unneeded(c),
             exclude_unmirrorable(x),
+            ignore_unfetched(u),
             failures(new Sequence<FetchActionFailure>),
             need_nofetch(false),
             in_nofetch(n),
@@ -108,8 +111,9 @@ CheckFetchedFilesVisitor::CheckFetchedFilesVisitor(
         const FSEntry & m2,
         const UseManifest um,
         const std::tr1::shared_ptr<OutputManager> & md,
-        const bool x) :
-    PrivateImplementationPattern<CheckFetchedFilesVisitor>(new Implementation<CheckFetchedFilesVisitor>(e, i, d, c, n, m2, um, md, x))
+        const bool x,
+        const bool u) :
+    PrivateImplementationPattern<CheckFetchedFilesVisitor>(new Implementation<CheckFetchedFilesVisitor>(e, i, d, c, n, m2, um, md, x, u))
 {
 }
 
@@ -384,7 +388,7 @@ CheckFetchedFilesVisitor::visit(const FetchableURISpecTree::NodeType<FetchableUR
                         ));
             }
         }
-        else
+        else if (! _imp->ignore_unfetched)
         {
             Log::get_instance()->message("e.check_fetched_files.does_not_exist", ll_debug, lc_context)
                 << "Automatic fetch failed for '" << node.spec()->filename() << "'";
@@ -396,6 +400,8 @@ CheckFetchedFilesVisitor::visit(const FetchableURISpecTree::NodeType<FetchableUR
                         value_for<n::target_file>(node.spec()->filename())
                         ));
         }
+        else
+            _imp->output_manager->stdout_stream() << "not fetched yet";
     }
     else if (0 == (_imp->distdir / node.spec()->filename()).file_size())
     {

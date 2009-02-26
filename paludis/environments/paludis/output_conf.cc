@@ -32,6 +32,8 @@
 #include <paludis/util/destringify.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_shared_copy.hh>
+#include <paludis/util/tribool.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/create_output_manager_info.hh>
 #include <paludis/package_id.hh>
@@ -48,6 +50,7 @@ namespace paludis
     namespace n
     {
         struct action_requirement;
+        struct ignore_unfetched_requirement;
         struct manager;
         struct matches_requirement;
         struct name_requirement;
@@ -61,6 +64,7 @@ namespace
     struct Rule
     {
         NamedValue<n::action_requirement, std::string> action_requirement;
+        NamedValue<n::ignore_unfetched_requirement, Tribool> ignore_unfetched_requirement;
         NamedValue<n::manager, std::string> manager;
         NamedValue<n::matches_requirement, std::tr1::shared_ptr<PackageDepSpec> > matches_requirement;
         NamedValue<n::name_requirement, std::string> name_requirement;
@@ -110,6 +114,8 @@ namespace
                         v, env, UserPackageDepSpecOptions() + updso_allow_wildcards + updso_no_disambiguation));
         else if (k == "action")
             rule.action_requirement() = v;
+        else if (k == "ignore_unfetched")
+            rule.ignore_unfetched_requirement() = destringify<Tribool>(v);
         else
             throw PaludisConfigError("Unknown rule '" + k + "'");
     }
@@ -143,6 +149,9 @@ namespace
             if (rule.matches_requirement())
                 return false;
 
+            if (! rule.ignore_unfetched_requirement().is_indeterminate())
+                return false;
+
             return true;
         }
 
@@ -164,6 +173,15 @@ namespace
             if (rule.matches_requirement() && ! match_package(*env, *rule.matches_requirement(),
                         *i.package_id(), MatchPackageOptions()))
                 return false;
+
+            if (! rule.ignore_unfetched_requirement().is_indeterminate())
+            {
+                const FetchAction * const fetch_action(simple_visitor_cast<const FetchAction>(i.action()));
+                if (! fetch_action)
+                    return false;
+                if (fetch_action->options.ignore_unfetched() != rule.ignore_unfetched_requirement().is_true())
+                    return false;
+            }
 
             return true;
         }
@@ -205,6 +223,7 @@ OutputConf::add(const FSEntry & filename)
 
         Rule rule(make_named_values<Rule>(
                     value_for<n::action_requirement>("*"),
+                    value_for<n::ignore_unfetched_requirement>(indeterminate),
                     value_for<n::manager>("unset"),
                     value_for<n::matches_requirement>(make_null_shared_ptr()),
                     value_for<n::name_requirement>("*"),

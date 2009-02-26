@@ -18,6 +18,11 @@
  */
 
 #include <paludis/util/tribool.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/util/stringify.hh>
+#include <string>
+#include <istream>
+#include <ostream>
 
 using namespace paludis;
 
@@ -58,5 +63,51 @@ NoType<0u> *
 paludis::indeterminate(const NoType<0u> * const)
 {
     return 0;
+}
+
+std::ostream &
+paludis::operator<< (std::ostream & s, const Tribool v)
+{
+    if (v.is_true())
+        s << "true";
+    else if (v.is_false())
+        s << "false";
+    else if (v.is_indeterminate())
+        s << "indeterminate";
+    else
+        throw InternalError(PALUDIS_HERE, "Bad tribool");
+    return s;
+}
+
+std::istream &
+paludis::operator>> (std::istream & s, Tribool & a)
+{
+    std::string value;
+    s >> value;
+
+    do
+    {
+        if (value == "true")
+        {
+            a = true;
+            break;
+        }
+
+        if (value == "false")
+        {
+            a = false;
+            break;
+        }
+
+        if (value == "indeterminate")
+        {
+            a = indeterminate;
+            break;
+        }
+
+        s.setstate(std::ios::badbit);
+    } while (false);
+
+    return s;
 }
 

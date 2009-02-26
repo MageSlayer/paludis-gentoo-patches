@@ -435,6 +435,9 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
 void
 ConsoleInstallTask::on_pretend_all_pre()
 {
+    output_endl();
+    output_activity_start_message("Checking for possible errors...");
+    output_activity_end_message();
 }
 
 void

@@ -52,7 +52,8 @@ namespace paludis
                         const FSEntry & m2,
                         const UseManifest um,
                         const std::tr1::shared_ptr<OutputManager> & output_manager,
-                        const bool exclude_unmirrorable);
+                        const bool exclude_unmirrorable,
+                        const bool ignore_unfetched);
 
                 ~CheckFetchedFilesVisitor();
 

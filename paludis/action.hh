@@ -55,6 +55,7 @@ namespace paludis
         struct failed_integrity_checks;
         struct fetch_unneeded;
         struct if_for_install_id;
+        struct ignore_unfetched;
         struct is_overwrite;
         struct make_output_manager;
         struct perform_uninstall;
@@ -82,6 +83,15 @@ namespace paludis
         NamedValue<n::fetch_unneeded, bool> fetch_unneeded;
 
         /**
+         * Ignore any unfetched packages. Verify digests for anything that's
+         * already there, and if we know for sure manual fetching will be
+         * required, raise the appropriate error.
+         *
+         * \since 0.36
+         */
+        NamedValue<n::ignore_unfetched, bool> ignore_unfetched;
+
+        /**
          * This is a function to avoid chicken / egg problems when using
          * Environment::create_output_manager.
          *
@@ -89,6 +99,7 @@ namespace paludis
          */
         NamedValue<n::make_output_manager, std::tr1::function<std::tr1::shared_ptr<OutputManager> (
                 const FetchAction &)> > make_output_manager;
+
 
         NamedValue<n::safe_resume, bool> safe_resume;
     };

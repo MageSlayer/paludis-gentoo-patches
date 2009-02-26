@@ -671,28 +671,62 @@ InstallTask::_pretend()
     on_pretend_all_pre();
 
     SupportsActionTest<PretendAction> pretend_action_query;
+    SupportsActionTest<FetchAction> fetch_action_query;
     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
             dep != dep_end ; ++dep)
     {
         if ((dlk_package != dep->kind()) || already_done(*dep))
             continue;
 
-        if (dep->package_id()->supports_action(pretend_action_query))
+        if (dep->package_id()->supports_action(pretend_action_query) ||
+                dep->package_id()->supports_action(fetch_action_query))
         {
             on_pretend_pre(*dep);
 
             OutputManagerFromEnvironment output_manager_holder(_imp->env, dep->package_id(), oe_exclusive);
-            PretendActionOptions options(make_named_values<PretendActionOptions>(
-                        value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
-                        ));
-            PretendAction pretend_action(options);
-            dep->package_id()->perform_action(pretend_action);
-            if (pretend_action.failed())
+
+            bool success(true);
+            if (dep->package_id()->supports_action(pretend_action_query))
             {
-                pretend_failed = true;
-                dep->handled().reset(new DepListEntryHandledFailed);
+                PretendActionOptions options(make_named_values<PretendActionOptions>(
+                            value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
+                            ));
+                PretendAction pretend_action(options);
+                dep->package_id()->perform_action(pretend_action);
+                if (pretend_action.failed())
+                {
+                    pretend_failed = true;
+                    success = false;
+                    dep->handled().reset(new DepListEntryHandledFailed);
+                }
             }
-            else
+
+            if (dep->package_id()->supports_action(fetch_action_query))
+            {
+                FetchActionOptions options(make_named_values<FetchActionOptions>(
+                            value_for<n::exclude_unmirrorable>(false),
+                            value_for<n::fetch_unneeded>(false),
+                            value_for<n::ignore_unfetched>(true),
+                            value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),
+                            value_for<n::safe_resume>(_imp->safe_resume)
+                            ));
+                FetchAction fetch_action(options);
+                try
+                {
+                    dep->package_id()->perform_action(fetch_action);
+                }
+                catch (const FetchActionError & e)
+                {
+                    pretend_failed = true;
+                    success = false;
+                    if (output_manager_holder.output_manager_if_constructed())
+                        on_fetch_action_error(output_manager_holder.output_manager_if_constructed(), e);
+                    else
+                        on_fetch_action_error(make_shared_ptr(new StandardOutputManager), e);
+                }
+            }
+
+            if (success)
             {
                 if (output_manager_holder.output_manager_if_constructed())
                     output_manager_holder.output_manager_if_constructed()->succeeded();
@@ -1796,6 +1830,7 @@ InstallTask::make_fetch_action_options(const DepListEntry &, OutputManagerFromEn
     return make_named_values<FetchActionOptions>(
             value_for<n::exclude_unmirrorable>(false),
             value_for<n::fetch_unneeded>(false),
+            value_for<n::ignore_unfetched>(false),
             value_for<n::make_output_manager>(std::tr1::ref(o)),
             value_for<n::safe_resume>(_imp->safe_resume)
             );
