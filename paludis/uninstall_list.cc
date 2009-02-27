@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -45,6 +45,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
+#include <paludis/dep_spec_flattener.hh>
 #include <tr1/unordered_map>
 #include <list>
 #include <algorithm>
@@ -135,7 +136,7 @@ UninstallList::real_add(const std::tr1::shared_ptr<const PackageID> & e, const s
     Context context("When adding '" + stringify(*e) + "' to the uninstall list:");
 
     if ((! error) || (! e->virtual_for_key()))
-        add_package(e, t, error ? ulk_required : (e->virtual_for_key() ? ulk_virtual : ulk_package));
+        add_package(e, t, error ? ulk_requires : (e->virtual_for_key() ? ulk_virtual : ulk_package));
 
     if (! error)
     {
@@ -150,6 +151,53 @@ UninstallList::real_add(const std::tr1::shared_ptr<const PackageID> & e, const s
 
     if (_imp->options.with_unused_dependencies())
         add_unused_dependencies();
+}
+
+void
+UninstallList::add_errors_for_system()
+{
+    Context context("When finding system packages:");
+
+    std::tr1::shared_ptr<const SetSpecTree> system(_imp->env->set(SetName("system")));
+    if (! system)
+        return;
+
+    std::tr1::shared_ptr<Set<std::tr1::shared_ptr<DepTag> > > tags(new Set<std::tr1::shared_ptr<DepTag> >);
+    tags->insert(make_shared_ptr(new GeneralSetDepTag(SetName("system"), "")));
+
+    for (std::list<UninstallListEntry>::iterator l(_imp->uninstall_list.begin()), l_end(_imp->uninstall_list.end()) ;
+            l != l_end ; ++l)
+    {
+        if (l->kind() == ulk_requires)
+            continue;
+
+        bool needed(false);
+        if (match_package_in_set(*_imp->env, *system, *l->package_id(), MatchPackageOptions()))
+            needed = true;
+
+        if ((! needed) && l->package_id()->provide_key())
+        {
+            DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->env);
+            l->package_id()->provide_key()->value()->root()->accept(f);
+            for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator v(f.begin()), v_end(f.end()) ;
+                    v != v_end && ! needed ; ++v)
+            {
+                const std::tr1::shared_ptr<const PackageIDSequence> virtuals((*_imp->env)[selection::AllVersionsUnsorted(
+                            generator::Matches(**v, MatchPackageOptions()))]);
+                for (PackageIDSequence::ConstIterator i(virtuals->begin()), i_end(virtuals->end()) ;
+                        i != i_end && ! needed ; ++i)
+                    if (match_package_in_set(*_imp->env, *system, **i, MatchPackageOptions()))
+                        needed = true;
+            }
+        }
+
+        if (needed)
+            _imp->uninstall_list.insert(l, make_named_values<UninstallListEntry>(
+                    value_for<n::kind>(ulk_required_by),
+                    value_for<n::package_id>(l->package_id()),
+                    value_for<n::tags>(tags)
+                    ));
+    }
 }
 
 void
@@ -521,7 +569,8 @@ namespace
                 case ulk_package:
                     return false;
 
-                case ulk_required:
+                case ulk_requires:
+                case ulk_required_by:
                     return true;
 
                 case last_ulk:

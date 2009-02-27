@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -110,7 +110,8 @@ namespace
                         cout << "* " << colour(cl_unimportant, stringify(*d.package_id()));
                         break;
 
-                    case ulk_required:
+                    case ulk_requires:
+                    case ulk_required_by:
                         cout << "* " << colour(cl_error, stringify(*d.package_id()));
                         ++_error_count;
                         break;
@@ -121,7 +122,7 @@ namespace
 
                 if ((CommandLine::get_instance()->install_args.a_show_reasons.argument() == "summary") ||
                         (CommandLine::get_instance()->install_args.a_show_reasons.argument() == "full") ||
-                        ulk_required == d.kind())
+                        ulk_requires == d.kind() || ulk_required_by == d.kind())
                 {
                     std::string deps;
                     unsigned count(0), max_count;
@@ -135,7 +136,7 @@ namespace
                             tag_end(d.tags()->end()) ;
                             tag != tag_end ; ++tag)
                     {
-                        if ((*tag)->category() != "dependency")
+                        if ((*tag)->category() != "dependency" && (*tag)->category() != "general")
                             continue;
 
                         if (++count < max_count)
@@ -150,8 +151,10 @@ namespace
                             deps.append(stringify(count - max_count + 1) + " more, ");
 
                         deps.erase(deps.length() - 2);
-                        if (d.kind() == ulk_required)
+                        if (d.kind() == ulk_requires)
                             cout << " requires";
+                        else if (d.kind() == ulk_required_by)
+                            cout << " required by";
                         cout << " " << colour(d.kind() == ulk_virtual ? cl_unimportant : cl_tag,
                                 "<" + deps + ">");
                     }

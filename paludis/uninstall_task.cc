@@ -240,6 +240,7 @@ UninstallTask::execute()
     if (_imp->unused)
         list.add_unused();
     else
+    {
         for (std::list<std::tr1::shared_ptr<const PackageDepSpec> >::const_iterator t(_imp->targets.begin()),
                 t_end(_imp->targets.end()) ; t != t_end ; ++t)
         {
@@ -273,6 +274,10 @@ UninstallTask::execute()
             else
                 list.add(*r->begin());
         }
+
+        if (_imp->check_safety)
+            list.add_errors_for_system();
+    }
 
     on_build_unmergelist_post();
 
