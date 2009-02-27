@@ -504,7 +504,6 @@ ebuild_main()
         fi
         perform_hook ebuild_${action}_post
     else
-        ebuild_load_environment
         for action in $@ ; do
             export EBUILD_PHASE="${action}"
             perform_hook ebuild_${action}_pre
