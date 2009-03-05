@@ -35,6 +35,7 @@
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/mutex-fwd.hh>
 #include <paludis/util/named_value.hh>
+#include <paludis/repositories/e/e_repository_id.hh>
 #include <string>
 
 /** \file
@@ -129,7 +130,7 @@ namespace paludis
                     ) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
-                    const std::tr1::shared_ptr<const PackageID> &,
+                    const std::tr1::shared_ptr<const erepository::ERepositoryID> &,
                     const std::tr1::shared_ptr<const Choice> &
                     ) const PALUDIS_ATTRIBUTE((warn_unused_result));
 

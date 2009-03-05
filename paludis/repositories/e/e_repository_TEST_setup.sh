@@ -191,7 +191,7 @@ END
 cd ..
 
 
-mkdir -p repo9/{eclass,distfiles,profiles/profile,cat-one/pkg-one,cat-two/pkg-one} || exit 1
+mkdir -p repo9/{eclass,distfiles,profiles/{profile,child},cat-one/pkg-one,cat-two/pkg-one} || exit 1
 mkdir -p repo9/{cat-one/pkg-one,cat-two/pkg-two} || exit 1
 cd repo9 || exit 1
 echo "test-repo-9" > profiles/repo_name || exit 1
@@ -206,21 +206,34 @@ END
 cat <<END >profiles/profile/make.defaults || exit 1
 ARCH=test
 USE="flag1 flag2 flag3 -flag4 -flag5 -enabled2 disabled2"
+USE_EXPAND="NOT_IN_IUSE"
+NOT_IN_IUSE="ennobled"
 END
 cat <<END >profiles/profile/use.mask || exit 1
 flag2
 enabled3
+not_in_iuse_masked
 END
 cat <<END >profiles/profile/use.force || exit 1
 flag4
 disabled3
+not_in_iuse_forced
+END
+cat <<END >profiles/profile/package.use || exit 1
+cat-one/pkg-one not_in_iuse_ennobled_package
+cat-two/pkg-two -not_in_iuse_disabled_package -not_in_iuse_ennobled
 END
 cat <<END >profiles/profile/package.use.mask || exit 1
 cat-two/pkg-two flag3
 >=cat-one/pkg-one-2 flag3
+cat-one/pkg-one not_in_iuse_masked_package
 END
-cat <<END >profiles/profile/package.use.force || exit 1
+cat <<END >profiles/child/package.use.force || exit 1
 cat-two/pkg-two flag5
+cat-two/pkg-two not_in_iuse_forced_package
+END
+cat <<END >profiles/child/parent || exit 1
+../profile
 END
 cat <<END > cat-one/pkg-one/pkg-one-1.ebuild || exit 1
 EAPI=1

@@ -167,6 +167,8 @@ namespace paludis
             std::tr1::shared_ptr<Set<std::string> > use_expand;
             std::tr1::shared_ptr<Set<std::string> > use_expand_hidden;
             KnownMap known_choice_value_names;
+            mutable Mutex known_choice_value_names_for_separator_mutex;
+            mutable std::tr1::unordered_map<char, KnownMap> known_choice_value_names_for_separator;
             StackedValuesList stacked_values_list;
 
             ///\}
@@ -843,18 +845,69 @@ ERepositoryProfile::use_state_ignoring_masks(
     return result;
 }
 
+namespace
+{
+    void
+    add_flag_status_map(const std::tr1::shared_ptr<Set<UnprefixedChoiceName> > result,
+            const FlagStatusMap & m, const std::string & prefix)
+    {
+        for (FlagStatusMap::const_iterator it(m.begin()),
+                 it_end(m.end()); it_end != it; ++it)
+            if (0 == stringify(it->first).compare(0, prefix.length(), prefix))
+                result->insert(UnprefixedChoiceName(stringify(it->first).substr(prefix.length())));
+    }
+
+    void
+    add_package_flag_status_map_list(const std::tr1::shared_ptr<Set<UnprefixedChoiceName> > result,
+            const PackageFlagStatusMapList & m, const std::string & prefix)
+    {
+        for (PackageFlagStatusMapList::const_iterator it(m.begin()),
+                 it_end(m.end()); it_end != it; ++it)
+            add_flag_status_map(result, it->second, prefix);
+    }
+}
+
 std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
 ERepositoryProfile::known_choice_value_names(
-        const std::tr1::shared_ptr<const PackageID> &,
+        const std::tr1::shared_ptr<const ERepositoryID> & id,
         const std::tr1::shared_ptr<const Choice> & choice
         ) const
 {
+    Lock l(_imp->known_choice_value_names_for_separator_mutex);
+
+    char separator(id->eapi()->supported()->choices_options()->use_expand_separator());
+    std::tr1::unordered_map<char, KnownMap>::iterator it(_imp->known_choice_value_names_for_separator.find(separator));
+    if (_imp->known_choice_value_names_for_separator.end() == it)
+        it = _imp->known_choice_value_names_for_separator.insert(std::make_pair(separator, KnownMap())).first;
+
     std::string lower_x;
     std::transform(choice->raw_name().begin(), choice->raw_name().end(), std::back_inserter(lower_x), &::tolower);
-    KnownMap::const_iterator i(_imp->known_choice_value_names.find(lower_x));
-    if (_imp->known_choice_value_names.end() == i)
-        throw InternalError(PALUDIS_HERE, lower_x);
-    return i->second;
+    KnownMap::const_iterator it2(it->second.find(lower_x));
+    if (it->second.end() == it2)
+    {
+        std::tr1::shared_ptr<Set<UnprefixedChoiceName> > result(new Set<UnprefixedChoiceName>);
+        it2 = it->second.insert(std::make_pair(lower_x, result)).first;
+
+        KnownMap::const_iterator i(_imp->known_choice_value_names.find(lower_x));
+        if (_imp->known_choice_value_names.end() == i)
+            throw InternalError(PALUDIS_HERE, lower_x);
+        std::copy(i->second->begin(), i->second->end(), result->inserter());
+
+        std::string prefix(lower_x);
+        prefix += separator;
+
+        for (StackedValuesList::const_iterator sit(_imp->stacked_values_list.begin()),
+                 sit_end(_imp->stacked_values_list.end()); sit_end != sit; ++sit)
+        {
+            add_flag_status_map(result, sit->use_mask, prefix);
+            add_flag_status_map(result, sit->use_force, prefix);
+            add_package_flag_status_map_list(result, sit->package_use, prefix);
+            add_package_flag_status_map_list(result, sit->package_use_mask, prefix);
+            add_package_flag_status_map_list(result, sit->package_use_force, prefix);
+        }
+    }
+
+    return it2->second;
 }
 
 std::string

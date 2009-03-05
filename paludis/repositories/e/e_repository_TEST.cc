@@ -587,10 +587,12 @@ namespace test_cases
     {
         ERepositoryQueryUseTest() : TestCase("USE query") { }
 
-        void test_choice(const std::tr1::shared_ptr<const PackageID> & p, const std::string & n, bool enabled, bool enabled_by_default, bool locked)
+        void test_choice(const std::tr1::shared_ptr<const PackageID> & p, const std::string & n, bool enabled, bool enabled_by_default, bool locked, const std::string & u = "")
         {
             TestMessageSuffix s(stringify(*p) + "[" + n + "]", true);
             std::tr1::shared_ptr<const ChoiceValue> choice(p->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix(n)));
+            TEST_CHECK(choice);
+            TEST_CHECK_EQUAL(choice->unprefixed_name(), UnprefixedChoiceName(u.empty() ? n : u));
             TEST_CHECK_EQUAL(choice->enabled(), enabled);
             TEST_CHECK_EQUAL(choice->enabled_by_default(), enabled_by_default);
             TEST_CHECK_EQUAL(choice->locked(), locked);
@@ -605,7 +607,7 @@ namespace test_cases
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo9"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo9/profiles/profile"));
+            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo9/profiles/child"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
             std::tr1::shared_ptr<ERepository> repo(std::tr1::static_pointer_cast<ERepository>(ERepository::repository_factory_create(&env,
                             std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1))));
@@ -653,6 +655,22 @@ namespace test_cases
 
                 test_choice(p1, "test",  true,  true,  true);
                 test_choice(p1, "test2", false, false, true);
+
+                test_choice(p1, "not_in_iuse_ennobled", true, true, false, "ennobled");
+                test_choice(p1, "not_in_iuse_masked", false, false, true, "masked");
+                test_choice(p1, "not_in_iuse_forced", true, true, true, "forced");
+                test_choice(p1, "not_in_iuse_ennobled_package", true, true, false, "ennobled_package");
+                test_choice(p1, "not_in_iuse_disabled_package", false, false, false, "disabled_package");
+                test_choice(p1, "not_in_iuse_masked_package", false, false, true, "masked_package");
+                test_choice(p1, "not_in_iuse_forced_package", false, false, false, "forced_package");
+
+                test_choice(p2, "not_in_iuse_ennobled", false, false, false, "ennobled");
+                test_choice(p2, "not_in_iuse_masked", false, false, true, "masked");
+                test_choice(p2, "not_in_iuse_forced", true, true, true, "forced");
+                test_choice(p2, "not_in_iuse_ennobled_package", false, false, false, "ennobled_package");
+                test_choice(p2, "not_in_iuse_disabled_package", false, false, false, "disabled_package");
+                test_choice(p2, "not_in_iuse_masked_package", false, false, false, "masked_package");
+                test_choice(p2, "not_in_iuse_forced_package", true, true, true, "forced_package");
             }
         }
     } test_e_repository_query_use;
