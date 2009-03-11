@@ -232,7 +232,7 @@ EInstalledRepository::get_environment_variable(
     {
         std::stringstream p;
         Command cmd(Command("bash -c '( bunzip2 < " + stringify(ver_dir / "environment.bz2" ) +
-                    " ; echo echo \\$" + var + " ) | bash 2>/dev/null'").with_captured_stdout_stream(&p));
+                    " ; echo echo \\$" + var + " ) | bash -O extglob 2>/dev/null'").with_captured_stdout_stream(&p));
         int exit_status(run_command(cmd));
         std::string result(strip_trailing_string(std::string(
                         (std::istreambuf_iterator<char>(p)),
