@@ -111,6 +111,35 @@ namespace test_cases
         }
     } test_metadata_flat_list_stale;
 
+    struct MetadataFlatListGuessedEAPITest : TestCase
+    {
+        MetadataFlatListGuessedEAPITest() : TestCase("metadata flat_list guessed EAPI") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            env.set_paludis_command("/bin/false");
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
+            keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
+            keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
+            keys->insert("eapi_when_unknown", "1");
+            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            env.package_database()->add_repository(1, repo);
+
+            const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
+                            PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-guessed-eapi-1",
+                                    &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+
+            TEST_CHECK(id1->short_description_key());
+            TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Generated Description flat_list-guessed-eapi");
+        }
+    } test_metadata_flat_list_guessed_eapi;
+
     struct MetadataFlatListEclassCachedTest : TestCase
     {
         MetadataFlatListEclassCachedTest() : TestCase("metadata flat_list eclass cached") { }
@@ -281,6 +310,91 @@ namespace test_cases
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "the-description-flat_hash");
         }
     } test_metadata_flat_hash_cached;
+
+    struct MetadataFlatHashGuessedEAPITest : TestCase
+    {
+        MetadataFlatHashGuessedEAPITest() : TestCase("metadata flat_hash guessed EAPI") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            env.set_paludis_command("/bin/false");
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
+            keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
+            keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
+            keys->insert("eapi_when_unknown", "1");
+            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            env.package_database()->add_repository(1, repo);
+
+            const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
+                            PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-guessed-eapi-1",
+                                    &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+
+            TEST_CHECK(id1->short_description_key());
+            TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Generated Description flat_hash-guessed-eapi");
+        }
+    } test_metadata_flat_hash_guessed_eapi;
+
+    struct MetadataFlatHashGuessedEAPIExtensionTest : TestCase
+    {
+        MetadataFlatHashGuessedEAPIExtensionTest() : TestCase("metadata flat_hash guessed EAPI by extension") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            env.set_paludis_command("/bin/false");
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
+            keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
+            keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
+            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            env.package_database()->add_repository(1, repo);
+
+            const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
+                            PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-guessed-eapi-extension-1",
+                                    &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+
+            TEST_CHECK(id1->short_description_key());
+            TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Generated Description flat_hash-guessed-eapi-extension");
+        }
+    } test_metadata_flat_hash_guessed_eapi_extension;
+
+    struct MetadataFlatHashCachedNoGuessedEAPITest : TestCase
+    {
+        MetadataFlatHashCachedNoGuessedEAPITest() : TestCase("metadata flat_hash no guessed EAPI") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            env.set_paludis_command("/bin/false");
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
+            keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
+            keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
+            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            env.package_database()->add_repository(1, repo);
+
+            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                            PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-no-guessed-eapi-1",
+                                    &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+
+            TEST_CHECK(id->short_description_key());
+            TEST_CHECK_EQUAL(id->short_description_key()->value(), "the-description-flat_hash-no-guessed-eapi");
+        }
+    } test_metadata_flat_hash_cached_no_guessed_eapi;
 
     struct MetadataFlatHashEmptyValueTest : TestCase
     {
@@ -1110,6 +1224,42 @@ namespace test_cases
             TEST_CHECK_EQUAL(FSEntry("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-1").mtime(), 60);
         }
     } test_metadata_write;
+
+    struct MetadataWriteEAPI1Test : TestCase
+    {
+        MetadataWriteEAPI1Test() : TestCase("metadata write EAPI 1") { }
+
+        std::string contents(const std::string & filename)
+        {
+            SafeIFStream s(FSEntry(filename).realpath());
+            return std::string((std::istreambuf_iterator<char>(s)), std::istreambuf_iterator<char>());
+        }
+
+        void run()
+        {
+            TestEnvironment env;
+            env.set_paludis_command("/bin/false");
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", "ebuild_flat_metadata_cache_TEST_dir/repo");
+            keys->insert("profiles", "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile");
+            keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+            keys->insert("write_cache", "ebuild_flat_metadata_cache_TEST_dir/cache");
+            keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
+            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            env.package_database()->add_repository(1, repo);
+
+            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                            PackageDepSpec(parse_user_package_dep_spec("=cat/write-eapi1-1",
+                                    &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+
+            TEST_CHECK(id->short_description_key());
+            TEST_CHECK_EQUAL(contents("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-eapi1-1"), contents("ebuild_flat_metadata_cache_TEST_dir/cache/expected/cat/write-eapi1-1"));
+            TEST_CHECK_EQUAL(FSEntry("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-eapi1-1").mtime(), 60);
+        }
+    } test_metadata_write_eapi1;
 
     struct MetadataWriteEclassesTest : TestCase
     {

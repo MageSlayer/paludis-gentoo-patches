@@ -112,6 +112,13 @@ namespace
                     Log::get_instance()->message("e.cache.flat_list.mtime", ll_debug, lc_context)
                         << "ebuild has mtime " << _imp->ebuild.mtime() << ", but expected at most " << cache_time;
 
+                if (ok && "0" != id->guessed_eapi_name())
+                {
+                    Log::get_instance()->message("e.cache.flat_list.guessed_eapi", ll_debug, lc_context)
+                        << "ebuild has guessed EAPI '" << id->guessed_eapi_name() << "', but flat_list assumes '0'";
+                    ok = false;
+                }
+
                 if (ok)
                 {
                     std::set<std::string> tokens;
@@ -356,6 +363,18 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
                 if (! ok)
                     Log::get_instance()->message("e.cache.flat_hash.mtime", ll_debug, lc_context)
                         << "ebuild has mtime " << _imp->ebuild.mtime() << ", but expected " << cache_time;
+
+                if (ok) {
+                    std::string cache_guessed(keys["_guessed_eapi_"]);
+                    if (cache_guessed.empty())
+                        cache_guessed = "0";
+                    if (id->guessed_eapi_name() != cache_guessed)
+                    {
+                        Log::get_instance()->message("e.cache.flat_hash.guessed_eapi", ll_debug, lc_context)
+                            << "ebuild has guessed EAPI '" << id->guessed_eapi_name() << "', but cache has '" << cache_guessed << "'";
+                        ok = false;
+                    }
+                }
 
                 if (ok && id->eapi()->supported()->ebuild_options()->support_eclasses())
                 {
@@ -657,6 +676,7 @@ EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
 
     std::ostringstream cache;
     write_kv(cache, "_mtime_", _imp->ebuild.mtime());
+    write_kv(cache, "_guessed_eapi_", id->guessed_eapi_name());
 
     if (id->eapi()->supported()->ebuild_options()->support_eclasses() && id->inherited_key())
     {

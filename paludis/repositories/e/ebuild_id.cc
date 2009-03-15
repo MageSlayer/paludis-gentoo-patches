@@ -144,7 +144,7 @@ EbuildID::EbuildID(const QualifiedPackageName & q, const VersionSpec & v,
         const std::string & g,
         const time_t t,
         const std::tr1::shared_ptr<const EclassMtimes> & m) :
-    PrivateImplementationPattern<EbuildID>(new Implementation<EbuildID>(q, v, e, r, f, g, t, m)),
+    PrivateImplementationPattern<EbuildID>(new Implementation<EbuildID>(q, v, e, r, f, g.empty() ? r->params().eapi_when_unknown() : g, t, m)),
     _imp(PrivateImplementationPattern<EbuildID>::_imp)
 {
 }
@@ -217,10 +217,7 @@ EbuildID::need_keys_added() const
             Log::get_instance()->message("e.ebuild.cache.no_usable", ll_qa, lc_no_context)
                 << "No usable cache entry for '" + canonical_form(idcf_full);
 
-        std::string eapi_str(_imp->guessed_eapi);
-        if (eapi_str.empty())
-            eapi_str = _imp->repository->params().eapi_when_unknown();
-        _imp->eapi = EAPIData::get_instance()->eapi_from_string(eapi_str);
+        _imp->eapi = EAPIData::get_instance()->eapi_from_string(_imp->guessed_eapi);
 
         if (_imp->eapi->supported())
         {
@@ -772,6 +769,12 @@ EbuildID::set_eapi(const std::string & s) const
 {
     Lock l(_imp->mutex);
     _imp->eapi = EAPIData::get_instance()->eapi_from_string(s);
+}
+
+std::string
+EbuildID::guessed_eapi_name() const
+{
+    return _imp->guessed_eapi;
 }
 
 std::tr1::shared_ptr<const ERepository>

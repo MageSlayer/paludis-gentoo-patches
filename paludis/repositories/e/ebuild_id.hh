@@ -112,6 +112,7 @@ namespace paludis
                 virtual std::tr1::shared_ptr<const ERepository> e_repository() const;
 
                 void set_eapi(const std::string &) const;
+                std::string guessed_eapi_name() const;
 
                 void load_short_description(const std::string &, const std::string &, const std::string &) const;
                 void load_captured_stderr(const std::string &, const std::string &, const MetadataKeyType, const std::string &) const;
