@@ -52,7 +52,7 @@ other keys.</p>
 <ul>
     <li><a href="unavailable.html">unavailable</a>, for information about ebuilds that are present in an overlay or
     supplemental repository that is not configured on this system.</li>
-    <li><a href="installedunpackaged.html">installed_unpackaged</a>, for tracking installs of packages installed
+    <li><a href="installed_unpackaged.html">installed_unpackaged</a>, for tracking installs of packages installed
     manually rather than through an ebuild.</li>
 </ul>
 
