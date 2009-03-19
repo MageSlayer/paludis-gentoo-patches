@@ -26,22 +26,22 @@ ever()
     case "${1}" in
         split)
             [[ "${#@}" != 2 ]] && die "$0 $1 takes one extra argument"
-            r=$(paludis_pipe_command EVER "$EAPI" SPLIT "${2}" )
+            r=$(paludis_pipe_command EVER "$EAPI" SPLIT "${2:-${PV}}" )
         ;;
 
         split_all)
             [[ "${#@}" != 2 ]] && die "$0 $1 takes one extra argument"
-            r=$(paludis_pipe_command EVER "$EAPI" SPLIT_ALL "${2}" )
+            r=$(paludis_pipe_command EVER "$EAPI" SPLIT_ALL "${2:-${PV}}" )
         ;;
 
         major)
             [[ "${#@}" != 1 ]] && [[ "${#@}" != 2 ]] && die "$0 $1 takes zero or one extra arguments"
-            r=$(paludis_pipe_command EVER "$EAPI" RANGE 1 "${2:-${PVR}}" )
+            r=$(paludis_pipe_command EVER "$EAPI" RANGE 1 "${2:-${PV}}" )
         ;;
 
         range)
             [[ "${#@}" != 2 ]] && [[ "${#@}" != 3 ]] && die "$0 $1 takes one or two extra arguments"
-            r=$(paludis_pipe_command EVER "$EAPI" RANGE ${2} "${3:-${PVR}}" )
+            r=$(paludis_pipe_command EVER "$EAPI" RANGE ${2} "${3:-${PV}}" )
         ;;
 
         remainder)
