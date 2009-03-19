@@ -54,7 +54,8 @@ _adjutrix() {
         --profile \
         --unstable \
         --write-cache-dir \
-        --master-repository-dir"
+        --master-repository-name \
+        --extra-repository-dir"
 
     case "${cur}" in
         -*)
@@ -98,7 +99,7 @@ _adjutrix() {
                     return 0
                     ;;
 
-                --repository-dir|-D|--write-cache-dir|--master-repository-dir)
+                --repository-dir|-D|--write-cache-dir|--extra-repository-dir)
                     _filedir -d
                     return 0
                     ;;

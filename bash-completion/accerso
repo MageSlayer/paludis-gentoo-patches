@@ -39,7 +39,8 @@ _accerso() {
         --no-color \
         --repository-dir -D \
         --download-dir -d \
-        --master-repository-dir \
+        --extra-repository-dir \
+        --master-repository-name \
         --write-cache-dir \
         --report-file -r"
 
@@ -56,7 +57,7 @@ _accerso() {
                     return 0
                     ;;
 
-                --repository-dir|-D|--download-dir|-d|--master-repository-dir|--write-cache-dir)
+                --repository-dir|-D|--download-dir|-d|--extra-repository-dir|--write-cache-dir)
                     _filedir -d
                     return 0
                     ;;

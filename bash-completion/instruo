@@ -39,7 +39,8 @@ _instruo() {
         --no-color \
         --repository-dir -D \
         --output-dir -o \
-        --master-repository-dir \
+        --extra-repository-dir \
+        --master-repository-name \
         --report-file -r"
 
      case "${cur}" in
@@ -55,7 +56,7 @@ _instruo() {
                     return 0
                     ;;
 
-                --repository-dir|-D|--output-dir|-o|--master-repository-dir)
+                --repository-dir|-D|--output-dir|-o|--extra-repository-dir)
                     _filedir -d
                     return 0
                     ;;

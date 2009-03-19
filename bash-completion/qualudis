@@ -31,8 +31,9 @@ _qualudis() {
         --log-level -L \
         --message-level -M \
         --write-cache-dir \
-        --master-repository-dir \
-        --use-repository-cache
+        --master-repository-name \
+        --extra-repository-dir \
+        --use-repository-cache \
         --show-associated-keys"
 
     case "${cur}" in
