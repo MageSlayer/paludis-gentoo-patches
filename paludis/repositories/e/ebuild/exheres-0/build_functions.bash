@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
 # Copyright (c) 2008 Bo Ørsted Andresen
 # Copyright (c) 2009 David Leverton
 #
@@ -145,6 +145,8 @@ econf()
             --datadir=/usr/share \
             --sysconfdir=/etc \
             --localstatedir=/var/lib \
+            --disable-dependency-tracking \
+            --enable-fast-install \
             ${libcmd} "$@" ${LOCAL_EXTRA_ECONF} 1>&2
 
         ${LOCAL_ECONF_WRAPPER} "${ECONF_SOURCE}"/configure \
@@ -155,6 +157,8 @@ econf()
             --datadir=/usr/share \
             --sysconfdir=/etc \
             --localstatedir=/var/lib \
+            --disable-dependency-tracking \
+            --enable-fast-install \
             ${libcmd} "$@" ${LOCAL_EXTRA_ECONF} || paludis_die_unless_nonfatal "econf failed" || return 247
 
     else
