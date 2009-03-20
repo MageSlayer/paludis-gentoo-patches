@@ -198,6 +198,9 @@ pkg_setup() {
     check "2" _ "1-scm" "1-scm"
     check "3" _ "1_beta2" "1_beta2"
     check "99" . "1.2.3-r4" "1.2.3-r4"
+    check "-" . "1.2-scm-r1" "1.2.scm-r1"
+    check "_" - "1.2.3_alpha1" "1.2.3-alpha1"
+    check "." - "1.2.3_alpha1" "1-2.3_alpha1"
 }
 END
 mkdir -p "packages/cat/ever-replace_all"
@@ -242,6 +245,9 @@ pkg_setup() {
     check 2 "1.2.3" "1.23"
     check 3 "1.2.3" "1.2.3"
     check 1 "1_beta2-try3" "1beta2-try3"
+    check "-" "1.2-scm-r1" "1.2scm-r1"
+    check "." "1.2.3_alpha1" "12.3_alpha1"
+    check "_" "1.2.3_alpha1" "1.2.3alpha1"
 }
 END
 mkdir -p "packages/cat/ever-delete_all"

@@ -480,35 +480,65 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
                 VersionSpec v(tokens[5]);
                 int current_pos(0);
-                int replace_pos(destringify<int>(tokens[3]));
                 std::string replacement(tokens[4]);
                 std::string result;
 
-                for (VersionSpec::ConstIterator c(v.begin()), c_end(v.end()) ;
-                        c != c_end ; ++c)
+                switch (tokens[3].at(0))
                 {
-                    if (c->text().empty())
-                        continue;
+                    case '.':
+                    case '-':
+                    case '_':
+                        {
+                            bool replacing_done(false);
+                            char replace_separator(tokens[3].at(0));
 
-                    switch (c->text().at(0))
-                    {
-                        case '.':
-                        case '-':
-                        case '_':
+                            for (VersionSpec::ConstIterator c(v.begin()), c_end(v.end()) ;
+                                    c != c_end ; ++c)
                             {
-                                if (current_pos == replace_pos)
+                                if (c->text().empty())
+                                    continue;
+
+                                if (! replacing_done && replace_separator == c->text().at(0))
+                                {
                                     result.append(replacement + c->text().substr(1));
+                                    replacing_done = true;
+                                }
                                 else
                                     result.append(c->text());
                             }
-                            break;
+                        }
+                        break;
 
-                        default:
-                            result.append(c->text());
-                            break;
-                    }
+                    default:
+                        int replace_pos(destringify<int>(tokens[3]));
 
-                    ++current_pos;
+                        for (VersionSpec::ConstIterator c(v.begin()), c_end(v.end()) ;
+                                c != c_end ; ++c)
+                        {
+                            if (c->text().empty())
+                                continue;
+
+                            switch (c->text().at(0))
+                            {
+                                case '.':
+                                case '-':
+                                case '_':
+                                    {
+                                        if (current_pos == replace_pos)
+                                            result.append(replacement + c->text().substr(1));
+                                        else
+                                            result.append(c->text());
+                                    }
+                                    break;
+
+                                default:
+                                    result.append(c->text());
+                                    break;
+                            }
+
+                            ++current_pos;
+                        }
+                        break;
                 }
 
                 return "O0;" + result;
