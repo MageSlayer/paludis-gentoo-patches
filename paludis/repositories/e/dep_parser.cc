@@ -83,7 +83,8 @@ namespace
             const std::tr1::shared_ptr<const PackageID> & id)
     {
         std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
-                    parse_elike_package_dep_spec(s, eapi.supported()->package_dep_spec_parse_options(), id)));
+                    parse_elike_package_dep_spec(s, eapi.supported()->package_dep_spec_parse_options(),
+                        eapi.supported()->version_spec_options(), id)));
         h.begin()->item()->append(spec);
         annotations_go_here(spec);
     }
@@ -108,7 +109,9 @@ namespace
 
             std::tr1::shared_ptr<BlockDepSpec> spec(new BlockDepSpec(
                         make_shared_ptr(new PackageDepSpec(parse_elike_package_dep_spec(s.substr(specstart),
-                                    eapi.supported()->package_dep_spec_parse_options(), id))), s));
+                                    eapi.supported()->package_dep_spec_parse_options(),
+                                    eapi.supported()->version_spec_options(),
+                                    id))), s));
             h.begin()->item()->append(spec);
             annotations_go_here(spec);
         }

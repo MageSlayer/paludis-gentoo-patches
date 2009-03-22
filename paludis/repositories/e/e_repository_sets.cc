@@ -22,6 +22,7 @@
 #include <paludis/repositories/e/e_repository_sets.hh>
 #include <paludis/repositories/e/glsa.hh>
 #include <paludis/repositories/e/dep_parser.hh>
+#include <paludis/repositories/e/eapi.hh>
 
 #include <paludis/environment.hh>
 #include <paludis/util/config_file.hh>
@@ -60,6 +61,7 @@
 #include "config.h"
 
 using namespace paludis;
+using namespace paludis::erepository;
 
 namespace paludis
 {
@@ -176,7 +178,7 @@ ERepositorySets::sets_list() const
 namespace
 {
     bool
-    match_range(const PackageID & e, const erepository::GLSARange & r)
+    match_range(const PackageID & e, const erepository::GLSARange & r, const VersionSpecOptions & ver_options)
     {
         if (r.slot() != "*")
         {
@@ -213,29 +215,30 @@ namespace
             our_op = vo_greater_equal;
 
         if (-1 != our_op)
-            return (VersionOperator(our_op).as_version_spec_comparator()(e.version(), VersionSpec(ver)));
+            return (VersionOperator(our_op).as_version_spec_comparator()(e.version(), VersionSpec(ver, ver_options)));
 
         if (0 == r.op().compare(0, 1, "r"))
         {
-            return e.version().remove_revision() == VersionSpec(ver).remove_revision() &&
+            return e.version().remove_revision() == VersionSpec(ver, ver_options).remove_revision() &&
                 match_range(e, make_named_values<erepository::GLSARange>(
                             value_for<n::op>(r.op().substr(1)),
                             value_for<n::slot>(r.slot()),
-                            value_for<n::version>(r.version())));
+                            value_for<n::version>(r.version())),
+                        ver_options);
         }
 
         throw GLSAError("Got bad op '" + r.op() + "'");
     }
 
     bool
-    is_vulnerable(const GLSAPackage & glsa_pkg, const PackageID & c)
+    is_vulnerable(const GLSAPackage & glsa_pkg, const PackageID & c, const VersionSpecOptions & ver_options)
     {
         /* a package is affected if it matches any vulnerable line, except if it matches
          * any unaffected line. */
         bool vulnerable(false);
         for (GLSAPackage::RangesConstIterator r(glsa_pkg.begin_vulnerable()), r_end(glsa_pkg.end_vulnerable()) ;
                 r != r_end && ! vulnerable ; ++r)
-            if (match_range(c, *r))
+            if (match_range(c, *r, ver_options))
                 vulnerable = true;
 
         if (! vulnerable)
@@ -243,7 +246,7 @@ namespace
 
         for (GLSAPackage::RangesConstIterator r(glsa_pkg.begin_unaffected()), r_end(glsa_pkg.end_unaffected()) ;
                 r != r_end && vulnerable ; ++r)
-            if (match_range(c, *r))
+            if (match_range(c, *r, ver_options))
                 vulnerable = false;
 
         return vulnerable;
@@ -269,6 +272,14 @@ ERepositorySets::security_set(bool insecurity) const
 
         Context local_context("When parsing security advisory '" + stringify(*f) + "':");
 
+        const std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
+                    _imp->e_repository->eapi_for_file(*f)));
+        if (! eapi->supported())
+            throw GLSAError("Can't use advisory '" + stringify(*f) +
+                    "' because it uses an unsupported EAPI");
+
+        const VersionSpecOptions ver_options(eapi->supported()->version_spec_options());
+
         try
         {
             std::tr1::shared_ptr<const GLSA> glsa(GLSA::create_from_xml_file(stringify(*f)));
@@ -289,7 +300,7 @@ ERepositorySets::security_set(bool insecurity) const
                 for (PackageIDSequence::ConstIterator c(candidates->begin()), c_end(candidates->end()) ;
                         c != c_end ; ++c)
                 {
-                    if (! is_vulnerable(*glsa_pkg, **c))
+                    if (! is_vulnerable(*glsa_pkg, **c, ver_options))
                         continue;
 
                     if (glsa_tags.end() == glsa_tags.find(glsa->id()))
@@ -325,7 +336,7 @@ ERepositorySets::security_set(bool insecurity) const
 
                         for (PackageIDSequence::ReverseConstIterator r(available->rbegin()), r_end(available->rend()) ; r != r_end ; ++r)
                         {
-                            if (is_vulnerable(*glsa_pkg, **r))
+                            if (is_vulnerable(*glsa_pkg, **r, ver_options))
                             {
                                 Log::get_instance()->message("e.glsa.skipping_vulnerable", ll_debug, lc_context)
                                     << "Skipping '" << **r << "' due to is_vulnerable match";

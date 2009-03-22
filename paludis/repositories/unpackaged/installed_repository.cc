@@ -41,6 +41,7 @@
 #include <paludis/dep_tag.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <paludis/user_dep_spec.hh>
 #include <sstream>
 #include <sys/time.h>
 
@@ -69,7 +70,7 @@ namespace paludis
 
         Implementation(const InstalledUnpackagedRepositoryParams & p) :
             params(p),
-            ndbam(p.location(), &supported_installed_unpackaged, "installed_unpackaged-1"),
+            ndbam(p.location(), &supported_installed_unpackaged, "installed_unpackaged-1", user_version_spec_options()),
             location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
                         mkt_significant, params.location())),
             root_key(new LiteralMetadataValueKey<FSEntry> ("root", "root",

@@ -167,7 +167,7 @@ namespace
                                 throw PackageDepSpecError("Invalid use of * with operator '" + stringify(vop) + " inside []");
                         }
 
-                        VersionSpec vs(ver);
+                        VersionSpec vs(ver, user_version_spec_options());
                         result.version_requirement(make_named_values<VersionRequirement>(
                                     value_for<n::version_operator>(vop),
                                     value_for<n::version_spec>(vs)));
@@ -293,7 +293,8 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const Environment *
             value_for<n::add_package_requirement>(std::tr1::bind(&user_add_package_requirement, _1, _2, env, options, filter)),
             value_for<n::add_version_requirement>(std::tr1::bind(&elike_add_version_requirement, _1, _2, _3)),
             value_for<n::check_sanity>(std::tr1::bind(&user_check_sanity, _1, options, env)),
-            value_for<n::get_remove_trailing_version>(std::tr1::bind(&elike_get_remove_trailing_version, _1)),
+            value_for<n::get_remove_trailing_version>(std::tr1::bind(&elike_get_remove_trailing_version, _1,
+                    user_version_spec_options())),
             value_for<n::get_remove_version_operator>(std::tr1::bind(&elike_get_remove_version_operator, _1,
                     ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps)),
             value_for<n::has_version_operator>(std::tr1::bind(&elike_has_version_operator, _1, std::tr1::cref(had_bracket_version_requirements))),
@@ -505,6 +506,13 @@ const std::string
 UserKeyRequirement::as_raw_string() const
 {
     return "[." + _imp->key + "=" + _imp->value + "]";
+}
+
+VersionSpecOptions
+paludis::user_version_spec_options()
+{
+    return VersionSpecOptions() + vso_flexible_dashes + vso_flexible_dots +
+        vso_ignore_case + vso_letters_anywhere + vso_dotted_suffixes;
 }
 
 template class PrivateImplementationPattern<UserKeyRequirement>;

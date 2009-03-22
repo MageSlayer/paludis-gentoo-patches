@@ -29,6 +29,7 @@
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <paludis/user_dep_spec.hh>
 #include <list>
 
 using namespace paludis;
@@ -160,7 +161,7 @@ UnavailableRepositoryFile::_load(const FSEntry & f)
                         (+simple_parser::any_except(" \t") >> token) &
                         (+simple_parser::any_of(" \t"))
                         ))
-                    versions.push_back(VersionSpec(token));
+                    versions.push_back(VersionSpec(token, user_version_spec_options()));
                 else
                     throw UnavailableRepositoryConfigurationError(
                             "Cannot parse body version line '" + line + " in '" + stringify(f) + "'");

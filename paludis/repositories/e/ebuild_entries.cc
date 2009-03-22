@@ -1043,7 +1043,9 @@ EbuildEntries::extract_package_file_version(const QualifiedPackageName & n, cons
     std::string::size_type p(e.basename().rfind('.'));
     if (std::string::npos == p)
         throw InternalError(PALUDIS_HERE, "got npos");
-    return VersionSpec(strip_leading_string(e.basename().substr(0, p), stringify(n.package()) + "-"));
+    return VersionSpec(strip_leading_string(e.basename().substr(0, p), stringify(n.package()) + "-"),
+            EAPIData::get_instance()->eapi_from_string(
+                _imp->e_repository->params().eapi_when_unknown())->supported()->version_spec_options());
 }
 
 bool

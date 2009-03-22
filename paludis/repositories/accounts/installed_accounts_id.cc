@@ -57,7 +57,7 @@ namespace paludis
                 const bool u) :
             env(e),
             name(q),
-            version("0"),
+            version("0", VersionSpecOptions()),
             repository(r),
             transient_key(new LiteralMetadataValueKey<bool>("transient", "Transient", mkt_internal, true)),
             is_user(u)

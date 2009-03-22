@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,6 +19,7 @@
 
 #include <paludis_ruby.hh>
 #include <paludis/version_spec.hh>
+#include <paludis/user_dep_spec.hh>
 #include <ruby.h>
 
 using namespace paludis;
@@ -46,7 +47,7 @@ namespace
         VersionSpec * ptr(0);
         try
         {
-            ptr = new VersionSpec(std::string(StringValuePtr(s)));
+            ptr = new VersionSpec(std::string(StringValuePtr(s)), user_version_spec_options());
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<VersionSpec>::free, ptr));
             rb_obj_call_init(tdata, 1, &s);
             return tdata;
@@ -185,7 +186,7 @@ VersionSpec
 paludis::ruby::value_to_version_spec(VALUE v)
 {
     if (T_STRING == TYPE(v))
-        return VersionSpec(StringValuePtr(v));
+        return VersionSpec(StringValuePtr(v), user_version_spec_options());
     else if (rb_obj_is_kind_of(v, c_version_spec))
     {
         VersionSpec * v_ptr;

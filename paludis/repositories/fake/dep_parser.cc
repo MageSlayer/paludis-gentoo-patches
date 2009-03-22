@@ -29,6 +29,7 @@
 #include <paludis/environment.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_id.hh>
+#include <paludis/user_dep_spec.hh>
 #include <list>
 
 using namespace paludis;
@@ -54,7 +55,9 @@ namespace
         PackageDepSpec p(parse_elike_package_dep_spec(s, ELikePackageDepSpecOptions() + epdso_allow_slot_deps
                     + epdso_allow_slot_star_deps + epdso_allow_slot_equal_deps + epdso_allow_repository_deps
                     + epdso_allow_use_deps + epdso_allow_ranged_deps + epdso_allow_tilde_greater_deps
-                    + epdso_strict_parsing, id));
+                    + epdso_strict_parsing,
+                    user_version_spec_options(),
+                    id));
         (*h.begin())->append(make_shared_ptr(new PackageDepSpec(p)));
     }
 
@@ -69,7 +72,9 @@ namespace
                                     ELikePackageDepSpecOptions() + epdso_allow_slot_deps
                                     + epdso_allow_slot_star_deps + epdso_allow_slot_equal_deps + epdso_allow_repository_deps
                                     + epdso_allow_use_deps + epdso_allow_ranged_deps + epdso_allow_tilde_greater_deps
-                                    + epdso_strict_parsing, id))))));
+                                    + epdso_strict_parsing,
+                                    user_version_spec_options(),
+                                    id))))));
         }
         else
             package_dep_spec_string_handler<T_>(h, s, id);

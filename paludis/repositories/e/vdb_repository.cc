@@ -116,6 +116,7 @@ namespace paludis
         std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > provides_cache_key;
         std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > names_cache_key;
         std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unknown_key;
     };
 
     Implementation<VDBRepository>::Implementation(const VDBRepository * const r,
@@ -137,7 +138,9 @@ namespace paludis
         names_cache_key(new LiteralMetadataValueKey<FSEntry> ("names_cache", "names_cache",
                     mkt_normal, params.names_cache())),
         builddir_key(new LiteralMetadataValueKey<FSEntry> ("builddir", "builddir",
-                    mkt_normal, params.builddir()))
+                    mkt_normal, params.builddir())),
+        eapi_when_unknown_key(new LiteralMetadataValueKey<std::string> (
+                    "eapi_when_unknown", "eapi_when_unknown", mkt_normal, params.eapi_when_unknown()))
     {
     }
 
@@ -188,6 +191,7 @@ VDBRepository::_add_metadata_keys() const
     add_metadata_key(_imp->provides_cache_key);
     add_metadata_key(_imp->names_cache_key);
     add_metadata_key(_imp->builddir_key);
+    add_metadata_key(_imp->eapi_when_unknown_key);
 }
 
 bool
@@ -329,8 +333,15 @@ VDBRepository::repository_factory_create(
     if (name.empty())
         name = "installed";
 
+    std::string eapi_when_unknown(f("eapi_when_unknown"));
+    if (eapi_when_unknown.empty())
+        eapi_when_unknown = EExtraDistributionData::get_instance()->data_from_distribution(
+                *DistributionData::get_instance()->distribution_from_string(
+                    env->distribution()))->default_eapi_when_unknown();
+
     return std::tr1::shared_ptr<Repository>(new VDBRepository(make_named_values<VDBRepositoryParams>(
                 value_for<n::builddir>(builddir),
+                value_for<n::eapi_when_unknown>(eapi_when_unknown),
                 value_for<n::environment>(env),
                 value_for<n::location>(location),
                 value_for<n::name>(RepositoryName(name)),
@@ -619,7 +630,8 @@ VDBRepository::load_provided_using_cache() const
             }
 
             QualifiedPackageName q(tokens.at(0));
-            VersionSpec v(tokens.at(1));
+            VersionSpec v(tokens.at(1), EAPIData::get_instance()->eapi_from_string(
+                        _imp->params.eapi_when_unknown())->supported()->version_spec_options());
 
             std::tr1::shared_ptr<Sequence<QualifiedPackageName> > qpns(new Sequence<QualifiedPackageName>);
             std::copy(tokens.begin() + 2, tokens.end(), create_inserter<QualifiedPackageName>(qpns->back_inserter()));

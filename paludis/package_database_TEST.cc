@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -117,47 +117,47 @@ namespace test_cases
             PackageDatabase & p(*e.package_database());
 
             std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(&e, RepositoryName("repo1")));
-            r1->add_version(CategoryNamePart("cat-one") + PackageNamePart("pkg-one"), VersionSpec("0"));
-            r1->add_version(CategoryNamePart("cat-one") + PackageNamePart("pkg-two"), VersionSpec("0"));
-            r1->add_version(CategoryNamePart("cat-two") + PackageNamePart("pkg-two"), VersionSpec("0"));
-            r1->add_version(CategoryNamePart("cat-two") + PackageNamePart("pkg-three"), VersionSpec("0"));
+            r1->add_version(CategoryNamePart("cat-one") + PackageNamePart("pkg-one"), VersionSpec("0", VersionSpecOptions()));
+            r1->add_version(CategoryNamePart("cat-one") + PackageNamePart("pkg-two"), VersionSpec("0", VersionSpecOptions()));
+            r1->add_version(CategoryNamePart("cat-two") + PackageNamePart("pkg-two"), VersionSpec("0", VersionSpecOptions()));
+            r1->add_version(CategoryNamePart("cat-two") + PackageNamePart("pkg-three"), VersionSpec("0", VersionSpecOptions()));
             p.add_repository(10, r1);
             TEST_CHECK(true);
 
             std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&e, RepositoryName("repo2")));
-            r2->add_version(CategoryNamePart("cat-three") + PackageNamePart("pkg-three"), VersionSpec("0"));
-            r2->add_version(CategoryNamePart("cat-three") + PackageNamePart("pkg-four"), VersionSpec("0"));
+            r2->add_version(CategoryNamePart("cat-three") + PackageNamePart("pkg-three"), VersionSpec("0", VersionSpecOptions()));
+            r2->add_version(CategoryNamePart("cat-three") + PackageNamePart("pkg-four"), VersionSpec("0", VersionSpecOptions()));
             p.add_repository(10, r2);
             TEST_CHECK(true);
 
             std::tr1::shared_ptr<FakeRepository> r3(new CoolFakeRepository(&e, RepositoryName("repo3")));
-            r3->add_version(CategoryNamePart("bad-cat1") + PackageNamePart("pkg-important"), VersionSpec("0"));
-            r3->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-important"), VersionSpec("0"));
+            r3->add_version(CategoryNamePart("bad-cat1") + PackageNamePart("pkg-important"), VersionSpec("0", VersionSpecOptions()));
+            r3->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-important"), VersionSpec("0", VersionSpecOptions()));
 
-            r3->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-installed"), VersionSpec("0"));
-            r3->add_version(CategoryNamePart("good-cat2") + PackageNamePart("pkg-installed"), VersionSpec("0"));
+            r3->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-installed"), VersionSpec("0", VersionSpecOptions()));
+            r3->add_version(CategoryNamePart("good-cat2") + PackageNamePart("pkg-installed"), VersionSpec("0", VersionSpecOptions()));
 
-            r3->add_version(CategoryNamePart("bad-cat1") + PackageNamePart("pkg-fail1"), VersionSpec("0"));
-            r3->add_version(CategoryNamePart("bad-cat2") + PackageNamePart("pkg-fail1"), VersionSpec("0"));
+            r3->add_version(CategoryNamePart("bad-cat1") + PackageNamePart("pkg-fail1"), VersionSpec("0", VersionSpecOptions()));
+            r3->add_version(CategoryNamePart("bad-cat2") + PackageNamePart("pkg-fail1"), VersionSpec("0", VersionSpecOptions()));
 
-            r3->add_version(CategoryNamePart("bad-cat1") + PackageNamePart("pkg-fail2"), VersionSpec("0"));
-            r3->add_version(CategoryNamePart("bad-cat2") + PackageNamePart("pkg-fail2"), VersionSpec("0"));
+            r3->add_version(CategoryNamePart("bad-cat1") + PackageNamePart("pkg-fail2"), VersionSpec("0", VersionSpecOptions()));
+            r3->add_version(CategoryNamePart("bad-cat2") + PackageNamePart("pkg-fail2"), VersionSpec("0", VersionSpecOptions()));
 
-            r3->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-fail3"), VersionSpec("0"));
-            r3->add_version(CategoryNamePart("good-cat2") + PackageNamePart("pkg-fail3"), VersionSpec("0"));
+            r3->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-fail3"), VersionSpec("0", VersionSpecOptions()));
+            r3->add_version(CategoryNamePart("good-cat2") + PackageNamePart("pkg-fail3"), VersionSpec("0", VersionSpecOptions()));
 
-            r3->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-fail4"), VersionSpec("0"));
-            r3->add_version(CategoryNamePart("good-cat2") + PackageNamePart("pkg-fail4"), VersionSpec("0"));
+            r3->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-fail4"), VersionSpec("0", VersionSpecOptions()));
+            r3->add_version(CategoryNamePart("good-cat2") + PackageNamePart("pkg-fail4"), VersionSpec("0", VersionSpecOptions()));
 
-            r3->add_version(CategoryNamePart("avail-cat") + PackageNamePart("pkg-foo"), VersionSpec("0"));
+            r3->add_version(CategoryNamePart("avail-cat") + PackageNamePart("pkg-foo"), VersionSpec("0", VersionSpecOptions()));
             p.add_repository(10, r3);
             TEST_CHECK(true);
 
             std::tr1::shared_ptr<FakeInstalledRepository> r4(new FakeInstalledRepository(&e, RepositoryName("repo4")));
-            r4->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-installed"), VersionSpec("0"));
-            r4->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-fail4"), VersionSpec("0"));
-            r4->add_version(CategoryNamePart("good-cat2") + PackageNamePart("pkg-fail4"), VersionSpec("0"));
-            r4->add_version(CategoryNamePart("inst-cat") + PackageNamePart("pkg-foo"), VersionSpec("0"));
+            r4->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-installed"), VersionSpec("0", VersionSpecOptions()));
+            r4->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-fail4"), VersionSpec("0", VersionSpecOptions()));
+            r4->add_version(CategoryNamePart("good-cat2") + PackageNamePart("pkg-fail4"), VersionSpec("0", VersionSpecOptions()));
+            r4->add_version(CategoryNamePart("inst-cat") + PackageNamePart("pkg-foo"), VersionSpec("0", VersionSpecOptions()));
             p.add_repository(10, r4);
 
             TEST_CHECK_STRINGIFY_EQUAL(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-one")),

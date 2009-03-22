@@ -184,6 +184,7 @@ InfoPkgsMetadataKey::need_keys_added() const
             std::tr1::shared_ptr<const PackageIDSequence> q((*_imp->env)[selection::AllVersionsSorted(
                         generator::Matches(parse_elike_package_dep_spec(i->first,
                                 eapi->supported()->package_dep_spec_parse_options(),
+                                eapi->supported()->version_spec_options(),
                                 std::tr1::shared_ptr<const PackageID>()), MatchPackageOptions()) |
                         filter::InstalledAtRoot(_imp->env->root()))]);
 

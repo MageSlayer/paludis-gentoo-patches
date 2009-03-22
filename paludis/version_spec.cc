@@ -30,6 +30,7 @@
 #include <paludis/util/named_value.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/options.hh>
 #include <paludis/version_spec.hh>
 #include <vector>
 #include <limits>
@@ -64,16 +65,19 @@ namespace paludis
         mutable bool has_is_scm;
         mutable bool is_scm;
 
-        Implementation() :
+        const VersionSpecOptions options;
+
+        Implementation(const VersionSpecOptions & o) :
             has_hash(false),
-            has_is_scm(false)
+            has_is_scm(false),
+            options(o)
         {
         }
     };
 }
 
-VersionSpec::VersionSpec(const std::string & text) :
-    PrivateImplementationPattern<VersionSpec>(new Implementation<VersionSpec>)
+VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & options) :
+    PrivateImplementationPattern<VersionSpec>(new Implementation<VersionSpec>(options))
 {
     Context c("When parsing version spec '" + text + "':");
 
@@ -250,7 +254,7 @@ VersionSpec::VersionSpec(const std::string & text) :
 }
 
 VersionSpec::VersionSpec(const VersionSpec & other) :
-    PrivateImplementationPattern<VersionSpec>(new Implementation<VersionSpec>)
+    PrivateImplementationPattern<VersionSpec>(new Implementation<VersionSpec>(other._imp->options))
 {
     _imp->text = other._imp->text;
     _imp->parts = other._imp->parts;
@@ -673,7 +677,7 @@ VersionSpec::bump() const
         str.append((*r).number_value());
         need_dot = true;
     }
-    return VersionSpec(str);
+    return VersionSpec(str, _imp->options);
 }
 
 bool

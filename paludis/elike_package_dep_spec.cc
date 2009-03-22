@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -85,7 +85,9 @@ paludis::elike_check_sanity(const std::string & s)
 
 bool
 paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
-        const ELikePackageDepSpecOptions & options, bool & had_bracket_version_requirements,
+        const ELikePackageDepSpecOptions & options,
+        const VersionSpecOptions & version_options,
+        bool & had_bracket_version_requirements,
         bool & had_use_requirements, const std::tr1::shared_ptr<const PackageID> & id)
 {
     std::string::size_type use_group_p;
@@ -171,7 +173,7 @@ paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, Partial
                             throw PackageDepSpecError("Invalid use of * with operator '" + stringify(vop) + " inside []");
                     }
 
-                    VersionSpec vs(ver);
+                    VersionSpec vs(ver, version_options);
                     result.version_requirement(make_named_values<VersionRequirement>(
                                 value_for<n::version_operator>(vop),
                                 value_for<n::version_spec>(vs)));
@@ -344,7 +346,7 @@ paludis::elike_get_remove_version_operator(std::string & s, const ELikePackageDe
 }
 
 VersionSpec
-paludis::elike_get_remove_trailing_version(std::string & s)
+paludis::elike_get_remove_trailing_version(std::string & s, const VersionSpecOptions & version_options)
 {
     /* find the last place a version spec could start (that is, a hyphen
      * followed by a digit, or a hyphen followed by 'scm'). if it's the scm
@@ -392,7 +394,7 @@ paludis::elike_get_remove_trailing_version(std::string & s)
         hyphen_pos = s.rfind('-', hyphen_pos - 1);
     }
 
-    VersionSpec result(s.substr(hyphen_pos + 1));
+    VersionSpec result(s.substr(hyphen_pos + 1), version_options);
     s.erase(hyphen_pos);
     return result;
 }
@@ -430,7 +432,9 @@ paludis::elike_add_package_requirement(const std::string & s, PartiallyMadePacka
 
 PartiallyMadePackageDepSpec
 paludis::partial_parse_elike_package_dep_spec(
-        const std::string & ss, const ELikePackageDepSpecOptions & options, const std::tr1::shared_ptr<const PackageID> & id)
+        const std::string & ss, const ELikePackageDepSpecOptions & options,
+        const VersionSpecOptions & version_options,
+        const std::tr1::shared_ptr<const PackageID> & id)
 {
     using namespace std::tr1::placeholders;
 
@@ -442,21 +446,22 @@ paludis::partial_parse_elike_package_dep_spec(
                 value_for<n::add_package_requirement>(std::tr1::bind(&elike_add_package_requirement, _1, _2)),
                 value_for<n::add_version_requirement>(std::tr1::bind(&elike_add_version_requirement, _1, _2, _3)),
                 value_for<n::check_sanity>(&elike_check_sanity),
-                value_for<n::get_remove_trailing_version>(std::tr1::bind(&elike_get_remove_trailing_version, _1)),
+                value_for<n::get_remove_trailing_version>(std::tr1::bind(&elike_get_remove_trailing_version, _1, version_options)),
                 value_for<n::get_remove_version_operator>(std::tr1::bind(&elike_get_remove_version_operator, _1, options)),
                 value_for<n::has_version_operator>(std::tr1::bind(&elike_has_version_operator, _1,
                         std::tr1::cref(had_bracket_version_requirements))),
                 value_for<n::remove_trailing_repo_if_exists>(std::tr1::bind(&elike_remove_trailing_repo_if_exists, _1, _2, options)),
                 value_for<n::remove_trailing_slot_if_exists>(std::tr1::bind(&elike_remove_trailing_slot_if_exists, _1, _2, options)),
                 value_for<n::remove_trailing_square_bracket_if_exists>(std::tr1::bind(&elike_remove_trailing_square_bracket_if_exists,
-                        _1, _2, options, std::tr1::ref(had_bracket_version_requirements), std::tr1::ref(had_use_requirements), id))
+                        _1, _2, options, version_options, std::tr1::ref(had_bracket_version_requirements), std::tr1::ref(had_use_requirements), id))
                 ));
 }
 
 PackageDepSpec
 paludis::parse_elike_package_dep_spec(const std::string & ss, const ELikePackageDepSpecOptions & options,
+        const VersionSpecOptions & version_options,
         const std::tr1::shared_ptr<const PackageID> & id)
 {
-    return partial_parse_elike_package_dep_spec(ss, options, id);
+    return partial_parse_elike_package_dep_spec(ss, options, version_options, id);
 }
 

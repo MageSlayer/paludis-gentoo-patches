@@ -144,6 +144,9 @@ ERepositoryNews::update_news() const
             NewsFile news(*d / (d->basename() + ".en.txt"));
             bool show(true);
 
+            const EAPI & eapi(*erepository::EAPIData::get_instance()->eapi_from_string(
+                        _imp->e_repository->params().profile_eapi_when_unspecified()));
+
             if (news.begin_display_if_installed() != news.end_display_if_installed())
             {
                 bool local_show(false);
@@ -151,9 +154,8 @@ ERepositoryNews::update_news() const
                         i_end(news.end_display_if_installed()) ; i != i_end ; ++i)
                     if (! (*_imp->environment)[selection::SomeArbitraryVersion(
                                 generator::Matches(PackageDepSpec(parse_elike_package_dep_spec(*i,
-                                            erepository::EAPIData::get_instance()->eapi_from_string(
-                                                _imp->e_repository->params().profile_eapi_when_unspecified())
-                                            ->supported()->package_dep_spec_parse_options(),
+                                            eapi.supported()->package_dep_spec_parse_options(),
+                                            eapi.supported()->version_spec_options(),
                                             std::tr1::shared_ptr<const PackageID>())), MatchPackageOptions()) |
                                 filter::SupportsAction<InstalledAction>())]->empty())
                         local_show = true;

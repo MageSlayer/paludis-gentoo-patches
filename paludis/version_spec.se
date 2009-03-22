@@ -27,4 +27,26 @@ make_enum_VersionSpecComponentType()
 END
 }
 
+make_enum_VersionSpecOption()
+{
+    prefix vso
+
+    key vso_flexible_dashes      "Allow - and _ to be interchanged"
+    key vso_flexible_dots        "Allow - where . is allowed"
+    key vso_ignore_case          "Allow uppercase letters"
+    key vso_letters_anywhere     "Allow 1a2.3 etc"
+    key vso_dotted_suffixes      "Allow 1_alpha2.3"
+
+    want_destringify
+
+    doxygen_comment << "END"
+        /**
+         * An option for parsing a VersionSpec.
+         *
+         * \ingroup g_dep_spec
+         * \since 0.38
+         * \see VersionSpecOptions
+         */
+END
+}
 

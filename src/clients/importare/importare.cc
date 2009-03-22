@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,6 +38,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
+#include <paludis/user_dep_spec.hh>
 
 #include <algorithm>
 #include <iterator>
@@ -138,7 +139,7 @@ main(int argc, char *argv[])
             throw args::DoHelp("install action takes between one and three parameters (cat/pkg version slot)");
 
         QualifiedPackageName q(params[0]);
-        VersionSpec v(params.size() >= 2 ? params[1] : "0");
+        VersionSpec v(params.size() >= 2 ? params[1] : "0", user_version_spec_options());
         SlotName s(params.size() >= 3 ? params[2] : "0");
 
         std::string build_dependencies, run_dependencies, description;

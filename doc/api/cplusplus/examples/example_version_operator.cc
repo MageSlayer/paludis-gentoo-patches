@@ -36,13 +36,15 @@ int main(int argc, char * argv[])
         CommandLine::get_instance()->run(argc, argv,
                 "example_version_operator", "EXAMPLE_VERSION_OPERATOR_OPTIONS", "EXAMPLE_VERSION_OPERATOR_CMDLINE");
 
-        /* Make a set of versions */
+        /* Make a set of versions. Use user_version_spec_options() for the
+         * options parameter for VersionSpec's constructor for handling any
+         * user-inputted data. */
         std::set<VersionSpec> versions;
-        versions.insert(VersionSpec("1.0"));
-        versions.insert(VersionSpec("1.1"));
-        versions.insert(VersionSpec("1.2"));
-        versions.insert(VersionSpec("1.2-r1"));
-        versions.insert(VersionSpec("2.0"));
+        versions.insert(VersionSpec("1.0", user_version_spec_options()));
+        versions.insert(VersionSpec("1.1", user_version_spec_options()));
+        versions.insert(VersionSpec("1.2", user_version_spec_options()));
+        versions.insert(VersionSpec("1.2-r1", user_version_spec_options()));
+        versions.insert(VersionSpec("2.0", user_version_spec_options()));
 
         /* And a list of operators */
         std::list<VersionOperator> operators;

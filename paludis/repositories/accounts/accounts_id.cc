@@ -79,7 +79,7 @@ namespace paludis
                 const FSEntry & l, const bool u) :
             env(e),
             name(q),
-            version("0"),
+            version("0", VersionSpecOptions()),
             repository(r),
             fs_location_key(new LiteralMetadataValueKey<FSEntry>("location", "Location", mkt_internal, l)),
             from_repositories_key(f),

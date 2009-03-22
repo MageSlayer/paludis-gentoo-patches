@@ -591,6 +591,7 @@ ERepository::repository_masked(const PackageID & id) const
             {
                 std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(parse_elike_package_dep_spec(
                                 line->second.first, line->first->supported()->package_dep_spec_parse_options(),
+                                line->first->supported()->version_spec_options(),
                                 std::tr1::shared_ptr<const PackageID>())));
                 if (a->package_ptr())
                     _imp->repo_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second.second));

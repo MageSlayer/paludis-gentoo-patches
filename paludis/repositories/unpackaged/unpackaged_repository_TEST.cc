@@ -84,7 +84,7 @@ namespace test_cases
                             value_for<n::rewrite_ids_over_to_root>(-1),
                             value_for<n::run_dependencies>(""),
                             value_for<n::slot>(SlotName("foo")),
-                            value_for<n::version>(VersionSpec("1.0"))
+                            value_for<n::version>(VersionSpec("1.0", VersionSpecOptions()))
                             )));
             env.package_database()->add_repository(1, repo);
 
@@ -114,14 +114,14 @@ namespace test_cases
                             value_for<n::rewrite_ids_over_to_root>(-1),
                             value_for<n::run_dependencies>(""),
                             value_for<n::slot>(SlotName("foo")),
-                            value_for<n::version>(VersionSpec("1.0"))
+                            value_for<n::version>(VersionSpec("1.0", VersionSpecOptions()))
                         )));
             env.package_database()->add_repository(1, repo);
 
             const std::tr1::shared_ptr<const PackageID> id(
                     *env[selection::RequireExactlyOne(generator::All())]->begin());
 
-            TEST_CHECK_EQUAL(id->version(), VersionSpec("1.0"));
+            TEST_CHECK_EQUAL(id->version(), VersionSpec("1.0", VersionSpecOptions()));
             TEST_CHECK_EQUAL(id->slot_key()->value(), SlotName("foo"));
             TEST_CHECK_EQUAL(id->name(), QualifiedPackageName("cat/pkg"));
             TEST_CHECK_EQUAL(id->repository()->name(), RepositoryName("unpackaged"));
@@ -149,7 +149,7 @@ namespace test_cases
                             value_for<n::rewrite_ids_over_to_root>(-1),
                             value_for<n::run_dependencies>(""),
                             value_for<n::slot>(SlotName("foo")),
-                            value_for<n::version>(VersionSpec("1.0"))
+                            value_for<n::version>(VersionSpec("1.0", VersionSpecOptions()))
                         )));
             env.package_database()->add_repository(1, repo);
 
@@ -179,7 +179,7 @@ namespace test_cases
                             value_for<n::rewrite_ids_over_to_root>(-1),
                             value_for<n::run_dependencies>(""),
                             value_for<n::slot>(SlotName("foo")),
-                            value_for<n::version>(VersionSpec("1.0"))
+                            value_for<n::version>(VersionSpec("1.0", VersionSpecOptions()))
                         )));
             env.package_database()->add_repository(1, repo);
 
@@ -222,7 +222,7 @@ namespace test_cases
                             value_for<n::rewrite_ids_over_to_root>(-1),
                             value_for<n::run_dependencies>(""),
                             value_for<n::slot>(SlotName("foo")),
-                            value_for<n::version>(VersionSpec("1.0"))
+                            value_for<n::version>(VersionSpec("1.0", VersionSpecOptions()))
                         )));
             env.package_database()->add_repository(1, repo);
 
@@ -278,7 +278,7 @@ namespace test_cases
                             value_for<n::rewrite_ids_over_to_root>(-1),
                             value_for<n::run_dependencies>(""),
                             value_for<n::slot>(SlotName("foo")),
-                            value_for<n::version>(VersionSpec("1.0"))
+                            value_for<n::version>(VersionSpec("1.0", VersionSpecOptions()))
                             )));
             env.package_database()->add_repository(1, repo);
 

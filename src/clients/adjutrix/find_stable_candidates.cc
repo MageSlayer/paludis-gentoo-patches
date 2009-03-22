@@ -112,7 +112,7 @@ namespace
             p += ":" + stringify(slot);
         cout << "  " << std::setw(col_width_package - 2) << p;
 
-        if (our_version != VersionSpec("0"))
+        if (our_version != VersionSpec("0", VersionSpecOptions()))
             cout << std::setw(col_width_our_version) << our_version;
         else
             cout << std::setw(col_width_our_version) << " ";
@@ -155,7 +155,7 @@ namespace
                 slots_to_versions.erase(slot_as_string(*v));
                 slots_to_versions.insert(std::make_pair(slot_as_string(*v),
                             make_named_values<SlotsEntry>(
-                                value_for<n::best_version>(VersionSpec("0")),
+                                value_for<n::best_version>(VersionSpec("0", VersionSpecOptions())),
                                 value_for<n::our_version>((*v)->version())
                                 )));
             }
@@ -167,7 +167,7 @@ namespace
                 slots_to_versions.insert(std::make_pair(slot_as_string(*v),
                             make_named_values<SlotsEntry>(
                                 value_for<n::best_version>((*v)->version()),
-                                value_for<n::our_version>(VersionSpec("0"))
+                                value_for<n::our_version>(VersionSpec("0", VersionSpecOptions()))
                                 )));
 
                 /* update the entry to mark our current version as the best

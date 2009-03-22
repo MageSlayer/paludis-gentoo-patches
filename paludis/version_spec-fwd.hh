@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,6 +22,7 @@
 
 #include <iosfwd>
 #include <paludis/util/attributes.hh>
+#include <paludis/util/options-fwd.hh>
 
 /** \file
  * Forward declarations for paludis/version_spec.hh .
@@ -37,6 +38,14 @@ namespace paludis
     struct VersionSpecComponent;
 
 #include <paludis/version_spec-se.hh>
+
+    /**
+     * Options for parsing a VersionSpec.
+     *
+     * \since 0.38
+     * \ingroup g_names
+     */
+    typedef Options<VersionSpecOption> VersionSpecOptions;
 
     /**
      * Output a VersionSpec to a stream.

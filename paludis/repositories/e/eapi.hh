@@ -163,6 +163,7 @@ namespace paludis
         struct utility_path_suffixes;
         struct vdb_from_env_unless_empty_variables;
         struct vdb_from_env_variables;
+        struct version_spec_options;
         struct want_portage_emulation_vars;
     }
 
@@ -249,6 +250,7 @@ namespace paludis
             NamedValue<n::tools_options, std::tr1::shared_ptr<const EAPIToolsOptions> > tools_options;
             NamedValue<n::uri_labels, std::tr1::shared_ptr<const EAPILabels> > uri_labels;
             NamedValue<n::userpriv_cannot_use_root, bool> userpriv_cannot_use_root;
+            NamedValue<n::version_spec_options, VersionSpecOptions> version_spec_options;
         };
 
         struct EAPIChoicesOptions

@@ -59,7 +59,7 @@ namespace
 
         QualifiedPackageName old_package("dummy/dummy");
         std::string old_slot("dummy");
-        VersionSpec best_version("0");
+        VersionSpec best_version("0", VersionSpecOptions());
         for (IndirectIterator<PackageIDSequence::ConstIterator> m(matches->begin()), m_end(matches->end()) ;
                 m != m_end ; ++m)
         {
@@ -122,7 +122,7 @@ namespace
                 throw ConfigurationError("Bad line '" + s + "'");
 
             map.insert(std::make_pair(make_pair(QualifiedPackageName(tokens.at(0)),
-                            tokens.at(1)), VersionSpec(tokens.at(2))));
+                            tokens.at(1)), VersionSpec(tokens.at(2), user_version_spec_options())));
         }
     }
 

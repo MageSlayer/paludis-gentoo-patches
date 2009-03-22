@@ -397,13 +397,13 @@ namespace test_cases
                 TEST_CHECK_EQUAL(2, std::distance(versions->begin(), versions->end()));
                 TEST_CHECK(indirect_iterator(versions->end()) != std::find_if(
                             indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
-                            std::tr1::bind(std::equal_to<VersionSpec>(), std::tr1::bind(std::tr1::mem_fn(&PackageID::version), _1), VersionSpec("1"))));
+                            std::tr1::bind(std::equal_to<VersionSpec>(), std::tr1::bind(std::tr1::mem_fn(&PackageID::version), _1), VersionSpec("1", VersionSpecOptions()))));
                 TEST_CHECK(indirect_iterator(versions->end()) != std::find_if(
                             indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
-                            std::tr1::bind(std::equal_to<VersionSpec>(), std::tr1::bind(std::tr1::mem_fn(&PackageID::version), _1), VersionSpec("1.1-r1"))));
+                            std::tr1::bind(std::equal_to<VersionSpec>(), std::tr1::bind(std::tr1::mem_fn(&PackageID::version), _1), VersionSpec("1.1-r1", VersionSpecOptions()))));
                 TEST_CHECK(indirect_iterator(versions->end()) == std::find_if(
                             indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
-                            std::tr1::bind(std::equal_to<VersionSpec>(), std::tr1::bind(std::tr1::mem_fn(&PackageID::version), _1), VersionSpec("2"))));
+                            std::tr1::bind(std::equal_to<VersionSpec>(), std::tr1::bind(std::tr1::mem_fn(&PackageID::version), _1), VersionSpec("2", VersionSpecOptions()))));
 
                 versions = repo->package_ids(QualifiedPackageName("cat-one/pkg-neither"));
                 TEST_CHECK(versions->empty());
@@ -442,13 +442,13 @@ namespace test_cases
                 TEST_CHECK_EQUAL(2, std::distance(versions->begin(), versions->end()));
                 TEST_CHECK(indirect_iterator(versions->end()) != std::find_if(
                             indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
-                            std::tr1::bind(std::equal_to<VersionSpec>(), std::tr1::bind(std::tr1::mem_fn(&PackageID::version), _1), VersionSpec("1"))));
+                            std::tr1::bind(std::equal_to<VersionSpec>(), std::tr1::bind(std::tr1::mem_fn(&PackageID::version), _1), VersionSpec("1", VersionSpecOptions()))));
                 TEST_CHECK(indirect_iterator(versions->end()) != std::find_if(
                             indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
-                            std::tr1::bind(std::equal_to<VersionSpec>(), std::tr1::bind(std::tr1::mem_fn(&PackageID::version), _1), VersionSpec("1.1-r1"))));
+                            std::tr1::bind(std::equal_to<VersionSpec>(), std::tr1::bind(std::tr1::mem_fn(&PackageID::version), _1), VersionSpec("1.1-r1", VersionSpecOptions()))));
                 TEST_CHECK(indirect_iterator(versions->end()) == std::find_if(
                             indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
-                            std::tr1::bind(std::equal_to<VersionSpec>(), std::tr1::bind(std::tr1::mem_fn(&PackageID::version), _1), VersionSpec("2"))));
+                            std::tr1::bind(std::equal_to<VersionSpec>(), std::tr1::bind(std::tr1::mem_fn(&PackageID::version), _1), VersionSpec("2", VersionSpecOptions()))));
 
                 versions = repo->package_ids(QualifiedPackageName("cat-one/pkg-neither"));
                 TEST_CHECK(versions->empty());

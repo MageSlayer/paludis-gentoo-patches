@@ -158,7 +158,9 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 if (! eapi->supported())
                     return "EBEST_VERSION EAPI " + tokens[1] + " unsupported";
 
-                PackageDepSpec spec(parse_elike_package_dep_spec(tokens[2], eapi->supported()->package_dep_spec_parse_options(), package_id));
+                PackageDepSpec spec(parse_elike_package_dep_spec(tokens[2],
+                            eapi->supported()->package_dep_spec_parse_options(),
+                            eapi->supported()->version_spec_options(), package_id));
                 std::tr1::shared_ptr<const PackageIDSequence> entries((*environment)[selection::AllVersionsSorted(
                             generator::Matches(spec, MatchPackageOptions()) | filter::InstalledAtRoot(environment->root()))]);
                 if (eapi->supported()->pipe_commands()->rewrite_virtuals() && (! entries->empty()) &&
@@ -197,7 +199,9 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 if (! eapi->supported())
                     return "EHAS_VERSION EAPI " + tokens[1] + " unsupported";
 
-                PackageDepSpec spec(parse_elike_package_dep_spec(tokens[2], eapi->supported()->package_dep_spec_parse_options(), package_id));
+                PackageDepSpec spec(parse_elike_package_dep_spec(tokens[2],
+                            eapi->supported()->package_dep_spec_parse_options(),
+                            eapi->supported()->version_spec_options(), package_id));
                 std::tr1::shared_ptr<const PackageIDSequence> entries((*environment)[selection::SomeArbitraryVersion(
                             generator::Matches(spec, MatchPackageOptions()) | filter::InstalledAtRoot(environment->root()))]);
                 if (entries->empty())
@@ -219,7 +223,9 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 if (! eapi->supported())
                     return "EMATCH EAPI " + tokens[1] + " unsupported";
 
-                PackageDepSpec spec(parse_elike_package_dep_spec(tokens[2], eapi->supported()->package_dep_spec_parse_options(), package_id));
+                PackageDepSpec spec(parse_elike_package_dep_spec(tokens[2],
+                            eapi->supported()->package_dep_spec_parse_options(),
+                            eapi->supported()->version_spec_options(), package_id));
                 std::tr1::shared_ptr<const PackageIDSequence> entries((*environment)[selection::AllVersionsSorted(
                             generator::Matches(spec, MatchPackageOptions()) | filter::InstalledAtRoot(environment->root()))]);
                 if (eapi->supported()->pipe_commands()->rewrite_virtuals() && (! entries->empty()))
@@ -338,6 +344,9 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
         }
         else if (tokens[0] == "EVER")
         {
+            std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
+            if (! eapi->supported())
+                return "EVER EAPI " + tokens[1] + " unsupported";
             if (tokens.size() < 3)
             {
                 Log::get_instance()->message("e.pipe_commands.ever.bad", ll_warning, lc_context) << "Got bad EVER pipe command";
@@ -352,7 +361,8 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     return "Ebad EVER AT_LEAST command {'" + join(tokens.begin(), tokens.end(), "', '") + "'}";
                 }
 
-                VersionSpec v1(tokens[3]), v2(tokens[4]);
+                VersionSpec v1(tokens[3], eapi->supported()->version_spec_options()),
+                            v2(tokens[4], eapi->supported()->version_spec_options());
                 return v2 >= v1 ? "O0;" : "O1;";
             }
             else if (tokens[2] == "SPLIT" || tokens[2] == "SPLIT_ALL")
@@ -365,7 +375,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     return "Ebad EVER " + tokens[2] + " command {'" + join(tokens.begin(), tokens.end(), "', '") + "'}";
                 }
 
-                VersionSpec v(tokens[3]);
+                VersionSpec v(tokens[3], eapi->supported()->version_spec_options());
                 std::string result;
                 for (VersionSpec::ConstIterator c(v.begin()), c_end(v.end()) ;
                         c != c_end ; ++c)
@@ -432,7 +442,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
                 }
 
-                VersionSpec v(tokens[4]);
+                VersionSpec v(tokens[4], eapi->supported()->version_spec_options());
 
                 int current_pos(0);
                 std::string result;
@@ -478,7 +488,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     return "Ebad EVER " + tokens[2] + " command {'" + join(tokens.begin(), tokens.end(), "', '") + "'}";
                 }
 
-                VersionSpec v(tokens[5]);
+                VersionSpec v(tokens[5], eapi->supported()->version_spec_options());
                 int current_pos(0);
                 std::string replacement(tokens[4]);
                 std::string result;
@@ -551,7 +561,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     return "Ebad EVER " + tokens[2] + " command {'" + join(tokens.begin(), tokens.end(), "', '") + "'}";
                 }
 
-                VersionSpec v(tokens[4]);
+                VersionSpec v(tokens[4], eapi->supported()->version_spec_options());
                 std::string replacement(tokens[3]);
                 std::string result;
                 for (VersionSpec::ConstIterator c(v.begin()), c_end(v.end()) ;

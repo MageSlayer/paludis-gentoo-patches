@@ -32,6 +32,7 @@ namespace paludis
     namespace n
     {
         struct builddir;
+        struct eapi_when_unknown;
         struct environment;
         struct location;
         struct root;
@@ -44,6 +45,7 @@ namespace paludis
         struct ExndbamRepositoryParams
         {
             NamedValue<n::builddir, FSEntry> builddir;
+            NamedValue<n::eapi_when_unknown, std::string> eapi_when_unknown;
             NamedValue<n::environment, Environment *> environment;
             NamedValue<n::location, FSEntry> location;
             NamedValue<n::root, FSEntry> root;

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,6 +31,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <paludis/user_dep_spec.hh>
 
 using namespace paludis;
 using namespace paludis::unpackaged_repositories;
@@ -257,7 +258,7 @@ UnpackagedRepository::repository_factory_create(
                     value_for<n::rewrite_ids_over_to_root>(rewrite_ids_over_to_root),
                     value_for<n::run_dependencies>(run_dependencies),
                     value_for<n::slot>(SlotName(slot)),
-                    value_for<n::version>(VersionSpec(version))
+                    value_for<n::version>(VersionSpec(version, user_version_spec_options()))
                 )));
 }
 

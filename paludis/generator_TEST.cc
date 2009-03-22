@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -61,14 +61,14 @@ namespace test_cases
             env.package_database()->add_repository(10, repo2);
             env.package_database()->add_repository(0, inst_repo1);
 
-            repo1->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1"));
-            repo1->add_version(CategoryNamePart("cat") + PackageNamePart("b"), VersionSpec("2"));
+            repo1->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1", VersionSpecOptions()));
+            repo1->add_version(CategoryNamePart("cat") + PackageNamePart("b"), VersionSpec("2", VersionSpecOptions()));
 
-            repo2->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1"));
-            repo2->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("2"))->keywords_key()->set_from_string("");
-            repo2->add_version(CategoryNamePart("cat") + PackageNamePart("c"), VersionSpec("3"));
+            repo2->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1", VersionSpecOptions()));
+            repo2->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("2", VersionSpecOptions()))->keywords_key()->set_from_string("");
+            repo2->add_version(CategoryNamePart("cat") + PackageNamePart("c"), VersionSpec("3", VersionSpecOptions()));
 
-            inst_repo1->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1"));
+            inst_repo1->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1", VersionSpecOptions()));
         }
 
         virtual std::string get_expected() const = 0;

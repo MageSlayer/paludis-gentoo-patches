@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,6 +26,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/user_dep_spec.hh>
 #include <tr1/functional>
 #include <map>
 #include <algorithm>
@@ -139,6 +140,13 @@ FakeRepositoryBase::add_version(const QualifiedPackageName & q, const VersionSpe
     std::tr1::shared_ptr<FakePackageID> id(new FakePackageID(_imp->env, shared_from_this(), q, v));
     _imp->ids.find(q)->second->push_back(id);
     return id;
+}
+
+std::tr1::shared_ptr<FakePackageID>
+FakeRepositoryBase::add_version(const std::string & c, const std::string & p,
+        const std::string & v)
+{
+    return add_version(CategoryNamePart(c) + PackageNamePart(p), VersionSpec(v, user_version_spec_options()));
 }
 
 void

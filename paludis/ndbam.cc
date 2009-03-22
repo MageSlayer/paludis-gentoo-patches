@@ -86,6 +86,7 @@ namespace paludis
     struct Implementation<NDBAM>
     {
         const FSEntry location;
+        const VersionSpecOptions version_options;
 
         mutable Mutex category_names_mutex;
         mutable std::tr1::shared_ptr<CategoryNamePartSet> category_names;
@@ -94,8 +95,9 @@ namespace paludis
         mutable Mutex category_names_containing_package_mutex;
         mutable CategoryNamesContainingPackage category_names_containing_package;
 
-        Implementation(const FSEntry & l) :
-            location(l)
+        Implementation(const FSEntry & l, const VersionSpecOptions & o) :
+            location(l),
+            version_options(o)
         {
         }
     };
@@ -103,8 +105,9 @@ namespace paludis
 
 NDBAM::NDBAM(const FSEntry & l,
         const std::tr1::function<bool (const std::string &)> & check_format,
-        const std::string & preferred_format) :
-    PrivateImplementationPattern<NDBAM>(new Implementation<NDBAM>(l))
+        const std::string & preferred_format,
+        const VersionSpecOptions & version_options) :
+    PrivateImplementationPattern<NDBAM>(new Implementation<NDBAM>(l, version_options))
 {
     Context c("When checking NDBAM layout at '" + stringify(l) + "':");
     if ((l / "ndbam.conf").exists())
@@ -324,7 +327,7 @@ NDBAM::entries(const QualifiedPackageName & q)
                     continue;
                 }
 
-                VersionSpec v(tokens[0]);
+                VersionSpec v(tokens[0], _imp->version_options);
                 SlotName s(tokens[1]);
                 std::string m(tokens[2]);
                 pc.entries->push_back(make_shared_ptr(new NDBAMEntry(NDBAMEntry(make_named_values<NDBAMEntry>(

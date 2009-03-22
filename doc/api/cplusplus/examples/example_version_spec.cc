@@ -36,16 +36,18 @@ int main(int argc, char * argv[])
         CommandLine::get_instance()->run(argc, argv,
                 "example_version_spec", "EXAMPLE_VERSION_SPEC_OPTIONS", "EXAMPLE_VERSION_SPEC_CMDLINE");
 
-        /* Make a set of versions */
+        /* Make a set of versions. Use user_version_spec_options() for the
+         * options parameter for VersionSpec's constructor for handling any
+         * user-inputted data. */
         std::set<VersionSpec> versions;
-        versions.insert(VersionSpec("1.0"));
-        versions.insert(VersionSpec("1.1"));
-        versions.insert(VersionSpec("1.2"));
-        versions.insert(VersionSpec("1.2-r1"));
-        versions.insert(VersionSpec("2.0"));
-        versions.insert(VersionSpec("2.0-try1"));
-        versions.insert(VersionSpec("2.0-scm"));
-        versions.insert(VersionSpec("9999"));
+        versions.insert(VersionSpec("1.0", user_version_spec_options()));
+        versions.insert(VersionSpec("1.1", user_version_spec_options()));
+        versions.insert(VersionSpec("1.2", user_version_spec_options()));
+        versions.insert(VersionSpec("1.2-r1", user_version_spec_options()));
+        versions.insert(VersionSpec("2.0", user_version_spec_options()));
+        versions.insert(VersionSpec("2.0-try1", user_version_spec_options()));
+        versions.insert(VersionSpec("2.0-scm", user_version_spec_options()));
+        versions.insert(VersionSpec("9999", user_version_spec_options()));
 
         /* For each version... */
         for (std::set<VersionSpec>::const_iterator v(versions.begin()), v_end(versions.end()) ;

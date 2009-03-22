@@ -72,10 +72,13 @@ namespace paludis
         std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
         std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unknown_key;
 
         Implementation(const ExndbamRepositoryParams & p) :
             params(p),
-            ndbam(params.location(), &supported_exndbam, "exndbam-1"),
+            ndbam(params.location(), &supported_exndbam, "exndbam-1",
+                    EAPIData::get_instance()->eapi_from_string(
+                        params.eapi_when_unknown())->supported()->version_spec_options()),
             location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
                         mkt_significant, params.location())),
             root_key(new LiteralMetadataValueKey<FSEntry> ("root", "root",
@@ -83,7 +86,9 @@ namespace paludis
             format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
                         mkt_significant, "vdb")),
             builddir_key(new LiteralMetadataValueKey<FSEntry> ("builddir", "builddir",
-                        mkt_normal, params.builddir()))
+                        mkt_normal, params.builddir())),
+            eapi_when_unknown_key(new LiteralMetadataValueKey<std::string> (
+                        "eapi_when_unknown", "eapi_when_unknown", mkt_normal, params.eapi_when_unknown()))
         {
         }
     };
@@ -129,6 +134,7 @@ ExndbamRepository::_add_metadata_keys() const
     add_metadata_key(_imp->root_key);
     add_metadata_key(_imp->format_key);
     add_metadata_key(_imp->builddir_key);
+    add_metadata_key(_imp->eapi_when_unknown_key);
 }
 
 std::tr1::shared_ptr<Repository>
@@ -155,10 +161,17 @@ ExndbamRepository::repository_factory_create(
     if (name.empty())
         name = "installed";
 
+    std::string eapi_when_unknown(f("eapi_when_unknown"));
+    if (eapi_when_unknown.empty())
+        eapi_when_unknown = EExtraDistributionData::get_instance()->data_from_distribution(
+                *DistributionData::get_instance()->distribution_from_string(
+                    env->distribution()))->default_eapi_when_unknown();
+
     return std::tr1::shared_ptr<Repository>(new ExndbamRepository(
                 RepositoryName(name),
                 make_named_values<ExndbamRepositoryParams>(
                     value_for<n::builddir>(builddir),
+                    value_for<n::eapi_when_unknown>(eapi_when_unknown),
                     value_for<n::environment>(env),
                     value_for<n::location>(location),
                     value_for<n::root>(root)

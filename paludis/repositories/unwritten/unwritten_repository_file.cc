@@ -35,6 +35,7 @@
 #include <paludis/metadata_key-fwd.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/formatter.hh>
+#include <paludis/user_dep_spec.hh>
 #include <list>
 
 using namespace paludis;
@@ -194,7 +195,7 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
     CategoryNamePart category("x");
     PackageNamePart package("x");
     std::tr1::shared_ptr<MetadataValueKey<SlotName> > slot;
-    VersionSpec version("0");
+    VersionSpec version("0", VersionSpecOptions());
     std::tr1::shared_ptr<UnwrittenRepositoryFileEntry> entry;
     while (std::getline(file, line))
     {
@@ -245,7 +246,7 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
             if (line_parser.consume(
                         (+simple_parser::any_except(" \t") >> token)
                         ))
-                version = VersionSpec(token);
+                version = VersionSpec(token, user_version_spec_options());
             else
                 throw UnwrittenRepositoryConfigurationError(
                         "Cannot parse body slot+version line '" + line + " in '" + stringify(f) + "'");

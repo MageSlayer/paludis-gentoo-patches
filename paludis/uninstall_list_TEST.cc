@@ -116,7 +116,7 @@ namespace test_cases
                 targets->push_back(
                         env.fetch_package_id(
                             QualifiedPackageName(p),
-                            VersionSpec(v),
+                            VersionSpec(v, VersionSpecOptions()),
                             RepositoryName("installed")));
             }
 

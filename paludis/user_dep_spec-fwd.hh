@@ -26,6 +26,7 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
+#include <paludis/version_spec-fwd.hh>
 #include <tr1/memory>
 #include <iosfwd>
 
@@ -65,6 +66,14 @@ namespace paludis
     struct UserSlotExactRequirement;
 
     struct UserKeyRequirement;
+
+    /**
+     * The VersionSpecOptions to use for parsing a user spec.
+     *
+     * \since 0.38
+     * \ingroup g_dep_spec
+     */
+    VersionSpecOptions user_version_spec_options() PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 }
 
 #endif

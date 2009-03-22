@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -46,17 +46,22 @@ namespace paludis
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
     PackageDepSpec parse_elike_package_dep_spec(const std::string & ss, const ELikePackageDepSpecOptions &,
+            const VersionSpecOptions &,
             const std::tr1::shared_ptr<const PackageID> &)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
-    PartiallyMadePackageDepSpec partial_parse_elike_package_dep_spec(const std::string & ss, const ELikePackageDepSpecOptions &,
+    PartiallyMadePackageDepSpec partial_parse_elike_package_dep_spec(const std::string & ss,
+            const ELikePackageDepSpecOptions &,
+            const VersionSpecOptions &,
             const std::tr1::shared_ptr<const PackageID> &)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
     void elike_check_sanity(const std::string & s) PALUDIS_VISIBLE;
 
     bool elike_remove_trailing_square_bracket_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
-            const ELikePackageDepSpecOptions & options, bool & had_bracket_version_requirements,
+            const ELikePackageDepSpecOptions & options,
+            const VersionSpecOptions & version_options,
+            bool & had_bracket_version_requirements,
             bool & had_use_requirements, const std::tr1::shared_ptr<const PackageID> & id) PALUDIS_VISIBLE;
 
     void elike_remove_trailing_repo_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
@@ -67,9 +72,11 @@ namespace paludis
 
     bool elike_has_version_operator(const std::string & s, const bool had_bracket_version_requirements) PALUDIS_VISIBLE;
 
-    VersionOperator elike_get_remove_version_operator(std::string & s, const ELikePackageDepSpecOptions & options) PALUDIS_VISIBLE;
+    VersionOperator elike_get_remove_version_operator(std::string & s,
+            const ELikePackageDepSpecOptions & options) PALUDIS_VISIBLE;
 
-    VersionSpec elike_get_remove_trailing_version(std::string & s) PALUDIS_VISIBLE;
+    VersionSpec elike_get_remove_trailing_version(std::string & s,
+            const VersionSpecOptions &) PALUDIS_VISIBLE;
 
     void elike_add_version_requirement(const VersionOperator & op, const VersionSpec & spec, PartiallyMadePackageDepSpec & result)
         PALUDIS_VISIBLE;

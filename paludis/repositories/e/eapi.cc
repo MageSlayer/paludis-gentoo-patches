@@ -268,6 +268,16 @@ namespace
                 iuse_flag_parse_options += destringify<IUseFlagParseOption>(*t);
         }
 
+        VersionSpecOptions version_spec_options;
+        {
+            std::list<std::string> version_spec_options_tokens;
+            tokenise_whitespace(check_get(k, "version_spec_options"), std::back_inserter(version_spec_options_tokens));
+            for (std::list<std::string>::const_iterator t(version_spec_options_tokens.begin()),
+                    t_end(version_spec_options_tokens.end()) ;
+                    t != t_end ; ++t)
+                version_spec_options += destringify<VersionSpecOption>(*t);
+        }
+
         MergerOptions merger_options;
         {
             std::list<std::string> merger_options_tokens;
@@ -295,7 +305,8 @@ namespace
                         value_for<n::pipe_commands>(make_pipe_commands(k)),
                         value_for<n::tools_options>(make_tool_options(k)),
                         value_for<n::uri_labels>(make_shared_ptr(new const EAPILabels(check_get(k, "uri_labels")))),
-                        value_for<n::userpriv_cannot_use_root>(destringify_key<bool>(k, "userpriv_cannot_use_root"))
+                        value_for<n::userpriv_cannot_use_root>(destringify_key<bool>(k, "userpriv_cannot_use_root")),
+                        value_for<n::version_spec_options>(version_spec_options)
                         )));
     }
 }

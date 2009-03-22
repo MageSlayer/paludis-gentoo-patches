@@ -73,9 +73,14 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
+            /**
+             * Constructor.
+             *
+             * \param version_options \since 0.38
+             */
             NDBAM(const FSEntry &,
                     const std::tr1::function<bool (const std::string &)> & check_format,
-                    const std::string & preferred_format);
+                    const std::string & preferred_format, const VersionSpecOptions & version_options);
             ~NDBAM();
 
             ///\}

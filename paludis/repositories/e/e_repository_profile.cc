@@ -484,6 +484,7 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
                 std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
                             parse_elike_package_dep_spec(i->second.substr(1),
                                 i->first->supported()->package_dep_spec_parse_options(),
+                                i->first->supported()->version_spec_options(),
                                 std::tr1::shared_ptr<const PackageID>())));
 
                 spec->set_tag(system_tag);
@@ -517,6 +518,7 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
                 virtuals.insert(std::make_pair(v, std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
                                     parse_elike_package_dep_spec(tokens[1],
                                         line->first->supported()->package_dep_spec_parse_options(),
+                                        line->first->supported()->version_spec_options(),
                                         std::tr1::shared_ptr<const PackageID>())))));
             }
         }
@@ -541,6 +543,7 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
             std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(
                         parse_elike_package_dep_spec(line->second.first,
                             line->first->supported()->package_dep_spec_parse_options(),
+                            line->first->supported()->version_spec_options(),
                             std::tr1::shared_ptr<const PackageID>())));
 
             if (a->package_ptr())
@@ -623,6 +626,7 @@ Implementation<ERepositoryProfile>::load_spec_use_file(const EAPI & eapi, const 
         {
             std::tr1::shared_ptr<const PackageDepSpec> spec(new PackageDepSpec(
                         parse_elike_package_dep_spec(*tokens.begin(), eapi.supported()->package_dep_spec_parse_options(),
+                            eapi.supported()->version_spec_options(),
                             std::tr1::shared_ptr<const PackageID>())));
             PackageFlagStatusMapList::iterator n(m.insert(m.end(), std::make_pair(spec, FlagStatusMap())));
 
