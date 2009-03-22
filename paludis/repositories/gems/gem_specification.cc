@@ -324,7 +324,7 @@ GemSpecification::name() const
 const VersionSpec
 GemSpecification::version() const
 {
-    return VersionSpec(_imp->version);
+    return VersionSpec(_imp->version, VersionSpecOptions());
 }
 
 const std::tr1::shared_ptr<const Repository>

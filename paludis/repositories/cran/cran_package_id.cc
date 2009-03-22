@@ -81,7 +81,7 @@ namespace paludis
             repository(r),
             cran_repository(r),
             name("cran/" + cran_name_to_internal(strip_trailing_string(f.basename(), ".DESCRIPTION"))),
-            version("0"),
+            version("0", VersionSpecOptions()),
             suggests_labels(new DependencyLabelSequence),
             depends_labels(new DependencyLabelSequence)
         {
@@ -153,14 +153,14 @@ CRANPackageID::CRANPackageID(const Environment * const env, const std::tr1::shar
         {
             Context local_context("When handling Version: key:");
             Log::get_instance()->message("cran.id.broken", ll_warning, lc_context) << "No Version: key in '" << stringify(f) << "'";
-            _imp->version = VersionSpec("0");
+            _imp->version = VersionSpec("0", VersionSpecOptions());
             add_mask(make_shared_ptr(new BrokenMask('B', "Broken", "No Version: key")));
             return;
         }
         else
         {
             Context local_context("When handling Version: key:");
-            _imp->version = VersionSpec(cran_version_to_internal(file.get("Version")));
+            _imp->version = VersionSpec(cran_version_to_internal(file.get("Version")), VersionSpecOptions());
         }
 
         if (! file.get("License").empty())

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,6 +25,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/options.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
@@ -196,7 +197,7 @@ paludis::cranrepository::parse_cran_package_dep_spec(const std::string & ss)
                 throw PackageDepSpecError("Invalid () entry '" + *t + "' in '" + ss + "'");
             data->version_requirement(make_named_values<VersionRequirement>(
                         value_for<n::version_operator>(VersionOperator(subtokens[0])),
-                        value_for<n::version_spec>(VersionSpec(cran_version_to_internal(subtokens[1])))));
+                        value_for<n::version_spec>(VersionSpec(cran_version_to_internal(subtokens[1]), VersionSpecOptions()))));
         }
     }
 
