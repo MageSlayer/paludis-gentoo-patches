@@ -90,12 +90,15 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
     /* parse */
     SimpleParser parser(text);
 
-    if (parser.consume(simple_parser::exact("scm")))
+    std::string scm_str;
+    if (parser.consume((options[vso_ignore_case] ? simple_parser::exact_ignoring_case("scm") : simple_parser::exact("scm")) >> scm_str))
+    {
         _imp->parts.push_back(make_named_values<VersionSpecComponent>(
                     value_for<n::number_value>(""),
-                    value_for<n::text>("scm"),
+                    value_for<n::text>(scm_str),
                     value_for<n::type>(vsct_scm)
                     ));
+    }
     else
     {
         /* numbers... */
@@ -126,21 +129,32 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
                             value_for<n::text>(l),
                             value_for<n::type>(vsct_letter)
                             ));
+            else if (options[vso_ignore_case] && parser.consume(simple_parser::any_of("ABCDEFGHIJKLMNOPQRSTUVWXYZ") >> l))
+                _imp->parts.push_back(make_named_values<VersionSpecComponent>(
+                            value_for<n::number_value>(std::string(1, std::tolower(l.at(0)))),
+                            value_for<n::text>(l),
+                            value_for<n::type>(vsct_letter)
+                            ));
         }
 
         while (true)
         {
             std::string suffix_str, number_str;
             VersionSpecComponentType k(vsct_empty);
-            if (parser.consume(simple_parser::exact("_alpha") >> suffix_str))
+            if (parser.consume((options[vso_ignore_case] ?
+                            simple_parser::exact_ignoring_case("_alpha") : simple_parser::exact("_alpha")) >> suffix_str))
                 k = vsct_alpha;
-            else if (parser.consume(simple_parser::exact("_beta") >> suffix_str))
+            else if (parser.consume((options[vso_ignore_case] ?
+                            simple_parser::exact_ignoring_case("_beta") : simple_parser::exact("_beta")) >> suffix_str))
                 k = vsct_beta;
-            else if (parser.consume(simple_parser::exact("_pre") >> suffix_str))
+            else if (parser.consume((options[vso_ignore_case] ?
+                            simple_parser::exact_ignoring_case("_pre") : simple_parser::exact("_pre")) >> suffix_str))
                 k = vsct_pre;
-            else if (parser.consume(simple_parser::exact("_rc") >> suffix_str))
+            else if (parser.consume((options[vso_ignore_case] ?
+                            simple_parser::exact_ignoring_case("_rc") : simple_parser::exact("_rc")) >> suffix_str))
                 k = vsct_rc;
-            else if (parser.consume(simple_parser::exact("_p") >> suffix_str))
+            else if (parser.consume((options[vso_ignore_case] ?
+                            simple_parser::exact_ignoring_case("_p") : simple_parser::exact("_p")) >> suffix_str))
                 k = vsct_patch;
             else
                 break;
@@ -164,13 +178,15 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
         }
 
         /* try */
-        if (parser.consume(simple_parser::exact("-try")))
+        std::string try_str;
+        if (parser.consume((options[vso_ignore_case] ?
+                        simple_parser::exact_ignoring_case("-try") : simple_parser::exact("-try")) >> try_str))
         {
             std::string number_str;
             if (! parser.consume(*simple_parser::any_of("0123456789") >> number_str))
                 throw BadVersionSpecError(text, "Expected optional number at offset " + stringify(parser.offset()));
 
-            std::string raw_text("-try" + number_str);
+            std::string raw_text(try_str + number_str);
             if (number_str.size() > 0)
             {
                 number_str = strip_leading(number_str, "0");
@@ -185,7 +201,8 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
         }
 
         /* scm */
-        if (parser.consume(simple_parser::exact("-scm")))
+        if (parser.consume((options[vso_ignore_case] ?
+                    simple_parser::exact_ignoring_case("-scm") : simple_parser::exact("-scm")) >> scm_str))
         {
             /* _suffix-scm? */
             if (_imp->parts.back().number_value().empty())
@@ -193,7 +210,7 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
 
             _imp->parts.push_back(make_named_values<VersionSpecComponent>(
                         value_for<n::number_value>(""),
-                        value_for<n::text>("-scm"),
+                        value_for<n::text>(scm_str),
                         value_for<n::type>(vsct_scm)
                         ));
         }
@@ -206,7 +223,9 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
     }
 
     /* revision */
-    if (parser.consume(simple_parser::exact("-r")))
+    std::string rev_str;
+    if (parser.consume((options[vso_ignore_case] ?
+                simple_parser::exact_ignoring_case("-r") : simple_parser::exact("-r")) >> rev_str))
     {
         bool first_revision(true);
         do
@@ -218,7 +237,7 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
             /* Are we -r */
             bool empty(number_str.empty());
 
-            std::string raw_text(first_revision ? "-r" : ".");
+            std::string raw_text(first_revision ? rev_str : ".");
             raw_text.append(number_str);
 
             number_str = strip_leading(number_str, "0");

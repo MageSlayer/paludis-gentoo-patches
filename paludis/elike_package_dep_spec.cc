@@ -28,6 +28,7 @@
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/version_requirements.hh>
+#include <strings.h>
 
 using namespace paludis;
 
@@ -375,7 +376,8 @@ paludis::elike_get_remove_trailing_version(std::string & s, const VersionSpecOpt
                 /* can't have an -scm before this */
                 break;
             }
-            else if (0 == s.compare(hyphen_pos + 1, 3, "scm"))
+            else if (0 == s.compare(hyphen_pos + 1, 3, "scm") ||
+                    (version_options[vso_ignore_case] && 0 == strncasecmp(s.c_str() + hyphen_pos + 1, "scm", 3)))
             {
                 if (std::string::npos == last_hyphen_pos)
                 {

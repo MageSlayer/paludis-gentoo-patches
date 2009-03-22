@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,6 +19,7 @@
 
 #include <paludis/util/simple_parser.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <strings.h>
 
 using namespace paludis;
 using namespace paludis::simple_parser;
@@ -108,14 +109,23 @@ namespace
         return std::string::npos == len_1 ? 0 : len_1;
     }
 
+    int compare_ignoring_case(const std::string & text, const std::string::size_type offset, const std::string::size_type length,
+            const std::string & pattern)
+    {
+        return strncasecmp(text.c_str() + offset, pattern.c_str(), length);
+    }
+
     std::string::size_type
     m_exact(const std::string & pattern, const std::string & text,
-            const std::string::size_type offset)
+            const std::string::size_type offset, const bool ignore_case)
     {
         if (offset >= text.length())
             return std::string::npos;
 
-        return (0 == text.compare(offset, pattern.length(), pattern)) ? pattern.length() : std::string::npos;
+        if (! ignore_case)
+            return (0 == text.compare(offset, pattern.length(), pattern)) ? pattern.length() : std::string::npos;
+        else
+            return (0 == compare_ignoring_case(text, offset, pattern.length(), pattern)) ? pattern.length() : std::string::npos;
     }
 
     std::string::size_type
@@ -184,7 +194,14 @@ SimpleParserExpression
 paludis::simple_parser::exact(const std::string & s)
 {
     using namespace std::tr1::placeholders;
-    return SimpleParserExpression(std::tr1::bind(m_exact, s, _1, _2));
+    return SimpleParserExpression(std::tr1::bind(m_exact, s, _1, _2, false));
+}
+
+SimpleParserExpression
+paludis::simple_parser::exact_ignoring_case(const std::string & s)
+{
+    using namespace std::tr1::placeholders;
+    return SimpleParserExpression(std::tr1::bind(m_exact, s, _1, _2, true));
 }
 
 SimpleParserExpression
