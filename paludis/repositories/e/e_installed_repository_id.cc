@@ -87,6 +87,7 @@ namespace paludis
         std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > > choices;
         std::tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license;
         std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide;
+        std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > raw_dependencies;
         std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies;
         std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies;
         std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies;
@@ -116,6 +117,7 @@ namespace paludis
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > pkgmanager;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > vdb_format;
 
+        std::tr1::shared_ptr<DependencyLabelSequence> raw_dependencies_labels;
         std::tr1::shared_ptr<DependencyLabelSequence> build_dependencies_labels;
         std::tr1::shared_ptr<DependencyLabelSequence> run_dependencies_labels;
         std::tr1::shared_ptr<DependencyLabelSequence> post_dependencies_labels;
@@ -129,10 +131,14 @@ namespace paludis
             repository(r),
             dir(f),
             has_keys(false),
+            raw_dependencies_labels(new DependencyLabelSequence),
             build_dependencies_labels(new DependencyLabelSequence),
             run_dependencies_labels(new DependencyLabelSequence),
             post_dependencies_labels(new DependencyLabelSequence)
         {
+            raw_dependencies_labels->push_back(make_shared_ptr(new DependencyBuildLabel("build")));
+            raw_dependencies_labels->push_back(make_shared_ptr(new DependencyRunLabel("run")));
+
             build_dependencies_labels->push_back(make_shared_ptr(new DependencyBuildLabel("DEPEND")));
             run_dependencies_labels->push_back(make_shared_ptr(new DependencyRunLabel("RDEPEND")));
             post_dependencies_labels->push_back(make_shared_ptr(new DependencyPostLabel("PDEPEND")));
@@ -282,18 +288,25 @@ EInstalledRepositoryID::need_keys_added() const
         if ((_imp->dir / vars->dependencies()->name()).exists())
         {
             DependenciesRewriter rewriter;
-            parse_depend(file_contents(_imp->dir / vars->dependencies()->name()), _imp->environment, shared_from_this(), *eapi())->root()->accept(rewriter);
+            std::string raw_deps_str(file_contents(_imp->dir / vars->dependencies()->name()));
+            std::tr1::shared_ptr<DependencySpecTree> raw_deps(parse_depend(raw_deps_str,
+                    _imp->environment, shared_from_this(), *eapi()));
+            raw_deps->root()->accept(rewriter);
+
+            _imp->raw_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->dependencies()->name(),
+                        vars->dependencies()->description(), raw_deps_str, _imp->build_dependencies_labels, mkt_dependencies));
+            add_metadata_key(_imp->raw_dependencies);
 
             _imp->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".DEPEND",
-                        vars->dependencies()->description() + " (build)", rewriter.depend(), _imp->build_dependencies_labels, mkt_dependencies));
+                        vars->dependencies()->description() + " (build)", rewriter.depend(), _imp->build_dependencies_labels, mkt_internal));
             add_metadata_key(_imp->build_dependencies);
 
             _imp->run_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".RDEPEND",
-                        vars->dependencies()->description() + " (run)", rewriter.rdepend(), _imp->build_dependencies_labels, mkt_dependencies));
+                        vars->dependencies()->description() + " (run)", rewriter.rdepend(), _imp->build_dependencies_labels, mkt_internal));
             add_metadata_key(_imp->run_dependencies);
 
             _imp->post_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".PDEPEND",
-                        vars->dependencies()->description() + " (post)", rewriter.pdepend(), _imp->build_dependencies_labels, mkt_dependencies));
+                        vars->dependencies()->description() + " (post)", rewriter.pdepend(), _imp->build_dependencies_labels, mkt_internal));
             add_metadata_key(_imp->post_dependencies);
         }
     }

@@ -82,6 +82,7 @@ namespace paludis
         mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > short_description;
         mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > long_description;
         mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > captured_stderr_key;
+        mutable std::tr1::shared_ptr<const EDependenciesKey> raw_dependencies;
         mutable std::tr1::shared_ptr<const EDependenciesKey> build_dependencies;
         mutable std::tr1::shared_ptr<const EDependenciesKey> run_dependencies;
         mutable std::tr1::shared_ptr<const EDependenciesKey> post_dependencies;
@@ -108,6 +109,7 @@ namespace paludis
         mutable std::tr1::shared_ptr<const EChoicesKey> choices;
         mutable std::tr1::shared_ptr<const EStringSetKey> defined_phases;
 
+        std::tr1::shared_ptr<DependencyLabelSequence> raw_dependencies_labels;
         std::tr1::shared_ptr<DependencyLabelSequence> build_dependencies_labels;
         std::tr1::shared_ptr<DependencyLabelSequence> run_dependencies_labels;
         std::tr1::shared_ptr<DependencyLabelSequence> post_dependencies_labels;
@@ -126,10 +128,14 @@ namespace paludis
             eclass_mtimes(m),
             has_keys(false),
             has_masks(false),
+            raw_dependencies_labels(new DependencyLabelSequence),
             build_dependencies_labels(new DependencyLabelSequence),
             run_dependencies_labels(new DependencyLabelSequence),
             post_dependencies_labels(new DependencyLabelSequence)
         {
+            raw_dependencies_labels->push_back(make_shared_ptr(new DependencyBuildLabel("build")));
+            raw_dependencies_labels->push_back(make_shared_ptr(new DependencyRunLabel("run")));
+
             build_dependencies_labels->push_back(make_shared_ptr(new DependencyBuildLabel("DEPEND")));
             run_dependencies_labels->push_back(make_shared_ptr(new DependencyRunLabel("RDEPEND")));
             post_dependencies_labels->push_back(make_shared_ptr(new DependencyPostLabel("PDEPEND")));
@@ -639,6 +645,13 @@ EbuildID::provide_key() const
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+EbuildID::raw_dependencies_key() const
+{
+    need_keys_added();
+    return _imp->raw_dependencies;
+}
+
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EbuildID::build_dependencies_key() const
 {
     need_keys_added();
@@ -808,29 +821,41 @@ EbuildID::load_long_description(const std::string & r, const std::string & h, co
 }
 
 void
-EbuildID::load_build_depend(const std::string & r, const std::string & h, const std::string & v) const
+EbuildID::load_raw_depend(const std::string & r, const std::string & h, const std::string & v) const
+{
+    Lock l(_imp->mutex);
+    _imp->raw_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), r, h, v,
+                _imp->raw_dependencies_labels, mkt_dependencies));
+    add_metadata_key(_imp->raw_dependencies);
+}
+
+void
+EbuildID::load_build_depend(const std::string & r, const std::string & h, const std::string & v,
+        bool rewritten) const
 {
     Lock l(_imp->mutex);
     _imp->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), r, h, v,
-                _imp->build_dependencies_labels, mkt_dependencies));
+                _imp->build_dependencies_labels, rewritten ? mkt_internal : mkt_dependencies));
     add_metadata_key(_imp->build_dependencies);
 }
 
 void
-EbuildID::load_run_depend(const std::string & r, const std::string & h, const std::string & v) const
+EbuildID::load_run_depend(const std::string & r, const std::string & h, const std::string & v,
+        bool rewritten) const
 {
     Lock l(_imp->mutex);
     _imp->run_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), r, h, v,
-                _imp->run_dependencies_labels, mkt_dependencies));
+                _imp->run_dependencies_labels, rewritten ? mkt_internal : mkt_dependencies));
     add_metadata_key(_imp->run_dependencies);
 }
 
 void
-EbuildID::load_post_depend(const std::string & r, const std::string & h, const std::string & v) const
+EbuildID::load_post_depend(const std::string & r, const std::string & h, const std::string & v,
+        bool rewritten) const
 {
     Lock l(_imp->mutex);
     _imp->post_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), r, h, v,
-                _imp->post_dependencies_labels, mkt_dependencies));
+                _imp->post_dependencies_labels, rewritten ? mkt_internal : mkt_dependencies));
     add_metadata_key(_imp->post_dependencies);
 }
 

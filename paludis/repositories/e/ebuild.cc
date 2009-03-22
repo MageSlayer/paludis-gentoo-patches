@@ -454,21 +454,23 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
     if (! m.dependencies()->name().empty())
     {
         DependenciesRewriter rewriter;
-        parse_depend(get(keys, m.dependencies()->name()), params.environment(), id, *id->eapi())->root()->accept(rewriter);
-        id->load_build_depend(m.dependencies()->name() + ".DEPEND", m.dependencies()->description() + " (build)", rewriter.depend());
-        id->load_run_depend(m.dependencies()->name() + ".RDEPEND", m.dependencies()->description() + " (run)", rewriter.rdepend());
-        id->load_post_depend(m.dependencies()->name() + ".PDEPEND", m.dependencies()->description() + " (post)", rewriter.pdepend());
+        std::string dep_s(get(keys, m.dependencies()->name()));
+        parse_depend(dep_s, params.environment(), id, *id->eapi())->root()->accept(rewriter);
+        id->load_raw_depend(m.dependencies()->name(), m.dependencies()->description(), dep_s);
+        id->load_build_depend(m.dependencies()->name() + ".DEPEND", m.dependencies()->description() + " (build)", rewriter.depend(), true);
+        id->load_run_depend(m.dependencies()->name() + ".RDEPEND", m.dependencies()->description() + " (run)", rewriter.rdepend(), true);
+        id->load_post_depend(m.dependencies()->name() + ".PDEPEND", m.dependencies()->description() + " (post)", rewriter.pdepend(), true);
     }
     else
     {
         if (! m.build_depend()->name().empty())
-            id->load_build_depend(m.build_depend()->name(), m.build_depend()->description(), get(keys, m.build_depend()->name()));
+            id->load_build_depend(m.build_depend()->name(), m.build_depend()->description(), get(keys, m.build_depend()->name()), false);
 
         if (! m.run_depend()->name().empty())
-            id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(), get(keys, m.run_depend()->name()));
+            id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(), get(keys, m.run_depend()->name()), false);
 
         if (! m.pdepend()->name().empty())
-            id->load_post_depend(m.pdepend()->name(), m.pdepend()->description(), get(keys, m.pdepend()->name()));
+            id->load_post_depend(m.pdepend()->name(), m.pdepend()->description(), get(keys, m.pdepend()->name()), false);
     }
 
     if (! m.slot()->name().empty())

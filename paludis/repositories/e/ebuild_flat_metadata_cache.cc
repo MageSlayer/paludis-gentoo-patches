@@ -172,16 +172,18 @@ namespace
             {
                 DependenciesRewriter rewriter;
                 parse_depend(lines.at(m.dependencies()->flat_list_index()), _imp->env, id, *id->eapi())->root()->accept(rewriter);
-                id->load_build_depend(m.dependencies()->name() + ".DEPEND", m.dependencies()->description() + " (build)", rewriter.depend());
-                id->load_run_depend(m.dependencies()->name() + ".RDEPEND", m.dependencies()->description() + " (run)", rewriter.rdepend());
-                id->load_post_depend(m.dependencies()->name() + ".PDEPEND", m.dependencies()->description() + " (post)", rewriter.pdepend());
+                id->load_raw_depend(m.dependencies()->name(), m.dependencies()->description(),
+                        lines.at(m.dependencies()->flat_list_index()));
+                id->load_build_depend(m.dependencies()->name() + ".DEPEND", m.dependencies()->description() + " (build)", rewriter.depend(), true);
+                id->load_run_depend(m.dependencies()->name() + ".RDEPEND", m.dependencies()->description() + " (run)", rewriter.rdepend(), true);
+                id->load_post_depend(m.dependencies()->name() + ".PDEPEND", m.dependencies()->description() + " (post)", rewriter.pdepend(), true);
             }
 
             if (-1 != m.build_depend()->flat_list_index() && ! m.build_depend()->name().empty())
-                id->load_build_depend(m.build_depend()->name(), m.build_depend()->description(), lines.at(m.build_depend()->flat_list_index()));
+                id->load_build_depend(m.build_depend()->name(), m.build_depend()->description(), lines.at(m.build_depend()->flat_list_index()), false);
 
             if (-1 != m.run_depend()->flat_list_index() && ! m.run_depend()->name().empty())
-                id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(), lines.at(m.run_depend()->flat_list_index()));
+                id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(), lines.at(m.run_depend()->flat_list_index()), false);
 
             id->load_slot(m.slot(), lines.at(m.slot()->flat_list_index()));
 
@@ -231,7 +233,7 @@ namespace
                 id->load_myoptions(m.myoptions()->name(), m.myoptions()->description(), lines.at(m.myoptions()->flat_list_index()));
 
             if (-1 != m.pdepend()->flat_list_index() && ! m.pdepend()->name().empty())
-                id->load_post_depend(m.pdepend()->name(), m.pdepend()->description(), lines.at(m.pdepend()->flat_list_index()));
+                id->load_post_depend(m.pdepend()->name(), m.pdepend()->description(), lines.at(m.pdepend()->flat_list_index()), false);
 
             if (-1 != m.provide()->flat_list_index() && ! m.provide()->name().empty())
                 id->load_provide(m.provide()->name(), m.provide()->description(), lines.at(m.provide()->flat_list_index()));
@@ -503,16 +505,18 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
             {
                 DependenciesRewriter rewriter;
                 parse_depend(keys[m.dependencies()->name()], _imp->env, id, *id->eapi())->root()->accept(rewriter);
-                id->load_build_depend(m.dependencies()->name() + ".DEPEND", m.dependencies()->description() + " (build)", rewriter.depend());
-                id->load_run_depend(m.dependencies()->name() + ".RDEPEND", m.dependencies()->description() + " (run)", rewriter.rdepend());
-                id->load_post_depend(m.dependencies()->name() + ".PDEPEND", m.dependencies()->description() + " (post)", rewriter.pdepend());
+                id->load_raw_depend(m.dependencies()->name(), m.dependencies()->description(),
+                        keys[m.dependencies()->name()]);
+                id->load_build_depend(m.dependencies()->name() + ".DEPEND", m.dependencies()->description() + " (build)", rewriter.depend(), true);
+                id->load_run_depend(m.dependencies()->name() + ".RDEPEND", m.dependencies()->description() + " (run)", rewriter.rdepend(), true);
+                id->load_post_depend(m.dependencies()->name() + ".PDEPEND", m.dependencies()->description() + " (post)", rewriter.pdepend(), true);
             }
 
             if (! m.build_depend()->name().empty())
-                id->load_build_depend(m.build_depend()->name(), m.build_depend()->description(), keys[m.build_depend()->name()]);
+                id->load_build_depend(m.build_depend()->name(), m.build_depend()->description(), keys[m.build_depend()->name()], false);
 
             if (! m.run_depend()->name().empty())
-                id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(), keys[m.run_depend()->name()]);
+                id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(), keys[m.run_depend()->name()], false);
 
             id->load_slot(m.slot(), keys[m.slot()->name()]);
 
@@ -561,7 +565,7 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
                 id->load_myoptions(m.myoptions()->name(), m.myoptions()->description(), keys[m.myoptions()->name()]);
 
             if (! m.pdepend()->name().empty())
-                id->load_post_depend(m.pdepend()->name(), m.pdepend()->description(), keys[m.pdepend()->name()]);
+                id->load_post_depend(m.pdepend()->name(), m.pdepend()->description(), keys[m.pdepend()->name()], false);
 
             if (! m.provide()->name().empty())
                 id->load_provide(m.provide()->name(), m.provide()->description(), keys[m.provide()->name()]);
@@ -718,12 +722,17 @@ EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
         {
             std::string s;
 
-            if (id->build_dependencies_key())
-                s.append(flatten(id->build_dependencies_key()->value()) + " ");
-            if (id->run_dependencies_key())
-                s.append(flatten(id->run_dependencies_key()->value()) + " ");
-            if (id->post_dependencies_key())
-                s.append(flatten(id->post_dependencies_key()->value()) + " ");
+            if (id->raw_dependencies_key())
+                s.append(flatten(id->raw_dependencies_key()->value()));
+            else
+            {
+                if (id->build_dependencies_key())
+                    s.append(flatten(id->build_dependencies_key()->value()) + " ");
+                if (id->run_dependencies_key())
+                    s.append(flatten(id->run_dependencies_key()->value()) + " ");
+                if (id->post_dependencies_key())
+                    s.append(flatten(id->post_dependencies_key()->value()) + " ");
+            }
 
             write_kv(cache, m.dependencies()->name(), s);
         }

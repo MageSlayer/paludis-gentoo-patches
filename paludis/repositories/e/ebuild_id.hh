@@ -97,6 +97,7 @@ namespace paludis
 
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<bool> > transient_key() const;
 
+                const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > raw_dependencies_key() const;
                 const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > remote_ids_key() const;
                 const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > bugs_to_key() const;
                 const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > upstream_changelog_key() const;
@@ -116,9 +117,13 @@ namespace paludis
 
                 void load_short_description(const std::string &, const std::string &, const std::string &) const;
                 void load_captured_stderr(const std::string &, const std::string &, const MetadataKeyType, const std::string &) const;
-                void load_build_depend(const std::string &, const std::string &, const std::string &) const;
-                void load_run_depend(const std::string &, const std::string &, const std::string &) const;
-                void load_post_depend(const std::string &, const std::string &, const std::string &) const;
+                void load_raw_depend(const std::string &, const std::string &, const std::string &) const;
+                void load_build_depend(const std::string &, const std::string &, const std::string &,
+                        const bool rewritten) const;
+                void load_run_depend(const std::string &, const std::string &, const std::string &,
+                        const bool rewritten) const;
+                void load_post_depend(const std::string &, const std::string &, const std::string &,
+                        const bool rewritten) const;
                 void load_src_uri(const std::tr1::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_homepage(const std::string &, const std::string &, const std::string &) const;
                 void load_license(const std::tr1::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
