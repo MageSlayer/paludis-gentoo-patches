@@ -49,13 +49,15 @@ BadVersionSpecError::BadVersionSpecError(const std::string & name, const std::st
 {
 }
 
+typedef std::vector<VersionSpecComponent> Parts;
+
 namespace paludis
 {
     template<>
     struct Implementation<VersionSpec>
     {
         std::string text;
-        std::vector<VersionSpecComponent> parts;
+        Parts parts;
 
         mutable Mutex hash_mutex;
         mutable bool has_hash;
@@ -216,7 +218,7 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
         }
 
         /* Now we can change empty values to "0" */
-        for (std::vector<VersionSpecComponent>::iterator i(_imp->parts.begin()),
+        for (Parts::iterator i(_imp->parts.begin()),
                 i_end(_imp->parts.end()) ; i != i_end ; ++i)
             if ((*i).number_value().empty())
                 (*i).number_value() = "0";
@@ -298,166 +300,153 @@ VersionSpec::~VersionSpec()
 {
 }
 
+namespace
+{
+    template <typename R_>
+    R_
+    componentwise_compare(const Parts & a, const Parts & b,
+            std::pair<R_, bool> (*comparator)(const VersionSpecComponent &, Parts::const_iterator, Parts::const_iterator,
+                    const VersionSpecComponent &, Parts::const_iterator, Parts::const_iterator, int))
+    {
+        std::vector<VersionSpecComponent>::const_iterator
+            v1(a.begin()), v1_end(a.end()), v2(b.begin()), v2_end(b.end());
+
+        VersionSpecComponent end_part(make_named_values<VersionSpecComponent>(
+                    value_for<n::number_value>(""),
+                    value_for<n::text>(""),
+                    value_for<n::type>(vsct_empty)
+                    ));
+        bool first(true);
+        while (true)
+        {
+            const VersionSpecComponent * const p1(v1 == v1_end ? &end_part : &*v1);
+            const VersionSpecComponent * const p2(v2 == v2_end ? &end_part : &*v2);
+
+            if (&end_part == p1 && &end_part == p2)
+            {
+                std::pair<R_, bool> result(comparator(*p1, v1, v1_end, *p2, v2, v2_end, 0));
+                if (result.second)
+                    return result.first;
+                else
+                    throw InternalError(PALUDIS_HERE, "comparator reached the end of the versions without deciding on a result");
+            }
+
+            int compared(-2);
+
+            if (p1 == &end_part && (*p2).type() == vsct_revision && (*p2).number_value() == "0")
+                compared = 0;
+
+            else if (p2 == &end_part && (*p1).type() == vsct_revision && (*p1).number_value() == "0")
+                compared = 0;
+
+            else if ((*p1).type() < (*p2).type())
+                compared = -1;
+            else if ((*p1).type() > (*p2).type())
+                compared = 1;
+
+            else
+            {
+                std::string p1s, p2s;
+                bool length_cmp(true);
+
+                /* number parts */
+                if ((*p1).type() == vsct_number)
+                {
+                    if (first)
+                    {
+                        /* first component - always as integer (leading zeroes removed) */
+                        first = false;
+                        p1s = strip_leading((*p1).number_value(), "0");
+                        p2s = strip_leading((*p2).number_value(), "0");
+                    }
+                    else if ((! (*p1).number_value().empty() && (*p1).number_value().at(0) == '0') ||
+                            (! (*p2).number_value().empty() && (*p2).number_value().at(0) == '0'))
+                    {
+                        /* leading zeroes - stringwise compare with trailing zeroes removed */
+                        length_cmp = false;
+                        p1s = strip_trailing((*p1).number_value(), "0");
+                        p2s = strip_trailing((*p2).number_value(), "0");
+                    }
+                    else
+                    {
+                        p1s = (*p1).number_value();
+                        p2s = (*p2).number_value();
+                    }
+                }
+                /* anything else than number parts */
+                else
+                {
+                    p1s = (*p1).number_value();
+                    p2s = (*p2).number_value();
+
+                    /* _suffix-scm? */
+                    if (p1s == "MAX" && p2s == "MAX")
+                        compared = 0;
+                    else if (p1s == "MAX")
+                        compared = 1;
+                    else if (p2s == "MAX")
+                        compared = -1;
+                }
+                if (compared == -2)
+                {
+                    /* common part */
+                    if (length_cmp)
+                    {
+                        /* length compare (integers) */
+                        int c = p1s.size() - p2s.size();
+                        if (c < 0)
+                            compared = -1;
+                        else if (c > 0)
+                            compared = 1;
+                    }
+                }
+                if (compared == -2)
+                {
+                    /* stringwise compare (also for integers with the same size) */
+                    int c(p1s.compare(p2s));
+                    compared = c < 0 ? -1 : c > 0 ? 1 : 0;
+                }
+            }
+
+            std::pair<R_, bool> result(comparator(*p1, v1, v1_end, *p2, v2, v2_end, compared));
+            if (result.second)
+                return result.first;
+
+            ++v1;
+            ++v2;
+        }
+    }
+
+    std::pair<int, bool>
+    compare_comparator(const VersionSpecComponent & a, Parts::const_iterator, Parts::const_iterator,
+            const VersionSpecComponent & b, Parts::const_iterator, Parts::const_iterator, int compared)
+    {
+        return std::make_pair(compared, compared != 0 || (a.type() == vsct_empty || b.type() == vsct_empty));
+    }
+
+    std::pair<bool, bool>
+    tilde_compare_comparator(const VersionSpecComponent & a, Parts::const_iterator, Parts::const_iterator,
+            const VersionSpecComponent & b, Parts::const_iterator, Parts::const_iterator, int compared)
+    {
+        if (compared != 0)
+            return std::make_pair(a.type() == vsct_revision &&
+                    (b.type() == vsct_empty || b.type() == vsct_revision) &&
+                    compared == 1, true);
+        else
+            return std::make_pair(true, a.type() == vsct_empty || b.type() == vsct_empty);
+    }
+}
+
 int
 VersionSpec::compare(const VersionSpec & other) const
 {
-    std::vector<VersionSpecComponent>::const_iterator
-        v1(_imp->parts.begin()), v1_end(_imp->parts.end()),
-        v2(other._imp->parts.begin()), v2_end(other._imp->parts.end());
-
-    VersionSpecComponent end_part(make_named_values<VersionSpecComponent>(
-                value_for<n::number_value>(""),
-                value_for<n::text>(""),
-                value_for<n::type>(vsct_empty)
-                ));
-    bool first(true);
-    while (true)
-    {
-        const VersionSpecComponent * const p1(v1 == v1_end ? &end_part : &*v1++);
-        const VersionSpecComponent * const p2(v2 == v2_end ? &end_part : &*v2++);
-
-        if (&end_part == p1 && &end_part == p2)
-            break;
-
-        if (p1 == &end_part && (*p2).type() == vsct_revision && (*p2).number_value() == "0")
-            continue;
-
-        if (p2 == &end_part && (*p1).type() == vsct_revision && (*p1).number_value() == "0")
-            continue;
-
-        if ((*p1).type() < (*p2).type())
-            return -1;
-        if ((*p1).type() > (*p2).type())
-            return 1;
-
-        std::string p1s, p2s;
-        bool length_cmp(true);
-
-        /* number parts */
-        if ((*p1).type() == vsct_number)
-        {
-            if (first)
-            {
-                /* first component - always as integer (leading zeroes removed) */
-                first = false;
-                p1s = strip_leading((*p1).number_value(), "0");
-                p2s = strip_leading((*p2).number_value(), "0");
-            }
-            else if ((! (*p1).number_value().empty() && (*p1).number_value().at(0) == '0') ||
-                    (! (*p2).number_value().empty() && (*p2).number_value().at(0) == '0'))
-            {
-                /* leading zeroes - stringwise compare with trailing zeroes removed */
-                length_cmp = false;
-                p1s = strip_trailing((*p1).number_value(), "0");
-                p2s = strip_trailing((*p2).number_value(), "0");
-            }
-            else
-            {
-                p1s = (*p1).number_value();
-                p2s = (*p2).number_value();
-            }
-        }
-        /* anything else than number parts */
-        else
-        {
-            p1s = (*p1).number_value();
-            p2s = (*p2).number_value();
-
-            /* _suffix-scm? */
-            if (p1s == "MAX" && p2s == "MAX")
-                continue;
-            else if (p1s == "MAX")
-                return 1;
-            else if (p2s == "MAX")
-                return -1;
-        }
-        /* common part */
-        if (length_cmp)
-        {
-            /* length compare (integers) */
-            int c = p1s.size() - p2s.size();
-            if (c < 0)
-                return -1;
-            else if (c > 0)
-                return 1;
-        }
-        /* stringwise compare (also for integers with the same size) */
-        int c(p1s.compare(p2s));
-        if (c != 0)
-            return c < 0 ? -1 : 1;
-    }
-
-    return 0;
+    return componentwise_compare(_imp->parts, other._imp->parts, compare_comparator);
 }
 
 bool
 VersionSpec::tilde_compare(const VersionSpec & other) const
 {
-    std::vector<VersionSpecComponent>::const_iterator
-        v1(_imp->parts.begin()), v1_end(_imp->parts.end()),
-        v2(other._imp->parts.begin()), v2_end(other._imp->parts.end());
-
-    VersionSpecComponent end_part(make_named_values<VersionSpecComponent>(
-                value_for<n::number_value>(""),
-                value_for<n::text>(""),
-                value_for<n::type>(vsct_empty)
-                ));
-    bool first(true);
-    while (true)
-    {
-        const VersionSpecComponent * const p1(v1 == v1_end ? &end_part : &*v1++);
-        const VersionSpecComponent * const p2(v2 == v2_end ? &end_part : &*v2++);
-        if (&end_part == p1 && &end_part == p2)
-            break;
-
-        if ((*p1).type() != (*p2).type())
-        {
-            if (p2 != &end_part || (*p1).type() != vsct_revision)
-                return false;
-        }
-        else
-        {
-            std::string p1s, p2s;
-            /* number part */
-            if ((*p1).type() == vsct_number)
-            {
-                if (first)
-                {
-                    /* first component - remove leading zeroes and check whether equal */
-                    first = false;
-                    if (strip_leading((*p1).number_value(), "0") != strip_leading((*p2).number_value(), "0"))
-                        return false;
-                }
-                else if ((! (*p1).number_value().empty() && (*p1).number_value().at(0) == '0') ||
-                        (! (*p2).number_value().empty() && (*p2).number_value().at(0) == '0'))
-                {
-                    /* leading zeroes - remove trailing zeroes and check whether equal */
-                    if (strip_trailing((*p1).number_value(), "0") != strip_trailing((*p2).number_value(), "0"))
-                        return false;
-                }
-                else
-                {
-                    /* normal(!) case */
-                    if ((*p1).number_value() != (*p2).number_value())
-                        return false;
-                }
-            }
-            /* revision - compare as integers */
-            else if ((*p1).type() == vsct_revision)
-            {
-                int c = (*p1).number_value().size() - (*p2).number_value().size();
-                if (c < 0)
-                    return false;
-                else if (c == 0 && (*p1).number_value().compare((*p2).number_value()) == -1)
-                    return false;
-            }
-            /* not a number part nor revision - must be just equal */
-            else if ((*p1).number_value() != (*p2).number_value())
-                return false;
-        }
-    }
-
-    return true;
+    return componentwise_compare(_imp->parts, other._imp->parts, tilde_compare_comparator);
 }
 
 bool
