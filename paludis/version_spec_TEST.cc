@@ -652,5 +652,31 @@ namespace test_cases
             TEST_CHECK(v5.hash() == v6.hash());
         }
     } test_version_spec_ignore_case;
+
+    struct VersionSpecFlexibleDashesTest : TestCase
+    {
+        VersionSpecFlexibleDashesTest() : TestCase("flexible dashes") { }
+
+        void run()
+        {
+            TEST_CHECK_THROWS(VersionSpec("1.2-alpha1", VersionSpecOptions()), BadVersionSpecError);
+            VersionSpec v1("1.2-alpha1", VersionSpecOptions() + vso_flexible_dashes);
+            VersionSpec v2("1.2_alpha1", VersionSpecOptions());
+            TEST_CHECK(v1 == v2);
+            TEST_CHECK(v1.hash() == v2.hash());
+
+            TEST_CHECK_THROWS(VersionSpec("1_scm", VersionSpecOptions()), BadVersionSpecError);
+            VersionSpec v3("1_scm", VersionSpecOptions() + vso_flexible_dashes);
+            VersionSpec v4("1-scm", VersionSpecOptions());
+            TEST_CHECK(v3 == v4);
+            TEST_CHECK(v3.hash() == v4.hash());
+
+            TEST_CHECK_THROWS(VersionSpec("1.2_r3", VersionSpecOptions()), BadVersionSpecError);
+            VersionSpec v5("1.2_r3", VersionSpecOptions() + vso_flexible_dashes);
+            VersionSpec v6("1.2-r3", VersionSpecOptions());
+            TEST_CHECK(v5 == v6);
+            TEST_CHECK(v5.hash() == v6.hash());
+        }
+    } test_version_spec_flexible_dashes;
 }
 

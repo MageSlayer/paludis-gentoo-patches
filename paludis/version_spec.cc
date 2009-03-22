@@ -76,6 +76,18 @@ namespace paludis
         {
         }
     };
+
+    simple_parser::SimpleParserExpression make_dash_parse_expression(const std::string & strict_dash,
+            const std::string & text,
+            const bool ignore_case,
+            const bool flexible_dashes)
+    {
+        simple_parser::SimpleParserExpression expr(ignore_case ? simple_parser::exact_ignoring_case(text) : simple_parser::exact(text));
+        if (flexible_dashes)
+            return simple_parser::any_of("-_") & expr;
+        else
+            return simple_parser::exact(strict_dash) & expr;
+    }
 }
 
 VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & options) :
@@ -143,20 +155,15 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
         {
             std::string suffix_str, number_str;
             VersionSpecComponentType k(vsct_empty);
-            if (parser.consume((options[vso_ignore_case] ?
-                            simple_parser::exact_ignoring_case("_alpha") : simple_parser::exact("_alpha")) >> suffix_str))
+            if (parser.consume(make_dash_parse_expression("_", "alpha", options[vso_ignore_case], options[vso_flexible_dashes]) >> suffix_str))
                 k = vsct_alpha;
-            else if (parser.consume((options[vso_ignore_case] ?
-                            simple_parser::exact_ignoring_case("_beta") : simple_parser::exact("_beta")) >> suffix_str))
+            else if (parser.consume(make_dash_parse_expression("_", "beta", options[vso_ignore_case], options[vso_flexible_dashes]) >> suffix_str))
                 k = vsct_beta;
-            else if (parser.consume((options[vso_ignore_case] ?
-                            simple_parser::exact_ignoring_case("_pre") : simple_parser::exact("_pre")) >> suffix_str))
+            else if (parser.consume(make_dash_parse_expression("_", "pre", options[vso_ignore_case], options[vso_flexible_dashes]) >> suffix_str))
                 k = vsct_pre;
-            else if (parser.consume((options[vso_ignore_case] ?
-                            simple_parser::exact_ignoring_case("_rc") : simple_parser::exact("_rc")) >> suffix_str))
+            else if (parser.consume(make_dash_parse_expression("_", "rc", options[vso_ignore_case], options[vso_flexible_dashes]) >> suffix_str))
                 k = vsct_rc;
-            else if (parser.consume((options[vso_ignore_case] ?
-                            simple_parser::exact_ignoring_case("_p") : simple_parser::exact("_p")) >> suffix_str))
+            else if (parser.consume(make_dash_parse_expression("_", "p", options[vso_ignore_case], options[vso_flexible_dashes]) >> suffix_str))
                 k = vsct_patch;
             else
                 break;
@@ -181,8 +188,7 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
 
         /* try */
         std::string try_str;
-        if (parser.consume((options[vso_ignore_case] ?
-                        simple_parser::exact_ignoring_case("-try") : simple_parser::exact("-try")) >> try_str))
+        if (parser.consume(make_dash_parse_expression("-", "try", options[vso_ignore_case], options[vso_flexible_dashes]) >> try_str))
         {
             std::string number_str;
             if (! parser.consume(*simple_parser::any_of("0123456789") >> number_str))
@@ -203,8 +209,7 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
         }
 
         /* scm */
-        if (parser.consume((options[vso_ignore_case] ?
-                    simple_parser::exact_ignoring_case("-scm") : simple_parser::exact("-scm")) >> scm_str))
+        if (parser.consume(make_dash_parse_expression("-", "scm", options[vso_ignore_case], options[vso_flexible_dashes]) >> scm_str))
         {
             /* _suffix-scm? */
             if (_imp->parts.back().number_value().empty())
@@ -226,8 +231,7 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
 
     /* revision */
     std::string rev_str;
-    if (parser.consume((options[vso_ignore_case] ?
-                simple_parser::exact_ignoring_case("-r") : simple_parser::exact("-r")) >> rev_str))
+    if (parser.consume(make_dash_parse_expression("-", "r", options[vso_ignore_case], options[vso_flexible_dashes]) >> rev_str))
     {
         bool first_revision(true);
         do
