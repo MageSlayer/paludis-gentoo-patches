@@ -435,6 +435,21 @@ namespace
         else
             return std::make_pair(true, a.type() == vsct_empty || b.type() == vsct_empty);
     }
+
+    std::pair<bool, bool>
+    nice_equal_star_compare_comparator(const VersionSpecComponent & a, Parts::const_iterator, Parts::const_iterator,
+            const VersionSpecComponent & b, Parts::const_iterator b_it, Parts::const_iterator b_it_end, int compared)
+    {
+        if (b.type() == vsct_empty)
+            return std::make_pair(true, true);
+        else if (a.type() == b.type() && next(b_it) == b_it_end &&
+                 (b.type() == vsct_alpha || b.type() == vsct_beta || b.type() == vsct_pre ||
+                  b.type() == vsct_rc || b.type() == vsct_patch) &&
+                 std::string::npos == b.text().find_first_of("0123456789"))
+            return std::make_pair(true, true);
+        else
+            return std::make_pair(false, compared != 0);
+    }
 }
 
 int
@@ -450,7 +465,13 @@ VersionSpec::tilde_compare(const VersionSpec & other) const
 }
 
 bool
-VersionSpec::equal_star_compare(const VersionSpec & other) const
+VersionSpec::nice_equal_star_compare(const VersionSpec & other) const
+{
+    return componentwise_compare(_imp->parts, other._imp->parts, nice_equal_star_compare_comparator);
+}
+
+bool
+VersionSpec::stupid_equal_star_compare(const VersionSpec & other) const
 {
     return 0 == _imp->text.compare(0, other._imp->text.length(), other._imp->text);
 }

@@ -162,7 +162,7 @@ namespace
                         {
                             ver.erase(ver.length() - 1);
                             if (vop == vo_equal)
-                                vop = vo_equal_star;
+                                vop = vo_nice_equal_star;
                             else
                                 throw PackageDepSpecError("Invalid use of * with operator '" + stringify(vop) + " inside []");
                         }
@@ -296,7 +296,7 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const Environment *
             value_for<n::get_remove_trailing_version>(std::tr1::bind(&elike_get_remove_trailing_version, _1,
                     user_version_spec_options())),
             value_for<n::get_remove_version_operator>(std::tr1::bind(&elike_get_remove_version_operator, _1,
-                    ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps)),
+                    ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps + epdso_nice_equal_star)),
             value_for<n::has_version_operator>(std::tr1::bind(&elike_has_version_operator, _1, std::tr1::cref(had_bracket_version_requirements))),
             value_for<n::remove_trailing_repo_if_exists>(std::tr1::bind(&user_remove_trailing_repo_if_exists, _1, _2)),
             value_for<n::remove_trailing_slot_if_exists>(std::tr1::bind(&user_remove_trailing_slot_if_exists, _1, _2)),

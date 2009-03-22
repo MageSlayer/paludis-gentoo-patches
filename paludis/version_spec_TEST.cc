@@ -132,29 +132,76 @@ namespace test_cases
     } test_version_spec_parse;
 
     /**
-     * \test VersionSpec star comparisons
+     * \test VersionSpec stupid star comparisons
      *
      */
-    struct VersionSpecStarCompareTest : TestCase
+    struct VersionSpecStupidStarCompareTest : TestCase
     {
-        VersionSpecStarCompareTest() : TestCase("version spec star compare") {}
+        VersionSpecStupidStarCompareTest() : TestCase("version spec stupid star compare") {}
 
         void run()
         {
-            TEST_CHECK(VersionSpec("1.2", VersionSpecOptions()).equal_star_compare(VersionSpec("1", VersionSpecOptions())));
-            TEST_CHECK(VersionSpec("1.2", VersionSpecOptions()).equal_star_compare(VersionSpec("1.2", VersionSpecOptions())));
-            TEST_CHECK(VersionSpec("1.2.1", VersionSpecOptions()).equal_star_compare(VersionSpec("1", VersionSpecOptions())));
-            TEST_CHECK(VersionSpec("1.2.1", VersionSpecOptions()).equal_star_compare(VersionSpec("1.2", VersionSpecOptions())));
-            TEST_CHECK(VersionSpec("2.2", VersionSpecOptions()).equal_star_compare(VersionSpec("2", VersionSpecOptions())));
-            TEST_CHECK(VersionSpec("2", VersionSpecOptions()).equal_star_compare(VersionSpec("2", VersionSpecOptions())));
-            TEST_CHECK(VersionSpec("2.59", VersionSpecOptions()).equal_star_compare(VersionSpec("2.5", VersionSpecOptions())));
-            TEST_CHECK(VersionSpec("2.59_alpha5-r1", VersionSpecOptions()).equal_star_compare(VersionSpec("2.59_alpha", VersionSpecOptions())));
-            TEST_CHECK(! VersionSpec("2", VersionSpecOptions()).equal_star_compare(VersionSpec("2.5", VersionSpecOptions())));
-            TEST_CHECK(! VersionSpec("2.59", VersionSpecOptions()).equal_star_compare(VersionSpec("2.50", VersionSpecOptions())));
-            TEST_CHECK(! VersionSpec("1", VersionSpecOptions()).equal_star_compare(VersionSpec("2", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("1.2", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("1", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("1.2", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("1.2", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("1.2.1", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("1", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("1.2.1", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("1.2", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("2.2", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("2", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("2", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("2", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("2.59", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("2.5", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("2.59_alpha5-r1", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("2.59_alpha", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("2", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("2.5", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("2.59", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("2.50", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("1", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("2", VersionSpecOptions())));
 
+            TEST_CHECK(! VersionSpec("01", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("1", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("1.02", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("1.020", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("1.020", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("1.02", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("1_alpha1", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("1_alpha01", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("1_alpha01", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("1_alpha1", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("1_alpha01", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("1_alpha0", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("1_pre1", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("1_p", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("1_pre-scm", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("1_pre", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("1_pre1", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("1_pre0", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("1_alpha1", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("1_alpha-r1", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("1_alpha1", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("1_beta", VersionSpecOptions())));
         }
-    } test_version_spec_star_compare;
+    } test_version_spec_stupid_star_compare;
+
+    /**
+     * \test VersionSpec nice star comparisons
+     *
+     */
+    struct VersionSpecNiceStarCompareTest : TestCase
+    {
+        VersionSpecNiceStarCompareTest() : TestCase("version spec nice star compare") {}
+
+        void run()
+        {
+            TEST_CHECK(VersionSpec("1.2", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("1", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("1.2", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("1.2", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("1.2.1", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("1", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("1.2.1", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("1.2", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("2.2", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("2", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("2", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("2", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("2.59", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("2.5", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("2.59_alpha5-r1", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("2.59_alpha", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("2", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("2.5", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("2.59", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("2.50", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("1", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("2", VersionSpecOptions())));
+
+            TEST_CHECK(VersionSpec("01", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("1", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("1.02", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("1.020", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("1.020", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("1.02", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("1_alpha1", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("1_alpha01", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("1_alpha01", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("1_alpha1", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("1_alpha01", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("1_alpha0", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("1_pre1", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("1_p", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("1_pre-scm", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("1_pre", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("1_pre1", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("1_pre0", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("1_alpha1", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("1_alpha-r1", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("1_alpha1", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("1_beta", VersionSpecOptions())));
+        }
+    } test_version_spec_nice_star_compare;
 
     /**
      * \test VersionSpec tilde comparisons
@@ -166,6 +213,7 @@ namespace test_cases
 
         void run()
         {
+
             TEST_CHECK(! VersionSpec("1.4-r1", VersionSpecOptions()).tilde_compare(VersionSpec("1.3-r1", VersionSpecOptions())));
             TEST_CHECK(! VersionSpec("1.4", VersionSpecOptions()).tilde_compare(VersionSpec("1.3-r1", VersionSpecOptions())));
             TEST_CHECK(! VersionSpec("1.2", VersionSpecOptions()).tilde_compare(VersionSpec("1.3-r1", VersionSpecOptions())));

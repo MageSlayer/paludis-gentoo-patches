@@ -4,6 +4,10 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+master:
+    * The =...* dependency operator in configuration files and command-line
+      arguments now matches component-wise rather than character-wise.
+
 0.34.2:
     * Wildcards are now allowed for --contents and --executables.
 

@@ -77,8 +77,8 @@ the following order:</p>
     greater than or equal to this revision.</dd>
 
     <dt><code>=*</code></dt>
-    <dd>Starting with this string. The asterisk comes <em>after</em> the version part (<code>=cat/pkg-1.2*</code> or
-    <code>cat/pkg[=1.2*]</code>). This operator should be avoided in favour of ranged and slot dependencies.</dd>
+    <dd>Starting with this version, componentwise. The asterisk comes <em>after</em> the version part (<code>=cat/pkg-1.2*</code> or
+    <code>cat/pkg[=1.2*]</code>).</dd>
 
     <dt><code>~&gt;</code></dt>
     <dd>Greater than or equal to the version, and strictly less than the version with its one-before-least-significant

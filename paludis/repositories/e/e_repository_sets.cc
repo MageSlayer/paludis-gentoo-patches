@@ -178,7 +178,7 @@ ERepositorySets::sets_list() const
 namespace
 {
     bool
-    match_range(const PackageID & e, const erepository::GLSARange & r, const VersionSpecOptions & ver_options)
+    match_range(const PackageID & e, const erepository::GLSARange & r, const VersionSpecOptions & ver_options, const ELikePackageDepSpecOptions & pds_options)
     {
         if (r.slot() != "*")
         {
@@ -204,7 +204,7 @@ namespace
             if (! ver.empty() && '*' == ver.at(ver.length() - 1))
             {
                 ver.erase(ver.length() - 1);
-                our_op = vo_equal_star;
+                our_op = pds_options[epdso_nice_equal_star] ? vo_nice_equal_star : vo_stupid_equal_star;
             }
             else
                 our_op = vo_equal;
@@ -224,21 +224,21 @@ namespace
                             value_for<n::op>(r.op().substr(1)),
                             value_for<n::slot>(r.slot()),
                             value_for<n::version>(r.version())),
-                        ver_options);
+                        ver_options, pds_options);
         }
 
         throw GLSAError("Got bad op '" + r.op() + "'");
     }
 
     bool
-    is_vulnerable(const GLSAPackage & glsa_pkg, const PackageID & c, const VersionSpecOptions & ver_options)
+    is_vulnerable(const GLSAPackage & glsa_pkg, const PackageID & c, const VersionSpecOptions & ver_options, const ELikePackageDepSpecOptions & pds_options)
     {
         /* a package is affected if it matches any vulnerable line, except if it matches
          * any unaffected line. */
         bool vulnerable(false);
         for (GLSAPackage::RangesConstIterator r(glsa_pkg.begin_vulnerable()), r_end(glsa_pkg.end_vulnerable()) ;
                 r != r_end && ! vulnerable ; ++r)
-            if (match_range(c, *r, ver_options))
+            if (match_range(c, *r, ver_options, pds_options))
                 vulnerable = true;
 
         if (! vulnerable)
@@ -246,7 +246,7 @@ namespace
 
         for (GLSAPackage::RangesConstIterator r(glsa_pkg.begin_unaffected()), r_end(glsa_pkg.end_unaffected()) ;
                 r != r_end && vulnerable ; ++r)
-            if (match_range(c, *r, ver_options))
+            if (match_range(c, *r, ver_options, pds_options))
                 vulnerable = false;
 
         return vulnerable;
@@ -279,6 +279,7 @@ ERepositorySets::security_set(bool insecurity) const
                     "' because it uses an unsupported EAPI");
 
         const VersionSpecOptions ver_options(eapi->supported()->version_spec_options());
+        const ELikePackageDepSpecOptions pds_options(eapi->supported()->package_dep_spec_parse_options());
 
         try
         {
@@ -300,7 +301,7 @@ ERepositorySets::security_set(bool insecurity) const
                 for (PackageIDSequence::ConstIterator c(candidates->begin()), c_end(candidates->end()) ;
                         c != c_end ; ++c)
                 {
-                    if (! is_vulnerable(*glsa_pkg, **c, ver_options))
+                    if (! is_vulnerable(*glsa_pkg, **c, ver_options, pds_options))
                         continue;
 
                     if (glsa_tags.end() == glsa_tags.find(glsa->id()))
@@ -336,7 +337,7 @@ ERepositorySets::security_set(bool insecurity) const
 
                         for (PackageIDSequence::ReverseConstIterator r(available->rbegin()), r_end(available->rend()) ; r != r_end ; ++r)
                         {
-                            if (is_vulnerable(*glsa_pkg, **r, ver_options))
+                            if (is_vulnerable(*glsa_pkg, **r, ver_options, pds_options))
                             {
                                 Log::get_instance()->message("e.glsa.skipping_vulnerable", ll_debug, lc_context)
                                     << "Skipping '" << **r << "' due to is_vulnerable match";
