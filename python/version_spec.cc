@@ -22,10 +22,21 @@
 
 #include <paludis/version_spec.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/options.hh>
+#include <paludis/user_dep_spec.hh>
 
 using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
+
+namespace
+{
+    VersionSpec * make_version_spec(const std::string & s)
+    {
+        return new VersionSpec(s, user_version_spec_options());
+    }
+
+}
 
 void expose_version_spec()
 {
@@ -39,15 +50,19 @@ void expose_version_spec()
     /**
      * VersionSpec
      */
-    bp::implicitly_convertible<std::string, VersionSpec>();
     bp::class_<VersionSpec>
         (
          "VersionSpec",
          "A VersionSpec represents a version number (for example, 1.2.3b-r1).\n\n"
 
          "See U{example_version_spec<###EX###../example_version_spec.html>}",
-         bp::init<const std::string &>("__init__(string)")
+         bp::no_init
         )
+        .def("__init__",
+                bp::make_constructor(&make_version_spec),
+                "__init__(string)"
+            )
+
         .def("bump", &VersionSpec::bump,
                 "bump() -> VersionSpec\n"
                 "This is used by the ~> operator. It returns a VersionSpec where the next to last number "

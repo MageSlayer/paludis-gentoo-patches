@@ -235,15 +235,15 @@ class TestCase_03_FakeRepository(unittest.TestCase):
         f.add_package("cat-foo/pkg")
         self.assertEquals(list(f.package_ids("cat-foo/pkg")), [])
 
-        pkg = f.add_version("cat-foo/pkg", "1")
+        pkg = f.add_version("cat-foo/pkg", VersionSpec("1"))
         self.assertEquals(list(f.package_ids("cat-foo/pkg")), [pkg])
         self.assertEquals(pkg.version, VersionSpec("1"))
 
-        pkg2 = f.add_version("cat-foo/pkg", "2")
+        pkg2 = f.add_version("cat-foo/pkg", VersionSpec("2"))
         self.assertEquals(list(f.package_ids("cat-foo/pkg")), [pkg, pkg2])
         self.assertEquals(pkg2.version, VersionSpec("2"))
 
-        pkg3 = f.add_version("cat-bar/pkg", "0")
+        pkg3 = f.add_version("cat-bar/pkg", VersionSpec("0"))
         self.assertEquals(list(f.package_ids("cat-bar/pkg")), [pkg3])
 
         self.assertEquals([str(x) for x in f.category_names], ["cat-bar", "cat-foo"])

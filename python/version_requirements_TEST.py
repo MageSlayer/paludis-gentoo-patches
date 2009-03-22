@@ -23,13 +23,13 @@ import unittest
 
 class TestCase_VersionRequirements(unittest.TestCase):
     def test_01_init(self):
-        VersionRequirement("<", "0")
-        VersionRequirement(VersionOperatorValue.LESS, "0")
+        VersionRequirement("<", VersionSpec("0"))
+        VersionRequirement(VersionOperatorValue.LESS, VersionSpec("0"))
 
     def test_02_data_members(self):
-        v1 = VersionRequirement("<", "0")
+        v1 = VersionRequirement("<", VersionSpec("0"))
         v1.version_operator = ">"
-        v1.version_spec = "1"
+        v1.version_spec = VersionSpec("1")
 
         self.assertEquals(str(v1.version_operator), ">")
         self.assertEquals(str(v1.version_spec), "1")
