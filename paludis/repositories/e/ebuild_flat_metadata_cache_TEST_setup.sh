@@ -1293,7 +1293,7 @@ cat <<END > cache/expected/cat/write-exlibs-1
 _mtime_=60
 _guessed_eapi_=exheres-0
 _exlibs_=bar	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise repo/cat/exlibs)	180	foo	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise repo/exlibs)	180
-DEPENDENCIES=( build: cat/foo bar? ( cat/bar ) ) cat/baz ( build: bar? ( ) ) cat/baz ( build: bar? ( ) ) 
+DEPENDENCIES=( build: cat/foo bar? ( cat/bar ) ) cat/baz
 SLOT=0
 HOMEPAGE=http://example.com/
 LICENCES=GPL-2
