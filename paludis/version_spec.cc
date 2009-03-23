@@ -416,8 +416,10 @@ namespace
             if (result.second)
                 return result.first;
 
-            ++v1;
-            ++v2;
+            if (v1_end != v1)
+                ++v1;
+            if (v2_end != v2)
+                ++v2;
         }
     }
 
@@ -425,7 +427,7 @@ namespace
     compare_comparator(const VersionSpecComponent & a, Parts::const_iterator, Parts::const_iterator,
             const VersionSpecComponent & b, Parts::const_iterator, Parts::const_iterator, int compared)
     {
-        return std::make_pair(compared, compared != 0 || (a.type() == vsct_empty || b.type() == vsct_empty));
+        return std::make_pair(compared, compared != 0 || (a.type() == vsct_empty && b.type() == vsct_empty));
     }
 
     std::pair<bool, bool>
@@ -437,7 +439,7 @@ namespace
                     (b.type() == vsct_empty || b.type() == vsct_revision) &&
                     compared == 1, true);
         else
-            return std::make_pair(true, a.type() == vsct_empty || b.type() == vsct_empty);
+            return std::make_pair(true, a.type() == vsct_empty && b.type() == vsct_empty);
     }
 
     std::pair<bool, bool>

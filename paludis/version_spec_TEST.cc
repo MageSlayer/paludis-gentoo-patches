@@ -246,6 +246,8 @@ namespace test_cases
 
             TEST_CHECK(! VersionSpec("1.2.3", VersionSpecOptions()).tilde_compare(VersionSpec("1.2-r3", VersionSpecOptions())));
             TEST_CHECK(! VersionSpec("1.2-r3", VersionSpecOptions()).tilde_compare(VersionSpec("1.2.3", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("1.2", VersionSpecOptions()).tilde_compare(VersionSpec("1.2-r0.2", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("1.2-r0.1", VersionSpecOptions()).tilde_compare(VersionSpec("1.2-r0.2", VersionSpecOptions())));
         }
     } test_version_spec_tilde_compare;
 
@@ -434,6 +436,8 @@ namespace test_cases
             TEST_CHECK(VersionSpec("1.2", VersionSpecOptions()) == VersionSpec("1.2-r", VersionSpecOptions()));
             TEST_CHECK(VersionSpec("1.2-r3", VersionSpecOptions()) == VersionSpec("1.2-r3.0", VersionSpecOptions()));
             TEST_CHECK(VersionSpec("1.2", VersionSpecOptions()) == VersionSpec("1.2-r0.0", VersionSpecOptions()));
+            TEST_CHECK(VersionSpec("1.2", VersionSpecOptions()) != VersionSpec("1.2-r0.1", VersionSpecOptions()));
+            TEST_CHECK(VersionSpec("1.2-r0.1", VersionSpecOptions()) != VersionSpec("1.2", VersionSpecOptions()));
 
             TEST_CHECK(VersionSpec("1_alpha_beta-scm", VersionSpecOptions()) == VersionSpec("1_alpha0_beta-scm", VersionSpecOptions()));
             TEST_CHECK(VersionSpec("1_alpha_beta000_rc3-scm", VersionSpecOptions()) == VersionSpec("1_alpha00_beta_rc3-scm", VersionSpecOptions()));
