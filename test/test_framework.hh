@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -71,6 +71,12 @@ namespace test
              */
             void check(const char * const function, const char * const file,
                     const long line, bool was_ok, const std::string & message) const;
+
+            /**
+             * Indicate that we reached a certain point.
+             */
+            void reached(const char * const function, const char * const file,
+                    const long line) const;
 
             /**
              * Run the tests (override this in descendents).
@@ -240,21 +246,11 @@ namespace test
  */
 #define TEST_CHECK_EQUAL(a, b) \
     do { \
-        try { \
-            test::TwoVarHolder test_h(a, b); \
-            check(__PRETTY_FUNCTION__, __FILE__, __LINE__, test_h.result, \
-                    "Expected '" #a "' to equal '" + test_h.s_b + \
-                    "' but got '" + test_h.s_a + "'" + test_h.s_d); \
-        } catch (const TestFailedException &) { \
-            throw; \
-        } catch (const std::exception & test_e) { \
-            throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__, \
-                    "Test threw unexpected exception " + test::get_exception_to_debug_string()(test_e) + \
-                    " inside a TEST_CHECK_EQUAL block"); \
-        } catch (...) { \
-            throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__, \
-                    "Test threw unexpected unknown exception inside a TEST_CHECK_EQUAL block"); \
-        } \
+        reached(__PRETTY_FUNCTION__, __FILE__, __LINE__); \
+        test::TwoVarHolder test_h(a, b); \
+        check(__PRETTY_FUNCTION__, __FILE__, __LINE__, test_h.result, \
+                "Expected '" #a "' to equal '" + test_h.s_b + \
+                "' but got '" + test_h.s_a + "'" + test_h.s_d); \
     } while (false)
 
 /**
@@ -262,21 +258,11 @@ namespace test
  */
 #define TEST_CHECK_STRINGIFY_EQUAL(a, b) \
     do { \
-        try { \
-            test::TwoVarHolder test_h(paludis::stringify(a), paludis::stringify(b)); \
-            check(__PRETTY_FUNCTION__, __FILE__, __LINE__, test_h.result, \
-                    "Expected 'stringify(" #a ")' = '" + test_h.s_a + "' to equal 'stringify(" #b \
-                    ")' = '" + test_h.s_b + "'" + test_h.s_d); \
-        } catch (const TestFailedException &) { \
-            throw; \
-        } catch (const std::exception & test_e) { \
-            throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__, \
-                    "Test threw unexpected exception " + test::get_exception_to_debug_string()(test_e) + \
-                    " inside a TEST_CHECK_STRINGIFY_EQUAL block"); \
-        } catch (...) { \
-            throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__, \
-                    "Test threw unexpected unknown exception inside a TEST_CHECK_STRINGIFY_EQUAL block"); \
-        } \
+        reached(__PRETTY_FUNCTION__, __FILE__, __LINE__); \
+        test::TwoVarHolder test_h(paludis::stringify(a), paludis::stringify(b)); \
+        check(__PRETTY_FUNCTION__, __FILE__, __LINE__, test_h.result, \
+                "Expected 'stringify(" #a ")' = '" + test_h.s_a + "' to equal 'stringify(" #b \
+                ")' = '" + test_h.s_b + "'" + test_h.s_d); \
     } while (false)
 
 /**
@@ -284,19 +270,9 @@ namespace test
  */
 #define TEST_CHECK(a) \
     do { \
-        try { \
-            check(__PRETTY_FUNCTION__, __FILE__, __LINE__, a, \
-                    "Check '" #a "' failed"); \
-        } catch (const TestFailedException &) { \
-            throw; \
-        } catch (const std::exception & test_e) { \
-            throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__, \
-                    "Test threw unexpected exception " + test::get_exception_to_debug_string()(test_e) + \
-                    " inside a TEST_CHECK block"); \
-        } catch (...) { \
-            throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__, \
-                    "Test threw unexpected unknown exception inside a TEST_CHECK block"); \
-        } \
+        reached(__PRETTY_FUNCTION__, __FILE__, __LINE__); \
+        check(__PRETTY_FUNCTION__, __FILE__, __LINE__, a, \
+                "Check '" #a "' failed"); \
     } while (false)
 
 /**

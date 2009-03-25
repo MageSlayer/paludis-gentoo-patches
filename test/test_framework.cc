@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -129,9 +129,15 @@ namespace paludis
     struct Implementation<TestCase>
     {
         const std::string name;
+        mutable const char * reached_file;
+        mutable const char * reached_function;
+        mutable long reached_line;
 
         Implementation(const std::string & the_name) :
-            name(the_name)
+            name(the_name),
+            reached_file(NULL),
+            reached_function(NULL),
+            reached_line(0)
         {
         }
     };
@@ -157,10 +163,23 @@ TestCase::check(const char * const function, const char * const file,
 }
 
 void
+TestCase::reached(const char * const file, const char * const function,
+        const long line) const
+{
+    _imp->reached_file = file;
+    _imp->reached_function = function;
+    _imp->reached_line = line;
+}
+
+void
 TestCase::call_run()
 {
     try
     {
+        _imp->reached_file = NULL;
+        _imp->reached_function = NULL;
+        _imp->reached_line = 0;
+
         run();
     }
     catch (TestFailedException)
@@ -169,12 +188,14 @@ TestCase::call_run()
     }
     catch (std::exception &e)
     {
-        throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__,
+        throw TestFailedException(_imp->reached_function ? _imp->reached_file : __PRETTY_FUNCTION__,
+                _imp->reached_file ? _imp->reached_file : __FILE__, _imp->reached_line ? _imp->reached_line : __LINE__,
                 "Test threw unexpected exception " + (DebugStringHolder::get_instance()->get())(e));
     }
     catch (...)
     {
-        throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__,
+        throw TestFailedException(_imp->reached_function ? _imp->reached_file : __PRETTY_FUNCTION__,
+                _imp->reached_file ? _imp->reached_file : __FILE__, _imp->reached_line ? _imp->reached_line : __LINE__,
                 "Test threw unexpected unknown exception");
     }
 }
