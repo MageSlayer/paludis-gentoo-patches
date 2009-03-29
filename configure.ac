@@ -1029,6 +1029,28 @@ if test "x$enable_ruby" = "xyes" ; then
 	AC_MSG_RESULT([$RUBY_INSTALL_DIR])
 	AC_SUBST([RUBY_INSTALL_DIR])
 
+	AC_MSG_CHECKING([for Ruby hdrdir])
+	RUBY_HDRDIR=`$RUBY -r rbconfig -e 'puts Config::CONFIG@<:@"rubyhdrdir"@:>@'`
+	if test "x$RUBY_HDRDIR" = "x" ; then
+		AC_MSG_ERROR([Could not find Ruby hdrdir])
+	elif test "x$RUBY_HDRDIR" = "xnil" ; then
+		RUBY_HDRDIR=$RUBY_ARCHDIR
+	fi
+	AC_MSG_RESULT([$RUBY_HDRDIR])
+	AC_SUBST([RUBY_HDRDIR])
+
+	AC_MSG_CHECKING([for Ruby hdrarchdir])
+	if test "x$RUBY_ARCHDIR" = "x$RUBY_HDRDIR"; then
+		RUBY_HDRARCHDIR=$RUBY_ARCHDIR
+	else
+		RUBY_HDRARCHDIR=`$RUBY -r rbconfig -e 'puts File.join(Config::CONFIG@<:@"rubyhdrdir"@:>@, Config::CONFIG@<:@"arch"@:>@'\)`
+		if test "x$RUBY_HDRARCHDIR" = "x" ; then
+			AC_MSG_ERROR([Could not find Ruby hdrarchdir])
+		fi
+	fi
+	AC_MSG_RESULT([$RUBY_HDRARCHDIR])
+	AC_SUBST([RUBY_HDRARCHDIR])
+
 fi
 AM_CONDITIONAL([ENABLE_RUBY], test "x$enable_ruby" = "xyes")
 dnl }}}

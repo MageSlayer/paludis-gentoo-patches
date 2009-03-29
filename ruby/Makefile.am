@@ -129,12 +129,12 @@ if ENABLE_RUBY
 
 lib_LTLIBRARIES = libpaludisruby_@PALUDIS_PC_SLOT@.la
 
-libpaludisruby_@PALUDIS_PC_SLOT@_la_CXXFLAGS = $(AM_CXXFLAGS) -I. -I@RUBY_SITEARCHDIR@ -I@RUBY_ARCHDIR@
+libpaludisruby_@PALUDIS_PC_SLOT@_la_CXXFLAGS = $(AM_CXXFLAGS) -I. -I@RUBY_HDRDIR@ -I@RUBY_HDRARCHDIR@
 libpaludisruby_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 paludis_ruby_so.o : paludis_ruby_so.cc
 	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) \
-	    $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(CXXFLAGS) $(AM_CXXFLAGS) -I$(RUBY_SITEARCHDIR) -I$(RUBY_ARCHDIR) -c \
+	    $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(CXXFLAGS) $(AM_CXXFLAGS) -I$(RUBY_HDRDIR) -I$(RUBY_HDRARCHDIR) -c \
 	    -o $@ $(srcdir)/paludis_ruby_so.cc ; then ln -fs .libs/paludis_ruby_so.o $@ ; else rm -f $@ ; exit 1 ; fi
 
 if ENABLE_QA
@@ -166,7 +166,7 @@ rubylib_DATA = Paludis.so
 	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	    $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	    $(AM_LDFLAGS) $(LDFLAGS) $(PTHREAD_LIBS) \
-	    -I@RUBY_SITEARCHDIR@ -l@RUBY_SONAME@ \
+	    -l@RUBY_SONAME@ \
 	    -o $@ \
 	    .libs/paludis_ruby_so.o \
 	    -L$(top_builddir)/ruby/.libs -lpaludisruby_@PALUDIS_PC_SLOT@
@@ -175,7 +175,7 @@ Paludis.so : libpaludisruby_@PALUDIS_PC_SLOT@.la paludis_ruby_so.o
 	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	    $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	    $(AM_LDFLAGS) $(LDFLAGS) $(PTHREAD_LIBS) \
-	    -I@RUBY_SITEARCHDIR@ -l@RUBY_SONAME@ \
+	    -l@RUBY_SONAME@ \
 	    -o $@ \
 	    .libs/paludis_ruby_so.o \
 	    -L$(top_builddir)/ruby/.libs -lpaludisruby_@PALUDIS_PC_SLOT@
