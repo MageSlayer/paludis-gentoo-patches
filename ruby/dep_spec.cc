@@ -944,7 +944,7 @@ namespace
 
             Check_Type(argv[2], T_ARRAY);
             UserPackageDepSpecOptions o;
-            for (int i(0) ; i < RARRAY(argv[2])->len ; ++i)
+            for (int i(0) ; i < RARRAY_LEN(argv[2]) ; ++i)
             {
                 VALUE entry(rb_ary_entry(argv[2], i));
                 Check_Type(entry, T_SYMBOL);

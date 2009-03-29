@@ -917,7 +917,7 @@ namespace
                 rb_raise(rb_eTypeError, "Can't convert %s into Array", rb_obj_classname(d));
             std::tr1::shared_ptr<DestinationsSet> destinations(new DestinationsSet);
 
-            for (long i = 0 ; i < RARRAY(d)->len ; ++i)
+            for (long i = 0 ; i < RARRAY_LEN(d) ; ++i)
                 destinations->insert(value_to_repository(rb_ary_entry(d, i)));
 
             std::tr1::shared_ptr<const SetSpecTree> sst(value_to_dep_tree<SetSpecTree>(da));
@@ -977,7 +977,7 @@ namespace
                 rb_raise(rb_eTypeError, "Can't convert %s into Array", rb_obj_classname(d));
             std::tr1::shared_ptr<DestinationsCollection> destinations(new DestinationsCollection::Concrete);
 
-            for (long i = 0 ; i < RARRAY(d)->len ; ++i)
+            for (long i = 0 ; i < RARRAY_LEN(d) ; ++i)
                 destinations->insert(value_to_repository(rb_ary_entry(d, i)));
 
             return p->already_installed(*value_to_dep_spec(da), destinations) ? Qtrue : Qfalse;

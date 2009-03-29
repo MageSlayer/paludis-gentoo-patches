@@ -334,7 +334,7 @@ namespace
                 master_repository_name = StringValuePtr(argv[2]);
 
                 Check_Type(argv[3], T_ARRAY);
-                for (int i(0) ; i < RARRAY(argv[3])->len ; ++i)
+                for (int i(0) ; i < RARRAY_LEN(argv[3]) ; ++i)
                 {
                     VALUE entry(rb_ary_entry(argv[3], i));
                     extra_repository_dirs->push_back(stringify(StringValuePtr(entry)));

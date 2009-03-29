@@ -522,7 +522,7 @@ MatchPackageOptions
 paludis::ruby::value_to_match_package_options(VALUE v)
 {
     MatchPackageOptions o;
-    for (int i(0) ; i < RARRAY(v)->len ; ++i)
+    for (int i(0) ; i < RARRAY_LEN(v) ; ++i)
     {
         VALUE entry(rb_ary_entry(v, i));
         Check_Type(entry, T_SYMBOL);
