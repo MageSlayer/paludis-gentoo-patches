@@ -137,21 +137,28 @@ namespace
     VALUE
     environment_accept_keywords(VALUE self, VALUE keywords, VALUE p)
     {
-        try
+        if (rb_obj_is_kind_of(keywords, rb_cArray))
         {
-            std::tr1::shared_ptr<KeywordNameSet> knc (new KeywordNameSet);
-            long len = NUM2LONG(rb_funcall(keywords,rb_intern("length"),0));
-            for (long i = 0; i < len; i++)
+            try
             {
-                // Stupid macros won't let me do it on one line.
-                VALUE kw = rb_ary_entry(keywords, i);
-                knc->insert(KeywordName(StringValuePtr(kw)));
+                std::tr1::shared_ptr<KeywordNameSet> knc (new KeywordNameSet);
+                long len = NUM2LONG(rb_funcall(keywords,rb_intern("length"),0));
+                for (long i = 0; i < len; i++)
+                {
+                    // Stupid macros won't let me do it on one line.
+                    VALUE kw = rb_ary_entry(keywords, i);
+                    knc->insert(KeywordName(StringValuePtr(kw)));
+                }
+                return value_to_environment(self)->accept_keywords(knc, *value_to_package_id(p)) ? Qtrue : Qfalse;
             }
-            return value_to_environment(self)->accept_keywords(knc, *value_to_package_id(p)) ? Qtrue : Qfalse;
+            catch (const std::exception & e)
+            {
+                exception_to_ruby_exception(e);
+            }
         }
-        catch (const std::exception & e)
+        else
         {
-            exception_to_ruby_exception(e);
+            rb_raise(rb_eTypeError, "Can't convert %s into Array", rb_obj_classname(keywords));
         }
     }
 
