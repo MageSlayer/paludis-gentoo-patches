@@ -230,6 +230,16 @@ namespace
                     throw InternalError(PALUDIS_HERE, "S takes no extra value");
                 return make_shared_ptr(new DepListEntryHandledSuccess);
 
+            case 'E':
+                if (s.length() != 1)
+                    throw InternalError(PALUDIS_HERE, "E takes no extra value");
+                return make_shared_ptr(new DepListEntryHandledFetchFailed);
+
+            case 'T':
+                if (s.length() != 1)
+                    throw InternalError(PALUDIS_HERE, "T takes no extra value");
+                return make_shared_ptr(new DepListEntryHandledFetchSuccess);
+
             case 'U':
                 return make_shared_ptr(new DepListEntryHandledSkippedUnsatisfied(
                             parse_user_package_dep_spec(s.substr(1), env, UserPackageDepSpecOptions())));
@@ -265,7 +275,7 @@ void
 InstallTask::set_targets_from_serialisation(const std::string & format,
         const std::tr1::shared_ptr<const Sequence<std::string> > & ss)
 {
-    if (format != "0.25")
+    if (format != "0.25" && format != "0.37")
         throw InternalError(PALUDIS_HERE, "Serialisation format '" + format + "' not supported by this version of Paludis");
 
     for (Sequence<std::string>::ConstIterator s(ss->begin()), s_end(ss->end()) ;
@@ -324,7 +334,7 @@ InstallTask::set_targets_from_serialisation(const std::string & format,
 std::string
 InstallTask::serialised_format() const
 {
-    return "0.25";
+    return "0.37";
 }
 
 namespace
@@ -347,6 +357,16 @@ namespace
         void visit(const DepListEntryHandledSuccess &)
         {
             result = "S";
+        }
+
+        void visit(const DepListEntryHandledFetchFailed &)
+        {
+            result = "E";
+        }
+
+        void visit(const DepListEntryHandledFetchSuccess &)
+        {
+            result = "T";
         }
 
         void visit(const DepListEntryHandledFailed &)
@@ -618,7 +638,20 @@ namespace
             task.on_display_failure_summary_failure(*entry);
         }
 
+        void visit(const DepListEntryHandledFetchFailed &)
+        {
+            ++failures;
+            ++total;
+            task.on_display_failure_summary_failure(*entry);
+        }
+
         void visit(const DepListEntryUnhandled &)
+        {
+            ++unreached;
+            ++total;
+        }
+
+        void visit(const DepListEntryHandledFetchSuccess &)
         {
             ++unreached;
             ++total;
@@ -833,6 +866,7 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
             if (output_manager_holder->output_manager_if_constructed())
                 output_manager_holder->output_manager_if_constructed()->succeeded();
             output_manager_holder.reset();
+            dep->handled().reset(new DepListEntryHandledFetchSuccess);
         }
 
         if (! _imp->fetch_only)
@@ -943,10 +977,8 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
 }
 
 void
-InstallTask::_main_actions()
+InstallTask::_main_actions_pre_hooks()
 {
-    using namespace std::tr1::placeholders;
-
     /* we're about to fetch / install the entire list */
     if (_imp->fetch_only)
     {
@@ -970,18 +1002,13 @@ InstallTask::_main_actions()
             throw InstallActionError("Install aborted by hook");
         on_install_all_pre();
     }
+}
 
-    /* fetch / install our entire list */
-    int x(0), y(0), s(0), f(0);
+void
+InstallTask::_main_actions_all(const int y, const DepList::Iterator dep_last_package)
+{
+    int x(0), s(0), f(0);
     bool is_first(true), is_last(false);
-    DepList::Iterator dep_last_package(_imp->dep_list.end());
-    for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
-            dep != dep_end ; ++dep)
-        if (dep->kind() == dlk_package)
-        {
-            dep_last_package = dep;
-            ++y;
-        }
 
     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
             dep != dep_end ; ++dep)
@@ -1053,7 +1080,7 @@ InstallTask::_main_actions()
         }
         catch (const FetchActionError & e)
         {
-            dep->handled().reset(new DepListEntryHandledFailed);
+            dep->handled().reset(new DepListEntryHandledFetchFailed);
             if (output_manager_holder && output_manager_holder->output_manager_if_constructed())
                 on_fetch_action_error(output_manager_holder->output_manager_if_constructed(), e);
             else
@@ -1063,6 +1090,28 @@ InstallTask::_main_actions()
 
         is_first = false;
     }
+}
+
+
+void
+InstallTask::_main_actions()
+{
+    using namespace std::tr1::placeholders;
+
+    _main_actions_pre_hooks();
+
+    /* fetch / install our entire list */
+    int y(0);
+    DepList::Iterator dep_last_package(_imp->dep_list.end());
+    for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
+            dep != dep_end ; ++dep)
+        if (dep->kind() == dlk_package)
+        {
+            dep_last_package = dep;
+            ++y;
+        }
+
+    _main_actions_all(y, dep_last_package);
 
     /* go no further if we had failures */
     if (had_action_failures())
@@ -1071,6 +1120,13 @@ InstallTask::_main_actions()
         return;
     }
 
+
+    _do_world_updates();
+}
+
+void
+InstallTask::_do_world_updates()
+{
     /* update world */
     if (! _imp->fetch_only)
     {
@@ -1129,7 +1185,11 @@ InstallTask::_main_actions()
         else
             on_preserve_world();
     }
+}
 
+void
+InstallTask::_main_actions_post_hooks()
+{
     /* we've fetched / installed the entire list */
     if (_imp->fetch_only)
     {
@@ -1552,6 +1612,15 @@ namespace
         void visit(const DepListEntryUnhandled &)
         {
         }
+
+        void visit(const DepListEntryHandledFetchFailed &)
+        {
+            failure = true;
+        }
+
+        void visit(const DepListEntryHandledFetchSuccess &)
+        {
+        }
     };
 
     struct CheckIndependentVisitor
@@ -1774,6 +1843,16 @@ namespace
         }
 
         void visit(const DepListEntryNoHandlingRequired &)
+        {
+            result = false;
+        }
+
+        void visit(const DepListEntryHandledFetchFailed &)
+        {
+            result = false;
+        }
+
+        void visit(const DepListEntryHandledFetchSuccess &)
         {
             result = false;
         }

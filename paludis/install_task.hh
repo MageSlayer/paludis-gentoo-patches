@@ -59,10 +59,17 @@ namespace paludis
     {
         private:
             void _execute();
+
             void _build_dep_list();
             void _display_task_list();
             bool _pretend();
+
             void _main_actions();
+            void _main_actions_pre_hooks();
+            void _main_actions_post_hooks();
+            void _do_world_updates();
+            void _main_actions_all(const int y, const DepList::Iterator dep_last_package);
+
             void _one(const DepList::Iterator, const int, const int, const int, const int, const bool is_first, const bool is_last,
                     std::tr1::shared_ptr<OutputManagerFromEnvironment> &);
             void _clean(const DepList::Iterator, const std::tr1::shared_ptr<const PackageID> & id,

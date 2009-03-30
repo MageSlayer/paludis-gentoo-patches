@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -51,6 +51,8 @@ namespace paludis
     class PALUDIS_VISIBLE DepListEntryHandled :
         public virtual DeclareAbstractAcceptMethods<DepListEntryHandled, MakeTypeList<
                 DepListEntryHandledSuccess,
+                DepListEntryHandledFetchSuccess,
+                DepListEntryHandledFetchFailed,
                 DepListEntryHandledSkippedUnsatisfied,
                 DepListEntryHandledSkippedDependent,
                 DepListEntryHandledFailed,
@@ -97,6 +99,20 @@ namespace paludis
     class PALUDIS_VISIBLE DepListEntryHandledSuccess :
         public DepListEntryHandled,
         public ImplementAcceptMethods<DepListEntryHandled, DepListEntryHandledSuccess>
+    {
+    };
+
+    /**
+     * Represents a DepListEntry that has been fetched successfully, but has
+     * not yet started its install.
+     *
+     * \ingroup g_dep_list
+     * \since 0.38
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE DepListEntryHandledFetchSuccess :
+        public DepListEntryHandled,
+        public ImplementAcceptMethods<DepListEntryHandled, DepListEntryHandledFetchSuccess>
     {
     };
 
@@ -168,6 +184,19 @@ namespace paludis
     class PALUDIS_VISIBLE DepListEntryHandledFailed :
         public DepListEntryHandled,
         public ImplementAcceptMethods<DepListEntryHandled, DepListEntryHandledFailed>
+    {
+    };
+
+    /**
+     * Represents a DepListEntry that failed its fetch.
+     *
+     * \ingroup g_dep_list
+     * \since 0.38
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE DepListEntryHandledFetchFailed :
+        public DepListEntryHandled,
+        public ImplementAcceptMethods<DepListEntryHandled, DepListEntryHandledFetchFailed>
     {
     };
 }
