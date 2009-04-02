@@ -735,8 +735,14 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type 
         if (d->already_installed(**c, destinations))
         {
             Context context("When using already installed group to resolve dependencies:");
-            d->add_not_top_level(only_if_not_suggested_label, **c, destinations);
-            return;
+            try
+            {
+                d->add_not_top_level(only_if_not_suggested_label, **c, destinations);
+                return;
+            }
+            catch (const DepListError &)
+            {
+            }
         }
     }
 

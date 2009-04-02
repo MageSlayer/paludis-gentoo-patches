@@ -1898,6 +1898,27 @@ namespace test_cases
     } test_dep_list_79;
 
     /**
+     * \test Test DepList resolution behaviour.
+     *
+     */
+    struct DepListTestCase80 : DepListTestCase<80>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "pkg-bin", "1");
+            std::tr1::shared_ptr<FakePackageID> catpkg(repo->add_version("cat", "pkg", "1"));
+            catpkg->build_dependencies_key()->set_from_string("|| ( cat/pkg-bin cat/pkg )");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/pkg";
+            expected.push_back("cat/pkg-bin-1:0::repo");
+            expected.push_back("cat/pkg-1:0::repo");
+        }
+    } test_dep_list_80;
+
+    /**
      * \test Test DepList transactional add behaviour.
      *
      */
