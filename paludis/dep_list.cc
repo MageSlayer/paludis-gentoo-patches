@@ -334,6 +334,7 @@ namespace
 
         void visit(const DependencyRecommendedLabel &)
         {
+            result = true;
         }
 
         void visit(const DependencySuggestedLabel &)
