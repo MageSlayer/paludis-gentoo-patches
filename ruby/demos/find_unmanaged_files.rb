@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # vim: set sw=4 sts=4 et tw=80 :
 #
-['Paludis','find','getoptlong'].each {|x| require x}
+%w[Paludis find getoptlong].each {|x| require x}
 
 include Paludis
 
