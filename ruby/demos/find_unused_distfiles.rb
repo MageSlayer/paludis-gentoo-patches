@@ -71,10 +71,10 @@ opts.each do | opt, arg |
         if arg =~ /^[0-9]+[gmkb]$/i then
             size_limit = arg[0..-2].to_i *
                 case arg.downcase[-1]
-                when ?b: 1
-                when ?k: 1024
-                when ?m: 1024 * 1024
-                when ?g: 1024 * 1024 * 1024
+                when ?b then 1
+                when ?k then 1024
+                when ?m then 1024 * 1024
+                when ?g then 1024 * 1024 * 1024
                 end
         else
             puts "Bad --size-limit value " + arg
@@ -85,11 +85,11 @@ opts.each do | opt, arg |
         if arg =~ /^[0-9]+[ymwdh]/ then
             time_limit = Time.now - arg[0..-2].to_i *
                 case arg.downcase[-1]
-                when ?h: 60 * 60
-                when ?d: 60 * 60 * 24
-                when ?w: 60 * 60 * 24 * 7
-                when ?m: 60 * 60 * 24 * 30
-                when ?y: 60 * 60 * 24 * 365
+                when ?h then 60 * 60
+                when ?d then 60 * 60 * 24
+                when ?w then 60 * 60 * 24 * 7
+                when ?m then 60 * 60 * 24 * 30
+                when ?y then 60 * 60 * 24 * 365
                 end
         else
             puts "Bad --time-limit value " + arg
