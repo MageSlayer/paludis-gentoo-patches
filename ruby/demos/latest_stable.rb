@@ -19,7 +19,7 @@ opts = GetoptLong.new(
 
 repository_dir = Dir.pwd
 write_cache_dir = '/var/empty'
-master_repository_dir = '/var/empty'
+master_repository_dir = ''
 
 opts.each do | opt, arg |
     case opt

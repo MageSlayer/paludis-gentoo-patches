@@ -75,7 +75,7 @@ opts = GetoptLong.new(
 output_image = nil
 repository_dir = Dir.getwd
 write_cache_dir = '/var/empty'
-master_repository_dir = '/var/empty'
+master_repository_dir = ''
 
 opts.each do | opt, arg |
     case opt
