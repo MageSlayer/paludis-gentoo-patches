@@ -36,6 +36,7 @@
 #include <paludis/repositories/e/layout.hh>
 #include <paludis/repositories/e/info_metadata_key.hh>
 #include <paludis/repositories/e/extra_distribution_data.hh>
+#include <paludis/repositories/e/memoised_hashes.hh>
 
 #ifdef ENABLE_QA
 #  include <paludis/repositories/e/qa/qa_controller.hh>
@@ -1239,20 +1240,13 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
 
             SafeIFStream file_stream(f);
 
-            RMD160 rmd160sum(file_stream);
+            MemoisedHashes * hashes = MemoisedHashes::get_instance();
+
             manifest << "DIST " << f.basename() << " "
                 << f.file_size()
-                << " RMD160 " << rmd160sum.hexsum();
-
-            file_stream.clear();
-            file_stream.seekg(0, std::ios::beg);
-            SHA1 sha1sum(file_stream);
-            manifest << " SHA1 " << sha1sum.hexsum();
-
-            file_stream.clear();
-            file_stream.seekg(0, std::ios::beg);
-            SHA256 sha256sum(file_stream);
-            manifest << " SHA256 " << sha256sum.hexsum()
+                << " RMD160 " << hashes->get<RMD160>(f, file_stream)
+                << " SHA1 " << hashes->get<SHA1>(f, file_stream)
+                << " SHA256 " << hashes->get<SHA256>(f, file_stream)
                 << std::endl;
         }
     }

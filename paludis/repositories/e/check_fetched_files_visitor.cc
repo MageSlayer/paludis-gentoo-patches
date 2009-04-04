@@ -18,6 +18,7 @@
  */
 
 #include <paludis/repositories/e/check_fetched_files_visitor.hh>
+#include <paludis/repositories/e/memoised_hashes.hh>
 #include <paludis/repositories/e/source_uri_finder.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/repositories/e/e_repository_params.hh>
@@ -241,10 +242,13 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
         {
             SafeIFStream file_stream(distfile);
 
+            MemoisedHashes * hashes = MemoisedHashes::get_instance();
+
             if (! m->rmd160().empty())
             {
-                RMD160 rmd160sum(file_stream);
-                if (rmd160sum.hexsum() != m->rmd160())
+                std::string rmd160hexsum(hashes->get<RMD160>(distfile, file_stream));
+
+                if (rmd160hexsum != m->rmd160())
                 {
                     Log::get_instance()->message("e.manifest.rmd160.failure", ll_debug, lc_context)
                         << "Malformed Manifest: failed RMD160 checksum";
@@ -258,15 +262,14 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                     return false;
                 }
                 Log::get_instance()->message("e.manifest.rmd160.result", ll_debug, lc_context)
-                    << "Actual RMD160 = " << rmd160sum.hexsum();
-                file_stream.clear();
-                file_stream.seekg(0, std::ios::beg);
+                    << "Actual RMD160 = " << rmd160hexsum;
             }
 
             if (! m->sha1().empty())
             {
-                SHA1 sha1sum(file_stream);
-                if (sha1sum.hexsum() != m->sha1())
+                std::string sha1hexsum(hashes->get<SHA1>(distfile, file_stream));
+
+                if (sha1hexsum != m->sha1())
                 {
                     Log::get_instance()->message("e.manifest.sha1.failure", ll_debug, lc_context)
                         << "Malformed Manifest: failed SHA1 checksum";
@@ -280,15 +283,14 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                     return false;
                 }
                 Log::get_instance()->message("e.manifest.sha1.result", ll_debug, lc_context)
-                    << "Actual SHA1 = " << sha1sum.hexsum();
-                file_stream.clear();
-                file_stream.seekg(0, std::ios::beg);
+                    << "Actual SHA1 = " << sha1hexsum;
             }
 
             if (! m->sha256().empty())
             {
-                SHA256 sha256sum(file_stream);
-                if (sha256sum.hexsum() != m->sha256())
+                std::string sha256hexsum(hashes->get<SHA256>(distfile, file_stream));
+
+                if (sha256hexsum != m->sha256())
                 {
                     Log::get_instance()->message("e.manifest.sha256.failure", ll_debug, lc_context)
                         << "Malformed Manifest: failed SHA256 checksum";
@@ -302,15 +304,14 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                     return false;
                 }
                 Log::get_instance()->message("e.manifest.sha256.result", ll_debug, lc_context)
-                    << "Actual SHA256 = " << sha256sum.hexsum();
-                file_stream.clear();
-                file_stream.seekg(0, std::ios::beg);
+                    << "Actual SHA256 = " << sha256hexsum;
             }
 
             if (! m->md5().empty())
             {
-                MD5 md5sum(file_stream);
-                if (md5sum.hexsum() != m->md5())
+                std::string md5hexsum(hashes->get<MD5>(distfile, file_stream));
+
+                if (md5hexsum != m->md5())
                 {
                     Log::get_instance()->message("e.manifest.md5.failure", ll_debug, lc_context)
                         << "Malformed Manifest: failed MD5 checksum";
@@ -324,7 +325,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                     return false;
                 }
                 Log::get_instance()->message("e.manifest.md5.result", ll_debug, lc_context)
-                    << "Actual MD5 = " << md5sum.hexsum();
+                    << "Actual MD5 = " << md5hexsum;
             }
         }
         catch (const SafeIFStreamError &)

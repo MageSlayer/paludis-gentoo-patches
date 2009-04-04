@@ -72,6 +72,7 @@ paludis_repositories_e_include_HEADERS = \
 	glsa.hh \
 	layout.hh \
 	manifest2_reader.hh \
+	memoised_hashes.hh \
 	metadata_xml.hh \
 	myoption.hh \
 	myoptions_requirements_verifier.hh \
@@ -129,6 +130,7 @@ libpaludiserepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	glsa.cc \
 	layout.cc \
 	manifest2_reader.cc \
+	memoised_hashes.cc \
 	metadata_xml.cc \
 	myoption.cc \
 	myoptions_requirements_verifier.cc \
