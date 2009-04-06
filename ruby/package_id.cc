@@ -436,6 +436,8 @@ namespace
                         &KeyValue<MetadataValueKey<std::tr1::shared_ptr<const Choices> >, &PackageID::choices_key>::fetch)), 0);
         rb_define_method(c_package_id, "slot_key", RUBY_FUNC_CAST((
                         &KeyValue<MetadataValueKey<SlotName>, &PackageID::slot_key>::fetch)), 0);
+        rb_define_method(c_package_id, "transient_key", RUBY_FUNC_CAST((
+                        &KeyValue<MetadataValueKey<bool>, &PackageID::transient_key>::fetch)), 0);
 
         /*
          * Document-module: Paludis::PackageIDCanonicalForm
