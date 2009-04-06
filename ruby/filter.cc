@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,6 +31,7 @@ namespace
     static VALUE c_filter_not_masked;
     static VALUE c_filter_installed_at_root;
     static VALUE c_filter_and;
+    static VALUE c_filter_same_slot;
 
     VALUE
     filter_init(int, VALUE *, VALUE self)
@@ -156,6 +157,31 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     new(PackageID) -> Filter
+     *
+     * Create a Filter that accepts packages that have the same slot as the given ID.
+     */
+    VALUE
+    filter_same_slot_new(VALUE self, VALUE id_v)
+    {
+        Filter * ptr(0);
+        try
+        {
+            std::tr1::shared_ptr<const PackageID> id = value_to_package_id(id_v);
+            ptr = new filter::SameSlot(id);
+            VALUE data(Data_Wrap_Struct(self, 0, &Common<Filter>::free, ptr));
+            rb_obj_call_init(data, 1, &id_v);
+            return data;
+        }
+        catch (const std::exception & e)
+        {
+            delete ptr;
+            exception_to_ruby_exception(e);
+        }
+    }
+
     void do_register_filter()
     {
         /*
@@ -215,6 +241,14 @@ namespace
          */
         c_filter_supports_action = rb_define_class_under(c_filter_module, "SupportsAction", c_filter);
         rb_define_singleton_method(c_filter_supports_action, "new", RUBY_FUNC_CAST(&filter_supports_action_new), 1);
+
+        /*
+         * Document-class: Paludis::Filter::SameSlot
+         *
+         * Accept packages that have the same slot as a given PackageID.
+         */
+        c_filter_same_slot = rb_define_class_under(c_filter_module, "SameSlot", c_filter);
+        rb_define_singleton_method(c_filter_same_slot, "new", RUBY_FUNC_CAST(&filter_same_slot_new), 1);
     }
 }
 
