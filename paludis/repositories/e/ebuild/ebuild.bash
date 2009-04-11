@@ -222,7 +222,6 @@ ebuild_scrub_environment()
                 echo E_${v}
             done )
         unset -v ${!PALUDIS_*}
-        unset -v ${!EXPARAMVAR_*}
 
         unset -v $(
             for v in ${!SANDBOX_*}; do
