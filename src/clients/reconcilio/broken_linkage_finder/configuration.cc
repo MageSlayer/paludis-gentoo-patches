@@ -290,7 +290,7 @@ Implementation<Configuration>::add_defaults()
     static const std::string default_search_dirs(
         "/bin /sbin /usr/bin /usr/sbin /lib* /usr/lib*");
     static const std::string default_search_dirs_mask(
-        "/opt/OpenOffice /usr/lib*/openoffice /lib*/modules");
+        "/lib*/modules");
     static const std::string default_ld_so_conf("/lib /usr/lib");
 
     Log::get_instance()->message("reconcilio.broken_linkage_finder.config", ll_debug, lc_context)
