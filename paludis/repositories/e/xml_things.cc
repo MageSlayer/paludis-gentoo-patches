@@ -398,18 +398,21 @@ paludis_xml_things_create_metadata_xml_from_xml_file(const FSEntry & filename)
     std::tr1::shared_ptr<xmlXPathObject> longdesc_object;
     longdesc_object = manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string(
                     "//pkgmetadata/longdescription[@lang=\"en\"]"), doc_context.get()), xmlXPathFreeObject);
-    if (0 == longdesc_object->nodesetval->nodeNr)
+    if (0 == longdesc_object->nodesetval || 0 == longdesc_object->nodesetval->nodeNr)
         longdesc_object = manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string(
                         "//pkgmetadata/longdescription[not(@lang)]"), doc_context.get()), xmlXPathFreeObject);
 
-    for (int i = 0 ; i != longdesc_object->nodesetval->nodeNr ; ++i)
+    if (0 != longdesc_object->nodesetval)
     {
-        text_context->node = longdesc_object->nodesetval->nodeTab[i];
-        std::tr1::shared_ptr<xmlXPathObject> text_object(manage_libxml_ptr(
-                    xmlXPathEvalExpression(stupid_libxml_string("descendant::text()"),
-                        text_context.get()), xmlXPathFreeObject));
+        for (int i = 0 ; i != longdesc_object->nodesetval->nodeNr ; ++i)
+        {
+            text_context->node = longdesc_object->nodesetval->nodeTab[i];
+            std::tr1::shared_ptr<xmlXPathObject> text_object(manage_libxml_ptr(
+                        xmlXPathEvalExpression(stupid_libxml_string("descendant::text()"),
+                            text_context.get()), xmlXPathFreeObject));
 
-        result->long_description() = extract_children_text(text_object);
+            result->long_description() = extract_children_text(text_object);
+        }
     }
 
     return result;
