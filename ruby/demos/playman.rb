@@ -62,7 +62,7 @@ Usage: #{$0} [options] [overlay1] [overlay2] [...]
 Options:
   --help, -h             Display a help message
   --version, -V          Display program version
-  --log-level            Set log level (debug, qa, warning, slient)
+  --log-level            Set log level (debug, qa, warning, silent)
   --environment, -E      Environment specification (class:suffix, both parts
                          optional, class must be 'paludis' if specified)
   --config-suffix, -c    Set configuration suffix (deprecated, use --environment)
