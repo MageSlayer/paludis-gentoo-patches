@@ -290,6 +290,14 @@ namespace paludis
                 &KeyValueConfigFile::no_transformation));
         }
 
+        if (! kv->get("PALUDIS_NO_WRITE_CACHE_CLEAN").empty())
+        {
+            Log::get_instance()->message("paludis_environment.dodgy_script_config", ll_warning, lc_context)
+                << "It looks like you configured Paludis using a dodgy broken script you found on the "
+                "forums. Unfortunately, your system is probably now broken beyond repair. Please start again, "
+                "and have more care when deciding how to set things up.";
+        }
+
         if (! kv->get("reduced_username").empty())
             reduced_username = kv->get("reduced_username");
 
