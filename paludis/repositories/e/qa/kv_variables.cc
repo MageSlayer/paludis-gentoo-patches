@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,7 +21,7 @@
 #include <paludis/qa.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/log.hh>
-#include <pcre++.h>
+#include <pcrecpp.h>
 #include <list>
 #include <sstream>
 
@@ -37,8 +37,8 @@ paludis::erepository::kv_variables_check(
 {
     Context context("When performing check '" + name + "' using kv_variables on '" + stringify(*id) + "':");
 
-    pcrepp::Pcre::Pcre r_global("^[a-zA-Z0-9\\_]+=.*\\$[{}]?KV");
-    pcrepp::Pcre::Pcre r_detect_version("^detect_version$");
+    pcrecpp::RE r_global("^[a-zA-Z0-9\\_]+=.*\\$[{}]?KV");
+    pcrecpp::RE r_detect_version("^detect_version$");
 
     Log::get_instance()->message("e.qa.kv_variables_check", ll_debug, lc_context) << "kv_variables '"
         << entry << "', '" << *id << "', '" << name << "'";
@@ -51,10 +51,10 @@ paludis::erepository::kv_variables_check(
     {
         ++line_number;
 
-        if (r_detect_version.search(line))
+        if (r_detect_version.PartialMatch(line))
             break;
 
-        if (r_global.search(line))
+        if (r_global.PartialMatch(line))
             reporter.message(QAMessage(entry, qaml_normal, name, "KV variable with no detect_version on line "
                         + stringify(line_number) + ": " + strip_leading(line, " \t")));
     }

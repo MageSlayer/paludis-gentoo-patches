@@ -20,7 +20,7 @@
 #include <paludis/repositories/e/qa/subshell_die.hh>
 #include <paludis/qa.hh>
 #include <paludis/util/log.hh>
-#include <pcre++.h>
+#include <pcrecpp.h>
 #include <list>
 #include <sstream>
 
@@ -45,8 +45,8 @@ paludis::erepository::subshell_die_check(
 {
     Context context("When performing check '" + name + "' using subshell_die_check on '" + (id ? stringify(*id) : stringify(entry)) + "':");
 
-    pcrepp::Pcre::Pcre r_comment("^\\s*#");
-    pcrepp::Pcre::Pcre r_subshell_die("\\([^\\)]*\\bdie\\b");
+    pcrecpp::RE r_comment("^\\s*#");
+    pcrecpp::RE r_subshell_die("\\([^\\)]*\\bdie\\b");
 
     if (id)
         Log::get_instance()->message("e.qa.subshell_die_check", ll_debug, lc_context) << "subshell_die '"
@@ -63,10 +63,10 @@ paludis::erepository::subshell_die_check(
     {
         ++line;
 
-        if (s.empty() || r_comment.search(s))
+        if (s.empty() || r_comment.PartialMatch(s))
             continue;
 
-        if (r_subshell_die.search(s))
+        if (r_subshell_die.PartialMatch(s))
         {
             reporter.message(with_id(QAMessage(entry, qaml_normal, name, "Invalid call of 'die' within subshell on line "
                     + stringify(line)), id));

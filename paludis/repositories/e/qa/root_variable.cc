@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,7 +21,7 @@
 #include <paludis/qa.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
-#include <pcre++.h>
+#include <pcrecpp.h>
 #include <list>
 #include <sstream>
 
@@ -46,9 +46,9 @@ paludis::erepository::root_variable_check(
 {
     Context context("When performing check '" + name + "' using root_variable_check on '" + stringify(*id) + "':");
 
-    pcrepp::Pcre::Pcre r_root("\\$[{]?ROOT[}]?([^=a-zA-Z0-9]|$)");
-    pcrepp::Pcre::Pcre r_start("^src_");
-    pcrepp::Pcre::Pcre r_end("^}");
+    pcrecpp::RE r_root("\\$[{]?ROOT[}]?([^=a-zA-Z0-9]|$)");
+    pcrecpp::RE r_start("^src_");
+    pcrecpp::RE r_end("^}");
 
     Log::get_instance()->message("e.qa.root_variable_check", ll_debug, lc_context) << "root_variable '"
         << entry << "', '" << *id << "', '" << name << "'";
@@ -67,7 +67,7 @@ paludis::erepository::root_variable_check(
         {
             case st_default:
                 {
-                    if (r_start.search(line))
+                    if (r_start.PartialMatch(line))
                     {
                         state = st_in_src;
                         func = line;
@@ -79,9 +79,9 @@ paludis::erepository::root_variable_check(
 
             case st_in_src:
                 {
-                    if (r_end.search(line))
+                    if (r_end.PartialMatch(line))
                         state = st_default;
-                    else if (r_root.search(line))
+                    else if (r_root.PartialMatch(line))
                         reporter.message(QAMessage(entry, qaml_maybe, name, "ROOT abuse in " + func + " on line "
                                 + stringify(line_number) + ": " + strip_leading(line, " \t"))
                                 .with_associated_id(id));

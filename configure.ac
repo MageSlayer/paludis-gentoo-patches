@@ -411,7 +411,7 @@ enum class C : long { c };
 dnl }}}
 
 need_xml_check=
-need_pcrepp_check=
+need_pcrecpp_check=
 need_syck_check=
 need_gem_check=
 
@@ -902,13 +902,13 @@ AM_CONDITIONAL([HAVE_HTMLTIDY], test "x$HAVE_HTMLTIDY" = "xyes")
 dnl {{{ check for whether to build qa stuff
 AC_MSG_CHECKING([whether to build QA tools])
 AC_ARG_ENABLE([qa],
-			  AS_HELP_STRING([--enable-qa], [Build QA things (needs pcre++)]),
+			  AS_HELP_STRING([--enable-qa], [Build QA things (needs pcrecpp)]),
 			  [ENABLE_QA=$enableval
 			   AC_MSG_RESULT([$enableval])],
 			  [ENABLE_QA=no
 			   AC_MSG_RESULT([no])])
 if test x"$ENABLE_QA" = "xyes" ; then
-	need_pcrepp_check=yes
+	need_pcrecpp_check=yes
 	AC_DEFINE([ENABLE_RUBY_QA], [1], [Enable QA support in ruby])
 	AC_DEFINE([ENABLE_QA], [1], [Build QA things])
 fi
@@ -1405,7 +1405,7 @@ AC_SUBST([ALL_CLIENTS_HTML])
 AC_SUBST([BUILD_CLIENTS])
 
 if echo $clients | tr ' ' '\n' | grep '^inquisitio$' >/dev/null ; then
-	need_pcrepp_check=yes
+	need_pcrecpp_check=yes
 fi
 dnl }}}
 
@@ -1421,17 +1421,12 @@ AC_SUBST([NEED_XML])
 AM_CONDITIONAL([NEED_XML], test "x$NEED_XML" = "xyes")
 dnl }}}
 
-dnl {{{ pcrepp check
-if test "x$need_pcrepp_check" = "xyes" ; then
-	AC_CHECK_PROG(HAVE_PRCEPLUSPLUS, [pcre++-config], [yes], [no])
-	if test x"$HAVE_PRCEPLUSPLUS" = "xyes" ; then
-		PCREPLUSPLUS_CFLAGS=`pcre++-config --cflags`
-		AC_SUBST(PCREPLUSPLUS_CFLAGS)
-		PCREPLUSPLUS_LIBS=`pcre++-config --libs`
-		AC_SUBST(PCREPLUSPLUS_LIBS)
-	else
-		AC_MSG_ERROR([pcre++ (http://www.daemon.de/PCRE) is required if --enable-qa or --with-clients=inquisitio is used])
-	fi
+dnl {{{ pcrecpp check
+if test "x$need_pcrecpp_check" = "xyes" ; then
+	PKG_CHECK_MODULES(PCRECPPDEPS, [libpcrecpp >= 7.8], [],
+		[AC_MSG_ERROR([pcrecpp (http://www.pcre.org/) is required if --enable-qa or --with-clients=inquisitio is used])])
+	AC_SUBST(PCRECPPDEPS_CFLAGS)
+	AC_SUBST(PCRECPPDEPS_LIBS)
 fi
 dnl }}}
 

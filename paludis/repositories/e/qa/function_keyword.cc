@@ -20,7 +20,7 @@
 #include "function_keyword.hh"
 #include <paludis/qa.hh>
 #include <paludis/util/log.hh>
-#include <pcre++.h>
+#include <pcrecpp.h>
 #include <list>
 #include <sstream>
 
@@ -45,7 +45,7 @@ paludis::erepository::function_keyword_check(
 {
     Context context("When performing check '" + name + "' using function_keyword_check on '" + (id ? stringify(*id) : stringify(entry)) + "':");
 
-    pcrepp::Pcre::Pcre r_function("^function +[^ ]+ *(\\(\\))? *{?");
+    pcrecpp::RE r_function("^function +[^ ]+ *(\\(\\))? *{?");
 
     if (id)
         Log::get_instance()->message("e.qa.function_keyword_check", ll_debug, lc_context) << "function_keyword '"
@@ -65,7 +65,7 @@ paludis::erepository::function_keyword_check(
         if (s.empty())
             continue;
 
-        if (r_function.search(s))
+        if (r_function.PartialMatch(s))
             reporter.message(with_id(QAMessage(entry, qaml_minor, name, "Use of the keyword 'function' on line " + stringify(line_number)), id));
     }
 

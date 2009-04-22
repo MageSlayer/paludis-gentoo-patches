@@ -5,7 +5,7 @@ MAINTAINERCLEANFILES = Makefile.in
 
 AM_CXXFLAGS = \
 	-I$(top_srcdir) -I$(top_builddir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@ \
-	$(PCREPLUSPLUS_CFLAGS)
+	$(PCRECPPDEPS_CFLAGS)
 
 DEFS = \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
@@ -105,7 +105,7 @@ libpaludiserepositoryqa_@PALUDIS_PC_SLOT@_la_SOURCES = \
 
 libpaludiserepositoryqa_@PALUDIS_PC_SLOT@_la_LDFLAGS = \
 	-version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 \
-	$(PCREPLUSPLUS_LIBS)
+	$(PCRECPPDEPS_LIBS)
 
 libpaludiserepositoryqa_@PALUDIS_PC_SLOT@_la_LIBADD = \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \

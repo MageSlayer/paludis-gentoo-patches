@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,7 +33,7 @@
 #include <string>
 #include <sstream>
 #include <utility>
-#include <pcre++.h>
+#include <pcrecpp.h>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -85,13 +85,13 @@ paludis::erepository::deprecated_functions_check(
 {
     Context context("When performing check '" + name + "' using deprecated_functions_check on '" + (id ? stringify(*id) : stringify(entry)) + "':");
 
-    pcrepp::Pcre::Pcre r_comment("^\\s*#");
-    std::list<std::pair<std::string, pcrepp::Pcre::Pcre> > deprecated_functions;
+    pcrecpp::RE r_comment("^\\s*#");
+    std::list<std::pair<std::string, pcrecpp::RE> > deprecated_functions;
     for (std::list<std::string>::const_iterator
              it(DeprecatedFunctions::get_instance()->deprecated_functions.begin()),
              it_end(DeprecatedFunctions::get_instance()->deprecated_functions.end());
              it_end != it; ++it)
-        deprecated_functions.push_back(std::make_pair(*it, pcrepp::Pcre::Pcre(*it)));
+        deprecated_functions.push_back(std::make_pair(*it, pcrecpp::RE(*it)));
 
     if (id)
         Log::get_instance()->message("e.qa.deprecated_functions_check", ll_debug, lc_context) << "deprecated_functions '"
@@ -108,13 +108,13 @@ paludis::erepository::deprecated_functions_check(
     {
         ++line_number;
 
-        if (s.empty() || r_comment.search(s))
+        if (s.empty() || r_comment.PartialMatch(s))
             continue;
 
-        for (std::list<std::pair<std::string, pcrepp::Pcre::Pcre> >::iterator
+        for (std::list<std::pair<std::string, pcrecpp::RE> >::iterator
                 r(deprecated_functions.begin()), r_end(deprecated_functions.end()) ;
                 r != r_end ; ++r )
-            if (r->second.search(s))
+            if (r->second.PartialMatch(s))
                 reporter.message(with_id(QAMessage(entry, qaml_normal, name,
                             "Deprecated call to '" + r->first + "' on line " + stringify(line_number)), id));
     }

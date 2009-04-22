@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,7 +20,7 @@
 #include "default_functions.hh"
 #include <paludis/qa.hh>
 #include <paludis/util/log.hh>
-#include <pcre++.h>
+#include <pcrecpp.h>
 #include <sstream>
 
 using namespace paludis;
@@ -45,14 +45,14 @@ paludis::erepository::default_functions_check(
 {
     Context context("When performing check '" + name + "' using default_functions_check on '" + stringify(*id) + "':");
 
-    pcrepp::Pcre::Pcre r_echo("^\\s*(echo|einfo|ewarn)[^|<>]*$");
-    pcrepp::Pcre::Pcre r_colon("^\\s*:");
-    pcrepp::Pcre::Pcre r_true("^\\s*true");
-    pcrepp::Pcre::Pcre r_comment("^\\s*#");
-    pcrepp::Pcre::Pcre r_econf("^\\s*econf( *\\|\\| *die.*)?$");
-    pcrepp::Pcre::Pcre r_emake("^\\s*emake( *\\|\\| *die.*)?$");
-    pcrepp::Pcre::Pcre r_unpack("^\\s*unpack *([$]A|[$][{]A[}]|\"[$][{]A[}]\"|[$][{]A[}])( *\\|\\| *die.*)?$");
-    pcrepp::Pcre::Pcre r_cd_s("^\\s*cd *([$]S|[$][{]S[}]|\"[$][{]S[}]\"|[$][{]S[}])( *\\|\\| *die.*)?$");
+    pcrecpp::RE r_echo("^\\s*(echo|einfo|ewarn)[^|<>]*$");
+    pcrecpp::RE r_colon("^\\s*:");
+    pcrecpp::RE r_true("^\\s*true");
+    pcrecpp::RE r_comment("^\\s*#");
+    pcrecpp::RE r_econf("^\\s*econf( *\\|\\| *die.*)?$");
+    pcrecpp::RE r_emake("^\\s*emake( *\\|\\| *die.*)?$");
+    pcrecpp::RE r_unpack("^\\s*unpack *([$]A|[$][{]A[}]|\"[$][{]A[}]\"|[$][{]A[}])( *\\|\\| *die.*)?$");
+    pcrecpp::RE r_cd_s("^\\s*cd *([$]S|[$][{]S[}]|\"[$][{]S[}]\"|[$][{]S[}])( *\\|\\| *die.*)?$");
 
     Log::get_instance()->message("e.qa.default_functions_check", ll_debug, lc_context) << "default_functions '"
         << entry << "', '" << *id << "', '" << name << "'";
@@ -87,17 +87,17 @@ paludis::erepository::default_functions_check(
                     }
                     else if (line.empty())
                         ;
-                    else if (r_econf.search(line))
+                    else if (r_econf.PartialMatch(line))
                         ;
-                    else if (r_emake.search(line))
+                    else if (r_emake.PartialMatch(line))
                         ;
-                    else if (r_echo.search(line))
+                    else if (r_echo.PartialMatch(line))
                         ;
-                    else if (r_colon.search(line))
+                    else if (r_colon.PartialMatch(line))
                         ;
-                    else if (r_true.search(line))
+                    else if (r_true.PartialMatch(line))
                         ;
-                    else if (r_comment.search(line))
+                    else if (r_comment.PartialMatch(line))
                         ;
                     else
                         src_compile_changed = true;
@@ -115,17 +115,17 @@ paludis::erepository::default_functions_check(
                     }
                     else if (line.empty())
                         ;
-                    else if (r_unpack.search(line))
+                    else if (r_unpack.PartialMatch(line))
                         ;
-                    else if (r_cd_s.search(line))
+                    else if (r_cd_s.PartialMatch(line))
                         ;
-                    else if (r_echo.search(line))
+                    else if (r_echo.PartialMatch(line))
                         ;
-                    else if (r_colon.search(line))
+                    else if (r_colon.PartialMatch(line))
                         ;
-                    else if (r_true.search(line))
+                    else if (r_true.PartialMatch(line))
                         ;
-                    else if (r_comment.search(line))
+                    else if (r_comment.PartialMatch(line))
                         ;
                     else
                         src_unpack_changed = true;

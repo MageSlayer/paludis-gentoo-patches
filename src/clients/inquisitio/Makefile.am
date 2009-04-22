@@ -25,7 +25,7 @@ man_inquisitio_LDADD = \
 	$(top_builddir)/paludis/libpaludismanpagethings_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/src/output/liboutput.a \
 	$(DYNAMIC_LD_LIBS) \
-	$(PCREPLUSPLUS_LIBS)
+	$(PCRECPPDEPS_LIBS)
 
 inquisitio_SOURCES = \
 	command_line.hh                 command_line.cc \
@@ -46,9 +46,9 @@ inquisitio_LDADD = \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/src/output/liboutput.a \
 	$(DYNAMIC_LD_LIBS) \
-	$(PCREPLUSPLUS_LIBS)
+	$(PCRECPPDEPS_LIBS)
 
-inquisitio_CXXFLAGS = $(AM_CXXFLAGS) $(PCREPLUSPLUS_CFLAGS)
+inquisitio_CXXFLAGS = $(AM_CXXFLAGS) $(PCRECPPDEPS_CFLAGS)
 
 TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \

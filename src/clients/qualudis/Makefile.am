@@ -24,11 +24,11 @@ qualudis_LDADD = \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/selinux/libpaludisselinux_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/src/output/liboutput.a \
-	$(PCREPLUSPLUS_LIBS) \
+	$(PCRECPPDEPS_LIBS) \
 	$(LIBXML2DEPS_LIBS) \
 	$(DYNAMIC_LD_LIBS)
 
-INCLUDES = $(PCREPLUSPLUS_CFLAGS) $(LIBXML2DEPS_CFLAGS)
+INCLUDES = $(PCRECPPDEPS_CFLAGS) $(LIBXML2DEPS_CFLAGS)
 
 TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \

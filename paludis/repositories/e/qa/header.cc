@@ -20,7 +20,7 @@
 #include "header.hh"
 #include <paludis/qa.hh>
 #include <paludis/util/log.hh>
-#include <pcre++.h>
+#include <pcrecpp.h>
 #include <time.h>
 #include <vector>
 #include <sstream>
@@ -53,10 +53,10 @@ paludis::erepository::header_check(
         Log::get_instance()->message("e.qa.header_check", ll_debug, lc_context) << "header '"
             << entry << "', '" << name << "'";
 
-    pcrepp::Pcre::Pcre r_licence("^# Distributed under the terms of the GNU General Public License v2$");
+    pcrecpp::RE r_licence("^# Distributed under the terms of the GNU General Public License v2$");
     // Match both CVS tag and extract year.[0]
-    pcrepp::Pcre::Pcre r_cvs_header("^#\\s*\\$Header.*\\s(\\d{4})/\\d{2}/\\d{2}\\s.*\\$$");
-    pcrepp::Pcre::Pcre r_cvs_empty_header("^#\\s*\\$Header:\\s*\\$$");
+    pcrecpp::RE r_cvs_header("^#\\s*\\$Header.*\\s(\\d{4})/\\d{2}/\\d{2}\\s.*\\$$");
+    pcrecpp::RE r_cvs_empty_header("^#\\s*\\$Header:\\s*\\$$");
 
     std::stringstream ff(content);
 
@@ -70,20 +70,21 @@ paludis::erepository::header_check(
 
     do
     {
-        if (! r_licence.search(lines[1]))
+        if (! r_licence.PartialMatch(lines[1]))
             reporter.message(with_id(QAMessage(entry, qaml_normal, name, "Wrong licence statement in line 2"), id));
 
         std::string year;
 
         // Check line 3 before line 1 to extract date of last commit
-        if (r_cvs_empty_header.search(lines[2]))
+        if (r_cvs_empty_header.PartialMatch(lines[2]))
         {
             time_t now(time(NULL));
             struct tm now_struct;
             year = stringify(localtime_r(&now, &now_struct)->tm_year + 1900);
         }
-        else if (r_cvs_header.search(lines[2]))
-            year = r_cvs_header[0];
+        else if (r_cvs_header.PartialMatch(lines[2], &year))
+        {
+        }
         else
         {
             reporter.message(with_id(QAMessage(entry, qaml_minor, name, "Unknown CVS tag in line 3"), id));
@@ -91,9 +92,9 @@ paludis::erepository::header_check(
         }
 
         Log::get_instance()->message("e.qa.header_check.year", ll_debug, lc_context) << "Expected copyright year is " << year;
-        pcrepp::Pcre::Pcre r_copyright("^# Copyright ((1999|200\\d)-)?" + year + " Gentoo Foundation$");
+        pcrecpp::RE r_copyright("^# Copyright ((1999|200\\d)-)?" + year + " Gentoo Foundation$");
 
-        if (! r_copyright.search(lines[0]))
+        if (! r_copyright.PartialMatch(lines[0]))
             reporter.message(with_id(QAMessage(entry, qaml_normal, name, "Wrong copyright assignment in line 1, possibly date related"), id));
 
     } while (false);

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -34,6 +34,13 @@ namespace inquisitio
             virtual ~PCREMatcher();
 
             bool operator() (const std::string &) const;
+    };
+
+    class PALUDIS_VISIBLE BadPCREPatternError :
+        public paludis::Exception
+    {
+        public:
+            BadPCREPatternError(const std::string &, const std::string &) throw ();
     };
 }
 
