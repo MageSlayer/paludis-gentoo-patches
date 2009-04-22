@@ -487,7 +487,7 @@ echo cat >postinsttest_src1/profiles/categories
 
 cat <<END >postinsttest_src1/cat/pkg/pkg-0.ebuild
 if [[ \${PV} == 0* ]]; then
-    EAPI=1
+    EAPI=kdebuild-1
 else
     EAPI=paludis-1
 fi
@@ -513,8 +513,7 @@ pkg_postinst() {
     \${COMMAND} "\${ROOT}"/\${OTHER##*/} || die
 }
 pkg_postrm() {
-    if has_version "=\${CATEGORY}/\${PN}-0*:\${SLOT}" &&
-            ( has_version "<\${CATEGORY}/\${PF}:\${SLOT}" || has_version ">\${CATEGORY}/\${PF}:\${SLOT}" ); then
+    if has_version "\${CATEGORY}/\${PN}:\${SLOT}[<\${PVR}&=0*]" || has_version "\${CATEGORY}/\${PN}:\${SLOT}[>\${PVR}&=0*]"; then
         rmdir "\${ROOT}"/\${PF} || die
     else
         mkdir "\${ROOT}"/\${PF} || die

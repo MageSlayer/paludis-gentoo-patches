@@ -496,6 +496,20 @@ VDBRepository::perform_uninstall(
         FSEntry(*d).unlink();
     pkg_dir.rmdir();
 
+    {
+        CategoryMap::iterator it(_imp->categories.find(id->name().category()));
+        if (_imp->categories.end() != it && it->second)
+        {
+            IDMap::iterator it2(_imp->ids.find(id->name()));
+            if (_imp->ids.end() != it2)
+            {
+                std::tr1::shared_ptr<PackageIDSequence> ids(new PackageIDSequence);
+                std::remove_copy(it2->second->begin(), it2->second->end(), ids->back_inserter(), id);
+                it2->second = ids;
+            }
+        }
+    }
+
     if (! a.options.is_overwrite())
     {
         std::tr1::shared_ptr<const PackageIDSequence> ids(package_ids(id->name()));
@@ -925,6 +939,22 @@ VDBRepository::merge(const MergeParams & m)
 
     tmp_vdb_dir.rename(vdb_dir);
 
+    std::tr1::shared_ptr<const PackageID> new_id;
+    {
+        CategoryMap::iterator it(_imp->categories.find(m.package_id()->name().category()));
+        if (_imp->categories.end() != it && it->second)
+        {
+            it->second->insert(m.package_id()->name());
+            IDMap::iterator it2(_imp->ids.find(m.package_id()->name()));
+            if (_imp->ids.end() == it2)
+            {
+                std::tr1::shared_ptr<PackageIDSequence> ids(new PackageIDSequence);
+                it2 = _imp->ids.insert(std::make_pair(m.package_id()->name(), ids)).first;
+            }
+            it2->second->push_back(new_id = make_id(m.package_id()->name(), m.package_id()->version(), vdb_dir));
+        }
+    }
+
     merger.merge();
 
     if (is_replace)
@@ -946,7 +976,7 @@ VDBRepository::merge(const MergeParams & m)
                  it_end(replace_candidates->end()); it_end != it; ++it)
         {
             std::tr1::shared_ptr<const ERepositoryID> candidate(std::tr1::static_pointer_cast<const ERepositoryID>(*it));
-            if (candidate != is_replace && slot_is_same(candidate, m.package_id()))
+            if (candidate != is_replace && candidate != new_id && slot_is_same(candidate, m.package_id()))
             {
                 UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                             value_for<n::config_protect>(config_protect),

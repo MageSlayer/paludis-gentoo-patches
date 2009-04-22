@@ -359,6 +359,84 @@ NDBAM::entries(const QualifiedPackageName & q)
 }
 
 void
+NDBAM::add_entry(const QualifiedPackageName & q, const FSEntry & d)
+{
+    Lock l(_imp->category_names_mutex);
+    CategoryContentsMap::iterator cc_i(_imp->category_contents_map.find(q.category()));
+    if (_imp->category_contents_map.end() == cc_i || ! cc_i->second)
+        return;
+    CategoryContents & cc(*cc_i->second);
+    l.acquire_then_release_old(cc.mutex);
+
+    PackageContentsMap::iterator pc_i(cc.package_contents_map.find(q));
+    if (cc.package_contents_map.end() == pc_i || ! pc_i->second)
+        return;
+    PackageContents & pc(*pc_i->second);
+    l.acquire_then_release_old(pc.mutex);
+
+    if (pc.entries)
+    {
+        std::vector<std::string> tokens;
+        tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(d.basename(), ":", "", std::back_inserter(tokens));
+
+        VersionSpec v(tokens[0], _imp->version_options);
+        SlotName s(tokens[1]);
+        std::string m(tokens[2]);
+        pc.entries->push_back(make_shared_ptr(new NDBAMEntry(NDBAMEntry(make_named_values<NDBAMEntry>(
+                                value_for<n::fs_location>(d.realpath()),
+                                value_for<n::magic>(m),
+                                value_for<n::mutex>(make_shared_ptr(new Mutex)),
+                                value_for<n::name>(q),
+                                value_for<n::package_id>(std::tr1::shared_ptr<PackageID>()),
+                                value_for<n::slot>(s),
+                                value_for<n::version>(v)
+                        )))));
+    }
+}
+
+namespace
+{
+    struct FSLocationIs
+    {
+        FSEntry _d;
+
+        FSLocationIs(const FSEntry & d) :
+            _d(d)
+        {
+        }
+
+        bool operator() (const std::tr1::shared_ptr<const NDBAMEntry> & e) const
+        {
+            return e->fs_location() == _d;
+        }
+    };
+}
+
+void
+NDBAM::remove_entry(const QualifiedPackageName & q, const FSEntry & d)
+{
+    Lock l(_imp->category_names_mutex);
+    CategoryContentsMap::iterator cc_i(_imp->category_contents_map.find(q.category()));
+    if (_imp->category_contents_map.end() == cc_i || ! cc_i->second)
+        return;
+    CategoryContents & cc(*cc_i->second);
+    l.acquire_then_release_old(cc.mutex);
+
+    PackageContentsMap::iterator pc_i(cc.package_contents_map.find(q));
+    if (cc.package_contents_map.end() == pc_i || ! pc_i->second)
+        return;
+    PackageContents & pc(*pc_i->second);
+    l.acquire_then_release_old(pc.mutex);
+
+    if (pc.entries)
+    {
+        std::tr1::shared_ptr<NDBAMEntrySequence> new_entries(new NDBAMEntrySequence);
+        std::remove_copy_if(pc.entries->begin(), pc.entries->end(), new_entries->back_inserter(), FSLocationIs(d));
+        pc.entries = new_entries;
+    }
+}
+
+void
 NDBAM::parse_contents(const PackageID & id,
         const std::tr1::function<void (const std::tr1::shared_ptr<const ContentsEntry> &)> & on_file,
         const std::tr1::function<void (const std::tr1::shared_ptr<const ContentsEntry> &)> & on_dir,

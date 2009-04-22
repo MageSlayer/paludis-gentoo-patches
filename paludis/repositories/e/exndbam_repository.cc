@@ -371,6 +371,8 @@ ExndbamRepository::merge(const MergeParams & m)
 
     write_vdb_entry_command();
 
+    _imp->ndbam.add_entry(m.package_id()->name(), target_ver_dir);
+
     /* load CONFIG_PROTECT, CONFIG_PROTECT_MASK back */
     std::string config_protect, config_protect_mask;
     try
@@ -440,7 +442,7 @@ ExndbamRepository::merge(const MergeParams & m)
                  it_end(replace_candidates->end()); it_end != it; ++it)
         {
             std::tr1::shared_ptr<const ERepositoryID> candidate(std::tr1::static_pointer_cast<const ERepositoryID>(*it));
-            if (candidate != if_overwritten_id && slot_is_same(candidate, m.package_id()))
+            if (candidate != if_overwritten_id && candidate->fs_location_key()->value() != target_ver_dir && slot_is_same(candidate, m.package_id()))
             {
                 UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                             value_for<n::config_protect>(config_protect),
@@ -474,7 +476,7 @@ ExndbamRepository::perform_uninstall(
 
     std::tr1::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
 
-    FSEntry ver_dir(id->fs_location_key()->value());
+    FSEntry ver_dir(id->fs_location_key()->value().realpath());
     std::tr1::shared_ptr<FSEntry> load_env(new FSEntry(ver_dir / "environment.bz2"));
 
     std::tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
@@ -572,6 +574,8 @@ ExndbamRepository::perform_uninstall(
     for (DirIterator d(ver_dir, DirIteratorOptions() + dio_include_dotfiles), d_end ; d != d_end ; ++d)
         FSEntry(*d).unlink();
     ver_dir.rmdir();
+
+    _imp->ndbam.remove_entry(id->name(), ver_dir);
 
     FSEntry pkg_dir(ver_dir.dirname());
     if (DirIterator() == DirIterator(pkg_dir, DirIteratorOptions() + dio_include_dotfiles + dio_inode_sort + dio_first_only))

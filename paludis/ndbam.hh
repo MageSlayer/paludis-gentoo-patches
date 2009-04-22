@@ -108,6 +108,9 @@ namespace paludis
             std::tr1::shared_ptr<NDBAMEntrySequence> entries(const QualifiedPackageName &)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            void add_entry(const QualifiedPackageName &, const FSEntry &);
+            void remove_entry(const QualifiedPackageName &, const FSEntry &);
+
             ///\}
 
             /**
