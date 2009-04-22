@@ -100,6 +100,28 @@ namespace test_cases
             return 3000;
         }
 
+        void install(const Environment & env,
+                const std::tr1::shared_ptr<Repository> & exndbam_repo,
+                const std::string & chosen_one,
+                const std::string & victim) const
+        {
+            std::tr1::shared_ptr<PackageIDSequence> replacing(new PackageIDSequence);
+            if (! victim.empty())
+                replacing->push_back(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec(victim,
+                                &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+            InstallAction install_action(make_named_values<InstallActionOptions>(
+                        value_for<n::destination>(exndbam_repo),
+                        value_for<n::make_output_manager>(&make_standard_output_manager),
+                        value_for<n::perform_uninstall>(&do_uninstall),
+                        value_for<n::replacing>(replacing),
+                        value_for<n::want_phase>(&want_all_phases)
+                    ));
+            (*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec(chosen_one,
+                                &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin())->perform_action(install_action);
+        }
+
         void run()
         {
             TestEnvironment env(FSEntry("exndbam_repository_TEST_dir/root").realpath());
@@ -129,30 +151,12 @@ namespace test_cases
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(0, exndbam_repo);
 
-            InstallAction install_action(make_named_values<InstallActionOptions>(
-                        value_for<n::destination>(exndbam_repo),
-                        value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::perform_uninstall>(&do_uninstall),
-                        value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
-                        value_for<n::want_phase>(&want_all_phases)
-                    ));
-
-            UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
-                        value_for<n::config_protect>(""),
-                        value_for<n::if_for_install_id>(make_null_shared_ptr()),
-                        value_for<n::is_overwrite>(false),
-                        value_for<n::make_output_manager>(&make_standard_output_manager)
-                    ));
-
             TEST_CHECK(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg"))->empty());
 
             {
                 TestMessageSuffix suffix("install eapi 1", true);
 
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-0::postinsttest",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-                id->perform_action(install_action);
+                install(env, exndbam_repo, "=cat/pkg-0::postinsttest", "");
                 exndbam_repo->invalidate();
 
                 std::tr1::shared_ptr<const PackageIDSequence> ids(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg")));
@@ -162,10 +166,7 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("reinstall eapi 1", true);
 
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-0::postinsttest",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-                id->perform_action(install_action);
+                install(env, exndbam_repo, "=cat/pkg-0::postinsttest", "");
                 exndbam_repo->invalidate();
 
                 std::tr1::shared_ptr<const PackageIDSequence> ids(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg")));
@@ -175,20 +176,7 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("upgrade eapi 1 -> 1", true);
 
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-0.1::postinsttest",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-                id->perform_action(install_action);
-                exndbam_repo->invalidate();
-
-                std::tr1::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(generator::Package(
-                                QualifiedPackageName("cat/pkg")) & generator::InRepository(RepositoryName("installed")))]);
-                TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-0::installed cat/pkg-0.1::installed");
-
-                const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-0::installed",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-                inst_id->perform_action(uninstall_action);
+                install(env, exndbam_repo, "=cat/pkg-0.1::postinsttest", "=cat/pkg-0::installed");
                 exndbam_repo->invalidate();
 
                 std::tr1::shared_ptr<const PackageIDSequence> ids2(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg")));
@@ -198,10 +186,7 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("upgrade eapi 1 -> paludis-1", true);
 
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1::postinsttest",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-                id->perform_action(install_action);
+                install(env, exndbam_repo, "=cat/pkg-1::postinsttest", "=cat/pkg-0.1::installed");
                 exndbam_repo->invalidate();
 
                 std::tr1::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(generator::Package(
@@ -212,10 +197,7 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("reinstall eapi paludis-1", true);
 
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1::postinsttest",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-                id->perform_action(install_action);
+                install(env, exndbam_repo, "=cat/pkg-1::postinsttest", "");
                 exndbam_repo->invalidate();
 
                 std::tr1::shared_ptr<const PackageIDSequence> ids(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg")));
@@ -225,10 +207,7 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("upgrade eapi paludis-1 -> paludis-1", true);
 
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1.1::postinsttest",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-                id->perform_action(install_action);
+                install(env, exndbam_repo, "=cat/pkg-1.1::postinsttest", "=cat/pkg-1::installed");
                 exndbam_repo->invalidate();
 
                 std::tr1::shared_ptr<const PackageIDSequence> ids(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg")));
@@ -238,10 +217,7 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("new slot", true);
 
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-2::postinsttest",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-                id->perform_action(install_action);
+                install(env, exndbam_repo, "=cat/pkg-2::postinsttest", "");
                 exndbam_repo->invalidate();
 
                 std::tr1::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(generator::Package(
@@ -252,20 +228,7 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("downgrade eapi paludis-1 -> 1", true);
 
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-0::postinsttest",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-                id->perform_action(install_action);
-                exndbam_repo->invalidate();
-
-                std::tr1::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(generator::Package(
-                                QualifiedPackageName("cat/pkg")) & generator::InRepository(RepositoryName("installed")))]);
-                TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-0::installed cat/pkg-1.1::installed cat/pkg-2::installed");
-
-                const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1.1::installed",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-                inst_id->perform_action(uninstall_action);
+                install(env, exndbam_repo, "=cat/pkg-0::postinsttest", "=cat/pkg-1.1::installed");
                 exndbam_repo->invalidate();
 
                 std::tr1::shared_ptr<const PackageIDSequence> ids2(env[selection::AllVersionsSorted(generator::Package(
