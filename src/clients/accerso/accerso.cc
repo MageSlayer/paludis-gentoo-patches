@@ -64,9 +64,11 @@ main(int argc, char *argv[])
     try
     {
         CommandLine::get_instance()->run(argc, argv, "accerso", "ACCERSO_OPTIONS", "ACCERSO_CMDLINE");
+
         set_use_colour(
-                (! CommandLine::get_instance()->a_no_color.specified()) &&
+                (! CommandLine::get_instance()->a_no_colour.specified()) &&
                 (! CommandLine::get_instance()->a_report_file.specified()));
+        set_force_colour(CommandLine::get_instance()->a_force_colour.specified());
 
         if (CommandLine::get_instance()->a_help.specified())
             throw args::DoHelp();

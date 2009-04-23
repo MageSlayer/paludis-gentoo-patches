@@ -93,7 +93,8 @@ main(int argc, char *argv[])
     try
     {
         CommandLine::get_instance()->run(argc, argv, "paludis", "PALUDIS_OPTIONS", "PALUDIS_CMDLINE");
-        set_use_colour(! CommandLine::get_instance()->a_no_color.specified());
+        set_use_colour(! CommandLine::get_instance()->a_no_colour.specified());
+        set_force_colour(CommandLine::get_instance()->a_force_colour.specified());
         if (1 != isatty(1))
             CommandLine::get_instance()->a_no_suggestions.set_specified(true);
 
@@ -169,6 +170,9 @@ main(int argc, char *argv[])
 
         if (CommandLine::get_instance()->a_no_color.specified())
             paludis_command.append(" --" + CommandLine::get_instance()->a_no_color.long_name());
+
+        if (CommandLine::get_instance()->a_force_color.specified())
+            paludis_command.append(" --" + CommandLine::get_instance()->a_force_color.long_name());
 
         paludis_command.append(CommandLine::get_instance()->install_args.paludis_command_fragment());
         paludis_command.append(CommandLine::get_instance()->dl_args.paludis_command_fragment());

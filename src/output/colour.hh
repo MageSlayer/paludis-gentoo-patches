@@ -81,6 +81,7 @@ enum Colour
 
 bool PALUDIS_VISIBLE use_colour();
 void PALUDIS_VISIBLE set_use_colour(const bool value);
+void PALUDIS_VISIBLE set_force_colour(const bool value);
 bool PALUDIS_VISIBLE use_xterm_titles() PALUDIS_ATTRIBUTE((pure));
 
 template <typename T_>

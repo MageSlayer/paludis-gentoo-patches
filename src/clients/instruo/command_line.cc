@@ -39,6 +39,8 @@ CommandLine::CommandLine() :
     a_log_level(&general_args, "log-level",  '\0'),
     a_no_colour(&general_args, "no-colour", '\0', "Do not use colour", false),
     a_no_color(&a_no_colour, "no-color"),
+    a_force_colour(&general_args, "force-colour", '\0', "Force the use of colour", false),
+    a_force_color(&a_force_colour, "force-color"),
     a_repository_directory(&general_args, "repository-dir", 'D',
             "Where to find the repository (default: current directory)"),
     a_output_directory(&general_args, "output-dir", 'o',

@@ -88,6 +88,8 @@ class CommandLine :
         paludis::args::LogLevelArg a_log_level;
         paludis::args::SwitchArg a_no_colour;
         paludis::args::AliasArg a_no_color;
+        paludis::args::SwitchArg a_force_colour;
+        paludis::args::AliasArg a_force_color;
         paludis::args::SwitchArg a_no_suggestions;
 
         paludis::args::StringArg a_repository_directory;

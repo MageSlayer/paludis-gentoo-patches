@@ -160,6 +160,12 @@ class CommandLine :
         /// --no-color
         paludis::args::AliasArg a_no_color;
 
+        /// --force-colour
+        paludis::args::SwitchArg a_force_colour;
+
+        /// --force-color
+        paludis::args::AliasArg a_force_color;
+
         /// --no-suggestions
         paludis::args::SwitchArg a_no_suggestions;
 

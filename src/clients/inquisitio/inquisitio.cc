@@ -67,7 +67,8 @@ main(int argc, char *argv[])
     try
     {
         CommandLine::get_instance()->run(argc, argv, "inquisitio", "INQUISITIO_OPTIONS", "INQUISITIO_CMDLINE");
-        set_use_colour(! CommandLine::get_instance()->a_no_color.specified());
+        set_use_colour(! CommandLine::get_instance()->a_no_colour.specified());
+        set_force_colour(CommandLine::get_instance()->a_force_colour.specified());
 
         if (CommandLine::get_instance()->a_help.specified())
             throw args::DoHelp();
@@ -100,6 +101,9 @@ main(int argc, char *argv[])
 
         if (CommandLine::get_instance()->a_no_color.specified())
             paludis_command.append(" --" + CommandLine::get_instance()->a_no_color.long_name());
+
+        if (CommandLine::get_instance()->a_force_color.specified())
+            paludis_command.append(" --" + CommandLine::get_instance()->a_force_color.long_name());
 
         std::tr1::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(env_spec));
         env->set_paludis_command(paludis_command);

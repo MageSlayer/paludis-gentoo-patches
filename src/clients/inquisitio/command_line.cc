@@ -40,6 +40,8 @@ CommandLine::CommandLine() :
     a_log_level(&general_args, "log-level",  '\0'),
     a_no_colour(&general_args, "no-colour", '\0', "Do not use colour", false),
     a_no_color(&a_no_colour, "no-color"),
+    a_force_colour(&general_args, "force-colour", '\0', "Force the use of colour", false),
+    a_force_color(&a_force_colour, "force-color"),
     a_environment(&general_args, "environment", 'E', "Environment specification (class:suffix, both parts optional)"),
 
     match_args(main_options_section(), "Matching options",

@@ -24,6 +24,7 @@
 namespace
 {
     static bool can_use_colour = true;
+    static bool force_colour = false;
 }
 
 bool
@@ -31,6 +32,9 @@ use_colour()
 {
     if (! can_use_colour)
         return false;
+
+    if (force_colour)
+        return true;
 
     static bool result(
             (1 == isatty(1)) &&
@@ -43,6 +47,12 @@ void
 set_use_colour(const bool value)
 {
     can_use_colour = value;
+}
+
+void
+set_force_colour(const bool value)
+{
+    force_colour = value;
 }
 
 bool
