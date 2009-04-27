@@ -148,6 +148,9 @@ done
     pkg_preinst pkg_prerm pkg_pretend pkg_setup pkg_bad_options
     src_compile src_configure src_install src_prepare src_test src_unpack"
 
+# keep the upgrade from 0.36 to 0.38 working
+[[ -z ${PALUDIS_EBUILD_PHASE_VAR} ]] && export PALUDIS_EBUILD_PHASE_VAR="EBUILD_PHASE"
+
 check_paludis_pipe_command()
 {
     [[ -n "${PALUDIS_SKIP_PIPE_COMMAND_CHECK}" ]] && return
