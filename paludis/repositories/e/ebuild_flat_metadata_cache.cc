@@ -296,7 +296,7 @@ EbuildFlatMetadataCache::~EbuildFlatMetadataCache()
 }
 
 bool
-EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
+EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id, const bool silent_on_stale)
 {
     using namespace std::tr1::placeholders;
 
@@ -495,8 +495,9 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id)
 
                 if (! ok)
                 {
-                    Log::get_instance()->message("e.cache.stale", ll_warning, lc_no_context)
-                        << "Stale cache file at '" << _imp->filename << "'";
+                    if (! silent_on_stale)
+                        Log::get_instance()->message("e.cache.stale", ll_warning, lc_no_context)
+                            << "Stale cache file at '" << _imp->filename << "'";
                     return false;
                 }
             }

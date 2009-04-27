@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -52,6 +52,8 @@ namespace paludis
                     const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 virtual void add_build_options(const std::tr1::shared_ptr<Choices> &) const = 0;
+
+                virtual void purge_invalid_cache() const = 0;
         };
     }
 }

@@ -88,6 +88,8 @@ namespace paludis
 
             virtual void invalidate_masks();
 
+            virtual void purge_invalid_cache() const;
+
             /* RepositoryMirrorsInterface */
 
             virtual MirrorsConstIterator begin_mirrors(const std::string & s) const

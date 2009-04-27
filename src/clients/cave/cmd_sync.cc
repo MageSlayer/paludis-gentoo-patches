@@ -349,6 +349,13 @@ SyncCommand::run(
                         std::tr1::ref(active), std::tr1::ref(done)));
     }
 
+    for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
+            r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
+    {
+        (*r)->invalidate();
+        (*r)->purge_invalid_cache();
+    }
+
     if (0 != env->perform_hook(Hook("sync_all_post")
                 ("TARGETS", join(repos.begin(), repos.end(), " ")
                 )).max_exit_status())

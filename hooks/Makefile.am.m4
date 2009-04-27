@@ -18,8 +18,7 @@ installhookcommonprog_SCRIPTS = \
 	eselect_env_update.bash \
 	log.bash \
 	installable_cache_regen.bash \
-	installed_cache_regen.bash \
-	write_cache_clean.bash
+	installed_cache_regen.bash
 
 installhookautoprog_SCRIPTS = \
 	news.hook \
@@ -48,7 +47,6 @@ EXTRA_DIST = \
 	log.bash \
 	installable_cache_regen.bash \
 	installed_cache_regen.bash \
-	write_cache_clean.bash \
 	news.hook.in \
 	find_config_updates.hook \
 	$(installhookinstallpost_SCRIPTS) \
@@ -260,7 +258,6 @@ install-data-local :
 	ln -sf ../common/log.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/sync_pre/
 	ln -sf ../common/log.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/sync_post/
 	ln -sf ../common/installable_cache_regen.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/sync_all_post/
-	ln -sf ../common/write_cache_clean.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/sync_all_post/
 	ln -sf ../common/installed_cache_regen.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/install_post/
 	ln -sf ../common/installed_cache_regen.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/uninstall_post/
 	ln -sf ../common/installed_cache_regen.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/clean_post/
@@ -269,7 +266,6 @@ uninstall-local :
 	rm -f $(DESTDIR)/$(libexecdir)/paludis/hooks/*/gnu_info_index.bash
 	rm -f $(DESTDIR)/$(libexecdir)/paludis/hooks/*/eselect_env_update.bash
 	rm -f $(DESTDIR)/$(libexecdir)/paludis/hooks/*/log.bash
-	rm -f $(DESTDIR)/$(libexecdir)/paludis/hooks/*/write_cache_clean.bash
 
 Makefile.am : Makefile.am.m4
 	$(top_srcdir)/misc/do_m4.bash Makefile.am

@@ -391,6 +391,11 @@ namespace paludis
              */
             virtual void regenerate_cache() const;
 
+            /**
+             * Purge any invalid on-disk cache entries.
+             */
+            virtual void purge_invalid_cache() const;
+
             ///\}
 
     };

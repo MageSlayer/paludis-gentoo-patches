@@ -31,6 +31,7 @@
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository_entries.hh>
 #include <paludis/repositories/e/eapi.hh>
+#include <paludis/repositories/e/eclass_mtimes.hh>
 #include <paludis/repositories/e/extra_distribution_data.hh>
 #include <paludis/repositories/e/use_desc.hh>
 #include <paludis/repositories/e/layout.hh>
@@ -799,6 +800,71 @@ ERepository::invalidate()
 {
     _imp.reset(new Implementation<ERepository>(this, _imp->params, _imp->mutexes));
     _add_metadata_keys();
+}
+
+void
+ERepository::purge_invalid_cache() const
+{
+    Context context("When purging invalid write_cache:");
+
+    FSEntry write_cache(_imp->params.write_cache());
+    if (write_cache == FSEntry("/var/empty") || ! write_cache.is_directory_or_symlink_to_directory())
+        return;
+
+    if (_imp->params.append_repository_name_to_write_cache())
+        write_cache /= stringify(name());
+
+    const std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
+                _imp->params.eapi_when_unknown()));
+
+    std::tr1::shared_ptr<EclassMtimes> eclass_mtimes(new EclassMtimes(this, _imp->params.eclassdirs()));
+    time_t master_mtime(0);
+    FSEntry master_mtime_file(_imp->params.location() / "metadata" / "timestamp");
+    if (master_mtime_file.exists())
+        master_mtime = master_mtime_file.mtime();
+
+    for (DirIterator dc(write_cache, DirIteratorOptions() + dio_inode_sort), dc_end ; dc != dc_end ; ++dc)
+    {
+        if (! dc->is_directory_or_symlink_to_directory())
+            continue;
+
+        for (DirIterator dp(*dc, DirIteratorOptions() + dio_inode_sort), dp_end ; dp != dp_end ; ++dp)
+        {
+            if (! dp->is_regular_file_or_symlink_to_regular_file())
+                continue;
+
+            try
+            {
+                CategoryNamePart cnp(dc->basename());
+                std::string pv(dp->basename());
+                VersionSpec v(elike_get_remove_trailing_version(pv, eapi->supported()->version_spec_options()));
+                PackageNamePart p(pv);
+
+                std::tr1::shared_ptr<const PackageIDSequence> ids(_imp->layout->package_ids(cnp + p));
+                bool found(false);
+                for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+                        i != i_end ; ++i)
+                {
+                    /* 00 is *not* equal to 0 here */
+                    if (stringify((*i)->version()) != stringify(v))
+                        continue;
+
+                    std::tr1::static_pointer_cast<const ERepositoryID>(*i)->purge_invalid_cache();
+
+                    found = true;
+                    break;
+                }
+
+                if (! found)
+                    FSEntry(*dp).unlink();
+            }
+            catch (const Exception & e)
+            {
+                Log::get_instance()->message("e.ebuild.purge_write_cache.ignoring", ll_warning, lc_context)
+                    << "Ignoring exception '" << e.message() << "' (" << e.what() << ") when purging invalid write_cache entries";
+            }
+        }
+    }
 }
 
 void

@@ -1001,3 +1001,8 @@ EInstalledRepositoryID::add_build_options(const std::tr1::shared_ptr<Choices> &)
 {
 }
 
+void
+EInstalledRepositoryID::purge_invalid_cache() const
+{
+}
+

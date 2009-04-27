@@ -156,6 +156,8 @@ namespace paludis
                         const bool, const std::string &, const bool) const;
 
                 virtual void add_build_options(const std::tr1::shared_ptr<Choices> &) const;
+
+                virtual void purge_invalid_cache() const;
         };
     }
 }

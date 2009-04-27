@@ -193,7 +193,7 @@ EbuildID::need_keys_added() const
     if (_imp->repository->params().cache().basename() != "empty")
     {
         EbuildFlatMetadataCache metadata_cache(_imp->environment, cache_file, _imp->ebuild, _imp->master_mtime, _imp->eclass_mtimes, false);
-        if (metadata_cache.load(shared_from_this()))
+        if (metadata_cache.load(shared_from_this(), false))
             ok = true;
     }
 
@@ -201,7 +201,7 @@ EbuildID::need_keys_added() const
     {
         EbuildFlatMetadataCache write_metadata_cache(_imp->environment,
                 write_cache_file, _imp->ebuild, _imp->master_mtime, _imp->eclass_mtimes, true);
-        if (write_metadata_cache.load(shared_from_this()))
+        if (write_metadata_cache.load(shared_from_this(), false))
             ok = true;
         else if (write_cache_file.exists())
         {
@@ -1362,6 +1362,27 @@ EbuildID::add_build_options(const std::tr1::shared_ptr<Choices> & choices) const
         {
             build_options->add(make_shared_ptr(new ELikeSplitChoiceValue(shared_from_this(), _imp->environment, build_options)));
             build_options->add(make_shared_ptr(new ELikeStripChoiceValue(shared_from_this(), _imp->environment, build_options)));
+        }
+    }
+}
+
+void
+EbuildID::purge_invalid_cache() const
+{
+    FSEntry write_cache_file(_imp->repository->params().write_cache());
+    if (_imp->repository->params().append_repository_name_to_write_cache())
+        write_cache_file /= stringify(repository()->name());
+    write_cache_file /= stringify(name().category());
+    write_cache_file /= stringify(name().package()) + "-" + stringify(version());
+
+    if (write_cache_file.exists())
+    {
+        if (_imp->repository->params().write_cache().basename() != "empty")
+        {
+            EbuildFlatMetadataCache write_metadata_cache(_imp->environment,
+                    write_cache_file, _imp->ebuild, _imp->master_mtime, _imp->eclass_mtimes, true);
+            if (! write_metadata_cache.load(shared_from_this(), true))
+                write_cache_file.unlink();
         }
     }
 }

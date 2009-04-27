@@ -180,6 +180,11 @@ Repository::regenerate_cache() const
 {
 }
 
+void
+Repository::purge_invalid_cache() const
+{
+}
+
 RepositorySetsInterface::~RepositorySetsInterface()
 {
 }

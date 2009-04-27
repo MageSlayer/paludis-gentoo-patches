@@ -189,6 +189,13 @@ SyncTask::execute()
     else
         std::for_each(_imp->targets.begin(), _imp->targets.end(), std::tr1::bind(&ItemSyncer::sync, &s, _1));
 
+    for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
+            r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
+    {
+        (*r)->invalidate();
+        (*r)->purge_invalid_cache();
+    }
+
     on_sync_all_post();
     if (0 !=
         _imp->env->perform_hook(Hook("sync_all_post")("TARGETS", join(_imp->targets.begin(),
