@@ -139,6 +139,8 @@ namespace paludis
 
             virtual const std::tr1::shared_ptr<OutputManager> create_output_manager(
                     const CreateOutputManagerInfo &) const;
+
+            void set_want_choice_enabled(const ChoicePrefixName &, const UnprefixedChoiceName &, const Tribool);
     };
 }
 

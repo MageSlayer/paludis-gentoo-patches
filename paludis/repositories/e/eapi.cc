@@ -232,6 +232,7 @@ namespace
                         value_for<n::fancy_test_flag>(check_get(k, "fancy_test_flag")),
                         value_for<n::has_optional_tests>(destringify_key<bool>(k, "has_optional_tests")),
                         value_for<n::has_recommended_tests>(destringify_key<bool>(k, "has_recommended_tests")),
+                        value_for<n::has_slow_tests>(destringify_key<bool>(k, "has_slow_tests")),
                         value_for<n::use_expand_separator>(destringify_key<char>(k, "use_expand_separator"))
                         )));
     }

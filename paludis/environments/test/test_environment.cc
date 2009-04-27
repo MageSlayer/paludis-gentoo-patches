@@ -34,6 +34,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/hook.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/choice.hh>
 #include <tr1/functional>
 #include <tr1/unordered_map>
 #include <string>
@@ -50,6 +51,7 @@ namespace paludis
     {
         std::tr1::shared_ptr<PackageDatabase> package_database;
         std::string paludis_command;
+        std::tr1::unordered_map<std::string, Tribool> override_want_choice_enabled;
         FSEntry root;
         Sets sets;
 
@@ -246,10 +248,14 @@ TestEnvironment::config_location_key() const
 const Tribool
 TestEnvironment::want_choice_enabled(
         const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const Choice> &,
+        const std::tr1::shared_ptr<const Choice> & c,
         const UnprefixedChoiceName & v
         ) const
 {
+    std::string s(stringify(c->prefix()) + ":" + stringify(v));
+    if (_imp->override_want_choice_enabled.end() != _imp->override_want_choice_enabled.find(s))
+        return _imp->override_want_choice_enabled.find(s)->second;
+
     if (stringify(v) == "pkgname")
     {
         if ("enabled" == stringify(id->name().package()))
@@ -281,5 +287,11 @@ const std::tr1::shared_ptr<OutputManager>
 TestEnvironment::create_output_manager(const CreateOutputManagerInfo &) const
 {
     return make_shared_ptr(new StandardOutputManager);
+}
+
+void
+TestEnvironment::set_want_choice_enabled(const ChoicePrefixName & p, const UnprefixedChoiceName & n, const Tribool v)
+{
+    _imp->override_want_choice_enabled[stringify(p) + ":" + stringify(n)] = v;
 }
 

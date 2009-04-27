@@ -179,6 +179,20 @@ e_repository_TEST_ever_LDADD = \
 
 e_repository_TEST_ever_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
+e_repository_TEST_phases_SOURCES = e_repository_TEST_phases.cc
+
+e_repository_TEST_phases_LDADD = \
+	libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
+e_repository_TEST_phases_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
 e_repository_TEST_exlibs_SOURCES = e_repository_TEST_exlibs.cc
 
 e_repository_TEST_exlibs_LDADD = \
@@ -387,6 +401,9 @@ EXTRA_DIST = \
 	e_repository_TEST_ever.cc \
 	e_repository_TEST_ever_setup.sh \
 	e_repository_TEST_ever_cleanup.sh \
+	e_repository_TEST_phases.cc \
+	e_repository_TEST_phases_setup.sh \
+	e_repository_TEST_phases_cleanup.sh \
 	e_repository_TEST_exlibs.cc \
 	e_repository_TEST_exlibs_setup.sh \
 	e_repository_TEST_exlibs_cleanup.sh \
@@ -437,6 +454,7 @@ BUILT_SOURCES = \
 check_SCRIPTS = \
 	e_repository_TEST_setup.sh e_repository_TEST_cleanup.sh \
 	e_repository_TEST_ever_setup.sh e_repository_TEST_ever_cleanup.sh \
+	e_repository_TEST_phases_setup.sh e_repository_TEST_phases_cleanup.sh \
 	e_repository_TEST_exlibs_setup.sh e_repository_TEST_exlibs_cleanup.sh \
 	e_repository_TEST_replacing_setup.sh e_repository_TEST_replacing_cleanup.sh \
 	xml_things_TEST_setup.sh xml_things_TEST_cleanup.sh \
@@ -528,6 +546,7 @@ TESTS = \
 	dep_spec_pretty_printer_TEST \
 	e_repository_TEST \
 	e_repository_TEST_ever \
+	e_repository_TEST_phases \
 	e_repository_TEST_exlibs \
 	e_repository_TEST_replacing \
 	e_repository_sets_TEST \

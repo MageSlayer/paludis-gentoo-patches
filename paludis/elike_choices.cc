@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -280,5 +280,65 @@ const std::string
 paludis::canonical_build_options_human_name()
 {
     return "Build Options";
+}
+
+const UnprefixedChoiceName
+ELikeSlowTestsChoiceValue::canonical_unprefixed_name()
+{
+    return UnprefixedChoiceName("slow_tests");
+}
+
+const ChoiceNameWithPrefix
+ELikeSlowTestsChoiceValue::canonical_name_with_prefix()
+{
+    return ChoiceNameWithPrefix(stringify(canonical_build_options_prefix()) + ":" + stringify(canonical_unprefixed_name()));
+}
+
+ELikeSlowTestsChoiceValue::ELikeSlowTestsChoiceValue(const std::tr1::shared_ptr<const PackageID> & id,
+        const Environment * const env, const std::tr1::shared_ptr<const Choice> & choice) :
+    _enabled(env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_true())
+{
+}
+
+const UnprefixedChoiceName
+ELikeSlowTestsChoiceValue::unprefixed_name() const
+{
+    return canonical_unprefixed_name();
+}
+
+const ChoiceNameWithPrefix
+ELikeSlowTestsChoiceValue::name_with_prefix() const
+{
+    return canonical_name_with_prefix();
+}
+
+bool
+ELikeSlowTestsChoiceValue::enabled() const
+{
+    return _enabled;
+}
+
+bool
+ELikeSlowTestsChoiceValue::enabled_by_default() const
+{
+    return false;
+}
+
+bool
+ELikeSlowTestsChoiceValue::locked() const
+{
+    return false;
+}
+
+const std::string
+ELikeSlowTestsChoiceValue::description() const
+{
+    return "Run tests considered by the package to be useful, but slow";
+}
+
+bool
+ELikeSlowTestsChoiceValue::explicitly_listed() const
+{
+    return true;
 }
 

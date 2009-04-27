@@ -99,6 +99,7 @@ namespace paludis
         struct flat_list_index;
         struct has_optional_tests;
         struct has_recommended_tests;
+        struct has_slow_tests;
         struct homepage;
         struct ignore_pivot_env_functions;
         struct ignore_pivot_env_variables;
@@ -258,6 +259,7 @@ namespace paludis
             NamedValue<n::fancy_test_flag, std::string> fancy_test_flag;
             NamedValue<n::has_optional_tests, bool> has_optional_tests;
             NamedValue<n::has_recommended_tests, bool> has_recommended_tests;
+            NamedValue<n::has_slow_tests, bool> has_slow_tests;
             NamedValue<n::use_expand_separator, char> use_expand_separator;
         };
 

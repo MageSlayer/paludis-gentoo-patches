@@ -1332,6 +1332,31 @@ EbuildID::add_build_options(const std::tr1::shared_ptr<Choices> & choices) const
             if (may_be_unrestricted_test)
                 build_options->add(make_shared_ptr(new ELikeRecommendedTestsChoiceValue(shared_from_this(), _imp->environment, build_options)));
 
+        /* slow_tests */
+        if (eapi()->supported()->choices_options()->has_slow_tests())
+        {
+            if (! _imp->defined_phases)
+                throw InternalError(PALUDIS_HERE, "bug! no defined_phases yet");
+
+            bool has_slow_test_phase(false);
+            EAPIPhases phases(_imp->eapi->supported()->ebuild_phases()->ebuild_install());
+            for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+                    phase != phase_end ; ++phase)
+            {
+                if (phase->option("slow_tests"))
+                {
+                    if (_imp->defined_phases->value()->end() != _imp->defined_phases->value()->find(phase->equal_option("skipname")))
+                    {
+                        has_slow_test_phase = true;
+                        break;
+                    }
+                }
+            }
+
+            if (has_slow_test_phase)
+                build_options->add(make_shared_ptr(new ELikeSlowTestsChoiceValue(shared_from_this(), _imp->environment, build_options)));
+        }
+
         /* split, strip */
         if (may_be_unrestricted_strip)
         {

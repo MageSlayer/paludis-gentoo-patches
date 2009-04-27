@@ -38,6 +38,7 @@ libexecprogexheres_SCRIPTS = \
 	src_configure.bash \
 	src_install.bash \
 	src_test.bash \
+	src_test_slow.bash \
 	src_prepare.bash \
 	src_unpack.bash
 
