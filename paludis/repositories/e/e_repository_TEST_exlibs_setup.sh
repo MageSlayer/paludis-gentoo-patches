@@ -415,6 +415,36 @@ pkg_setup() {
     [[ ${SUMMARY} == "baz" ]] || die "Bad SUMMARY"
 }
 END
+mkdir -p "packages/cat/illegal-in-global-scope"
+cat <<'END' > packages/cat/illegal-in-global-scope/illegal-in-global-scope-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+SLOT="0"
+LICENCES="GPL-2"
+
+f() {
+    illegal_in_global_scope
+}
+
+f
+END
+mkdir -p "packages/cat/illegal-in-global-scope-in-func"
+cat <<'END' > packages/cat/illegal-in-global-scope-in-func/illegal-in-global-scope-in-func-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+SLOT="0"
+LICENCES="GPL-2"
+
+f() {
+    illegal_in_global_scope
+}
+
+pkg_setup() {
+    f
+}
+END
 cd ..
 
 cd ..

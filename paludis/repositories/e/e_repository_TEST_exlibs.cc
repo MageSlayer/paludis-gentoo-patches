@@ -193,5 +193,7 @@ namespace test_cases
     ExlibsTest test_noarray_bad("noarray-bad", throws_UnsupportedActionError);
     ExlibsTest test_scalar_required("scalar-required", throws_UnsupportedActionError);
     ExlibsTest test_array_required("array-required", throws_UnsupportedActionError);
+    ExlibsTest test_illegal_in_global_scope("illegal-in-global-scope", throws_UnsupportedActionError);
+    ExlibsTest test_illegal_in_global_scope_in_func("illegal-in-global-scope-in-func", success);
 }
 

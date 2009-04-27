@@ -231,3 +231,10 @@ default()
         die "default_$(paludis_phase_to_function_name "${!PALUDIS_EBUILD_PHASE_VAR}") is not a function"
     default_$(paludis_phase_to_function_name "${!PALUDIS_EBUILD_PHASE_VAR}") "$@"
 }
+
+illegal_in_global_scope()
+{
+    [[ "${!PALUDIS_EBUILD_PHASE_VAR}" == "metadata" ]] \
+        && die "Exheres bug: ${FUNCNAME[1]} must not be called in global scope"
+}
+
