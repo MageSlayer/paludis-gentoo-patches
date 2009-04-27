@@ -213,6 +213,8 @@ EbuildCommand::operator() ()
                     params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_t())
             .with_setenv("PALUDIS_NAME_VERSION_REVISION_VAR",
                     params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_pf())
+            .with_setenv("PALUDIS_EBUILD_PHASE_VAR",
+                    params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_ebuild_phase())
             .with_setenv("PALUDIS_PIPE_COMMANDS_SUPPORTED", "yes")
             .with_setenv("PALUDIS_PIPE_COMMAND_DELIM", "\2")
             )
@@ -892,6 +894,8 @@ WriteVDBEntryCommand::operator() ()
                     params.package_id()->eapi()->supported()->ebuild_options()->ignore_pivot_env_variables())
             .with_setenv("PALUDIS_EBUILD_MODULE_SUFFIXES",
                     params.package_id()->eapi()->supported()->ebuild_options()->ebuild_module_suffixes())
+            .with_setenv("PALUDIS_EBUILD_PHASE_VAR",
+                    params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_ebuild_phase())
             .with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params.environment(),
                         params.package_id(), _1, params.maybe_output_manager()))
             );
@@ -1115,6 +1119,8 @@ WriteBinaryEbuildCommand::operator() ()
                         + params.package_id()->eapi()->exported_name())->supported()->ebuild_environment_variables()->env_distdir())
             .with_setenv("PALUDIS_EBUILD_MODULE_SUFFIXES",
                     params.package_id()->eapi()->supported()->ebuild_options()->ebuild_module_suffixes())
+            .with_setenv("PALUDIS_EBUILD_PHASE_VAR",
+                    params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_ebuild_phase())
             .with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params.environment(),
                         params.package_id(), _1, params.maybe_output_manager()))
             );

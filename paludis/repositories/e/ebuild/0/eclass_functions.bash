@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006, 2007 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2009 Ciaran McCreesh
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -26,7 +26,7 @@ EXPORT_FUNCTIONS()
 
     local e
     for e in "$@" ; do
-        if [[ ${EBUILD_PHASE} != metadata ]] && { [[ "${e}" == builtin_* ]] || ! has "${e}" ${PALUDIS_EBUILD_FUNCTIONS}; }; then
+        if [[ ${!PALUDIS_EBUILD_PHASE_VAR} != metadata ]] && { [[ "${e}" == builtin_* ]] || ! has "${e}" ${PALUDIS_EBUILD_FUNCTIONS}; }; then
             ebuild_notice "qa" "$e should not be in EXPORT_FUNCTIONS for ${ECLASS}"
         fi
         eval "${e}() { ${ECLASS}_${e} \"\$@\" ; }"

@@ -37,8 +37,8 @@ is_nonfatal()
 
 expatch()
 {
-    if [[ "${EBUILD_PHASE}" != "prepare" ]] ; then
-        die "expatch called in EBUILD_PHASE ${EBUILD_PHASE}"
+    if [[ "${!PALUDIS_EBUILD_PHASE_VAR}" != "prepare" ]] ; then
+        die "expatch called in phase ${!PALUDIS_EBUILD_PHASE_VAR}"
     fi
 
     local recognise= patchlevel= options=() cmd= appliedpatches=0 dirpatches=()
@@ -97,8 +97,8 @@ expatch()
 
 econf()
 {
-    if [[ "${EBUILD_PHASE}" != "configure" ]] ; then
-        die "econf called in EBUILD_PHASE ${EBUILD_PHASE}"
+    if [[ "${!PALUDIS_EBUILD_PHASE_VAR}" != "configure" ]] ; then
+        die "econf called in phase ${!PALUDIS_EBUILD_PHASE_VAR}"
     fi
 
     local LOCAL_EXTRA_ECONF="${EXTRA_ECONF}"
@@ -168,8 +168,8 @@ econf()
 
 einstall()
 {
-    if [[ "${EBUILD_PHASE}" != "install" ]] ; then
-        die "einstall called in EBUILD_PHASE ${EBUILD_PHASE}"
+    if [[ "${!PALUDIS_EBUILD_PHASE_VAR}" != "install" ]] ; then
+        die "einstall called in phase ${!PALUDIS_EBUILD_PHASE_VAR}"
     fi
 
     if [[ -f Makefile ]] || [[ -f makefile ]] || [[ -f GNUmakefile ]] ; then

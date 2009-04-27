@@ -79,6 +79,7 @@ namespace
                         value_for<n::env_arch>(check_get(k, "env_arch")),
                         value_for<n::env_d>(check_get(k, "env_d")),
                         value_for<n::env_distdir>(check_get(k, "env_distdir")),
+                        value_for<n::env_ebuild_phase>(check_get(k, "env_ebuild_phase")),
                         value_for<n::env_filesdir>(check_get(k, "env_filesdir")),
                         value_for<n::env_kv>(check_get(k, "env_kv")),
                         value_for<n::env_p>(check_get(k, "env_p")),

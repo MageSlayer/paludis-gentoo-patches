@@ -81,6 +81,7 @@ namespace paludis
         struct env_arch;
         struct env_d;
         struct env_distdir;
+        struct env_ebuild_phase;
         struct env_filesdir;
         struct env_kv;
         struct env_p;
@@ -273,6 +274,7 @@ namespace paludis
             NamedValue<n::env_arch, std::string> env_arch;
             NamedValue<n::env_d, std::string> env_d;
             NamedValue<n::env_distdir, std::string> env_distdir;
+            NamedValue<n::env_ebuild_phase, std::string> env_ebuild_phase;
             NamedValue<n::env_filesdir, std::string> env_filesdir;
             NamedValue<n::env_kv, std::string> env_kv;
             NamedValue<n::env_p, std::string> env_p;

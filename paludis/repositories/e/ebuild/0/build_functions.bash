@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006, 2007 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2009 Ciaran McCreesh
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -24,8 +24,8 @@ econf()
 {
     local phase
     has src_configure ${PALUDIS_EBUILD_FUNCTIONS} && phase=configure
-    if [[ "${EBUILD_PHASE}" != "${phase:-compile}" ]]; then
-        ebuild_notice "qa" "econf called in EBUILD_PHASE ${EBUILD_PHASE}. It should not be run outside src_${phase} for this EAPI."
+    if [[ "${PALUDIS_EBUILD_PHASE_VAR}" != "${phase:-compile}" ]]; then
+        ebuild_notice "qa" "econf called in EBUILD_PHASE ${!PALUDIS_EBUILD_PHASE_VAR}. It should not be run outside src_${phase} for this EAPI."
     fi
 
     local LOCAL_EXTRA_ECONF="${EXTRA_ECONF}"

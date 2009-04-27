@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -484,7 +484,7 @@ ebuild_main()
 
     if [[ $1 == metadata ]] || [[ $1 == variable ]] || [[ $1 == pretend ]] || \
             [[ $1 == bad_options ]] ; then
-        export EBUILD_PHASE="${1}"
+        export ${PALUDIS_EBUILD_PHASE_VAR}="${1}"
         perform_hook ebuild_${action}_pre
         if [[ $1 == metadata ]]; then
             for f in cut tr date ; do
@@ -504,7 +504,7 @@ ebuild_main()
         perform_hook ebuild_${action}_post
     else
         for action in $@ ; do
-            export EBUILD_PHASE="${action}"
+            export ${PALUDIS_EBUILD_PHASE_VAR}="${action}"
             perform_hook ebuild_${action}_pre
             if ! ${PALUDIS_F_FUNCTION_PREFIX:-ebuild_f}_${action} ; then
                 perform_hook ebuild_${action}_fail

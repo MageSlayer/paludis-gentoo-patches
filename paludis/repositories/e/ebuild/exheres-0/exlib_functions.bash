@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2007, 2008 Ciaran McCreesh
+# Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
 # Copyright (c) 2009 Bo Ørsted Andresen
 #
 # This file is part of the Paludis package manager. Paludis is free software;
@@ -227,7 +227,7 @@ require()
 
 default()
 {
-    [[ $(type -t "default_$(paludis_phase_to_function_name "${EBUILD_PHASE}")" ) == "function" ]] || \
-        die "default_$(paludis_phase_to_function_name "${EBUILD_PHASE}") is not a function"
-    default_$(paludis_phase_to_function_name "${EBUILD_PHASE}") "$@"
+    [[ $(type -t "default_$(paludis_phase_to_function_name "${!PALUDIS_EBUILD_PHASE_VAR}")" ) == "function" ]] || \
+        die "default_$(paludis_phase_to_function_name "${!PALUDIS_EBUILD_PHASE_VAR}") is not a function"
+    default_$(paludis_phase_to_function_name "${!PALUDIS_EBUILD_PHASE_VAR}") "$@"
 }
