@@ -159,6 +159,7 @@ namespace
                         value_for<n::ignore_pivot_env_functions>(check_get(k, "ignore_pivot_env_functions")),
                         value_for<n::ignore_pivot_env_variables>(check_get(k, "ignore_pivot_env_variables")),
                         value_for<n::load_modules>(check_get(k, "load_modules")),
+                        value_for<n::must_not_change_after_source_variables>(check_get(k, "must_not_change_after_source_variables")),
                         value_for<n::must_not_change_variables>(check_get(k, "must_not_change_variables")),
                         value_for<n::non_empty_variables>(check_get(k, "non_empty_variables")),
                         value_for<n::rdepend_defaults_to_depend>(destringify_key<bool>(k, "rdepend_defaults_to_depend")),

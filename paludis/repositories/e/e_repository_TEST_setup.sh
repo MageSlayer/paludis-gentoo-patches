@@ -2288,6 +2288,23 @@ src_install() {
     doman bar.m
 }
 END
+mkdir -p "packages/cat/change-globals"
+cat <<'END' > packages/cat/change-globals/change-globals-0.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+WORK="${WORKBASE}"
+
+src_compile() {
+    DEFAULT_SRC_COMPILE_PARAMS="foo"
+    default
+}
+END
 mkdir -p "packages/cat/doman-nonfatal"
 cat <<'END' > packages/cat/doman-nonfatal/doman-nonfatal-0.ebuild || exit 1
 DESCRIPTION="The Long Description"

@@ -22,6 +22,8 @@
 
 default_src_compile()
 {
+    ebuild_verify_not_changed_from_global_scope DEFAULT_SRC_COMPILE_PARAMS
+
     if [[ -f Makefile ]] || [[ -f makefile ]] || [[ -f GNUmakefile ]] ; then
         emake "${DEFAULT_SRC_COMPILE_PARAMS[@]}"
     fi

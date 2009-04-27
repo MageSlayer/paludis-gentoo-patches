@@ -22,6 +22,8 @@
 
 default_src_prepare()
 {
+    ebuild_verify_not_changed_from_global_scope DEFAULT_SRC_PREPARE_PATCHES
+
     if [[ -n "${DEFAULT_SRC_PREPARE_PATCHES[@]}" ]]; then
         expatch "${DEFAULT_SRC_PREPARE_PATCHES[@]}"
     fi

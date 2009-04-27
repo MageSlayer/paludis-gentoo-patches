@@ -326,6 +326,11 @@ ebuild_load_ebuild()
         fi
     done
 
+    for paludis_v in ${PALUDIS_MUST_NOT_CHANGE_AFTER_SOURCE_VARIABLES} ; do
+        local paludis_s_v=PALUDIS_SAVE_GLOBAL_SCOPE_${paludis_v}
+        export ${paludis_s_v}="$(declare -p ${paludis_v} 2>/dev/null)"
+    done
+
     PALUDIS_DECLARED_FUNCTIONS=$(declare -F | while read paludis_v ; do
         echo -n ${paludis_v#declare -f } " "
     done )

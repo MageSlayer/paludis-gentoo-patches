@@ -179,6 +179,8 @@ EbuildCommand::operator() ()
                     params.package_id()->eapi()->supported()->ebuild_options()->bracket_merged_variables())
             .with_setenv("PALUDIS_MUST_NOT_CHANGE_VARIABLES",
                     params.package_id()->eapi()->supported()->ebuild_options()->must_not_change_variables())
+            .with_setenv("PALUDIS_MUST_NOT_CHANGE_AFTER_SOURCE_VARIABLES",
+                    params.package_id()->eapi()->supported()->ebuild_options()->must_not_change_after_source_variables())
             .with_setenv("PALUDIS_RDEPEND_DEFAULTS_TO_DEPEND",
                     params.package_id()->eapi()->supported()->ebuild_options()->rdepend_defaults_to_depend() ? "yes" : "")
             .with_setenv("PALUDIS_F_FUNCTION_PREFIX",

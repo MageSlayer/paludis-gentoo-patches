@@ -39,3 +39,13 @@ ebuild_safe_source()
     eval "trap DEBUG; shopt -u extdebug; set +T; return ${?}"
 }
 
+ebuild_verify_not_changed_from_global_scope()
+{
+    local v vv_orig
+    for v in "$@" ; do
+        vv_orig=PALUDIS_SAVE_GLOBAL_SCOPE_$v
+        vv_orig=${!vv_orig}
+        [[ "${vv_orig}" == "$(declare -p "${v}" 2>/dev/null)" ]] || die "Variable $v must be set to an invariant value in global scope"
+    done
+}
+
