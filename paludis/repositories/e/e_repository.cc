@@ -808,11 +808,14 @@ ERepository::purge_invalid_cache() const
     Context context("When purging invalid write_cache:");
 
     FSEntry write_cache(_imp->params.write_cache());
-    if (write_cache == FSEntry("/var/empty") || ! write_cache.is_directory_or_symlink_to_directory())
+    if (write_cache == FSEntry("/var/empty"))
         return;
 
     if (_imp->params.append_repository_name_to_write_cache())
         write_cache /= stringify(name());
+
+    if (! write_cache.is_directory_or_symlink_to_directory())
+        return;
 
     const std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
                 _imp->params.eapi_when_unknown()));
