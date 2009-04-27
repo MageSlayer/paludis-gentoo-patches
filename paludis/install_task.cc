@@ -1120,7 +1120,7 @@ InstallTask::_main_actions()
         return;
     }
 
-
+    _main_actions_post_hooks();
     _do_world_updates();
 }
 
