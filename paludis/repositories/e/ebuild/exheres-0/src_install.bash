@@ -26,7 +26,7 @@ default_src_install()
 
     local done_docs old_set f d p doc e
     if [[ -f Makefile ]] || [[ -f makefile ]] || [[ -f GNUmakefile ]] ; then
-        if make -j1 -n "${DEFAULT_SRC_INSTALL_PARAMS[@]}" install ; then
+        if make -j1 -n DESTDIR="${IMAGE}" "${DEFAULT_SRC_INSTALL_PARAMS[@]}" install ; then
             echo "Found a makefile, using the install target" 
             emake -j1 DESTDIR="${IMAGE}" "${DEFAULT_SRC_INSTALL_PARAMS[@]}" install
         else
