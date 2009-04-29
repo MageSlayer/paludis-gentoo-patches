@@ -5,12 +5,15 @@
 # Written by Baptiste Daroussin <baptux at free.fr>
 # Usage: _paludis_packages installed|available|repositories|categories|sets|repository-formats
 
-local flags prepo packages categories paludis_pkgs
+local flags prepo packages categories
 _paludis_packages_update_available() {
     if [[ $PREFIX != -* ]]; then
         if [[ $PREFIX != */* ]];then
-            paludis_pkgs=(${(o)${${(M)${(f)"$(paludis --log-level silent --list-packages)"}:#\* *}##\* }##*/})
-            _wanted paludis_pkgs expl "packages" compadd - ${(@)paludis_pkgs}
+            if ( [[ ${+_paludis_pkgs_available} -eq 0 ]] || _cache_invalid PALUDIS_available ) && ! _retrieve_cache PALUDIS_available ; then
+                _paludis_pkgs_available=(${(o)${${(M)${(f)"$(paludis --log-level silent --list-packages)"}:#\* *}##\* }##*/})
+                _store_cache PALUDIS_available _paludis_pkgs_available
+            fi
+            _wanted paludis_pkgs expl "packages" compadd - ${(@)_paludis_pkgs_avail}
             categories=(${${(M)${(f)"$(paludis --log-level silent --list-categories)"}:#\* *}##\* })
             _wanted cat_packages expl "category/packages" compadd -S "/" $categories
         else
@@ -27,8 +30,11 @@ _paludis_packages_update_repository-formats() {
 }
 
 _paludis_packages_update_installed() {
-    packages=(${${(M)${(f)"$(paludis --log-level silent --repository installed --list-packages)"}:#\* *}##\* })
-    compadd ${(@)packages}
+    if ( [[ ${+_paludis_pkgs_installed} -eq 0 ]] || _cache_invalid PALUDIS_installed ) && ! _retrieve_cache PALUDIS_installed ; then
+        _paludis_pkgs_installed=(${${(M)${(f)"$(paludis --log-level silent --repository installed --list-packages)"}:#\* *}##\* })
+        _store_cache PALUDIS_installed _paludis_pkgs_installed
+    fi
+    compadd ${(@)_paludis_pkgs_inst}
 }
 _paludis_packages_update_categories() {
     packages=(${${${(M)${(f)"$(paludis --log-level silent --list-categories)"}:#\* *}##\* }:#*(virtual|installed)*})
