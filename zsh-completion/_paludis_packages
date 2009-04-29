@@ -65,9 +65,9 @@ _paludis_packages() {
         _paludis_packages_update_$pkgset
 }
 _paludis_cache_policy () {
-#   rebuild if cache is more than a week old
-        oldp=( "$1"(mw+1) )
-        (( $#oldp )) && return 0
+    # Rebuild if cache is more than a week old
+    oldp=( "$1"(mw+1) )
+    (( $#oldp )) && return 0
 }
 
 _paludis_packages "$@"
