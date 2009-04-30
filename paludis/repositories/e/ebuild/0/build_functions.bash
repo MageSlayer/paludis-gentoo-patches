@@ -24,7 +24,7 @@ econf()
 {
     local phase
     has src_configure ${PALUDIS_EBUILD_FUNCTIONS} && phase=configure
-    if [[ "${PALUDIS_EBUILD_PHASE_VAR}" != "${phase:-compile}" ]]; then
+    if [[ "${!PALUDIS_EBUILD_PHASE_VAR}" != "${phase:-compile}" ]]; then
         ebuild_notice "qa" "econf called in EBUILD_PHASE ${!PALUDIS_EBUILD_PHASE_VAR}. It should not be run outside src_${phase} for this EAPI."
     fi
 
