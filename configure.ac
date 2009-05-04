@@ -101,315 +101,6 @@ dnl {{{ check for byte order
 AC_C_BIGENDIAN
 dnl }}}
 
-dnl {{{ check for partial specialisation of template classes
-AC_MSG_CHECKING([for compiler support for partial specialisation of template classes])
-AC_COMPILE_IFELSE([
-template <typename T_>
-struct S
-{
-    static const int s = 0;
-};
-
-template <typename T_>
-struct S<const T_>
-{
-};
-
-template <typename T_>
-struct S<const T_ &>
-{
-    static const int t = 0;
-};
-
-int main(int, char **)
-{
-    return S<int &>::s + S<const int &>::t;
-}
-],
-	[AC_MSG_RESULT([yes])],
-	[
-	 AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your C++ compiler doesn't compile C++ code])
-	])
-dnl }}}
-
-dnl {{{ check for basic_string and string::find_last_not_of
-AC_MSG_CHECKING([for a sufficiently standard std::basic_string<>])
-AC_COMPILE_IFELSE([
-#include <string>
-int main(int, char **)
-{
-	std::string s("test");
-	std::basic_string<int> t;
-	return std::string::npos != s.find_last_not_of("abcde") ? 0 : 1;
-}
-],
-	[AC_MSG_RESULT([yes])],
-	[
-	 AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([I need a less broken std::basic_string<> implementation])
-	])
-dnl }}}
-
-dnl {{{ check for limits
-AC_MSG_CHECKING([for a usable std::numeric_limits])
-AC_COMPILE_IFELSE([
-#include <limits>
-int main(int, char **)
-{
-	return std::numeric_limits<unsigned>::digits >> 3;
-}
-],
-	[AC_MSG_RESULT([yes])],
-	[
-	 AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your std::numeric_limits either doesn't exist or hates me])
-	])
-dnl }}}
-
-dnl {{{ check for broken std::set<>::const_reverse_iterator
-AC_MSG_CHECKING([for a usable std::set<>::const_reverse_iterator])
-AC_COMPILE_IFELSE([
-#include <set>
-int main(int, char **)
-{
-	std::set<int> s;
-	s.insert(1);
-	std::set<int>::const_reverse_iterator i;
-	return *i;
-}
-],
-	[AC_MSG_RESULT([yes])],
-	[
-	 AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your std::set<>::const_reverse_iterator is h0rked])
-	])
-dnl }}}
-
-dnl {{{ check for namespace aliasing
-AC_MSG_CHECKING([whether your compiler has referencing issues])
-AC_COMPILE_IFELSE([
-namespace n
-{
-	int x = 0;
-	int & r_x = x;
-}
-
-using n::r_x;
-],
-	[AC_MSG_RESULT([no])],
-	[AC_MSG_RESULT([yes])
-	 AC_MSG_ERROR([Your compiler is b0rked (GCC bug 31899?)])])
-dnl }}}
-
-dnl {{{ check for whether we want an extra template<> for Implementation
-AC_MSG_CHECKING([whether your compiler wants template<> for template specialisations of template classes])
-AC_COMPILE_IFELSE([
-template <typename T_> struct S;
-template <typename T_> struct T;
-template <> template <typename T_> struct S<T<T_> > { };
-],
-	[AC_MSG_RESULT([yes])],
-	[AC_MSG_RESULT([no])
-	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_NO_DOUBLE_TEMPLATE=1"
-	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_NO_DOUBLE_TEMPLATE=1"
-	])
-dnl }}}
-
-dnl {{{ check whether we do explicit instantiation of fully specialised templates
-AC_MSG_CHECKING([whether we should explicitly instantiate fully specialised templates])
-AC_COMPILE_IFELSE([
-template <typename T_> struct S;
-template <> struct S<int> { };
-template class S<int>;
-],
-	[AC_MSG_RESULT([yes])],
-	[AC_MSG_RESULT([no])
-	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_NO_EXPLICIT_FULLY_SPECIALISED=1"
-	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_NO_EXPLICIT_FULLY_SPECIALISED=1"
-	])
-dnl }}}
-
-dnl {{{ check for static_assert
-AC_MSG_CHECKING([for compiler support for static_assert])
-AC_COMPILE_IFELSE([
-int main(int, char **)
-{
-	static_assert(true, "works");
-}
-],
-	[AC_MSG_RESULT([yes])
-	 AC_MSG_CHECKING([whether static_assert works])
-	 AC_COMPILE_IFELSE([
-int main(int, char **)
-{
-	static_assert(false, "works");
-}
-],
-	 [AC_MSG_RESULT([no])],
-	 [AC_MSG_RESULT([yes])
-	  PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_STATIC_ASSERT=1"
-	  PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_STATIC_ASSERT=1"
-	 ])],
-	[AC_MSG_RESULT([no])])
-dnl }}}
-
-dnl {{{ check for concept support
-AC_MSG_CHECKING([for compiler support for concepts])
-AC_COMPILE_IFELSE([
-auto concept Monkeyable<typename T_>
-{
-	void T_::monkey () const;
-};
-
-template <Monkeyable Monkey_>
-void monkey_lots(const Monkey_ & m)
-{
-	for (int x(0) ; x < 10 ; ++x)
-		m.monkey();
-}
-
-struct Bobo
-{
-	void monkey() const
-	{
-	}
-};
-
-int main(int, char **)
-{
-	monkey_lots(Bobo());
-}
-],
-	[AC_MSG_RESULT([yes])
-	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_CONCEPTS=1"
-	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_CONCEPTS=1"
-	],
-	[AC_MSG_RESULT([no])])
-dnl }}}
-
-dnl {{{ check for hashes
-AC_MSG_CHECKING([for hashed associative containers])
-AC_COMPILE_IFELSE([
-#include <tr1/unordered_map>
-int main(int, char **)
-{
-	std::tr1::unordered_map<int, int> m;
-	m.insert(std::make_pair(1, 2));
-}
-],
-	[AC_MSG_RESULT([std::tr1::unordered_map])],
-	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support tr1 unordered containers])])
-dnl }}}
-
-dnl {{{ tr1 shared pointers
-AC_MSG_CHECKING([for std::tr1::shared_ptr<>])
-AC_COMPILE_IFELSE([
-#include <tr1/memory>
-int main(int, char **)
-{
-	std::tr1::shared_ptr<int> x(new int(10));
-	return *x;
-}
-],
-	[AC_MSG_RESULT([yes])],
-	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support tr1 shared pointers])])
-dnl }}}
-
-dnl {{{ tr1 type traits
-AC_MSG_CHECKING([for std::tr1::remove_pointer<>])
-AC_COMPILE_IFELSE([
-#include <tr1/type_traits>
-int main(int, char **)
-{
-	std::tr1::remove_pointer<int *>::type x(10);
-	return x;
-}
-],
-	[AC_MSG_RESULT([yes])],
-	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support tr1 type traits])])
-dnl }}}
-
-dnl {{{ tr1 binders
-AC_MSG_CHECKING([for std::tr1::bind<>])
-AC_COMPILE_IFELSE([
-#include <tr1/functional>
-#include <functional>
-#include <algorithm>
-#include <list>
-struct S
-{
-	void x(const int) const
-	{
-	}
-};
-int main(int, char **)
-{
-	using namespace std::tr1::placeholders;
-	std::list<int> l;
-	S s;
-	std::for_each(l.begin(), l.end(),
-		std::tr1::bind(std::tr1::mem_fn(&S::x), &s, _1));
-}
-],
-	[AC_MSG_RESULT([yes])],
-	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support tr1 functional])])
-dnl }}}
-
-dnl {{{ std::next
-AC_MSG_CHECKING([for std::next])
-AC_COMPILE_IFELSE([
-#include <algorithm>
-#include <iterator>
-#include <list>
-int main(int, char **)
-{
-	std::list<int> x;
-	next(x.begin());
-}
-],
-	[AC_MSG_RESULT([yes])
-	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_STD_NEXT=1"
-	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_STD_NEXT=1"
-	],
-	[AC_MSG_RESULT([no])
-	])
-dnl }}}
-
-dnl {{{ c++0x default and deleted functions
-AC_MSG_CHECKING([for c++0x default and deleted functions])
-AC_COMPILE_IFELSE([
-struct S
-{
-	S() = default;
-	S & operator= (const S &) = delete;
-};
-],
-	[AC_MSG_RESULT([yes])
-	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_DEFAULT_DELETED=1"
-	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_DEFAULT_DELETED=1"
-	],
-	[AC_MSG_RESULT([no])
-	])
-dnl }}}
-
-dnl {{{ c++0x enum classes
-AC_MSG_CHECKING([for c++0x enum class support])
-AC_COMPILE_IFELSE([
-enum class C : long { c };
-],
-	[AC_MSG_RESULT([yes])
-	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_ENUM_CLASS=1"
-	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_ENUM_CLASS=1"
-	],
-	[AC_MSG_RESULT([no])
-	])
-dnl }}}
-
 need_xml_check=
 need_pcrecpp_check=
 need_syck_check=
@@ -803,6 +494,320 @@ AC_SUBST([PALUDIS_CXXFLAGS_NO_WEXTRA])
 AC_SUBST([PALUDIS_CXXFLAGS_NO_WUNUSED])
 AC_SUBST([PALUDIS_CXXFLAGS_NO_WWRITE_STRINGS])
 AC_SUBST([PALUDIS_CXXFLAGS_NO_WMISSING_NORETURN])
+
+save_CXXFLAGS="$CXXFLAGS"
+CXXFLAGS="$CXXFLAGS $PALUDIS_CXXFLAGS"
+
+dnl {{{ check for partial specialisation of template classes
+AC_MSG_CHECKING([for compiler support for partial specialisation of template classes])
+AC_COMPILE_IFELSE([
+template <typename T_>
+struct S
+{
+    static const int s = 0;
+};
+
+template <typename T_>
+struct S<const T_>
+{
+};
+
+template <typename T_>
+struct S<const T_ &>
+{
+    static const int t = 0;
+};
+
+int main(int, char **)
+{
+    return S<int &>::s + S<const int &>::t;
+}
+],
+	[AC_MSG_RESULT([yes])],
+	[
+	 AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([Your C++ compiler doesn't compile C++ code])
+	])
+dnl }}}
+
+dnl {{{ check for basic_string and string::find_last_not_of
+AC_MSG_CHECKING([for a sufficiently standard std::basic_string<>])
+AC_COMPILE_IFELSE([
+#include <string>
+int main(int, char **)
+{
+	std::string s("test");
+	std::basic_string<int> t;
+	return std::string::npos != s.find_last_not_of("abcde") ? 0 : 1;
+}
+],
+	[AC_MSG_RESULT([yes])],
+	[
+	 AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([I need a less broken std::basic_string<> implementation])
+	])
+dnl }}}
+
+dnl {{{ check for limits
+AC_MSG_CHECKING([for a usable std::numeric_limits])
+AC_COMPILE_IFELSE([
+#include <limits>
+int main(int, char **)
+{
+	return std::numeric_limits<unsigned>::digits >> 3;
+}
+],
+	[AC_MSG_RESULT([yes])],
+	[
+	 AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([Your std::numeric_limits either doesn't exist or hates me])
+	])
+dnl }}}
+
+dnl {{{ check for broken std::set<>::const_reverse_iterator
+AC_MSG_CHECKING([for a usable std::set<>::const_reverse_iterator])
+AC_COMPILE_IFELSE([
+#include <set>
+int main(int, char **)
+{
+	std::set<int> s;
+	s.insert(1);
+	std::set<int>::const_reverse_iterator i;
+	return *i;
+}
+],
+	[AC_MSG_RESULT([yes])],
+	[
+	 AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([Your std::set<>::const_reverse_iterator is h0rked])
+	])
+dnl }}}
+
+dnl {{{ check for namespace aliasing
+AC_MSG_CHECKING([whether your compiler has referencing issues])
+AC_COMPILE_IFELSE([
+namespace n
+{
+	int x = 0;
+	int & r_x = x;
+}
+
+using n::r_x;
+],
+	[AC_MSG_RESULT([no])],
+	[AC_MSG_RESULT([yes])
+	 AC_MSG_ERROR([Your compiler is b0rked (GCC bug 31899?)])])
+dnl }}}
+
+dnl {{{ check for whether we want an extra template<> for Implementation
+AC_MSG_CHECKING([whether your compiler wants template<> for template specialisations of template classes])
+AC_COMPILE_IFELSE([
+template <typename T_> struct S;
+template <typename T_> struct T;
+template <> template <typename T_> struct S<T<T_> > { };
+],
+	[AC_MSG_RESULT([yes])],
+	[AC_MSG_RESULT([no])
+	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_NO_DOUBLE_TEMPLATE=1"
+	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_NO_DOUBLE_TEMPLATE=1"
+	])
+dnl }}}
+
+dnl {{{ check whether we do explicit instantiation of fully specialised templates
+AC_MSG_CHECKING([whether we should explicitly instantiate fully specialised templates])
+AC_COMPILE_IFELSE([
+template <typename T_> struct S;
+template <> struct S<int> { };
+template class S<int>;
+],
+	[AC_MSG_RESULT([yes])],
+	[AC_MSG_RESULT([no])
+	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_NO_EXPLICIT_FULLY_SPECIALISED=1"
+	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_NO_EXPLICIT_FULLY_SPECIALISED=1"
+	])
+dnl }}}
+
+dnl {{{ check for static_assert
+AC_MSG_CHECKING([for compiler support for static_assert])
+AC_COMPILE_IFELSE([
+int main(int, char **)
+{
+	static_assert(true, "works");
+}
+],
+	[AC_MSG_RESULT([yes])
+	 AC_MSG_CHECKING([whether static_assert works])
+	 AC_COMPILE_IFELSE([
+int main(int, char **)
+{
+	static_assert(false, "works");
+}
+],
+	 [AC_MSG_RESULT([no])],
+	 [AC_MSG_RESULT([yes])
+	  PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_STATIC_ASSERT=1"
+	  PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_STATIC_ASSERT=1"
+	 ])],
+	[AC_MSG_RESULT([no])])
+dnl }}}
+
+dnl {{{ check for concept support
+AC_MSG_CHECKING([for compiler support for concepts])
+AC_COMPILE_IFELSE([
+auto concept Monkeyable<typename T_>
+{
+	void T_::monkey () const;
+};
+
+template <Monkeyable Monkey_>
+void monkey_lots(const Monkey_ & m)
+{
+	for (int x(0) ; x < 10 ; ++x)
+		m.monkey();
+}
+
+struct Bobo
+{
+	void monkey() const
+	{
+	}
+};
+
+int main(int, char **)
+{
+	monkey_lots(Bobo());
+}
+],
+	[AC_MSG_RESULT([yes])
+	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_CONCEPTS=1"
+	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_CONCEPTS=1"
+	],
+	[AC_MSG_RESULT([no])])
+dnl }}}
+
+dnl {{{ check for hashes
+AC_MSG_CHECKING([for hashed associative containers])
+AC_COMPILE_IFELSE([
+#include <tr1/unordered_map>
+int main(int, char **)
+{
+	std::tr1::unordered_map<int, int> m;
+	m.insert(std::make_pair(1, 2));
+}
+],
+	[AC_MSG_RESULT([std::tr1::unordered_map])],
+	[AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([Your compiler doesn't support tr1 unordered containers])])
+dnl }}}
+
+dnl {{{ tr1 shared pointers
+AC_MSG_CHECKING([for std::tr1::shared_ptr<>])
+AC_COMPILE_IFELSE([
+#include <tr1/memory>
+int main(int, char **)
+{
+	std::tr1::shared_ptr<int> x(new int(10));
+	return *x;
+}
+],
+	[AC_MSG_RESULT([yes])],
+	[AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([Your compiler doesn't support tr1 shared pointers])])
+dnl }}}
+
+dnl {{{ tr1 type traits
+AC_MSG_CHECKING([for std::tr1::remove_pointer<>])
+AC_COMPILE_IFELSE([
+#include <tr1/type_traits>
+int main(int, char **)
+{
+	std::tr1::remove_pointer<int *>::type x(10);
+	return x;
+}
+],
+	[AC_MSG_RESULT([yes])],
+	[AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([Your compiler doesn't support tr1 type traits])])
+dnl }}}
+
+dnl {{{ tr1 binders
+AC_MSG_CHECKING([for std::tr1::bind<>])
+AC_COMPILE_IFELSE([
+#include <tr1/functional>
+#include <functional>
+#include <algorithm>
+#include <list>
+struct S
+{
+	void x(const int) const
+	{
+	}
+};
+int main(int, char **)
+{
+	using namespace std::tr1::placeholders;
+	std::list<int> l;
+	S s;
+	std::for_each(l.begin(), l.end(),
+		std::tr1::bind(std::tr1::mem_fn(&S::x), &s, _1));
+}
+],
+	[AC_MSG_RESULT([yes])],
+	[AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([Your compiler doesn't support tr1 functional])])
+dnl }}}
+
+dnl {{{ std::next
+AC_MSG_CHECKING([for std::next])
+AC_COMPILE_IFELSE([
+#include <algorithm>
+#include <iterator>
+#include <list>
+int main(int, char **)
+{
+	std::list<int> x;
+	next(x.begin());
+}
+],
+	[AC_MSG_RESULT([yes])
+	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_STD_NEXT=1"
+	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_STD_NEXT=1"
+	],
+	[AC_MSG_RESULT([no])
+	])
+dnl }}}
+
+dnl {{{ c++0x default and deleted functions
+AC_MSG_CHECKING([for c++0x default and deleted functions])
+AC_COMPILE_IFELSE([
+struct S
+{
+	S() = default;
+	S & operator= (const S &) = delete;
+};
+],
+	[AC_MSG_RESULT([yes])
+	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_DEFAULT_DELETED=1"
+	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_DEFAULT_DELETED=1"
+	],
+	[AC_MSG_RESULT([no])
+	])
+dnl }}}
+
+dnl {{{ c++0x enum classes
+AC_MSG_CHECKING([for c++0x enum class support])
+AC_COMPILE_IFELSE([
+enum class C : long { c };
+],
+	[AC_MSG_RESULT([yes])
+	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_ENUM_CLASS=1"
+	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_ENUM_CLASS=1"
+	],
+	[AC_MSG_RESULT([no])
+	])
+dnl }}}
+
+CXXFLAGS="$save_CXXFLAGS"
 
 AC_MSG_CHECKING([whether to enable visibility])
 AC_ARG_ENABLE([visibility],
