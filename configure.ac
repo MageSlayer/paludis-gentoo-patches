@@ -749,6 +749,29 @@ int main(int, char **)
 	],
 	[AC_MSG_RESULT([no])])
 
+AC_MSG_CHECKING([whether we want -std=gnu++0x])
+AC_COMPILE_IFELSE([
+#ifndef __GNUC__
+#  error not gcc
+#endif
+
+#if __GNUC__ != 4
+#  error not gcc 4
+#endif
+
+#if __GNUC_MINOR__ != 4
+#  error not gcc 4.4
+#endif
+
+int main(int, char **)
+{
+}
+],
+	[AC_MSG_RESULT([yes])
+	PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -std=gnu++0x"
+	],
+	[AC_MSG_RESULT([no])])
+
 PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC=$PALUDIS_CXXFLAGS
 
 AC_MSG_CHECKING([whether -pedantic works if we use extern template])
