@@ -328,7 +328,7 @@ PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC=
 PALUDIS_CXXFLAGS_NO_STRICT_ALIASING=
 PALUDIS_CXXFLAGS_VISIBILITY=
 AC_MSG_CHECKING([whether our compiler is iccy])
-AC_COMPILE_IFELSE([
+AC_PREPROC_IFELSE([
 #ifndef __ICC
 #error nope
 #endif
@@ -418,7 +418,7 @@ fi
 AC_MSG_RESULT([${cxxflags_message}])
 
 AC_MSG_CHECKING([whether we want -Wno-non-virtual-dtor to work around compiler silliness])
-AC_COMPILE_IFELSE([
+AC_PREPROC_IFELSE([
 #ifndef __GNUC__
 #  error not gcc
 #endif
@@ -430,10 +430,6 @@ AC_COMPILE_IFELSE([
 #if __GNUC_MINOR__ != 1
 #  error not gcc 4.1
 #endif
-
-int main(int, char **)
-{
-}
 ],
 	[AC_MSG_RESULT([yes])
 	PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -Wno-non-virtual-dtor"
@@ -441,7 +437,7 @@ int main(int, char **)
 	[AC_MSG_RESULT([no])])
 
 AC_MSG_CHECKING([whether we want -std=gnu++0x])
-AC_COMPILE_IFELSE([
+AC_PREPROC_IFELSE([
 #ifndef __GNUC__
 #  error not gcc
 #endif
@@ -453,10 +449,6 @@ AC_COMPILE_IFELSE([
 #if __GNUC_MINOR__ != 4
 #  error not gcc 4.4
 #endif
-
-int main(int, char **)
-{
-}
 ],
 	[AC_MSG_RESULT([yes])
 	PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -std=gnu++0x"
@@ -1133,7 +1125,7 @@ if test "x$enable_python" = "xyes" ; then
 	AC_SUBST([PYTHON_INSTALL_DIR])
 
 	AC_MSG_CHECKING([whether your gcc is new enough to enable Python])
-	AC_COMPILE_IFELSE([
+	AC_PREPROC_IFELSE([
 #ifdef __GNUC__
 #  if __GNUC__ < 4
 #    error too old
@@ -1461,7 +1453,7 @@ dnl }}}
 dnl {{{ syck check
 if test "x$need_syck_check" = "xyes" ; then
 	AC_MSG_CHECKING([for syck])
-	AC_COMPILE_IFELSE([
+	AC_PREPROC_IFELSE([
 #include <syck.h>
 ],
 	[AC_MSG_RESULT([yes])],
