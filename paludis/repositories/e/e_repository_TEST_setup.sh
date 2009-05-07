@@ -1294,6 +1294,76 @@ src_install() {
     docompress bar || die
 }
 END
+mkdir -p "cat/dodoc-r" || exit 1
+cat << 'END' > cat/dodoc-r/dodoc-r-3.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="3"
+
+src_unpack() {
+    mkdir -p ${WORKDIR}
+    cd "${WORKDIR}"
+
+    mkdir one two three
+    echo foo > one/first
+    echo foo > two/second
+    echo foo > four
+    mkdir dot
+    mkdir dot/five
+    echo foo > dot/five/fifth
+}
+
+src_install() {
+    dodoc -r one two three four
+    cd dot
+    dodoc -r .
+}
+
+pkg_preinst() {
+    [[ -e ${D}/usr/share/doc/${PF}/one/first ]] || die one/first
+    [[ -e ${D}/usr/share/doc/${PF}/two/second ]] || die two/second
+    [[ -e ${D}/usr/share/doc/${PF}/four ]] || die four
+    [[ -e ${D}/usr/share/doc/${PF}/five/fifth ]] || die five/fifth
+}
+END
+mkdir -p "cat/doins-r-symlink" || exit 1
+cat << 'END' > cat/doins-r-symlink/doins-r-symlink-3.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="3"
+
+src_unpack() {
+    mkdir -p ${WORKDIR}
+    cd "${WORKDIR}"
+
+    echo foo > foo
+    ln -s foo bar
+}
+
+src_install() {
+    insinto /foo
+    doins -r .
+}
+
+pkg_preinst() {
+    find ${D} | xargs -n1 ls -ldh
+    [[ -f ${D}/foo/foo ]] || die foo
+    [[ -L ${D}/foo/bar ]] || die bar
+    [[ $(readlink ${D}/foo/bar ) == foo ]] || die sym
+}
+END
 cd ..
 
 mkdir -p repo14/{profiles/profile,metadata,eclass} || exit 1

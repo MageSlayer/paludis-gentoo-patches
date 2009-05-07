@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et :
 
 # Copyright (c) 2006 Stephen Bennett
-# Copyright (c) 2007 Ciaran McCreesh
+# Copyright (c) 2007, 2009 Ciaran McCreesh
 #
 # Based in part upon dodoc from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -28,6 +28,15 @@ if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR} ]]; then
     paludis_die_or_error "\${${PALUDIS_IMAGE_DIR_VAR}} not valid; aborting"
 fi
 
+recurse=false
+
+if [[ -n ${PALUDIS_DODOC_R} ]] ; then
+    if [[ $1 == "-r" ]] ; then
+        shift
+        recurse=true
+    fi
+fi
+
 if [[ $# -lt 1 ]]; then
     paludis_die_or_error "at least one argument needed"
 fi
@@ -40,7 +49,13 @@ fi
 ret=0
 
 for x in "$@"; do
-    if [[ -s "${x}" ]]; then
+    if $recurse && [[ -d "${x}" ]] ; then
+        (
+            export DOCDESTTREE="${DOCDESTTREE}/${x}"
+            cd "${x}"
+            ls * >/dev/null 2>&1 && dodoc -r *
+        )
+    elif [[ -s "${x}" ]]; then
         install -m0644 "${x}" "${dir}"
     elif [[ ! -e "${x}" ]]; then
         echo "${0}: ${x} does not exist" >&2
@@ -50,3 +65,4 @@ done
 
 [[ 0 != "${ret}" ]] && paludis_die_or_error "dodoc returned error ${ret}"
 exit ${ret}
+

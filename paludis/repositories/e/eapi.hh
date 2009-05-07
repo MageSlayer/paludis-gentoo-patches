@@ -54,6 +54,8 @@ namespace paludis
         struct description_use;
         struct directory_if_exists_variables;
         struct directory_variables;
+        struct dodoc_r;
+        struct doins_r_symlink;
         struct doman_lang_filenames;
         struct dosym_mkdir;
         struct eapi;
@@ -378,6 +380,8 @@ namespace paludis
 
         struct EAPIToolsOptions
         {
+            NamedValue<n::dodoc_r, bool> dodoc_r;
+            NamedValue<n::doins_r_symlink, bool> doins_r_symlink;
             NamedValue<n::doman_lang_filenames, bool> doman_lang_filenames;
             NamedValue<n::dosym_mkdir, bool> dosym_mkdir;
             NamedValue<n::failure_is_fatal, bool> failure_is_fatal;

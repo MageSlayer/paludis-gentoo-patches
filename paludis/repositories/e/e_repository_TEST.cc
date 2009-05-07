@@ -1657,6 +1657,26 @@ namespace test_cases
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "3");
                 id->perform_action(action);
             }
+
+            {
+                TestMessageSuffix suffix("dodoc -r", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/dodoc-r-3",
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "3");
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("doins -r symlink", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/doins-r-symlink-3",
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "3");
+                id->perform_action(action);
+            }
         }
     } test_e_repository_install_eapi_3;
 
