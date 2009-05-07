@@ -6,6 +6,7 @@ eapis = \
 	0.conf \
 	1.conf \
 	2.conf \
+	3.conf \
 	exheres-0.conf \
 	kdebuild-1.conf \
 	paludis-1.conf \
