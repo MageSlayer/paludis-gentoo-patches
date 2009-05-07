@@ -475,7 +475,20 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
             id->load_build_depend(m.build_depend()->name(), m.build_depend()->description(), get(keys, m.build_depend()->name()), false);
 
         if (! m.run_depend()->name().empty())
-            id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(), get(keys, m.run_depend()->name()), false);
+        {
+            if (id->eapi()->supported()->ebuild_options()->rdepend_defaults_to_depend())
+            {
+                if (! get(keys, "PALUDIS_EBUILD_RDEPEND_WAS_SET").empty())
+                    id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(),
+                            get(keys, m.run_depend()->name()), false);
+                else
+                    id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(),
+                            get(keys, "PALUDIS_EBUILD_DEPEND") + " " + get(keys, m.run_depend()->name()), false);
+            }
+            else
+                id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(),
+                        get(keys, m.run_depend()->name()), false);
+        }
 
         if (! m.pdepend()->name().empty())
             id->load_post_depend(m.pdepend()->name(), m.pdepend()->description(), get(keys, m.pdepend()->name()), false);
