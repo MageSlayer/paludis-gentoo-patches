@@ -1213,6 +1213,36 @@ pkg_setup() {
     [[ $LINGUAS == "enabled_en enabled_en_GB enabled_en_GB@UTF-8" ]] || die "LINGUAS=$LINGUAS is wrong"
 }
 END
+mkdir -p "cat/pkg_pretend"
+cat <<"END" > cat/pkg_pretend/pkg_pretend-3.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="enabled-weasel broccoli"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="3"
+
+pkg_pretend() {
+    einfo "This is my pkg_pretend. There are many like it, but this one is mine."
+}
+END
+mkdir -p "cat/pkg_pretend-failure"
+cat <<"END" > cat/pkg_pretend-failure/pkg_pretend-failure-3.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="enabled-weasel broccoli"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="3"
+
+pkg_pretend() {
+    die "This is my pkg_pretend. There are many like it, but this one is mine."
+}
+END
 cd ..
 
 mkdir -p repo14/{profiles/profile,metadata,eclass} || exit 1

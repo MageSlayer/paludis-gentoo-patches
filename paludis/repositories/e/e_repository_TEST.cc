@@ -1568,6 +1568,78 @@ namespace test_cases
         }
     } test_e_repository_install_eapi_2;
 
+    struct ERepositoryInstallEAPI3Test : TestCase
+    {
+        ERepositoryInstallEAPI3Test() : TestCase("install_eapi_3") { }
+
+        unsigned max_run_time() const
+        {
+            return 3000;
+        }
+
+        bool repeatable() const
+        {
+            return false;
+        }
+
+        void run()
+        {
+            TestEnvironment env;
+            env.set_paludis_command("/bin/false");
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo13"));
+            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo13/profiles/profile"));
+            keys->insert("layout", "traditional");
+            keys->insert("eapi_when_unknown", "0");
+            keys->insert("eapi_when_unspecified", "0");
+            keys->insert("profile_eapi", "0");
+            keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "distdir"));
+            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            env.package_database()->add_repository(1, repo);
+
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
+            env.package_database()->add_repository(2, installed_repo);
+
+            InstallAction action(make_named_values<InstallActionOptions>(
+                        value_for<n::destination>(installed_repo),
+                        value_for<n::make_output_manager>(&make_standard_output_manager),
+                        value_for<n::perform_uninstall>(&cannot_uninstall),
+                        value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
+                        value_for<n::want_phase>(&want_all_phases)
+                    ));
+
+            PretendAction pretend_action(make_named_values<PretendActionOptions>(
+                        value_for<n::make_output_manager>(&make_standard_output_manager)
+                        ));
+
+            {
+                TestMessageSuffix suffix("pkg_pretend", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg_pretend-3",
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "3");
+                id->perform_action(pretend_action);
+                TEST_CHECK(! pretend_action.failed());
+            }
+
+            {
+                TestMessageSuffix suffix("pkg_pretend-failure", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/pkg_pretend-failure-3",
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "3");
+                id->perform_action(pretend_action);
+                TEST_CHECK(pretend_action.failed());
+            }
+        }
+    } test_e_repository_install_eapi_3;
+
     struct ERepositoryInstallEAPIKdebuild1Test : TestCase
     {
         ERepositoryInstallEAPIKdebuild1Test() : TestCase("install_eapi_kdebuild_1") { }

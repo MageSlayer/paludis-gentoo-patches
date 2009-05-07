@@ -5,6 +5,7 @@ SUBDIRS = .
 libexecprog3dir = $(libexecdir)/paludis/3
 
 libexecprog3_SCRIPTS = \
+	pkg_pretend.bash \
 	output_functions.bash
 
 TESTS_ENVIRONMENT = env \
