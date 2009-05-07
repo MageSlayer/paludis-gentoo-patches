@@ -1277,6 +1277,23 @@ pkg_preinst() {
     [[ -e ${D}/EATME ]] || die EATME
 }
 END
+mkdir -p "cat/docompress" || exit 1
+cat << 'END' > cat/docompress/docompress-3.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="3"
+
+src_install() {
+    docompress foo || die
+    docompress bar || die
+}
+END
 cd ..
 
 mkdir -p repo14/{profiles/profile,metadata,eclass} || exit 1

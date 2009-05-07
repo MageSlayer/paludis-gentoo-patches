@@ -1626,6 +1626,7 @@ AC_OUTPUT(
 	paludis/repositories/e/ebuild/paludis-1/Makefile
 	paludis/repositories/e/ebuild/pbin-1/Makefile
 	paludis/repositories/e/ebuild/utils/Makefile
+	paludis/repositories/e/ebuild/utils/3/Makefile
 	paludis/repositories/e/ebuild/utils/exheres-0/Makefile
 	paludis/repositories/e/ebuild/utils/kdebuild-1/Makefile
 	paludis/repositories/e/qa/Makefile
