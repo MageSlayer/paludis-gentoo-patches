@@ -4,7 +4,10 @@ SUBDIRS = .
 libexecprog3dir = $(libexecdir)/paludis/utils/3/
 
 libexecprog3_SCRIPTS = \
-	docompress
+	docompress \
+	dohard \
+	dosed \
+	banned_in_eapi_3
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise \
@@ -22,7 +25,13 @@ TESTS_ENVIRONMENT = env \
 TESTS =
 EXTRA_DIST = $(TESTS)
 
-CLEANFILES = *~ *.epicfail
+bannedscripts = dohard dosed
+
+$(bannedscripts) : banned_in_eapi_3
+	cat $? > $@
+	chmod +x $@
+
+CLEANFILES = *~ $(bannedscripts) *.epicfail
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done

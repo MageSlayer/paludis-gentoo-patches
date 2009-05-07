@@ -1358,10 +1358,25 @@ src_install() {
 }
 
 pkg_preinst() {
-    find ${D} | xargs -n1 ls -ldh
     [[ -f ${D}/foo/foo ]] || die foo
     [[ -L ${D}/foo/bar ]] || die bar
     [[ $(readlink ${D}/foo/bar ) == foo ]] || die sym
+}
+END
+mkdir -p "cat/banned-functions"
+cat <<END > cat/banned-functions/banned-functions-3.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="3"
+
+src_install() {
+    touch foo
+    dohard foo bar
 }
 END
 cd ..
