@@ -1637,6 +1637,16 @@ namespace test_cases
                 id->perform_action(pretend_action);
                 TEST_CHECK(pretend_action.failed());
             }
+
+            {
+                TestMessageSuffix suffix("default_src_install 3", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/default_src_install-3",
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "3");
+                id->perform_action(action);
+            }
         }
     } test_e_repository_install_eapi_3;
 

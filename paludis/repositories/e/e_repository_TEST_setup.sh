@@ -1243,6 +1243,40 @@ pkg_pretend() {
     die "This is my pkg_pretend. There are many like it, but this one is mine."
 }
 END
+mkdir -p "cat/default_src_install" || exit 1
+cat << 'END' > cat/default_src_install/default_src_install-3.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="3"
+
+src_unpack() {
+    mkdir -p ${WORKDIR}
+    cat <<'EOF' >${WORKDIR}/Makefile
+all :
+	echo spork > README
+	echo monkey > README.txt
+	touch README.foo
+	echo gerbil > GERBIL
+
+install :
+	echo spork > $(DESTDIR)/EATME
+EOF
+}
+
+pkg_preinst() {
+    [[ -e ${D}/usr/share/doc/${PF}/README ]] || die README
+    [[ -e ${D}/usr/share/doc/${PF}/README.txt ]] || die README.txt
+    [[ -e ${D}/usr/share/doc/${PF}/README.foo ]] && die README.foo
+    [[ -e ${D}/usr/share/doc/${PF}/GERBIL ]] && die GERBIL
+    [[ -e ${D}/EATME ]] || die EATME
+}
+END
 cd ..
 
 mkdir -p repo14/{profiles/profile,metadata,eclass} || exit 1
