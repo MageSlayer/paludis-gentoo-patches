@@ -21,6 +21,7 @@ command_MANS = \
 	cave-print-commands.1 \
 	cave-print-environment-metadata.1 \
 	cave-print-id-contents.1 \
+	cave-print-id-executables.1 \
 	cave-print-id-metadata.1 \
 	cave-print-ids.1 \
 	cave-print-owners.1 \
@@ -76,6 +77,7 @@ libcave_a_SOURCES = \
 	cmd_print_commands.cc cmd_print_commands.hh \
 	cmd_print_environment_metadata.cc cmd_print_environment_metadata.hh \
 	cmd_print_id_contents.cc cmd_print_id_contents.hh \
+	cmd_print_id_executables.cc cmd_print_id_executables.hh \
 	cmd_print_id_metadata.cc cmd_print_id_metadata.hh \
 	cmd_print_ids.cc cmd_print_ids.hh \
 	cmd_print_owners.cc cmd_print_owners.hh \
@@ -100,7 +102,6 @@ libcave_a_SOURCES = \
 #	cmd_info.cc \
 #	cmd_install.cc \
 #	cmd_owner.cc \
-#	cmd_print_executables.cc \
 #	cmd_print_id_actions.cc \
 #	cmd_print_id_masks.cc \
 #	cmd_print_repository_metadata.cc \
