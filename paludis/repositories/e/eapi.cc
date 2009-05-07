@@ -211,6 +211,7 @@ namespace
                         value_for<n::doins_r_symlink>(destringify_key<bool>(k, "doins_r_symlink")),
                         value_for<n::doman_lang_filenames>(destringify_key<bool>(k, "doman_lang_filenames")),
                         value_for<n::dosym_mkdir>(destringify_key<bool>(k, "dosym_mkdir")),
+                        value_for<n::econf_extra_options>(k.get("econf_extra_options")),
                         value_for<n::failure_is_fatal>(destringify_key<bool>(k, "failure_is_fatal")),
                         value_for<n::unpack_fix_permissions>(destringify_key<bool>(k, "unpack_fix_permissions")),
                         value_for<n::unpack_suffixes>(k.get("unpack_suffixes")),

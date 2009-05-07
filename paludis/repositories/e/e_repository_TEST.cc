@@ -1343,6 +1343,16 @@ namespace test_cases
                 TEST_CHECK(id);
                 id->perform_action(action);
             }
+
+            {
+                TestMessageSuffix suffix("econf disable dependency tracking", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/econf-disable-dependency-tracking-0",
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "0");
+                id->perform_action(action);
+            }
         }
     } test_e_repository_install_eapi_0;
 
@@ -1686,6 +1696,16 @@ namespace test_cases
                 TEST_CHECK(id);
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "3");
                 TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+            }
+
+            {
+                TestMessageSuffix suffix("econf disable dependency tracking", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/econf-disable-dependency-tracking-3",
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "3");
+                id->perform_action(action);
             }
         }
     } test_e_repository_install_eapi_3;

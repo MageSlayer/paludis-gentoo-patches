@@ -1379,6 +1379,63 @@ src_install() {
     dohard foo bar
 }
 END
+mkdir -p "cat/econf-disable-dependency-tracking" || exit 1
+cat << 'END' > cat/econf-disable-dependency-tracking/econf-disable-dependency-tracking-0.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="0"
+
+src_unpack() {
+    mkdir -p ${WORKDIR}
+    cd "${WORKDIR}"
+
+    cat <<'EOF' > configure
+#!/bin/sh
+
+if echo "$@" | grep -q 'disable-dependency-tracking' ; then
+    exit 1
+fi
+
+exit 0
+EOF
+
+    chmod +x configure
+}
+END
+cat << 'END' > cat/econf-disable-dependency-tracking/econf-disable-dependency-tracking-3.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="3"
+
+src_unpack() {
+    mkdir -p ${WORKDIR}
+    cd "${WORKDIR}"
+
+    cat <<'EOF' > configure
+#!/bin/sh
+
+if ! echo "$@" | grep -q 'disable-dependency-tracking' ; then
+    exit 1
+fi
+
+exit 0
+EOF
+
+    chmod +x configure
+}
+END
 cd ..
 
 mkdir -p repo14/{profiles/profile,metadata,eclass} || exit 1

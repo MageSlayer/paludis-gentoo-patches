@@ -76,6 +76,7 @@ namespace paludis
         struct ebuild_uninstall;
         struct ebuild_variable;
         struct ebuild_new_upgrade_phase_order;
+        struct econf_extra_options;
         struct eclass_must_not_set_variables;
         struct env_a;
         struct env_aa;
@@ -384,6 +385,7 @@ namespace paludis
             NamedValue<n::doins_r_symlink, bool> doins_r_symlink;
             NamedValue<n::doman_lang_filenames, bool> doman_lang_filenames;
             NamedValue<n::dosym_mkdir, bool> dosym_mkdir;
+            NamedValue<n::econf_extra_options, std::string> econf_extra_options;
             NamedValue<n::failure_is_fatal, bool> failure_is_fatal;
             NamedValue<n::unpack_fix_permissions, bool> unpack_fix_permissions;
             NamedValue<n::unpack_suffixes, std::string> unpack_suffixes;
