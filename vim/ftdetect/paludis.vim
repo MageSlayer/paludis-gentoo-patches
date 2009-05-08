@@ -74,3 +74,6 @@ au BufNewFile,BufRead repository_defaults.conf
 au BufNewFile,BufRead **/repositories/*.conf
     \     set filetype=paludis-repositories-conf
 
+au BufNewFile,BufRead **/metadata/repository_mask.conf
+    \     set filetype=paludis-package-mask-conf
+
