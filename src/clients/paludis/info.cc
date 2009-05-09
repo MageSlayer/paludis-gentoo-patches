@@ -329,7 +329,7 @@ do_info(const std::tr1::shared_ptr<const Environment> & env)
     cout << endl;
 
     {
-        cout << "Environment:" << endl;
+        cout << colour(cl_heading, "Environment:") << endl;
         std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(
                 env->begin_metadata(), env->end_metadata());
         InfoDisplayer i("    ");
