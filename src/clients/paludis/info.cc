@@ -301,22 +301,6 @@ do_info(const std::tr1::shared_ptr<const Environment> & env)
         << endl;
     cout << endl;
 
-    cout << "    " << colour(cl_heading, "Reduced Privs:") << endl;
-    cout << "        " << std::setw(22) << std::left << "reduced_uid:" << std::setw(0) << " "
-        << env->reduced_uid() << endl;
-    const struct passwd * const p(getpwuid(env->reduced_uid()));
-    cout << "        " << std::setw(22) << std::left << "reduced_uid->name:" << std::setw(0) << " "
-        << (p ? p->pw_name : "???") << endl;
-    cout << "        " << std::setw(22) << std::left << "reduced_uid->dir:" << std::setw(0) << " "
-        << (p ? p->pw_dir : "???") << endl;
-    cout << "        " << std::setw(22) << std::left << "reduced_gid:" << std::setw(0) << " "
-        << env->reduced_gid() << endl;
-    const struct group * const g(getgrgid(env->reduced_gid()));
-    cout << "        " << std::setw(22) << std::left << "reduced_gid->name:" << std::setw(0) << " "
-        << (g ? g->gr_name : "???") << endl;
-
-    cout << endl;
-
     cout << "    " << colour(cl_heading, "Paths:") << endl;
 
     cout << "        " << std::setw(22) << std::left << ("DATADIR:") << std::setw(0) << " " << DATADIR << endl;
@@ -325,6 +309,22 @@ do_info(const std::tr1::shared_ptr<const Environment> & env)
     cout << "        " << std::setw(22) << std::left << ("SYSCONFDIR:") << std::setw(0) << " " << SYSCONFDIR << endl;
     cout << "        " << std::setw(22) << std::left << ("PYTHONINSTALLDIR:") << std::setw(0) << " " << PYTHONINSTALLDIR << endl;
     cout << "        " << std::setw(22) << std::left << ("RUBYINSTALLDIR:") << std::setw(0) << " " << RUBYINSTALLDIR << endl;
+
+    cout << endl;
+
+    cout << colour(cl_heading, "Reduced Privs:") << endl;
+    cout << "    " << std::setw(26) << std::left << "reduced_uid:" << std::setw(0) << " "
+        << env->reduced_uid() << endl;
+    const struct passwd * const p(getpwuid(env->reduced_uid()));
+    cout << "    " << std::setw(26) << std::left << "reduced_uid->name:" << std::setw(0) << " "
+        << (p ? p->pw_name : "???") << endl;
+    cout << "    " << std::setw(26) << std::left << "reduced_uid->dir:" << std::setw(0) << " "
+        << (p ? p->pw_dir : "???") << endl;
+    cout << "    " << std::setw(26) << std::left << "reduced_gid:" << std::setw(0) << " "
+        << env->reduced_gid() << endl;
+    const struct group * const g(getgrgid(env->reduced_gid()));
+    cout << "    " << std::setw(26) << std::left << "reduced_gid->name:" << std::setw(0) << " "
+        << (g ? g->gr_name : "???") << endl;
 
     cout << endl;
 
