@@ -26,6 +26,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/system.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
@@ -47,6 +48,7 @@
 
 using namespace paludis;
 using std::endl;
+using std::flush;
 using std::cout;
 
 namespace
@@ -309,6 +311,15 @@ do_info(const std::tr1::shared_ptr<const Environment> & env)
     cout << "        " << std::setw(22) << std::left << ("SYSCONFDIR:") << std::setw(0) << " " << SYSCONFDIR << endl;
     cout << "        " << std::setw(22) << std::left << ("PYTHONINSTALLDIR:") << std::setw(0) << " " << PYTHONINSTALLDIR << endl;
     cout << "        " << std::setw(22) << std::left << ("RUBYINSTALLDIR:") << std::setw(0) << " " << RUBYINSTALLDIR << endl;
+
+    cout << endl;
+
+    cout << colour(cl_heading, "System:") << endl;
+    cout << "    " << flush;
+    int status(run_command(Command("uname -a")));
+    if (0 != status)
+        Log::get_instance()->message("info.uname.failure", ll_warning, lc_context)
+            << "uname -a failed with status " << status;
 
     cout << endl;
 
