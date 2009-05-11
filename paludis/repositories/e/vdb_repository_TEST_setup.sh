@@ -175,6 +175,7 @@ IUSE=""
 LICENSE="GPL-2"
 KEYWORDS="test"
 DEPEND="foo/bar"
+S="${WORKDIR}"
 
 src_install() {
     echo MONKEY > ${D}/monkey

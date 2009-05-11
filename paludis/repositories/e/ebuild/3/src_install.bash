@@ -47,6 +47,8 @@ ebuild_f_install()
 {
     if [[ -d "${S}" ]] ; then
         cd "${S}" || die "cd to \${S} (\"${S}\") failed"
+    elif [[ -n "${PALUDIS_NO_S_WORKDIR_FALLBACK}" ]] ; then
+        die "\${S} (\"${S}\") does not exist"
     elif [[ -d "${WORKDIR}" ]] ; then
         cd "${WORKDIR}" || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
     fi

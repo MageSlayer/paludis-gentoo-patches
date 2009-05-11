@@ -1255,6 +1255,8 @@ LICENSE="GPL-2"
 KEYWORDS="test"
 EAPI="3"
 
+S="${WORKDIR}"
+
 src_unpack() {
     mkdir -p ${WORKDIR}
     cat <<'EOF' >${WORKDIR}/Makefile
@@ -1289,6 +1291,8 @@ LICENSE="GPL-2"
 KEYWORDS="test"
 EAPI="3"
 
+S="${WORKDIR}"
+
 src_install() {
     docompress foo || die
     docompress bar || die
@@ -1305,6 +1309,8 @@ IUSE="spork"
 LICENSE="GPL-2"
 KEYWORDS="test"
 EAPI="3"
+
+S="${WORKDIR}"
 
 src_unpack() {
     mkdir -p ${WORKDIR}
@@ -1344,6 +1350,8 @@ LICENSE="GPL-2"
 KEYWORDS="test"
 EAPI="3"
 
+S="${WORKDIR}"
+
 src_unpack() {
     mkdir -p ${WORKDIR}
     cd "${WORKDIR}"
@@ -1374,6 +1382,8 @@ LICENSE="GPL-2"
 KEYWORDS="test"
 EAPI="3"
 
+S="\${WORKDIR}"
+
 src_install() {
     touch foo
     dohard foo bar
@@ -1390,6 +1400,8 @@ IUSE="spork"
 LICENSE="GPL-2"
 KEYWORDS="test"
 EAPI="0"
+
+S="${WORKDIR}"
 
 src_unpack() {
     mkdir -p ${WORKDIR}
@@ -1418,6 +1430,8 @@ IUSE="spork"
 LICENSE="GPL-2"
 KEYWORDS="test"
 EAPI="3"
+
+S="${WORKDIR}"
 
 src_unpack() {
     mkdir -p ${WORKDIR}

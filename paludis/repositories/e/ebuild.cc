@@ -193,6 +193,8 @@ EbuildCommand::operator() ()
                     params.package_id()->eapi()->supported()->ebuild_options()->load_modules())
             .with_setenv("PALUDIS_EBUILD_FUNCTIONS",
                     params.package_id()->eapi()->supported()->ebuild_options()->ebuild_functions())
+            .with_setenv("PALUDIS_NO_S_WORKDIR_FALLBACK",
+                    params.package_id()->eapi()->supported()->ebuild_options()->no_s_workdir_fallback() ? "yes" : "")
             .with_setenv("PALUDIS_BINARY_DISTDIR_VARIABLE",
                     params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_distdir())
             .with_setenv("PALUDIS_ECONF_EXTRA_OPTIONS",

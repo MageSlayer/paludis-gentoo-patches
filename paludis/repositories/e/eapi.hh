@@ -127,6 +127,7 @@ namespace paludis
         struct must_not_change_after_source_variables;
         struct must_not_change_variables;
         struct name;
+        struct no_s_workdir_fallback;
         struct no_slot_or_repo;
         struct non_empty_variables;
         struct package_dep_spec_parse_options;
@@ -347,6 +348,7 @@ namespace paludis
             NamedValue<n::load_modules, std::string> load_modules;
             NamedValue<n::must_not_change_after_source_variables, std::string> must_not_change_after_source_variables;
             NamedValue<n::must_not_change_variables, std::string> must_not_change_variables;
+            NamedValue<n::no_s_workdir_fallback, bool> no_s_workdir_fallback;
             NamedValue<n::non_empty_variables, std::string> non_empty_variables;
             NamedValue<n::rdepend_defaults_to_depend, bool> rdepend_defaults_to_depend;
             NamedValue<n::require_use_expand_in_iuse, bool> require_use_expand_in_iuse;
