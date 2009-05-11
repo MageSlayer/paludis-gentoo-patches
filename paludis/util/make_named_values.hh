@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -30,6 +30,30 @@
 
 namespace paludis
 {
+#ifdef PALUDIS_HAVE_VARIADIC_TEMPLATES
+
+#  ifdef PALUDIS_HAVE_RVALUE_REFERENCES
+
+    template <typename R_, typename... T_>
+    R_ make_named_values(T_ && ... a)
+    {
+        R_ result = { a... };
+        return result;
+    }
+
+#  else
+
+    template <typename R_, typename... T_>
+    R_ make_named_values(const T_ & ... a)
+    {
+        R_ result = { a... };
+        return result;
+    }
+
+#  endif
+
+#else
+
     template <typename R_, typename T1_>
     R_ make_named_values(const T1_ & v1)
     {
@@ -399,6 +423,108 @@ namespace paludis
             v21, v22, v23, v24, v25, v26, v27, v28, v29, v30 };
         return result;
     }
+
+    template <typename R_, typename T1_, typename T2_, typename T3_, typename T4_, typename T5_,
+             typename T6_, typename T7_, typename T8_, typename T9_, typename T10_,
+             typename T11_, typename T12_, typename T13_, typename T14_, typename T15_,
+             typename T16_, typename T17_, typename T18_, typename T19_, typename T20_,
+             typename T21_, typename T22_, typename T23_, typename T24_, typename T25_,
+             typename T26_, typename T27_, typename T28_, typename T29_, typename T30_,
+             typename T31_>
+     R_ make_named_values(const T1_ & v1, const T2_ & v2, const T3_ & v3, const T4_ & v4, const T5_ & v5,
+            const T6_ & v6, const T7_ & v7, const T8_ & v8, const T9_ & v9, const T10_ & v10,
+            const T11_ & v11, const T12_ & v12, const T13_ & v13, const T14_ & v14, const T15_ & v15,
+            const T16_ & v16, const T17_ & v17, const T18_ & v18, const T19_ & v19, const T20_ & v20,
+            const T21_ & v21, const T22_ & v22, const T23_ & v23, const T24_ & v24, const T25_ & v25,
+            const T26_ & v26, const T27_ & v27, const T28_ & v28, const T29_ & v29, const T30_ & v30,
+            const T31_ & v31)
+    {
+        R_ result = { v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20,
+            v21, v22, v23, v24, v25, v26, v27, v28, v29, v30, v31 };
+        return result;
+    }
+
+    template <typename R_, typename T1_, typename T2_, typename T3_, typename T4_, typename T5_,
+             typename T6_, typename T7_, typename T8_, typename T9_, typename T10_,
+             typename T11_, typename T12_, typename T13_, typename T14_, typename T15_,
+             typename T16_, typename T17_, typename T18_, typename T19_, typename T20_,
+             typename T21_, typename T22_, typename T23_, typename T24_, typename T25_,
+             typename T26_, typename T27_, typename T28_, typename T29_, typename T30_,
+             typename T31_, typename T32_>
+     R_ make_named_values(const T1_ & v1, const T2_ & v2, const T3_ & v3, const T4_ & v4, const T5_ & v5,
+            const T6_ & v6, const T7_ & v7, const T8_ & v8, const T9_ & v9, const T10_ & v10,
+            const T11_ & v11, const T12_ & v12, const T13_ & v13, const T14_ & v14, const T15_ & v15,
+            const T16_ & v16, const T17_ & v17, const T18_ & v18, const T19_ & v19, const T20_ & v20,
+            const T21_ & v21, const T22_ & v22, const T23_ & v23, const T24_ & v24, const T25_ & v25,
+            const T26_ & v26, const T27_ & v27, const T28_ & v28, const T29_ & v29, const T30_ & v30,
+            const T31_ & v31, const T32_ & v32)
+    {
+        R_ result = { v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20,
+            v21, v22, v23, v24, v25, v26, v27, v28, v29, v30, v31, v32 };
+        return result;
+    }
+
+    template <typename R_, typename T1_, typename T2_, typename T3_, typename T4_, typename T5_,
+             typename T6_, typename T7_, typename T8_, typename T9_, typename T10_,
+             typename T11_, typename T12_, typename T13_, typename T14_, typename T15_,
+             typename T16_, typename T17_, typename T18_, typename T19_, typename T20_,
+             typename T21_, typename T22_, typename T23_, typename T24_, typename T25_,
+             typename T26_, typename T27_, typename T28_, typename T29_, typename T30_,
+             typename T31_, typename T32_, typename T33_>
+     R_ make_named_values(const T1_ & v1, const T2_ & v2, const T3_ & v3, const T4_ & v4, const T5_ & v5,
+            const T6_ & v6, const T7_ & v7, const T8_ & v8, const T9_ & v9, const T10_ & v10,
+            const T11_ & v11, const T12_ & v12, const T13_ & v13, const T14_ & v14, const T15_ & v15,
+            const T16_ & v16, const T17_ & v17, const T18_ & v18, const T19_ & v19, const T20_ & v20,
+            const T21_ & v21, const T22_ & v22, const T23_ & v23, const T24_ & v24, const T25_ & v25,
+            const T26_ & v26, const T27_ & v27, const T28_ & v28, const T29_ & v29, const T30_ & v30,
+            const T31_ & v31, const T32_ & v32, const T33_ & v33)
+    {
+        R_ result = { v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20,
+            v21, v22, v23, v24, v25, v26, v27, v28, v29, v30, v31, v32, v33 };
+        return result;
+    }
+
+    template <typename R_, typename T1_, typename T2_, typename T3_, typename T4_, typename T5_,
+             typename T6_, typename T7_, typename T8_, typename T9_, typename T10_,
+             typename T11_, typename T12_, typename T13_, typename T14_, typename T15_,
+             typename T16_, typename T17_, typename T18_, typename T19_, typename T20_,
+             typename T21_, typename T22_, typename T23_, typename T24_, typename T25_,
+             typename T26_, typename T27_, typename T28_, typename T29_, typename T30_,
+             typename T31_, typename T32_, typename T33_, typename T34_>
+     R_ make_named_values(const T1_ & v1, const T2_ & v2, const T3_ & v3, const T4_ & v4, const T5_ & v5,
+            const T6_ & v6, const T7_ & v7, const T8_ & v8, const T9_ & v9, const T10_ & v10,
+            const T11_ & v11, const T12_ & v12, const T13_ & v13, const T14_ & v14, const T15_ & v15,
+            const T16_ & v16, const T17_ & v17, const T18_ & v18, const T19_ & v19, const T20_ & v20,
+            const T21_ & v21, const T22_ & v22, const T23_ & v23, const T24_ & v24, const T25_ & v25,
+            const T26_ & v26, const T27_ & v27, const T28_ & v28, const T29_ & v29, const T30_ & v30,
+            const T31_ & v31, const T32_ & v32, const T33_ & v33, const T34_ & v34)
+    {
+        R_ result = { v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20,
+            v21, v22, v23, v24, v25, v26, v27, v28, v29, v30, v31, v32, v33, v34 };
+        return result;
+    }
+
+    template <typename R_, typename T1_, typename T2_, typename T3_, typename T4_, typename T5_,
+             typename T6_, typename T7_, typename T8_, typename T9_, typename T10_,
+             typename T11_, typename T12_, typename T13_, typename T14_, typename T15_,
+             typename T16_, typename T17_, typename T18_, typename T19_, typename T20_,
+             typename T21_, typename T22_, typename T23_, typename T24_, typename T25_,
+             typename T26_, typename T27_, typename T28_, typename T29_, typename T30_,
+             typename T31_, typename T32_, typename T33_, typename T34_, typename T35_>
+     R_ make_named_values(const T1_ & v1, const T2_ & v2, const T3_ & v3, const T4_ & v4, const T5_ & v5,
+            const T6_ & v6, const T7_ & v7, const T8_ & v8, const T9_ & v9, const T10_ & v10,
+            const T11_ & v11, const T12_ & v12, const T13_ & v13, const T14_ & v14, const T15_ & v15,
+            const T16_ & v16, const T17_ & v17, const T18_ & v18, const T19_ & v19, const T20_ & v20,
+            const T21_ & v21, const T22_ & v22, const T23_ & v23, const T24_ & v24, const T25_ & v25,
+            const T26_ & v26, const T27_ & v27, const T28_ & v28, const T29_ & v29, const T30_ & v30,
+            const T31_ & v31, const T32_ & v32, const T33_ & v33, const T34_ & v34, const T35_ & v35)
+    {
+        R_ result = { v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20,
+            v21, v22, v23, v24, v25, v26, v27, v28, v29, v30, v31, v32, v33, v34, v35 };
+        return result;
+    }
+
+#endif
 }
 
 #endif

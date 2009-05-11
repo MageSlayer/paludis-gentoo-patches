@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,6 +26,19 @@ namespace paludis
 
     template <typename Item_, typename Tail_>
     struct TypeListEntry;
+
+#ifdef PALUDIS_HAVE_VARIADIC_TEMPLATES
+
+    template <typename...>
+    struct MakeTypeList;
+
+    template <>
+    struct MakeTypeList<>;
+
+    template <typename H_, typename... T_>
+    struct MakeTypeList<H_, T_...>;
+
+#else
 
     template <typename Item_, typename Tail_>
     struct MakeTypeListEntry;
@@ -58,6 +71,8 @@ namespace paludis
         typename T25_ = TypeListTail
         >
     struct MakeTypeList;
+
+#endif
 
     template <typename TypeList_>
     struct MakeTypeListConst;
