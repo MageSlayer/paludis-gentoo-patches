@@ -786,6 +786,38 @@ struct S
 	])
 dnl }}}
 
+dnl {{{ c++0x variadic templates
+AC_MSG_CHECKING([for c++0x variadic templates])
+AC_COMPILE_IFELSE([
+template <typename... T_>
+void f(const T_ & ... a)
+{
+}
+],
+	[AC_MSG_RESULT([yes])
+	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_VARIADIC_TEMPLATES=1"
+	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_VARIADIC_TEMPLATES=1"
+	],
+	[AC_MSG_RESULT([no])
+	])
+dnl }}}
+
+dnl {{{ c++0x rvalue references
+AC_MSG_CHECKING([for c++0x rvalue references])
+AC_COMPILE_IFELSE([
+int f(int && a)
+{
+	return a;
+}
+],
+	[AC_MSG_RESULT([yes])
+	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_RVALUE_REFERENCES=1"
+	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_RVALUE_REFERENCES=1"
+	],
+	[AC_MSG_RESULT([no])
+	])
+dnl }}}
+
 dnl {{{ c++0x enum classes
 AC_MSG_CHECKING([for c++0x enum class support])
 AC_COMPILE_IFELSE([
