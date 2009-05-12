@@ -83,13 +83,20 @@ namespace
 
     struct ReplacingTest : TestCase
     {
+        const std::string eapi;
+        const std::string repo_path;
         const std::string test;
         const std::string replacing;
+        const std::string replacing_pkg_name;
 
-        ReplacingTest(const std::string & s, const std::string & r) :
-            TestCase(s),
+        ReplacingTest(const std::string & e, const std::string & p, const std::string & s, const std::string & r,
+                const std::string & n) :
+            TestCase(e + " " + s),
+            eapi(e),
+            repo_path(p),
             test(s),
-            replacing(r)
+            replacing(r),
+            replacing_pkg_name(n)
         {
         }
 
@@ -110,12 +117,13 @@ namespace
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_replacing_dir" / "repo1"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_replacing_dir" / "repo1/profiles/profile"));
+            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_replacing_dir" / repo_path));
+            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_replacing_dir" / repo_path
+                        / "profiles/profile"));
             keys->insert("layout", "exheres");
-            keys->insert("eapi_when_unknown", "exheres-0");
-            keys->insert("eapi_when_unspecified", "exheres-0");
-            keys->insert("profile_eapi", "exheres-0");
+            keys->insert("eapi_when_unknown", eapi);
+            keys->insert("eapi_when_unspecified", eapi);
+            keys->insert("profile_eapi", eapi);
             keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_replacing_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_replacing_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
@@ -123,14 +131,15 @@ namespace
             env.package_database()->add_repository(1, repo);
 
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
-            installed_repo->add_version("cat", "pkg", "1")->set_slot(SlotName("1"));
-            installed_repo->add_version("cat", "pkg", "2")->set_slot(SlotName("2"));
-            installed_repo->add_version("cat", "pkg", "3")->set_slot(SlotName("3"));
+            installed_repo->add_version("cat", replacing_pkg_name, "1")->set_slot(SlotName("1"));
+            installed_repo->add_version("cat", replacing_pkg_name, "2")->set_slot(SlotName("2"));
+            installed_repo->add_version("cat", replacing_pkg_name, "3")->set_slot(SlotName("3"));
             env.package_database()->add_repository(2, installed_repo);
 
             const std::tr1::shared_ptr<const PackageIDSequence> rlist(env[selection::AllVersionsSorted(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec(replacing, &env, UserPackageDepSpecOptions())),
-                            MatchPackageOptions()))]);
+                            MatchPackageOptions()) |
+                        filter::SupportsAction<InstalledAction>())]);
 
             InstallAction action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(installed_repo),
@@ -142,7 +151,8 @@ namespace
 
             const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("cat/" + test,
-                                    &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                    &env, UserPackageDepSpecOptions())), MatchPackageOptions()) |
+                        filter::SupportsAction<InstallAction>())]->last());
             TEST_CHECK(id);
             id->perform_action(action);
         }
@@ -151,8 +161,12 @@ namespace
 
 namespace test_cases
 {
-    ReplacingTest test_replace_none("replace-none", "cat/none");
-    ReplacingTest test_replace_one("replace-one", "=cat/pkg-1");
-    ReplacingTest test_replace_many("replace-many", "cat/pkg");
+    ReplacingTest test_exheres_0_replace_none("exheres-0", "repo1", "replace-none", "cat/none", "pkg");
+    ReplacingTest test_exheres_0_replace_one("exheres-0", "repo1", "replace-one", "=cat/pkg-1", "pkg");
+    ReplacingTest test_exheres_0_replace_many("exheres-0", "repo1", "replace-many", "cat/pkg", "pkg");
+
+    ReplacingTest test_3_replace_none("0", "repo2", "replace-none", "cat/none", "replace-none");
+    ReplacingTest test_3_replace_one("0", "repo2", "replace-one", "=cat/replace-one-1", "replace-one");
+    ReplacingTest test_3_replace_many("0", "repo2", "replace-many", "cat/replace-many", "replace-many");
 }
 
