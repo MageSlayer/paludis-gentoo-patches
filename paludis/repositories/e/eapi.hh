@@ -54,6 +54,8 @@ namespace paludis
         struct description_use;
         struct directory_if_exists_variables;
         struct directory_variables;
+        struct dodoc_r;
+        struct doins_r_symlink;
         struct doman_lang_filenames;
         struct dosym_mkdir;
         struct eapi;
@@ -74,6 +76,7 @@ namespace paludis
         struct ebuild_uninstall;
         struct ebuild_variable;
         struct ebuild_new_upgrade_phase_order;
+        struct econf_extra_options;
         struct eclass_must_not_set_variables;
         struct env_a;
         struct env_aa;
@@ -88,7 +91,9 @@ namespace paludis
         struct env_pf;
         struct env_portdir;
         struct env_replaced_by_id;
+        struct env_replaced_by_version;
         struct env_replacing_ids;
+        struct env_replacing_versions;
         struct env_t;
         struct env_use;
         struct env_use_expand;
@@ -124,6 +129,7 @@ namespace paludis
         struct must_not_change_after_source_variables;
         struct must_not_change_variables;
         struct name;
+        struct no_s_workdir_fallback;
         struct no_slot_or_repo;
         struct non_empty_variables;
         struct package_dep_spec_parse_options;
@@ -282,7 +288,9 @@ namespace paludis
             NamedValue<n::env_pf, std::string> env_pf;
             NamedValue<n::env_portdir, std::string> env_portdir;
             NamedValue<n::env_replaced_by_id, std::string> env_replaced_by_id;
+            NamedValue<n::env_replaced_by_version, std::string> env_replaced_by_version;
             NamedValue<n::env_replacing_ids, std::string> env_replacing_ids;
+            NamedValue<n::env_replacing_versions, std::string> env_replacing_versions;
             NamedValue<n::env_t, std::string> env_t;
             NamedValue<n::env_use, std::string> env_use;
             NamedValue<n::env_use_expand, std::string> env_use_expand;
@@ -344,6 +352,7 @@ namespace paludis
             NamedValue<n::load_modules, std::string> load_modules;
             NamedValue<n::must_not_change_after_source_variables, std::string> must_not_change_after_source_variables;
             NamedValue<n::must_not_change_variables, std::string> must_not_change_variables;
+            NamedValue<n::no_s_workdir_fallback, bool> no_s_workdir_fallback;
             NamedValue<n::non_empty_variables, std::string> non_empty_variables;
             NamedValue<n::rdepend_defaults_to_depend, bool> rdepend_defaults_to_depend;
             NamedValue<n::require_use_expand_in_iuse, bool> require_use_expand_in_iuse;
@@ -378,8 +387,11 @@ namespace paludis
 
         struct EAPIToolsOptions
         {
+            NamedValue<n::dodoc_r, bool> dodoc_r;
+            NamedValue<n::doins_r_symlink, bool> doins_r_symlink;
             NamedValue<n::doman_lang_filenames, bool> doman_lang_filenames;
             NamedValue<n::dosym_mkdir, bool> dosym_mkdir;
+            NamedValue<n::econf_extra_options, std::string> econf_extra_options;
             NamedValue<n::failure_is_fatal, bool> failure_is_fatal;
             NamedValue<n::unpack_fix_permissions, bool> unpack_fix_permissions;
             NamedValue<n::unpack_suffixes, std::string> unpack_suffixes;

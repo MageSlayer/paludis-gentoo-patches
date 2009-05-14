@@ -20,9 +20,27 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
+default_src_install()
+{
+    if [[ -f Makefile ]] || [[ -f GNUmakefile ]] || [[ -f makefile ]]; then
+        emake DESTDIR="${D}" install
+    fi
+    if ! declare -p DOCS >/dev/null 2>&1 ; then
+        local d
+        for d in README* ChangeLog AUTHORS NEWS TODO CHANGES \
+            THANKS BUGS FAQ CREDITS CHANGELOG ; do
+            [[ -s "${d}" ]] && dodoc "${d}"
+        done
+    elif declare -p DOCS | grep -q ’^declare -a ’ ; then
+        dodoc "${DOCS[@]}"
+    else
+        dodoc ${DOCS}
+    fi
+}
+
 src_install()
 {
-    :
+    default_src_install
 }
 
 ebuild_f_install()

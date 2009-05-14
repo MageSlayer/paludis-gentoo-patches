@@ -1,5 +1,5 @@
 MAINTAINERCLEANFILES = Makefile.in
-SUBDIRS = . exheres-0 kdebuild-1
+SUBDIRS = . 3 exheres-0 kdebuild-1
 
 libexecprogdir = $(libexecdir)/paludis/utils
 

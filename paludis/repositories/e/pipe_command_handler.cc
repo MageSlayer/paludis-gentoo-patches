@@ -330,8 +330,18 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     (var == eapi->supported()->ebuild_metadata_variables()->pdepend()->name()) ||
                     (var == eapi->supported()->ebuild_metadata_variables()->dependencies()->name()))
             {
-                std::tr1::shared_ptr<const DependencySpecTree> before(parse_depend(join(tokens.begin() + 4, tokens.end(), " "),
-                            environment, package_id, *eapi));
+                /* use the value in the metadata key, since RDEPEND in the
+                 * ebuild env isn't modified for DEPEND=RDEPEND */
+                PackageID::MetadataConstIterator m(package_id->find_metadata(var));
+                if (m == package_id->end_metadata())
+                    throw InternalError(PALUDIS_HERE, "oops. can't find key '" + var + "'");
+
+                const MetadataSpecTreeKey<DependencySpecTree> * mm(
+                        simple_visitor_cast<const MetadataSpecTreeKey<DependencySpecTree> >(**m));
+                if (! mm)
+                    throw InternalError(PALUDIS_HERE, "oops. key '" + var + "' isn't a DependencySpecTree key");
+
+                std::tr1::shared_ptr<const DependencySpecTree> before(mm->value());
                 std::tr1::shared_ptr<const DependencySpecTree> after(fix_locked_dependencies(
                             environment, *eapi, package_id, before));
                 StringifyFormatter ff;

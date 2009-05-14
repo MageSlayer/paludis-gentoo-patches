@@ -14,11 +14,14 @@ eapis = \
 	pbin-1+paludis-1.conf \
 	pbin-1+exheres-0.conf
 
+future_eapis = \
+	3.conf
+
 eapidir = $(datadir)/paludis/eapis/
 
 eapi_DATA = $(eapis)
 
-EXTRA_DIST = $(eapis)
+EXTRA_DIST = $(eapis) $(future_eapis)
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done

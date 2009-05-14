@@ -165,6 +165,20 @@ e_repository_TEST_LDADD = \
 
 e_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
+depend_rdepend_TEST_SOURCES = depend_rdepend_TEST.cc
+
+depend_rdepend_TEST_LDADD = \
+	libpaludiserepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
+depend_rdepend_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
 e_repository_TEST_ever_SOURCES = e_repository_TEST_ever.cc
 
 e_repository_TEST_ever_LDADD = \
@@ -395,6 +409,9 @@ EXTRA_DIST = \
 	dep_parser-se.cc \
 	dep_parser_TEST.cc \
 	dep_spec_pretty_printer_TEST.cc \
+	depend_rdepend_TEST.cc \
+	depend_rdepend_TEST_setup.sh \
+	depend_rdepend_TEST_cleanup.sh \
 	e_repository_TEST.cc \
 	e_repository_TEST_setup.sh \
 	e_repository_TEST_cleanup.sh \
@@ -452,6 +469,7 @@ BUILT_SOURCES = \
 	iuse-se.cc
 
 check_SCRIPTS = \
+	depend_rdepend_TEST_setup.sh depend_rdepend_TEST_cleanup.sh \
 	e_repository_TEST_setup.sh e_repository_TEST_cleanup.sh \
 	e_repository_TEST_ever_setup.sh e_repository_TEST_ever_cleanup.sh \
 	e_repository_TEST_phases_setup.sh e_repository_TEST_phases_cleanup.sh \
@@ -544,6 +562,7 @@ TESTS = \
 	aa_visitor_TEST \
 	dep_parser_TEST \
 	dep_spec_pretty_printer_TEST \
+	depend_rdepend_TEST \
 	e_repository_TEST \
 	e_repository_TEST_ever \
 	e_repository_TEST_phases \

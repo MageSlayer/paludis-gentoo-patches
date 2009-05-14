@@ -418,8 +418,8 @@ namespace test_cases
                 id->perform_action(uninstall_action);
             }
         }
-    } test_phases_eapi_0("0"), test_phases_eapi_1("1"), test_phases_eapi_exheres_0("exheres-0"),
-                        test_phases_eapi_kdebuild_1("kdebuild-1");
+    } test_phases_eapi_0("0"), test_phases_eapi_1("1"), test_phases_eapi_2("2"), test_phases_eapi_3("3"),
+                        test_phases_eapi_exheres_0("exheres-0"), test_phases_eapi_kdebuild_1("kdebuild-1");
 
     struct VarsTest : TestCase
     {
@@ -547,8 +547,8 @@ namespace test_cases
                 id->perform_action(uninstall_action);
             }
         }
-    } test_vdb_vars_eapi_0("0"), test_vdb_vars_eapi_1("1"), test_vdb_vars_eapi_exheres_0("exheres-0"),
-                      test_vdb_vars_eapi_kdebuild_1("kdebuild-1");
+    } test_vdb_vars_eapi_0("0"), test_vdb_vars_eapi_1("1"), test_vdb_vars_eapi_2("2"),
+                      test_vdb_vars_eapi_exheres_0("exheres-0"), test_vdb_vars_eapi_kdebuild_1("kdebuild-1");
 
     struct NamesCacheIncrementalTest : TestCase
     {

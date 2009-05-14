@@ -1213,6 +1213,243 @@ pkg_setup() {
     [[ $LINGUAS == "enabled_en enabled_en_GB enabled_en_GB@UTF-8" ]] || die "LINGUAS=$LINGUAS is wrong"
 }
 END
+mkdir -p "cat/pkg_pretend"
+cat <<"END" > cat/pkg_pretend/pkg_pretend-3.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="enabled-weasel broccoli"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="3"
+
+pkg_pretend() {
+    einfo "This is my pkg_pretend. There are many like it, but this one is mine."
+}
+END
+mkdir -p "cat/pkg_pretend-failure"
+cat <<"END" > cat/pkg_pretend-failure/pkg_pretend-failure-3.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="enabled-weasel broccoli"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="3"
+
+pkg_pretend() {
+    die "This is my pkg_pretend. There are many like it, but this one is mine."
+}
+END
+mkdir -p "cat/default_src_install" || exit 1
+cat << 'END' > cat/default_src_install/default_src_install-3.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="3"
+
+S="${WORKDIR}"
+
+src_unpack() {
+    mkdir -p ${WORKDIR}
+    cat <<'EOF' >${WORKDIR}/Makefile
+all :
+	echo spork > README
+	echo monkey > README.txt
+	touch README.foo
+	echo gerbil > GERBIL
+
+install :
+	echo spork > $(DESTDIR)/EATME
+EOF
+}
+
+pkg_preinst() {
+    [[ -e ${D}/usr/share/doc/${PF}/README ]] || die README
+    [[ -e ${D}/usr/share/doc/${PF}/README.txt ]] || die README.txt
+    [[ -e ${D}/usr/share/doc/${PF}/README.foo ]] && die README.foo
+    [[ -e ${D}/usr/share/doc/${PF}/GERBIL ]] && die GERBIL
+    [[ -e ${D}/EATME ]] || die EATME
+}
+END
+mkdir -p "cat/docompress" || exit 1
+cat << 'END' > cat/docompress/docompress-3.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="3"
+
+S="${WORKDIR}"
+
+src_install() {
+    docompress foo || die
+    docompress bar || die
+}
+END
+mkdir -p "cat/dodoc-r" || exit 1
+cat << 'END' > cat/dodoc-r/dodoc-r-3.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="3"
+
+S="${WORKDIR}"
+
+src_unpack() {
+    mkdir -p ${WORKDIR}
+    cd "${WORKDIR}"
+
+    mkdir one two three
+    echo foo > one/first
+    echo foo > two/second
+    echo foo > four
+    mkdir dot
+    mkdir dot/five
+    echo foo > dot/five/fifth
+}
+
+src_install() {
+    dodoc -r one two three four
+    cd dot
+    dodoc -r .
+}
+
+pkg_preinst() {
+    [[ -e ${D}/usr/share/doc/${PF}/one/first ]] || die one/first
+    [[ -e ${D}/usr/share/doc/${PF}/two/second ]] || die two/second
+    [[ -e ${D}/usr/share/doc/${PF}/four ]] || die four
+    [[ -e ${D}/usr/share/doc/${PF}/five/fifth ]] || die five/fifth
+}
+END
+mkdir -p "cat/doins-r-symlink" || exit 1
+cat << 'END' > cat/doins-r-symlink/doins-r-symlink-3.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="3"
+
+S="${WORKDIR}"
+
+src_unpack() {
+    mkdir -p ${WORKDIR}
+    cd "${WORKDIR}"
+
+    echo foo > foo
+    ln -s foo bar
+}
+
+src_install() {
+    insinto /foo
+    doins -r .
+}
+
+pkg_preinst() {
+    [[ -f ${D}/foo/foo ]] || die foo
+    [[ -L ${D}/foo/bar ]] || die bar
+    [[ $(readlink ${D}/foo/bar ) == foo ]] || die sym
+}
+END
+mkdir -p "cat/banned-functions"
+cat <<END > cat/banned-functions/banned-functions-3.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="3"
+
+S="\${WORKDIR}"
+
+src_install() {
+    touch foo
+    dohard foo bar
+}
+END
+mkdir -p "cat/econf-disable-dependency-tracking" || exit 1
+cat << 'END' > cat/econf-disable-dependency-tracking/econf-disable-dependency-tracking-0.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="0"
+
+S="${WORKDIR}"
+
+src_unpack() {
+    mkdir -p ${WORKDIR}
+    cd "${WORKDIR}"
+
+    cat <<'EOF' > configure
+#!/bin/sh
+
+if echo "$@" | grep -q 'disable-dependency-tracking' ; then
+    exit 1
+fi
+
+exit 0
+EOF
+
+    chmod +x configure
+}
+END
+cat << 'END' > cat/econf-disable-dependency-tracking/econf-disable-dependency-tracking-3.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="3"
+
+S="${WORKDIR}"
+
+src_unpack() {
+    mkdir -p ${WORKDIR}
+    cd "${WORKDIR}"
+
+    cat <<'EOF' > configure
+#!/bin/sh
+
+if ! echo "$@" | grep -q 'disable-dependency-tracking' ; then
+    exit 1
+fi
+
+exit 0
+EOF
+
+    chmod +x configure
+}
+END
 cd ..
 
 mkdir -p repo14/{profiles/profile,metadata,eclass} || exit 1

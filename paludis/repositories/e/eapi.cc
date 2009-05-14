@@ -86,7 +86,9 @@ namespace
                         value_for<n::env_pf>(check_get(k, "env_pf")),
                         value_for<n::env_portdir>(check_get(k, "env_portdir")),
                         value_for<n::env_replaced_by_id>(check_get(k, "env_replaced_by_id")),
+                        value_for<n::env_replaced_by_version>(check_get(k, "env_replaced_by_version")),
                         value_for<n::env_replacing_ids>(check_get(k, "env_replacing_ids")),
+                        value_for<n::env_replacing_versions>(check_get(k, "env_replacing_versions")),
                         value_for<n::env_t>(check_get(k, "env_t")),
                         value_for<n::env_use>(check_get(k, "env_use")),
                         value_for<n::env_use_expand>(check_get(k, "env_use_expand")),
@@ -161,6 +163,7 @@ namespace
                         value_for<n::load_modules>(check_get(k, "load_modules")),
                         value_for<n::must_not_change_after_source_variables>(check_get(k, "must_not_change_after_source_variables")),
                         value_for<n::must_not_change_variables>(check_get(k, "must_not_change_variables")),
+                        value_for<n::no_s_workdir_fallback>(destringify_key<bool>(k, "no_s_workdir_fallback")),
                         value_for<n::non_empty_variables>(check_get(k, "non_empty_variables")),
                         value_for<n::rdepend_defaults_to_depend>(destringify_key<bool>(k, "rdepend_defaults_to_depend")),
                         value_for<n::require_use_expand_in_iuse>(destringify_key<bool>(k, "require_use_expand_in_iuse")),
@@ -207,8 +210,11 @@ namespace
     std::tr1::shared_ptr<const EAPIToolsOptions> make_tool_options(const KeyValueConfigFile & k)
     {
         return make_shared_ptr(new EAPIToolsOptions(make_named_values<EAPIToolsOptions>(
+                        value_for<n::dodoc_r>(destringify_key<bool>(k, "dodoc_r")),
+                        value_for<n::doins_r_symlink>(destringify_key<bool>(k, "doins_r_symlink")),
                         value_for<n::doman_lang_filenames>(destringify_key<bool>(k, "doman_lang_filenames")),
                         value_for<n::dosym_mkdir>(destringify_key<bool>(k, "dosym_mkdir")),
+                        value_for<n::econf_extra_options>(k.get("econf_extra_options")),
                         value_for<n::failure_is_fatal>(destringify_key<bool>(k, "failure_is_fatal")),
                         value_for<n::unpack_fix_permissions>(destringify_key<bool>(k, "unpack_fix_permissions")),
                         value_for<n::unpack_suffixes>(k.get("unpack_suffixes")),

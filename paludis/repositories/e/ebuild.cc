@@ -193,14 +193,22 @@ EbuildCommand::operator() ()
                     params.package_id()->eapi()->supported()->ebuild_options()->load_modules())
             .with_setenv("PALUDIS_EBUILD_FUNCTIONS",
                     params.package_id()->eapi()->supported()->ebuild_options()->ebuild_functions())
+            .with_setenv("PALUDIS_NO_S_WORKDIR_FALLBACK",
+                    params.package_id()->eapi()->supported()->ebuild_options()->no_s_workdir_fallback() ? "yes" : "")
             .with_setenv("PALUDIS_BINARY_DISTDIR_VARIABLE",
                     params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_distdir())
+            .with_setenv("PALUDIS_ECONF_EXTRA_OPTIONS",
+                    params.package_id()->eapi()->supported()->tools_options()->econf_extra_options())
             .with_setenv("PALUDIS_UNPACK_UNRECOGNISED_IS_FATAL",
                     params.package_id()->eapi()->supported()->tools_options()->unpack_unrecognised_is_fatal() ? "yes" : "")
             .with_setenv("PALUDIS_UNPACK_FIX_PERMISSIONS",
                     params.package_id()->eapi()->supported()->tools_options()->unpack_fix_permissions() ? "yes" : "")
             .with_setenv("PALUDIS_UNPACK_SUFFIXES",
                     params.package_id()->eapi()->supported()->tools_options()->unpack_suffixes())
+            .with_setenv("PALUDIS_DODOC_R",
+                    params.package_id()->eapi()->supported()->tools_options()->dodoc_r() ? "yes" : "")
+            .with_setenv("PALUDIS_DOINS_R_SYMLINK",
+                    params.package_id()->eapi()->supported()->tools_options()->doins_r_symlink() ? "yes" : "")
             .with_setenv("PALUDIS_DOMAN_LANG_FILENAMES",
                     params.package_id()->eapi()->supported()->tools_options()->doman_lang_filenames() ? "yes" : "")
             .with_setenv("PALUDIS_DOSYM_NO_MKDIR",
@@ -471,7 +479,20 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
             id->load_build_depend(m.build_depend()->name(), m.build_depend()->description(), get(keys, m.build_depend()->name()), false);
 
         if (! m.run_depend()->name().empty())
-            id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(), get(keys, m.run_depend()->name()), false);
+        {
+            if (id->eapi()->supported()->ebuild_options()->rdepend_defaults_to_depend())
+            {
+                if (! get(keys, "PALUDIS_EBUILD_RDEPEND_WAS_SET").empty())
+                    id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(),
+                            get(keys, m.run_depend()->name()), false);
+                else
+                    id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(),
+                            get(keys, "PALUDIS_EBUILD_DEPEND") + " " + get(keys, m.run_depend()->name()), false);
+            }
+            else
+                id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(),
+                        get(keys, m.run_depend()->name()), false);
+        }
 
         if (! m.pdepend()->name().empty())
             id->load_post_depend(m.pdepend()->name(), m.pdepend()->description(), get(keys, m.pdepend()->name()), false);
@@ -744,10 +765,27 @@ EbuildInstallCommand::extend_command(const Command & cmd)
     if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand_hidden().empty())
         result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand_hidden(),
                 install_params.use_expand_hidden());
+
     if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_replacing_ids().empty())
         result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_replacing_ids(),
                 join(indirect_iterator(install_params.replacing_ids()->begin()),
                     indirect_iterator(install_params.replacing_ids()->end()), " "));
+
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_replacing_versions().empty())
+    {
+        std::string s;
+        for (PackageIDSequence::ConstIterator i(install_params.replacing_ids()->begin()),
+                i_end(install_params.replacing_ids()->end()) ;
+                i != i_end ; ++i)
+            if ((*i)->name() == params.package_id()->name())
+            {
+                if (! s.empty())
+                    s.append(" ");
+                s.append(stringify((*i)->version()));
+            }
+
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_replacing_versions(), s);
+    }
 
     for (Map<std::string, std::string>::ConstIterator
             i(install_params.expand_vars()->begin()),
@@ -799,6 +837,11 @@ EbuildUninstallCommand::extend_command(const Command & cmd)
         if (uninstall_params.replaced_by())
             result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_replaced_by_id(),
                 stringify(*uninstall_params.replaced_by()));
+
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_replaced_by_version().empty())
+        if (uninstall_params.replaced_by())
+            result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_replaced_by_version(),
+                stringify(uninstall_params.replaced_by()->version()));
 
     return result;
 }

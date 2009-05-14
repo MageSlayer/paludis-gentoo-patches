@@ -72,6 +72,7 @@ econf()
             --datadir=/usr/share \
             --sysconfdir=/etc \
             --localstatedir=/var/lib \
+            ${PALUDIS_ECONF_EXTRA_OPTIONS} \
             ${libcmd} "$@" ${LOCAL_EXTRA_ECONF} 1>&2
 
         ${LOCAL_ECONF_WRAPPER} "${ECONF_SOURCE}"/configure \
@@ -82,6 +83,7 @@ econf()
             --datadir=/usr/share \
             --sysconfdir=/etc \
             --localstatedir=/var/lib \
+            ${PALUDIS_ECONF_EXTRA_OPTIONS} \
             ${libcmd} "$@" ${LOCAL_EXTRA_ECONF} || die "econf failed"
 
     else
