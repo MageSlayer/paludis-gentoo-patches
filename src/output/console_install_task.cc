@@ -983,7 +983,7 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
                         continue;
 
                     case dlk_block:
-                        output_no_endl(render_as_update_mode(" [! blocking]"));
+                        output_no_endl(render_as_update_mode(" [! " + stringify(d.package_id()->canonical_form(idcf_version)) + " blocking]"));
                         continue;
 
                     case dlk_provided:
