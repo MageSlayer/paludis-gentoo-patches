@@ -23,7 +23,9 @@ TESTS_ENVIRONMENT = env \
 	bash $(top_srcdir)/paludis/repositories/e/ebuild/utils/run_test.bash
 
 TESTS =
-EXTRA_DIST = $(TESTS)
+EXTRA_DIST = \
+	$(libexecprog3_SCRIPTS) \
+	$(TESTS)
 
 bannedscripts = dohard dosed
 

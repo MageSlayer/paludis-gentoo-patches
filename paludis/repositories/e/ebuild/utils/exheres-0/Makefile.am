@@ -44,8 +44,10 @@ TESTS_ENVIRONMENT = env \
 
 TESTS =
 
-EXTRA_DIST = $(libexecprog_SCRIPTS) $(check_SCRIPTS) \
-	banned_in_eapi_exheres-0 $(TESTS)
+EXTRA_DIST = \
+	$(check_SCRIPTS) \
+	$(libexecprog_SCRIPTS) \
+	$(TESTS)
 
 bannedscripts = prepall prepallstrip prepstrip prepallman prepman prepallinfo \
 		prepinfo prepdocs prepalldocs dohard donewins dosed dohtml \
