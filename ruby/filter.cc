@@ -32,6 +32,8 @@ namespace
     static VALUE c_filter_installed_at_root;
     static VALUE c_filter_and;
     static VALUE c_filter_same_slot;
+    static VALUE c_filter_slot;
+    static VALUE c_filter_no_slot;
 
     VALUE
     filter_init(int, VALUE *, VALUE self)
@@ -182,6 +184,55 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     new(slot) -> Filter
+     *
+     * Create a Filter that accepts packages that have a given slot.
+     */
+    VALUE
+    filter_slot_new(VALUE self, VALUE s_v)
+    {
+        Filter * ptr(0);
+        try
+        {
+            SlotName s(std::string(StringValuePtr(s_v)));
+            ptr = new filter::Slot(s);
+            VALUE data(Data_Wrap_Struct(self, 0, &Common<Filter>::free, ptr));
+            rb_obj_call_init(data, 1, &s_v);
+            return data;
+        }
+        catch (const std::exception & e)
+        {
+            delete ptr;
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     new() -> Filter
+     *
+     * Create a Filter that accepts packages that have no slot.
+     */
+    VALUE
+    filter_no_slot_new(VALUE self_v)
+    {
+        Filter * ptr(0);
+        try
+        {
+            ptr = new filter::NoSlot;
+            VALUE data(Data_Wrap_Struct(self_v, 0, &Common<Filter>::free, ptr));
+            rb_obj_call_init(data, 0, &self_v);
+            return data;
+        }
+        catch (const std::exception & e)
+        {
+            delete ptr;
+            exception_to_ruby_exception(e);
+        }
+    }
+
     void do_register_filter()
     {
         /*
@@ -249,6 +300,22 @@ namespace
          */
         c_filter_same_slot = rb_define_class_under(c_filter_module, "SameSlot", c_filter);
         rb_define_singleton_method(c_filter_same_slot, "new", RUBY_FUNC_CAST(&filter_same_slot_new), 1);
+
+        /*
+         * Document-class: Paludis::Filter::Slot
+         *
+         * Accept packages that have a particular slot.
+         */
+        c_filter_slot = rb_define_class_under(c_filter_module, "Slot", c_filter);
+        rb_define_singleton_method(c_filter_slot, "new", RUBY_FUNC_CAST(&filter_slot_new), 1);
+
+        /*
+         * Document-class: Paludis::Filter::NoSlot
+         *
+         * Accept packages that have no slot.
+         */
+        c_filter_no_slot = rb_define_class_under(c_filter_module, "NoSlot", c_filter);
+        rb_define_singleton_method(c_filter_no_slot, "new", RUBY_FUNC_CAST(&filter_no_slot_new), 0);
     }
 }
 

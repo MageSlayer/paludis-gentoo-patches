@@ -114,6 +114,20 @@ namespace paludis
             public:
                 SameSlot(const std::tr1::shared_ptr<const PackageID> &);
         };
+
+        class PALUDIS_VISIBLE Slot :
+            public Filter
+        {
+            public:
+                Slot(const SlotName &);
+        };
+
+        class PALUDIS_VISIBLE NoSlot :
+            public Filter
+        {
+            public:
+                NoSlot();
+        };
     }
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE

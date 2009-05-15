@@ -320,6 +320,59 @@ namespace
             return "same slot as " + stringify(*as_id);
         }
     };
+
+    struct SlotHandler :
+        AllFilterHandlerBase
+    {
+        const SlotName slot;
+
+        SlotHandler(const SlotName & s) :
+            slot(s)
+        {
+        }
+
+        virtual std::tr1::shared_ptr<const PackageIDSet> ids(
+                const Environment * const,
+                const std::tr1::shared_ptr<const PackageIDSet> & id) const
+        {
+            std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
+
+            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
+                    i != i_end ; ++i)
+                if ((*i)->slot_key() && (*i)->slot_key()->value() == slot)
+                    result->insert(*i);
+
+            return result;
+        }
+
+        virtual std::string as_string() const
+        {
+            return "slot is " + stringify(slot);
+        }
+    };
+
+    struct NoSlotHandler :
+        AllFilterHandlerBase
+    {
+        virtual std::tr1::shared_ptr<const PackageIDSet> ids(
+                const Environment * const,
+                const std::tr1::shared_ptr<const PackageIDSet> & id) const
+        {
+            std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
+
+            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
+                    i != i_end ; ++i)
+                if (! (*i)->slot_key())
+                    result->insert(*i);
+
+            return result;
+        }
+
+        virtual std::string as_string() const
+        {
+            return "has no slot";
+        }
+    };
 }
 
 filter::All::All() :
@@ -350,6 +403,16 @@ filter::And::And(const Filter & f1, const Filter & f2) :
 
 filter::SameSlot::SameSlot(const std::tr1::shared_ptr<const PackageID> & i) :
     Filter(make_shared_ptr(new SameSlotHandler(i)))
+{
+}
+
+filter::Slot::Slot(const SlotName & s) :
+    Filter(make_shared_ptr(new SlotHandler(s)))
+{
+}
+
+filter::NoSlot::NoSlot() :
+    Filter(make_shared_ptr(new NoSlotHandler))
 {
 }
 
