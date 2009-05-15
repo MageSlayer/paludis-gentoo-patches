@@ -317,7 +317,7 @@ namespace
 
         virtual std::string as_string() const
         {
-            return "not masked";
+            return "same slot as " + stringify(*as_id);
         }
     };
 }
