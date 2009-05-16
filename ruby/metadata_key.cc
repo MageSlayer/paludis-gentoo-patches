@@ -24,6 +24,8 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/mask.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <ruby.h>
 
 using namespace paludis;
@@ -550,6 +552,37 @@ namespace
 
     /*
      * call-seq:
+     *     initial_labels -> Array of DependencyLabel
+     *
+     * Return the initial labels to use when deciding the behaviour of
+     * individual items in the heirarchy.
+     */
+    VALUE
+    metadata_dependency_spec_tree_key_initial_labels(VALUE self)
+    {
+        try
+        {
+            std::tr1::shared_ptr<const MetadataKey> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const MetadataKey>, self_ptr);
+            const MetadataSpecTreeKey<DependencySpecTree> * real_self(simple_visitor_cast<
+                    const MetadataSpecTreeKey<DependencySpecTree> >(**self_ptr));
+
+            VALUE result(rb_ary_new());
+
+            for (DependencyLabelSequence::ConstIterator it(real_self->initial_labels()->begin()),
+                     it_end(real_self->initial_labels()->end()); it_end != it; ++it)
+                rb_ary_push(result, dependency_label_to_value(*it));
+
+            return result;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
      *     mask_file -> String
      *
      * Filename where the key was defined.
@@ -776,6 +809,7 @@ namespace
          */
         c_metadata_dependency_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataDependencySpecTreeKey", c_metadata_key);
         rb_define_method(c_metadata_dependency_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<DependencySpecTree>::fetch)), 0);
+        rb_define_method(c_metadata_dependency_spec_tree_key, "initial_labels", RUBY_FUNC_CAST(&metadata_dependency_spec_tree_key_initial_labels), 0);
 
         /*
          * Document-class: Paludis::MetadataFetchableURISpecTreeKey

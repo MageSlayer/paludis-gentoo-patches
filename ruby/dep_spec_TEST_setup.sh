@@ -55,7 +55,7 @@ SLOT="0"
 MYOPTIONS=""
 LICENCES="GPL-2"
 PLATFORMS="test"
-DEPENDENCIES=""
+DEPENDENCIES="build: one/two"
 END
 
 cat <<"END" > bar/bar/bar-1.0.ebuild || exit 1

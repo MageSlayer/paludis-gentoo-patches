@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # vim: set sw=4 sts=4 et tw=80 :
 #
-# Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
 # Copyright (c) 2007 Richard Brown
 #
 # This file is part of the Paludis package manager. Paludis is free software;
@@ -400,6 +400,24 @@ module Paludis
             assert_equal "listed-first",  specs.to_a[3].labels[0].text
             assert_equal "local-only",    specs.to_a[4].labels[0].text
             assert_equal "manual",        specs.to_a[5].labels[0].text
+        end
+    end
+
+    class TestCase_DependencyLabels < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentFactory.instance.create("")
+        end
+
+        def spec_key
+            env[Selection::RequireExactlyOne.new(Generator::Package.new("bar/foo"))].last.build_dependencies_key
+        end
+
+        def test_initial_labels
+            assert_kind_of Array, spec_key.initial_labels
+            assert_kind_of DependencyBuildLabel, spec_key.initial_labels[0]
+            assert_equal "DEPEND", spec_key.initial_labels[0].text
+            assert_equal "DEPEND", spec_key.initial_labels[0].to_s
+            ActiveDependencyLabels.new spec_key.initial_labels
         end
     end
 end
