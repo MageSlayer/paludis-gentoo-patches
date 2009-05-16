@@ -367,6 +367,31 @@ namespace
         }
     }
 
+    template <typename T_, const std::tr1::shared_ptr<const T_> (ActiveDependencyLabels::* f_) () const>
+    struct ActiveDependencyLabelsLabels
+    {
+        static VALUE
+        get(VALUE self)
+        {
+            try
+            {
+                std::tr1::shared_ptr<ActiveDependencyLabels> * ptr;
+                Data_Get_Struct(self, std::tr1::shared_ptr<ActiveDependencyLabels>, ptr);
+                std::tr1::shared_ptr<const T_> v(((**ptr).*(f_))());
+
+                VALUE result(rb_ary_new());
+                for (typename T_::ConstIterator i(v->begin()), i_end(v->end()) ;
+                        i != i_end ; ++i)
+                    rb_ary_push(result, dependency_label_to_value(*i));
+                return result;
+            }
+            catch (const std::exception & e)
+            {
+                exception_to_ruby_exception(e);
+            }
+        }
+    };
+
     void do_register_dep_label()
     {
         /*
@@ -448,6 +473,18 @@ namespace
         c_active_dependency_labels = rb_define_class_under(paludis_module(), "ActiveDependencyLabels", rb_cObject);
         rb_define_singleton_method(c_active_dependency_labels, "new", RUBY_FUNC_CAST(&active_dependency_labels_new), -1);
         rb_define_method(c_active_dependency_labels, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
+        rb_define_method(c_active_dependency_labels, "system_labels", RUBY_FUNC_CAST((
+                        ActiveDependencyLabelsLabels<DependencySystemLabelSequence,
+                        &ActiveDependencyLabels::system_labels>::get)), 0);
+        rb_define_method(c_active_dependency_labels, "type_labels", RUBY_FUNC_CAST((
+                        ActiveDependencyLabelsLabels<DependencyTypeLabelSequence,
+                        &ActiveDependencyLabels::type_labels>::get)), 0);
+        rb_define_method(c_active_dependency_labels, "abi_labels", RUBY_FUNC_CAST((
+                        ActiveDependencyLabelsLabels<DependencyABIsLabelSequence,
+                        &ActiveDependencyLabels::abi_labels>::get)), 0);
+        rb_define_method(c_active_dependency_labels, "suggest_labels", RUBY_FUNC_CAST((
+                        ActiveDependencyLabelsLabels<DependencySuggestLabelSequence,
+                        &ActiveDependencyLabels::suggest_labels>::get)), 0);
     }
 }
 

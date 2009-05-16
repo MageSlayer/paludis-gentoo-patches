@@ -417,7 +417,10 @@ module Paludis
             assert_kind_of DependencyBuildLabel, spec_key.initial_labels[0]
             assert_equal "DEPEND", spec_key.initial_labels[0].text
             assert_equal "DEPEND", spec_key.initial_labels[0].to_s
-            ActiveDependencyLabels.new spec_key.initial_labels
+
+            a = ActiveDependencyLabels.new spec_key.initial_labels
+            assert_kind_of Array, a.type_labels
+            assert_kind_of DependencyBuildLabel, a.type_labels[0]
         end
     end
 end
