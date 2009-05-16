@@ -52,7 +52,7 @@ paludis_ecmd()
 {
     local cmd="$1" hook="$2" prefix="$3" message="$4" newline="$5"
 
-    echo -n "${prefix}${message}"
+    echo -ne "${prefix}${message}"
     [[ -z "${newline}" ]] && echo
 
     if type perform_hook &>/dev/null ; then
