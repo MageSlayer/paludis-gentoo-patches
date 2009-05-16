@@ -164,6 +164,17 @@ namespace test_cases
             TEST_CHECK(! VersionSpec("1_pre1", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("1_pre0", VersionSpecOptions())));
             TEST_CHECK(! VersionSpec("1_alpha1", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("1_alpha-r1", VersionSpecOptions())));
             TEST_CHECK(! VersionSpec("1_alpha1", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("1_beta", VersionSpecOptions())));
+
+            TEST_CHECK(VersionSpec("010", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("010", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("010", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("01", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("2.010", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("2.01", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("2.0105", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("2.010", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("2.0135", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("2.010", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("2.010.1", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("2.01", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("2.011.1", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("2.01", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("2.010.1", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("2.01.1", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("2.011.1", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("2.01.1", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("2.10", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("2.1", VersionSpecOptions())));
         }
     } test_version_spec_stupid_star_compare;
 
@@ -200,6 +211,17 @@ namespace test_cases
             TEST_CHECK(! VersionSpec("1_pre1", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("1_pre0", VersionSpecOptions())));
             TEST_CHECK(! VersionSpec("1_alpha1", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("1_alpha-r1", VersionSpecOptions())));
             TEST_CHECK(! VersionSpec("1_alpha1", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("1_beta", VersionSpecOptions())));
+
+            TEST_CHECK(VersionSpec("010", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("010", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("010", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("01", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("2.010", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("2.01", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("2.0105", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("2.010", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("2.0135", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("2.010", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("2.010.1", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("2.01", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("2.011.1", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("2.01", VersionSpecOptions())));
+            TEST_CHECK(VersionSpec("2.010.1", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("2.01.1", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("2.011.1", VersionSpecOptions()).stupid_equal_star_compare(VersionSpec("2.01.1", VersionSpecOptions())));
+            TEST_CHECK(! VersionSpec("2.10", VersionSpecOptions()).nice_equal_star_compare(VersionSpec("2.1", VersionSpecOptions())));
         }
     } test_version_spec_nice_star_compare;
 

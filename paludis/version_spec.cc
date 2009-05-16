@@ -429,6 +429,9 @@ namespace
     {
         if (b.type() == vsct_empty)
             return std::make_pair(true, true);
+        else if (a.type() == vsct_floatlike && b.type() == vsct_floatlike && next(b_it) == b_it_end &&
+                 a.number_value().compare(0, b.number_value().length(), b.number_value()) == 0)
+            return std::make_pair(true, true);
         else if (a.type() == b.type() && next(b_it) == b_it_end &&
                  (b.type() == vsct_alpha || b.type() == vsct_beta || b.type() == vsct_pre ||
                   b.type() == vsct_rc || b.type() == vsct_patch) &&
