@@ -21,6 +21,7 @@
 #include <paludis_ruby.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
+#include <paludis/environments/test/test_environment.hh>
 #include <paludis/environment_factory.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/set.hh>
@@ -36,6 +37,7 @@ namespace
     static VALUE c_environment;
     static VALUE c_paludis_environment;
     static VALUE c_no_config_environment;
+    static VALUE c_test_environment;
     static VALUE c_environment_factory;
 
     /*
@@ -287,6 +289,28 @@ namespace
 
     /*
      * call-seq:
+     *     TestEnvironment.new -> TestEnvironment
+     *
+     * Create a new TestEnvironment.
+     */
+    VALUE
+    test_environment_new(VALUE self)
+    {
+        try
+        {
+            std::tr1::shared_ptr<Environment> * e = new std::tr1::shared_ptr<Environment>(new TestEnvironment);
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<Environment> >::free, e));
+            rb_obj_call_init(tdata, 0, &self);
+            return tdata;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
      *     config_dir -> String
      *
      * Configuration directory used by this PaludisEnvironment.
@@ -505,6 +529,14 @@ namespace
         rb_define_method(c_no_config_environment, "main_repository", RUBY_FUNC_CAST(&no_config_environment_main_repository), 0);
         rb_define_method(c_no_config_environment, "master_repository", RUBY_FUNC_CAST(&no_config_environment_master_repository), 0);
         rb_define_method(c_no_config_environment, "accept_unstable=", RUBY_FUNC_CAST(&no_config_environment_set_accept_unstable), 1);
+
+        /*
+         * Document-class: Paludis::TestEnvironment
+         *
+         * A crude test environment.
+         */
+        c_test_environment = rb_define_class_under(paludis_module(), "TestEnvironment", c_environment);
+        rb_define_singleton_method(c_test_environment, "new", RUBY_FUNC_CAST(&test_environment_new), 0);
 
         /*
          * Document-class: Paludis::EnvironmentFactory
