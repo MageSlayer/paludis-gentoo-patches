@@ -123,11 +123,18 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
             if (! parser.consume(+simple_parser::any_of("0123456789") >> number_part))
                 throw BadVersionSpecError(text, "Expected number part not found at offset " + stringify(parser.offset()));
 
-            _imp->parts.push_back(make_named_values<VersionSpecComponent>(
-                        value_for<n::number_value>(number_part),
-                        value_for<n::text>(first_number ? number_part : "." + number_part),
-                        value_for<n::type>(vsct_number)
-                        ));
+            if (first_number || '0' != number_part[0])
+                _imp->parts.push_back(make_named_values<VersionSpecComponent>(
+                            value_for<n::number_value>(strip_leading(number_part, "0")),
+                            value_for<n::text>(first_number ? number_part : "." + number_part),
+                            value_for<n::type>(vsct_number)
+                            ));
+            else
+                _imp->parts.push_back(make_named_values<VersionSpecComponent>(
+                            value_for<n::number_value>(number_part),
+                            value_for<n::text>("." + number_part),
+                            value_for<n::type>(vsct_floatlike)
+                            ));
 
             if (! parser.consume(simple_parser::exact(".")))
                 break;
@@ -320,7 +327,6 @@ namespace
                     value_for<n::text>(""),
                     value_for<n::type>(vsct_empty)
                     ));
-        bool first(true);
         while (true)
         {
             const VersionSpecComponent * const p1(v1 == v1_end ? &end_part : &*v1);
@@ -350,51 +356,25 @@ namespace
 
             else
             {
-                std::string p1s, p2s;
-                bool length_cmp(true);
-
-                /* number parts */
-                if ((*p1).type() == vsct_number)
+                std::string p1s((*p1).number_value()), p2s((*p2).number_value());
+                if ((*p1).type() == vsct_floatlike)
                 {
-                    if (first)
-                    {
-                        /* first component - always as integer (leading zeroes removed) */
-                        first = false;
-                        p1s = strip_leading((*p1).number_value(), "0");
-                        p2s = strip_leading((*p2).number_value(), "0");
-                    }
-                    else if ((! (*p1).number_value().empty() && (*p1).number_value().at(0) == '0') ||
-                            (! (*p2).number_value().empty() && (*p2).number_value().at(0) == '0'))
-                    {
-                        /* leading zeroes - stringwise compare with trailing zeroes removed */
-                        length_cmp = false;
-                        p1s = strip_trailing((*p1).number_value(), "0");
-                        p2s = strip_trailing((*p2).number_value(), "0");
-                    }
-                    else
-                    {
-                        p1s = (*p1).number_value();
-                        p2s = (*p2).number_value();
-                    }
+                    p1s = strip_trailing(p1s, "0");
+                    p2s = strip_trailing(p2s, "0");
                 }
-                /* anything else than number parts */
-                else
-                {
-                    p1s = (*p1).number_value();
-                    p2s = (*p2).number_value();
 
-                    /* _suffix-scm? */
-                    if (p1s == "MAX" && p2s == "MAX")
-                        compared = 0;
-                    else if (p1s == "MAX")
-                        compared = 1;
-                    else if (p2s == "MAX")
-                        compared = -1;
-                }
+                /* _suffix-scm? */
+                if (p1s == "MAX" && p2s == "MAX")
+                    compared = 0;
+                else if (p1s == "MAX")
+                    compared = 1;
+                else if (p2s == "MAX")
+                    compared = -1;
+
                 if (compared == -2)
                 {
                     /* common part */
-                    if (length_cmp)
+                    if ((*p1).type() != vsct_floatlike)
                     {
                         /* length compare (integers) */
                         int c = p1s.size() - p2s.size();
@@ -404,6 +384,7 @@ namespace
                             compared = 1;
                     }
                 }
+
                 if (compared == -2)
                 {
                     /* stringwise compare (also for integers with the same size) */
@@ -509,7 +490,7 @@ VersionSpec::hash() const
             result ^= (hh >> h_shift);
 
             std::string r_v;
-            if (! (*r).number_value().empty() && (*r).number_value().at(0) == '0')
+            if ((*r).type() == vsct_floatlike)
                 r_v = strip_trailing((*r).number_value(), "0");
             else
                 r_v = (*r).number_value();
@@ -545,6 +526,16 @@ namespace
         bool operator() (const VersionSpecComponent & p) const
         {
             return p.type() == p_;
+        }
+    };
+
+    template <VersionSpecComponentType p_, VersionSpecComponentType q_>
+    struct IsEitherVersionSpecComponentType :
+        std::unary_function<VersionSpecComponent, bool>
+    {
+        bool operator() (const VersionSpecComponent & p) const
+        {
+            return p.type() == p_ || p.type() == q_;
         }
     };
 }
@@ -676,7 +667,7 @@ VersionSpec::bump() const
 {
     std::vector<VersionSpecComponent> number_parts;
     std::copy(_imp->parts.begin(),
-            std::find_if(_imp->parts.begin(), _imp->parts.end(), std::not1(IsVersionSpecComponentType<vsct_number>())),
+            std::find_if(_imp->parts.begin(), _imp->parts.end(), std::not1(IsEitherVersionSpecComponentType<vsct_number, vsct_floatlike>())),
             std::back_inserter(number_parts));
 
     if (number_parts.empty())
