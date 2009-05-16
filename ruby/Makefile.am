@@ -45,6 +45,7 @@ IF_RUBY_SOURCES = \
 	action.cc \
 	choice.cc \
 	contents.cc \
+	dep_label.cc \
 	dep_list.cc \
 	dep_spec.cc \
 	dep_tag.cc \
