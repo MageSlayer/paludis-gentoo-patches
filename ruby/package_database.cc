@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -184,6 +184,31 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     add_repository(importance, repository) -> nil
+     *
+     *  Add a repository.
+     */
+    VALUE
+    package_database_add_repository(VALUE self, VALUE importance, VALUE repo_v)
+    {
+        try
+        {
+            std::tr1::shared_ptr<PackageDatabase> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
+
+            std::tr1::shared_ptr<Repository> repo(value_to_repository(repo_v));
+
+            (*self_ptr)->add_repository(NUM2INT(importance), repo);
+            return Qnil;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
     void do_register_package_database()
     {
         /*
@@ -204,7 +229,8 @@ namespace
                 RUBY_FUNC_CAST(&package_database_more_important_than), 2);
         rb_define_method(c_package_database, "has_repository_named?",
                 RUBY_FUNC_CAST(&package_database_has_repository_named), 1);
-
+        rb_define_method(c_package_database, "add_repository",
+                RUBY_FUNC_CAST(&package_database_add_repository), 2);
     }
 }
 
