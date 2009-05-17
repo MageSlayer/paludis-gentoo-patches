@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2006, 2007, 2008 Richard Brown
  * Copyright (c) 2007 David Leverton
  *
@@ -714,6 +714,7 @@ namespace
      * call-seq:
      *     add_version(qualified_package_name, version_spec) -> PackageID
      *     add_version(category_name, package_name, version_string) -> PackageID
+     *     add_version(category_name, package_name, version_string, slot) -> PackageID
      *
      * Add a version, and a package and category if necessary, and set some
      * default values for its metadata, and return said metadata.
@@ -724,7 +725,7 @@ namespace
         try
         {
             std::tr1::shared_ptr<FakeRepositoryBase> repo(value_to_fake_repository_base(self));
-            std::tr1::shared_ptr<PackageID> pkg;
+            std::tr1::shared_ptr<FakePackageID> pkg;
 
             switch (argc)
             {
@@ -740,6 +741,16 @@ namespace
                     std::string name(StringValuePtr(argv[1]));
                     std::string ver(StringValuePtr(argv[2]));
                     pkg = repo->add_version(cat, name, ver);
+                    break;
+                }
+
+                case 4: {
+                    std::string cat(StringValuePtr(argv[0]));
+                    std::string name(StringValuePtr(argv[1]));
+                    std::string ver(StringValuePtr(argv[2]));
+                    std::string slot(StringValuePtr(argv[3]));
+                    pkg = repo->add_version(cat, name, ver);
+                    pkg->set_slot(SlotName(slot));
                     break;
                 }
 
