@@ -23,6 +23,7 @@
 #include <paludis/repository.hh>
 #include <paludis/util/options.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
+#include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -44,6 +45,7 @@ namespace
     static VALUE c_profiles_desc_line;
     static VALUE c_fake_repository_base;
     static VALUE c_fake_repository;
+    static VALUE c_fake_installed_repository;
 
     VALUE
     profiles_desc_line_to_value(const RepositoryEInterface::ProfilesDescLine & v)
@@ -800,6 +802,32 @@ namespace
 
     /*
      * call-seq:
+     *     FakeInstalledRepository.new(environment, repo_name) -> FakeInstalledRepository
+     *
+     * Create a new FakeInstalledRepository.
+     */
+    VALUE
+    fake_installed_repository_new(int argc, VALUE* argv, VALUE self)
+    {
+        try
+        {
+            if (2 != argc)
+                rb_raise(rb_eArgError, "FakeInstalledRepository.new expects two arguments, but got %d", argc);
+
+            std::tr1::shared_ptr<Repository> * r = new std::tr1::shared_ptr<Repository>(new
+                    FakeInstalledRepository(value_to_environment(argv[0]).get(), RepositoryName(StringValuePtr(argv[1]))));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<Repository> >::free, r));
+            rb_obj_call_init(tdata, argc, argv);
+            return tdata;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
      *     [String] -> MetadataKey or Nil
      *
      * The named metadata key.
@@ -996,6 +1024,15 @@ namespace
         c_fake_repository = rb_define_class_under(paludis_module(), "FakeRepository", c_fake_repository_base);
         rb_define_singleton_method(c_fake_repository, "new", RUBY_FUNC_CAST(&fake_repository_new), -1);
         rb_define_method(c_fake_repository, "initialize", RUBY_FUNC_CAST(&fake_repository_init), -1);
+
+        /*
+         * Document-class: Paludis::FakeInstalledRepository
+         *
+         * Fake repository for use in test cases.
+         */
+        c_fake_installed_repository = rb_define_class_under(paludis_module(), "FakeInstalledRepository", c_fake_repository_base);
+        rb_define_singleton_method(c_fake_installed_repository, "new", RUBY_FUNC_CAST(&fake_installed_repository_new), -1);
+        rb_define_method(c_fake_installed_repository, "initialize", RUBY_FUNC_CAST(&fake_repository_init), -1);
     }
 }
 
