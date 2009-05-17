@@ -504,7 +504,7 @@ module Paludis
 
             assert_raise ArgumentError do f.add_version end
             assert_raise ArgumentError do f.add_version('foo-bar/baz') end
-            assert_raise ArgumentError do f.add_version('foo-bar', 'baz', '3', 'abc') end
+            assert_raise ArgumentError do f.add_version('foo-bar', 'baz', '3', 'abc', '123') end
 
             assert_raise TypeError do f.add_version(42, '1') end
             assert_raise TypeError do f.add_version('foo-bar/baz', []) end
