@@ -24,6 +24,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/make_named_values.hh>
 
 using namespace paludis;
 
@@ -39,7 +40,15 @@ namespace
             UnChoicesKey() :
                 _value(new Choices)
             {
-                _value->add(make_shared_ptr(new Choice("Choices", "Choices", ChoicePrefixName(""), true, true, true, false)));
+                _value->add(make_shared_ptr(new Choice(make_named_values<ChoiceParams>(
+                                    value_for<n::consider_added_or_changed>(false),
+                                    value_for<n::contains_every_value>(true),
+                                    value_for<n::hidden>(true),
+                                    value_for<n::human_name>("Choices"),
+                                    value_for<n::prefix>(ChoicePrefixName("")),
+                                    value_for<n::raw_name>("Choices"),
+                                    value_for<n::show_with_no_prefix>(true)
+                                    ))));
             }
 
             ~UnChoicesKey()

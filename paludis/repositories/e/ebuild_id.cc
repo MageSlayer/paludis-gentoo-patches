@@ -1305,8 +1305,15 @@ EbuildID::add_build_options(const std::tr1::shared_ptr<Choices> & choices) const
 {
     if (eapi()->supported())
     {
-        std::tr1::shared_ptr<Choice> build_options(new Choice(canonical_build_options_raw_name(), canonical_build_options_human_name(),
-                    canonical_build_options_prefix(), false, false, false, false));
+        std::tr1::shared_ptr<Choice> build_options(new Choice(make_named_values<ChoiceParams>(
+                        value_for<n::consider_added_or_changed>(false),
+                        value_for<n::contains_every_value>(false),
+                        value_for<n::hidden>(false),
+                        value_for<n::human_name>(canonical_build_options_human_name()),
+                        value_for<n::prefix>(canonical_build_options_prefix()),
+                        value_for<n::raw_name>(canonical_build_options_raw_name()),
+                        value_for<n::show_with_no_prefix>(false)
+                        )));
         choices->add(build_options);
 
         bool may_be_unrestricted_test(true), may_be_unrestricted_strip(true);

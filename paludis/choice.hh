@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,6 +25,8 @@
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/util/named_value.hh>
+#include <paludis/util/validated.hh>
 #include <tr1/memory>
 #include <string>
 
@@ -41,6 +43,17 @@
 
 namespace paludis
 {
+    namespace n
+    {
+        struct consider_added_or_changed;
+        struct contains_every_value;
+        struct hidden;
+        struct human_name;
+        struct prefix;
+        struct raw_name;
+        struct show_with_no_prefix;
+    }
+
     /**
      * Thrown if a ChoicePrefixName is given an invalid value.
      *
@@ -193,6 +206,23 @@ namespace paludis
     };
 
     /**
+     * Named parameters for Choice::Choice.
+     *
+     * \since 0.38
+     * \ingroup g_choices
+     */
+    struct ChoiceParams
+    {
+        NamedValue<n::consider_added_or_changed, bool> consider_added_or_changed;
+        NamedValue<n::contains_every_value, bool> contains_every_value;
+        NamedValue<n::hidden, bool> hidden;
+        NamedValue<n::human_name, std::string> human_name;
+        NamedValue<n::prefix, ChoicePrefixName> prefix;
+        NamedValue<n::raw_name, std::string> raw_name;
+        NamedValue<n::show_with_no_prefix, bool> show_with_no_prefix;
+    };
+
+    /**
      * An individual choice in a Choices collection.
      *
      * Examples of a choice include USE, individual USE_EXPAND values (linguas, video_cards etc)
@@ -208,9 +238,8 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            Choice(const std::string & raw_name, const std::string & human_name, const ChoicePrefixName & prefix,
-                    const bool contains_every_value, const bool hidden, const bool show_with_no_prefix,
-                    const bool consider_added_or_changed);
+            ///\since 0.38
+            Choice(const ChoiceParams &);
             ~Choice();
 
             ///\}

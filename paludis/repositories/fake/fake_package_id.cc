@@ -489,8 +489,15 @@ FakeMetadataChoicesKey::add(const std::string & n, const std::string & v)
 {
     if (_imp->choices.end() == _imp->choices.find(n))
     {
-        std::tr1::shared_ptr<Choice> c(new Choice(n.empty() ? "default" : n, n.empty() ? "default" : n, ChoicePrefixName(n),
-                    false, false, false, false));
+        std::tr1::shared_ptr<Choice> c(new Choice(make_named_values<ChoiceParams>(
+                        value_for<n::consider_added_or_changed>(false),
+                        value_for<n::contains_every_value>(false),
+                        value_for<n::hidden>(false),
+                        value_for<n::human_name>(n.empty() ? "default" : n),
+                        value_for<n::prefix>(ChoicePrefixName(n)),
+                        value_for<n::raw_name>(n.empty() ? "default" : n),
+                        value_for<n::show_with_no_prefix>(false)
+                        )));
         _imp->value->add(c);
         _imp->choices.insert(std::make_pair(n, c));
     }

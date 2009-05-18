@@ -37,6 +37,7 @@
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/make_named_values.hh>
 
 #include <paludis/environment.hh>
 #include <paludis/stringify_formatter-impl.hh>
@@ -255,14 +256,15 @@ EChoicesKey::value() const
     if (! _imp->id->eapi()->supported())
         return _imp->value;
 
-    std::tr1::shared_ptr<Choice> use(new Choice(
-                _imp->id->eapi()->supported()->ebuild_environment_variables()->env_use(),
-                _imp->id->eapi()->supported()->ebuild_environment_variables()->env_use(),
-                ChoicePrefixName(""),
-                false,
-                false,
-                true,
-                true));
+    std::tr1::shared_ptr<Choice> use(new Choice(make_named_values<ChoiceParams>(
+                    value_for<n::consider_added_or_changed>(true),
+                    value_for<n::contains_every_value>(false),
+                    value_for<n::hidden>(false),
+                    value_for<n::human_name>(_imp->id->eapi()->supported()->ebuild_environment_variables()->env_use()),
+                    value_for<n::prefix>(ChoicePrefixName("")),
+                    value_for<n::raw_name>(_imp->id->eapi()->supported()->ebuild_environment_variables()->env_use()),
+                    value_for<n::show_with_no_prefix>(true)
+                )));
     _imp->value->add(use);
 
     bool has_fancy_test_flag(false);
@@ -288,8 +290,15 @@ EChoicesKey::value() const
 
                 std::string lower_u;
                 std::transform(u->begin(), u->end(), std::back_inserter(lower_u), &::tolower);
-                std::tr1::shared_ptr<Choice> exp(new Choice(stringify(*u), lower_u, ChoicePrefixName(lower_u),
-                            false, hidden ? hidden->end() != hidden->find(*u) : false, false, true));
+                std::tr1::shared_ptr<Choice> exp(new Choice(make_named_values<ChoiceParams>(
+                                value_for<n::consider_added_or_changed>(true),
+                                value_for<n::contains_every_value>(false),
+                                value_for<n::hidden>(hidden ? hidden->end() != hidden->find(*u) : false),
+                                value_for<n::human_name>(lower_u),
+                                value_for<n::prefix>(ChoicePrefixName(lower_u)),
+                                value_for<n::raw_name>(stringify(*u)),
+                                value_for<n::show_with_no_prefix>(false)
+                            )));
                 _imp->value->add(exp);
 
                 MyOptionsFinder::Prefixes::iterator p(myoptions.prefixes.find(ChoicePrefixName(lower_u)));
@@ -396,7 +405,15 @@ EChoicesKey::value() const
         std::string env_arch(_imp->id->eapi()->supported()->ebuild_environment_variables()->env_arch());
         if ((! env_arch.empty()) && _imp->maybe_e_repository)
         {
-            std::tr1::shared_ptr<Choice> arch(new Choice(env_arch, env_arch, ChoicePrefixName(""), false, true, false, false));
+            std::tr1::shared_ptr<Choice> arch(new Choice(make_named_values<ChoiceParams>(
+                            value_for<n::consider_added_or_changed>(false),
+                            value_for<n::contains_every_value>(false),
+                            value_for<n::hidden>(true),
+                            value_for<n::human_name>(env_arch),
+                            value_for<n::prefix>(ChoicePrefixName("")),
+                            value_for<n::raw_name>(env_arch),
+                            value_for<n::show_with_no_prefix>(false)
+                        )));
             _imp->value->add(arch);
 
             for (Set<UnprefixedChoiceName>::ConstIterator a(_imp->maybe_e_repository->arch_flags()->begin()), a_end(_imp->maybe_e_repository->arch_flags()->end()) ;
@@ -412,9 +429,15 @@ EChoicesKey::value() const
             {
                 std::string lower_u;
                 std::transform(u->begin(), u->end(), std::back_inserter(lower_u), &::tolower);
-                std::tr1::shared_ptr<Choice> exp(new Choice(stringify(*u), lower_u, ChoicePrefixName(lower_u),
-                            ! _imp->id->eapi()->supported()->ebuild_options()->require_use_expand_in_iuse(),
-                            hidden ? hidden->end() != hidden->find(*u) : false, false, true));
+                std::tr1::shared_ptr<Choice> exp(new Choice(make_named_values<ChoiceParams>(
+                                value_for<n::consider_added_or_changed>(true),
+                                value_for<n::contains_every_value>(! _imp->id->eapi()->supported()->ebuild_options()->require_use_expand_in_iuse()),
+                                value_for<n::hidden>(hidden ? hidden->end() != hidden->find(*u) : false),
+                                value_for<n::human_name>(lower_u),
+                                value_for<n::prefix>(ChoicePrefixName(lower_u)),
+                                value_for<n::raw_name>(stringify(*u)),
+                                value_for<n::show_with_no_prefix>(false)
+                                )));
                 _imp->value->add(exp);
 
                 std::set<UnprefixedChoiceName> values;

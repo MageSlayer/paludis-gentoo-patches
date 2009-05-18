@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -204,31 +204,17 @@ namespace paludis
     struct Implementation<Choice>
     {
         std::list<std::tr1::shared_ptr<const ChoiceValue> > values;
-        const std::string raw_name;
-        const std::string human_name;
-        const ChoicePrefixName prefix;
-        const bool contains_every_value;
-        const bool hidden;
-        const bool show_with_no_prefix;
-        const bool consider_added_or_changed;
+        const ChoiceParams params;
 
-        Implementation(const std::string & r, const std::string & h, const ChoicePrefixName & p,
-                const bool c, const bool i, const bool s, const bool a) :
-            raw_name(r),
-            human_name(h),
-            prefix(p),
-            contains_every_value(c),
-            hidden(i),
-            show_with_no_prefix(s),
-            consider_added_or_changed(a)
+        Implementation(const ChoiceParams & p) :
+            params(p)
         {
         }
     };
 }
 
-Choice::Choice(const std::string & r, const std::string & h, const ChoicePrefixName & p,
-        const bool c, const bool i, const bool s, const bool a) :
-    PrivateImplementationPattern<Choice>(new Implementation<Choice>(r, h, p, c, i, s, a))
+Choice::Choice(const ChoiceParams & p) :
+    PrivateImplementationPattern<Choice>(new Implementation<Choice>(p))
 {
 }
 
@@ -245,43 +231,43 @@ Choice::add(const std::tr1::shared_ptr<const ChoiceValue> & v)
 const std::string
 Choice::raw_name() const
 {
-    return _imp->raw_name;
+    return _imp->params.raw_name();
 }
 
 const std::string
 Choice::human_name() const
 {
-    return _imp->human_name;
+    return _imp->params.human_name();
 }
 
 const bool
 Choice::contains_every_value() const
 {
-    return _imp->contains_every_value;
+    return _imp->params.contains_every_value();
 }
 
 const bool
 Choice::hidden() const
 {
-    return _imp->hidden;
+    return _imp->params.hidden();
 }
 
 const bool
 Choice::show_with_no_prefix() const
 {
-    return _imp->show_with_no_prefix;
+    return _imp->params.show_with_no_prefix();
 }
 
 const bool
 Choice::consider_added_or_changed() const
 {
-    return _imp->consider_added_or_changed;
+    return _imp->params.consider_added_or_changed();
 }
 
 const ChoicePrefixName
 Choice::prefix() const
 {
-    return _imp->prefix;
+    return _imp->params.prefix();
 }
 
 Choice::ConstIterator
