@@ -533,7 +533,7 @@ InstallTask::_add_package_id(const std::tr1::shared_ptr<const PackageID> & targe
     if (! _imp->override_target_type)
         _imp->dep_list.options()->target_type() = dl_target_package;
 
-    PartiallyMadePackageDepSpec part_spec;
+    PartiallyMadePackageDepSpec part_spec((PartiallyMadePackageDepSpecOptions()));
     part_spec.package(target->name());
     part_spec.in_repository(target->repository()->name());
     part_spec.version_requirement(make_named_values<VersionRequirement>(

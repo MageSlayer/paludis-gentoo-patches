@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -361,7 +361,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            PartiallyMadePackageDepSpec();
+            PartiallyMadePackageDepSpec(const PartiallyMadePackageDepSpecOptions &);
             ~PartiallyMadePackageDepSpec();
             PartiallyMadePackageDepSpec(const PackageDepSpec &);
             PartiallyMadePackageDepSpec(const PartiallyMadePackageDepSpec &);
@@ -687,6 +687,13 @@ namespace paludis
              * Fetch the annotations (may be a zero pointer).
              */
             virtual std::tr1::shared_ptr<const MetadataSectionKey> annotations_key() const = 0;
+
+            /**
+             * Fetch options if we're being used to construct a new PartiallyMadePackageDepSpec.
+             *
+             * \since 0.38
+             */
+            virtual const PartiallyMadePackageDepSpecOptions options_for_partially_made_package_dep_spec() const = 0;
     };
 
     /**

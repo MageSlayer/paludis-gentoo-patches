@@ -175,7 +175,7 @@ namespace
         for (PackageIDSequence::ConstIterator i(names->begin()), i_end(names->end()) ;
                 i != i_end ; ++i)
         {
-            PackageDepSpec name_spec(make_package_dep_spec().package((*i)->name()));
+            PackageDepSpec name_spec(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package((*i)->name()));
             cout << format_general_s(select_format_for_spec(env, name_spec,
                         f::show_wildcard_spec_installed(),
                         f::show_wildcard_spec_installable(),

@@ -278,6 +278,11 @@ namespace
                 result.from_repository(RepositoryName(left));
         }
     }
+
+    const PartiallyMadePackageDepSpecOptions fixed_options_for_partially_made_package_dep_spec(PartiallyMadePackageDepSpecOptions o)
+    {
+        return o;
+    }
 }
 
 PackageDepSpec
@@ -289,6 +294,8 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const Environment *
     Context context("When parsing user package dep spec '" + ss + "':");
 
     bool had_bracket_version_requirements(false);
+    PartiallyMadePackageDepSpecOptions o;
+
     return partial_parse_generic_elike_package_dep_spec(ss, make_named_values<GenericELikePackageDepSpecParseFunctions>(
             value_for<n::add_package_requirement>(std::tr1::bind(&user_add_package_requirement, _1, _2, env, options, filter)),
             value_for<n::add_version_requirement>(std::tr1::bind(&elike_add_version_requirement, _1, _2, _3)),
@@ -299,6 +306,7 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const Environment *
                     ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps + epdso_nice_equal_star)),
             value_for<n::has_version_operator>(std::tr1::bind(&elike_has_version_operator, _1,
                     std::tr1::cref(had_bracket_version_requirements), ELikePackageDepSpecOptions())),
+            value_for<n::options_for_partially_made_package_dep_spec>(std::tr1::bind(&fixed_options_for_partially_made_package_dep_spec, o)),
             value_for<n::remove_trailing_repo_if_exists>(std::tr1::bind(&user_remove_trailing_repo_if_exists, _1, _2)),
             value_for<n::remove_trailing_slot_if_exists>(std::tr1::bind(&user_remove_trailing_slot_if_exists, _1, _2)),
             value_for<n::remove_trailing_square_bracket_if_exists>(std::tr1::bind(&user_remove_trailing_square_bracket_if_exists,

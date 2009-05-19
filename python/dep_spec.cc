@@ -271,7 +271,7 @@ PythonPackageDepSpec::~PythonPackageDepSpec()
 
 PythonPackageDepSpec::operator PackageDepSpec() const
 {
-    PartiallyMadePackageDepSpec p;
+    PartiallyMadePackageDepSpec p((PartiallyMadePackageDepSpecOptions()));
 
     if (package_ptr())
         p.package(*package_ptr());

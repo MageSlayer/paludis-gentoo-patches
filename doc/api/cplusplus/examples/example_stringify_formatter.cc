@@ -39,7 +39,7 @@ int main(int argc, char * argv[])
 
         /* Fetch package IDs for installable 'sys-apps/paludis'. */
         std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
-                    generator::Matches(make_package_dep_spec().package(QualifiedPackageName("sys-apps/paludis")), MatchPackageOptions()) |
+                    generator::Package(QualifiedPackageName("sys-apps/paludis")) |
                     filter::SupportsAction<InstallAction>())]);
 
         /* For each ID: */

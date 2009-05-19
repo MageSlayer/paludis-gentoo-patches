@@ -315,7 +315,7 @@ UninstallTask::execute()
         {
             bool remove(true);
             std::tr1::shared_ptr<const PackageIDSequence> installed((*_imp->env)[selection::AllVersionsUnsorted(
-                        generator::Matches(make_package_dep_spec().package(i->first), MatchPackageOptions()) |
+                        generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(i->first), MatchPackageOptions()) |
                         filter::SupportsAction<InstalledAction>()
                         )]);
             for (PackageIDSequence::ConstIterator r(installed->begin()), r_end(installed->end()) ;
@@ -324,7 +324,8 @@ UninstallTask::execute()
                     remove = false;
 
             if (remove)
-                all->root()->append(make_shared_ptr(new PackageDepSpec(make_package_dep_spec().package(i->first))));
+                all->root()->append(make_shared_ptr(new PackageDepSpec(make_package_dep_spec(
+                                    PartiallyMadePackageDepSpecOptions()).package(i->first))));
         }
 
         world_remove_packages(all);

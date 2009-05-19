@@ -28,6 +28,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/options.hh>
 #include <paludis/dep_spec.hh>
 #include <list>
 #include <sstream>
@@ -186,6 +187,11 @@ namespace
         virtual std::tr1::shared_ptr<const InstallableToPath> installable_to_path_ptr() const
         {
             return make_null_shared_ptr();
+        }
+
+        virtual const PartiallyMadePackageDepSpecOptions options_for_partially_made_package_dep_spec() const
+        {
+            return PartiallyMadePackageDepSpecOptions() + pmpdso_always_use_ranged_deps;
         }
     };
 }

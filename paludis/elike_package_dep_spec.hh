@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,6 +33,7 @@ namespace paludis
         struct get_remove_trailing_version;
         struct get_remove_version_operator;
         struct has_version_operator;
+        struct options_for_partially_made_package_dep_spec;
         struct remove_trailing_repo_if_exists;
         struct remove_trailing_slot_if_exists;
         struct remove_trailing_square_bracket_if_exists;
@@ -46,6 +47,7 @@ namespace paludis
         NamedValue<n::get_remove_trailing_version, std::tr1::function<VersionSpec (std::string &)> > get_remove_trailing_version;
         NamedValue<n::get_remove_version_operator, std::tr1::function<VersionOperator (std::string &)> > get_remove_version_operator;
         NamedValue<n::has_version_operator, std::tr1::function<bool (const std::string &)> > has_version_operator;
+        NamedValue<n::options_for_partially_made_package_dep_spec, std::tr1::function<const PartiallyMadePackageDepSpecOptions ()> > options_for_partially_made_package_dep_spec;
         NamedValue<n::remove_trailing_repo_if_exists, std::tr1::function<void (std::string &, PartiallyMadePackageDepSpec &)> > remove_trailing_repo_if_exists;
         NamedValue<n::remove_trailing_slot_if_exists, std::tr1::function<void (std::string &, PartiallyMadePackageDepSpec &)> > remove_trailing_slot_if_exists;
         NamedValue<n::remove_trailing_square_bracket_if_exists, std::tr1::function<bool (std::string &, PartiallyMadePackageDepSpec &)> > remove_trailing_square_bracket_if_exists;

@@ -828,7 +828,8 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
 
     if (node.spec()->blocked_spec()->package_ptr())
     {
-        PackageDepSpec just_package(make_package_dep_spec().package(*node.spec()->blocked_spec()->package_ptr()));
+        PackageDepSpec just_package(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(
+                    *node.spec()->blocked_spec()->package_ptr()));
         already_installed = (*d->_imp->env)[selection::AllVersionsUnsorted(
                 generator::Matches(just_package, d->_imp->opts->match_package_options()) |
                 filter::SupportsAction<InstalledAction>())];
@@ -1139,7 +1140,7 @@ DepList::add_package(const std::tr1::shared_ptr<const PackageID> & p, const std:
 
         for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
-            std::tr1::shared_ptr<PackageDepSpec> pp(new PackageDepSpec(make_package_dep_spec()
+            std::tr1::shared_ptr<PackageDepSpec> pp(new PackageDepSpec(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                         .package(*(*i)->package_ptr())
                         .version_requirement(make_named_values<VersionRequirement>(
                                 value_for<n::version_operator>(vo_equal),
@@ -1662,7 +1663,7 @@ DepList::replaced(const PackageID & m) const
     std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p(
             _imp->merge_list_index.equal_range(m.name()));
 
-    PackageDepSpec spec(make_package_dep_spec().package(m.name()));
+    PackageDepSpec spec(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(m.name()));
     while (p.second != ((p.first = std::find_if(p.first, p.second,
                         MatchDepListEntryAgainstPackageDepSpec(_imp->env, spec, _imp->opts->match_package_options())))))
     {

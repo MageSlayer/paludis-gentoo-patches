@@ -43,7 +43,7 @@ paludis::partial_parse_generic_elike_package_dep_spec(const std::string & ss, co
     fns.check_sanity()(ss);
 
     std::string s(ss);
-    PartiallyMadePackageDepSpec result;
+    PartiallyMadePackageDepSpec result(fns.options_for_partially_made_package_dep_spec()());
 
     /* Remove trailing [use], [version] etc parts. */
     while (fns.remove_trailing_square_bracket_if_exists()(s, result))
@@ -438,6 +438,14 @@ paludis::elike_add_package_requirement(const std::string & s, PartiallyMadePacka
         result.package(QualifiedPackageName(s));
 }
 
+namespace
+{
+    const PartiallyMadePackageDepSpecOptions fixed_options_for_partially_made_package_dep_spec(PartiallyMadePackageDepSpecOptions o)
+    {
+        return o;
+    }
+}
+
 PartiallyMadePackageDepSpec
 paludis::partial_parse_elike_package_dep_spec(
         const std::string & ss, const ELikePackageDepSpecOptions & options,
@@ -450,6 +458,10 @@ paludis::partial_parse_elike_package_dep_spec(
 
     bool had_bracket_version_requirements(false), had_use_requirements(false);
 
+    PartiallyMadePackageDepSpecOptions o;
+    if (options[epdso_disallow_nonranged_deps])
+        o += pmpdso_always_use_ranged_deps;
+
     return partial_parse_generic_elike_package_dep_spec(ss, make_named_values<GenericELikePackageDepSpecParseFunctions>(
                 value_for<n::add_package_requirement>(std::tr1::bind(&elike_add_package_requirement, _1, _2)),
                 value_for<n::add_version_requirement>(std::tr1::bind(&elike_add_version_requirement, _1, _2, _3)),
@@ -458,6 +470,7 @@ paludis::partial_parse_elike_package_dep_spec(
                 value_for<n::get_remove_version_operator>(std::tr1::bind(&elike_get_remove_version_operator, _1, options)),
                 value_for<n::has_version_operator>(std::tr1::bind(&elike_has_version_operator, _1,
                         std::tr1::cref(had_bracket_version_requirements), options)),
+                value_for<n::options_for_partially_made_package_dep_spec>(std::tr1::bind(&fixed_options_for_partially_made_package_dep_spec, o)),
                 value_for<n::remove_trailing_repo_if_exists>(std::tr1::bind(&elike_remove_trailing_repo_if_exists, _1, _2, options)),
                 value_for<n::remove_trailing_slot_if_exists>(std::tr1::bind(&elike_remove_trailing_slot_if_exists, _1, _2, options)),
                 value_for<n::remove_trailing_square_bracket_if_exists>(std::tr1::bind(&elike_remove_trailing_square_bracket_if_exists,

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -43,6 +43,8 @@
 #include <map>
 
 using namespace paludis;
+
+#include <paludis/dep_spec-se.cc>
 
 namespace paludis
 {
@@ -719,7 +721,7 @@ PackageDepSpec::without_additional_requirements() const
 {
     using namespace std::tr1::placeholders;
 
-    PartiallyMadePackageDepSpec result;
+    PartiallyMadePackageDepSpec result(data()->options_for_partially_made_package_dep_spec());
 
     if (package_ptr())
         result.package(*package_ptr());
@@ -801,9 +803,9 @@ paludis::operator<< (std::ostream & s, const AdditionalPackageDepSpecRequirement
 }
 
 PartiallyMadePackageDepSpec
-paludis::make_package_dep_spec()
+paludis::make_package_dep_spec(const PartiallyMadePackageDepSpecOptions & o)
 {
-    return PartiallyMadePackageDepSpec();
+    return PartiallyMadePackageDepSpec(o);
 }
 
 namespace
@@ -824,10 +826,12 @@ namespace
         std::tr1::shared_ptr<const InstallableToPath> installable_to_path;
         std::tr1::shared_ptr<AdditionalPackageDepSpecRequirements> additional_requirements;
         std::tr1::shared_ptr<const MetadataSectionKey> annotations;
+        PartiallyMadePackageDepSpecOptions options_for_partially_made_package_dep_spec_v;
 
-        PartiallyMadePackageDepSpecData() :
+        PartiallyMadePackageDepSpecData(const PartiallyMadePackageDepSpecOptions & o) :
             PackageDepSpecData(),
-            version_requirements_mode_v(vr_and)
+            version_requirements_mode_v(vr_and),
+            options_for_partially_made_package_dep_spec_v(o)
         {
         }
 
@@ -845,7 +849,8 @@ namespace
             installed_at_path(other.installed_at_path_ptr()),
             installable_to_path(other.installable_to_path_ptr()),
             additional_requirements(other.additional_requirements_ptr() ? new AdditionalPackageDepSpecRequirements : 0),
-            annotations(other.annotations_key())
+            annotations(other.annotations_key()),
+            options_for_partially_made_package_dep_spec_v(other.options_for_partially_made_package_dep_spec())
         {
             if (version_requirements)
                 std::copy(other.version_requirements_ptr()->begin(), other.version_requirements_ptr()->end(),
@@ -870,7 +875,8 @@ namespace
             installed_at_path(other.installed_at_path),
             installable_to_path(other.installable_to_path),
             additional_requirements(other.additional_requirements),
-            annotations(other.annotations)
+            annotations(other.annotations),
+            options_for_partially_made_package_dep_spec_v(other.options_for_partially_made_package_dep_spec_v)
         {
         }
 
@@ -883,7 +889,8 @@ namespace
                 if (version_requirements_ptr()->begin() == version_requirements_ptr()->end())
                 {
                 }
-                else if (next(version_requirements_ptr()->begin()) == version_requirements_ptr()->end())
+                else if (next(version_requirements_ptr()->begin()) == version_requirements_ptr()->end() &&
+                        ! options_for_partially_made_package_dep_spec_v[pmpdso_always_use_ranged_deps])
                 {
                     if (version_requirements_ptr()->begin()->version_operator() == vo_stupid_equal_star || version_requirements_ptr()->begin()->version_operator() == vo_nice_equal_star)
                         s << "=";
@@ -914,7 +921,8 @@ namespace
                 if (version_requirements_ptr()->begin() == version_requirements_ptr()->end())
                 {
                 }
-                else if (next(version_requirements_ptr()->begin()) == version_requirements_ptr()->end())
+                else if (next(version_requirements_ptr()->begin()) == version_requirements_ptr()->end() &&
+                        ! options_for_partially_made_package_dep_spec_v[pmpdso_always_use_ranged_deps])
                 {
                     s << "-" << version_requirements_ptr()->begin()->version_spec();
                     if (version_requirements_ptr()->begin()->version_operator() == vo_stupid_equal_star || version_requirements_ptr()->begin()->version_operator() == vo_nice_equal_star)
@@ -982,7 +990,8 @@ namespace
                 if (version_requirements_ptr()->begin() == version_requirements_ptr()->end())
                 {
                 }
-                else if (next(version_requirements_ptr()->begin()) == version_requirements_ptr()->end())
+                else if (next(version_requirements_ptr()->begin()) == version_requirements_ptr()->end() &&
+                        ! options_for_partially_made_package_dep_spec_v[pmpdso_always_use_ranged_deps])
                 {
                 }
                 else
@@ -1101,6 +1110,11 @@ namespace
         {
             return annotations;
         }
+
+        virtual const PartiallyMadePackageDepSpecOptions options_for_partially_made_package_dep_spec() const
+        {
+            return options_for_partially_made_package_dep_spec_v;
+        }
     };
 }
 
@@ -1111,8 +1125,8 @@ namespace paludis
     {
         std::tr1::shared_ptr<PartiallyMadePackageDepSpecData> data;
 
-        Implementation() :
-            data(new PartiallyMadePackageDepSpecData)
+        Implementation(const PartiallyMadePackageDepSpecOptions & o) :
+            data(new PartiallyMadePackageDepSpecData(o))
         {
         }
 
@@ -1128,8 +1142,8 @@ namespace paludis
     };
 }
 
-PartiallyMadePackageDepSpec::PartiallyMadePackageDepSpec() :
-    PrivateImplementationPattern<PartiallyMadePackageDepSpec>(new Implementation<PartiallyMadePackageDepSpec>)
+PartiallyMadePackageDepSpec::PartiallyMadePackageDepSpec(const PartiallyMadePackageDepSpecOptions & o) :
+    PrivateImplementationPattern<PartiallyMadePackageDepSpec>(new Implementation<PartiallyMadePackageDepSpec>(o))
 {
 }
 

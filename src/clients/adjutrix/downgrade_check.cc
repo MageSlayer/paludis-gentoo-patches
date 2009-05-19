@@ -146,7 +146,7 @@ namespace
                 a(after.find(b->first));
             if (after.end() == a)
             {
-                PartiallyMadePackageDepSpec part_spec;
+                PartiallyMadePackageDepSpec part_spec((PartiallyMadePackageDepSpecOptions()));
                 part_spec.package(b->first.first);
                 if ("(none)" != b->first.second)
                     part_spec.slot_requirement(make_shared_ptr(new UserSlotExactRequirement(SlotName(b->first.second))));

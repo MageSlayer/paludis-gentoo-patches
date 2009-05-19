@@ -219,7 +219,7 @@ ReportTask::execute()
                             std::tr1::shared_ptr<const PackageIDSequence> installable(
                                     (*e)[selection::BestVersionOnly((
                                             (generator::InRepository(RepositoryName(*o)) &
-                                             generator::Matches(make_package_dep_spec()
+                                             generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                                                  .package((*v)->name())
                                                  .version_requirement(make_named_values<VersionRequirement>(
                                                          value_for<n::version_operator>(vo_equal),

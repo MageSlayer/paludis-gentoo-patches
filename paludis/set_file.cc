@@ -270,7 +270,7 @@ namespace
                         Log::get_instance()->message("set_file.bad_operator", ll_warning, lc_context)
                             << "Line '" << line << "' uses ?: operator but no environment is available";
                     else if (! (*params.environment())[selection::SomeArbitraryVersion(generator::Matches(
-                                    make_package_dep_spec()
+                                    make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                                     .package(*spec->package_ptr())
                                     .slot_requirement(spec->slot_requirement_ptr()),
                                     MatchPackageOptions()) |

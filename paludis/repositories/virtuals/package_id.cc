@@ -67,7 +67,7 @@ namespace paludis
             labels(l),
             spec(exact ?
                     make_shared_ptr(new PackageDepSpec(
-                            make_package_dep_spec()
+                            make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                             .package(v->name())
                             .version_requirement(make_named_values<VersionRequirement>(
                                     value_for<n::version_operator>(vo_equal),
@@ -77,7 +77,7 @@ namespace paludis
                             .in_repository(v->repository()->name())))
                     :
                     make_shared_ptr(new PackageDepSpec(
-                            make_package_dep_spec()
+                            make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                             .package(v->name())
                             ))
                 ),

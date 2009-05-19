@@ -438,7 +438,8 @@ InstalledUnpackagedRepository::package_set(const SetName & s) const
             for (QualifiedPackageNameSet::ConstIterator e(pkgs->begin()), e_end(pkgs->end()) ;
                     e != e_end ; ++e)
             {
-                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec().package(QualifiedPackageName(*e))));
+                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()
+                                ).package(QualifiedPackageName(*e))));
                 spec->set_tag(tag);
                 result->root()->append(spec);
             }

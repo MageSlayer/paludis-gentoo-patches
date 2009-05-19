@@ -151,6 +151,11 @@ namespace
         {
             return make_null_shared_ptr();
         }
+
+        virtual const PartiallyMadePackageDepSpecOptions options_for_partially_made_package_dep_spec() const
+        {
+            return PartiallyMadePackageDepSpecOptions();
+        }
     };
 }
 

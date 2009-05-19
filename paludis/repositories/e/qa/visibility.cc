@@ -119,7 +119,7 @@ namespace
                 ERepositoryProfile::VirtualsConstIterator v((*profile).profile()->fetch()->find_virtual(*p->package_ptr()));
                 if ((*profile).profile()->fetch()->end_virtuals() != v)
                 {
-                    PartiallyMadePackageDepSpec pp;
+                    PartiallyMadePackageDepSpec pp((PartiallyMadePackageDepSpecOptions()));
 
                     if (v->second->version_requirements_ptr())
                         std::for_each(v->second->version_requirements_ptr()->begin(), v->second->version_requirements_ptr()->end(),

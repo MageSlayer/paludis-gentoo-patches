@@ -311,7 +311,7 @@ ERepositorySets::security_set(bool insecurity) const
                     if (insecurity)
                     {
                         std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
-                                    make_package_dep_spec()
+                                    make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                                     .package((*c)->name())
                                     .version_requirement(make_named_values<VersionRequirement>(
                                             value_for<n::version_operator>(vo_equal),
@@ -344,7 +344,7 @@ ERepositorySets::security_set(bool insecurity) const
                                 continue;
                             }
 
-                            std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec()
+                            std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                                         .package((*r)->name())
                                         .version_requirement(make_named_values<VersionRequirement>(
                                                 value_for<n::version_operator>(vo_equal),

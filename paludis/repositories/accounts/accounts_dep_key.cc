@@ -51,7 +51,7 @@ namespace paludis
             for (Set<std::string>::ConstIterator i(s->begin()), i_end(s->end()) ;
                     i != i_end ; ++i)
             {
-                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec()
+                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                                 .package(CategoryNamePart("group") + PackageNamePart(*i))));
                 specs->push_back(spec);
                 tree->root()->append(spec);

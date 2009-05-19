@@ -396,13 +396,17 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
         repo.reset(new RepositoryName(d.destination()->name()));
 
     std::tr1::shared_ptr<const PackageIDSequence> existing_repo((*environment())[selection::AllVersionsSorted(repo ?
-                generator::Matches(make_package_dep_spec().package(d.package_id()->name()).in_repository(*repo), MatchPackageOptions()) :
-                generator::Matches(make_package_dep_spec().package(d.package_id()->name()), MatchPackageOptions()) | filter::SupportsAction<InstalledAction>()
+                generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
+                    .package(d.package_id()->name()).in_repository(*repo), MatchPackageOptions()) :
+                generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
+                    .package(d.package_id()->name()), MatchPackageOptions()) | filter::SupportsAction<InstalledAction>()
                 )]);;
 
     std::tr1::shared_ptr<const PackageIDSequence> existing_slot_repo((*environment())[selection::AllVersionsSorted((repo ?
-                    generator::Matches(make_package_dep_spec().package(d.package_id()->name()).in_repository(*repo), MatchPackageOptions()) :
-                    generator::Matches(make_package_dep_spec().package(d.package_id()->name()), MatchPackageOptions()) | filter::SupportsAction<InstalledAction>())
+                    generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
+                        .package(d.package_id()->name()).in_repository(*repo), MatchPackageOptions()) :
+                    generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
+                        .package(d.package_id()->name()), MatchPackageOptions()) | filter::SupportsAction<InstalledAction>())
                 | filter::SameSlot(d.package_id()))]);
 
     display_merge_list_entry_start(d, m);
