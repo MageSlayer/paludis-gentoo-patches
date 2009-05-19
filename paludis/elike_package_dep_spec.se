@@ -15,6 +15,7 @@ make_enum_ELikePackageDepSpecOption()
     key epdso_allow_use_dep_defaults     "Allow [use+] and [use-] deps"
     key epdso_allow_ranged_deps          "Allow [op version] deps"
     key epdso_allow_tilde_greater_deps   "Allow ~> deps"
+    key epdso_disallow_nonranged_deps    "Disallow >=foo/bar-1 deps"
     key epdso_nice_equal_star            "Make =* do something sensible"
     key epdso_strict_parsing             "Error rather than warn for violations"
 }

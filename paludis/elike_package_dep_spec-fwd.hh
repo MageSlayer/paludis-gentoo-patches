@@ -70,7 +70,8 @@ namespace paludis
     void elike_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
             const ELikePackageDepSpecOptions & options) PALUDIS_VISIBLE;
 
-    bool elike_has_version_operator(const std::string & s, const bool had_bracket_version_requirements) PALUDIS_VISIBLE;
+    bool elike_has_version_operator(const std::string & s, const bool had_bracket_version_requirements,
+            const ELikePackageDepSpecOptions & options) PALUDIS_VISIBLE;
 
     VersionOperator elike_get_remove_version_operator(std::string & s,
             const ELikePackageDepSpecOptions & options) PALUDIS_VISIBLE;

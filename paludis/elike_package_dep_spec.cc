@@ -304,12 +304,18 @@ paludis::elike_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePack
 }
 
 bool
-paludis::elike_has_version_operator(const std::string & s, const bool had_bracket_version_requirements)
+paludis::elike_has_version_operator(const std::string & s, const bool had_bracket_version_requirements,
+        const ELikePackageDepSpecOptions & options)
 {
     if ((! s.empty()) && std::string::npos != std::string("<>=~").find(s.at(0)))
     {
         if (had_bracket_version_requirements)
             throw PackageDepSpecError("Cannot mix [] and traditional version specifications");
+
+        if (options[epdso_disallow_nonranged_deps])
+            Log::get_instance()->message("e.package_dep_spec.traditional_version_ops_not_allowed", ll_qa, lc_context)
+                << "Traditional version specifications are deprecated and will soon stop working here";
+
         return true;
     }
     else
@@ -451,7 +457,7 @@ paludis::partial_parse_elike_package_dep_spec(
                 value_for<n::get_remove_trailing_version>(std::tr1::bind(&elike_get_remove_trailing_version, _1, version_options)),
                 value_for<n::get_remove_version_operator>(std::tr1::bind(&elike_get_remove_version_operator, _1, options)),
                 value_for<n::has_version_operator>(std::tr1::bind(&elike_has_version_operator, _1,
-                        std::tr1::cref(had_bracket_version_requirements))),
+                        std::tr1::cref(had_bracket_version_requirements), options)),
                 value_for<n::remove_trailing_repo_if_exists>(std::tr1::bind(&elike_remove_trailing_repo_if_exists, _1, _2, options)),
                 value_for<n::remove_trailing_slot_if_exists>(std::tr1::bind(&elike_remove_trailing_slot_if_exists, _1, _2, options)),
                 value_for<n::remove_trailing_square_bracket_if_exists>(std::tr1::bind(&elike_remove_trailing_square_bracket_if_exists,
