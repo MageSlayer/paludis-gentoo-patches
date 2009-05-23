@@ -1069,15 +1069,6 @@ InstallTask::_main_actions_all(const int y, const DepList::Iterator dep_last_pac
         {
             _one(dep, x, y, s, f, is_first, is_last, output_manager_holder);
         }
-        catch (const InstallActionError & e)
-        {
-            dep->handled().reset(new DepListEntryHandledFailed);
-            if (output_manager_holder && output_manager_holder->output_manager_if_constructed())
-                on_install_action_error(output_manager_holder->output_manager_if_constructed(), e);
-            else
-                on_install_action_error(make_shared_ptr(new StandardOutputManager), e);
-            ++f;
-        }
         catch (const FetchActionError & e)
         {
             dep->handled().reset(new DepListEntryHandledFetchFailed);
@@ -1085,6 +1076,15 @@ InstallTask::_main_actions_all(const int y, const DepList::Iterator dep_last_pac
                 on_fetch_action_error(output_manager_holder->output_manager_if_constructed(), e);
             else
                 on_fetch_action_error(make_shared_ptr(new StandardOutputManager), e);
+            ++f;
+        }
+        catch (const ActionError & e)
+        {
+            dep->handled().reset(new DepListEntryHandledFailed);
+            if (output_manager_holder && output_manager_holder->output_manager_if_constructed())
+                on_install_action_error(output_manager_holder->output_manager_if_constructed(), e);
+            else
+                on_install_action_error(make_shared_ptr(new StandardOutputManager), e);
             ++f;
         }
 

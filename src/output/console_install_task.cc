@@ -1474,7 +1474,7 @@ ConsoleInstallTask::on_ambiguous_package_name_error(const AmbiguousPackageNameEr
 }
 
 void
-ConsoleInstallTask::on_install_action_error(const std::tr1::shared_ptr<OutputManager> & output_manager, const InstallActionError & e)
+ConsoleInstallTask::on_install_action_error(const std::tr1::shared_ptr<OutputManager> & output_manager, const ActionError & e)
 {
     output_manager->stdout_stream() << endl;
     output_manager->stdout_stream() << "Install error:" << endl;
