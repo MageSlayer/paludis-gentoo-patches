@@ -269,7 +269,8 @@ EbuildCommand::operator() ()
     if (params.maybe_output_manager())
         cmd
             .with_captured_stderr_stream(&params.maybe_output_manager()->stderr_stream())
-            .with_captured_stdout_stream(&params.maybe_output_manager()->stdout_stream());
+            .with_captured_stdout_stream(&params.maybe_output_manager()->stdout_stream())
+            .with_ptys();
 
     if (do_run_command(cmd))
         return success();
@@ -948,7 +949,8 @@ WriteVDBEntryCommand::operator() ()
     if (params.maybe_output_manager())
         cmd
             .with_captured_stderr_stream(&params.maybe_output_manager()->stderr_stream())
-            .with_captured_stdout_stream(&params.maybe_output_manager()->stdout_stream());
+            .with_captured_stdout_stream(&params.maybe_output_manager()->stdout_stream())
+            .with_ptys();
 
     std::string defined_phases(params.package_id()->eapi()->supported()->ebuild_metadata_variables()->defined_phases()->name());
     if (! defined_phases.empty())

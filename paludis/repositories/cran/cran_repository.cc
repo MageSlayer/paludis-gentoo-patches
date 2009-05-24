@@ -381,6 +381,7 @@ CRANRepository::sync(const std::tr1::shared_ptr<OutputManager> & output_manager)
     command1
         .with_captured_stdout_stream(&output_manager->stdout_stream())
         .with_captured_stderr_stream(&output_manager->stderr_stream())
+        .with_ptys()
         ;
 
     if (0 != run_command(command1))
@@ -393,6 +394,7 @@ CRANRepository::sync(const std::tr1::shared_ptr<OutputManager> & output_manager)
     command2
         .with_captured_stdout_stream(&output_manager->stdout_stream())
         .with_captured_stderr_stream(&output_manager->stderr_stream())
+        .with_ptys()
         ;
 
     if (0 != run_command(command2))
@@ -405,6 +407,7 @@ CRANRepository::sync(const std::tr1::shared_ptr<OutputManager> & output_manager)
     command3
         .with_captured_stdout_stream(&output_manager->stdout_stream())
         .with_captured_stderr_stream(&output_manager->stderr_stream())
+        .with_ptys()
         ;
 
     if (0 != run_command(command3))

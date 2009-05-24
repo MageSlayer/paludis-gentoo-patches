@@ -237,7 +237,8 @@ FetchVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::T
 
                 cmd
                     .with_captured_stderr_stream(&_imp->output_manager->stderr_stream())
-                    .with_captured_stdout_stream(&_imp->output_manager->stdout_stream());
+                    .with_captured_stdout_stream(&_imp->output_manager->stdout_stream())
+                    .with_ptys();
 
                 _imp->output_manager->stdout_stream() << "Trying to fetch '" << i->first << "' to '" <<
                     i->second << "'..." << std::endl;

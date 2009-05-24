@@ -18,25 +18,28 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "pipe.hh"
+#include "channel.hh"
 #include <paludis/util/exception.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <unistd.h>
+#include <cstring>
+#include <errno.h>
 
 using namespace paludis;
 
-Pipe::Pipe()
+Channel::Channel()
 {
-    Context context("When creating pipe FDs:");
-
-    if (-1 == pipe(_fds))
-        throw InternalError(PALUDIS_HERE, "pipe(2) failed");
-
-    Log::get_instance()->message("util.pipe.fds", ll_debug, lc_context) << "Pipe FDs are '" << read_fd() << "', '"
-        << write_fd() << "'";
 }
 
-Pipe::~Pipe()
+Channel::~Channel()
 {
+    Context context("When destroying channel FDs '" + stringify(read_fd()) + "', '" + stringify(write_fd()) + "'");
+    if (-1 != _fds[0])
+        if (-1 == close(_fds[0]))
+            Log::get_instance()->message("util.channel.close", ll_warning, lc_context) << "close(" << _fds[0] << ") -> " << strerror(errno);
+    if (-1 != _fds[1])
+        if (-1 == close(_fds[1]))
+            Log::get_instance()->message("util.channel.close", ll_warning, lc_context) << "close(" << _fds[1] << ") -> " << strerror(errno);
 }
 

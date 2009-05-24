@@ -101,7 +101,8 @@ DefaultSyncer::sync(const SyncOptions & opts) const
 
     cmd
         .with_captured_stderr_stream(&opts.output_manager()->stderr_stream())
-        .with_captured_stdout_stream(&opts.output_manager()->stdout_stream());
+        .with_captured_stdout_stream(&opts.output_manager()->stdout_stream())
+        .with_ptys();
 
     if (run_command(cmd))
         throw SyncFailedError(_local, _remote);

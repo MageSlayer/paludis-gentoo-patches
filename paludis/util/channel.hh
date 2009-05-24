@@ -18,13 +18,13 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_UTIL_PIPE_HH
-#define PALUDIS_GUARD_PALUDIS_UTIL_PIPE_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_UTIL_CHANNEL_HH
+#define PALUDIS_GUARD_PALUDIS_UTIL_CHANNEL_HH 1
 
-#include <paludis/util/channel.hh>
+#include <paludis/util/instantiation_policy.hh>
 
 /** \file
- * Declaration for the Pipe class.
+ * Declaration for the Channel class.
  *
  * \ingroup g_system
  *
@@ -36,21 +36,49 @@
 namespace paludis
 {
     /**
-     * Wrapper around pipe file descriptors.
+     * Wrapper around a read/write file descriptor pair, such as a pipe.
      *
      * \ingroup g_system
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE Pipe :
-        public Channel
+    class PALUDIS_VISIBLE Channel :
+        InstantiationPolicy<Channel, instantiation_method::NonCopyableTag>
     {
+        protected:
+            int _fds[2];
+
         public:
             ///\name Basic operations
             ///\{
 
-            Pipe();
+            Channel();
 
-            virtual ~Pipe();
+            virtual ~Channel();
+
+            ///\}
+
+            ///\name File descriptors
+            ///\{
+
+            int read_fd() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return _fds[0];
+            }
+
+            int write_fd() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return _fds[1];
+            }
+
+            void clear_read_fd()
+            {
+                _fds[0] = -1;
+            }
+
+            void clear_write_fd()
+            {
+                _fds[1] = -1;
+            }
 
             ///\}
 

@@ -196,6 +196,13 @@ namespace paludis
              */
             Command & with_captured_stderr_stream(std::ostream * const);
 
+            /**
+             * Use ptys instead of pipes to capture stdout and/or stderr.
+             *
+             * \since 0.38
+             */
+            Command & with_ptys();
+
             ///\}
 
             ///\name Fetch command execution options
@@ -263,6 +270,13 @@ namespace paludis
              * \since 0.30
              */
             std::ostream * captured_stderr_stream() const;
+
+            /**
+             * Uses ptys instead of pipes?
+             *
+             * \since 0.38
+             */
+            bool ptys() const;
 
             /**
              * Should we clear existing environment variables?

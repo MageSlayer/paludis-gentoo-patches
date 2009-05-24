@@ -18,13 +18,14 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_UTIL_PIPE_HH
-#define PALUDIS_GUARD_PALUDIS_UTIL_PIPE_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_UTIL_PTY_HH
+#define PALUDIS_GUARD_PALUDIS_UTIL_PTY_HH 1
 
 #include <paludis/util/channel.hh>
+#include <paludis/util/exception.hh>
 
 /** \file
- * Declaration for the Pipe class.
+ * Declaration for the Pty class.
  *
  * \ingroup g_system
  *
@@ -36,21 +37,40 @@
 namespace paludis
 {
     /**
-     * Wrapper around pipe file descriptors.
+     * Thrown if a pty cannot be allocated and opened.
+     *
+     * \ingroup g_exceptions
+     * \ingroup g_system
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE PtyError :
+        public Exception
+    {
+        public:
+            ///\name Basic operations
+            ///\{
+
+            PtyError(const std::string & message) throw ();
+
+            ///\}
+    };
+
+    /**
+     * Wrapper around pty file descriptors.
      *
      * \ingroup g_system
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE Pipe :
+    class PALUDIS_VISIBLE Pty :
         public Channel
     {
         public:
             ///\name Basic operations
             ///\{
 
-            Pipe();
+            Pty();
 
-            virtual ~Pipe();
+            virtual ~Pty();
 
             ///\}
 

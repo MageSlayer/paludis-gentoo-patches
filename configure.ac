@@ -132,9 +132,15 @@ AC_CHECK_FUNCS([alarm],        [], [AC_MSG_ERROR([I need alarm])])
 AC_CHECK_FUNCS([strerror],     [], [AC_MSG_ERROR([I need strerror])])
 AC_CHECK_FUNCS([signal],       [], [AC_MSG_ERROR([I need signal])])
 AC_CHECK_FUNCS([popen],        [], [AC_MSG_ERROR([I need popen])])
-AC_CHECK_FUNCS([ptsname],      [], [AC_MSG_ERROR([I need ptsname])])
+AC_CHECK_FUNCS([posix_openpt], [], [AC_MSG_ERROR([I need posix_openpt])])
 AC_CHECK_FUNCS([grantpt],      [], [AC_MSG_ERROR([I need grantpt])])
 AC_CHECK_FUNCS([unlockpt],     [], [AC_MSG_ERROR([I need unlockpt])])
+dnl }}}
+
+dnl {{{ check for ptsname_r or ptsname function
+AC_CHECK_FUNCS([ptsname_r],    [],
+	[AC_CHECK_FUNCS([ptsname], [], [AC_MSG_ERROR([I need ptsname_r or ptsname])])])
+AM_CONDITIONAL(HAVE_PTSNAME_R, test x$ac_cv_func_ptsname_r = xyes)
 dnl }}}
 
 dnl {{{ check for lchflags function

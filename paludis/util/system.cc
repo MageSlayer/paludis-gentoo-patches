@@ -29,6 +29,7 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/pipe.hh>
+#include <paludis/util/pty.hh>
 
 #include <sys/utsname.h>
 #include <sys/types.h>
@@ -163,6 +164,7 @@ namespace paludis
         std::tr1::function<std::string (const std::string &)> pipe_command_handler;
         std::ostream * captured_stdout_stream;
         std::ostream * captured_stderr_stream;
+        bool ptys;
 
         Implementation(const std::string & c,
                 const std::map<std::string, std::string> & s = make_me_a_frickin_map_because_gcc_sucks(),
@@ -187,7 +189,8 @@ namespace paludis
             prefix_blank_lines(bb),
             pipe_command_handler(h),
             captured_stdout_stream(cs),
-            captured_stderr_stream(ds)
+            captured_stderr_stream(ds),
+            ptys(false)
         {
         }
     };
@@ -283,6 +286,13 @@ Command::with_captured_stderr_stream(std::ostream * const c)
 }
 
 Command &
+Command::with_ptys()
+{
+    _imp->ptys = true;
+    return *this;
+}
+
+Command &
 Command::with_sandbox()
 {
 #if HAVE_SANDBOX
@@ -358,16 +368,17 @@ paludis::run_command(const Command & cmd)
     Log::get_instance()->message("util.system.execl", ll_debug, lc_no_context) << "execl /bin/sh -c " << command
         << " " << extras;
 
-    std::tr1::shared_ptr<Pipe> internal_command_reader(new Pipe), pipe_command_reader, pipe_command_response, captured_stdout, captured_stderr;
+    std::tr1::shared_ptr<Pipe> internal_command_reader(new Pipe), pipe_command_reader, pipe_command_response;
+    std::tr1::shared_ptr<Channel> captured_stdout, captured_stderr;
     if (cmd.pipe_command_handler())
     {
         pipe_command_reader.reset(new Pipe);
         pipe_command_response.reset(new Pipe);
     }
     if (cmd.captured_stdout_stream())
-        captured_stdout.reset(new Pipe);
+        captured_stdout.reset(cmd.ptys() ? static_cast<Channel *>(new Pty) : new Pipe);
     if (cmd.captured_stderr_stream())
-        captured_stderr.reset(new Pipe);
+        captured_stderr.reset(cmd.ptys() ? static_cast<Channel *>(new Pty) : new Pipe);
 
     /* Why do we fork twice, rather than install a SIGCHLD handler that writes to a pipe that
      * our pselect watches? Simple: Unix is retarded. APUE 12.8 says "Each thread has its own signal
@@ -918,6 +929,12 @@ std::ostream *
 Command::captured_stderr_stream() const
 {
     return _imp->captured_stderr_stream;
+}
+
+bool
+Command::ptys() const
+{
+    return _imp->ptys;
 }
 
 std::string
