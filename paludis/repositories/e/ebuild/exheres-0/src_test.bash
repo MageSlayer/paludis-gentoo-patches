@@ -48,7 +48,10 @@ src_test()
 exheres_internal_test()
 {
     local old_sandbox_predict="${SANDBOX_PREDICT}"
-    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_PREDICT="${SANDBOX_PREDICT+${SANDBOX_PREDICT}:}/"
+    if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
+        SANDBOX_PREDICT="${SANDBOX_PREDICT+${SANDBOX_PREDICT}:}/"
+        sydboxcheck >/dev/null 2>&1 && addpredict "/"
+    fi
 
     local save_PALUDIS_EXTRA_DIE_MESSAGE="${PALUDIS_EXTRA_DIE_MESSAGE}"
 
@@ -68,6 +71,9 @@ exheres_internal_test()
 
     export PALUDIS_EXTRA_DIE_MESSAGE="${save_PALUDIS_EXTRA_DIE_MESSAGE}"
 
-    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_PREDICT="${old_sandbox_predict}"
+    if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
+        SANDBOX_PREDICT="${old_sandbox_predict}"
+        sydboxcheck >/dev/null 2>&1 && rmpredict "/"
+    fi
     true
 }

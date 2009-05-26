@@ -286,6 +286,7 @@ EInstalledRepository::perform_config(
                     value_for<n::package_id>(id),
                     value_for<n::portdir>(ver_dir),
                     value_for<n::sandbox>(phase->option("sandbox")),
+                    value_for<n::sydbox>(phase->option("sydbox")),
                     value_for<n::userpriv>(phase->option("userpriv"))
                 ),
 
@@ -392,6 +393,7 @@ EInstalledRepository::perform_info(
                     value_for<n::package_id>(id),
                     value_for<n::portdir>(ver_dir),
                     value_for<n::sandbox>(phase->option("sandbox")),
+                    value_for<n::sydbox>(phase->option("sydbox")),
                     value_for<n::userpriv>(phase->option("userpriv"))
                 ),
 

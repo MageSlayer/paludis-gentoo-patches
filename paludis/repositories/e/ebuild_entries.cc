@@ -489,6 +489,7 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                             (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
                             (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
                         value_for<n::sandbox>(phase->option("sandbox")),
+                        value_for<n::sydbox>(phase->option("sydbox")),
                         value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
                         ));
 
@@ -796,6 +797,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                         (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
                         (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
                     value_for<n::sandbox>(phase->option("sandbox")),
+                    value_for<n::sydbox>(phase->option("sydbox")),
                     value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
                     ));
 
@@ -907,6 +909,7 @@ EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
                     (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
                     (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
                 value_for<n::sandbox>(phase->option("sandbox")),
+                value_for<n::sydbox>(phase->option("sydbox")),
                 value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
                 ));
 
@@ -978,6 +981,7 @@ EbuildEntries::get_environment_variable(
                 (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
                 (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
             value_for<n::sandbox>(phases.begin_phases()->option("sandbox")),
+            value_for<n::sydbox>(phases.begin_phases()->option("sydbox")),
             value_for<n::userpriv>(phases.begin_phases()->option("userpriv") && userpriv_ok)
             ),
 
@@ -1134,6 +1138,7 @@ EbuildEntries::pretend(
                                 (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
                                 (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
                             value_for<n::sandbox>(phase->option("sandbox")),
+                            value_for<n::sydbox>(phase->option("sydbox")),
                             value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
                             ));
 
@@ -1187,6 +1192,7 @@ EbuildEntries::pretend(
                     (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
                     (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
                 value_for<n::sandbox>(phase->option("sandbox")),
+                value_for<n::sydbox>(phase->option("sydbox")),
                 value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
                 ));
 

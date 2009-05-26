@@ -43,7 +43,11 @@ pkg_nofetch()
 exheres_internal_nofetch()
 {
     local old_sandbox_write="${SANDBOX_WRITE}"
-    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${FETCHEDDIR}"
+    if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
+        SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${FETCHEDDIR}"
+        sydboxcheck >/dev/null 2>&1 && addwrite "${FETCHEDDIR}"
+    fi
+
     if hasq "nofetch" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping pkg_nofetch (SKIP_FUNCTIONS)"
     else
@@ -51,6 +55,10 @@ exheres_internal_nofetch()
         pkg_nofetch
         ebuild_section "Done pkg_nofetch"
     fi
-    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${old_sandbox_write}"
+
+    if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
+        SANDBOX_WRITE="${old_sandbox_write}"
+        sydboxcheck >/dev/null 2>&1 && rmwrite "${FETCHEDDIR}"
+    fi
     true
 }

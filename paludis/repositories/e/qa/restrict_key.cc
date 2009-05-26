@@ -47,6 +47,7 @@ namespace
             allowed_restricts.insert("nostrip");
             allowed_restricts.insert("strip");
             allowed_restricts.insert("sandbox");
+            allowed_restricts.insert("sydbox");
             allowed_restricts.insert("userpriv");
             allowed_restricts.insert("test");
         }

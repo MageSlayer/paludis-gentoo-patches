@@ -26,7 +26,11 @@ builtin_saveenv()
 exheres_internal_saveenv()
 {
     local old_sandbox_write="${SANDBOX_WRITE}"
-    SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${PALUDIS_LOADSAVEENV_DIR%/}/"
+    if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
+        SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${PALUDIS_LOADSAVEENV_DIR%/}/"
+        sydboxcheck >/dev/null 2>&1 && addwrite "${PALUDIS_LOADSAVEENV_DIR}"
+    fi
+
 
     if hasq "saveenv" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping builtin_saveenv (SKIP_FUNCTIONS)"
@@ -36,7 +40,10 @@ exheres_internal_saveenv()
         ebuild_section "Done builtin_saveenv"
     fi
 
-    SANDBOX_WRITE="${old_sandbox_write}"
+    if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
+        SANDBOX_WRITE="${old_sandbox_write}"
+        sydboxcheck >/dev/null 2>&1 && rmwrite "${PALUDIS_LOADSAVEENV_DIR}"
+    fi
     true
 }
 

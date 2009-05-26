@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+# Copyright (c) 2009 Ali Polatel <polatel@gmail.com>
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -20,35 +20,54 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-default_pkg_prerm()
+sydboxcheck()
 {
-    :
-}
-
-pkg_prerm()
-{
-    default "$@"
-}
-
-exheres_internal_prerm()
-{
-    local old_sandbox_write="${SANDBOX_WRITE}"
-    if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
-        SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
-        sydboxcheck >/dev/null 2>&1 && addwrite "${ROOT}"
-    fi
-
-    if hasq "prerm" ${SKIP_FUNCTIONS} ; then
-        ebuild_section "Skipping pkg_prerm (SKIP_FUNCTIONS)"
+    if [[ -z "${1}" ]]; then
+        [[ -e /dev/sydbox ]]
     else
-        ebuild_section "Starting pkg_prerm"
-        pkg_prerm
-        ebuild_section "Done pkg_prerm"
+        [[ -e /dev/sydbox/${1} ]]
     fi
-
-    if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
-        SANDBOX_WRITE="${old_sandbox_write}"
-        sydboxcheck >/dev/null 2>&1 && rmwrite "${ROOT}"
-    fi
-    true
 }
+
+sydboxcmd()
+{
+    if sydboxcheck ${1}; then
+        if [[ -n "${2}" ]]; then
+            [[ "/" != "${2:0:1}" ]] && die "${FUNCNAME} ${1}: non-absolute path"
+            : > /dev/sydbox/${1}/"${2}"
+        else
+            : > /dev/sydbox/${1}
+        fi
+    fi
+}
+
+addread()
+{
+    die_unless_nonfatal "${FUNCNAME} not implemented for sydbox yet"
+}
+
+addwrite()
+{
+    sydboxcmd write "${1}"
+}
+
+adddeny()
+{
+    die_unless_nonfatal "${FUNCNAME} not implemented for sydbox yet"
+}
+
+addpredict()
+{
+    sydboxcmd predict "${1}"
+}
+
+rmwrite()
+{
+    sydboxcmd unwrite "${1}"
+}
+
+rmpredict()
+{
+    sydboxcmd unpredict "${1}"
+}
+

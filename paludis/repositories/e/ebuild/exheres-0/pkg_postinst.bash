@@ -33,7 +33,10 @@ pkg_postinst()
 exheres_internal_postinst()
 {
     local old_sandbox_write="${SANDBOX_WRITE}"
-    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
+    if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
+        SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
+        sydboxcheck >/dev/null 2>&1 && addwrite "${ROOT}"
+    fi
 
     if hasq "postinst" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping pkg_postinst (SKIP_FUNCTIONS)"
@@ -43,6 +46,9 @@ exheres_internal_postinst()
         ebuild_section "Done pkg_postinst"
     fi
 
-    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${old_sandbox_write}"
+    if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
+        SANDBOX_WRITE="${old_sandbox_write}"
+        sydboxcheck >/dev/null 2>&1 && rmwrite "${ROOT}"
+    fi
     true
 }

@@ -144,7 +144,7 @@ ebuild_load_module source_functions
 
 if [[ -z ${PALUDIS_LOAD_MODULES} ]]; then
     PALUDIS_LOAD_MODULES="
-        conditional_functions kernel_functions sandbox portage_stubs
+        conditional_functions kernel_functions sandbox sydbox portage_stubs
         multilib_functions install_functions build_functions"
     for m in eclass_functions exlib_functions ever_functions; do
         for d in ${EBUILD_MODULES_DIRS}; do
@@ -448,7 +448,14 @@ perform_hook()
     ebuild_notice "debug" "Starting hook '${HOOK}'"
 
     local old_sandbox_on="${SANDBOX_ON}"
-    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && export SANDBOX_ON="0"
+    local old_sydbox_enabled
+    sydboxcheck enabled 2>/dev/null && old_sydbox_enabled=true || old_sydbox_enabled=false
+    if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
+        export SANDBOX_ON="0"
+        if sydboxcheck 2>/dev/null; then
+            sydboxcmd off || ebuild_notice "warning" "sydboxcmd off returned failure"
+        fi
+    fi
 
     local hook_dir
     for hook_dir in ${PALUDIS_HOOK_DIRS} ; do
@@ -465,7 +472,16 @@ perform_hook()
         done
     done
 
-    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && export SANDBOX_ON="${old_sandbox_on}"
+    if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
+        export SANDBOX_ON="${old_sandbox_on}"
+        if sydboxcheck 2>/dev/null; then
+            if $old_sydbox_enabled; then
+                sydboxcmd on || ebuild_notice "warning" "sydboxcmd on returned failure"
+            else
+                sydboxcmd off || ebuild_notice "warning" "sydboxcmd off returned failure"
+            fi
+        fi
+    fi
     true
 }
 
@@ -500,6 +516,11 @@ ebuild_main()
 
     ebuild_notice "debug" "Using ebuild '${EBUILD}', EAPI before source is '${EAPI}'"
 
+    # If we're running under sydbox lock magic commands when execve() is called.
+    if sydboxcheck 2>/dev/null; then
+        sydboxcmd exec_lock || ebuild_notice "warning" "sydboxcmd exec_lock returned failure"
+    fi
+
     if [[ ${#@} -ge 2 ]] ; then
         ebuild_section "Running ebuild phases $@ as $(id -un ):$(id -gn )..."
     elif [[ ${1} != variable ]] && [[ ${1} != metadata ]] && \
@@ -516,13 +537,22 @@ ebuild_main()
         export ${PALUDIS_EBUILD_PHASE_VAR}="${1}"
         perform_hook ebuild_${action}_pre
         if [[ $1 == metadata ]]; then
-            for f in cut tr date ; do
-                eval "${f}() { ebuild_notice qa 'global scope ${f}' ; $(type -P ${f} ) \"\$@\" ; }"
-            done
+            # Ban execve() calls if we're running under sydbox
+            if sydboxcheck 2>/dev/null; then
+                sydboxcmd sandbox_exec || ebuild_notice "warning" "sydboxcmd sandbox_exec returned failure"
+            else
+                for f in cut tr date ; do
+                    eval "${f}() { ebuild_notice qa 'global scope ${f}' ; $(type -P ${f} ) \"\$@\" ; }"
+                done
+            fi
             for f in locked_pipe_command ; do
                 eval "${f}() { $(type -P ${f} ) \"\$@\" ; }"
             done
             PATH="" ebuild_load_ebuild "${EBUILD}"
+            # Unban execve() calls if we're running under sydbox
+            if sydboxcheck 2>/dev/null; then
+                sydboxcmd unsandbox_exec || ebuild_notice "warning" "sydboxcmd unsandbox_exec returned failure"
+            fi
         else
             ebuild_load_em_up_dan
         fi

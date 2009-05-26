@@ -16,6 +16,7 @@ libexecprog_SCRIPTS = \
 	output_functions.bash \
 	pipe_functions.bash \
 	sandbox.bash \
+	sydbox.bash \
 	source_functions.bash \
 	usage_error.bash \
 	write_vdb_entry.bash \

@@ -555,6 +555,7 @@ ExndbamRepository::perform_uninstall(
                         value_for<n::package_id>(id),
                         value_for<n::portdir>(_imp->params.location()),
                         value_for<n::sandbox>(phase->option("sandbox")),
+                        value_for<n::sydbox>(phase->option("sydbox")),
                         value_for<n::userpriv>(phase->option("userpriv"))
                     ));
 

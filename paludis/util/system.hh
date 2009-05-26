@@ -149,6 +149,13 @@ namespace paludis
             Command & with_sandbox();
 
             /**
+             * Run our command sydboxed
+             *
+             * \since 0.38
+             */
+            Command & with_sydbox();
+
+            /**
              * Echo the command to be run to stderr before running it.
              */
             Command & with_echo_to_stderr();

@@ -103,7 +103,9 @@ EbuildCommand::operator() ()
     if (params.clearenv())
         cmd.with_clearenv();
 
-    if (params.sandbox())
+    if (params.sydbox())
+        cmd.with_sydbox();
+    else if (params.sandbox())
         cmd.with_sandbox();
 
     if (params.userpriv())

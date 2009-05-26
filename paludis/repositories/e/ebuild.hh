@@ -77,6 +77,7 @@ namespace paludis
         struct replacing_ids;
         struct root;
         struct sandbox;
+        struct sydbox;
         struct slot;
         struct unmerge_only;
         struct unmet_requirements;
@@ -116,6 +117,7 @@ namespace paludis
             NamedValue<n::package_id, std::tr1::shared_ptr<const erepository::ERepositoryID> > package_id;
             NamedValue<n::portdir, FSEntry> portdir;
             NamedValue<n::sandbox, bool> sandbox;
+            NamedValue<n::sydbox, bool> sydbox;
             NamedValue<n::userpriv, bool> userpriv;
         };
 

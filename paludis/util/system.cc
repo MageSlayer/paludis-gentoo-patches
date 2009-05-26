@@ -35,6 +35,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/select.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>
 #include <grp.h>
@@ -308,6 +309,24 @@ Command::with_sandbox()
         if (getenv_with_default("BASH_ENV", "").empty())
             with_setenv("BASH_ENV", "/dev/null");
     }
+#endif
+
+    return *this;
+}
+
+Command &
+Command::with_sydbox()
+{
+#if HAVE_SYDBOX
+    struct stat buf;
+    if (! getenv_with_default("PALUDIS_DO_NOTHING_SANDBOXY", "").empty())
+        Log::get_instance()->message("util.system.nothing_sandboxy", ll_debug, lc_no_context)
+            << "PALUDIS_DO_NOTHING_SANDBOXY is set, not using sydbox";
+    else if (-1 != stat("/dev/sydbox", &buf))
+        Log::get_instance()->message("util.system.sandbox_in_sandbox", ll_warning, lc_no_context)
+            << "Already inside sydbox, not spawning another sydbox instance";
+    else
+        _imp->command = "sydbox -- " + _imp->command;
 #endif
 
     return *this;
