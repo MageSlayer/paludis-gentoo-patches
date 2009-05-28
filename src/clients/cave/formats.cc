@@ -25,49 +25,49 @@ using namespace cave;
 const std::string
 paludis::cave::c::bold_blue()
 {
-    return "\e[1;34m";
+    return "\033[1;34m";
 }
 
 const std::string
 paludis::cave::c::blue()
 {
-    return "\e[0;34m";
+    return "\033[0;34m";
 }
 
 const std::string
 paludis::cave::c::bold_green()
 {
-    return "\e[1;32m";
+    return "\033[1;32m";
 }
 
 const std::string
 paludis::cave::c::green()
 {
-    return "\e[0;32m";
+    return "\033[0;32m";
 }
 
 const std::string
 paludis::cave::c::red()
 {
-    return "\e[0;31m";
+    return "\033[0;31m";
 }
 
 const std::string
 paludis::cave::c::bold_red()
 {
-    return "\e[1;31m";
+    return "\033[1;31m";
 }
 
 const std::string
 paludis::cave::c::normal()
 {
-    return "\e[0;0m";
+    return "\033[0;0m";
 }
 
 const std::string
 paludis::cave::c::bold_normal()
 {
-    return "\e[1m";
+    return "\033[1m";
 }
 
 const std::string
