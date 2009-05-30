@@ -29,8 +29,8 @@ LINGUAS="en en_GB en_GB@UTF-8"
 USERLAND="GNU"
 OPTIONS="weasel spinach"
 END
-mkdir -p "packages/cat/no-slow-test"
-cat <<'END' > packages/cat/no-slow-test/no-slow-test-1.0.exheres-0 || exit 1
+mkdir -p "packages/cat/no-expensive-test"
+cat <<'END' > packages/cat/no-expensive-test/no-expensive-test-1.0.exheres-0 || exit 1
 DESCRIPTION="foo"
 SUMMARY="foo"
 HOMEPAGE="http://example.com/"
@@ -40,8 +40,8 @@ MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
 END
-mkdir -p "packages/cat/slow-test"
-cat <<'END' > packages/cat/slow-test/slow-test-1.0.exheres-0 || exit 1
+mkdir -p "packages/cat/expensive-test"
+cat <<'END' > packages/cat/expensive-test/expensive-test-1.0.exheres-0 || exit 1
 DESCRIPTION="foo"
 SUMMARY="foo"
 HOMEPAGE="http://example.com/"
@@ -51,12 +51,12 @@ MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
 
-src_test_slow() {
+src_test_expensive() {
     true
 }
 END
-mkdir -p "packages/cat/slow-test-fail"
-cat <<'END' > packages/cat/slow-test-fail/slow-test-fail-1.0.exheres-0 || exit 1
+mkdir -p "packages/cat/expensive-test-fail"
+cat <<'END' > packages/cat/expensive-test-fail/expensive-test-fail-1.0.exheres-0 || exit 1
 DESCRIPTION="foo"
 SUMMARY="foo"
 HOMEPAGE="http://example.com/"
@@ -66,7 +66,7 @@ MYOPTIONS="spork"
 LICENCES="GPL-2"
 PLATFORMS="test"
 
-src_test_slow() {
+src_test_expensive() {
     die
 }
 END

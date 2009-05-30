@@ -116,14 +116,14 @@ namespace paludis
             static const ChoiceNameWithPrefix canonical_name_with_prefix() PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    class PALUDIS_VISIBLE ELikeSlowTestsChoiceValue :
+    class PALUDIS_VISIBLE ELikeExpensiveTestsChoiceValue :
         public ChoiceValue
     {
         private:
             const bool _enabled;
 
         public:
-            ELikeSlowTestsChoiceValue(const std::tr1::shared_ptr<const PackageID> &,
+            ELikeExpensiveTestsChoiceValue(const std::tr1::shared_ptr<const PackageID> &,
                     const Environment * const env, const std::tr1::shared_ptr<const Choice> &);
 
             virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));

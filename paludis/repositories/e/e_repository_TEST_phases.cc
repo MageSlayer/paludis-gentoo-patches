@@ -88,13 +88,13 @@ namespace
     {
         const std::string test;
         const bool expect_pass;
-        const bool expect_slow_test;
+        const bool expect_expensive_test;
 
         PhasesTest(const std::string & s, const bool p, const bool t) :
             TestCase("ever " + s),
             test(s),
             expect_pass(p),
-            expect_slow_test(t)
+            expect_expensive_test(t)
         {
         }
 
@@ -168,7 +168,7 @@ namespace
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
             TEST_CHECK(id);
             TEST_CHECK_EQUAL(!! id->choices_key()->value()->find_by_name_with_prefix(
-                        ChoiceNameWithPrefix("build_options:slow_tests")), expect_slow_test);
+                        ChoiceNameWithPrefix("build_options:expensive_tests")), expect_expensive_test);
 
             if (expect_pass)
                 id->perform_action(action);
@@ -180,20 +180,20 @@ namespace
 
 namespace test_cases
 {
-    PhasesTest test_no("no-slow-test", true, false);
-    PhasesTest test_pass("slow-test", true, true);
-    PhasesTest test_fail("slow-test-fail", true, true);
+    PhasesTest test_no("no-expensive-test", true, false);
+    PhasesTest test_pass("expensive-test", true, true);
+    PhasesTest test_fail("expensive-test-fail", true, true);
 
     struct TestFailEnabled : PhasesTest
     {
         TestFailEnabled() :
-            PhasesTest("slow-test-fail", false, true)
+            PhasesTest("expensive-test-fail", false, true)
         {
         }
 
         void extra_settings(TestEnvironment & env)
         {
-            env.set_want_choice_enabled(ChoicePrefixName("build_options"), UnprefixedChoiceName("slow_tests"), true);
+            env.set_want_choice_enabled(ChoicePrefixName("build_options"), UnprefixedChoiceName("expensive_tests"), true);
         }
     } test_fail_enabled;
 }

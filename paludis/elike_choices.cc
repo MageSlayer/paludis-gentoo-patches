@@ -283,61 +283,61 @@ paludis::canonical_build_options_human_name()
 }
 
 const UnprefixedChoiceName
-ELikeSlowTestsChoiceValue::canonical_unprefixed_name()
+ELikeExpensiveTestsChoiceValue::canonical_unprefixed_name()
 {
-    return UnprefixedChoiceName("slow_tests");
+    return UnprefixedChoiceName("expensive_tests");
 }
 
 const ChoiceNameWithPrefix
-ELikeSlowTestsChoiceValue::canonical_name_with_prefix()
+ELikeExpensiveTestsChoiceValue::canonical_name_with_prefix()
 {
     return ChoiceNameWithPrefix(stringify(canonical_build_options_prefix()) + ":" + stringify(canonical_unprefixed_name()));
 }
 
-ELikeSlowTestsChoiceValue::ELikeSlowTestsChoiceValue(const std::tr1::shared_ptr<const PackageID> & id,
+ELikeExpensiveTestsChoiceValue::ELikeExpensiveTestsChoiceValue(const std::tr1::shared_ptr<const PackageID> & id,
         const Environment * const env, const std::tr1::shared_ptr<const Choice> & choice) :
     _enabled(env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_true())
 {
 }
 
 const UnprefixedChoiceName
-ELikeSlowTestsChoiceValue::unprefixed_name() const
+ELikeExpensiveTestsChoiceValue::unprefixed_name() const
 {
     return canonical_unprefixed_name();
 }
 
 const ChoiceNameWithPrefix
-ELikeSlowTestsChoiceValue::name_with_prefix() const
+ELikeExpensiveTestsChoiceValue::name_with_prefix() const
 {
     return canonical_name_with_prefix();
 }
 
 bool
-ELikeSlowTestsChoiceValue::enabled() const
+ELikeExpensiveTestsChoiceValue::enabled() const
 {
     return _enabled;
 }
 
 bool
-ELikeSlowTestsChoiceValue::enabled_by_default() const
+ELikeExpensiveTestsChoiceValue::enabled_by_default() const
 {
     return false;
 }
 
 bool
-ELikeSlowTestsChoiceValue::locked() const
+ELikeExpensiveTestsChoiceValue::locked() const
 {
     return false;
 }
 
 const std::string
-ELikeSlowTestsChoiceValue::description() const
+ELikeExpensiveTestsChoiceValue::description() const
 {
-    return "Run tests considered by the package to be useful, but slow";
+    return "Run tests considered by the package to be useful, but expensive";
 }
 
 bool
-ELikeSlowTestsChoiceValue::explicitly_listed() const
+ELikeExpensiveTestsChoiceValue::explicitly_listed() const
 {
     return true;
 }

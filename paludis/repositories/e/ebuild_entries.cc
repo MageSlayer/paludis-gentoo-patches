@@ -770,10 +770,10 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                 if (choice && ! choice->enabled())
                     continue;
             }
-            else if (phase->option("slow_tests"))
+            else if (phase->option("expensive_tests"))
             {
                 std::tr1::shared_ptr<const ChoiceValue> choice(id->choices_key()->value()->find_by_name_with_prefix(
-                            ELikeSlowTestsChoiceValue::canonical_name_with_prefix()));
+                            ELikeExpensiveTestsChoiceValue::canonical_name_with_prefix()));
                 if (choice && ! choice->enabled())
                     continue;
             }

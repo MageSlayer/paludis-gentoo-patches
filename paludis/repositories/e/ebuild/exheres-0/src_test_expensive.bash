@@ -20,17 +20,17 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-default_src_test_slow()
+default_src_test_expensive()
 {
     :
 }
 
-src_test_slow()
+src_test_expensive()
 {
     default "$@"
 }
 
-exheres_internal_test_slow()
+exheres_internal_test_expensive()
 {
     local old_sandbox_predict="${SANDBOX_PREDICT}"
     [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_PREDICT="${SANDBOX_PREDICT+${SANDBOX_PREDICT}:}/"
@@ -43,12 +43,12 @@ exheres_internal_test_slow()
         cd "${WORKBASE}" || die "cd to \${WORKBASE} (\"${WORKBASE}\") failed"
     fi
 
-    if hasq "test_slow" ${SKIP_FUNCTIONS} ; then
-        ebuild_section "Skipping src_test_slow (SKIP_FUNCTIONS)"
+    if hasq "test_expensive" ${SKIP_FUNCTIONS} ; then
+        ebuild_section "Skipping src_test_expensive (SKIP_FUNCTIONS)"
     else
-        ebuild_section "Starting src_test_slow"
-        src_test_slow
-        ebuild_section "Done src_test_slow"
+        ebuild_section "Starting src_test_expensive"
+        src_test_expensive
+        ebuild_section "Done src_test_expensive"
     fi
 
     export PALUDIS_EXTRA_DIE_MESSAGE="${save_PALUDIS_EXTRA_DIE_MESSAGE}"

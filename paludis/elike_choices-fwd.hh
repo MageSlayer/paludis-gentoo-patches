@@ -30,7 +30,7 @@ namespace paludis
     struct ELikeSplitChoiceValue;
     struct ELikeOptionalTestsChoiceValue;
     struct ELikeRecommendedTestsChoiceValue;
-    struct ELikeSlowTestsChoiceValue;
+    struct ELikeExpensiveTestsChoiceValue;
 
     const ChoicePrefixName canonical_build_options_prefix() PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
     const std::string canonical_build_options_raw_name() PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
