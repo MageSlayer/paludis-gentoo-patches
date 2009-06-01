@@ -54,7 +54,7 @@ builtin_initmisc()
         rm -fr "${PALUDIS_PACKAGE_BUILDDIR}" || die "Couldn't remove previous work"
     fi
 
-    export T="${PALUDIS_PACKAGE_BUILDDIR}"
+    export T="${PALUDIS_PACKAGE_BUILDDIR}/temp/"
     mkdir -p "${T}" || die "Couldn't create \$T (\"${T}\")"
     export HOME="${T}"
     export TMPDIR="${T}"

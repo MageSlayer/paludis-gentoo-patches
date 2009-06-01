@@ -537,6 +537,7 @@ ExndbamRepository::perform_uninstall(
         }
         else
         {
+            FSEntry package_builddir(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-uninstall"));
             EbuildCommandParams params(
                     make_named_values<EbuildCommandParams>(
                         value_for<n::builddir>(_imp->params.builddir()),
@@ -550,7 +551,7 @@ ExndbamRepository::perform_uninstall(
                         value_for<n::exlibsdirs>(make_shared_ptr(new FSEntrySequence)),
                         value_for<n::files_dir>(ver_dir),
                         value_for<n::maybe_output_manager>(output_manager),
-                        value_for<n::package_builddir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-uninstall")),
+                        value_for<n::package_builddir>(package_builddir),
                         value_for<n::package_id>(id),
                         value_for<n::portdir>(_imp->params.location()),
                         value_for<n::sandbox>(phase->option("sandbox")),
@@ -560,7 +561,7 @@ ExndbamRepository::perform_uninstall(
             EbuildUninstallCommandParams uninstall_params(
                     make_named_values<EbuildUninstallCommandParams>(
                         value_for<n::load_environment>(load_env.get()),
-                        value_for<n::loadsaveenv_dir>(ver_dir),
+                        value_for<n::loadsaveenv_dir>(package_builddir / "temp"),
                         value_for<n::replaced_by>(a.options.if_for_install_id()),
                         value_for<n::root>(stringify(_imp->params.root())),
                         value_for<n::unmerge_only>(false)
