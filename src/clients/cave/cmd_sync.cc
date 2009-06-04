@@ -298,6 +298,12 @@ namespace
     }
 }
 
+bool
+SyncCommand::important() const
+{
+    return true;
+}
+
 int
 SyncCommand::run(
         const std::tr1::shared_ptr<Environment> & env,
