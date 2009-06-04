@@ -69,7 +69,7 @@ namespace
      *
      * Return as String
      */
-    FAKE_RDOC_METHOD(selection_to_s);
+    FAKE_RDOC_METHOD(selection_to_s)
 
     /*
      * call-seq:
@@ -77,7 +77,7 @@ namespace
      *
      * Create new SomeArbitrartyVersion Selection
      */
-    FAKE_RDOC_METHOD(some_arbitrary_version_new);
+    FAKE_RDOC_METHOD(some_arbitrary_version_new)
 
     /*
      * call-seq:
@@ -85,7 +85,7 @@ namespace
      *
      * Create new BestVersionOnly Selection
      */
-    FAKE_RDOC_METHOD(best_version_only_new);
+    FAKE_RDOC_METHOD(best_version_only_new)
 
     /*
      * call-seq:
@@ -93,7 +93,7 @@ namespace
      *
      * Create new BestVersionOnly Selection
      */
-    FAKE_RDOC_METHOD(best_version_in_each_slot_new);
+    FAKE_RDOC_METHOD(best_version_in_each_slot_new)
 
     /*
      * call-seq:
@@ -101,7 +101,7 @@ namespace
      *
      * Create new AllVersionsSorted Selection
      */
-    FAKE_RDOC_METHOD(all_versions_sorted_new);
+    FAKE_RDOC_METHOD(all_versions_sorted_new)
 
     /*
      * call-seq:
@@ -109,7 +109,7 @@ namespace
      *
      * Create new AllVersionsGroupedBySlot Selection
      */
-    FAKE_RDOC_METHOD(all_versions_sorted_new);
+    FAKE_RDOC_METHOD(all_versions_sorted_new)
 
     /*
      * call-seq:
@@ -117,7 +117,7 @@ namespace
      *
      * Create new AllVersionsUnsorted Selection
      */
-    FAKE_RDOC_METHOD(all_versions_sorted_new);
+    FAKE_RDOC_METHOD(all_versions_sorted_new)
 
     /*
      * call-seq:
@@ -125,7 +125,7 @@ namespace
      *
      * Create new RequireExactlyOne Selection
      */
-    FAKE_RDOC_METHOD(all_versions_sorted_new);
+    FAKE_RDOC_METHOD(all_versions_sorted_new)
 
     void do_register_selection()
     {

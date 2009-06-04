@@ -134,7 +134,7 @@ namespace
      *
      * Our raw name, for example 'USE' or 'LINGUAS'.
      */
-    FAKE_RDOC_METHOD(choice_raw_name);
+    FAKE_RDOC_METHOD(choice_raw_name)
 
     /*
      * call-seq:
@@ -142,7 +142,7 @@ namespace
      *
      * A human-readable name (often the same as raw_name).
      */
-    FAKE_RDOC_METHOD(choice_human_name);
+    FAKE_RDOC_METHOD(choice_human_name)
 
     /*
      * call-seq:
@@ -152,7 +152,7 @@ namespace
      *
      * An empty string for USE and ARCH, 'linguas' for LINGUAS etc.
      */
-    FAKE_RDOC_METHOD(choice_prefix);
+    FAKE_RDOC_METHOD(choice_prefix)
 
     template <typename R_, const R_ (Choice::* r_) () const>
     struct ChoiceStringishMembers
@@ -181,7 +181,7 @@ namespace
      * For pesky 0-based EAPIs that don't require things like userland_GNU in IUSE, and that
      * don't have a comprehensive list of possible values.
      */
-    FAKE_RDOC_METHOD(choice_contains_every_value);
+    FAKE_RDOC_METHOD(choice_contains_every_value)
 
     /*
      * call-seq:
@@ -189,7 +189,7 @@ namespace
      *
      * If true, this option should not usually be shown visually to a user.
      */
-    FAKE_RDOC_METHOD(choice_hidden);
+    FAKE_RDOC_METHOD(choice_hidden)
 
     /*
      * call-seq:
@@ -200,7 +200,7 @@ namespace
      * This is used by --pretend --install and --query to avoid showing a Use:
      * prefix before a list of use flag names.
      */
-    FAKE_RDOC_METHOD(choice_show_with_no_prefix);
+    FAKE_RDOC_METHOD(choice_show_with_no_prefix)
 
     /*
      * call-seq:
@@ -211,7 +211,7 @@ namespace
      *
      * Used by build_options.
      */
-    FAKE_RDOC_METHOD(choice_consider_added_or_changed);
+    FAKE_RDOC_METHOD(choice_consider_added_or_changed)
 
     template <typename R_, const R_ (Choice::* r_) () const>
     struct ChoiceBoolishMembers
@@ -236,7 +236,7 @@ namespace
      *
      * Our name, without an prefix (for example, 'nls' or 'en').
      */
-    FAKE_RDOC_METHOD(choice_value_unprefixed_name);
+    FAKE_RDOC_METHOD(choice_value_unprefixed_name)
 
     /*
      * call-seq:
@@ -244,7 +244,7 @@ namespace
      *
      * Our name, with prefix if there is one (for example, 'nls' or 'linguas_en').
      */
-    FAKE_RDOC_METHOD(choice_value_name_with_prefix);
+    FAKE_RDOC_METHOD(choice_value_name_with_prefix)
 
     /*
      * call-seq:
@@ -252,7 +252,7 @@ namespace
      *
      * The flag's description, or an empty string.
      */
-    FAKE_RDOC_METHOD(choice_value_description);
+    FAKE_RDOC_METHOD(choice_value_description)
 
     template <typename R_, const R_ (ChoiceValue::* r_) () const>
     struct ChoiceValueStringishMembers
@@ -277,7 +277,7 @@ namespace
      *
      * Is this flag enabled?
      */
-    FAKE_RDOC_METHOD(choice_value_enabled);
+    FAKE_RDOC_METHOD(choice_value_enabled)
 
     /*
      * call-seq:
@@ -286,7 +286,7 @@ namespace
      * Would this flag be enabled by default (i.e. before considering
      * any overrides from the Environment)?
      */
-    FAKE_RDOC_METHOD(choice_value_enabled_by_default);
+    FAKE_RDOC_METHOD(choice_value_enabled_by_default)
 
     /*
      * call-seq:
@@ -294,7 +294,7 @@ namespace
      *
      * Is this flag locked (forced or masked)?
      */
-    FAKE_RDOC_METHOD(choice_value_locked);
+    FAKE_RDOC_METHOD(choice_value_locked)
 
     /*
      * call-seq:
@@ -305,7 +305,7 @@ namespace
      * Use this to avoid showing things like LINGUAS values that aren't listed
      * in IUSE but that end up as a ChoiceValue anyway.
      */
-    FAKE_RDOC_METHOD(choice_value_explicitly_listed);
+    FAKE_RDOC_METHOD(choice_value_explicitly_listed)
 
     template <typename R_, R_ (ChoiceValue::* r_) () const>
     struct ChoiceValueBoolishMembers

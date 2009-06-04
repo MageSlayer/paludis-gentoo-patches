@@ -149,7 +149,7 @@ namespace
      *
      * Return as String
      */
-    FAKE_RDOC_METHOD(version_spec_to_s);
+    FAKE_RDOC_METHOD(version_spec_to_s)
 
     /*
      *  call-seq:
@@ -157,7 +157,7 @@ namespace
      *
      * Comparison—Returns -1, 0, or +1 depending on whether provided VersionSpec is less than, equal to, or greater than this VersionSpec. This is the basis for the tests in Comparable.
      */
-    FAKE_RDOC_METHOD(version_spec_compare);
+    FAKE_RDOC_METHOD(version_spec_compare)
 
     void do_register_version_spec()
     {
