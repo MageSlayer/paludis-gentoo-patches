@@ -91,8 +91,8 @@ else
             puts "#{file} is not a directory."
             exit 1
         end
-        unless file == root or file[0,root.length] == root
-            puts "#{file} is not under ${ROOT} (#{root})"
+        unless file == root or file[0,root.length + 1] == root + "/"
+            puts "#{file} is not under ${ROOT} (#{root}/)"
             exit 1
         end
         files << (file[-1] == ?/ ? file.chop : file)
