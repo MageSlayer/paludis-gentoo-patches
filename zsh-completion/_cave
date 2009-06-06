@@ -23,6 +23,7 @@ _cave()
     'print-commands:Prints a list of known cave commands'
     'print-environment-metadata:Prints environment metadata'
     'print-id-contents:Prints the contents of a package ID'
+    'print-id-executables:Prints a list of executables belonging to an ID'
     'print-id-metadata:Prints ID metadata'
     'print-ids:Prints a list of known IDs'
     'print-owners:Prints a list of package IDs owning a given file'
@@ -111,6 +112,14 @@ _cave_cmd_print-id-contents()
     '--nobest[If the spec matches multiple IDs, give an error]' \
     '--format[Select the output format]:format: '
 }
+
+(( ${+functions[_cave_cmd_print-id-executables]} )) ||
+_cave_cmd_print-id-executables()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]'
+}
+
 
 (( ${+functions[_cave_cmd_print-id-metadata]} )) ||
 _cave_cmd_print-id-metadata()
