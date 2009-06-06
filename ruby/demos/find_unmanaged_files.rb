@@ -78,7 +78,7 @@ end
 
 env = Paludis::EnvironmentFactory.instance.create env_spec
 db = env.package_database
-root = ( env.root.length > 1 && env.root[-1] == ?/ ) ? env.root.chop : env.root
+root = env.root[-1] == ?/ ? env.root.chop : env.root
 
 files = []
 
@@ -100,7 +100,7 @@ else
 end
 
 in_fs = []
-Find.find(*files) {|file| in_fs << file}
+Find.find(*(files.collect {|f| f.empty? ? "/" : f})) {|file| in_fs << file}
 
 db.repositories do |repo|
     next unless repo.some_ids_might_support_action(SupportsActionTest.new(InstalledAction))
