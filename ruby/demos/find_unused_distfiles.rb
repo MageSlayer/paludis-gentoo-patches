@@ -46,7 +46,7 @@ opts.each do | opt, arg |
         exit 0
 
     when '--version'
-        puts $0.to_s.split(/\//).last + " " + Paludis::Version
+        puts $0.to_s.split(/\//).last + " " + Paludis::Version.to_s
         exit 0
 
     when '--log-level'
