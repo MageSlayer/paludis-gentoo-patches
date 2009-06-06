@@ -78,7 +78,7 @@ end
 
 env = Paludis::EnvironmentFactory.instance.create env_spec
 db = env.package_database
-root = env.root[-1] == ?/ ? env.root.chop : env.root
+root = ( env.root.length > 1 && env.root[-1] == ?/ ) ? env.root.chop : env.root
 
 files = []
 
