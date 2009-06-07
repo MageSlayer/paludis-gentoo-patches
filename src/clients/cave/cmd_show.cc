@@ -767,6 +767,12 @@ namespace
     }
 }
 
+bool
+ShowCommand::important() const
+{
+    return true;
+}
+
 int
 ShowCommand::run(
         const std::tr1::shared_ptr<Environment> & env,

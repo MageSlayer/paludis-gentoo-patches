@@ -30,6 +30,8 @@ namespace paludis
             public Command
         {
             public:
+                bool important() const;
+
                 int run(
                         const std::tr1::shared_ptr<Environment> &,
                         const std::tr1::shared_ptr<const Sequence<std::string > > & args
