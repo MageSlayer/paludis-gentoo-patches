@@ -87,6 +87,12 @@ namespace
     };
 }
 
+bool
+HelpCommand::important() const
+{
+    return true;
+}
+
 int
 HelpCommand::run(const std::tr1::shared_ptr<Environment> & env,
                  const std::tr1::shared_ptr< const Sequence<std::string> > & args)
