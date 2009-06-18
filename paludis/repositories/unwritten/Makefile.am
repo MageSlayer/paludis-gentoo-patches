@@ -22,7 +22,7 @@ paludis_repositories_unwritten_include_HEADERS = \
 	unwritten_id.hh \
 	unwritten_mask.hh \
 	unwritten_repository_store.hh \
-	unwritten_repository_file.hh unwritten_repository_file.hh
+	unwritten_repository_file.hh
 
 libpaludisunwrittenrepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	unwritten_repository.cc \
