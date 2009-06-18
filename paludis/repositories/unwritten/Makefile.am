@@ -18,7 +18,7 @@ paludis_repositories_unwritten_includedir = $(includedir)/paludis-$(PALUDIS_PC_S
 libpaludisunwrittenrepository_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 paludis_repositories_unwritten_include_HEADERS = \
-	unwritten_repository.hh unwritten_repository.hh \
+	unwritten_repository.hh \
 	unwritten_id.hh \
 	unwritten_mask.hh \
 	unwritten_repository_store.hh \
