@@ -42,7 +42,7 @@ libpaludispaludisenvironment_@PALUDIS_PC_SLOT@_la_LIBADD = \
 
 endif
 
-libenvdir = $(libdir)/paludis/environments/
+libenvdir = $(libdir)/paludis/environments
 
 if MONOLITHIC
 

@@ -18,7 +18,7 @@ libpaludisnoconfigenvironment_@PALUDIS_PC_SLOT@_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la
 
-libenvdir = $(libdir)/paludis/environments/
+libenvdir = $(libdir)/paludis/environments
 libenv_LTLIBRARIES = libpaludisnoconfigenvironment_@PALUDIS_PC_SLOT@.la
 
 paludis_environment_no_config_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/environments/no_config

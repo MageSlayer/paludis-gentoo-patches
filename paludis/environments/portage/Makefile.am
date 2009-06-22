@@ -19,7 +19,7 @@ libpaludisportageenvironment_@PALUDIS_PC_SLOT@_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la
 
-libenvdir = $(libdir)/paludis/environments/
+libenvdir = $(libdir)/paludis/environments
 
 libexecenvdir = $(libexecdir)/paludis/environments/portage/
 libexecenv_SCRIPTS = bashrc
