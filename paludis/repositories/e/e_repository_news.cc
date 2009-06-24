@@ -149,6 +149,8 @@ ERepositoryNews::update_news() const
 
             if (news.begin_display_if_installed() != news.end_display_if_installed())
             {
+                Context header_context("When checking Displau-If-Installed headers:");
+
                 bool local_show(false);
                 for (NewsFile::DisplayIfInstalledConstIterator i(news.begin_display_if_installed()),
                         i_end(news.end_display_if_installed()) ; i != i_end ; ++i)
@@ -164,6 +166,8 @@ ERepositoryNews::update_news() const
 
             if (news.begin_display_if_keyword() != news.end_display_if_keyword())
             {
+                Context header_context("When checking Displau-If-Keyword headers:");
+
                 bool local_show(false);
                 for (NewsFile::DisplayIfKeywordConstIterator i(news.begin_display_if_keyword()),
                         i_end(news.end_display_if_keyword()) ; i != i_end && ! local_show ; ++i)
@@ -174,6 +178,8 @@ ERepositoryNews::update_news() const
 
             if (news.begin_display_if_profile() != news.end_display_if_profile())
             {
+                Context header_context("When checking Displau-If-Profile headers:");
+
                 bool local_show(false);
                 std::tr1::shared_ptr<const FSEntrySequence> c(_imp->params.profiles());
                 for (FSEntrySequence::ConstIterator p(c->begin()), p_end(c->end()) ; p != p_end ; ++p)
@@ -193,6 +199,8 @@ ERepositoryNews::update_news() const
 
             if (show)
             {
+                Context update_context("When updating skip and unread files:");
+
                 SafeOFStream s(_imp->skip_file, O_CREAT | O_WRONLY | O_APPEND);
                 if (! s)
                     Log::get_instance()->message("e.news.skip_file.append_failure", ll_warning, lc_no_context) <<
@@ -218,7 +226,7 @@ ERepositoryNews::update_news() const
         }
         catch (const Exception & e)
         {
-            Log::get_instance()->message("e.news.skipping", ll_warning, lc_no_context) <<
+            Log::get_instance()->message("e.news.skipping", ll_warning, lc_context) <<
                 "Skipping news item '" << *d << "' because of exception '" << e.message() << "' ("
                 << e.what() << ")";
         }
