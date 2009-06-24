@@ -149,7 +149,7 @@ ERepositoryNews::update_news() const
 
             if (news.begin_display_if_installed() != news.end_display_if_installed())
             {
-                Context header_context("When checking Displau-If-Installed headers:");
+                Context header_context("When checking Display-If-Installed headers:");
 
                 bool local_show(false);
                 for (NewsFile::DisplayIfInstalledConstIterator i(news.begin_display_if_installed()),
@@ -166,7 +166,7 @@ ERepositoryNews::update_news() const
 
             if (news.begin_display_if_keyword() != news.end_display_if_keyword())
             {
-                Context header_context("When checking Displau-If-Keyword headers:");
+                Context header_context("When checking Display-If-Keyword headers:");
 
                 bool local_show(false);
                 for (NewsFile::DisplayIfKeywordConstIterator i(news.begin_display_if_keyword()),
@@ -178,7 +178,7 @@ ERepositoryNews::update_news() const
 
             if (news.begin_display_if_profile() != news.end_display_if_profile())
             {
-                Context header_context("When checking Displau-If-Profile headers:");
+                Context header_context("When checking Display-If-Profile headers:");
 
                 bool local_show(false);
                 std::tr1::shared_ptr<const FSEntrySequence> c(_imp->params.profiles());
