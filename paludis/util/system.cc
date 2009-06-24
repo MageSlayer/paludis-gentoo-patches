@@ -469,6 +469,11 @@ paludis::run_command(const Command & cmd)
                     setenv("PALUDIS_PIPE_COMMAND_READ_FD", stringify(pipe_command_response->read_fd()).c_str(), 1);
                 }
 
+                /* This is what happens when people are allowed to play with
+                 * things they don't understand. Yay Gentoo! */
+                setenv("PACKAGE_MANAGER", "paludis", 1);
+                setenv("ESELECT_PACKAGE_MANAGER", "paludis", 1);
+
                 if (cmd.captured_stdout_stream())
                 {
                     if (-1 == dup2(captured_stdout->write_fd(), 1))
