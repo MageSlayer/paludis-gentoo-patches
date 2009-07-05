@@ -40,7 +40,7 @@ fi
 
 if [[ 0 != ${code} ]] ; then
     echo ">>> test ${testname} returned ${code}"
-    if [[ -z "${PALUDIS_TESTS_RERUN_VERBOSELY}" ]] ; then
+    if [[ -z "${PALUDIS_TESTS_RERUN_VERBOSELY}" ]] && [[ "${testname#./}" != "test_fail_TEST" ]] ; then
         out=`pwd`/${testname#./}.epicfail
         echo ">>> rerunning test ${testname} verbosely redirected to ${out}"
         env PALUDIS_TESTS_RERUN_VERBOSELY=no PALUDIS_TESTS_KEEP_STDERR=yes \
