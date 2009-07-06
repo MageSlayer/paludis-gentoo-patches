@@ -269,7 +269,7 @@ EChoicesKey::populate_myoptions() const
 {
     Context local_context("When using raw_myoptions_key to populate choices:");
 
-    std::tr1::shared_ptr<Choice> use(new Choice(make_named_values<ChoiceParams>(
+    std::tr1::shared_ptr<Choice> options(new Choice(make_named_values<ChoiceParams>(
                     value_for<n::consider_added_or_changed>(true),
                     value_for<n::contains_every_value>(false),
                     value_for<n::hidden>(false),
@@ -278,7 +278,7 @@ EChoicesKey::populate_myoptions() const
                     value_for<n::raw_name>(_imp->id->eapi()->supported()->ebuild_environment_variables()->env_use()),
                     value_for<n::show_with_no_prefix>(true)
                 )));
-    _imp->value->add(use);
+    _imp->value->add(options);
 
     std::tr1::shared_ptr<const Set<std::string> > hidden;
     if (_imp->id->raw_use_expand_hidden_key())
@@ -324,7 +324,7 @@ EChoicesKey::populate_myoptions() const
         Context local_local_context("When using empty prefix to populate choices:");
         for (MyOptionsFinder::Values::const_iterator v(p->second.begin()), v_end(p->second.end()) ;
                 v != v_end ; ++v)
-            use->add(make_myoption(_imp->id, use, v, indeterminate, true));
+            options->add(make_myoption(_imp->id, options, v, indeterminate, true));
         myoptions.prefixes.erase(p);
     }
 
