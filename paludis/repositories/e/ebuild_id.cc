@@ -330,6 +330,7 @@ EbuildID::need_keys_added() const
             std::copy(e_repository()->profile()->iuse_implicit()->begin(), e_repository()->profile()->iuse_implicit()->end(),
                     iuse_effective->inserter());
 
+            const std::tr1::shared_ptr<const Set<std::string> > use_expand(e_repository()->profile()->use_expand());
             const std::tr1::shared_ptr<const Set<std::string> > use_expand_unprefixed(e_repository()->profile()->use_expand_unprefixed());
             const std::string separator(stringify(_imp->eapi->supported()->choices_options()->use_expand_separator()));
 
@@ -340,14 +341,19 @@ EbuildID::need_keys_added() const
                 std::string lower_x;
                 std::transform(x->begin(), x->end(), std::back_inserter(lower_x), &::tolower);
 
-                bool prefixed(use_expand_unprefixed->end() == use_expand_unprefixed->find(*x));
+                bool prefixed(use_expand->end() != use_expand->find(*x));
+                bool unprefixed(use_expand_unprefixed->end() != use_expand_unprefixed->find(*x));
+
+                if ((! unprefixed) && (! prefixed))
+                    throw InternalError(PALUDIS_HERE, "(! unprefixed) && (! prefixed) for " + *x);
+
                 const std::tr1::shared_ptr<const Set<std::string> > values(e_repository()->profile()->use_expand_values(*x));
                 for (Set<std::string>::ConstIterator v(values->begin()), v_end(values->end()) ;
                         v != v_end ; ++v)
                 {
                     if (prefixed)
                         iuse_effective->insert(lower_x + separator + *v);
-                    else
+                    if (unprefixed)
                         iuse_effective->insert(*v);
                 }
             }
