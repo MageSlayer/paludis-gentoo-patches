@@ -345,7 +345,8 @@ EbuildID::need_keys_added() const
                 bool unprefixed(use_expand_unprefixed->end() != use_expand_unprefixed->find(*x));
 
                 if ((! unprefixed) && (! prefixed))
-                    throw InternalError(PALUDIS_HERE, "(! unprefixed) && (! prefixed) for " + *x);
+                    Log::get_instance()->message("e.ebuild.iuse_effective.neither", ll_qa, lc_context)
+                        << "USE_EXPAND_IMPLICIT value " << *x << " is not in either USE_EXPAND or USE_EXPAND_UNPREFIXED";
 
                 const std::tr1::shared_ptr<const Set<std::string> > values(e_repository()->profile()->use_expand_values(*x));
                 for (Set<std::string>::ConstIterator v(values->begin()), v_end(values->end()) ;
