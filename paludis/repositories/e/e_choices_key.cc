@@ -245,19 +245,23 @@ namespace
         std::map<ChoiceNameWithPrefix, ChoiceOptions>::iterator i(values.find(flag.first));
         if (values.end() == i)
             values.insert(flag);
-        else if (! flag.second.default_value().is_indeterminate())
+        else
         {
-            if (i->second.default_value().is_indeterminate())
-                i->second.default_value() = flag.second.default_value();
-            else if (flag.second.default_value().is_true() != i->second.default_value().is_true())
-            {
-                Log::get_instance()->message("e.iuse_key.contradiction", ll_warning, lc_context)
-                    << "Flag '" << flag.first << "' is both enabled and disabled by default in "
-                    << "'" << key->raw_name() << "', using enabled";
-                i->second.default_value() = true;
-            }
-
             i->second.implicit() = i->second.implicit() && flag.second.implicit();
+
+            if (! flag.second.default_value().is_indeterminate())
+            {
+                if (i->second.default_value().is_indeterminate())
+                    i->second.default_value() = flag.second.default_value();
+                else if (flag.second.default_value().is_true() != i->second.default_value().is_true())
+                {
+                    Log::get_instance()->message("e.iuse_key.contradiction", ll_warning, lc_context)
+                        << "Flag '" << flag.first << "' is both enabled and disabled by default in "
+                        << "'" << key->raw_name() << "', using enabled";
+                    i->second.default_value() = true;
+                }
+
+            }
         }
     }
 }
