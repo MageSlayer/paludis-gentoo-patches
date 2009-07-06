@@ -167,24 +167,11 @@ namespace paludis
 
 namespace
 {
-    bool is_incremental_excluding_use_expand(const KeyValueConfigFile &, const std::string & s)
+    bool is_incremental(const KeyValueConfigFile &, const std::string & s)
     {
         return (s == "USE" || s == "USE_EXPAND" || s == "USE_EXPAND_HIDDEN" ||
                 s == "CONFIG_PROTECT" || s == "CONFIG_PROTECT_MASK" || s == "FEATURES"
                 || s == "ACCEPT_KEYWORDS");
-    }
-
-    bool is_incremental(const KeyValueConfigFile & k, const std::string & s)
-    {
-        if (is_incremental_excluding_use_expand(k, s))
-            return true;
-
-        std::set<std::string> use_expand;
-        tokenise_whitespace(k.get("USE_EXPAND"), std::inserter(use_expand, use_expand.begin()));
-        if (use_expand.end() != use_expand.find(s))
-            return true;
-
-        return false;
     }
 
     std::string predefined(const std::tr1::shared_ptr<const KeyValueConfigFile> & k,
@@ -221,14 +208,6 @@ namespace
     std::string do_incremental(const KeyValueConfigFile & k, const std::string & var, const std::string & before, const std::string & value)
     {
         if (! is_incremental(k, var))
-            return value;
-        return make_incremental(k, var, before, value);
-    }
-
-    std::string do_incremental_excluding_use_expand(
-            const KeyValueConfigFile & k, const std::string & var, const std::string & before, const std::string & value)
-    {
-        if (! is_incremental_excluding_use_expand(k, var))
             return value;
         return make_incremental(k, var, before, value);
     }
@@ -270,7 +249,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
         _imp->vars.reset(new KeyValueConfigFile(_imp->conf_dir / "make.conf", KeyValueConfigFileOptions() +
                     kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments + kvcfo_allow_multiple_assigns_per_line,
                     std::tr1::bind(&predefined, _imp->vars, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
-                    &do_incremental_excluding_use_expand));
+                    &do_incremental));
 
     /* TODO: load USE etc from env? */
 

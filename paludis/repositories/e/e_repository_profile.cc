@@ -550,8 +550,6 @@ Implementation<ERepositoryProfile>::is_incremental(const EAPI & e, const std::st
 {
     Context c("When checking whether '" + s + "' is incremental:");
 
-    std::string uevp_var(e.supported()->ebuild_environment_variables()->env_use_expand_values_part());
-
     return (! s.empty()) && (
             (s == e.supported()->ebuild_environment_variables()->env_use())
             || (s == e.supported()->ebuild_environment_variables()->env_use_expand())
@@ -560,10 +558,7 @@ Implementation<ERepositoryProfile>::is_incremental(const EAPI & e, const std::st
             || (s == e.supported()->ebuild_environment_variables()->env_use_expand_implicit())
             || (s == e.supported()->ebuild_environment_variables()->env_iuse_implicit())
             || s == "CONFIG_PROTECT"
-            || s == "CONFIG_PROTECT_MASK"
-            || use_expand->end() != use_expand->find(s)
-            || ((! uevp_var.empty()) && (s.length() > uevp_var.length()) && (0 == s.compare(0, uevp_var.length(), s)) &&
-                use_expand_implicit->end() != use_expand_implicit->find(s.substr(uevp_var.length() + 1))));
+            || s == "CONFIG_PROTECT_MASK");
 }
 
 void
