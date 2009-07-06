@@ -136,11 +136,16 @@ namespace paludis
 
             ///\}
 
-            ///\name Iterate over USE_EXPAND, USE_EXPAND_HIDDEN
+            ///\name Iterate over USE_EXPAND, USE_EXPAND_HIDDEN etc
             ///\{
 
             const std::tr1::shared_ptr<const Set<std::string> > use_expand() const PALUDIS_ATTRIBUTE((warn_unused_result));
             const std::tr1::shared_ptr<const Set<std::string> > use_expand_hidden() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            const std::tr1::shared_ptr<const Set<std::string> > use_expand_unprefixed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::tr1::shared_ptr<const Set<std::string> > use_expand_implicit() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::tr1::shared_ptr<const Set<std::string> > iuse_implicit() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::tr1::shared_ptr<const Set<std::string> > use_expand_values(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
 

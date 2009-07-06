@@ -467,13 +467,18 @@ virtual/virtual-pretend-installed cat/pretend-installed
 virtual/virtual-doesnotexist cat/doesnotexist
 END
 cat <<END > profiles/profile/make.defaults
-ARCH="test"
+ARCH="cheese"
 USERLAND="GNU"
 KERNEL="linux"
 LIBC="glibc"
 CHOST="i286-badger-linux-gnu"
 LINGUAS="enabled_en enabled_en_GB enabled_en_GB@UTF-8"
-USE_EXPAND="LINGUAS"
+USE_EXPAND="LINGUAS USERLAND"
+USE_EXPAND_UNPREFIXED="ARCH"
+USE_EXPAND_IMPLICIT="USERLAND ARCH"
+USE_EXPAND_VALUES_USERLAND="GNU"
+USE_EXPAND_VALUES_ARCH="cheese otherarch"
+IUSE_IMPLICIT="build"
 END
 mkdir -p "cat/in-ebuild-die"
 cat <<END > cat/in-ebuild-die/in-ebuild-die-1.ebuild || exit 1
@@ -1207,7 +1212,7 @@ LICENSE="GPL-2"
 KEYWORDS="test"
 
 pkg_setup() {
-    [[ $USE == "enabled-weasel linguas_enabled_en linguas_enabled_en_GB linguas_enabled_en_GB@UTF-8 test " ]] \
+    [[ $USE == "enabled-weasel linguas_enabled_en linguas_enabled_en_GB linguas_enabled_en_GB@UTF-8 userland_GNU cheese " ]] \
         || die "USE=$USE is wrong"
     [[ $USERLAND == "GNU" ]] || die "USERLAND=$USERLAND is wrong"
     [[ $LINGUAS == "enabled_en enabled_en_GB enabled_en_GB@UTF-8" ]] || die "LINGUAS=$LINGUAS is wrong"
@@ -1450,6 +1455,80 @@ EOF
     chmod +x configure
 }
 END
+mkdir -p "cat/strict-use" || exit 1
+cat << 'END' > cat/strict-use/strict-use-3.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork enabled"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="3"
+
+S="${WORKDIR}"
+
+pkg_setup() {
+    use enabled || die "enabled not enabled"
+    use spork && die "sporks are bad"
+}
+END
+mkdir -p "cat/strict-use-fail" || exit 1
+cat << 'END' > cat/strict-use-fail/strict-use-fail-3.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork enabled"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="3"
+
+S="${WORKDIR}"
+
+pkg_setup() {
+    use pony
+}
+END
+mkdir -p "cat/strict-use-injection" || exit 1
+cat << 'END' > cat/strict-use-injection/strict-use-injection-3.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork enabled"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="3"
+
+S="${WORKDIR}"
+
+pkg_setup() {
+    use build && die "build set"
+    use userland_GNU || die "userland_GNU not set"
+    use cheese || die "cheese not set"
+    use otherarch && die "otherarch set"
+}
+END
+mkdir -p "cat/global-scope-use" || exit 1
+cat << 'END' > cat/global-scope-use/global-scope-use-3.ebuild || exit 1
+use spork
+
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork enabled"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="3"
+
+S="${WORKDIR}"
+END
 cd ..
 
 mkdir -p repo14/{profiles/profile,metadata,eclass} || exit 1
@@ -1466,6 +1545,7 @@ SUBOPTIONS="LINGUAS"
 LINGUAS="en en_GB en_GB@UTF-8"
 USERLAND="GNU"
 OPTIONS="weasel spinach"
+USE_EXPAND="USERLAND"
 END
 mkdir -p "packages/cat/in-ebuild-die"
 cat <<'END' > packages/cat/in-ebuild-die/in-ebuild-die-1.ebuild || exit 1

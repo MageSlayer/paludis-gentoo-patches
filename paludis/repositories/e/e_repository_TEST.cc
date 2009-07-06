@@ -1707,6 +1707,46 @@ namespace test_cases
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "3");
                 id->perform_action(action);
             }
+
+            {
+                TestMessageSuffix suffix("strict use", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/strict-use-3",
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "3");
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("strict use fail", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/strict-use-fail-3",
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "3");
+                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+            }
+
+            {
+                TestMessageSuffix suffix("strict use injection", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/strict-use-injection-3",
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "3");
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("global scope use", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/global-scope-use-3",
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "3");
+                id->perform_action(action);
+            }
         }
     } test_e_repository_install_eapi_3;
 

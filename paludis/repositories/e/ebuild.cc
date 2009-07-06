@@ -254,6 +254,12 @@ EbuildCommand::operator() ()
         cmd.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_filesdir(),
                         stringify(params.files_dir()));
 
+    if (! params.package_id()->eapi()->supported()->ebuild_metadata_variables()->iuse_effective()->name().empty())
+        if (params.package_id()->raw_iuse_effective_key())
+            cmd.with_setenv(params.package_id()->eapi()->supported()->ebuild_metadata_variables()->iuse_effective()->name(),
+                    join(params.package_id()->raw_iuse_effective_key()->value()->begin(),
+                        params.package_id()->raw_iuse_effective_key()->value()->end(), " "));
+
     if (params.package_id()->eapi()->supported()->ebuild_options()->support_eclasses())
         cmd
             .with_setenv("ECLASSDIR", stringify(*params.eclassdirs()->begin()))
@@ -947,6 +953,12 @@ WriteVDBEntryCommand::operator() ()
             .with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params.environment(),
                         params.package_id(), _1, params.maybe_output_manager()))
             );
+
+    if (! params.package_id()->eapi()->supported()->ebuild_metadata_variables()->iuse_effective()->name().empty())
+        if (params.package_id()->raw_iuse_effective_key())
+            cmd.with_setenv(params.package_id()->eapi()->supported()->ebuild_metadata_variables()->iuse_effective()->name(),
+                    join(params.package_id()->raw_iuse_effective_key()->value()->begin(),
+                        params.package_id()->raw_iuse_effective_key()->value()->end(), " "));
 
     if (params.maybe_output_manager())
         cmd

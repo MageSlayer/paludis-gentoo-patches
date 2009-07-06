@@ -94,6 +94,7 @@ namespace paludis
         mutable std::tr1::shared_ptr<const ELicenseKey> license;
         mutable std::tr1::shared_ptr<const EKeywordsKey> keywords;
         mutable std::tr1::shared_ptr<const EStringSetKey> raw_iuse;
+        mutable std::tr1::shared_ptr<const LiteralMetadataStringSetKey> raw_iuse_effective;
         mutable std::tr1::shared_ptr<const EMyOptionsKey> raw_myoptions;
         mutable std::tr1::shared_ptr<const EStringSetKey> inherited;
         mutable std::tr1::shared_ptr<const EStringSetKey> raw_use;
@@ -298,12 +299,12 @@ EbuildID::need_keys_added() const
                     _imp->eapi->supported()->ebuild_metadata_variables()->use_expand()->name(),
                     _imp->eapi->supported()->ebuild_metadata_variables()->use_expand()->description(),
                     mkt_internal,
-                    std::tr1::static_pointer_cast<const ERepository>(repository())->profile()->use_expand()));
+                    e_repository()->profile()->use_expand()));
         _imp->raw_use_expand_hidden = make_shared_ptr(new LiteralMetadataStringSetKey(
                     _imp->eapi->supported()->ebuild_metadata_variables()->use_expand_hidden()->name(),
                     _imp->eapi->supported()->ebuild_metadata_variables()->use_expand_hidden()->description(),
                     mkt_internal,
-                    std::tr1::static_pointer_cast<const ERepository>(repository())->profile()->use_expand_hidden()));
+                    e_repository()->profile()->use_expand_hidden()));
 
         std::tr1::shared_ptr<const MetadataXML> m(MetadataXMLPool::get_instance()->metadata_if_exists(
                     _imp->fs_location->value().dirname() / "metadata.xml"));
@@ -318,16 +319,55 @@ EbuildID::need_keys_added() const
                 add_metadata_key(make_shared_ptr(new LiteralMetadataStringSequenceKey("maintainers", "Maintainers", mkt_normal, m->maintainers())));
             maybe_use_descriptions = m->uses();
         }
-    }
 
-    if (_imp->eapi->supported())
+        if (_imp->eapi->supported()->choices_options()->profile_iuse_injection())
+        {
+            std::tr1::shared_ptr<Set<std::string> > iuse_effective(new Set<std::string>);
+            if (! _imp->raw_iuse)
+                throw InternalError(PALUDIS_HERE, "no raw_iuse?");
+
+            std::copy(_imp->raw_iuse->value()->begin(), _imp->raw_iuse->value()->end(), iuse_effective->inserter());
+            std::copy(e_repository()->profile()->iuse_implicit()->begin(), e_repository()->profile()->iuse_implicit()->end(),
+                    iuse_effective->inserter());
+
+            const std::tr1::shared_ptr<const Set<std::string> > use_expand_unprefixed(e_repository()->profile()->use_expand_unprefixed());
+            const std::string separator(stringify(_imp->eapi->supported()->choices_options()->use_expand_separator()));
+
+            for (Set<std::string>::ConstIterator x(e_repository()->profile()->use_expand_implicit()->begin()),
+                    x_end(e_repository()->profile()->use_expand_implicit()->end()) ;
+                    x != x_end ; ++x)
+            {
+                std::string lower_x;
+                std::transform(x->begin(), x->end(), std::back_inserter(lower_x), &::tolower);
+
+                bool prefixed(use_expand_unprefixed->end() == use_expand_unprefixed->find(*x));
+                const std::tr1::shared_ptr<const Set<std::string> > values(e_repository()->profile()->use_expand_values(*x));
+                for (Set<std::string>::ConstIterator v(values->begin()), v_end(values->end()) ;
+                        v != v_end ; ++v)
+                {
+                    if (prefixed)
+                        iuse_effective->insert(lower_x + separator + *v);
+                    else
+                        iuse_effective->insert(*v);
+                }
+            }
+
+            _imp->raw_iuse_effective.reset(new LiteralMetadataStringSetKey(
+                    _imp->eapi->supported()->ebuild_metadata_variables()->iuse_effective()->name(),
+                    _imp->eapi->supported()->ebuild_metadata_variables()->iuse_effective()->description(),
+                    mkt_internal,
+                    iuse_effective));
+            add_metadata_key(_imp->raw_iuse_effective);
+        }
+
         _imp->choices.reset(new EChoicesKey(_imp->environment, shared_from_this(), "PALUDIS_CHOICES",
                     _imp->eapi->supported()->ebuild_environment_variables()->description_choices(),
-                    mkt_normal, std::tr1::static_pointer_cast<const ERepository>(repository()),
+                    mkt_normal, e_repository(),
                     maybe_use_descriptions));
+    }
     else
         _imp->choices.reset(new EChoicesKey(_imp->environment, shared_from_this(), "PALUDIS_CHOICES", "Choices", mkt_normal,
-                    std::tr1::static_pointer_cast<const ERepository>(repository()), maybe_use_descriptions));
+                    e_repository(), maybe_use_descriptions));
     add_metadata_key(_imp->choices);
 }
 
@@ -595,6 +635,13 @@ EbuildID::raw_iuse_key() const
 {
     need_keys_added();
     return _imp->raw_iuse;
+}
+
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+EbuildID::raw_iuse_effective_key() const
+{
+    need_keys_added();
+    return _imp->raw_iuse_effective;
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >

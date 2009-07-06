@@ -86,6 +86,7 @@ namespace paludis
         struct env_distdir;
         struct env_ebuild_phase;
         struct env_filesdir;
+        struct env_iuse_implicit;
         struct env_kv;
         struct env_p;
         struct env_pf;
@@ -98,6 +99,9 @@ namespace paludis
         struct env_use;
         struct env_use_expand;
         struct env_use_expand_hidden;
+        struct env_use_expand_implicit;
+        struct env_use_expand_unprefixed;
+        struct env_use_expand_values_part;
         struct exported_name;
         struct f_function_prefix;
         struct failure_is_fatal;
@@ -111,6 +115,7 @@ namespace paludis
         struct ignore_pivot_env_variables;
         struct inherited;
         struct iuse;
+        struct iuse_effective;
         struct iuse_flag_parse_options;
         struct keywords;
         struct license;
@@ -135,6 +140,7 @@ namespace paludis
         struct package_dep_spec_parse_options;
         struct pdepend;
         struct pipe_commands;
+        struct profile_iuse_injection;
         struct properties;
         struct provide;
         struct rdepend_defaults_to_depend;
@@ -268,6 +274,7 @@ namespace paludis
             NamedValue<n::has_expensive_tests, bool> has_expensive_tests;
             NamedValue<n::has_optional_tests, bool> has_optional_tests;
             NamedValue<n::has_recommended_tests, bool> has_recommended_tests;
+            NamedValue<n::profile_iuse_injection, bool> profile_iuse_injection;
             NamedValue<n::use_expand_separator, char> use_expand_separator;
         };
 
@@ -283,6 +290,7 @@ namespace paludis
             NamedValue<n::env_distdir, std::string> env_distdir;
             NamedValue<n::env_ebuild_phase, std::string> env_ebuild_phase;
             NamedValue<n::env_filesdir, std::string> env_filesdir;
+            NamedValue<n::env_iuse_implicit, std::string> env_iuse_implicit;
             NamedValue<n::env_kv, std::string> env_kv;
             NamedValue<n::env_p, std::string> env_p;
             NamedValue<n::env_pf, std::string> env_pf;
@@ -295,6 +303,9 @@ namespace paludis
             NamedValue<n::env_use, std::string> env_use;
             NamedValue<n::env_use_expand, std::string> env_use_expand;
             NamedValue<n::env_use_expand_hidden, std::string> env_use_expand_hidden;
+            NamedValue<n::env_use_expand_implicit, std::string> env_use_expand_implicit;
+            NamedValue<n::env_use_expand_unprefixed, std::string> env_use_expand_unprefixed;
+            NamedValue<n::env_use_expand_values_part, std::string> env_use_expand_values_part;
         };
 
         struct EAPIMetadataVariable
@@ -314,6 +325,7 @@ namespace paludis
             NamedValue<n::homepage, std::tr1::shared_ptr<const EAPIMetadataVariable> > homepage;
             NamedValue<n::inherited, std::tr1::shared_ptr<const EAPIMetadataVariable> > inherited;
             NamedValue<n::iuse, std::tr1::shared_ptr<const EAPIMetadataVariable> > iuse;
+            NamedValue<n::iuse_effective, std::tr1::shared_ptr<const EAPIMetadataVariable> > iuse_effective;
             NamedValue<n::keywords, std::tr1::shared_ptr<const EAPIMetadataVariable> > keywords;
             NamedValue<n::license, std::tr1::shared_ptr<const EAPIMetadataVariable> > license;
             NamedValue<n::long_description, std::tr1::shared_ptr<const EAPIMetadataVariable> > long_description;

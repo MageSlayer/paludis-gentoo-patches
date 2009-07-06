@@ -81,6 +81,7 @@ namespace paludis
         std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use;
         std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > inherited;
         std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string > > > raw_iuse;
+        std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string > > > raw_iuse_effective;
         std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > raw_myoptions;
         std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string > > > raw_use_expand;
         std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string > > > raw_use_expand_hidden;
@@ -241,6 +242,17 @@ EInstalledRepositoryID::need_keys_added() const
                         "", mkt_internal));
         }
         add_metadata_key(_imp->raw_iuse);
+    }
+
+    if (! vars->iuse_effective()->name().empty())
+    {
+        if ((_imp->dir / vars->iuse_effective()->name()).exists())
+        {
+            _imp->raw_iuse_effective.reset(new EStringSetKey(
+                        shared_from_this(), vars->iuse_effective()->name(), vars->iuse_effective()->description(),
+                        file_contents(_imp->dir / vars->iuse_effective()->name()), mkt_internal));
+            add_metadata_key(_imp->raw_iuse_effective);
+        }
     }
 
     if (! vars->myoptions()->name().empty())
@@ -652,6 +664,13 @@ EInstalledRepositoryID::raw_iuse_key() const
 {
     need_keys_added();
     return _imp->raw_iuse;
+}
+
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+EInstalledRepositoryID::raw_iuse_effective_key() const
+{
+    need_keys_added();
+    return _imp->raw_iuse_effective;
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >

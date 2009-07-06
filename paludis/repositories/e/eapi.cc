@@ -81,6 +81,7 @@ namespace
                         value_for<n::env_distdir>(check_get(k, "env_distdir")),
                         value_for<n::env_ebuild_phase>(check_get(k, "env_ebuild_phase")),
                         value_for<n::env_filesdir>(check_get(k, "env_filesdir")),
+                        value_for<n::env_iuse_implicit>(check_get(k, "env_iuse_implicit")),
                         value_for<n::env_kv>(check_get(k, "env_kv")),
                         value_for<n::env_p>(check_get(k, "env_p")),
                         value_for<n::env_pf>(check_get(k, "env_pf")),
@@ -92,7 +93,10 @@ namespace
                         value_for<n::env_t>(check_get(k, "env_t")),
                         value_for<n::env_use>(check_get(k, "env_use")),
                         value_for<n::env_use_expand>(check_get(k, "env_use_expand")),
-                        value_for<n::env_use_expand_hidden>(check_get(k, "env_use_expand_hidden"))
+                        value_for<n::env_use_expand_hidden>(check_get(k, "env_use_expand_hidden")),
+                        value_for<n::env_use_expand_implicit>(check_get(k, "env_use_expand_implicit")),
+                        value_for<n::env_use_expand_unprefixed>(check_get(k, "env_use_expand_unprefixed")),
+                        value_for<n::env_use_expand_values_part>(check_get(k, "env_use_expand_values_part"))
             )));
     }
 
@@ -116,6 +120,7 @@ namespace
             value_for<n::homepage>(make_metadata_variable(k, "homepage")),
             value_for<n::inherited>(make_metadata_variable(k, "inherited")),
             value_for<n::iuse>(make_metadata_variable(k, "iuse")),
+            value_for<n::iuse_effective>(make_metadata_variable(k, "iuse_effective")),
             value_for<n::keywords>(make_metadata_variable(k, "keywords")),
             value_for<n::license>(make_metadata_variable(k, "license")),
             value_for<n::long_description>(make_metadata_variable(k, "long_description")),
@@ -241,6 +246,7 @@ namespace
                         value_for<n::has_expensive_tests>(destringify_key<bool>(k, "has_expensive_tests")),
                         value_for<n::has_optional_tests>(destringify_key<bool>(k, "has_optional_tests")),
                         value_for<n::has_recommended_tests>(destringify_key<bool>(k, "has_recommended_tests")),
+                        value_for<n::profile_iuse_injection>(destringify_key<bool>(k, "profile_iuse_injection")),
                         value_for<n::use_expand_separator>(destringify_key<char>(k, "use_expand_separator"))
                         )));
     }

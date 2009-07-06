@@ -166,6 +166,10 @@ namespace paludis
             std::set<std::pair<ChoicePrefixName, UnprefixedChoiceName> > use;
             std::tr1::shared_ptr<Set<std::string> > use_expand;
             std::tr1::shared_ptr<Set<std::string> > use_expand_hidden;
+            std::tr1::shared_ptr<Set<std::string> > use_expand_unprefixed;
+            std::tr1::shared_ptr<Set<std::string> > use_expand_implicit;
+            std::tr1::shared_ptr<Set<std::string> > iuse_implicit;
+            std::tr1::unordered_map<std::string, std::tr1::shared_ptr<Set<std::string> > > use_expand_values;
             KnownMap known_choice_value_names;
             mutable Mutex known_choice_value_names_for_separator_mutex;
             mutable std::tr1::unordered_map<char, KnownMap> known_choice_value_names_for_separator;
@@ -194,7 +198,10 @@ namespace paludis
                 system_packages(new SetSpecTree(make_shared_ptr(new AllDepSpec))),
                 system_tag(new GeneralSetDepTag(SetName("system"), stringify(name))),
                 use_expand(new Set<std::string>),
-                use_expand_hidden(new Set<std::string>)
+                use_expand_hidden(new Set<std::string>),
+                use_expand_unprefixed(new Set<std::string>),
+                use_expand_implicit(new Set<std::string>),
+                iuse_implicit(new Set<std::string>)
             {
                 Context context("When loading profiles '" + join(dirs.begin(), dirs.end(), "' '") + "' for repository '" + stringify(name) + "':");
 
@@ -384,6 +391,90 @@ Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & d
         Log::get_instance()->message("e.profile.make_defaults.use_expand_failure", ll_warning, lc_context)
             << "Loading '" << use_expand_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
     }
+
+    std::string use_expand_unprefixed_var(eapi->supported()->ebuild_environment_variables()->env_use_expand_unprefixed());
+    try
+    {
+        use_expand_unprefixed->clear();
+        if (! use_expand_unprefixed_var.empty())
+            tokenise_whitespace(environment_variables[use_expand_unprefixed_var], use_expand_unprefixed->inserter());
+    }
+    catch (const InternalError &)
+    {
+        throw;
+    }
+    catch (const Exception & e)
+    {
+        Log::get_instance()->message("e.profile.make_defaults.use_expand_unprefixed_failure", ll_warning, lc_context)
+            << "Loading '" << use_expand_unprefixed_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
+    }
+
+    std::string use_expand_implicit_var(eapi->supported()->ebuild_environment_variables()->env_use_expand_implicit());
+    try
+    {
+        use_expand_implicit->clear();
+        if (! use_expand_implicit_var.empty())
+            tokenise_whitespace(environment_variables[use_expand_implicit_var], use_expand_implicit->inserter());
+    }
+    catch (const InternalError &)
+    {
+        throw;
+    }
+    catch (const Exception & e)
+    {
+        Log::get_instance()->message("e.profile.make_defaults.use_expand_implicit_failure", ll_warning, lc_context)
+            << "Loading '" << use_expand_implicit_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
+    }
+
+    std::string iuse_implicit_var(eapi->supported()->ebuild_environment_variables()->env_iuse_implicit());
+    try
+    {
+        iuse_implicit->clear();
+        if (! iuse_implicit_var.empty())
+            tokenise_whitespace(environment_variables[iuse_implicit_var], iuse_implicit->inserter());
+    }
+    catch (const InternalError &)
+    {
+        throw;
+    }
+    catch (const Exception & e)
+    {
+        Log::get_instance()->message("e.profile.make_defaults.iuse_implicit_failure", ll_warning, lc_context)
+            << "Loading '" << iuse_implicit_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
+    }
+
+    std::string use_expand_values_part_var(eapi->supported()->ebuild_environment_variables()->env_use_expand_values_part());
+    try
+    {
+        use_expand_values.clear();
+        if (! use_expand_values_part_var.empty())
+        {
+            for (Set<std::string>::ConstIterator x(use_expand->begin()), x_end(use_expand->end()) ;
+                    x != x_end ; ++x)
+            {
+                std::tr1::shared_ptr<Set<std::string> > v(new Set<std::string>);
+                tokenise_whitespace(environment_variables[use_expand_values_part_var + *x], v->inserter());
+                use_expand_values.insert(std::make_pair(*x, v));
+            }
+
+            for (Set<std::string>::ConstIterator x(use_expand_unprefixed->begin()), x_end(use_expand_unprefixed->end()) ;
+                    x != x_end ; ++x)
+            {
+                std::tr1::shared_ptr<Set<std::string> > v(new Set<std::string>);
+                tokenise_whitespace(environment_variables[use_expand_values_part_var + *x], v->inserter());
+                use_expand_values.insert(std::make_pair(*x, v));
+            }
+        }
+    }
+    catch (const InternalError &)
+    {
+        throw;
+    }
+    catch (const Exception & e)
+    {
+        Log::get_instance()->message("e.profile.make_defaults.iuse_implicit_failure", ll_warning, lc_context)
+            << "Loading '" << iuse_implicit_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
+    }
 }
 
 void
@@ -459,13 +550,20 @@ Implementation<ERepositoryProfile>::is_incremental(const EAPI & e, const std::st
 {
     Context c("When checking whether '" + s + "' is incremental:");
 
+    std::string uevp_var(e.supported()->ebuild_environment_variables()->env_use_expand_implicit());
+
     return (! s.empty()) && (
             (s == e.supported()->ebuild_environment_variables()->env_use())
             || (s == e.supported()->ebuild_environment_variables()->env_use_expand())
             || (s == e.supported()->ebuild_environment_variables()->env_use_expand_hidden())
+            || (s == e.supported()->ebuild_environment_variables()->env_use_expand_unprefixed())
+            || (s == e.supported()->ebuild_environment_variables()->env_use_expand_implicit())
+            || (s == e.supported()->ebuild_environment_variables()->env_iuse_implicit())
             || s == "CONFIG_PROTECT"
             || s == "CONFIG_PROTECT_MASK"
-            || use_expand->end() != use_expand->find(s));
+            || use_expand->end() != use_expand->find(s)
+            || ((! uevp_var.empty()) && (s.length() > uevp_var.length()) && (0 == s.compare(0, uevp_var.length(), s)) &&
+                use_expand_implicit->end() != use_expand_implicit->find(s.substr(uevp_var.length() + 1))));
 }
 
 void
@@ -975,6 +1073,34 @@ const std::tr1::shared_ptr<const Set<std::string> >
 ERepositoryProfile::use_expand_hidden() const
 {
     return _imp->use_expand_hidden;
+}
+
+const std::tr1::shared_ptr<const Set<std::string> >
+ERepositoryProfile::use_expand_unprefixed() const
+{
+    return _imp->use_expand_unprefixed;
+}
+
+const std::tr1::shared_ptr<const Set<std::string> >
+ERepositoryProfile::use_expand_implicit() const
+{
+    return _imp->use_expand_implicit;
+}
+
+const std::tr1::shared_ptr<const Set<std::string> >
+ERepositoryProfile::use_expand_values(const std::string & x) const
+{
+    Context context("When finding USE_EXPAND_VALUES_" + x + ":");
+    std::tr1::unordered_map<std::string, std::tr1::shared_ptr<Set<std::string> > >::const_iterator i(_imp->use_expand_values.find(x));
+    if (i == _imp->use_expand_values.end())
+        throw InternalError(PALUDIS_HERE, "Oops. We need USE_EXPAND_VALUES_" + x + ", but it's not in the map");
+    return i->second;
+}
+
+const std::tr1::shared_ptr<const Set<std::string> >
+ERepositoryProfile::iuse_implicit() const
+{
+    return _imp->iuse_implicit;
 }
 
 const std::tr1::shared_ptr<ERepositoryProfile>

@@ -221,24 +221,43 @@ namespace
     }
 }
 
+namespace paludis
+{
+    namespace n
+    {
+        struct default_value;
+        struct implicit;
+    }
+}
+
 namespace
 {
-    void add_choice_to_map(std::map<ChoiceNameWithPrefix, Tribool> & values,
-           const std::pair<ChoiceNameWithPrefix, Tribool> & flag,
+    struct ChoiceOptions
+    {
+        NamedValue<n::default_value, Tribool> default_value;
+        NamedValue<n::implicit, bool> implicit;
+    };
+
+    void add_choice_to_map(std::map<ChoiceNameWithPrefix, ChoiceOptions> & values,
+           const std::pair<ChoiceNameWithPrefix, ChoiceOptions> & flag,
            const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & key)
     {
-        std::map<ChoiceNameWithPrefix, Tribool>::iterator i(values.find(flag.first));
+        std::map<ChoiceNameWithPrefix, ChoiceOptions>::iterator i(values.find(flag.first));
         if (values.end() == i)
             values.insert(flag);
-        else if (! flag.second.is_indeterminate()) {
-            if (i->second.is_indeterminate())
-                i->second = flag.second;
-            else if (flag.second.is_true() != i->second.is_true()) {
+        else if (! flag.second.default_value().is_indeterminate())
+        {
+            if (i->second.default_value().is_indeterminate())
+                i->second.default_value() = flag.second.default_value();
+            else if (flag.second.default_value().is_true() != i->second.default_value().is_true())
+            {
                 Log::get_instance()->message("e.iuse_key.contradiction", ll_warning, lc_context)
                     << "Flag '" << flag.first << "' is both enabled and disabled by default in "
                     << "'" << key->raw_name() << "', using enabled";
-                i->second = true;
+                i->second.default_value() = true;
             }
+
+            i->second.implicit() = i->second.implicit() && flag.second.implicit();
         }
     }
 }
@@ -362,47 +381,64 @@ EChoicesKey::populate_iuse() const
 
     /* ugh. iuse and all that mess. */
 
-    std::map<ChoiceNameWithPrefix, Tribool> i_values;
+    std::map<ChoiceNameWithPrefix, ChoiceOptions> i_values;
     std::string delim(1, _imp->id->eapi()->supported()->choices_options()->use_expand_separator());
 
     if (_imp->id->raw_iuse_key())
     {
         std::set<std::string> iuse_sanitised;
 
-        std::map<ChoiceNameWithPrefix, Tribool> values;
+        std::map<ChoiceNameWithPrefix, ChoiceOptions> values;
+
+        std::map<std::string, bool> iuse_with_implicit;
         for (Set<std::string>::ConstIterator u(_imp->id->raw_iuse_key()->value()->begin()), u_end(_imp->id->raw_iuse_key()->value()->end()) ;
                 u != u_end ; ++u)
+            iuse_with_implicit.insert(std::make_pair(*u, false));
+
+        if (_imp->id->raw_iuse_effective_key())
+            for (Set<std::string>::ConstIterator u(_imp->id->raw_iuse_effective_key()->value()->begin()),
+                    u_end(_imp->id->raw_iuse_effective_key()->value()->end()) ;
+                    u != u_end ; ++u)
+                iuse_with_implicit.insert(std::make_pair(*u, true));
+
+        for (std::map<std::string, bool>::const_iterator u(iuse_with_implicit.begin()), u_end(iuse_with_implicit.end()) ;
+                u != u_end ; ++u)
         {
-            std::pair<ChoiceNameWithPrefix, Tribool> flag(parse_iuse(_imp->id->eapi(), *u));
+            std::pair<ChoiceNameWithPrefix, Tribool> flag(parse_iuse(_imp->id->eapi(), u->first));
+            std::pair<ChoiceNameWithPrefix, ChoiceOptions> flag_with_options(flag.first, make_named_values<ChoiceOptions>(
+                        value_for<n::default_value>(flag.second),
+                        value_for<n::implicit>(u->second)
+                        ));
+
             iuse_sanitised.insert(stringify(flag.first));
             if (_imp->id->raw_use_expand_key() &&
                     _imp->id->raw_use_expand_key()->value()->end() != std::find_if(
                         _imp->id->raw_use_expand_key()->value()->begin(),
                         _imp->id->raw_use_expand_key()->value()->end(),
                         IsExpand(flag.first, delim)))
-                add_choice_to_map(i_values, flag, _imp->id->raw_iuse_key());
+                add_choice_to_map(i_values, flag_with_options, _imp->id->raw_iuse_key());
             else
             {
                 if (stringify(flag.first) == _imp->id->eapi()->supported()->choices_options()->fancy_test_flag())
                     /* have to add this right at the end, after build_options is there */
                     has_fancy_test_flag = true;
                 else
-                    add_choice_to_map(values, flag, _imp->id->raw_iuse_key());
+                    add_choice_to_map(values, flag_with_options, _imp->id->raw_iuse_key());
             }
         }
 
-        for (std::map<ChoiceNameWithPrefix, Tribool>::const_iterator it(values.begin()),
-                 it_end(values.end()); it_end != it; ++it)
+        for (std::map<ChoiceNameWithPrefix, ChoiceOptions>::const_iterator it(values.begin()),
+                 it_end(values.end()) ; it != it_end ; ++it)
         {
             std::tr1::shared_ptr<const ChoiceValue> choice(_imp->id->make_choice_value(
-                        use, UnprefixedChoiceName(stringify(it->first)), it->second, true,
+                        use, UnprefixedChoiceName(stringify(it->first)), it->second.default_value(), ! it->second.implicit(),
                         get_maybe_description(_imp->maybe_descriptions, it->first), false));
             use->add(choice);
         }
 
         /* pain in the ass: installed packages with DEPEND="x86? ( blah )" need to work,
          * even if x86 isn't listed in IUSE. */
-        if (_imp->id->raw_use_key())
+        if (_imp->id->raw_use_key() && ! _imp->id->eapi()->supported()->choices_options()->profile_iuse_injection())
         {
             for (Set<std::string>::ConstIterator u(_imp->id->raw_use_key()->value()->begin()), u_end(_imp->id->raw_use_key()->value()->end()) ;
                     u != u_end ; ++u)
@@ -432,7 +468,7 @@ EChoicesKey::populate_iuse() const
     }
 
     std::string env_arch(_imp->id->eapi()->supported()->ebuild_environment_variables()->env_arch());
-    if ((! env_arch.empty()) && _imp->maybe_e_repository)
+    if ((! env_arch.empty()) && _imp->maybe_e_repository && ! _imp->id->eapi()->supported()->ebuild_options()->require_use_expand_in_iuse())
     {
         std::tr1::shared_ptr<Choice> arch(new Choice(make_named_values<ChoiceParams>(
                         value_for<n::consider_added_or_changed>(false),
@@ -495,7 +531,7 @@ EChoicesKey::populate_iuse() const
                 }
             }
 
-            for (std::map<ChoiceNameWithPrefix, Tribool>::const_iterator i(i_values.begin()), i_end(i_values.end()) ;
+            for (std::map<ChoiceNameWithPrefix, ChoiceOptions>::const_iterator i(i_values.begin()), i_end(i_values.end()) ;
                     i != i_end ; ++i)
                 if (IsExpand(i->first, delim)(*u))
                     values.insert(UnprefixedChoiceName(i->first.data().substr(u->length() + delim.length())));
@@ -503,9 +539,9 @@ EChoicesKey::populate_iuse() const
             for (std::set<UnprefixedChoiceName>::const_iterator v(values.begin()), v_end(values.end()) ;
                     v != v_end ; ++v)
             {
-                std::map<ChoiceNameWithPrefix, Tribool>::const_iterator i(i_values.find(ChoiceNameWithPrefix(lower_u + delim + stringify(*v))));
+                std::map<ChoiceNameWithPrefix, ChoiceOptions>::const_iterator i(i_values.find(ChoiceNameWithPrefix(lower_u + delim + stringify(*v))));
                 if (i_values.end() != i)
-                    exp->add(_imp->id->make_choice_value(exp, *v, i->second, true,
+                    exp->add(_imp->id->make_choice_value(exp, *v, i->second.default_value(), ! i->second.implicit(),
                                 get_maybe_description(_imp->maybe_descriptions, i->first), false));
                 else
                     exp->add(_imp->id->make_choice_value(exp, *v, indeterminate, false, "", false));
