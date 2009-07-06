@@ -37,6 +37,10 @@ namespace paludis
             public MetadataValueKey<std::tr1::shared_ptr<const Choices> >,
             private PrivateImplementationPattern<EChoicesKey>
         {
+            private:
+                void populate_iuse() const;
+                void populate_myoptions() const;
+
             public:
                 EChoicesKey(
                         const Environment * const,

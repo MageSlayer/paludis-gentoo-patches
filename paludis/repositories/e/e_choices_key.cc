@@ -256,6 +256,93 @@ EChoicesKey::value() const
     if (! _imp->id->eapi()->supported())
         return _imp->value;
 
+    if (_imp->id->raw_myoptions_key())
+        populate_myoptions();
+    else
+        populate_iuse();
+
+    return _imp->value;
+}
+
+void
+EChoicesKey::populate_myoptions() const
+{
+    Context local_context("When using raw_myoptions_key to populate choices:");
+
+    std::tr1::shared_ptr<Choice> use(new Choice(make_named_values<ChoiceParams>(
+                    value_for<n::consider_added_or_changed>(true),
+                    value_for<n::contains_every_value>(false),
+                    value_for<n::hidden>(false),
+                    value_for<n::human_name>(_imp->id->eapi()->supported()->ebuild_environment_variables()->env_use()),
+                    value_for<n::prefix>(ChoicePrefixName("")),
+                    value_for<n::raw_name>(_imp->id->eapi()->supported()->ebuild_environment_variables()->env_use()),
+                    value_for<n::show_with_no_prefix>(true)
+                )));
+    _imp->value->add(use);
+
+    std::tr1::shared_ptr<const Set<std::string> > hidden;
+    if (_imp->id->raw_use_expand_hidden_key())
+        hidden = _imp->id->raw_use_expand_hidden_key()->value();
+
+    /* yay. myoptions is easy. */
+    MyOptionsFinder myoptions;
+    _imp->id->raw_myoptions_key()->value()->root()->accept(myoptions);
+
+    if (_imp->id->raw_use_expand_key())
+        for (Set<std::string>::ConstIterator u(_imp->id->raw_use_expand_key()->value()->begin()),
+                u_end(_imp->id->raw_use_expand_key()->value()->end()) ;
+                u != u_end ; ++u)
+        {
+            Context local_local_context("When using raw_use_expand_key value '" + *u + "' to populate choices:");
+
+            std::string lower_u;
+            std::transform(u->begin(), u->end(), std::back_inserter(lower_u), &::tolower);
+            std::tr1::shared_ptr<Choice> exp(new Choice(make_named_values<ChoiceParams>(
+                            value_for<n::consider_added_or_changed>(true),
+                            value_for<n::contains_every_value>(false),
+                            value_for<n::hidden>(hidden ? hidden->end() != hidden->find(*u) : false),
+                            value_for<n::human_name>(lower_u),
+                            value_for<n::prefix>(ChoicePrefixName(lower_u)),
+                            value_for<n::raw_name>(stringify(*u)),
+                            value_for<n::show_with_no_prefix>(false)
+                        )));
+            _imp->value->add(exp);
+
+            MyOptionsFinder::Prefixes::iterator p(myoptions.prefixes.find(ChoicePrefixName(lower_u)));
+            if (myoptions.prefixes.end() != p)
+            {
+                for (MyOptionsFinder::Values::const_iterator v(p->second.begin()), v_end(p->second.end()) ;
+                        v != v_end ; ++v)
+                    exp->add(make_myoption(_imp->id, exp, v, indeterminate, true));
+                myoptions.prefixes.erase(p);
+            }
+        }
+
+    MyOptionsFinder::Prefixes::iterator p(myoptions.prefixes.find(ChoicePrefixName("")));
+    if (myoptions.prefixes.end() != p)
+    {
+        Context local_local_context("When using empty prefix to populate choices:");
+        for (MyOptionsFinder::Values::const_iterator v(p->second.begin()), v_end(p->second.end()) ;
+                v != v_end ; ++v)
+            use->add(make_myoption(_imp->id, use, v, indeterminate, true));
+        myoptions.prefixes.erase(p);
+    }
+
+    if (! myoptions.prefixes.empty())
+    {
+        Log::get_instance()->message("e.myoptions_key.invalid", ll_warning, lc_context) << "Key '" << raw_name() << "' for '"
+            << *_imp->id << "' uses unknown prefixes { '" << join(first_iterator(myoptions.prefixes.begin()),
+                    first_iterator(myoptions.prefixes.end()), "', '") << "' }";
+    }
+
+    _imp->id->add_build_options(_imp->value);
+}
+
+void
+EChoicesKey::populate_iuse() const
+{
+    Context local_context("When using raw_iuse_key and raw_use_key to populate choices:");
+
     std::tr1::shared_ptr<Choice> use(new Choice(make_named_values<ChoiceParams>(
                     value_for<n::consider_added_or_changed>(true),
                     value_for<n::contains_every_value>(false),
@@ -273,214 +360,155 @@ EChoicesKey::value() const
     if (_imp->id->raw_use_expand_hidden_key())
         hidden = _imp->id->raw_use_expand_hidden_key()->value();
 
-    if (_imp->id->raw_myoptions_key())
+    /* ugh. iuse and all that mess. */
+
+    std::map<ChoiceNameWithPrefix, Tribool> i_values;
+    std::string delim(1, _imp->id->eapi()->supported()->choices_options()->use_expand_separator());
+
+    if (_imp->id->raw_iuse_key())
     {
-        Context local_context("When using raw_myoptions_key to populate choices:");
+        std::set<std::string> iuse_sanitised;
 
-        /* yay. myoptions is easy. */
-        MyOptionsFinder myoptions;
-        _imp->id->raw_myoptions_key()->value()->root()->accept(myoptions);
-
-        if (_imp->id->raw_use_expand_key())
-            for (Set<std::string>::ConstIterator u(_imp->id->raw_use_expand_key()->value()->begin()),
-                    u_end(_imp->id->raw_use_expand_key()->value()->end()) ;
-                    u != u_end ; ++u)
+        std::map<ChoiceNameWithPrefix, Tribool> values;
+        for (Set<std::string>::ConstIterator u(_imp->id->raw_iuse_key()->value()->begin()), u_end(_imp->id->raw_iuse_key()->value()->end()) ;
+                u != u_end ; ++u)
+        {
+            std::pair<ChoiceNameWithPrefix, Tribool> flag(parse_iuse(_imp->id->eapi(), *u));
+            iuse_sanitised.insert(stringify(flag.first));
+            if (_imp->id->raw_use_expand_key() &&
+                    _imp->id->raw_use_expand_key()->value()->end() != std::find_if(
+                        _imp->id->raw_use_expand_key()->value()->begin(),
+                        _imp->id->raw_use_expand_key()->value()->end(),
+                        IsExpand(flag.first, delim)))
+                add_choice_to_map(i_values, flag, _imp->id->raw_iuse_key());
+            else
             {
-                Context local_local_context("When using raw_use_expand_key value '" + *u + "' to populate choices:");
-
-                std::string lower_u;
-                std::transform(u->begin(), u->end(), std::back_inserter(lower_u), &::tolower);
-                std::tr1::shared_ptr<Choice> exp(new Choice(make_named_values<ChoiceParams>(
-                                value_for<n::consider_added_or_changed>(true),
-                                value_for<n::contains_every_value>(false),
-                                value_for<n::hidden>(hidden ? hidden->end() != hidden->find(*u) : false),
-                                value_for<n::human_name>(lower_u),
-                                value_for<n::prefix>(ChoicePrefixName(lower_u)),
-                                value_for<n::raw_name>(stringify(*u)),
-                                value_for<n::show_with_no_prefix>(false)
-                            )));
-                _imp->value->add(exp);
-
-                MyOptionsFinder::Prefixes::iterator p(myoptions.prefixes.find(ChoicePrefixName(lower_u)));
-                if (myoptions.prefixes.end() != p)
-                {
-                    for (MyOptionsFinder::Values::const_iterator v(p->second.begin()), v_end(p->second.end()) ;
-                            v != v_end ; ++v)
-                        exp->add(make_myoption(_imp->id, exp, v, indeterminate, true));
-                    myoptions.prefixes.erase(p);
-                }
+                if (stringify(flag.first) == _imp->id->eapi()->supported()->choices_options()->fancy_test_flag())
+                    /* have to add this right at the end, after build_options is there */
+                    has_fancy_test_flag = true;
+                else
+                    add_choice_to_map(values, flag, _imp->id->raw_iuse_key());
             }
-
-        MyOptionsFinder::Prefixes::iterator p(myoptions.prefixes.find(ChoicePrefixName("")));
-        if (myoptions.prefixes.end() != p)
-        {
-            Context local_local_context("When using empty prefix to populate choices:");
-            for (MyOptionsFinder::Values::const_iterator v(p->second.begin()), v_end(p->second.end()) ;
-                    v != v_end ; ++v)
-                use->add(make_myoption(_imp->id, use, v, indeterminate, true));
-            myoptions.prefixes.erase(p);
         }
 
-        if (! myoptions.prefixes.empty())
+        for (std::map<ChoiceNameWithPrefix, Tribool>::const_iterator it(values.begin()),
+                 it_end(values.end()); it_end != it; ++it)
         {
-            Log::get_instance()->message("e.myoptions_key.invalid", ll_warning, lc_context) << "Key '" << raw_name() << "' for '"
-                << *_imp->id << "' uses unknown prefixes { '" << join(first_iterator(myoptions.prefixes.begin()),
-                        first_iterator(myoptions.prefixes.end()), "', '") << "' }";
+            std::tr1::shared_ptr<const ChoiceValue> choice(_imp->id->make_choice_value(
+                        use, UnprefixedChoiceName(stringify(it->first)), it->second, true,
+                        get_maybe_description(_imp->maybe_descriptions, it->first), false));
+            use->add(choice);
         }
-    }
-    else
-    {
-        /* ugh. iuse and all that mess. */
-        Context local_context("When using raw_iuse_key and raw_use_key to populate choices:");
 
-        std::map<ChoiceNameWithPrefix, Tribool> i_values;
-        std::string delim(1, _imp->id->eapi()->supported()->choices_options()->use_expand_separator());
-
-        if (_imp->id->raw_iuse_key())
+        /* pain in the ass: installed packages with DEPEND="x86? ( blah )" need to work,
+         * even if x86 isn't listed in IUSE. */
+        if (_imp->id->raw_use_key())
         {
-            std::set<std::string> iuse_sanitised;
-
-            std::map<ChoiceNameWithPrefix, Tribool> values;
-            for (Set<std::string>::ConstIterator u(_imp->id->raw_iuse_key()->value()->begin()), u_end(_imp->id->raw_iuse_key()->value()->end()) ;
+            for (Set<std::string>::ConstIterator u(_imp->id->raw_use_key()->value()->begin()), u_end(_imp->id->raw_use_key()->value()->end()) ;
                     u != u_end ; ++u)
             {
-                std::pair<ChoiceNameWithPrefix, Tribool> flag(parse_iuse(_imp->id->eapi(), *u));
-                iuse_sanitised.insert(stringify(flag.first));
+                if (iuse_sanitised.end() != iuse_sanitised.find(*u))
+                    continue;
+
+                std::pair<ChoiceNameWithPrefix, Tribool> flag(ChoiceNameWithPrefix("x"), indeterminate);
+                if (0 == u->compare(0, 1, "-", 0, 1))
+                    flag = std::make_pair(ChoiceNameWithPrefix(u->substr(1)), false);
+                else
+                    flag = std::make_pair(ChoiceNameWithPrefix(*u), true);
+
                 if (_imp->id->raw_use_expand_key() &&
                         _imp->id->raw_use_expand_key()->value()->end() != std::find_if(
                             _imp->id->raw_use_expand_key()->value()->begin(),
                             _imp->id->raw_use_expand_key()->value()->end(),
                             IsExpand(flag.first, delim)))
-                    add_choice_to_map(i_values, flag, _imp->id->raw_iuse_key());
+                {
+                    /* don't need to worry */
+                }
                 else
-                {
-                    if (stringify(flag.first) == _imp->id->eapi()->supported()->choices_options()->fancy_test_flag())
-                        /* have to add this right at the end, after build_options is there */
-                        has_fancy_test_flag = true;
-                    else
-                        add_choice_to_map(values, flag, _imp->id->raw_iuse_key());
-                }
-            }
-
-            for (std::map<ChoiceNameWithPrefix, Tribool>::const_iterator it(values.begin()),
-                     it_end(values.end()); it_end != it; ++it)
-            {
-                std::tr1::shared_ptr<const ChoiceValue> choice(_imp->id->make_choice_value(
-                            use, UnprefixedChoiceName(stringify(it->first)), it->second, true,
-                            get_maybe_description(_imp->maybe_descriptions, it->first), false));
-                use->add(choice);
-            }
-
-            /* pain in the ass: installed packages with DEPEND="x86? ( blah )" need to work,
-             * even if x86 isn't listed in IUSE. */
-            if (_imp->id->raw_use_key())
-            {
-                for (Set<std::string>::ConstIterator u(_imp->id->raw_use_key()->value()->begin()), u_end(_imp->id->raw_use_key()->value()->end()) ;
-                        u != u_end ; ++u)
-                {
-                    if (iuse_sanitised.end() != iuse_sanitised.find(*u))
-                        continue;
-
-                    std::pair<ChoiceNameWithPrefix, Tribool> flag(ChoiceNameWithPrefix("x"), indeterminate);
-                    if (0 == u->compare(0, 1, "-", 0, 1))
-                        flag = std::make_pair(ChoiceNameWithPrefix(u->substr(1)), false);
-                    else
-                        flag = std::make_pair(ChoiceNameWithPrefix(*u), true);
-
-                    if (_imp->id->raw_use_expand_key() &&
-                            _imp->id->raw_use_expand_key()->value()->end() != std::find_if(
-                                _imp->id->raw_use_expand_key()->value()->begin(),
-                                _imp->id->raw_use_expand_key()->value()->end(),
-                                IsExpand(flag.first, delim)))
-                    {
-                        /* don't need to worry */
-                    }
-                    else
-                        use->add(_imp->id->make_choice_value(use, UnprefixedChoiceName(stringify(flag.first)), flag.second, false,
-                                    get_maybe_description(_imp->maybe_descriptions, flag.first), false));
-                }
+                    use->add(_imp->id->make_choice_value(use, UnprefixedChoiceName(stringify(flag.first)), flag.second, false,
+                                get_maybe_description(_imp->maybe_descriptions, flag.first), false));
             }
         }
+    }
 
-        std::string env_arch(_imp->id->eapi()->supported()->ebuild_environment_variables()->env_arch());
-        if ((! env_arch.empty()) && _imp->maybe_e_repository)
+    std::string env_arch(_imp->id->eapi()->supported()->ebuild_environment_variables()->env_arch());
+    if ((! env_arch.empty()) && _imp->maybe_e_repository)
+    {
+        std::tr1::shared_ptr<Choice> arch(new Choice(make_named_values<ChoiceParams>(
+                        value_for<n::consider_added_or_changed>(false),
+                        value_for<n::contains_every_value>(false),
+                        value_for<n::hidden>(true),
+                        value_for<n::human_name>(env_arch),
+                        value_for<n::prefix>(ChoicePrefixName("")),
+                        value_for<n::raw_name>(env_arch),
+                        value_for<n::show_with_no_prefix>(false)
+                    )));
+        _imp->value->add(arch);
+
+        for (Set<UnprefixedChoiceName>::ConstIterator a(_imp->maybe_e_repository->arch_flags()->begin()), a_end(_imp->maybe_e_repository->arch_flags()->end()) ;
+                a != a_end ; ++a)
+            arch->add(_imp->id->make_choice_value(arch, *a, indeterminate, false, "", false));
+    }
+
+    if (_imp->id->raw_use_expand_key())
+    {
+        for (Set<std::string>::ConstIterator u(_imp->id->raw_use_expand_key()->value()->begin()),
+                u_end(_imp->id->raw_use_expand_key()->value()->end()) ;
+                u != u_end ; ++u)
         {
-            std::tr1::shared_ptr<Choice> arch(new Choice(make_named_values<ChoiceParams>(
-                            value_for<n::consider_added_or_changed>(false),
-                            value_for<n::contains_every_value>(false),
-                            value_for<n::hidden>(true),
-                            value_for<n::human_name>(env_arch),
-                            value_for<n::prefix>(ChoicePrefixName("")),
-                            value_for<n::raw_name>(env_arch),
+            std::string lower_u;
+            std::transform(u->begin(), u->end(), std::back_inserter(lower_u), &::tolower);
+            std::tr1::shared_ptr<Choice> exp(new Choice(make_named_values<ChoiceParams>(
+                            value_for<n::consider_added_or_changed>(true),
+                            value_for<n::contains_every_value>(! _imp->id->eapi()->supported()->ebuild_options()->require_use_expand_in_iuse()),
+                            value_for<n::hidden>(hidden ? hidden->end() != hidden->find(*u) : false),
+                            value_for<n::human_name>(lower_u),
+                            value_for<n::prefix>(ChoicePrefixName(lower_u)),
+                            value_for<n::raw_name>(stringify(*u)),
                             value_for<n::show_with_no_prefix>(false)
-                        )));
-            _imp->value->add(arch);
+                            )));
+            _imp->value->add(exp);
 
-            for (Set<UnprefixedChoiceName>::ConstIterator a(_imp->maybe_e_repository->arch_flags()->begin()), a_end(_imp->maybe_e_repository->arch_flags()->end()) ;
-                    a != a_end ; ++a)
-                arch->add(_imp->id->make_choice_value(arch, *a, indeterminate, false, "", false));
-        }
+            std::set<UnprefixedChoiceName> values;
 
-        if (_imp->id->raw_use_expand_key())
-        {
-            for (Set<std::string>::ConstIterator u(_imp->id->raw_use_expand_key()->value()->begin()),
-                    u_end(_imp->id->raw_use_expand_key()->value()->end()) ;
-                    u != u_end ; ++u)
+            if (! _imp->id->eapi()->supported()->ebuild_options()->require_use_expand_in_iuse())
             {
-                std::string lower_u;
-                std::transform(u->begin(), u->end(), std::back_inserter(lower_u), &::tolower);
-                std::tr1::shared_ptr<Choice> exp(new Choice(make_named_values<ChoiceParams>(
-                                value_for<n::consider_added_or_changed>(true),
-                                value_for<n::contains_every_value>(! _imp->id->eapi()->supported()->ebuild_options()->require_use_expand_in_iuse()),
-                                value_for<n::hidden>(hidden ? hidden->end() != hidden->find(*u) : false),
-                                value_for<n::human_name>(lower_u),
-                                value_for<n::prefix>(ChoicePrefixName(lower_u)),
-                                value_for<n::raw_name>(stringify(*u)),
-                                value_for<n::show_with_no_prefix>(false)
-                                )));
-                _imp->value->add(exp);
+                std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > e_values(_imp->env->known_choice_value_names(_imp->id, exp));
+                std::copy(e_values->begin(), e_values->end(), std::inserter(values, values.begin()));
 
-                std::set<UnprefixedChoiceName> values;
-
-                if (! _imp->id->eapi()->supported()->ebuild_options()->require_use_expand_in_iuse())
+                if (_imp->maybe_e_repository)
                 {
-                    std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > e_values(_imp->env->known_choice_value_names(_imp->id, exp));
-                    std::copy(e_values->begin(), e_values->end(), std::inserter(values, values.begin()));
-
-                    if (_imp->maybe_e_repository)
-                    {
-                        std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > r_values(
-                            _imp->maybe_e_repository->profile()->known_choice_value_names(_imp->id, exp));
-                        std::copy(r_values->begin(), r_values->end(), std::inserter(values, values.begin()));
-                    }
-
-                    if (_imp->id->raw_use_key())
-                    {
-                        for (Set<std::string>::ConstIterator it(_imp->id->raw_use_key()->value()->begin()),
-                                 it_end(_imp->id->raw_use_key()->value()->end()); it_end != it; ++it)
-                        {
-                            std::string flag(0 == it->compare(0, 1, "-", 0, 1) ? it->substr(1) : *it);
-                            if (IsExpand(ChoiceNameWithPrefix(flag), delim)(*u))
-                                values.insert(UnprefixedChoiceName(flag.substr(u->length() + delim.length())));
-                        }
-                    }
+                    std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > r_values(
+                        _imp->maybe_e_repository->profile()->known_choice_value_names(_imp->id, exp));
+                    std::copy(r_values->begin(), r_values->end(), std::inserter(values, values.begin()));
                 }
 
-                for (std::map<ChoiceNameWithPrefix, Tribool>::const_iterator i(i_values.begin()), i_end(i_values.end()) ;
-                        i != i_end ; ++i)
-                    if (IsExpand(i->first, delim)(*u))
-                        values.insert(UnprefixedChoiceName(i->first.data().substr(u->length() + delim.length())));
-
-                for (std::set<UnprefixedChoiceName>::const_iterator v(values.begin()), v_end(values.end()) ;
-                        v != v_end ; ++v)
+                if (_imp->id->raw_use_key())
                 {
-                    std::map<ChoiceNameWithPrefix, Tribool>::const_iterator i(i_values.find(ChoiceNameWithPrefix(lower_u + delim + stringify(*v))));
-                    if (i_values.end() != i)
-                        exp->add(_imp->id->make_choice_value(exp, *v, i->second, true,
-                                    get_maybe_description(_imp->maybe_descriptions, i->first), false));
-                    else
-                        exp->add(_imp->id->make_choice_value(exp, *v, indeterminate, false, "", false));
+                    for (Set<std::string>::ConstIterator it(_imp->id->raw_use_key()->value()->begin()),
+                             it_end(_imp->id->raw_use_key()->value()->end()); it_end != it; ++it)
+                    {
+                        std::string flag(0 == it->compare(0, 1, "-", 0, 1) ? it->substr(1) : *it);
+                        if (IsExpand(ChoiceNameWithPrefix(flag), delim)(*u))
+                            values.insert(UnprefixedChoiceName(flag.substr(u->length() + delim.length())));
+                    }
                 }
+            }
+
+            for (std::map<ChoiceNameWithPrefix, Tribool>::const_iterator i(i_values.begin()), i_end(i_values.end()) ;
+                    i != i_end ; ++i)
+                if (IsExpand(i->first, delim)(*u))
+                    values.insert(UnprefixedChoiceName(i->first.data().substr(u->length() + delim.length())));
+
+            for (std::set<UnprefixedChoiceName>::const_iterator v(values.begin()), v_end(values.end()) ;
+                    v != v_end ; ++v)
+            {
+                std::map<ChoiceNameWithPrefix, Tribool>::const_iterator i(i_values.find(ChoiceNameWithPrefix(lower_u + delim + stringify(*v))));
+                if (i_values.end() != i)
+                    exp->add(_imp->id->make_choice_value(exp, *v, i->second, true,
+                                get_maybe_description(_imp->maybe_descriptions, i->first), false));
+                else
+                    exp->add(_imp->id->make_choice_value(exp, *v, indeterminate, false, "", false));
             }
         }
     }
@@ -506,8 +534,6 @@ EChoicesKey::value() const
             use->add(choice);
         }
     }
-
-    return _imp->value;
 }
 
 const std::string
