@@ -550,7 +550,7 @@ Implementation<ERepositoryProfile>::is_incremental(const EAPI & e, const std::st
 {
     Context c("When checking whether '" + s + "' is incremental:");
 
-    std::string uevp_var(e.supported()->ebuild_environment_variables()->env_use_expand_implicit());
+    std::string uevp_var(e.supported()->ebuild_environment_variables()->env_use_expand_values_part());
 
     return (! s.empty()) && (
             (s == e.supported()->ebuild_environment_variables()->env_use())
