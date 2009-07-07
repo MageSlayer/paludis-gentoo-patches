@@ -440,6 +440,15 @@ namespace
     {
         s = v;
     }
+
+    bool ignore_nothing(const FSEntry &)
+    {
+        return false;
+    }
+
+    void installed_this(const FSEntry &)
+    {
+    }
 }
 
 void
@@ -467,6 +476,7 @@ AccountsID::perform_action(Action & action) const
                         make_named_values<MergeParams>(
                             value_for<n::environment_file>(FSEntry("/dev/null")),
                             value_for<n::image_dir>(fs_location_key()->value()),
+                            value_for<n::installed_this>(&installed_this),
                             value_for<n::options>(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs),
                             value_for<n::output_manager>(output_manager),
                             value_for<n::package_id>(shared_from_this()),
@@ -499,6 +509,7 @@ AccountsID::perform_action(Action & action) const
             UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                         value_for<n::config_protect>(used_config_protect),
                         value_for<n::if_for_install_id>(shared_from_this()),
+                        value_for<n::ignore_for_unmerge>(&ignore_nothing),
                         value_for<n::is_overwrite>(false),
                         value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, output_manager, std::tr1::placeholders::_1))
                         ));

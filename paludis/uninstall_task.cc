@@ -222,6 +222,14 @@ UninstallTask::add_unused()
         throw InternalError(PALUDIS_HERE, "Trying to mix unused and normal targets?");
 }
 
+namespace
+{
+    bool ignore_nothing(const FSEntry &)
+    {
+        return false;
+    }
+}
+
 void
 UninstallTask::execute()
 {
@@ -370,6 +378,7 @@ UninstallTask::execute()
                     make_named_values<UninstallActionOptions>(
                         value_for<n::config_protect>(""),
                         value_for<n::if_for_install_id>(make_null_shared_ptr()),
+                        value_for<n::ignore_for_unmerge>(&ignore_nothing),
                         value_for<n::is_overwrite>(false),
                         value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
                         ));

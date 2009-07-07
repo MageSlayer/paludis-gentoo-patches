@@ -819,6 +819,14 @@ InstalledUnpackagedID::extra_hash_value() const
     return Hash<SlotName>()(slot_key()->value());
 }
 
+namespace
+{
+    bool ignore_nothing(const FSEntry &)
+    {
+        return false;
+    }
+}
+
 void
 InstalledUnpackagedID::uninstall(const bool replace, const std::tr1::shared_ptr<OutputManager> & output_manager) const
 {
@@ -849,6 +857,7 @@ InstalledUnpackagedID::uninstall(const bool replace, const std::tr1::shared_ptr<
                 value_for<n::config_protect_mask>(getenv_with_default("CONFIG_PROTECT_MASK", "")),
                 value_for<n::contents_file>(ver_dir / "contents"),
                 value_for<n::environment>(_imp->env),
+                value_for<n::ignore>(&ignore_nothing),
                 value_for<n::ndbam>(_imp->ndbam),
                 value_for<n::output_manager>(output_manager),
                 value_for<n::package_id>(shared_from_this()),

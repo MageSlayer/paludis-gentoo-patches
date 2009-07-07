@@ -27,6 +27,7 @@
 #include <paludis/util/named_value.hh>
 #include <paludis/merger_entry_type.hh>
 #include <paludis/contents-fwd.hh>
+#include <tr1/functional>
 
 /** \file
  * Declarations for the Unmerger class, which can be used by Repository
@@ -47,6 +48,7 @@ namespace paludis
     namespace n
     {
         struct environment;
+        struct ignore;
         struct root;
     }
 
@@ -60,6 +62,7 @@ namespace paludis
     struct UnmergerOptions
     {
         NamedValue<n::environment, const Environment *> environment;
+        NamedValue<n::ignore, const std::tr1::function<bool (const FSEntry &)> > ignore;
         NamedValue<n::root, FSEntry> root;
     };
 

@@ -35,6 +35,7 @@ namespace paludis
         struct config_protect;
         struct config_protect_mask;
         struct environment;
+        struct ignore;
         struct output_manager;
         struct package_id;
         struct root;
@@ -52,6 +53,7 @@ namespace paludis
         NamedValue<n::config_protect, std::string> config_protect;
         NamedValue<n::config_protect_mask, std::string> config_protect_mask;
         NamedValue<n::environment, Environment *> environment;
+        NamedValue<n::ignore, const std::tr1::function<bool (const FSEntry &)> > ignore;
         NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
         NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
         NamedValue<n::root, FSEntry> root;

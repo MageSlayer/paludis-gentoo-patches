@@ -55,6 +55,7 @@ namespace paludis
         struct failed_integrity_checks;
         struct fetch_unneeded;
         struct if_for_install_id;
+        struct ignore_for_unmerge;
         struct ignore_unfetched;
         struct is_overwrite;
         struct make_output_manager;
@@ -123,6 +124,7 @@ namespace paludis
          */
         NamedValue<n::make_output_manager, std::tr1::function<std::tr1::shared_ptr<OutputManager> (
                 const InstallAction &)> > make_output_manager;
+
         /**
          * Callback to carry out an uninstall, for replacing.
          *
@@ -165,6 +167,13 @@ namespace paludis
          * \since 0.36
          */
         NamedValue<n::if_for_install_id, std::tr1::shared_ptr<const PackageID> > if_for_install_id;
+
+        /**
+         * Sometimes we never want to unmerge certain files.
+         *
+         * \since 0,38
+         */
+        NamedValue<n::ignore_for_unmerge, std::tr1::function<bool (const FSEntry &)> > ignore_for_unmerge;
 
         /**
          * Some repositories need to do special handlings for direct overwrites

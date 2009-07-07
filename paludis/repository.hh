@@ -62,6 +62,7 @@ namespace paludis
         struct environment_variable_interface;
         struct hook_interface;
         struct image_dir;
+        struct installed_this;
         struct make_virtuals_interface;
         struct manifest_interface;
         struct mirrors_interface;
@@ -161,6 +162,14 @@ namespace paludis
     {
         NamedValue<n::environment_file, FSEntry> environment_file;
         NamedValue<n::image_dir, FSEntry> image_dir;
+
+        /**
+         * Some callers need to know what we merged.
+         *
+         * \since 0.38
+         */
+        NamedValue<n::installed_this, std::tr1::function<void (const FSEntry &)> > installed_this;
+
         NamedValue<n::options, MergerOptions> options;
         NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
         NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;

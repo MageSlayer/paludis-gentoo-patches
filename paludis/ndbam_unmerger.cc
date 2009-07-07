@@ -71,6 +71,7 @@ namespace paludis
 NDBAMUnmerger::NDBAMUnmerger(const NDBAMUnmergerOptions & o) :
     Unmerger(make_named_values<UnmergerOptions>(
             value_for<n::environment>(o.environment()),
+            value_for<n::ignore>(o.ignore()),
             value_for<n::root>(o.root())
             )),
     PrivateImplementationPattern<NDBAMUnmerger>(new Implementation<NDBAMUnmerger>(o)),

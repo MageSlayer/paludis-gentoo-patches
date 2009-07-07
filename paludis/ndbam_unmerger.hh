@@ -27,6 +27,7 @@
 #include <paludis/unmerger.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
+#include <tr1/functional>
 
 namespace paludis
 {
@@ -36,6 +37,7 @@ namespace paludis
         struct config_protect_mask;
         struct contents_file;
         struct environment;
+        struct ignore;
         struct ndbam;
         struct output_manager;
         struct package_id;
@@ -50,6 +52,7 @@ namespace paludis
         NamedValue<n::config_protect_mask, std::string> config_protect_mask;
         NamedValue<n::contents_file, FSEntry> contents_file;
         NamedValue<n::environment, const Environment *> environment;
+        NamedValue<n::ignore, const std::tr1::function<bool (const FSEntry &)> > ignore;
         NamedValue<n::ndbam, const NDBAM *> ndbam;
         NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
         NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;

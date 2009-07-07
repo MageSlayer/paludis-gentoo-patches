@@ -554,6 +554,15 @@ namespace
     {
         return o;
     }
+
+    void installed_this(const FSEntry &)
+    {
+    }
+
+    bool ignore_nothing(const FSEntry &)
+    {
+        return false;
+    }
 }
 
 void
@@ -707,6 +716,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                         make_named_values<MergeParams>(
                             value_for<n::environment_file>(package_builddir / "temp" / "loadsaveenv"),
                             value_for<n::image_dir>(package_builddir / "image"),
+                            value_for<n::installed_this>(&installed_this),
                             value_for<n::options>(id->eapi()->supported()->merger_options()),
                             value_for<n::output_manager>(output_manager),
                             value_for<n::package_id>(id),
@@ -839,6 +849,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
         UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                     value_for<n::config_protect>(used_config_protect),
                     value_for<n::if_for_install_id>(id),
+                    value_for<n::ignore_for_unmerge>(&ignore_nothing),
                     value_for<n::is_overwrite>(false),
                     value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, output_manager, std::tr1::placeholders::_1))
                     ));

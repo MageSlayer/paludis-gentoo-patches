@@ -52,6 +52,11 @@ namespace
             return mm->second;
     }
 
+    bool ignore_nothing(const FSEntry &)
+    {
+        return false;
+    }
+
     class VDBUnmergerNoDisplay :
         public VDBUnmerger
     {
@@ -121,6 +126,7 @@ namespace
                                 value_for<n::config_protect>("/protected_file /protected_dir"),
                                 value_for<n::config_protect_mask>("/protected_dir/unprotected_file /protected_dir/unprotected_dir"),
                                 value_for<n::environment>(&env),
+                                value_for<n::ignore>(&ignore_nothing),
                                 value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
                                 value_for<n::package_id>(*env[selection::RequireExactlyOne(generator::Matches(
                                             parse_user_package_dep_spec("cat/" + fix(what), &env, UserPackageDepSpecOptions()),
