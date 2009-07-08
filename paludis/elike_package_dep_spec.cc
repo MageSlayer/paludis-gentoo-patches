@@ -313,8 +313,7 @@ paludis::elike_has_version_operator(const std::string & s, const bool had_bracke
             throw PackageDepSpecError("Cannot mix [] and traditional version specifications");
 
         if (options[epdso_disallow_nonranged_deps])
-            Log::get_instance()->message("e.package_dep_spec.traditional_version_ops_not_allowed", ll_qa, lc_context)
-                << "Traditional version specifications are deprecated and will soon stop working here";
+            throw PackageDepSpecError("Traditional version specifications are not allowed here");
 
         return true;
     }
