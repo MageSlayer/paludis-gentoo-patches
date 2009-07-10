@@ -152,6 +152,9 @@ MyOptionsRequirementsVerifier::verify_one(const ChoicePrefixName & spec_prefix,
         else if (a_key == _imp->id->eapi()->supported()->annotations()->myoptions_number_selected())
         {
         }
+        else if (a_key == _imp->id->eapi()->supported()->ebuild_options()->bracket_merged_variables_annotation())
+        {
+        }
         else if (a_key == _imp->id->eapi()->supported()->annotations()->myoptions_requires())
         {
             std::list<std::string> tokens;

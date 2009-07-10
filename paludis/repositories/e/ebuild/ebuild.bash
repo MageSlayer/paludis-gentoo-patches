@@ -338,7 +338,12 @@ ebuild_load_ebuild()
 
     for paludis_v in ${PALUDIS_BRACKET_MERGED_VARIABLES} ; do
         paludis_e_v=E_${paludis_v}
-        eval ${paludis_v}='"( ${!paludis_v} ) ${!paludis_e_v}"'
+        if has "${paludis_v}" ${PALUDIS_BRACKET_MERGED_VARIABLES_ANNOTATABLE} ; then
+            eval ${paludis_v}='"( ${!paludis_v} ) [[ '\
+                ${PALUDIS_BRACKET_MERGED_VARIABLES_ANNOTATION}' = [ '${1##*/}' ] ]] ${!paludis_e_v}"'
+        else
+            eval ${paludis_v}='"( ${!paludis_v} ) ${!paludis_e_v}"'
+        fi
     done
 
     for paludis_v in ${PALUDIS_MUST_NOT_CHANGE_VARIABLES} ; do

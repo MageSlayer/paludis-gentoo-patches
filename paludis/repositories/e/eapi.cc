@@ -156,6 +156,8 @@ namespace
         return make_shared_ptr(new EAPIEbuildOptions(make_named_values<EAPIEbuildOptions>(
                         value_for<n::binary_from_env_variables>(check_get(k, "binary_from_env_variables")),
                         value_for<n::bracket_merged_variables>(check_get(k, "bracket_merged_variables")),
+                        value_for<n::bracket_merged_variables_annotatable>(check_get(k, "bracket_merged_variables_annotatable")),
+                        value_for<n::bracket_merged_variables_annotation>(check_get(k, "bracket_merged_variables_annotation")),
                         value_for<n::directory_if_exists_variables>(check_get(k, "directory_if_exists_variables")),
                         value_for<n::directory_variables>(check_get(k, "directory_variables")),
                         value_for<n::ebuild_functions>(check_get(k, "ebuild_functions")),

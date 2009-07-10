@@ -40,6 +40,8 @@ namespace paludis
         struct annotations;
         struct binary_from_env_variables;
         struct bracket_merged_variables;
+        struct bracket_merged_variables_annotatable;
+        struct bracket_merged_variables_annotation;
         struct breaks_portage;
         struct bugs_to;
         struct build_depend;
@@ -352,6 +354,8 @@ namespace paludis
         {
             NamedValue<n::binary_from_env_variables, std::string> binary_from_env_variables;
             NamedValue<n::bracket_merged_variables, std::string> bracket_merged_variables;
+            NamedValue<n::bracket_merged_variables_annotatable, std::string> bracket_merged_variables_annotatable;
+            NamedValue<n::bracket_merged_variables_annotation, std::string> bracket_merged_variables_annotation;
             NamedValue<n::directory_if_exists_variables, std::string> directory_if_exists_variables;
             NamedValue<n::directory_variables, std::string> directory_variables;
             NamedValue<n::ebuild_functions, std::string> ebuild_functions;

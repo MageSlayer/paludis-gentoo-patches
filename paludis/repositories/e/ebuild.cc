@@ -179,6 +179,10 @@ EbuildCommand::operator() ()
                     params.package_id()->eapi()->supported()->ebuild_options()->source_merged_variables())
             .with_setenv("PALUDIS_BRACKET_MERGED_VARIABLES",
                     params.package_id()->eapi()->supported()->ebuild_options()->bracket_merged_variables())
+            .with_setenv("PALUDIS_BRACKET_MERGED_VARIABLES_ANNOTATABLE",
+                    params.package_id()->eapi()->supported()->ebuild_options()->bracket_merged_variables_annotatable())
+            .with_setenv("PALUDIS_BRACKET_MERGED_VARIABLES_ANNOTATION",
+                    params.package_id()->eapi()->supported()->ebuild_options()->bracket_merged_variables_annotation())
             .with_setenv("PALUDIS_MUST_NOT_CHANGE_VARIABLES",
                     params.package_id()->eapi()->supported()->ebuild_options()->must_not_change_variables())
             .with_setenv("PALUDIS_MUST_NOT_CHANGE_AFTER_SOURCE_VARIABLES",

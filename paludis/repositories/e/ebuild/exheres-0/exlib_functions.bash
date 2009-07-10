@@ -174,7 +174,12 @@ require()
 
         for v in ${PALUDIS_BRACKET_MERGED_VARIABLES} ; do
             local e_v="E_${v}"
-            export -n ${e_v}="${!e_v} ( ${!v} )"
+            if has "${v}" ${PALUDIS_BRACKET_MERGED_VARIABLES_ANNOTATABLE} ; then
+                export -n ${e_v}="${!e_v} ( ${!v} ) [[ ${PALUDIS_BRACKET_MERGED_VARIABLES_ANNOTATION} =
+                    [ ${CURRENT_EXLIB}.exlib ] ]]"
+            else
+                export -n ${e_v}="${!e_v} ( ${!v} )"
+            fi
         done
 
         for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ${PALUDIS_BRACKET_MERGED_VARIABLES} ; do
