@@ -17,7 +17,7 @@ END
 
 mkdir -p var/db/pkg
 
-mkdir -p repo/{profiles,cat-one/pkg-{one,two,three,four,x}}
+mkdir -p repo/{profiles,cat-one/pkg-{one,two,three,four,five,x}}
 cat <<"END" > repo/profiles/repo_name
 repo
 END
@@ -26,6 +26,7 @@ echo -e "IUSE='one two three four five six'\nSLOT='0'\n" > repo/cat-one/pkg-one/
 echo -e "IUSE='one two three four five six'\nSLOT='0'\n" > repo/cat-one/pkg-two/pkg-two-1.ebuild || exit 4
 echo -e "IUSE='one two three four five six'\nSLOT='0'\n" > repo/cat-one/pkg-three/pkg-three-1.ebuild || exit 4
 echo -e "IUSE='one two three four five six'\nSLOT='0'\n" > repo/cat-one/pkg-four/pkg-four-1.ebuild || exit 4
+echo -e "IUSE='one two three four five six'\nSLOT='0'\n" > repo/cat-one/pkg-five/pkg-five-1.ebuild || exit 4
 echo -e "IUSE='one two three four five six'\nSLOT='0'\n" > repo/cat-one/pkg-x/pkg-x-1.ebuild || exit 4
 
 mkdir -p query_use/${SYSCONFDIR}/portage
@@ -51,6 +52,7 @@ cat-one/pkg-one ~arch
 cat-one/pkg-two
 cat-one/pkg-three -*
 cat-one/pkg-four **
+cat-one/pkg-five ~*
 END
 
 mkdir -p known_use_expand_names/${SYSCONFDIR}/portage

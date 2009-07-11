@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -177,6 +177,12 @@ namespace test_cases
             TEST_CHECK(accept_keyword(env, KeywordName("fred"), *id4));
             std::tr1::shared_ptr<const KeywordNameSet> empty(new KeywordNameSet);
             TEST_CHECK(env.accept_keywords(empty, *id4));
+
+            const std::tr1::shared_ptr<const PackageID> id5(*env[selection::RequireExactlyOne(
+                        generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-five-1",
+                                    &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+            TEST_CHECK(accept_keyword(env, KeywordName("~foo"), *id5));
+            TEST_CHECK(! accept_keyword(env, KeywordName("foo"), *id5));
         }
     } test_accept_keywords;
 }

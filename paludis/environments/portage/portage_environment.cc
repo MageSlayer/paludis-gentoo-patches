@@ -593,6 +593,15 @@ PortageEnvironment::set_paludis_command(const std::string & s)
     _imp->paludis_command = s;
 }
 
+namespace
+{
+    bool is_tilde_keyword(const KeywordName & k)
+    {
+        std::string k_s(stringify(k));
+        return 0 == k_s.compare(0, 1, "~");
+    }
+}
+
 bool
 PortageEnvironment::accept_keywords(const std::tr1::shared_ptr <const KeywordNameSet> & keywords,
         const PackageID & d) const
@@ -601,6 +610,8 @@ PortageEnvironment::accept_keywords(const std::tr1::shared_ptr <const KeywordNam
         return true;
 
     std::set<std::string> accepted;
+    bool accept_star_star(false), accept_tilde_star(false);
+
     std::copy(_imp->accept_keywords.begin(), _imp->accept_keywords.end(), std::inserter(accepted, accepted.begin()));
     for (PackageKeywords::const_iterator it(_imp->package_keywords.begin()),
              it_end(_imp->package_keywords.end()); it_end != it; ++it)
@@ -612,12 +623,20 @@ PortageEnvironment::accept_keywords(const std::tr1::shared_ptr <const KeywordNam
             accepted.clear();
         else if ('-' == it->second.at(0))
             accepted.erase(it->second.substr(1));
+        else if ("**" == it->second)
+            accept_star_star = true;
+        else if ("~*" == it->second)
+            accept_tilde_star = true;
         else
             accepted.insert(it->second);
     }
 
-    if (accepted.end() != accepted.find("**"))
+    if (accept_star_star)
         return true;
+
+    if (accept_tilde_star)
+        if (keywords->end() != std::find_if(keywords->begin(), keywords->end(), is_tilde_keyword))
+            return true;
 
     for (KeywordNameSet::ConstIterator it(keywords->begin()),
              it_end(keywords->end()); it_end != it; ++it)
