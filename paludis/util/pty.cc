@@ -39,7 +39,7 @@ Pty::Pty()
 
     _fds[0] = posix_openpt(O_RDWR | O_NOCTTY);
     if (-1 == _fds[0])
-        throw PtyError("posix_openpt(3) failed: " + std::string(std::strerror(errno)));
+        throw PtyError("posix_openpt(3) failed (is /dev/pts mounted?): " + std::string(std::strerror(errno)));
     if (-1 == grantpt(_fds[0]))
     {
         close(_fds[0]);
