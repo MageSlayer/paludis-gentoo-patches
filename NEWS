@@ -4,6 +4,9 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.38.1:
+    * Various fixes when using the Portage configuration.
+
 0.38.0:
     * The =...* dependency operator in configuration files and command-line
       arguments now matches component-wise rather than character-wise.
