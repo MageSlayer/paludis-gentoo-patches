@@ -276,12 +276,12 @@ namespace paludis
              * For pesky 0-based EAPIs that don't require things like userland_GNU in IUSE, and that
              * don't have a comprehensive list of possible values.
              */
-            const bool contains_every_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool contains_every_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * If true, this option should not usually be shown visually to a user.
              */
-            const bool hidden() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool hidden() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * If true, hint that we're better not displaying our prefix to the user.
@@ -289,7 +289,7 @@ namespace paludis
              * This is used by --pretend --install and --query to avoid showing a Use:
              * prefix before a list of use flag names.
              */
-            const bool show_with_no_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool show_with_no_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * If false, do not consider flags in this section for 'added' or 'changed'
@@ -297,7 +297,7 @@ namespace paludis
              *
              * Used by build_options.
              */
-            const bool consider_added_or_changed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool consider_added_or_changed() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
 

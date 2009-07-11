@@ -240,25 +240,25 @@ Choice::human_name() const
     return _imp->params.human_name();
 }
 
-const bool
+bool
 Choice::contains_every_value() const
 {
     return _imp->params.contains_every_value();
 }
 
-const bool
+bool
 Choice::hidden() const
 {
     return _imp->params.hidden();
 }
 
-const bool
+bool
 Choice::show_with_no_prefix() const
 {
     return _imp->params.show_with_no_prefix();
 }
 
-const bool
+bool
 Choice::consider_added_or_changed() const
 {
     return _imp->params.consider_added_or_changed();

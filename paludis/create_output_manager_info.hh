@@ -69,7 +69,7 @@ namespace paludis
 
             const std::tr1::shared_ptr<const PackageID> package_id() const PALUDIS_ATTRIBUTE((warn_unused_result));
             const Action & action() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            const OutputExclusivity output_exclusivity() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            OutputExclusivity output_exclusivity() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -93,7 +93,7 @@ namespace paludis
             ~CreateOutputManagerForRepositorySyncInfo();
 
             const Repository & repository() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            const OutputExclusivity output_exclusivity() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            OutputExclusivity output_exclusivity() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

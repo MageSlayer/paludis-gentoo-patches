@@ -84,7 +84,7 @@ CreateOutputManagerForPackageIDActionInfo::action() const
     return _imp->action;
 }
 
-const OutputExclusivity
+OutputExclusivity
 CreateOutputManagerForPackageIDActionInfo::output_exclusivity() const
 {
     return _imp->output_exclusivity;
@@ -107,7 +107,7 @@ CreateOutputManagerForRepositorySyncInfo::repository() const
     return _imp->repo;
 }
 
-const OutputExclusivity
+OutputExclusivity
 CreateOutputManagerForRepositorySyncInfo::output_exclusivity() const
 {
     return _imp->output_exclusivity;

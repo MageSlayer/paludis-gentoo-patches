@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -213,7 +213,7 @@ namespace
      */
     FAKE_RDOC_METHOD(choice_consider_added_or_changed)
 
-    template <typename R_, const R_ (Choice::* r_) () const>
+    template <typename R_, R_ (Choice::* r_) () const>
     struct ChoiceBoolishMembers
     {
         static VALUE fetch(VALUE self_v)
