@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -141,6 +141,8 @@ namespace paludis
 
         using DeclareAbstractAcceptMethods<DependencySystemLabel, MakeTypeList<
             DependencyHostLabel, DependencyTargetLabel>::Type>::accept;
+        using DeclareAbstractAcceptMethods<DependencySystemLabel, MakeTypeList<
+            DependencyHostLabel, DependencyTargetLabel>::Type>::accept_returning;
     };
 
     /**
@@ -164,6 +166,9 @@ namespace paludis
         using DeclareAbstractAcceptMethods<DependencyTypeLabel, MakeTypeList<
             DependencyBuildLabel, DependencyRunLabel, DependencyPostLabel, DependencyInstallLabel,
             DependencyCompileLabel>::Type>::accept;
+        using DeclareAbstractAcceptMethods<DependencyTypeLabel, MakeTypeList<
+            DependencyBuildLabel, DependencyRunLabel, DependencyPostLabel, DependencyInstallLabel,
+            DependencyCompileLabel>::Type>::accept_returning;
     };
 
     /**
@@ -186,6 +191,9 @@ namespace paludis
         using DeclareAbstractAcceptMethods<DependencySuggestLabel, MakeTypeList<
             DependencySuggestedLabel, DependencyRecommendedLabel,
             DependencyRequiredLabel>::Type>::accept;
+        using DeclareAbstractAcceptMethods<DependencySuggestLabel, MakeTypeList<
+            DependencySuggestedLabel, DependencyRecommendedLabel,
+            DependencyRequiredLabel>::Type>::accept_returning;
     };
 
     /**
@@ -208,6 +216,9 @@ namespace paludis
         using DeclareAbstractAcceptMethods<DependencyABIsLabel, MakeTypeList<
             DependencyAnyLabel, DependencyMineLabel, DependencyPrimaryLabel,
             DependencyABILabel>::Type>::accept;
+        using DeclareAbstractAcceptMethods<DependencyABIsLabel, MakeTypeList<
+            DependencyAnyLabel, DependencyMineLabel, DependencyPrimaryLabel,
+            DependencyABILabel>::Type>::accept_returning;
     };
 
     /**
