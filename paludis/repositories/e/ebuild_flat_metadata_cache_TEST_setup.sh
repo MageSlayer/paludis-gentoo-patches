@@ -1293,13 +1293,13 @@ cat <<END > cache/expected/cat/write-exlibs-1
 _mtime_=60
 _guessed_eapi_=exheres-0
 _exlibs_=bar	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise repo/cat/exlibs)	180	foo	$(${PALUDIS_EBUILD_DIR}/utils/canonicalise repo/exlibs)	180
-DEPENDENCIES=( build: cat/foo bar? ( cat/bar ) ) [[ defined-in = [ write-exlibs-1.ebuild ] ]] ( cat/baz ) [[ defined-in = [ foo.exlib ] ]] ( ) [[ defined-in = [ bar.exlib ] ]]
+DEPENDENCIES=( build: cat/foo bar? ( cat/bar ) ) [[ defined-in = [ write-exlibs-1.ebuild ] ]] ( cat/baz ) [[ defined-in = [ foo.exlib ] ]]
 SLOT=0
 HOMEPAGE=http://example.com/
 LICENCES=GPL-2
 SUMMARY=A nice package
 PLATFORMS=test
-MYOPTIONS=( bar ) [[ defined-in = [ write-exlibs-1.ebuild ] ]] ( quux ) [[ defined-in = [ foo.exlib ] ]] ( ) [[ defined-in = [ bar.exlib ] ]]
+MYOPTIONS=( bar ) [[ defined-in = [ write-exlibs-1.ebuild ] ]] ( quux ) [[ defined-in = [ foo.exlib ] ]]
 EAPI=exheres-0
 DEFINED_PHASES=-
 END
