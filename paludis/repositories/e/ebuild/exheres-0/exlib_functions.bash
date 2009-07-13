@@ -109,7 +109,7 @@ require()
     local exlibs e ee p a=() location v a_v v_qa
     # parse exlib parameters
     while [[ -n $@ ]]; do
-        if [[ ${1} == +(\[) ]]; then
+        if [[ ${1} == +('[') ]]; then
             [[ -z ${e} ]] && die "\"${1}\" encountered with no preceding exlib"
             p=${1}
             shift
