@@ -39,6 +39,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/choice.hh>
 #include <paludis/package_dep_spec_properties.hh>
+#include <paludis/notifier_callback.hh>
 
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
@@ -1086,6 +1087,7 @@ DepList::add_package(const std::tr1::shared_ptr<const PackageID> & p, const std:
         const PackageDepSpec & pds, const std::tr1::shared_ptr<const DestinationsSet> & destinations)
 {
     Context context("When adding package '" + stringify(*p) + "':");
+    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
     Save<MergeList::iterator> save_merge_list_insert_position(&_imp->merge_list_insert_position);
 
@@ -1364,6 +1366,7 @@ DepList::add_already_installed_package(const std::tr1::shared_ptr<const PackageI
         const PackageDepSpec & pds, const std::tr1::shared_ptr<const DestinationsSet> & destinations)
 {
     Context context("When adding installed package '" + stringify(*p) + "':");
+    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
     Save<MergeList::iterator> save_merge_list_insert_position(&_imp->merge_list_insert_position);
 
