@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -47,8 +47,12 @@ namespace paludis
      * \see Environment
      */
     class PALUDIS_VISIBLE EnvironmentImplementation :
+        private PrivateImplementationPattern<EnvironmentImplementation>,
         public Environment
     {
+        private:
+            PrivateImplementationPattern<EnvironmentImplementation>::ImpPtr & _imp;
+
         protected:
             virtual const std::tr1::shared_ptr<const SetSpecTree> local_set(const SetName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
@@ -60,6 +64,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
+            EnvironmentImplementation();
             virtual ~EnvironmentImplementation() = 0;
 
             ///\}
@@ -90,6 +95,12 @@ namespace paludis
 
             virtual std::tr1::shared_ptr<PackageIDSequence> operator[] (const Selection &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual NotifierCallbackID add_notifier_callback(const NotifierCallbackFunction &);
+
+            virtual void remove_notifier_callback(const NotifierCallbackID);
+
+            virtual void trigger_notifier_callback(const NotifierCallbackEvent &) const;
     };
 }
 

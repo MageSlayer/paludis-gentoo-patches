@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,9 +32,25 @@
 #include <paludis/distribution.hh>
 #include <paludis/selection.hh>
 #include <algorithm>
+#include <map>
 #include "config.h"
 
 using namespace paludis;
+
+namespace paludis
+{
+    template <>
+    struct Implementation<EnvironmentImplementation>
+    {
+        std::map<unsigned, NotifierCallbackFunction> notifier_callbacks;
+    };
+}
+
+EnvironmentImplementation::EnvironmentImplementation() :
+    PrivateImplementationPattern<EnvironmentImplementation>(new Implementation<EnvironmentImplementation>),
+    _imp(PrivateImplementationPattern<EnvironmentImplementation>::_imp)
+{
+}
 
 EnvironmentImplementation::~EnvironmentImplementation()
 {
@@ -163,5 +179,31 @@ std::tr1::shared_ptr<PackageIDSequence>
 EnvironmentImplementation::operator[] (const Selection & selection) const
 {
     return selection.perform_select(this);
+}
+
+NotifierCallbackID
+EnvironmentImplementation::add_notifier_callback(const NotifierCallbackFunction & f)
+{
+    unsigned idx(0);
+    if (! _imp->notifier_callbacks.empty())
+        idx = _imp->notifier_callbacks.rbegin()->first + 1;
+
+    _imp->notifier_callbacks.insert(std::make_pair(idx, f));
+    return idx;
+}
+
+void
+EnvironmentImplementation::remove_notifier_callback(const NotifierCallbackID i)
+{
+    _imp->notifier_callbacks.erase(i);
+}
+
+void
+EnvironmentImplementation::trigger_notifier_callback(const NotifierCallbackEvent & e) const
+{
+    for (std::map<unsigned, NotifierCallbackFunction>::const_iterator i(_imp->notifier_callbacks.begin()),
+            i_end(_imp->notifier_callbacks.end()) ;
+            i != i_end ; ++i)
+        (i->second)(e);
 }
 

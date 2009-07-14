@@ -40,6 +40,7 @@
 #include <paludis/metadata_key_holder.hh>
 #include <paludis/choice-fwd.hh>
 #include <paludis/create_output_manager_info-fwd.hh>
+#include <paludis/notifier_callback-fwd.hh>
 
 /** \file
  * Declarations for the Environment class.
@@ -380,6 +381,29 @@ namespace paludis
              */
             virtual const std::tr1::shared_ptr<OutputManager> create_output_manager(
                     const CreateOutputManagerInfo &) const = 0;
+
+            /**
+             * Set a callback function to use when a particular event occurs.
+             *
+             * The return value can be passed to remove_notifier_callback.
+             *
+             * \since 0.40
+             */
+            virtual NotifierCallbackID add_notifier_callback(const NotifierCallbackFunction &) = 0;
+
+            /**
+             * Remove a function added with add_notifier_callback.
+             *
+             * \since 0.40
+             */
+            virtual void remove_notifier_callback(const NotifierCallbackID) = 0;
+
+            /**
+             * Trigger a notifier callback.
+             *
+             * \since 0.40
+             */
+            virtual void trigger_notifier_callback(const NotifierCallbackEvent &) const = 0;
 
             ///\}
     };
