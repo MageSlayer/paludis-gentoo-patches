@@ -30,6 +30,7 @@
 #include <paludis/action.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/notifier_callback.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_shared_ptr.hh>
@@ -49,6 +50,43 @@ using namespace inquisitio;
 
 namespace
 {
+    struct DisplayCallback
+    {
+        mutable Mutex mutex;
+        mutable bool done_header;
+
+        DisplayCallback() :
+            done_header(false)
+        {
+        }
+
+        void operator() (const NotifierCallbackEvent & event) const
+        {
+            event.accept(*this);
+        }
+
+        void visit(const NotifierCallbackGeneratingMetadataEvent &) const
+        {
+            Lock lock(mutex);
+            if (! done_header)
+            {
+                std::cout << "Generating metadata (no cache available): ";
+                done_header = true;
+            }
+            std::cout << "*" << std::flush;
+        }
+
+        void visit(const NotifierCallbackResolverStepEvent &) const
+        {
+        }
+
+        void done()
+        {
+            if (done_header)
+                std::cout << std::endl;
+        }
+    };
+
     struct Eligible
     {
         typedef bool result;
@@ -188,9 +226,12 @@ namespace
 }
 
 int
-do_search(const Environment & env)
+do_search(Environment & env)
 {
     using namespace std::tr1::placeholders;
+
+    DisplayCallback display_callback;
+    ScopedNotifierCallback display_callback_holder(&env, NotifierCallbackFunction(std::tr1::cref(display_callback)));
 
     if (CommandLine::get_instance()->a_repository.specified() &&
         ! CommandLine::get_instance()->a_kind.specified())
@@ -301,6 +342,9 @@ do_search(const Environment & env)
                 CommandLine::get_instance()->a_all_versions.specified(),
                 CommandLine::get_instance()->a_not.specified()),
             n_threads, 10);
+
+    display_callback_holder.remove_now();
+    display_callback.done();
 
     bool any(false);
     InquisitioQueryTask task(&env);
