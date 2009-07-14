@@ -55,6 +55,7 @@
 #include <paludis/output_manager_from_environment.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/dep_list.hh>
+#include <paludis/notifier_callback.hh>
 
 #include <tr1/functional>
 #include <algorithm>
@@ -198,8 +199,42 @@ ConsoleInstallTask::try_to_set_targets_from_user_specs(const std::tr1::shared_pt
 void
 ConsoleInstallTask::on_build_deplist_pre()
 {
-    output_activity_start_message("Building dependency list");
+    output_activity_start_message("Building dependency list: ");
     output_xterm_title("Building dependency list");
+
+    _notifier_callback.reset(new NotifierCallbackID(environment()->add_notifier_callback(
+                    std::tr1::bind(std::tr1::mem_fn(&ConsoleInstallTask::_notifier_callback_fn),
+                        this, std::tr1::placeholders::_1))));
+}
+
+namespace
+{
+    struct CallbackDisplayer
+    {
+        std::ostream & stream;
+
+        CallbackDisplayer(std::ostream & s) :
+            stream(s)
+        {
+        }
+
+        void visit(const NotifierCallbackResolverStepEvent &)
+        {
+            stream << "." << std::flush;
+        }
+
+        void visit(const NotifierCallbackGeneratingMetadataEvent &)
+        {
+            stream << "*" << std::flush;
+        }
+    };
+}
+
+void
+ConsoleInstallTask::_notifier_callback_fn(const NotifierCallbackEvent & e)
+{
+    CallbackDisplayer d(output_stream());
+    e.accept(d);
 }
 
 void
@@ -207,6 +242,9 @@ ConsoleInstallTask::on_build_deplist_post()
 {
     output_activity_end_message();
     _resolution_finished = true;
+
+    environment()->remove_notifier_callback(*_notifier_callback);
+    _notifier_callback.reset();
 }
 
 void

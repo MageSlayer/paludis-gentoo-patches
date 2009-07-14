@@ -110,6 +110,10 @@ namespace paludis
 
             bool _resolution_finished;
 
+            std::tr1::shared_ptr<NotifierCallbackID> _notifier_callback;
+
+            void _notifier_callback_fn(const NotifierCallbackEvent &);
+
         protected:
             ConsoleInstallTask(Environment * const env, const DepListOptions & options,
                     const std::tr1::shared_ptr<const DestinationsSet> &);
