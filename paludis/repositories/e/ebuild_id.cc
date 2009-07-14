@@ -40,6 +40,7 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/elike_choices.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/notifier_callback.hh>
 
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
@@ -223,6 +224,8 @@ EbuildID::need_keys_added() const
         if (_imp->repository->params().cache().basename() != "empty")
             Log::get_instance()->message("e.ebuild.cache.no_usable", ll_qa, lc_no_context)
                 << "No usable cache entry for '" + canonical_form(idcf_full);
+
+        _imp->environment->trigger_notifier_callback(NotifierCallbackGeneratingMetadataEvent());
 
         _imp->eapi = EAPIData::get_instance()->eapi_from_string(_imp->guessed_eapi);
 
