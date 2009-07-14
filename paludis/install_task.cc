@@ -361,7 +361,10 @@ namespace
 
         void visit(const DepListEntryHandledFetchFailed &)
         {
-            result = "E";
+            if (undo_failures)
+                result = "P";
+            else
+                result = "E";
         }
 
         void visit(const DepListEntryHandledFetchSuccess &)
