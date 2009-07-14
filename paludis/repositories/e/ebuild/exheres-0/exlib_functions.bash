@@ -173,9 +173,10 @@ require()
         done
 
         for v in ${PALUDIS_BRACKET_MERGED_VARIABLES} ; do
-            [[ -z "${!v}" ]] && continue
             local e_v="E_${v}"
-            if has "${v}" ${PALUDIS_BRACKET_MERGED_VARIABLES_ANNOTATABLE} ; then
+            if [[ -z "${!v}" ]] ; then
+                export -n ${e_v}="${!e_v}"
+            elif has "${v}" ${PALUDIS_BRACKET_MERGED_VARIABLES_ANNOTATABLE} ; then
                 export -n ${e_v}="${!e_v} ( ${!v} ) [[ ${PALUDIS_BRACKET_MERGED_VARIABLES_ANNOTATION} =
                     [ ${CURRENT_EXLIB}.exlib ] ]]"
             else
