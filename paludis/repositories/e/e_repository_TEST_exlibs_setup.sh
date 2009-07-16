@@ -497,6 +497,15 @@ cat <<'END' > packages/cat/boolean-nodefault/boolean-nodefault-1.ebuild || exit 
 SLOT="0"
 require boolean-nodefault
 END
+mkdir -p "packages/cat/boolean-notreally"
+cat <<'END' > packages/cat/boolean-notreally/boolean-notreally.exlib || exit 1
+myexparam t
+exparam -b t && SLOT="1"
+END
+cat <<'END' > packages/cat/boolean-notreally/boolean-notreally-1.ebuild || exit 1
+SLOT="0"
+require boolean-notreally [ t=monkey ]
+END
 mkdir -p "packages/cat/illegal-in-global-scope"
 cat <<'END' > packages/cat/illegal-in-global-scope/illegal-in-global-scope-1.ebuild || exit 1
 DESCRIPTION="The Long Description"

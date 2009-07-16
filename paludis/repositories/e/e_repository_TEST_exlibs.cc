@@ -202,5 +202,6 @@ namespace test_cases
     ExlibsTest test_boolean_baddefault("boolean-baddefault", throws_UnsupportedActionError);
     ExlibsTest test_boolean_blankdefault("boolean-blankdefault", throws_UnsupportedActionError);
     ExlibsTest test_boolean_nodefault("boolean-nodefault", throws_UnsupportedActionError);
+    ExlibsTest test_boolean_notreally("boolean-notreally", throws_UnsupportedActionError);
 }
 
