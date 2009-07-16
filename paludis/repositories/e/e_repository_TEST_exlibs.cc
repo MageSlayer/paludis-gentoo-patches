@@ -195,5 +195,12 @@ namespace test_cases
     ExlibsTest test_array_required("array-required", throws_UnsupportedActionError);
     ExlibsTest test_illegal_in_global_scope("illegal-in-global-scope", throws_UnsupportedActionError);
     ExlibsTest test_illegal_in_global_scope_in_func("illegal-in-global-scope-in-func", success);
+    ExlibsTest test_boolean("boolean", success);
+    ExlibsTest test_boolean_badvalue("boolean-badvalue", throws_UnsupportedActionError);
+    ExlibsTest test_boolean_blankvalue("boolean-blankvalue", throws_UnsupportedActionError);
+    ExlibsTest test_boolean_badvaluewithdefault("boolean-badvaluewithdefault", throws_UnsupportedActionError);
+    ExlibsTest test_boolean_baddefault("boolean-baddefault", throws_UnsupportedActionError);
+    ExlibsTest test_boolean_blankdefault("boolean-blankdefault", throws_UnsupportedActionError);
+    ExlibsTest test_boolean_nodefault("boolean-nodefault", throws_UnsupportedActionError);
 }
 

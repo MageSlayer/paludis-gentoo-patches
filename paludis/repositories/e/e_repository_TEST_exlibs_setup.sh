@@ -415,6 +415,88 @@ pkg_setup() {
     [[ ${SUMMARY} == "baz" ]] || die "Bad SUMMARY"
 }
 END
+mkdir -p "packages/cat/boolean"
+cat <<'END' > packages/cat/boolean/boolean.exlib || exit 1
+myexparam -b t
+myexparam -b f
+myexparam -b t2=true
+myexparam -b f2=false
+myexparam -b t3=true
+myexparam -b f3=false
+tellme () {
+    exparam "${@}"
+}
+END
+cat <<'END' > packages/cat/boolean/boolean-1.ebuild || exit 1
+SLOT="0"
+require boolean [ t=true f=false t2=false f2=true ]
+tellme -b t || die
+tellme -b f && die
+tellme -b t2 && die
+tellme -b f2 || die
+tellme -b t3 || die
+tellme -b f3 && die
+[[ -n $(tellme -b t) ]] && die
+[[ -n $(tellme -b f) ]] && die
+[[ -n $(tellme -b t2) ]] && die
+[[ -n $(tellme -b f2) ]] && die
+[[ -n $(tellme -b t3) ]] && die
+[[ -n $(tellme -b f3) ]] && die
+[[ $(tellme t) == true ]] || die
+[[ $(tellme f) == false ]] || die
+[[ $(tellme t2) == false ]] || die
+[[ $(tellme f2) == true ]] || die
+[[ $(tellme t3) == true ]] || die
+[[ $(tellme f3) == false ]] || die
+END
+mkdir -p "packages/cat/boolean-badvalue"
+cat <<'END' > packages/cat/boolean-badvalue/boolean-badvalue.exlib || exit 1
+myexparam -b t
+END
+cat <<'END' > packages/cat/boolean-badvalue/boolean-badvalue-1.ebuild || exit 1
+SLOT="0"
+require boolean-badvalue [ t=monkey ]
+END
+mkdir -p "packages/cat/boolean-blankvalue"
+cat <<'END' > packages/cat/boolean-blankvalue/boolean-blankvalue.exlib || exit 1
+myexparam -b t
+END
+cat <<'END' > packages/cat/boolean-blankvalue/boolean-blankvalue-1.ebuild || exit 1
+SLOT="0"
+require boolean-blankvalue [ t= ]
+END
+mkdir -p "packages/cat/boolean-badvaluewithdefault"
+cat <<'END' > packages/cat/boolean-badvaluewithdefault/boolean-badvaluewithdefault.exlib || exit 1
+myexparam -b t=true
+END
+cat <<'END' > packages/cat/boolean-badvaluewithdefault/boolean-badvaluewithdefault-1.ebuild || exit 1
+SLOT="0"
+require boolean-badvaluewithdefault [ t=monkey ]
+END
+mkdir -p "packages/cat/boolean-baddefault"
+cat <<'END' > packages/cat/boolean-baddefault/boolean-baddefault.exlib || exit 1
+myexparam -b t=monkey
+END
+cat <<'END' > packages/cat/boolean-baddefault/boolean-baddefault-1.ebuild || exit 1
+SLOT="0"
+require boolean-baddefault
+END
+mkdir -p "packages/cat/boolean-blankdefault"
+cat <<'END' > packages/cat/boolean-blankdefault/boolean-blankdefault.exlib || exit 1
+myexparam -b t=
+END
+cat <<'END' > packages/cat/boolean-blankdefault/boolean-blankdefault-1.ebuild || exit 1
+SLOT="0"
+require boolean-blankdefault
+END
+mkdir -p "packages/cat/boolean-nodefault"
+cat <<'END' > packages/cat/boolean-nodefault/boolean-nodefault.exlib || exit 1
+myexparam -b t
+END
+cat <<'END' > packages/cat/boolean-nodefault/boolean-nodefault-1.ebuild || exit 1
+SLOT="0"
+require boolean-nodefault
+END
 mkdir -p "packages/cat/illegal-in-global-scope"
 cat <<'END' > packages/cat/illegal-in-global-scope/illegal-in-global-scope-1.ebuild || exit 1
 DESCRIPTION="The Long Description"

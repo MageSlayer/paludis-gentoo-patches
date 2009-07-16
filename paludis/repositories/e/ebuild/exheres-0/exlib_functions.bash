@@ -51,8 +51,21 @@ exparam_print()
 
 exparam_internal()
 {
-    local i e=${1} a to_var v a_v=$(exparam_var_name ${1})__ALLDECLS__
+    local i e=${1} a to_var v a_v=$(exparam_var_name ${1})__ALLDECLS__ b_v=$(exparam_var_name ${1})__BOOLEANS__
     shift
+
+    if [[ ${1} == -b ]]; then
+        [[ ${#} -eq 2 ]] || die "exparam ${1} requires exactly two arguments"
+        shift
+        has "${1}" ${!b_v} || die "${e}.exlib has no ${1} boolean"
+        v=$(exparam_var_name ${e})_${1}
+        if ${!v}; then
+            return 0
+        else
+            return 1
+        fi
+    fi
+
     if [[ ${1} == -v ]]; then
         [[ ${#} -eq 3 ]] || die "exparam ${1} requires exactly three arguments"
         a=${1}
@@ -61,6 +74,7 @@ exparam_internal()
     else
         [[ ${#} -eq 1 ]] || die "exparam requires exactly one argument"
     fi
+
     v=$(exparam_var_name ${e})_${1%\[*}
     if [[ ${1} == *\[*\] ]]; then
         has "${1%\[*}[]" ${!a_v} || die "${e}.exlib has no ${1%\[*} array"
@@ -82,9 +96,19 @@ myexparam()
 {
     [[ -z "${CURRENT_EXLIB}" ]] && die "myexparam called but CURRENT_EXLIB undefined"
 
+    local bool=false
+    if [[ ${1} == -b ]]; then
+        bool=true
+        shift
+    fi
+
     local v=${1%%=*} a_v="$(exparam_var_name ${CURRENT_EXLIB})__ALLDECLS__"
     [[ ${1} == *=\[ && ${#} -gt 1 ]] && v+="[]"
     printf -v "${a_v}" "%s %s" "${!a_v}" "${v}"
+    if ${bool}; then
+        local b_v="$(exparam_var_name ${CURRENT_EXLIB})__BOOLEANS__"
+        printf -v "${b_v}" "%s %s" "${!b_v}" "${v}"
+    fi
 
     v=$(exparam_var_name ${CURRENT_EXLIB})_${v%\[\]}
     if [[ -z ${!v+set} && ${1} == *=* ]]; then
@@ -101,6 +125,8 @@ myexparam()
             printf -v "${v}" "%s" "${1#*=}"
         fi
     fi
+
+    ${bool} && ! has "${!v}" true false && die "exparam ${1%%=*} for exlib ${CURRENT_EXLIB} must be 'true' or 'false'"
 }
 
 require()
