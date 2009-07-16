@@ -22,7 +22,8 @@ opts = GetoptLong.new(
 env_spec                                  = nil
 size_limit        = time_limit            = nil
 mirror_repository = mirror_distdir        = nil
-write_cache_dir   = master_repository_dir = "/var/empty"
+write_cache_dir                           = "/var/empty"
+master_repository_name                    = ''
 
 opts.each do | opt, arg |
     case opt
@@ -42,7 +43,7 @@ opts.each do | opt, arg |
         puts "  --mirror-repository     In mirror mode, the location of the ebuild repository"
         puts "  --mirror-distdir        In mirror mode, the location of the downloaded files"
         puts "  --write-cache-dir       Use a subdirectory named for the repository name under the specified directory for repository write cache"
-        puts "  --master-repository-dir Use the specified location for the master repository"
+        puts "  --master-repository     The name of the master repository"
         exit 0
 
     when '--version'
@@ -103,8 +104,8 @@ opts.each do | opt, arg |
 
     when '--write-cache-dir'
         write_cache_dir = arg
-    when '--master-repository-dir'
-        master_repository_dir = arg
+    when '--master-repository'
+        master_repository_name = arg
 
     end
 end
@@ -119,7 +120,7 @@ if mirror_repository && env_spec then
 end
 
 if mirror_repository then
-    env = Paludis::NoConfigEnvironment.new(mirror_repository, write_cache_dir, master_repository_dir)
+    env = Paludis::NoConfigEnvironment.new(mirror_repository, write_cache_dir, master_repository_name)
     relevant_packages = Paludis::Generator::InRepository.new(env.main_repository.name)
     $check_condition = lambda { true }
     $banned_labels = {
