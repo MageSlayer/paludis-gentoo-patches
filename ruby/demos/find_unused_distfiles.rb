@@ -17,6 +17,7 @@ opts = GetoptLong.new(
     [ '--mirror-repository',     GetoptLong::REQUIRED_ARGUMENT ],
     [ '--mirror-distdir',        GetoptLong::REQUIRED_ARGUMENT ],
     [ '--write-cache-dir',       GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--extra-repository-dir',  GetoptLong::REQUIRED_ARGUMENT ],
     [ '--master-repository-dir', GetoptLong::REQUIRED_ARGUMENT ])
 
 env_spec                                  = nil
@@ -24,6 +25,7 @@ size_limit        = time_limit            = nil
 mirror_repository = mirror_distdir        = nil
 write_cache_dir                           = "/var/empty"
 master_repository_name                    = ''
+extra_repository_dirs                     = []
 
 opts.each do | opt, arg |
     case opt
@@ -43,7 +45,8 @@ opts.each do | opt, arg |
         puts "  --mirror-repository     In mirror mode, the location of the ebuild repository"
         puts "  --mirror-distdir        In mirror mode, the location of the downloaded files"
         puts "  --write-cache-dir       Use a subdirectory named for the repository name under the specified directory for repository write cache"
-        puts "  --master-repository     The name of the master repository"
+        puts "  --extra-repository-dir  Also include the repository at this location. May be specified multiple times, in creation order."
+        puts "  --master-repository     The name of the master repository. Specify the location using --extra-repository-dir."
         exit 0
 
     when '--version'
@@ -104,6 +107,8 @@ opts.each do | opt, arg |
 
     when '--write-cache-dir'
         write_cache_dir = arg
+    when '--extra-repository-dir'
+        extra_repository_dirs << arg
     when '--master-repository'
         master_repository_name = arg
 
@@ -120,7 +125,7 @@ if mirror_repository && env_spec then
 end
 
 if mirror_repository then
-    env = Paludis::NoConfigEnvironment.new(mirror_repository, write_cache_dir, master_repository_name)
+    env = Paludis::NoConfigEnvironment.new(mirror_repository, write_cache_dir, master_repository_name, extra_repository_dirs)
     relevant_packages = Paludis::Generator::InRepository.new(env.main_repository.name)
     $check_condition = lambda { true }
     $banned_labels = {
