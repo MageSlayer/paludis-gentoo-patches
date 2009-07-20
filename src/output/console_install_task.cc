@@ -196,45 +196,69 @@ ConsoleInstallTask::try_to_set_targets_from_user_specs(const std::tr1::shared_pt
     return is_ok;
 }
 
+struct ConsoleInstallTask::CallbackDisplayer
+{
+    Mutex mutex;
+
+    std::ostream & stream;
+    int width, step, metadata;
+
+    CallbackDisplayer(std::ostream & s) :
+        stream(s),
+        width(0),
+        step(0),
+        metadata(0)
+    {
+    }
+
+    void update()
+    {
+        std::string s;
+        if (step > 0)
+            s.append("steps: " + stringify(step));
+        if (metadata > 0)
+        {
+            if (! s.empty())
+                s.append(", ");
+            s.append("metadata: " + stringify(metadata));
+        }
+
+        stream << std::string(width, '\010');
+        stream << " " << s << std::flush;
+        width = s.length() + 1;
+    }
+
+    void visit(const NotifierCallbackResolverStepEvent &)
+    {
+        Lock lock(mutex);
+        ++step;
+        update();
+    }
+
+    void visit(const NotifierCallbackGeneratingMetadataEvent &)
+    {
+        Lock lock(mutex);
+        ++metadata;
+        update();
+    }
+};
+
 void
 ConsoleInstallTask::on_build_deplist_pre()
 {
     output_activity_start_message("Building dependency list: ");
     output_xterm_title("Building dependency list");
 
+    _callback_displayer.reset(new CallbackDisplayer(output_stream()));
     _notifier_callback.reset(new NotifierCallbackID(environment()->add_notifier_callback(
                     std::tr1::bind(std::tr1::mem_fn(&ConsoleInstallTask::_notifier_callback_fn),
                         this, std::tr1::placeholders::_1))));
 }
 
-namespace
-{
-    struct CallbackDisplayer
-    {
-        std::ostream & stream;
-
-        CallbackDisplayer(std::ostream & s) :
-            stream(s)
-        {
-        }
-
-        void visit(const NotifierCallbackResolverStepEvent &)
-        {
-            stream << "." << std::flush;
-        }
-
-        void visit(const NotifierCallbackGeneratingMetadataEvent &)
-        {
-            stream << "*" << std::flush;
-        }
-    };
-}
-
 void
 ConsoleInstallTask::_notifier_callback_fn(const NotifierCallbackEvent & e)
 {
-    CallbackDisplayer d(output_stream());
-    e.accept(d);
+    e.accept(*_callback_displayer);
 }
 
 void

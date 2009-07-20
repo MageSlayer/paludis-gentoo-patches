@@ -101,6 +101,8 @@ namespace paludis
             typedef std::map<std::string, ChoiceValueDescriptions> ChoiceDescriptions;
 
         private:
+            struct CallbackDisplayer;
+
             int _counts[last_count];
             unsigned long _download_size;
             bool _download_size_overflow;
@@ -110,6 +112,7 @@ namespace paludis
 
             bool _resolution_finished;
 
+            std::tr1::shared_ptr<CallbackDisplayer> _callback_displayer;
             std::tr1::shared_ptr<NotifierCallbackID> _notifier_callback;
 
             void _notifier_callback_fn(const NotifierCallbackEvent &);
