@@ -50,13 +50,19 @@ using namespace inquisitio;
 
 namespace
 {
+    struct Searched
+    {
+    };
+
     struct DisplayCallback
     {
         mutable Mutex mutex;
-        mutable bool done_header;
+        mutable int width, metadata, searched;
 
         DisplayCallback() :
-            done_header(false)
+            width(0),
+            metadata(0),
+            searched(0)
         {
         }
 
@@ -68,22 +74,36 @@ namespace
         void visit(const NotifierCallbackGeneratingMetadataEvent &) const
         {
             Lock lock(mutex);
-            if (! done_header)
-            {
-                std::cout << "Generating metadata (no cache available): ";
-                done_header = true;
-            }
-            std::cout << "*" << std::flush;
+            ++metadata;
+            update();
         }
 
         void visit(const NotifierCallbackResolverStepEvent &) const
         {
         }
 
-        void done()
+        void visit(const Searched &) const
         {
-            if (done_header)
-                std::cout << std::endl;
+            Lock lock(mutex);
+            ++searched;
+            update();
+        }
+
+        void update() const
+        {
+            std::string s;
+            if (0 != searched)
+                s.append("searched: " + stringify(searched));
+
+            if (0 != metadata)
+            {
+                if (! s.empty())
+                    s.append(", ");
+                s.append("metadata: " + stringify(metadata));
+            }
+
+            std::cout << std::string(width, '\010') << s << std::flush;
+            width = s.length();
         }
     };
 
@@ -155,7 +175,8 @@ namespace
             const std::tr1::function<bool (const PackageID &)> & e,
             const std::tr1::function<bool (const PackageID &)> & m,
             const bool all_versions,
-            const bool invert_match)
+            const bool invert_match,
+            const DisplayCallback & display_callback)
     {
         std::tr1::shared_ptr<const PackageIDSequence> ids(r->package_ids(q));
         if (ids->empty())
@@ -171,6 +192,7 @@ namespace
             {
                 try
                 {
+                    display_callback.visit(Searched());
                     if (e(**i))
                     {
                         if (invert_match ^ m(**i))
@@ -201,13 +223,15 @@ namespace
             const std::tr1::function<bool (const PackageID &)> & e,
             const std::tr1::function<bool (const PackageID &)> & m,
             const bool all_versions,
-            const bool invert_match)
+            const bool invert_match,
+            const DisplayCallback & display_callback)
     {
         std::tr1::shared_ptr<const PackageID> best_id;
         for (std::list<std::tr1::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
                 r != r_end ; ++r)
         {
-            std::tr1::shared_ptr<const PackageID> id(fetch_id(env, *r, q.first, e, m, all_versions, invert_match));
+            std::tr1::shared_ptr<const PackageID> id(fetch_id(env, *r, q.first, e, m, all_versions, invert_match,
+                        display_callback));
             if (id)
             {
                 if (best_id)
@@ -230,6 +254,7 @@ do_search(Environment & env)
 {
     using namespace std::tr1::placeholders;
 
+    std::cout << "Searching: " << std::flush;
     DisplayCallback display_callback;
     ScopedNotifierCallback display_callback_holder(&env, NotifierCallbackFunction(std::tr1::cref(display_callback)));
 
@@ -338,13 +363,15 @@ do_search(Environment & env)
             );
 
     const unsigned n_threads(destringify<int>(getenv_with_default("INQUISITIO_THREADS", "5")));
-    forward_parallel_for_each(ids.begin(), ids.end(), std::tr1::bind(&set_id, std::tr1::cref(env), std::tr1::cref(repos), _1, eligible, matches,
+    forward_parallel_for_each(ids.begin(), ids.end(),
+            std::tr1::bind(&set_id, std::tr1::cref(env), std::tr1::cref(repos), _1, eligible, matches,
                 CommandLine::get_instance()->a_all_versions.specified(),
-                CommandLine::get_instance()->a_not.specified()),
+                CommandLine::get_instance()->a_not.specified(),
+                std::tr1::cref(display_callback)),
             n_threads, 10);
 
     display_callback_holder.remove_now();
-    display_callback.done();
+    std::cout << std::endl;
 
     bool any(false);
     InquisitioQueryTask task(&env);
