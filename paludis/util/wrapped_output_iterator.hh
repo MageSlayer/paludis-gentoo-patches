@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,10 +23,6 @@
 #include <paludis/util/wrapped_output_iterator-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <iterator>
-
-#ifdef PALUDIS_HAVE_CONCEPTS
-#  include <concepts>
-#endif
 
 namespace paludis
 {
@@ -90,30 +86,5 @@ namespace paludis
             ///\}
     };
 }
-
-#ifdef PALUDIS_HAVE_CONCEPTS
-namespace std
-{
-    template <typename Tag_, typename Value_>
-    concept_map OutputIterator<paludis::WrappedOutputIterator<Tag_, Value_>, Value_>
-    {
-    };
-
-    template <typename Tag_, typename Value_>
-    concept_map OutputIterator<paludis::WrappedOutputIterator<Tag_, Value_>, Value_ &>
-    {
-    };
-
-    template <typename Tag_, typename Value_>
-    concept_map OutputIterator<paludis::WrappedOutputIterator<Tag_, Value_>, const Value_>
-    {
-    };
-
-    template <typename Tag_, typename Value_>
-    concept_map OutputIterator<paludis::WrappedOutputIterator<Tag_, Value_>, const Value_ &>
-    {
-    };
-}
-#endif
 
 #endif

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2007 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -24,11 +24,6 @@
 #include <paludis/util/member_iterator-fwd.hh>
 #include <paludis/util/operators.hh>
 #include <tr1/type_traits>
-
-#ifdef PALUDIS_HAVE_CONCEPTS
-#  include <concepts>
-#endif
-
 
 namespace paludis
 {
@@ -114,16 +109,5 @@ namespace paludis
             ///\}
     };
 }
-
-#ifdef PALUDIS_HAVE_CONCEPTS
-namespace std
-{
-    template <typename Value_, typename Iterator_,
-             Value_ std::tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
-    concept_map ForwardIterator<paludis::MemberIterator<Value_, Iterator_, member_> >
-    {
-    };
-}
-#endif
 
 #endif

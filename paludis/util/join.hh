@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,10 +24,6 @@
 #include <iterator>
 #include <string>
 
-#ifdef PALUDIS_HAVE_CONCEPTS
-#  include <concepts>
-#endif
-
 /** \file
  * Declarations for the join function.
  *
@@ -40,33 +36,12 @@
 
 namespace paludis
 {
-#ifdef PALUDIS_HAVE_CONCEPTS
-    auto concept IsJoinResult<typename T_>
-    {
-        requires std::DefaultConstructible<T_>;
-        requires std::CopyConstructible<T_>;
-        void T_::operator+= (const T_ &);
-        void T_::operator+= (const std::string &);
-    };
-
-    auto concept IsJoinStringifier<typename F_, typename T_, typename I_>
-    {
-        T_ operator() (const F_ &, const I_ &);
-    };
-#endif
-
     /**
      * Join together the items from i to end using joiner.
      *
      * \ingroup g_strings
      */
     template <typename I_, typename T_>
-#ifdef PALUDIS_HAVE_CONCEPTS
-        requires
-            std::ForwardIterator<I_>,
-            IsStringifiable<I_::reference>,
-            IsJoinResult<T_>
-#endif
     T_ join(I_ i, I_ end, const T_ & joiner)
     {
         T_ result;
@@ -88,12 +63,6 @@ namespace paludis
      * \ingroup g_strings
      */
     template <typename I_, typename T_, typename F_>
-#ifdef PALUDIS_HAVE_CONCEPTS
-        requires
-            std::ForwardIterator<I_>,
-            IsJoinResult<T_>,
-            IsJoinStringifier<F_, T_, I_::reference>
-#endif
     T_ join(I_ i, I_ end, const T_ & joiner, const F_ & f)
     {
         T_ result;
@@ -115,11 +84,6 @@ namespace paludis
      * \ingroup g_strings
      */
     template <typename I_>
-#ifdef PALUDIS_HAVE_CONCEPTS
-        requires
-            std::ForwardIterator<I_>,
-            IsStringifiable<I_::reference>
-#endif
     std::string join(I_ begin, const I_ end, const char * const t)
     {
         return join(begin, end, std::string(t));
@@ -132,11 +96,6 @@ namespace paludis
      * \ingroup g_strings
      */
     template <typename I_, typename F_>
-#ifdef PALUDIS_HAVE_CONCEPTS
-        requires
-            std::ForwardIterator<I_>,
-            IsJoinStringifier<F_, std::string, I_::reference>
-#endif
     std::string join(I_ begin, const I_ end, const char * const t, const F_ & f)
     {
         return join(begin, end, std::string(t), f);

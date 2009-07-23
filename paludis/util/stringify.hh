@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,10 +26,6 @@
 #include <sstream>
 #include <string>
 
-#ifdef PALUDIS_HAVE_CONCEPTS
-#  include <concepts>
-#endif
-
 /** \file
  * Stringify functions.
  *
@@ -42,20 +38,6 @@
 
 namespace paludis
 {
-#ifdef PALUDIS_HAVE_CONCEPTS
-    auto concept IsStreamStringifiable<typename T_>
-    {
-        requires ! std::Dereferenceable<T_>;
-        std::ostream & operator<< (std::ostream &, const T_ &);
-    };
-
-    auto concept IsStringifiable<typename T_>
-    {
-        std::string stringify(const T_ &);
-    };
-#endif
-
-#ifndef PALUDIS_HAVE_CONCEPTS
     /**
      * For use by stringify.
      *
@@ -110,7 +92,6 @@ namespace paludis
             enum { value = 0 } Value;
         };
     }
-#endif
 
     template <typename T_> inline std::string stringify(const T_ & item);
 
@@ -124,17 +105,12 @@ namespace paludis
          * \ingroup g_strings
          */
         template <typename T_>
-#ifdef PALUDIS_HAVE_CONCEPTS
-            requires IsStreamStringifiable<T_>
-#endif
         std::string
         real_stringify(const T_ & item)
         {
-#ifndef PALUDIS_HAVE_CONCEPTS
             /* check that we're not trying to stringify a pointer or somesuch */
             int check_for_stringifying_silly_things
                 PALUDIS_ATTRIBUTE((unused)) = CheckType<T_>::value;
-#endif
 
             std::ostringstream s;
             s << item;

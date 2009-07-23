@@ -107,10 +107,6 @@ probably others) the compiler will die with an internal error or a floating poin
 exception; even without any non-standard optimisations turned on, ICC produces
 code that is measurably faster than GCC.</p>
 
-<p>ConceptGCC has been known to work -- Paludis makes limited use of concepts where compiler
-support is available. Note that ConceptGCC isn't ABI compatible with GCC, so you'll need
-all of the link dependencies built using ConceptGCC rather than GCC too.</p>
-
 <h2 id="verb">What term should I use to mean "to install a package using Paludis"?</h2>
 
 <p>"Install".</p>

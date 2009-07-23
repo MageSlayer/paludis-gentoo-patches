@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -34,12 +34,6 @@ namespace paludis
          * For use by fast_unique_copy only.
          */
         template <typename I_, typename O_, typename C_>
-#ifdef PALUDIS_HAVE_CONCEPTS
-            requires
-                std::RandomAccessIterator<I_>,
-                std::OutputIterator<O_, I_::value_type>,
-                std::BinaryPredicate<C_, I_::reference, I_::reference>
-#endif
         void
         real_fast_unique_copy(const I_ & start, const I_ & end, const I_ & full_end, O_ out,
                 C_ comp, const I_ & mbgt)
@@ -72,21 +66,11 @@ namespace paludis
      * Extract unique elements from a sorted range of random access iterators.
      */
     template <typename I_, typename O_>
-#ifdef PALUDIS_HAVE_CONCEPTS
-        requires
-            std::RandomAccessIterator<I_>,
-            std::OutputIterator<O_, I_::value_type>,
-            std::BinaryPredicate<std::less<I_::value_type>, I_::reference, I_::reference>
-#endif
     void
     fast_unique_copy(const I_ & start, const I_ & end, O_ out)
     {
         fast_unique_copy_internals::real_fast_unique_copy(start, end, end, out,
-#ifdef PALUDIS_HAVE_CONCEPTS
-                std::less<I_::value_type>(),
-#else
                 std::less<typename std::iterator_traits<I_>::value_type>(),
-#endif
                 end);
     }
 
@@ -94,12 +78,6 @@ namespace paludis
      * Extract unique elements from a sorted range of random access iterators.
      */
     template <typename I_, typename O_, typename C_>
-#ifdef PALUDIS_HAVE_CONCEPTS
-        requires
-            std::RandomAccessIterator<I_>,
-            std::OutputIterator<O_, I_::value_type>,
-            std::BinaryPredicate<C_, I_::reference>
-#endif
     void
     fast_unique_copy(const I_ & start, const I_ & end, O_ out, C_ comp)
     {

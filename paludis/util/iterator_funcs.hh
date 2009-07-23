@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2007 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -23,10 +23,6 @@
 
 #include <iterator>
 
-#ifdef PALUDIS_HAVE_CONCEPTS
-#  include <concepts>
-#endif
-
 namespace paludis
 {
 #ifdef PALUDIS_HAVE_STD_NEXT
@@ -38,9 +34,6 @@ namespace paludis
      * \ingroup g_iterator
      */
     template <typename T_>
-#ifdef PALUDIS_HAVE_CONCEPTS
-        requires std::ForwardIterator<T_>
-#endif
     T_ next(const T_ & i)
     {
         T_ result(i);
@@ -53,9 +46,6 @@ namespace paludis
      * \ingroup g_iterator
      */
     template <typename T_>
-#ifdef PALUDIS_HAVE_CONCEPTS
-        requires std::ForwardIterator<T_>
-#endif
     T_ next(const T_ & i, const int & n)
     {
         T_ result(i);
@@ -70,9 +60,6 @@ namespace paludis
      * \ingroup g_iterator
      */
     template <typename T_>
-#ifdef PALUDIS_HAVE_CONCEPTS
-        requires std::BidirectionalIterator<T_>
-#endif
     T_ previous(const T_ & i)
     {
         T_ result(i);
@@ -86,9 +73,6 @@ namespace paludis
      * \ingroup g_iterator
      */
     template <typename T_>
-#ifdef PALUDIS_HAVE_CONCEPTS
-        requires std::ForwardIterator<T_>
-#endif
     std::size_t capped_distance(T_ a, const T_ & b, unsigned n)
     {
         std::size_t x(0);

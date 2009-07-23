@@ -154,44 +154,12 @@ namespace paludis
         };
     }
 
-#ifdef PALUDIS_HAVE_CONCEPTS
-    /**
-     * A type is destringifiable if it can be default and copy constructed and read from an ostream.
-     *
-     * \ingroup g_strings
-     * \since 0.26
-     */
-    auto concept IsDestringifiable<typename T_>
-    {
-        requires std::DefaultConstructible<T_>;
-        requires std::CopyConstructible<T_>;
-        std::ostream & operator<< (std::ostream &, const T_ &);
-    };
-
-    /**
-     * A type is suitable for destringify exceptions if it can be thrown with a single string parameter.
-     *
-     * \ingroup g_strings
-     * \since 0.26
-     */
-    auto concept IsDestringifyException<typename T_>
-    {
-        requires std::CopyConstructible<T_>;
-        T_::T_(const std::string &);
-    };
-#endif
-
     /**
      * Extract a value of some type from a string.
      *
      * \ingroup g_strings
      */
     template <typename Type_, typename Exception_>
-#ifdef PALUDIS_HAVE_CONCEPTS
-            requires
-                IsDestringifiable<Type_>,
-                IsDestringifyException<Exception_>
-#endif
     Type_ destringify(const std::string & s)
     {
         if (s == "")
@@ -201,10 +169,6 @@ namespace paludis
     }
 
     template <typename Type_>
-#ifdef PALUDIS_HAVE_CONCEPTS
-            requires
-                IsDestringifiable<Type_>
-#endif
     Type_ destringify(const std::string & s)
     {
         return destringify<Type_, DestringifyError>(s);

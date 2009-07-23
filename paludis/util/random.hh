@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,10 +23,6 @@
 #include <cstdlib>
 #include <inttypes.h>
 #include <paludis/util/attributes.hh>
-
-#ifdef PALUDIS_HAVE_CONCEPTS
-#  include <concepts>
-#endif
 
 /** \file
  * Declarations for the Random class.
@@ -74,11 +70,6 @@ namespace paludis
 
             /// Fetch a random number in (0, max]
             template <typename DiffType_>
-#ifdef PALUDIS_HAVE_CONCEPTS
-                requires
-                    std::HasMultiply<double, DiffType_>,
-                    std::CopyConstructible<DiffType_>
-#endif
             DiffType_ operator() (DiffType_ max)
             {
                 local_seed = (_a * local_seed + _b) % _m;

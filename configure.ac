@@ -649,40 +649,6 @@ int main(int, char **)
 	[AC_MSG_RESULT([no])])
 dnl }}}
 
-dnl {{{ check for concept support
-AC_MSG_CHECKING([for compiler support for concepts])
-AC_COMPILE_IFELSE([
-auto concept Monkeyable<typename T_>
-{
-	void T_::monkey () const;
-};
-
-template <Monkeyable Monkey_>
-void monkey_lots(const Monkey_ & m)
-{
-	for (int x(0) ; x < 10 ; ++x)
-		m.monkey();
-}
-
-struct Bobo
-{
-	void monkey() const
-	{
-	}
-};
-
-int main(int, char **)
-{
-	monkey_lots(Bobo());
-}
-],
-	[AC_MSG_RESULT([yes])
-	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_CONCEPTS=1"
-	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_CONCEPTS=1"
-	],
-	[AC_MSG_RESULT([no])])
-dnl }}}
-
 dnl {{{ check for hashes
 AC_MSG_CHECKING([for hashed associative containers])
 AC_COMPILE_IFELSE([
