@@ -236,7 +236,7 @@ InfoPkgsMetadataKey::human_name() const
 MetadataKeyType
 InfoPkgsMetadataKey::type() const
 {
-    return mkt_internal;
+    return mkt_normal;
 }
 
 
