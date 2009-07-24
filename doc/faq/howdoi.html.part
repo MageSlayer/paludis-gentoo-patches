@@ -11,6 +11,7 @@
     <li><a href="howdoi.html#syncfromcvs">Sync from CVS</a></li>
     <li><a href="howdoi.html#syncfromsnapshot">Sync from a Gentoo tree snapshot</a></li>
     <li><a href="howdoi.html#deletedvdb">Recover VDB</a></li>
+    <li><a href="howdoi.html#removeportage">Remove Portage from my Gentoo installation</a></li>
 </ul>
 
 <h2 id="ccache">Use <code>ccache</code></h2>
@@ -203,4 +204,11 @@ sync_options = --strip-components=1
 careful next time.</p>
 
 <p>If you deleted <code>/var/db/pkg</code> on purpose, please install OS X and stop pestering us.</p>
+
+<h2 id="removeportage">Remove Portage from my Gentoo installation</h2>
+
+<p>The short answer is that you can't.</p>
+
+<p>Several Gentoo packages wrongly depend on Portage, several depend on Portage because they use it
+and there really is no reason to try. Just leave Portage installed.</p>
 
