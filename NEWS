@@ -4,6 +4,9 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.38.2:
+    * Failures installing qt-core on Gentoo have been fixed.
+
 0.38.1:
     * Various fixes when using the Portage configuration.
 

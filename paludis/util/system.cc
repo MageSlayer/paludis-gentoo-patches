@@ -167,7 +167,7 @@ namespace paludis
         std::ostream * captured_stderr_stream;
         bool ptys;
 
-        Implementation(const std::string & c,
+        Implementation(const std::string & c, bool cl = false,
                 const std::map<std::string, std::string> & s = make_me_a_frickin_map_because_gcc_sucks(),
                 const std::string & d = "", bool e = false,
                 std::tr1::shared_ptr<uid_t> u = std::tr1::shared_ptr<uid_t>(),
@@ -178,7 +178,7 @@ namespace paludis
                 std::ostream * cs = 0,
                 std::ostream * ds = 0) :
             command(c),
-            clearenv(false),
+            clearenv(cl),
             setenv_values(s),
             chdir(d),
             echo_to_stderr(e),
@@ -209,7 +209,7 @@ Command::Command(const char * const s) :
 
 Command::Command(const Command & other) :
     PrivateImplementationPattern<Command>(new Implementation<Command>(other._imp->command,
-                other._imp->setenv_values, other._imp->chdir, other._imp->echo_to_stderr,
+                other._imp->clearenv, other._imp->setenv_values, other._imp->chdir, other._imp->echo_to_stderr,
                 other._imp->uid, other._imp->gid, other._imp->stdout_prefix, other._imp->stderr_prefix,
                 other._imp->prefix_discard_blank_output,
                 other._imp->prefix_blank_lines, other._imp->pipe_command_handler, other._imp->captured_stdout_stream,
@@ -222,7 +222,7 @@ Command::operator= (const Command & other)
 {
     if (this != &other)
     {
-        _imp.reset(new Implementation<Command>(other._imp->command, other._imp->setenv_values,
+        _imp.reset(new Implementation<Command>(other._imp->command, other._imp->clearenv, other._imp->setenv_values,
                     other._imp->chdir, other._imp->echo_to_stderr,
                     std::tr1::shared_ptr<uid_t>(),
                     std::tr1::shared_ptr<gid_t>(),
@@ -464,12 +464,13 @@ paludis::run_command(const Command & cmd)
                 if (cmd.clearenv())
                 {
                     std::map<std::string, std::string> setenvs;
-                    for (const char * const * it(environ); 0 != it; ++it)
+                    for (const char * const * it(environ); 0 != *it; ++it)
                     {
                         std::string var(*it);
                         if (std::string::npos != var.find('=') &&
                             ("PALUDIS_" == var.substr(0, 8) ||
                              "PATH=" == var.substr(0, 5) ||
+                             "HOME=" == var.substr(0, 5) ||
                              "LD_LIBRARY_PATH=" == var.substr(0, 16)))
                             setenvs.insert(std::make_pair(var.substr(0, var.find('=')), var.substr(var.find('=') + 1)));
                     }
