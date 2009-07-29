@@ -44,7 +44,28 @@ namespace paludis
             NamedValue<n::spec, PackageDepSpec> spec;
             NamedValue<n::use_installed, UseInstalled> use_installed;
         };
+
+        class PALUDIS_VISIBLE Constraints :
+            private PrivateImplementationPattern<Constraints>
+        {
+            public:
+                Constraints();
+                ~Constraints();
+
+                UseInstalled strictest_use_installed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                void add(const std::tr1::shared_ptr<const Constraint> &);
+
+                struct ConstIteratorTag;
+                typedef WrappedForwardIterator<ConstIteratorTag, const std::tr1::shared_ptr<const Constraint> > ConstIterator;
+                ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
     }
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class PrivateImplementationPattern<resolver::Constraints>;
+#endif
 }
 
 #endif

@@ -43,7 +43,7 @@ namespace paludis
         {
             NamedValue<n::already_ordered, bool> already_ordered;
             NamedValue<n::arrows, std::tr1::shared_ptr<ArrowSequence> > arrows;
-            NamedValue<n::constraints, std::tr1::shared_ptr<ConstraintSequence> > constraints;
+            NamedValue<n::constraints, std::tr1::shared_ptr<Constraints> > constraints;
             NamedValue<n::decision, std::tr1::shared_ptr<Decision> > decision;
         };
     }

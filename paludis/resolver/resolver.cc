@@ -52,7 +52,7 @@ using namespace paludis;
 using namespace paludis::resolver;
 
 typedef std::map<QPN_S, std::tr1::shared_ptr<Resolution> > ResolutionsByQPN_SMap;
-typedef std::map<QPN_S, std::tr1::shared_ptr<ConstraintSequence> > InitialConstraints;
+typedef std::map<QPN_S, std::tr1::shared_ptr<Constraints> > InitialConstraints;
 typedef std::list<std::tr1::shared_ptr<const Resolution> > OrderedResolutionsList;
 
 namespace paludis
@@ -303,7 +303,7 @@ Resolver::_apply_resolution_constraint(
     if (resolution->decision())
         _verify_new_constraint(qpn_s, resolution, constraint);
 
-    resolution->constraints()->push_back(constraint);
+    resolution->constraints()->add(constraint);
 }
 
 void
@@ -346,10 +346,6 @@ Resolver::_constraint_matches(
         case ui_if_same_version:
             if (decision->is_installed())
                 ok = ok && (decision->is_same_version() || decision->is_transient());
-            break;
-
-        case ui_always:
-            ok = ok && decision->is_installed();
             break;
 
         case last_ui:
@@ -423,7 +419,7 @@ Resolver::_best_id_from(
     {
         bool ok(true);
 
-        for (ConstraintSequence::ConstIterator c(resolution->constraints()->begin()),
+        for (Constraints::ConstIterator c(resolution->constraints()->begin()),
                 c_end(resolution->constraints()->end()) ;
                 c != c_end ; ++c)
         {
@@ -491,8 +487,8 @@ Resolver::_add_dependencies(const QPN_S & our_qpn_s, const std::tr1::shared_ptr<
 }
 
 bool
-Resolver::_care_about_dependency_spec(const QPN_S & qpn_s,
-        const std::tr1::shared_ptr<const Resolution> &, const SanitisedDependency & dep) const
+Resolver::_care_about_dependency_spec(const QPN_S &,
+        const std::tr1::shared_ptr<const Resolution> &, const SanitisedDependency &) const
 {
     return true;
     // return _desire_strength_from_sanitised_dependency(qpn_s, dep) >= ds_recommendation;
@@ -506,7 +502,7 @@ Resolver::_resolve_arrows()
     for (ResolutionsByQPN_SMap::iterator i(_imp->resolutions_by_qpn_s.begin()), i_end(_imp->resolutions_by_qpn_s.end()) ;
             i != i_end ; ++i)
     {
-        for (ConstraintSequence::ConstIterator c(i->second->constraints()->begin()),
+        for (Constraints::ConstIterator c(i->second->constraints()->begin()),
                 c_end(i->second->constraints()->end()) ;
                 c != c_end ; ++c)
         {
@@ -702,7 +698,7 @@ Resolver::_unable_to_decide(
                 i != i_end ; ++i)
         {
             std::cout << "  * " << **i << " doesn't match:" << std::endl;
-            for (ConstraintSequence::ConstIterator c(resolution->constraints()->begin()),
+            for (Constraints::ConstIterator c(resolution->constraints()->begin()),
                     c_end(resolution->constraints()->end()) ;
                     c != c_end ; ++c)
                 if (! _constraint_matches(*c, _decision_from_package_id(qpn_s, *i)))
@@ -731,12 +727,12 @@ Resolver::_unable_to_order_more() const
     throw InternalError(PALUDIS_HERE, "not implemented");
 }
 
-const std::tr1::shared_ptr<ConstraintSequence>
+const std::tr1::shared_ptr<Constraints>
 Resolver::_initial_constraints_for(const QPN_S & qpn_s) const
 {
     InitialConstraints::const_iterator i(_imp->initial_constraints.find(qpn_s));
     if (i == _imp->initial_constraints.end())
-        return make_shared_ptr(new ConstraintSequence);
+        return make_shared_ptr(new Constraints);
     else
         return i->second;
 }
@@ -748,7 +744,7 @@ Resolver::_made_wrong_decision(const QPN_S & qpn_s,
 {
     /* can we find a resolution that works for all our constraints? */
     std::tr1::shared_ptr<Resolution> adapted_resolution(make_shared_ptr(new Resolution(*resolution)));
-    adapted_resolution->constraints()->push_back(constraint);
+    adapted_resolution->constraints()->add(constraint);
 
     const std::tr1::shared_ptr<Decision> decision(_try_to_find_decision_for(qpn_s, adapted_resolution));
     if (decision)
@@ -810,8 +806,8 @@ Resolver::add_initial_constraint(const QPN_S & q, const std::tr1::shared_ptr<con
 {
     InitialConstraints::iterator i(_imp->initial_constraints.find(q));
     if (i == _imp->initial_constraints.end())
-        i = _imp->initial_constraints.insert(std::make_pair(q, make_shared_ptr(new ConstraintSequence))).first;
-    i->second->push_back(c);
+        i = _imp->initial_constraints.insert(std::make_pair(q, make_shared_ptr(new Constraints))).first;
+    i->second->add(c);
 }
 
 #if 0
@@ -992,7 +988,7 @@ Resolver::find_any_score(const QPN_S & our_qpn_s, const SanitisedDependency & de
         {
             const std::tr1::shared_ptr<Resolution> resolution(_create_resolution_for_qpn_s(*qpn_s));
             const std::tr1::shared_ptr<Constraint> constraint(_make_constraint_from_dependency(our_qpn_s, dep));
-            resolution->constraints()->push_back(constraint);
+            resolution->constraints()->add(constraint);
             const std::tr1::shared_ptr<Decision> decision(_try_to_find_decision_for(*qpn_s, resolution));
             if (decision)
                 return 20 + operator_bias;

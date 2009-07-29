@@ -115,7 +115,7 @@ namespace paludis
 
                 void _unable_to_order_more() const PALUDIS_ATTRIBUTE((noreturn));
 
-                const std::tr1::shared_ptr<ConstraintSequence> _initial_constraints_for(const QPN_S &) const;
+                const std::tr1::shared_ptr<Constraints> _initial_constraints_for(const QPN_S &) const;
 
                 void _suggest_restart_with(const QPN_S &,
                         const std::tr1::shared_ptr<const Resolution> &,

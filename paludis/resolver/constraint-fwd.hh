@@ -30,8 +30,7 @@ namespace paludis
     namespace resolver
     {
         struct Constraint;
-
-        typedef Sequence<std::tr1::shared_ptr<const Constraint> > ConstraintSequence;
+        struct Constraints;
 
         std::ostream & operator<< (std::ostream & s, const Constraint & c) PALUDIS_VISIBLE;
     }

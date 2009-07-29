@@ -139,6 +139,12 @@ namespace
 //        args::SwitchArg a_install_to_chroot;
 //        args::SwitchArg a_install_to_root;
 
+//        args::ArgsGroup g_interactivity_options;
+//        args::SwitchArg a_interactive;
+//        args::SwitchArg a_interactive_slots;
+//        args::SwitchArg a_interactive_decisions;
+//        args::SwitchArg a_interactive_ordering;
+
         args::ArgsGroup g_dump_options;
         args::SwitchArg a_dump;
         args::SwitchArg a_dump_dependencies;

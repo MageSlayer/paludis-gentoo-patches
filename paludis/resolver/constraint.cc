@@ -20,9 +20,10 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/sequence-impl.hh>
 #include <sstream>
+#include <list>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -40,6 +41,49 @@ paludis::resolver::operator<< (std::ostream & s, const Constraint & c)
     return s;
 }
 
-template class Sequence<std::tr1::shared_ptr<const Constraint> >;
-template class WrappedForwardIterator<ConstraintSequence::ConstIteratorTag, const std::tr1::shared_ptr<const Constraint> >;
+namespace paludis
+{
+    template <>
+    struct Implementation<Constraints>
+    {
+        UseInstalled strictest_use_installed;
+        std::list<std::tr1::shared_ptr<const Constraint> > constraints;
+
+        Implementation() :
+            strictest_use_installed(ui_if_possible)
+        {
+        }
+    };
+}
+
+Constraints::Constraints() :
+    PrivateImplementationPattern<Constraints>(new Implementation<Constraints>)
+{
+}
+
+Constraints::~Constraints()
+{
+}
+
+Constraints::ConstIterator
+Constraints::begin() const
+{
+    return ConstIterator(_imp->constraints.begin());
+}
+
+Constraints::ConstIterator
+Constraints::end() const
+{
+    return ConstIterator(_imp->constraints.end());
+}
+
+void
+Constraints::add(const std::tr1::shared_ptr<const Constraint> & c)
+{
+    _imp->constraints.push_back(c);
+    _imp->strictest_use_installed = std::min(_imp->strictest_use_installed, c->use_installed());
+}
+
+template class PrivateImplementationPattern<Constraints>;
+template class WrappedForwardIterator<Constraints::ConstIteratorTag, const std::tr1::shared_ptr<const Constraint> >;
 

@@ -6,11 +6,11 @@ make_enum_UseInstalled()
     prefix ui
     namespace paludis::resolver
 
+    # must be kept in strictness order
     key ui_never               "Never"
     key ui_only_if_transient   "Only if it is transient"
     key ui_if_same             "If it is the same"
     key ui_if_same_version     "If it is the same version"
     key ui_if_possible         "If possible"
-    key ui_always              "Always"
 }
 
