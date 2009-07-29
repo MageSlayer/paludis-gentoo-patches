@@ -20,6 +20,8 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/sequence-impl.hh>
 #include <sstream>
 
 using namespace paludis;
@@ -37,4 +39,7 @@ paludis::resolver::operator<< (std::ostream & s, const Constraint & c)
 
     return s;
 }
+
+template class Sequence<std::tr1::shared_ptr<const Constraint> >;
+template class WrappedForwardIterator<ConstraintSequence::ConstIteratorTag, const std::tr1::shared_ptr<const Constraint> >;
 
