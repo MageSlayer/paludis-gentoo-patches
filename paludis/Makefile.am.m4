@@ -83,7 +83,7 @@ EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
 	testscriptlist srlist srcleanlist selist secleanlist \
 	hooker.bash \
 	stripper_TEST_binary.cc
-SUBDIRS = distributions fetchers syncers util selinux . repositories environments args
+SUBDIRS = distributions fetchers syncers util selinux . repositories environments args resolver
 BUILT_SOURCES = srcleanlist secleanlist
 
 libpaludis_@PALUDIS_PC_SLOT@_la_SOURCES = filelist

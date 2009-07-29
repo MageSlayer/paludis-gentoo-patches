@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -40,6 +40,7 @@
 #include "cmd_print_repository_formats.hh"
 #include "cmd_print_sets.hh"
 #include "cmd_print_sync_protocols.hh"
+#include "cmd_resolve.hh"
 #include "cmd_show.hh"
 #include "cmd_sync.hh"
 
@@ -83,6 +84,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("print-repository-formats", make_command<PrintRepositoryFormatsCommand>));
     _imp->handlers.insert(std::make_pair("print-sets", make_command<PrintSetsCommand>));
     _imp->handlers.insert(std::make_pair("print-sync-protocols", make_command<PrintSyncProtocolsCommand>));
+    _imp->handlers.insert(std::make_pair("resolve", make_command<ResolveCommand>));
     _imp->handlers.insert(std::make_pair("show", make_command<ShowCommand>));
     _imp->handlers.insert(std::make_pair("sync", make_command<SyncCommand>));
 }

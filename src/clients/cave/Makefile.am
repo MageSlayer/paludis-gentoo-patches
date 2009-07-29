@@ -30,6 +30,7 @@ command_MANS = \
 	cave-print-repository-formats.1 \
 	cave-print-sets.1 \
 	cave-print-sync-protocols.1 \
+	cave-resolve.1 \
 	cave-show.1 \
 	cave-sync.1
 
@@ -51,6 +52,7 @@ cave_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/args/libpaludisargs_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/resolver/libpaludisresolver.a \
 	$(top_builddir)/src/output/liboutput.a \
 	$(DYNAMIC_LD_LIBS)
 
@@ -62,7 +64,8 @@ man_cave_LDADD = \
 	$(top_builddir)/paludis/args/libpaludisargs_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/args/libpaludisman_@PALUDIS_PC_SLOT@.a \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/libpaludismanpagethings_@PALUDIS_PC_SLOT@.la
+	$(top_builddir)/paludis/libpaludismanpagethings_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/resolver/libpaludisresolver.a
 
 noinst_LIBRARIES = libcave.a
 
@@ -86,6 +89,7 @@ libcave_a_SOURCES = \
 	cmd_print_repository_formats.cc cmd_print_repository_formats.hh \
 	cmd_print_sets.cc cmd_print_sets.hh \
 	cmd_print_sync_protocols.cc cmd_print_sync_protocols.hh \
+	cmd_resolve.cc cmd_resolve.hh \
 	cmd_show.cc cmd_show.hh \
 	cmd_sync.cc cmd_sync.hh \
 	exceptions.cc exceptions.hh \
@@ -100,7 +104,6 @@ libcave_a_SOURCES = \
 #	cmd_contents.cc \
 #	cmd_executables.cc \
 #	cmd_info.cc \
-#	cmd_install.cc \
 #	cmd_owner.cc \
 #	cmd_print_id_actions.cc \
 #	cmd_print_id_masks.cc \

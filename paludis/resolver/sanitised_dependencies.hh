@@ -1,0 +1,76 @@
+/* vim: set sw=4 sts=4 et foldmethod=syntax : */
+
+/*
+ * Copyright (c) 2009 Ciaran McCreesh
+ *
+ * This file is part of the Paludis package manager. Paludis is free software;
+ * you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License version 2, as published by the Free Software Foundation.
+ *
+ * Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_SANITISED_DEPENDENCIES_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_SANITISED_DEPENDENCIES_HH 1
+
+#include <paludis/resolver/sanitised_dependencies-fwd.hh>
+#include <paludis/resolver/resolver-fwd.hh>
+#include <paludis/util/named_value.hh>
+#include <paludis/dep_label-fwd.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/spec_tree-fwd.hh>
+#include <paludis/metadata_key-fwd.hh>
+
+namespace paludis
+{
+    namespace n
+    {
+        struct active_dependency_labels;
+        struct spec;
+    }
+
+    namespace resolver
+    {
+        struct SanitisedDependency
+        {
+            NamedValue<n::active_dependency_labels, std::tr1::shared_ptr<const ActiveDependencyLabels> > active_dependency_labels;
+            NamedValue<n::spec, PackageDepSpec> spec;
+        };
+
+        class SanitisedDependencies :
+            private PrivateImplementationPattern<SanitisedDependencies>
+        {
+            private:
+                void _populate_one(
+                        const Resolver &,
+                        const std::tr1::shared_ptr<const PackageID> &,
+                        const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > (PackageID::* const) () const
+                        );
+
+            public:
+                SanitisedDependencies();
+                ~SanitisedDependencies();
+
+                void populate(
+                        const Resolver &,
+                        const std::tr1::shared_ptr<const PackageID> &);
+
+                void add(const SanitisedDependency & d);
+
+                struct ConstIteratorTag;
+                typedef WrappedForwardIterator<ConstIteratorTag, const SanitisedDependency> ConstIterator;
+
+                ConstIterator begin() const;
+                ConstIterator end() const;
+        };
+    }
+}
+
+#endif
