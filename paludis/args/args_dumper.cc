@@ -75,12 +75,14 @@ void ArgsDumper::visit(const EnumArg & a)
             it != it_end; ++it)
     {
         std::stringstream p;
-        p << "      " << (*it).first;
+        p << "      " << it->long_name();
+        if (it->short_name())
+            p << " (" << std::string(1, it->short_name()) << ")";
         if (p.str().length() < 26)
             p << std::string(26 - p.str().length(), ' ');
         _os << p.str();
-        _os << " " << (*it).second;
-        if ((*it).first == a.default_arg())
+        _os << " " << it->description();
+        if (it->long_name() == a.default_arg())
             _os << " (default)";
         _os << std::endl;
     }

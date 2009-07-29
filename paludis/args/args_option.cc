@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,7 @@
 #include "args_error.hh"
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/make_named_values.hh>
 #include <set>
 #include <vector>
 #include <algorithm>
@@ -33,26 +34,28 @@ template class WrappedForwardIterator<StringSetArg::ConstIteratorTag, const std:
 template class WrappedForwardIterator<StringSetArg::AllowedArgConstIteratorTag,
          const std::pair<std::string, std::string> >;
 template class WrappedForwardIterator<EnumArg::AllowedArgConstIteratorTag,
-         const std::pair<std::string, std::string> >;
+         const AllowedEnumArg>;
 template class WrappedForwardIterator<StringSequenceArg::ConstIteratorTag, const std::string>;
 
 namespace
 {
     struct ArgIs
     {
-        /// The argument.
         const std::string arg;
 
-        /// Constructor.
         ArgIs(const std::string & a) :
             arg(a)
         {
         }
 
-        /// Comparator.
         bool operator() (const std::pair<std::string, std::string> & p) const
         {
             return p.first == arg;
+        }
+
+        bool operator() (const AllowedEnumArg & p) const
+        {
+            return p.long_name() == arg || (p.short_name() && std::string(1, p.short_name()) == arg);
         }
     };
 }
@@ -80,8 +83,8 @@ ArgsOption::remove()
     _group->handler()->remove_option(_long_name, _short_name);
 }
 
-SwitchArg::SwitchArg(ArgsGroup * const our_group, std::string our_long_name, char our_short_name,
-        std::string our_description, const bool c) :
+SwitchArg::SwitchArg(ArgsGroup * const our_group, const std::string & our_long_name, char our_short_name,
+        const std::string & our_description, const bool c) :
     ArgsOption(our_group, our_long_name, our_short_name, our_description),
     _can_be_negated(c)
 {
@@ -229,24 +232,24 @@ namespace paludis
     template<>
     struct Implementation<EnumArg>
     {
-        std::vector<std::pair<std::string, std::string> > allowed_args;
+        std::vector<AllowedEnumArg> allowed_args;
     };
 
     template<>
     struct Implementation<EnumArg::EnumArgOptions>
     {
-        std::vector<std::pair<std::string, std::string> > options;
+        std::vector<AllowedEnumArg> options;
     };
 }
 
-StringSetArg::StringSetArgOptions::StringSetArgOptions(std::string opt, std::string desc) :
+StringSetArg::StringSetArgOptions::StringSetArgOptions(const std::string & opt, const std::string & desc) :
     PrivateImplementationPattern<StringSetArgOptions>(new Implementation<StringSetArgOptions>)
 {
     _imp->options.push_back(std::make_pair(opt, desc));
 }
 
 StringSetArg::StringSetArgOptions &
-StringSetArg::StringSetArgOptions::operator() (std::string opt, std::string desc)
+StringSetArg::StringSetArgOptions::operator() (const std::string & opt, const std::string & desc)
 {
     _imp->options.push_back(std::make_pair(opt, desc));
     return *this;
@@ -295,15 +298,45 @@ EnumArg::~EnumArg()
 {
 }
 
-EnumArg::EnumArgOptions::EnumArgOptions(std::string opt, std::string desc) :
+EnumArg::EnumArgOptions::EnumArgOptions(const std::string & opt, const std::string & desc) :
     PrivateImplementationPattern<EnumArgOptions>(new Implementation<EnumArgOptions>)
 {
-    _imp->options.push_back(std::make_pair(opt, desc));
+    _imp->options.push_back(make_named_values<AllowedEnumArg>(
+                value_for<n::description>(desc),
+                value_for<n::long_name>(opt),
+                value_for<n::short_name>('\0')
+                ));
 }
 
-EnumArg::EnumArgOptions & EnumArg::EnumArgOptions::operator() (std::string opt, std::string desc)
+EnumArg::EnumArgOptions::EnumArgOptions(const std::string & opt, const char s, const std::string & desc) :
+    PrivateImplementationPattern<EnumArgOptions>(new Implementation<EnumArgOptions>)
 {
-    _imp->options.push_back(std::make_pair(opt, desc));
+    _imp->options.push_back(make_named_values<AllowedEnumArg>(
+                value_for<n::description>(desc),
+                value_for<n::long_name>(opt),
+                value_for<n::short_name>(s)
+                ));
+}
+
+EnumArg::EnumArgOptions &
+EnumArg::EnumArgOptions::operator() (const std::string & opt, const std::string & desc)
+{
+    _imp->options.push_back(make_named_values<AllowedEnumArg>(
+                value_for<n::description>(desc),
+                value_for<n::long_name>(opt),
+                value_for<n::short_name>('\0')
+                ));
+    return *this;
+}
+
+EnumArg::EnumArgOptions &
+EnumArg::EnumArgOptions::operator() (const std::string & opt, const char s, const std::string & desc)
+{
+    _imp->options.push_back(make_named_values<AllowedEnumArg>(
+                value_for<n::description>(desc),
+                value_for<n::long_name>(opt),
+                value_for<n::short_name>(s)
+                ));
     return *this;
 }
 

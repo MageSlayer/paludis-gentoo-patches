@@ -68,8 +68,7 @@ namespace paludis
                 virtual void arg_group_item(const char & short_name, const std::string & long_name,
                         const std::string & negated_long_name, const std::string & description) = 0;
                 virtual void start_extra_arg() = 0;
-                virtual void extra_arg_enum(const std::string & first, const std::string & second,
-                        const std::string & default_arg) = 0;
+                virtual void extra_arg_enum(const AllowedEnumArg &, const std::string & default_arg) = 0;
                 virtual void extra_arg_string_set(const std::string & first, const std::string & second) = 0;
                 virtual void end_extra_arg() = 0;
                 virtual void end_arg_group() = 0;
@@ -128,8 +127,7 @@ namespace paludis
                 void arg_group_item(const char & short_name, const std::string & long_name,
                         const std::string & negated_long_name, const std::string & description);
                 void start_extra_arg();
-                void extra_arg_enum(const std::string & first, const std::string & second,
-                        const std::string & default_arg);
+                void extra_arg_enum(const AllowedEnumArg &, const std::string & default_arg);
                 void extra_arg_string_set(const std::string & first, const std::string & second);
                 void end_extra_arg();
                 void end_arg_group();
@@ -186,8 +184,7 @@ namespace paludis
                 void arg_group_item(const char & short_name, const std::string & long_name,
                         const std::string & negated_long_name, const std::string & description);
                 void start_extra_arg();
-                void extra_arg_enum(const std::string & first, const std::string & second,
-                        const std::string & default_arg);
+                void extra_arg_enum(const AllowedEnumArg &, const std::string & default_arg);
                 void extra_arg_string_set(const std::string & first, const std::string & second);
                 void end_extra_arg();
                 void end_arg_group();
