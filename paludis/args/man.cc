@@ -65,9 +65,7 @@ namespace
 
             for (EnumArg::AllowedArgConstIterator a(e.begin_allowed_args()), a_end(e.end_allowed_args()) ;
                     a != a_end ; ++a)
-            {
-                _dw.extra_arg_enum(a->first, a->second, e.default_arg());
-            }
+                _dw.extra_arg_enum(*a, e.default_arg());
 
             _dw.end_extra_arg();
         }
@@ -79,11 +77,9 @@ namespace
 
             _dw.start_extra_arg();
 
-            for (EnumArg::AllowedArgConstIterator a(e.begin_allowed_args()), a_end(e.end_allowed_args()) ;
+            for (StringSetArg::AllowedArgConstIterator a(e.begin_allowed_args()), a_end(e.end_allowed_args()) ;
                     a != a_end ; ++a)
-            {
                 _dw.extra_arg_string_set(a->first, a->second);
-            }
 
             _dw.end_extra_arg();
         }
@@ -241,14 +237,17 @@ HtmlWriter::start_extra_arg()
 }
 
 void
-HtmlWriter::extra_arg_enum(const std::string & first, const std::string & second, const std::string & default_arg)
+HtmlWriter::extra_arg_enum(const AllowedEnumArg & e, const std::string & default_arg)
 {
     std::string default_string;
-    if (first == default_arg)
+    if (e.long_name() == default_arg)
         default_string = " (default)";
 
-    _os << "<dt>" << first << "</dt>" << endl;
-    _os << "<dd>" << second << default_string << "</dd>" << endl;
+    _os << "<dt>" << e.long_name();
+    if (e.short_name())
+        _os << " (" << std::string(1, e.short_name()) << ")";
+    _os << "</dt>" << endl;
+    _os << "<dd>" << e.description() << default_string << "</dd>" << endl;
 }
 
 void
@@ -441,16 +440,19 @@ ManWriter::start_extra_arg()
 }
 
 void
-ManWriter::extra_arg_enum(const std::string & first, const std::string & second, const std::string & default_arg)
+ManWriter::extra_arg_enum(const AllowedEnumArg & e, const std::string & default_arg)
 {
     std::string default_string;
-    if (first == default_arg)
+    if (e.long_name() == default_arg)
         default_string = " (default)";
 
     _os << ".RS" << endl;
     _os << ".TP" << endl;
-    _os << ".B \"" << first << "\"" << endl;
-    _os << second << default_string << endl;
+    _os << ".B \"" << e.long_name();
+    if (e.short_name())
+        _os << " (" << std::string(1, e.short_name()) << ")";
+    _os << "\"" << endl;
+    _os << e.description() << default_string << endl;
     _os << ".RE" << endl;
 }
 

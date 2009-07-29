@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2006 Stephen Bennett
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -25,6 +25,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/type_list.hh>
+#include <paludis/util/named_value.hh>
 
 /** \file
  * Declarations for ArgsOption.
@@ -38,6 +39,13 @@
 
 namespace paludis
 {
+    namespace n
+    {
+        struct description;
+        struct long_name;
+        struct short_name;
+    }
+
     namespace args
     {
         class ArgsGroup;
@@ -159,8 +167,8 @@ namespace paludis
                  *
                  * \since 0.26
                  */
-                SwitchArg(ArgsGroup * const group, std::string long_name, char short_name,
-                        std::string description, const bool can_be_negated);
+                SwitchArg(ArgsGroup * const group, const std::string & long_name, char short_name,
+                        const std::string & description, const bool can_be_negated);
 
                 ~SwitchArg();
 
@@ -197,12 +205,12 @@ namespace paludis
                 /**
                  * Fetch the argument that was given to this option.
                  */
-                const std::string& argument() const { return _argument; }
+                const std::string & argument() const { return _argument; }
 
                 /**
                  * Set the argument returned by argument().
                  */
-                void set_argument(const std::string& arg);
+                void set_argument(const std::string & arg);
 
                 virtual bool can_be_negated() const;
         };
@@ -237,7 +245,7 @@ namespace paludis
                         /**
                          * Constructor
                          */
-                        StringSetArgOptions(const std::string, const std::string);
+                        StringSetArgOptions(const std::string &, const std::string &);
 
                         /**
                          * Blank constructor
@@ -257,7 +265,7 @@ namespace paludis
                         /**
                          * Adds another (option, description) pair.
                          */
-                        StringSetArgOptions & operator() (const std::string, const std::string);
+                        StringSetArgOptions & operator() (const std::string &, const std::string &);
                 };
 
                 ///\name Basic operations
@@ -435,6 +443,21 @@ namespace paludis
         };
 
         /**
+         * An allowed argument for an EnumArg.
+         *
+         * \ingroup g_args
+         * \since 0.40
+         */
+        struct AllowedEnumArg
+        {
+            NamedValue<n::description, std::string> description;
+            NamedValue<n::long_name, std::string> long_name;
+
+            /// Might be '\0', for none.
+            NamedValue<n::short_name, char> short_name;
+        };
+
+        /**
          * An option that takes one of a predefined set of string arguments.
          *
          * \ingroup g_args
@@ -465,7 +488,14 @@ namespace paludis
                         /**
                          * Constructor
                          */
-                        EnumArgOptions(const std::string, const std::string);
+                        EnumArgOptions(const std::string &, const std::string &);
+
+                        /**
+                         * Constructor, with short arg.
+                         *
+                         * \since 0.40
+                         */
+                        EnumArgOptions(const std::string &, const char, const std::string &);
 
                         /**
                          * Destructor.
@@ -473,9 +503,16 @@ namespace paludis
                         ~EnumArgOptions();
 
                         /**
-                         * Adds another (option, description) pair.
+                         * Adds another (option, description).
                          */
-                        EnumArgOptions & operator() (const std::string, const std::string);
+                        EnumArgOptions & operator() (const std::string &, const std::string &);
+
+                        /**
+                         * Adds another (option, short-option, description).
+                         *
+                         * \since 0.40
+                         */
+                        EnumArgOptions & operator() (const std::string &, const char, const std::string &);
                 };
 
                 /**
@@ -520,8 +557,8 @@ namespace paludis
                 ///\{
 
                 struct AllowedArgConstIteratorTag;
-                typedef WrappedForwardIterator<AllowedArgConstIteratorTag, 
-                        const std::pair<std::string, std::string> > AllowedArgConstIterator;
+                typedef WrappedForwardIterator<AllowedArgConstIteratorTag,
+                        const AllowedEnumArg> AllowedArgConstIterator;
 
                 AllowedArgConstIterator begin_allowed_args() const;
 
