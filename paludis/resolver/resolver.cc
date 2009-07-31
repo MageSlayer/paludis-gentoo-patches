@@ -29,6 +29,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/dep_spec_flattener.hh>
@@ -276,7 +277,7 @@ const std::tr1::shared_ptr<Constraint>
 Resolver::_make_constraint_from_target(const PackageDepSpec & spec, const UseInstalled use_installed) const
 {
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                    // value_for<n::desire_strength>(ds_requirement),
+                    value_for<n::desire_strength>(ds_target),
                     value_for<n::reason>(make_shared_ptr(new TargetReason)),
                     value_for<n::spec>(spec),
                     value_for<n::use_installed>(use_installed)
@@ -287,7 +288,7 @@ const std::tr1::shared_ptr<Constraint>
 Resolver::_make_constraint_from_dependency(const QPN_S & qpn_s, const SanitisedDependency & dep) const
 {
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                    // value_for<n::desire_strength>(_desire_strength_from_sanitised_dependency(qpn_s, dep)),
+                    value_for<n::desire_strength>(_desire_strength_from_sanitised_dependency(qpn_s, dep)),
                     value_for<n::reason>(make_shared_ptr(new DependencyReason(qpn_s, dep))),
                     value_for<n::spec>(dep.spec()),
                     value_for<n::use_installed>(ui_if_same)
@@ -487,11 +488,10 @@ Resolver::_add_dependencies(const QPN_S & our_qpn_s, const std::tr1::shared_ptr<
 }
 
 bool
-Resolver::_care_about_dependency_spec(const QPN_S &,
-        const std::tr1::shared_ptr<const Resolution> &, const SanitisedDependency &) const
+Resolver::_care_about_dependency_spec(const QPN_S & qpn_s,
+        const std::tr1::shared_ptr<const Resolution> &, const SanitisedDependency & dep) const
 {
-    return true;
-    // return _desire_strength_from_sanitised_dependency(qpn_s, dep) >= ds_recommendation;
+    return _desire_strength_from_sanitised_dependency(qpn_s, dep) >= ds_recommendation;
 }
 
 void
@@ -785,7 +785,7 @@ Resolver::_make_constraint_for_preloading(
         const std::tr1::shared_ptr<const Decision> & d) const
 {
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                    // value_for<n::desire_strength>(ds_none),
+                    value_for<n::desire_strength>(ds_none),
                     value_for<n::reason>(make_shared_ptr(new TargetReason)),
                     value_for<n::spec>(d->package_id()->uniquely_identifying_spec()),
                     value_for<n::use_installed>(ui_if_possible)
@@ -809,8 +809,6 @@ Resolver::add_initial_constraint(const QPN_S & q, const std::tr1::shared_ptr<con
         i = _imp->initial_constraints.insert(std::make_pair(q, make_shared_ptr(new Constraints))).first;
     i->second->add(c);
 }
-
-#if 0
 
 namespace
 {
@@ -851,7 +849,6 @@ Resolver::_desire_strength_from_sanitised_dependency(const QPN_S &, const Saniti
 
     return result;
 }
-#endif
 
 Resolver::ConstIterator
 Resolver::begin() const
@@ -1007,4 +1004,6 @@ Resolver::find_any_score(const QPN_S & our_qpn_s, const SanitisedDependency & de
     /* yay, people are depping upon packages that don't exist again. I SMELL A LESSPIPE. */
     return 0;
 }
+
+template class WrappedForwardIterator<Resolver::ConstIteratorTag, const std::tr1::shared_ptr<const Resolution> >;
 

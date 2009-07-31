@@ -33,6 +33,7 @@ paludis::resolver::operator<< (std::ostream & s, const Constraint & c)
 {
     std::stringstream ss;
     ss << "Constraint(spec: " << c.spec()
+        << "; desire_strength: " << stringify(c.desire_strength())
         << "; use_installed: " << stringify(c.use_installed())
         << "; reason: " << (c.reason() ? stringify(*c.reason()) : "none")
         << ")";

@@ -1,9 +1,15 @@
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 MAINTAINERCLEANFILES = Makefile.in
-DISTCLEANFILES = use_installed-se.hh use_installed-se.cc
+DISTCLEANFILES = \
+	desire_strength-se.hh desire_strength-se.cc \
+	use_installed-se.hh use_installed-se.cc
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
-EXTRA_DIST = use_installed-se.hh use_installed-se.cc use_installed.se
-BUILT_SOURCES = use_installed-se.hh use_installed-se.cc
+EXTRA_DIST = \
+	desire_strength-se.hh desire_strength-se.cc desire_strength.se \
+	use_installed-se.hh use_installed-se.cc use_installed.se
+BUILT_SOURCES = \
+	desire_strength-se.hh desire_strength-se.cc \
+	use_installed-se.hh use_installed-se.cc
 
 TESTS =
 
@@ -11,6 +17,7 @@ noinst_HEADERS = \
 	arrow.hh arrow-fwd.hh \
 	constraint.hh constraint-fwd.hh \
 	decision.hh decision-fwd.hh \
+	desire_strength.hh desire_strength-fwd.hh desire_strength-se.hh
 	qpn_s.hh qpn_s-fwd.hh \
 	reason.hh reason-fwd.hh \
 	resolution.hh resolution-fwd.hh \
@@ -22,6 +29,7 @@ libpaludisresolver_a_SOURCES = \
 	arrow.cc \
 	constraint.cc \
 	decision.cc \
+	desire_strength.cc \
 	qpn_s.cc \
 	reason.cc \
 	resolution.cc \
@@ -53,6 +61,12 @@ distcheck-deps : distcheck-deps-subdirs
 distcheck-deps-subdirs :
 	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
+
+desire_strength-se.hh : desire_strength.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/desire_strength.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+desire_strength-se.cc : desire_strength.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/desire_strength.se > $@ ; then rm -f $@ ; exit 1 ; fi
 
 use_installed-se.hh : use_installed.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/use_installed.se > $@ ; then rm -f $@ ; exit 1 ; fi

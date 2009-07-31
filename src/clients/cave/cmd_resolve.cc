@@ -27,6 +27,8 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/resolver/resolver.hh>
+#include <paludis/resolver/resolution.hh>
+#include <paludis/resolver/decision.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
 
@@ -368,7 +370,7 @@ namespace
 
         ~DisplayCallback()
         {
-            std::cout << std::endl;
+            std::cout << std::endl << std::endl;
         }
 
         void operator() (const NotifierCallbackEvent & event) const
@@ -443,6 +445,35 @@ namespace
             }
         }
     }
+
+    void display_resolution(
+            const std::tr1::shared_ptr<Environment> &,
+            const std::tr1::shared_ptr<Resolver> & resolver,
+            const ResolveCommandLine &)
+    {
+        Context context("When displaying chosen resolution:");
+
+        for (Resolver::ConstIterator c(resolver->begin()), c_end(resolver->end()) ;
+                c != c_end ; ++c)
+        {
+            const std::tr1::shared_ptr<const PackageID> id((*c)->decision()->package_id());
+            std::cout << "* " << id->canonical_form(idcf_no_version) << " " << id->canonical_form(idcf_version)
+                << " replacing { }" << std::endl;
+        }
+
+        std::cout << std::endl;
+    }
+
+    void dump_if_requested(
+            const std::tr1::shared_ptr<Environment> &,
+            const std::tr1::shared_ptr<Resolver> & resolver,
+            const ResolveCommandLine & cmdline)
+    {
+        Context context("When dumping the resolver:");
+
+        if (cmdline.a_dump.specified())
+            resolver->dump(std::cerr);
+    }
 }
 
 bool
@@ -471,17 +502,33 @@ ResolveCommand::run(
     std::tr1::shared_ptr<Resolver> resolver(new Resolver(env.get()));
     try
     {
-        DisplayCallback display_callback;
-        ScopedNotifierCallback display_callback_holder(env.get(),
-                NotifierCallbackFunction(std::tr1::cref(display_callback)));
-        add_resolver_targets(env, resolver, cmdline);
-        resolver->resolve();
+        while (true)
+        {
+            try
+            {
+                DisplayCallback display_callback;
+                ScopedNotifierCallback display_callback_holder(env.get(),
+                        NotifierCallbackFunction(std::tr1::cref(display_callback)));
+                add_resolver_targets(env, resolver, cmdline);
+                resolver->resolve();
+                break;
+            }
+            catch (...)
+            {
+                /* handle restarts etc */
+                throw;
+            }
+        }
+
+        display_resolution(env, resolver, cmdline);
     }
     catch (...)
     {
-        // dump_if_requested(resolver);
+        dump_if_requested(env, resolver, cmdline);
         throw;
     }
+
+    dump_if_requested(env, resolver, cmdline);
 
     return retcode;
 }

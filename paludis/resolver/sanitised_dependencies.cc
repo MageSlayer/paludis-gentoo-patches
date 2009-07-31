@@ -433,7 +433,7 @@ namespace
                     );
         }
 
-        void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type &)
+        void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type &) PALUDIS_ATTRIBUTE((noreturn))
         {
             throw InternalError(PALUDIS_HERE, "not implemented");
         }

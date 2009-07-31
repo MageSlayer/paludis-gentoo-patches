@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_DesireStrength()
+{
+    prefix ds
+    namespace paludis::resolver
+
+    # must be kept in strictness order
+    key ds_none                "Not desired"
+    key ds_suggestion          "A suggestion"
+    key ds_recommendation      "A recommended dependency"
+    key ds_requirement         "A required dependency"
+    key ds_target              "Was a target"
+}
+
+
