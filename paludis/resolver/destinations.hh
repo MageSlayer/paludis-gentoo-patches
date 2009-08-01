@@ -17,37 +17,35 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLUTION_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLUTION_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_DESTINATIONS_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_DESTINATIONS_HH 1
 
-#include <paludis/resolver/resolution-fwd.hh>
-#include <paludis/resolver/arrow-fwd.hh>
-#include <paludis/resolver/constraint-fwd.hh>
-#include <paludis/resolver/decision-fwd.hh>
 #include <paludis/resolver/destinations-fwd.hh>
 #include <paludis/util/named_value.hh>
+#include <paludis/name.hh>
+#include <paludis/package_id-fwd.hh>
 #include <tr1/memory>
 
 namespace paludis
 {
     namespace n
     {
-        struct already_ordered;
-        struct arrows;
-        struct constraints;
-        struct decision;
-        struct destinations;
+        struct replacing;
+        struct repository;
+        struct slash;
     }
 
     namespace resolver
     {
-        struct Resolution
+        struct Destination
         {
-            NamedValue<n::already_ordered, bool> already_ordered;
-            NamedValue<n::arrows, std::tr1::shared_ptr<ArrowSequence> > arrows;
-            NamedValue<n::constraints, std::tr1::shared_ptr<Constraints> > constraints;
-            NamedValue<n::decision, std::tr1::shared_ptr<Decision> > decision;
-            NamedValue<n::destinations, std::tr1::shared_ptr<Destinations> > destinations;
+            NamedValue<n::replacing, std::tr1::shared_ptr<const PackageIDSequence> > replacing;
+            NamedValue<n::repository, RepositoryName> repository;
+        };
+
+        struct Destinations
+        {
+            NamedValue<n::slash, std::tr1::shared_ptr<Destination> > slash;
         };
     }
 }

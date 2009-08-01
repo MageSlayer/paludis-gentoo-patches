@@ -17,7 +17,8 @@ noinst_HEADERS = \
 	arrow.hh arrow-fwd.hh \
 	constraint.hh constraint-fwd.hh \
 	decision.hh decision-fwd.hh \
-	desire_strength.hh desire_strength-fwd.hh desire_strength-se.hh
+	desire_strength.hh desire_strength-fwd.hh desire_strength-se.hh \
+	destinations.hh destinations-fwd.hh \
 	qpn_s.hh qpn_s-fwd.hh \
 	reason.hh reason-fwd.hh \
 	resolution.hh resolution-fwd.hh \
@@ -30,6 +31,7 @@ libpaludisresolver_a_SOURCES = \
 	constraint.cc \
 	decision.cc \
 	desire_strength.cc \
+	destinations.cc \
 	qpn_s.cc \
 	reason.cc \
 	resolution.cc \

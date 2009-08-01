@@ -29,6 +29,7 @@
 #include <paludis/resolver/reason-fwd.hh>
 #include <paludis/resolver/use_installed-fwd.hh>
 #include <paludis/resolver/desire_strength-fwd.hh>
+#include <paludis/resolver/destinations-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -36,6 +37,7 @@
 #include <paludis/name.hh>
 #include <paludis/filter-fwd.hh>
 #include <paludis/environment-fwd.hh>
+#include <paludis/repository-fwd.hh>
 #include <tr1/memory>
 
 namespace paludis
@@ -79,7 +81,18 @@ namespace paludis
                         const std::tr1::shared_ptr<const Constraint> &,
                         const std::tr1::shared_ptr<const Decision> &) const;
 
+                const std::tr1::shared_ptr<Destinations> _make_destinations_for(const QPN_S &,
+                        const std::tr1::shared_ptr<const Resolution> &) const;
+
+                const std::tr1::shared_ptr<Destination> _make_slash_destination_for(const QPN_S &,
+                        const std::tr1::shared_ptr<const Resolution> &) const;
+
+                const std::tr1::shared_ptr<const PackageIDSequence> _find_replacing(
+                        const std::tr1::shared_ptr<const PackageID> &,
+                        const std::tr1::shared_ptr<const Repository> &) const;
+
                 void _resolve_dependencies();
+                void _resolve_destinations();
                 void _resolve_arrows();
                 void _resolve_order();
 
@@ -128,6 +141,12 @@ namespace paludis
 
                 DesireStrength _desire_strength_from_sanitised_dependency(
                         const QPN_S &, const SanitisedDependency &) const;
+
+                bool _dependency_to_destination_slash(
+                        const QPN_S &, const SanitisedDependency &) const;
+
+                bool _same_slot(const std::tr1::shared_ptr<const PackageID> & a,
+                        const std::tr1::shared_ptr<const PackageID> & b) const;
 
             public:
                 Resolver(const Environment * const);

@@ -25,6 +25,7 @@
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/arrow.hh>
 #include <paludis/resolver/decision.hh>
+#include <paludis/resolver/destinations.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/log.hh>
@@ -44,10 +45,13 @@
 #include <paludis/action.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/version_requirements.hh>
+#include <paludis/package_database.hh>
+#include <paludis/repository.hh>
 #include <iostream>
 #include <iomanip>
 #include <list>
 #include <map>
+#include <set>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -88,6 +92,7 @@ Resolver::resolve()
     Context context("When finding an appropriate resolution:");
 
     _resolve_dependencies();
+    _resolve_destinations();
     _resolve_arrows();
     _resolve_order();
 }
@@ -116,6 +121,130 @@ Resolver::_resolve_dependencies()
             _add_dependencies(i->first, i->second);
         }
     }
+}
+
+void
+Resolver::_resolve_destinations()
+{
+    Context context("When resolving destinations:");
+
+    for (ResolutionsByQPN_SMap::iterator i(_imp->resolutions_by_qpn_s.begin()), i_end(_imp->resolutions_by_qpn_s.end()) ;
+            i != i_end ; ++i)
+    {
+        if (i->second->destinations())
+            continue;
+
+        i->second->destinations() = _make_destinations_for(i->first, i->second);
+    }
+}
+
+const std::tr1::shared_ptr<Destinations>
+Resolver::_make_destinations_for(const QPN_S & qpn_s,
+        const std::tr1::shared_ptr<const Resolution> & resolution) const
+{
+    Context context("When finding destinations for '" + stringify(qpn_s) + "':");
+
+    if (resolution->decision()->is_installed())
+        return make_shared_ptr(new Destinations(make_named_values<Destinations>(
+                        value_for<n::slash>(make_null_shared_ptr())
+                        )));
+
+    bool requires_slash(false);
+
+    for (Constraints::ConstIterator c(resolution->constraints()->begin()),
+            c_end(resolution->constraints()->end()) ;
+            c != c_end ; ++c)
+        requires_slash = requires_slash || (*c)->to_destination_slash();
+
+    return make_shared_ptr(new Destinations(
+                make_named_values<Destinations>(
+                    value_for<n::slash>(requires_slash ?
+                        _make_slash_destination_for(qpn_s, resolution) :
+                        make_null_shared_ptr())
+                    )));
+}
+
+const std::tr1::shared_ptr<Destination>
+Resolver::_make_slash_destination_for(const QPN_S & qpn_s,
+        const std::tr1::shared_ptr<const Resolution> & resolution) const
+{
+    Context context("When finding / destination for '" + stringify(qpn_s) + "':");
+
+    if (! resolution->decision())
+        throw InternalError(PALUDIS_HERE, "not decided. shouldn't happen.");
+
+    std::tr1::shared_ptr<const Repository> repo;
+    for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
+            r_end(_imp->env->package_database()->end_repositories()) ;
+            r != r_end ; ++r)
+    {
+        if ((*r)->destination_interface() && (*r)->destination_interface()->is_suitable_destination_for(
+                    *resolution->decision()->package_id()))
+        {
+            if (repo)
+                throw InternalError(PALUDIS_HERE, "multiple valid destinations.");
+            else
+                repo = *r;
+        }
+    }
+
+    if (! repo)
+        throw InternalError(PALUDIS_HERE, "no valid destination for " + stringify(*resolution));
+
+    return make_shared_ptr(new Destination(make_named_values<Destination>(
+                    value_for<n::replacing>(_find_replacing(resolution->decision()->package_id(), repo)),
+                    value_for<n::repository>(repo->name())
+                    )));
+}
+
+const std::tr1::shared_ptr<const PackageIDSequence>
+Resolver::_find_replacing(
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const Repository> & repo) const
+{
+    Context context("When working out what is replaced by '" + stringify(*id) +
+            "' when it is installed to '" + stringify(repo->name()) + "':");
+
+    std::set<RepositoryName, RepositoryNameComparator> repos;
+
+    if (repo->installed_root_key())
+    {
+        for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
+                r_end(_imp->env->package_database()->end_repositories()) ;
+                r != r_end ; ++r)
+            if ((*r)->installed_root_key() &&
+                    (*r)->installed_root_key()->value() == repo->installed_root_key()->value())
+                repos.insert((*r)->name());
+    }
+    else
+        repos.insert(repo->name());
+
+    std::tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+    for (std::set<RepositoryName, RepositoryNameComparator>::const_iterator r(repos.begin()),
+            r_end(repos.end()) ;
+            r != r_end ; ++r)
+    {
+        std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::AllVersionsUnsorted(
+                    generator::Package(id->name()) & generator::InRepository(*r))]);
+        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+                i != i_end ; ++i)
+        {
+            if ((*i)->version() == id->version() || _same_slot(*i, id))
+                result->push_back(*i);
+        }
+    }
+
+    return result;
+}
+
+bool
+Resolver::_same_slot(const std::tr1::shared_ptr<const PackageID> & a,
+        const std::tr1::shared_ptr<const PackageID> & b) const
+{
+    if (a->slot_key())
+        return b->slot_key() && a->slot_key()->value() == b->slot_key()->value();
+    else
+        return ! b->slot_key();
 }
 
 void
@@ -235,7 +364,8 @@ Resolver::_create_resolution_for_qpn_s(const QPN_S & qpn_s) const
                     value_for<n::already_ordered>(false),
                     value_for<n::arrows>(make_shared_ptr(new ArrowSequence)),
                     value_for<n::constraints>(_initial_constraints_for(qpn_s)),
-                    value_for<n::decision>(make_null_shared_ptr())
+                    value_for<n::decision>(make_null_shared_ptr()),
+                    value_for<n::destinations>(make_null_shared_ptr())
                     )));
 }
 
@@ -280,6 +410,7 @@ Resolver::_make_constraint_from_target(const PackageDepSpec & spec, const UseIns
                     value_for<n::desire_strength>(ds_target),
                     value_for<n::reason>(make_shared_ptr(new TargetReason)),
                     value_for<n::spec>(spec),
+                    value_for<n::to_destination_slash>(true),
                     value_for<n::use_installed>(use_installed)
                     )));
 }
@@ -291,6 +422,7 @@ Resolver::_make_constraint_from_dependency(const QPN_S & qpn_s, const SanitisedD
                     value_for<n::desire_strength>(_desire_strength_from_sanitised_dependency(qpn_s, dep)),
                     value_for<n::reason>(make_shared_ptr(new DependencyReason(qpn_s, dep))),
                     value_for<n::spec>(dep.spec()),
+                    value_for<n::to_destination_slash>(_dependency_to_destination_slash(qpn_s, dep)),
                     value_for<n::use_installed>(ui_if_same)
                     )));
 }
@@ -788,6 +920,7 @@ Resolver::_make_constraint_for_preloading(
                     value_for<n::desire_strength>(ds_none),
                     value_for<n::reason>(make_shared_ptr(new TargetReason)),
                     value_for<n::spec>(d->package_id()->uniquely_identifying_spec()),
+                    value_for<n::to_destination_slash>(false),
                     value_for<n::use_installed>(ui_if_possible)
                     )));
 }
@@ -848,6 +981,12 @@ Resolver::_desire_strength_from_sanitised_dependency(const QPN_S &, const Saniti
     }
 
     return result;
+}
+
+bool
+Resolver::_dependency_to_destination_slash(const QPN_S &, const SanitisedDependency &) const
+{
+    return true;
 }
 
 Resolver::ConstIterator

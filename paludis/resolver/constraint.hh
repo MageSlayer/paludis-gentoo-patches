@@ -35,6 +35,7 @@ namespace paludis
         struct desire_strength;
         struct reason;
         struct spec;
+        struct to_destination_slash;
         struct use_installed;
     }
 
@@ -45,6 +46,7 @@ namespace paludis
             NamedValue<n::desire_strength, DesireStrength> desire_strength;
             NamedValue<n::reason, std::tr1::shared_ptr<const Reason> > reason;
             NamedValue<n::spec, PackageDepSpec> spec;
+            NamedValue<n::to_destination_slash, bool> to_destination_slash;
             NamedValue<n::use_installed, UseInstalled> use_installed;
         };
 

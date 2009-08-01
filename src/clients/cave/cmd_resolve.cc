@@ -458,7 +458,7 @@ namespace
         {
             const std::tr1::shared_ptr<const PackageID> id((*c)->decision()->package_id());
             std::cout << "* " << id->canonical_form(idcf_no_version) << " " << id->canonical_form(idcf_version)
-                << " replacing { }" << std::endl;
+                << " to " << *(*c)->destinations() << std::endl;
         }
 
         std::cout << std::endl;
