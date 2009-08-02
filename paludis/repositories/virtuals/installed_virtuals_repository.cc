@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -110,7 +110,7 @@ namespace
 InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * const env,
         const FSEntry & r) :
     Repository(env, RepositoryName(make_name(r)), make_named_values<RepositoryCapabilities>(
-                value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
+                value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(this)),
                 value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
                 value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
                 value_for<n::hook_interface>(this),
@@ -363,4 +363,29 @@ InstalledVirtualsRepository::repository_factory_dependencies(
     return make_shared_ptr(new RepositoryNameSet);
 }
 
+bool
+InstalledVirtualsRepository::is_suitable_destination_for(const PackageID & e) const
+{
+    std::string f(e.repository()->format_key() ? e.repository()->format_key()->value() : "");
+    return f == "virtuals";
+
+}
+
+bool
+InstalledVirtualsRepository::is_default_destination() const
+{
+    return false;
+}
+
+bool
+InstalledVirtualsRepository::want_pre_post_phases() const
+{
+    return false;
+}
+
+void
+InstalledVirtualsRepository::merge(const MergeParams &)
+{
+    throw InternalError(PALUDIS_HERE, "can't merge to installed virtuals");
+}
 
