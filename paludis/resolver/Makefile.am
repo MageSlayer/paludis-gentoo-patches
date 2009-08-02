@@ -23,6 +23,7 @@ noinst_HEADERS = \
 	reason.hh reason-fwd.hh \
 	resolution.hh resolution-fwd.hh \
 	resolver.hh resolver-fwd.hh \
+	resolver_functions.hh resolver_functions-fwd.hh \
 	sanitised_dependencies.hh sanitised_dependencies-fwd.hh \
 	use_installed.hh use_installed-fwd.hh use_installed-se.hh
 

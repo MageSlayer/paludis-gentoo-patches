@@ -24,33 +24,36 @@
 #include <paludis/resolver/qpn_s-fwd.hh>
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/simple_visitor.hh>
+#include <paludis/util/type_list.hh>
+#include <paludis/name-fwd.hh>
+#include <tr1/memory>
 
 namespace paludis
 {
     namespace resolver
     {
-        class Reason
+        class Reason :
+            public virtual DeclareAbstractAcceptMethods<Reason, MakeTypeList<
+                TargetReason, DependencyReason, PresetReason, SetReason>::Type>
         {
             public:
                 virtual ~Reason() = 0;
                 virtual std::string as_string() const = 0;
-
-                virtual DependencyReason * if_dependency_reason() = 0;
-                virtual const DependencyReason * if_dependency_reason() const = 0;
         };
 
         class TargetReason :
-            public Reason
+            public Reason,
+            public ImplementAcceptMethods<Reason, TargetReason>
         {
             public:
                 virtual std::string as_string() const;
-                virtual DependencyReason * if_dependency_reason();
-                virtual const DependencyReason * if_dependency_reason() const;
         };
 
         class DependencyReason :
             private PrivateImplementationPattern<DependencyReason>,
-            public Reason
+            public Reason,
+            public ImplementAcceptMethods<Reason, DependencyReason>
         {
             public:
                 DependencyReason(
@@ -60,19 +63,38 @@ namespace paludis
                 ~DependencyReason();
 
                 const QPN_S qpn_s() const;
-
                 const SanitisedDependency & sanitised_dependency() const;
 
                 virtual std::string as_string() const;
+        };
 
-                virtual DependencyReason * if_dependency_reason();
+        class PresetReason :
+            public Reason,
+            public ImplementAcceptMethods<Reason, PresetReason>
+        {
+            public:
+                virtual std::string as_string() const;
+        };
 
-                virtual const DependencyReason * if_dependency_reason() const;
+        class SetReason :
+            public Reason,
+            private PrivateImplementationPattern<SetReason>,
+            public ImplementAcceptMethods<Reason, SetReason>
+        {
+            public:
+                SetReason(const SetName &, const std::tr1::shared_ptr<const Reason> &);
+                ~SetReason();
+
+                const SetName set_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::tr1::shared_ptr<const Reason> reason_for_set() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual std::string as_string() const;
         };
     }
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<resolver::DependencyReason>;
+    extern template class PrivateImplementationPattern<resolver::SetReason>;
 #endif
 
 }

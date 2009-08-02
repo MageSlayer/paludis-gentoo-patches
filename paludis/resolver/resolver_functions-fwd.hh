@@ -17,23 +17,14 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_REASON_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_REASON_FWD_HH 1
-
-#include <paludis/util/attributes.hh>
-#include <iosfwd>
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLVER_FUNCTIONS_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLVER_FUNCTIONS_FWD_HH 1
 
 namespace paludis
 {
     namespace resolver
     {
-        struct Reason;
-        struct DependencyReason;
-        struct TargetReason;
-        struct PresetReason;
-        struct SetReason;
-
-        std::ostream & operator<< (std::ostream & s, const Reason &) PALUDIS_VISIBLE;
+        struct ResolverFunctions;
     }
 }
 

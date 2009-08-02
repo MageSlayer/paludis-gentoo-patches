@@ -17,23 +17,33 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_REASON_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_REASON_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLVER_FUNCTIONS_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLVER_FUNCTIONS_HH 1
 
-#include <paludis/util/attributes.hh>
-#include <iosfwd>
+#include <paludis/resolver/resolver_functions-fwd.hh>
+#include <paludis/resolver/use_installed-fwd.hh>
+#include <paludis/resolver/resolution-fwd.hh>
+#include <paludis/resolver/qpn_s-fwd.hh>
+#include <paludis/resolver/reason-fwd.hh>
+#include <paludis/util/named_value.hh>
+#include <tr1/functional>
 
 namespace paludis
 {
+    namespace n
+    {
+        struct get_use_installed_fn;
+    }
+
     namespace resolver
     {
-        struct Reason;
-        struct DependencyReason;
-        struct TargetReason;
-        struct PresetReason;
-        struct SetReason;
+        typedef std::tr1::function<UseInstalled (
+                const PackageDepSpec &, const std::tr1::shared_ptr<const Reason> &)> GetUseInstalledFunction;
 
-        std::ostream & operator<< (std::ostream & s, const Reason &) PALUDIS_VISIBLE;
+        struct ResolverFunctions
+        {
+            NamedValue<n::get_use_installed_fn, GetUseInstalledFunction> get_use_installed_fn;
+        };
     }
 }
 

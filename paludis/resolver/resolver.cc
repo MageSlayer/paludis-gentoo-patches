@@ -26,11 +26,13 @@
 #include <paludis/resolver/arrow.hh>
 #include <paludis/resolver/decision.hh>
 #include <paludis/resolver/destinations.hh>
+#include <paludis/resolver/resolver_functions.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/dep_spec_flattener.hh>
@@ -66,19 +68,22 @@ namespace paludis
     struct Implementation<Resolver>
     {
         const Environment * const env;
+        const ResolverFunctions fns;
+
         ResolutionsByQPN_SMap resolutions_by_qpn_s;
         InitialConstraints initial_constraints;
         OrderedResolutionsList ordered_resolutions;
 
-        Implementation(const Environment * const e) :
-            env(e)
+        Implementation(const Environment * const e, const ResolverFunctions & f) :
+            env(e),
+            fns(f)
         {
         }
     };
 }
 
-Resolver::Resolver(const Environment * const e) :
-    PrivateImplementationPattern<Resolver>(new Implementation<Resolver>(e))
+Resolver::Resolver(const Environment * const e, const ResolverFunctions & f) :
+    PrivateImplementationPattern<Resolver>(new Implementation<Resolver>(e, f))
 {
 }
 
@@ -248,9 +253,9 @@ Resolver::_same_slot(const std::tr1::shared_ptr<const PackageID> & a,
 }
 
 void
-Resolver::add_target(const PackageDepSpec & spec, const UseInstalled use_installed)
+Resolver::add_target_with_reason(const PackageDepSpec & spec, const std::tr1::shared_ptr<const Reason> & reason)
 {
-    Context context("When adding target '" + stringify(spec) + "':");
+    Context context("When adding target '" + stringify(spec) + "' with reason '" + stringify(*reason) + "':");
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
     std::list<QPN_S> qpn_s_s;
@@ -265,14 +270,20 @@ Resolver::add_target(const PackageDepSpec & spec, const UseInstalled use_install
                 + stringify(*qpn_s) + "':");
 
         const std::tr1::shared_ptr<Resolution> dep_resolution(_resolution_for_qpn_s(*qpn_s, true));
-        const std::tr1::shared_ptr<Constraint> constraint(_make_constraint_from_target(spec, use_installed));
+        const std::tr1::shared_ptr<Constraint> constraint(_make_constraint_from_target(spec, reason));
 
         _apply_resolution_constraint(*qpn_s, dep_resolution, constraint);
     }
 }
 
 void
-Resolver::add_set(const SetName & set_name, const UseInstalled use_installed)
+Resolver::add_target(const PackageDepSpec & spec)
+{
+    add_target_with_reason(spec, make_shared_ptr(new TargetReason));
+}
+
+void
+Resolver::add_target(const SetName & set_name)
 {
     Context context("When adding set target '" + stringify(set_name) + "':");
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
@@ -284,9 +295,10 @@ Resolver::add_set(const SetName & set_name, const UseInstalled use_installed)
     DepSpecFlattener<SetSpecTree, PackageDepSpec> flattener(_imp->env);
     set->root()->accept(flattener);
 
+    const std::tr1::shared_ptr<Reason> reason(new SetReason(set_name, make_shared_ptr(new TargetReason)));
     for (DepSpecFlattener<SetSpecTree, PackageDepSpec>::ConstIterator s(flattener.begin()), s_end(flattener.end()) ;
             s != s_end ; ++s)
-        add_target(**s, use_installed);
+        add_target_with_reason(**s, reason);
 }
 
 namespace
@@ -405,26 +417,28 @@ Resolver::qpn_s_from_id(const std::tr1::shared_ptr<const PackageID> & id) const
 }
 
 const std::tr1::shared_ptr<Constraint>
-Resolver::_make_constraint_from_target(const PackageDepSpec & spec, const UseInstalled use_installed) const
+Resolver::_make_constraint_from_target(const PackageDepSpec & spec, const std::tr1::shared_ptr<const Reason> & reason) const
 {
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
                     value_for<n::desire_strength>(ds_target),
-                    value_for<n::reason>(make_shared_ptr(new TargetReason)),
+                    value_for<n::reason>(reason),
                     value_for<n::spec>(spec),
                     value_for<n::to_destination_slash>(true),
-                    value_for<n::use_installed>(use_installed)
+                    value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(spec, reason))
                     )));
 }
 
 const std::tr1::shared_ptr<Constraint>
 Resolver::_make_constraint_from_dependency(const QPN_S & qpn_s, const SanitisedDependency & dep) const
 {
+    const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(qpn_s, dep));
+
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
                     value_for<n::desire_strength>(_desire_strength_from_sanitised_dependency(qpn_s, dep)),
-                    value_for<n::reason>(make_shared_ptr(new DependencyReason(qpn_s, dep))),
+                    value_for<n::reason>(reason),
                     value_for<n::spec>(dep.spec()),
                     value_for<n::to_destination_slash>(_dependency_to_destination_slash(qpn_s, dep)),
-                    value_for<n::use_installed>(ui_if_same)
+                    value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(dep.spec(), reason))
                     )));
 }
 
@@ -628,6 +642,32 @@ Resolver::_care_about_dependency_spec(const QPN_S & qpn_s,
     return _desire_strength_from_sanitised_dependency(qpn_s, dep) >= ds_recommendation;
 }
 
+namespace
+{
+    struct GetDependencyReason
+    {
+        const DependencyReason * visit(const DependencyReason & r) const
+        {
+            return &r;
+        }
+
+        const DependencyReason * visit(const SetReason & r) const
+        {
+            return r.reason_for_set()->accept_returning<const DependencyReason *>(*this);
+        }
+
+        const DependencyReason * visit(const TargetReason &) const
+        {
+            return 0;
+        }
+
+        const DependencyReason * visit(const PresetReason &) const
+        {
+            return 0;
+        }
+    };
+}
+
 void
 Resolver::_resolve_arrows()
 {
@@ -640,13 +680,15 @@ Resolver::_resolve_arrows()
                 c_end(i->second->constraints()->end()) ;
                 c != c_end ; ++c)
         {
-            if (! (*c)->reason()->if_dependency_reason())
+            GetDependencyReason gdr;
+            const DependencyReason * if_dependency_reason((*c)->reason()->accept_returning<const DependencyReason *>(gdr));
+            if (! if_dependency_reason)
                 continue;
 
-            const QPN_S from_qpns((*c)->reason()->if_dependency_reason()->qpn_s());
+            const QPN_S from_qpns(if_dependency_reason->qpn_s());
             const std::tr1::shared_ptr<Resolution> resolution(_resolution_for_qpn_s(from_qpns, false));
 
-            if (_causes_pre_arrow(*(*c)->reason()->if_dependency_reason()))
+            if (_causes_pre_arrow(*if_dependency_reason))
                 resolution->arrows()->push_back(make_shared_ptr(new Arrow(make_named_values<Arrow>(
                                     value_for<n::to_qpn_s>(i->first)
                                     ))));
@@ -918,12 +960,14 @@ const std::tr1::shared_ptr<const Constraint>
 Resolver::_make_constraint_for_preloading(
         const std::tr1::shared_ptr<const Decision> & d) const
 {
+    const std::tr1::shared_ptr<PresetReason> reason(new PresetReason);
+
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
                     value_for<n::desire_strength>(ds_none),
-                    value_for<n::reason>(make_shared_ptr(new TargetReason)),
+                    value_for<n::reason>(reason),
                     value_for<n::spec>(d->package_id()->uniquely_identifying_spec()),
                     value_for<n::to_destination_slash>(false),
-                    value_for<n::use_installed>(ui_if_possible)
+                    value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(d->package_id()->uniquely_identifying_spec(), reason))
                     )));
 }
 

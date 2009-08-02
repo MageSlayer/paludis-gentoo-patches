@@ -43,18 +43,6 @@ TargetReason::as_string() const
     return "Target()";
 }
 
-DependencyReason *
-TargetReason::if_dependency_reason()
-{
-    return 0;
-}
-
-const DependencyReason *
-TargetReason::if_dependency_reason() const
-{
-    return 0;
-}
-
 namespace paludis
 {
     template <>
@@ -98,17 +86,55 @@ DependencyReason::as_string() const
     return "Dependency(package: " + stringify(_imp->qpn_s) + " dep: " + stringify(_imp->dep) + ")";
 }
 
-DependencyReason *
-DependencyReason::if_dependency_reason()
+std::string
+PresetReason::as_string() const
 {
-    return this;
+    return "Preset()";
 }
 
-const DependencyReason *
-DependencyReason::if_dependency_reason() const
+namespace paludis
 {
-    return this;
+    template <>
+    struct Implementation<SetReason>
+    {
+        const SetName set_name;
+        const std::tr1::shared_ptr<const Reason> reason_for_set;
+
+        Implementation(const SetName & s, const std::tr1::shared_ptr<const Reason> & r) :
+            set_name(s),
+            reason_for_set(r)
+        {
+        }
+    };
+}
+
+SetReason::SetReason(const SetName & s, const std::tr1::shared_ptr<const Reason> & r) :
+    PrivateImplementationPattern<SetReason>(new Implementation<SetReason>(s, r))
+{
+}
+
+SetReason::~SetReason()
+{
+}
+
+const SetName
+SetReason::set_name() const
+{
+    return _imp->set_name;
+}
+
+const std::tr1::shared_ptr<const Reason>
+SetReason::reason_for_set() const
+{
+    return _imp->reason_for_set;
+}
+
+std::string
+SetReason::as_string() const
+{
+    return "Set(set: " + stringify(_imp->set_name) + " because: " + stringify(*_imp->reason_for_set) + ")";
 }
 
 template class PrivateImplementationPattern<DependencyReason>;
+template class PrivateImplementationPattern<SetReason>;
 

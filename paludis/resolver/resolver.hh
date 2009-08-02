@@ -30,6 +30,7 @@
 #include <paludis/resolver/use_installed-fwd.hh>
 #include <paludis/resolver/desire_strength-fwd.hh>
 #include <paludis/resolver/destinations-fwd.hh>
+#include <paludis/resolver/resolver_functions-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -57,7 +58,8 @@ namespace paludis
                 const std::tr1::shared_ptr<Resolution> _resolution_for_qpn_s(const QPN_S &) const;
 
                 const std::tr1::shared_ptr<Constraint> _make_constraint_from_target(
-                        const PackageDepSpec &, const UseInstalled) const;
+                        const PackageDepSpec &,
+                        const std::tr1::shared_ptr<const Reason> &) const;
 
                 const std::tr1::shared_ptr<Constraint> _make_constraint_from_dependency(
                         const QPN_S &, const SanitisedDependency &) const;
@@ -149,11 +151,14 @@ namespace paludis
                         const std::tr1::shared_ptr<const PackageID> & b) const;
 
             public:
-                Resolver(const Environment * const);
+                Resolver(
+                        const Environment * const,
+                        const ResolverFunctions &);
                 ~Resolver();
 
-                void add_target(const PackageDepSpec &, const UseInstalled);
-                void add_set(const SetName &, const UseInstalled);
+                void add_target_with_reason(const PackageDepSpec &, const std::tr1::shared_ptr<const Reason> &);
+                void add_target(const PackageDepSpec &);
+                void add_target(const SetName &);
 
                 void copy_initial_constraints_from(const Resolver &);
                 void add_initial_constraint(const QPN_S &, const std::tr1::shared_ptr<const Constraint> &);

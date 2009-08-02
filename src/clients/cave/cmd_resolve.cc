@@ -25,10 +25,13 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/decision.hh>
+#include <paludis/resolver/resolver_functions.hh>
+#include <paludis/resolver/reason.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
 
@@ -36,12 +39,11 @@
 #include <cstdlib>
 
 using namespace paludis;
+using namespace paludis::resolver;
 using namespace cave;
 
 using std::cout;
 using std::endl;
-
-using resolver::Resolver;
 
 namespace
 {
@@ -101,10 +103,10 @@ namespace
 //        args::StringSetArg a_skip_until_phase;
 //        args::EnumArg a_change_phases_for;
 
-//        args::ArgsGroup g_reinstall_options;
-//        args::EnumArg a_reinstall_targets;
-//        args::EnumArg a_reinstall;
-//        args::EnumArg a_reinstall_scm;
+        args::ArgsGroup g_reinstall_options;
+        args::EnumArg a_reinstall_targets;
+        args::EnumArg a_reinstall;
+        args::EnumArg a_reinstall_scm;
 //        args::SwitchArg a_reinstall_for_removals;
 
 //        args::ArgsGroup g_slot_options;
@@ -226,42 +228,42 @@ namespace
 //                    ("last",                       "Only the last package on the list"),
 //                    "all"),
 //
-//            g_reinstall_options(this, "Reinstall Options", "Control whether packages are reinstalled."),
-//            a_reinstall_targets(&g_reinstall_options, "reinstall-targets", 'R',
-//                    "Select whether to reinstall target packages",
-//                    args::EnumArg::EnumArgOptions
-//                    ("auto",                  'x', "If the target is a set, if-necessary, otherwise always")
-//                    ("always",                'a', "Always")
-//                    ("unless-transient",      't', "Unless the target is transient (e.g. from 'importare')"
-//                                                   " (default if --everything)")
-//                    ("unless-same",           's', "Unless the target is the same (version, option flags)")
-//                    ("unless-same-version",   'v', "Unless the target is the same version")
-//                    ("if-necessary",          'i', "If necessary")
-//                    ("never",                 'n', "Never"),
-//                    "auto"
-//                    ),
-//            a_reinstall(&g_reinstall_options, "reinstall", 'r',
-//                    "Select whether to reinstall packages that are not targets",
-//                    args::EnumArg::EnumArgOptions
-//                    ("always",                'a', "Always")
-//                    ("unless-transient",      't', "Unless the target is transient (e.g. from 'importare')"
-//                                                   " (default if --everything)")
-//                    ("unless-same",           's', "Unless the target is the same (version, option flags)"
-//                                                   " (default if --complete)")
-//                    ("unless-same-version",   'v', "Unless the target is the same version")
-//                    ("if-necessary",          'i', "If necessary")
-//                    ("never",                 'n', "Never"),
-//                    "if-necessary"
-//                    ),
-//            a_reinstall_scm(&g_reinstall_options, "reinstall-scm", 's',
-//                    "Select whether to reinstall SCM packages that would otherwise not be reinstalled",
-//                    args::EnumArg::EnumArgOptions
-//                    ("always",                'a', "Always")
-//                    ("daily",                 'd', "If they were installed more than a day ago")
-//                    ("weekly",                'w', "If they were installed more than a week ago")
-//                    ("never",                 'n', "Never"),
-//                    "weekly"
-//                    ),
+            g_reinstall_options(this, "Reinstall Options", "Control whether packages are reinstalled."),
+            a_reinstall_targets(&g_reinstall_options, "reinstall-targets", 'R',
+                    "Select whether to reinstall target packages",
+                    args::EnumArg::EnumArgOptions
+                    ("auto",                  'x', "If the target is a set, if-necessary, otherwise always")
+                    ("always",                'a', "Always")
+                    ("unless-transient",      't', "Unless the target is transient (e.g. from 'importare')"
+                                                   " (default if --everything)")
+                    ("unless-same",           's', "Unless the target is the same (version, option flags)")
+                    ("unless-same-version",   'v', "Unless the target is the same version")
+                    ("if-necessary",          'i', "If necessary")
+                    ("never",                 'n', "Never"),
+                    "auto"
+                    ),
+            a_reinstall(&g_reinstall_options, "reinstall", 'r',
+                    "Select whether to reinstall packages that are not targets",
+                    args::EnumArg::EnumArgOptions
+                    ("always",                'a', "Always")
+                    ("unless-transient",      't', "Unless the target is transient (e.g. from 'importare')"
+                                                   " (default if --everything)")
+                    ("unless-same",           's', "Unless the target is the same (version, option flags)"
+                                                   " (default if --complete)")
+                    ("unless-same-version",   'v', "Unless the target is the same version")
+                    ("if-necessary",          'i', "If necessary")
+                    ("never",                 'n', "Never"),
+                    "if-necessary"
+                    ),
+            a_reinstall_scm(&g_reinstall_options, "reinstall-scm", 's',
+                    "Select whether to reinstall SCM packages that would otherwise not be reinstalled",
+                    args::EnumArg::EnumArgOptions
+                    ("always",                'a', "Always")
+                    ("daily",                 'd', "If they were installed more than a day ago")
+                    ("weekly",                'w', "If they were installed more than a week ago")
+                    ("never",                 'n', "Never"),
+                    "weekly"
+                    ),
 //            a_reinstall_for_removals(&g_reinstall_options, "reinstall-for-removals", '\0',
 //                    "Select whether to rebuild packages if rebuilding would avoid an unsafe removal", true),
 //
@@ -428,8 +430,7 @@ namespace
             try
             {
                 resolver->add_target(parse_user_package_dep_spec(*p, env.get(),
-                            UserPackageDepSpecOptions() + updso_throw_if_set),
-                        resolver::ui_never);
+                            UserPackageDepSpecOptions() + updso_throw_if_set));
                 if (seen_sets)
                     throw args::DoHelp("Cannot specify both set and package targets");
                 seen_packages = true;
@@ -441,7 +442,7 @@ namespace
                 if (seen_sets)
                     throw args::DoHelp("Cannot specify multiple set targets");
 
-                resolver->add_set(SetName(*p), resolver::ui_if_same);
+                resolver->add_target(SetName(*p));
                 seen_sets = true;
             }
         }
@@ -475,6 +476,36 @@ namespace
         if (cmdline.a_dump.specified())
             resolver->dump(std::cerr, cmdline.a_dump_dependencies.specified());
     }
+
+    struct UseInstalledVisitor
+    {
+        UseInstalled visit(const DependencyReason &) const
+        {
+            return ui_if_same;
+        }
+
+        UseInstalled visit(const TargetReason &) const
+        {
+            return ui_never;
+        }
+
+        UseInstalled visit(const PresetReason &) const
+        {
+            return ui_if_possible;
+        }
+
+        UseInstalled visit(const SetReason &) const
+        {
+            return ui_if_same;
+        }
+    };
+
+    UseInstalled use_installed_fn(const ResolveCommandLine &, const PackageDepSpec &,
+            const std::tr1::shared_ptr<const Reason> & reason)
+    {
+        UseInstalledVisitor v;
+        return reason->accept_returning<UseInstalled>(v);
+    }
 }
 
 bool
@@ -500,7 +531,11 @@ ResolveCommand::run(
 
     int retcode(0);
 
-    std::tr1::shared_ptr<Resolver> resolver(new Resolver(env.get()));
+    ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
+                value_for<n::get_use_installed_fn>(std::tr1::bind(&use_installed_fn,
+                        std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2))
+                ));
+    std::tr1::shared_ptr<Resolver> resolver(new Resolver(env.get(), resolver_functions));
     try
     {
         while (true)
