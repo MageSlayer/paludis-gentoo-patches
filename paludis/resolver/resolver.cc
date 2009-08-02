@@ -365,7 +365,8 @@ Resolver::_create_resolution_for_qpn_s(const QPN_S & qpn_s) const
                     value_for<n::arrows>(make_shared_ptr(new ArrowSequence)),
                     value_for<n::constraints>(_initial_constraints_for(qpn_s)),
                     value_for<n::decision>(make_null_shared_ptr()),
-                    value_for<n::destinations>(make_null_shared_ptr())
+                    value_for<n::destinations>(make_null_shared_ptr()),
+                    value_for<n::sanitised_dependencies>(make_null_shared_ptr())
                     )));
 }
 
@@ -587,6 +588,7 @@ Resolver::_add_dependencies(const QPN_S & our_qpn_s, const std::tr1::shared_ptr<
 
     const std::tr1::shared_ptr<SanitisedDependencies> deps(new SanitisedDependencies);
     deps->populate(*this, our_resolution->decision()->package_id());
+    our_resolution->sanitised_dependencies() = deps;
 
     for (SanitisedDependencies::ConstIterator s(deps->begin()), s_end(deps->end()) ;
             s != s_end ; ++s)
@@ -1002,7 +1004,7 @@ Resolver::end() const
 }
 
 void
-Resolver::dump(std::ostream & s) const
+Resolver::dump(std::ostream & s, const bool show_deps) const
 {
     s << "Initial Constraints:" << std::endl;
     for (InitialConstraints::const_iterator i(_imp->initial_constraints.begin()),
@@ -1016,7 +1018,15 @@ Resolver::dump(std::ostream & s) const
     for (ResolutionsByQPN_SMap::const_iterator i(_imp->resolutions_by_qpn_s.begin()),
             i_end(_imp->resolutions_by_qpn_s.end()) ;
             i != i_end ; ++i)
+    {
         s << "  [*] " << std::left << std::setw(30) << i->first << " " << *i->second << std::endl;
+        if (show_deps)
+            for (SanitisedDependencies::ConstIterator d(i->second->sanitised_dependencies()->begin()),
+                    d_end(i->second->sanitised_dependencies()->end()) ;
+                    d != d_end ; ++d)
+                s << "      -> " << *d << std::endl;
+    }
+
     s << std::endl;
 
     s << "Ordered Resolutions:" << std::endl;

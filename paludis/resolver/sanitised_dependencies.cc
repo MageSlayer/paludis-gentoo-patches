@@ -24,6 +24,7 @@
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/join.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/package_dep_spec_properties.hh>
 #include <paludis/slot_requirement.hh>
@@ -512,7 +513,25 @@ SanitisedDependencies::end() const
 std::ostream &
 paludis::resolver::operator<< (std::ostream & s, const SanitisedDependency & d)
 {
-    s << d.spec();
+    std::stringstream ss;
+    ss << "Dep(" << d.spec();
+
+    if (! d.active_dependency_labels()->system_labels()->empty())
+        ss << " system { " << join(indirect_iterator(d.active_dependency_labels()->system_labels()->begin()),
+                indirect_iterator(d.active_dependency_labels()->system_labels()->end()), ", ") << " }";
+    if (! d.active_dependency_labels()->type_labels()->empty())
+        ss << " type { " << join(indirect_iterator(d.active_dependency_labels()->type_labels()->begin()),
+                indirect_iterator(d.active_dependency_labels()->type_labels()->end()), ", ") << " }";
+    if (! d.active_dependency_labels()->abi_labels()->empty())
+        ss << " abi { " << join(indirect_iterator(d.active_dependency_labels()->abi_labels()->begin()),
+                indirect_iterator(d.active_dependency_labels()->abi_labels()->end()), ", ") << " }";
+    if (! d.active_dependency_labels()->suggest_labels()->empty())
+        ss << " suggest { " << join(indirect_iterator(d.active_dependency_labels()->suggest_labels()->begin()),
+                indirect_iterator(d.active_dependency_labels()->suggest_labels()->end()), ", ") << " }";
+
+    ss << ")";
+
+    s << ss.str();
     return s;
 }
 

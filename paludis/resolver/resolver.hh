@@ -159,7 +159,7 @@ namespace paludis
                 void add_initial_constraint(const QPN_S &, const std::tr1::shared_ptr<const Constraint> &);
 
                 void resolve();
-                void dump(std::ostream &) const;
+                void dump(std::ostream &, const bool deps) const;
 
                 struct ConstIteratorTag;
                 typedef WrappedForwardIterator<ConstIteratorTag,

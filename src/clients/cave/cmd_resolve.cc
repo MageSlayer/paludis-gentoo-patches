@@ -348,7 +348,8 @@ namespace
             g_dump_options(this, "Dump Options", "Dump the resolver's state to stdout after completion, or when an "
                     "error occurs. For debugging purposes; produces rather a lot of noise."),
             a_dump(&g_dump_options, "dump", '\0', "Dump debug output", true),
-            a_dump_dependencies(&g_dump_options, "dump-dependencies", '\0', "If dumping, also dump dependency information", true)
+            a_dump_dependencies(&g_dump_options, "dump-dependencies", '\0', "If dumping, also dump the "
+                    "sanitised dependencies selected for every package" , true)
         {
             add_usage_line("[ -x|--execute ] [ -z|--lazy or -c|--complete or -e|--everything ] spec ...");
             add_usage_line("[ -x|--execute ] [ -z|--lazy or -c|--complete or -e|--everything ] set");
@@ -472,7 +473,7 @@ namespace
         Context context("When dumping the resolver:");
 
         if (cmdline.a_dump.specified())
-            resolver->dump(std::cerr);
+            resolver->dump(std::cerr, cmdline.a_dump_dependencies.specified());
     }
 }
 
