@@ -92,8 +92,8 @@ namespace
 //        args::EnumArg a_show_option_descriptions;
 //        args::EnumArg a_show_descriptions;
 
-        args::ArgsGroup g_explanations;
-        args::StringSetArg a_explain;
+//        args::ArgsGroup g_explanations;
+//        args::StringSetArg a_explain;
 
 //        args::ArgsGroup g_phase_options;
 //        args::StringSetArg a_skip_phase;
@@ -206,12 +206,12 @@ namespace
 //                    "new"
 //                    ),
 //
-            g_explanations(this, "Explanations", "Options requesting the resolver explain a particular decision "
-                    "that it made"),
-            a_explain(&g_explanations, "explain", '\0', "Explain why the resolver made a particular decision. The "
-                    "argument is a package dependency specification, so --explain dev-libs/boost or --explain qt:3"
-                    " or even --explain '*/*' (although --dump is a better way of getting highly noisy debug output)."),
-
+//            g_explanations(this, "Explanations", "Options requesting the resolver explain a particular decision "
+//                    "that it made"),
+//            a_explain(&g_explanations, "explain", '\0', "Explain why the resolver made a particular decision. The "
+//                    "argument is a package dependency specification, so --explain dev-libs/boost or --explain qt:3"
+//                    " or even --explain '*/*' (although --dump is a better way of getting highly noisy debug output)."),
+//
 //            g_phase_options(this, "Phase Options", "Options controlling which phases to execute. No sanity checking "
 //                    "is done, allowing you to shoot as many feet off as you desire. Phase names do not have the "
 //                    "src_, pkg_ or builtin_ prefix, so 'init', 'preinst', 'unpack', 'merge', 'strip' etc."),
