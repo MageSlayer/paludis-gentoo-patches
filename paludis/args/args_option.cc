@@ -276,11 +276,12 @@ EnumArg::set_argument(const std::string & arg)
 {
     Context context("When handling argument '" + arg + "' for '--" + long_name() + "':");
 
-    if (_imp->allowed_args.end() == std::find_if(_imp->allowed_args.begin(),
-                _imp->allowed_args.end(), ArgIs(arg)))
+    /* if we're given the short arg, turn it magically into the long one */
+    AllowedArgConstIterator i(std::find_if(_imp->allowed_args.begin(), _imp->allowed_args.end(), ArgIs(arg)));
+    if (i == _imp->allowed_args.end())
         throw (BadValue("--" + long_name(), arg));
 
-    _argument = arg;
+    _argument = i->long_name();
 }
 
 void
