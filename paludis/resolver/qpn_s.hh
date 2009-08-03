@@ -23,8 +23,11 @@
 #include <paludis/resolver/qpn_s-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/attributes.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/name.hh>
 #include <paludis/filter-fwd.hh>
+#include <paludis/dep_spec-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 #include <tr1/memory>
 
 namespace paludis
@@ -37,16 +40,28 @@ namespace paludis
 
     namespace resolver
     {
-        struct PALUDIS_VISIBLE QPN_S
+        class PALUDIS_VISIBLE QPN_S :
+            private PrivateImplementationPattern<QPN_S>
         {
-            NamedValue<n::package, QualifiedPackageName> package;
-            NamedValue<n::slot_name_or_null, std::tr1::shared_ptr<const SlotName> > slot_name_or_null;
+            public:
+                QPN_S(const QualifiedPackageName &, const std::tr1::shared_ptr<const SlotName> &);
+                QPN_S(const PackageDepSpec &, const std::tr1::shared_ptr<const SlotName> &);
+                QPN_S(const std::tr1::shared_ptr<const PackageID> &);
+                QPN_S(const QPN_S &);
+                ~QPN_S();
 
-            Filter make_slot_filter() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const QualifiedPackageName package() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::tr1::shared_ptr<const SlotName> slot_name_or_null() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
+                Filter make_slot_filter() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                bool operator< (const QPN_S & other) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
-
     }
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class PrivateImplementationPattern<resolver::QPN_S>;
+#endif
 }
 
 #endif

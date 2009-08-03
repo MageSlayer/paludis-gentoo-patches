@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_QPN_S_FWD_HH 1
 
 #include <paludis/util/attributes.hh>
+#include <paludis/util/sequence-fwd.hh>
 #include <iosfwd>
 
 namespace paludis
@@ -31,7 +32,7 @@ namespace paludis
 
         std::ostream & operator<< (std::ostream & s, const QPN_S &) PALUDIS_VISIBLE;
 
-        bool operator< (const QPN_S &, const QPN_S &) PALUDIS_VISIBLE;
+        typedef Sequence<QPN_S> QPN_S_Sequence;
     }
 }
 

@@ -258,12 +258,11 @@ Resolver::add_target_with_reason(const PackageDepSpec & spec, const std::tr1::sh
     Context context("When adding target '" + stringify(spec) + "' with reason '" + stringify(*reason) + "':");
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-    std::list<QPN_S> qpn_s_s;
-    _find_qpn_s_s_for_spec(spec, std::back_inserter(qpn_s_s));
-    if (qpn_s_s.empty())
+    const std::tr1::shared_ptr<const QPN_S_Sequence> qpn_s_s(_imp->fns.get_qpn_s_s_for_fn()(spec, reason));
+    if (qpn_s_s->empty())
         throw InternalError(PALUDIS_HERE, "not implemented: no slot for " + stringify(spec));
 
-    for (std::list<QPN_S>::const_iterator qpn_s(qpn_s_s.begin()), qpn_s_end(qpn_s_s.end()) ;
+    for (QPN_S_Sequence::ConstIterator qpn_s(qpn_s_s->begin()), qpn_s_end(qpn_s_s->end()) ;
             qpn_s != qpn_s_end ; ++qpn_s)
     {
         Context context_2("When adding constraints from target '" + stringify(spec) + "' to qpn:s '"
@@ -299,65 +298,6 @@ Resolver::add_target(const SetName & set_name)
     for (DepSpecFlattener<SetSpecTree, PackageDepSpec>::ConstIterator s(flattener.begin()), s_end(flattener.end()) ;
             s != s_end ; ++s)
         add_target_with_reason(**s, reason);
-}
-
-namespace
-{
-    struct SlotNameFinder
-    {
-        std::tr1::shared_ptr<SlotName> visit(const SlotExactRequirement & s)
-        {
-            return make_shared_ptr(new SlotName(s.slot()));
-        }
-
-        std::tr1::shared_ptr<SlotName> visit(const SlotAnyUnlockedRequirement &)
-        {
-            return make_null_shared_ptr();
-        }
-
-        std::tr1::shared_ptr<SlotName> visit(const SlotAnyLockedRequirement &)
-        {
-            return make_null_shared_ptr();
-        }
-    };
-}
-
-template <typename I_>
-void
-Resolver::_find_qpn_s_s_for_spec(const PackageDepSpec & spec, I_ iter) const
-{
-    std::tr1::shared_ptr<SlotName> exact_slot;
-
-    if (spec.slot_requirement_ptr())
-    {
-        SlotNameFinder f;
-        exact_slot = spec.slot_requirement_ptr()->accept_returning<std::tr1::shared_ptr<SlotName> >(f);
-    }
-
-    if (exact_slot)
-        *iter++ = make_named_values<QPN_S>(
-                value_for<n::package>(_package_from_spec(spec)),
-                value_for<n::slot_name_or_null>(exact_slot)
-                );
-    else
-    {
-        const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::BestVersionOnly(
-                    generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements) |
-                    filter::SupportsAction<InstallAction>() |
-                    filter::NotMasked())]);
-
-        if (! ids->empty())
-            *iter++ = qpn_s_from_id(*ids->begin());
-        else
-        {
-            const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
-                        generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements) |
-                        filter::SupportsAction<InstalledAction>())]);
-
-            if (! installed_ids->empty())
-                *iter++ = qpn_s_from_id(*installed_ids->begin());
-        }
-    }
 }
 
 QualifiedPackageName
@@ -407,15 +347,6 @@ Resolver::_resolution_for_qpn_s(const QPN_S & qpn_s) const
     return i->second;
 }
 
-QPN_S
-Resolver::qpn_s_from_id(const std::tr1::shared_ptr<const PackageID> & id) const
-{
-    return make_named_values<QPN_S>(
-            value_for<n::package>(id->name()),
-            value_for<n::slot_name_or_null>(id->slot_key() ? make_shared_ptr(new SlotName(id->slot_key()->value())) : make_null_shared_ptr())
-            );
-}
-
 const std::tr1::shared_ptr<Constraint>
 Resolver::_make_constraint_from_target(
         const QPN_S & qpn_s,
@@ -432,10 +363,9 @@ Resolver::_make_constraint_from_target(
 }
 
 const std::tr1::shared_ptr<Constraint>
-Resolver::_make_constraint_from_dependency(const QPN_S & qpn_s, const SanitisedDependency & dep) const
+Resolver::_make_constraint_from_dependency(const QPN_S & qpn_s, const SanitisedDependency & dep,
+        const std::tr1::shared_ptr<const Reason> & reason) const
 {
-    const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(qpn_s, dep));
-
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
                     value_for<n::desire_strength>(_desire_strength_from_sanitised_dependency(qpn_s, dep)),
                     value_for<n::reason>(reason),
@@ -603,13 +533,13 @@ Resolver::_add_dependencies(const QPN_S & our_qpn_s, const std::tr1::shared_ptr<
     {
         Context context_2("When handling dependency '" + stringify(*s) + "':");
 
-        std::list<QPN_S> qpn_s_s;
-
         if (! _care_about_dependency_spec(our_qpn_s, our_resolution, *s))
             continue;
 
-        _find_qpn_s_s_for_spec(s->spec(), std::back_inserter(qpn_s_s));
-        if (qpn_s_s.empty())
+        const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(our_qpn_s, *s));
+
+        const std::tr1::shared_ptr<const QPN_S_Sequence> qpn_s_s(_imp->fns.get_qpn_s_s_for_fn()(s->spec(), reason));
+        if (qpn_s_s->empty())
         {
             if (our_resolution->decision()->is_installed())
                 Log::get_instance()->message("resolver.cannot_find_installed_dep", ll_warning, lc_context)
@@ -618,11 +548,11 @@ Resolver::_add_dependencies(const QPN_S & our_qpn_s, const std::tr1::shared_ptr<
                 throw InternalError(PALUDIS_HERE, "not implemented: no slot for " + stringify(s->spec()));
         }
 
-        for (std::list<QPN_S>::const_iterator qpn_s(qpn_s_s.begin()), qpn_s_end(qpn_s_s.end()) ;
+        for (QPN_S_Sequence::ConstIterator qpn_s(qpn_s_s->begin()), qpn_s_end(qpn_s_s->end()) ;
                 qpn_s != qpn_s_end ; ++qpn_s)
         {
             const std::tr1::shared_ptr<Resolution> dep_resolution(_resolution_for_qpn_s(*qpn_s, true));
-            const std::tr1::shared_ptr<Constraint> constraint(_make_constraint_from_dependency(our_qpn_s, *s));
+            const std::tr1::shared_ptr<Constraint> constraint(_make_constraint_from_dependency(our_qpn_s, *s, reason));
 
             _apply_resolution_constraint(*qpn_s, dep_resolution, constraint);
         }
@@ -1117,12 +1047,12 @@ Resolver::find_any_score(const QPN_S & our_qpn_s, const SanitisedDependency & de
             return 40 + operator_bias;
     }
 
-    std::list<QPN_S> qpn_s_s;
-    _find_qpn_s_s_for_spec(dep.spec(), std::back_inserter(qpn_s_s));
+    const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(our_qpn_s, dep));
+    const std::tr1::shared_ptr<const QPN_S_Sequence> qpn_s_s(_imp->fns.get_qpn_s_s_for_fn()(dep.spec(), reason));
 
     /* next: will already be installing */
     {
-        for (std::list<QPN_S>::const_iterator qpn_s(qpn_s_s.begin()), qpn_s_end(qpn_s_s.end()) ;
+        for (QPN_S_Sequence::ConstIterator qpn_s(qpn_s_s->begin()), qpn_s_end(qpn_s_s->end()) ;
                 qpn_s != qpn_s_end ; ++qpn_s)
         {
             ResolutionsByQPN_SMap::const_iterator i(_imp->resolutions_by_qpn_s.find(*qpn_s));
@@ -1133,11 +1063,11 @@ Resolver::find_any_score(const QPN_S & our_qpn_s, const SanitisedDependency & de
 
     /* next: could install */
     {
-        for (std::list<QPN_S>::const_iterator qpn_s(qpn_s_s.begin()), qpn_s_end(qpn_s_s.end()) ;
+        for (QPN_S_Sequence::ConstIterator qpn_s(qpn_s_s->begin()), qpn_s_end(qpn_s_s->end()) ;
                 qpn_s != qpn_s_end ; ++qpn_s)
         {
             const std::tr1::shared_ptr<Resolution> resolution(_create_resolution_for_qpn_s(*qpn_s));
-            const std::tr1::shared_ptr<Constraint> constraint(_make_constraint_from_dependency(our_qpn_s, dep));
+            const std::tr1::shared_ptr<Constraint> constraint(_make_constraint_from_dependency(our_qpn_s, dep, reason));
             resolution->constraints()->add(constraint);
             const std::tr1::shared_ptr<Decision> decision(_try_to_find_decision_for(*qpn_s, resolution));
             if (decision)

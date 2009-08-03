@@ -120,9 +120,9 @@ namespace
         args::EnumArg a_reinstall_scm;
 //        args::SwitchArg a_reinstall_for_removals;
 
-//        args::ArgsGroup g_slot_options;
-//        args::EnumArg a_target_slots;
-//        args::EnumArg a_slots;
+        args::ArgsGroup g_slot_options;
+        args::EnumArg a_target_slots;
+        args::EnumArg a_slots;
 
 //        args::ArgsGroup g_dependency_options;
 //        args::SwitchArg a_follow_installed_build_dependencies;
@@ -264,7 +264,7 @@ namespace
                     ("if-necessary",          'i', "If necessary"),
                     "if-necessary"
                     ),
-            a_reinstall_scm(&g_reinstall_options, "reinstall-scm", 's',
+            a_reinstall_scm(&g_reinstall_options, "reinstall-scm", '\0',
                     "Select whether to reinstall SCM packages that would otherwise not be reinstalled",
                     args::EnumArg::EnumArgOptions
                     ("always",                'a', "Always")
@@ -276,34 +276,34 @@ namespace
 //            a_reinstall_for_removals(&g_reinstall_options, "reinstall-for-removals", '\0',
 //                    "Select whether to rebuild packages if rebuilding would avoid an unsafe removal", true),
 //
-//            g_slot_options(this, "Slot Options", "Control which slots are considered."),
-//            a_target_slots(&g_slot_options, "target-slots", 'S',
-//                    "Which slots to consider for targets",
-//                    args::EnumArg::EnumArgOptions
-//                    ("best-or-installed",     'x', "Consider the best slot, if it is not installed, "
-//                                                   "or all installed slots otherwise")
-//                    ("installed-or-best",     'i', "Consider all installed slots, or the best "
-//                                                   "installable slot if nothing is installed")
-//                    ("all",                   'a', "Consider all installed slots and the best installable slot"
-//                                                   " (default if --complete or --everything)")
-//                    ("best",                  'b', "Consider the best installable slot only"
-//                                                   " (default if --lazy)"),
-//                    "best-or-installed"
-//                    ),
-//            a_slots(&g_slot_options, "slots", 's',
-//                    "Which slots to consider for packages that are not targets",
-//                    args::EnumArg::EnumArgOptions
-//                    ("best-or-installed",     'x', "Consider the best slot, if it is not installed, "
-//                                                   "or all installed slots otherwise")
-//                    ("installed-or-best",     'i', "Consider all installed slots, or the best "
-//                                                   "installable slot if nothing is installed")
-//                    ("all",                   'a', "Consider all installed slots and the best installable slot"
-//                                                   " (default if --complete or --everything)")
-//                    ("best",                  'b', "Consider the best installable slot only"
-//                                                   " (default if --lazy)"),
-//                    "best-or-installed"
-//                    ),
-//
+            g_slot_options(this, "Slot Options", "Control which slots are considered."),
+            a_target_slots(&g_slot_options, "target-slots", 'S',
+                    "Which slots to consider for targets",
+                    args::EnumArg::EnumArgOptions
+                    ("best-or-installed",     'x', "Consider the best slot, if it is not installed, "
+                                                   "or all installed slots otherwise")
+                    ("installed-or-best",     'i', "Consider all installed slots, or the best "
+                                                   "installable slot if nothing is installed")
+                    ("all",                   'a', "Consider all installed slots and the best installable slot"
+                                                   " (default if --complete or --everything)")
+                    ("best",                  'b', "Consider the best installable slot only"
+                                                   " (default if --lazy)"),
+                    "best-or-installed"
+                    ),
+            a_slots(&g_slot_options, "slots", 's',
+                    "Which slots to consider for packages that are not targets",
+                    args::EnumArg::EnumArgOptions
+                    ("best-or-installed",     'x', "Consider the best slot, if it is not installed, "
+                                                   "or all installed slots otherwise")
+                    ("installed-or-best",     'i', "Consider all installed slots, or the best "
+                                                   "installable slot if nothing is installed")
+                    ("all",                   'a', "Consider all installed slots and the best installable slot"
+                                                   " (default if --complete or --everything)")
+                    ("best",                  'b', "Consider the best installable slot only"
+                                                   " (default if --lazy)"),
+                    "best-or-installed"
+                    ),
+
 //            g_dependency_options(this, "Dependency Options", "Control which dependencies are followed."),
 //            a_follow_installed_build_dependencies(&g_dependency_options, "follow-installed-build-dependencies", 'D',
 //                    "Follow build dependencies for installed packages (default if --complete or --everything", true),
@@ -659,6 +659,63 @@ namespace
         else
             return i->second;
     }
+
+    struct SlotNameFinder
+    {
+        std::tr1::shared_ptr<SlotName> visit(const SlotExactRequirement & s)
+        {
+            return make_shared_ptr(new SlotName(s.slot()));
+        }
+
+        std::tr1::shared_ptr<SlotName> visit(const SlotAnyUnlockedRequirement &)
+        {
+            return make_null_shared_ptr();
+        }
+
+        std::tr1::shared_ptr<SlotName> visit(const SlotAnyLockedRequirement &)
+        {
+            return make_null_shared_ptr();
+        }
+    };
+
+    const std::tr1::shared_ptr<QPN_S_Sequence>
+    get_qpn_s_s_for_fn(const Environment * const env, const ResolveCommandLine &, const PackageDepSpec & spec,
+            const std::tr1::shared_ptr<const Reason> &)
+    {
+        std::tr1::shared_ptr<QPN_S_Sequence> result(new QPN_S_Sequence);
+
+        std::tr1::shared_ptr<SlotName> exact_slot;
+
+        if (spec.slot_requirement_ptr())
+        {
+            SlotNameFinder f;
+            exact_slot = spec.slot_requirement_ptr()->accept_returning<std::tr1::shared_ptr<SlotName> >(f);
+        }
+
+        if (exact_slot)
+            result->push_back(QPN_S(spec, exact_slot));
+        else
+        {
+            const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
+                        generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements) |
+                        filter::SupportsAction<InstallAction>() |
+                        filter::NotMasked())]);
+
+            if (! ids->empty())
+                result->push_back(QPN_S(*ids->begin()));
+            else
+            {
+                const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*env)[selection::BestVersionOnly(
+                            generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements) |
+                            filter::SupportsAction<InstalledAction>())]);
+
+                if (! installed_ids->empty())
+                    result->push_back(QPN_S(*installed_ids->begin()));
+            }
+        }
+
+        return result;
+    }
 }
 
 
@@ -690,6 +747,8 @@ ResolveCommand::run(
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
                 value_for<n::get_initial_constraints_for_fn>(std::tr1::bind(&initial_constraints_for_fn,
                         env.get(), std::tr1::cref(cmdline), std::tr1::cref(initial_constraints), std::tr1::placeholders::_1)),
+                value_for<n::get_qpn_s_s_for_fn>(std::tr1::bind(&get_qpn_s_s_for_fn,
+                        env.get(), std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2)),
                 value_for<n::get_use_installed_fn>(std::tr1::bind(&use_installed_fn,
                         std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3))
                 ));

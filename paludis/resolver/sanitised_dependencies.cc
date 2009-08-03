@@ -473,7 +473,7 @@ SanitisedDependencies::_populate_one(
 {
     Context context("When finding dependencies for '" + stringify(*id) + "' from key '" + ((*id).*pmf)()->raw_name() + "':");
 
-    Finder f(resolver, resolver.qpn_s_from_id(id), *this, ((*id).*pmf)()->initial_labels());
+    Finder f(resolver, QPN_S(id), *this, ((*id).*pmf)()->initial_labels());
     ((*id).*pmf)()->value()->root()->accept(f);
 }
 

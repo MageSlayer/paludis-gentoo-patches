@@ -33,22 +33,31 @@ namespace paludis
     namespace n
     {
         struct get_initial_constraints_for_fn;
+        struct get_qpn_s_s_for_fn;
         struct get_use_installed_fn;
     }
 
     namespace resolver
     {
         typedef std::tr1::function<std::tr1::shared_ptr<Constraints> (
-                const QPN_S &)> GetInitialConstraintsFunction;
+                const QPN_S &
+                )> GetInitialConstraintsFunction;
+
+        typedef std::tr1::function<std::tr1::shared_ptr<QPN_S_Sequence> (
+                const PackageDepSpec &,
+                const std::tr1::shared_ptr<const Reason> &
+                )> GetQPNSSForFunction;
 
         typedef std::tr1::function<UseInstalled (
                 const QPN_S &,
                 const PackageDepSpec &,
-                const std::tr1::shared_ptr<const Reason> &)> GetUseInstalledFunction;
+                const std::tr1::shared_ptr<const Reason> &
+                )> GetUseInstalledFunction;
 
         struct ResolverFunctions
         {
             NamedValue<n::get_initial_constraints_for_fn, GetInitialConstraintsFunction> get_initial_constraints_for_fn;
+            NamedValue<n::get_qpn_s_s_for_fn, GetQPNSSForFunction> get_qpn_s_s_for_fn;
             NamedValue<n::get_use_installed_fn, GetUseInstalledFunction> get_use_installed_fn;
         };
     }

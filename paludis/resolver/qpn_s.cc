@@ -18,31 +18,90 @@
  */
 
 #include <paludis/resolver/qpn_s.hh>
+#include <paludis/util/sequence-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/filter.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
 #include <sstream>
 
 using namespace paludis;
 using namespace paludis::resolver;
 
-bool
-paludis::resolver::operator< (const QPN_S & lhs, const QPN_S & rhs)
+namespace paludis
 {
-    if (lhs.package() < rhs.package())
+    template <>
+    struct Implementation<QPN_S>
+    {
+        const QualifiedPackageName package;
+        const std::tr1::shared_ptr<const SlotName> slot_name_or_null;
+
+        Implementation(const QualifiedPackageName & q, const std::tr1::shared_ptr<const SlotName> & s) :
+            package(q),
+            slot_name_or_null(s)
+        {
+        }
+    };
+}
+
+QPN_S::QPN_S(const QualifiedPackageName & q, const std::tr1::shared_ptr<const SlotName> & s) :
+    PrivateImplementationPattern<QPN_S>(new Implementation<QPN_S>(q, s))
+{
+}
+
+QPN_S::QPN_S(const PackageDepSpec & p, const std::tr1::shared_ptr<const SlotName> & s) :
+    PrivateImplementationPattern<QPN_S>(new Implementation<QPN_S>(*p.package_ptr(), s))
+{
+}
+
+QPN_S::QPN_S(const std::tr1::shared_ptr<const PackageID> & id) :
+    PrivateImplementationPattern<QPN_S>(new Implementation<QPN_S>(id->name(),
+                id->slot_key() ? make_shared_ptr(new SlotName(id->slot_key()->value())) : make_null_shared_ptr()))
+{
+}
+
+QPN_S::QPN_S(const QPN_S & other) :
+    PrivateImplementationPattern<QPN_S>(new Implementation<QPN_S>(other.package(), other.slot_name_or_null()))
+{
+}
+
+QPN_S::~QPN_S()
+{
+}
+
+const QualifiedPackageName
+QPN_S::package() const
+{
+    return _imp->package;
+}
+
+const std::tr1::shared_ptr<const SlotName>
+QPN_S::slot_name_or_null() const
+{
+    return _imp->slot_name_or_null;
+}
+
+bool
+QPN_S::operator< (const QPN_S & other) const
+{
+    if (package() < other.package())
         return true;
-    if (lhs.package() > rhs.package())
+    if (package() > other.package())
         return false;
 
     /* no slot orders before any slot */
-    if (lhs.slot_name_or_null())
+    if (slot_name_or_null())
     {
-        if (rhs.slot_name_or_null())
-            return *lhs.slot_name_or_null() < *rhs.slot_name_or_null();
+        if (other.slot_name_or_null())
+            return *slot_name_or_null() < *other.slot_name_or_null();
         else
             return false;
     }
     else
     {
-        if (rhs.slot_name_or_null())
+        if (other.slot_name_or_null())
             return true;
         else
             return false;
@@ -71,4 +130,7 @@ QPN_S::make_slot_filter() const
     else
         return filter::NoSlot();
 }
+
+template class PrivateImplementationPattern<QPN_S>;
+template class WrappedForwardIterator<QPN_S_Sequence::ConstIteratorTag, const QPN_S>;
 

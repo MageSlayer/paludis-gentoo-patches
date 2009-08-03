@@ -48,8 +48,6 @@ namespace paludis
             private PrivateImplementationPattern<Resolver>
         {
             private:
-                template <typename I_> void _find_qpn_s_s_for_spec(const PackageDepSpec &, I_) const;
-
                 QualifiedPackageName _package_from_spec(const PackageDepSpec &) const;
 
                 const std::tr1::shared_ptr<Resolution> _create_resolution_for_qpn_s(const QPN_S &) const;
@@ -62,7 +60,8 @@ namespace paludis
                         const std::tr1::shared_ptr<const Reason> &) const;
 
                 const std::tr1::shared_ptr<Constraint> _make_constraint_from_dependency(
-                        const QPN_S &, const SanitisedDependency &) const;
+                        const QPN_S &, const SanitisedDependency &,
+                        const std::tr1::shared_ptr<const Reason> &) const;
 
                 const std::tr1::shared_ptr<Decision> _decision_from_package_id(
                         const QPN_S &, const std::tr1::shared_ptr<const PackageID> &) const;
@@ -169,7 +168,6 @@ namespace paludis
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 int find_any_score(const QPN_S &, const SanitisedDependency &) const;
-                QPN_S qpn_s_from_id(const std::tr1::shared_ptr<const PackageID> &) const;
 
         };
     }
