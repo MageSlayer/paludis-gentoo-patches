@@ -32,6 +32,8 @@
 #include <paludis/resolver/decision.hh>
 #include <paludis/resolver/resolver_functions.hh>
 #include <paludis/resolver/reason.hh>
+#include <paludis/resolver/suggest_restart.hh>
+#include <paludis/resolver/qpn_s.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
 
@@ -232,7 +234,7 @@ namespace
             a_reinstall_targets(&g_reinstall_options, "reinstall-targets", 'R',
                     "Select whether to reinstall target packages",
                     args::EnumArg::EnumArgOptions
-                    ("auto",                  'x', "If the target is a set, if-necessary, otherwise always")
+                    ("auto",                  'x', "If the target is a set, if-same, otherwise always")
                     ("always",                'a', "Always")
                     ("unless-transient",      't', "Unless the target is transient (e.g. from 'importare')"
                                                    " (default if --everything)")
@@ -478,7 +480,7 @@ namespace
     UseInstalled use_installed_from_cmdline(const args::EnumArg & a, const bool is_set)
     {
         if (a.argument() == "auto")
-            return is_set ? ui_if_possible : ui_never;
+            return is_set ? ui_if_same : ui_never;
         else if (a.argument() == "always")
             return ui_never;
         else if (a.argument() == "unless-transient")
@@ -575,10 +577,15 @@ ResolveCommand::run(
                 resolver->resolve();
                 break;
             }
-            catch (...)
+            catch (const SuggestRestart & e)
             {
-                /* handle restarts etc */
-                throw;
+                std::cout << "Restarting: for '" << e.qpn_s() << "' we had chosen '" << *e.previous_decision()
+                    << "' but new constraint '" << *e.problematic_constraint() << "' means we now want '"
+                    << *e.new_decision() << "' instead" << std::endl;
+                std::tr1::shared_ptr<Resolver> new_resolver(new Resolver(env.get(), resolver_functions));
+                new_resolver->copy_initial_constraints_from(*resolver);
+                new_resolver->add_initial_constraint(e.qpn_s(), e.suggested_preset());
+                resolver = new_resolver;
             }
         }
 

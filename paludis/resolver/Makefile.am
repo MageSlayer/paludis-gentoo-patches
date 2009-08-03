@@ -25,6 +25,7 @@ noinst_HEADERS = \
 	resolver.hh resolver-fwd.hh \
 	resolver_functions.hh resolver_functions-fwd.hh \
 	sanitised_dependencies.hh sanitised_dependencies-fwd.hh \
+	suggest_restart.hh suggest_restart-fwd.hh \
 	use_installed.hh use_installed-fwd.hh use_installed-se.hh
 
 libpaludisresolver_a_SOURCES = \
@@ -38,6 +39,7 @@ libpaludisresolver_a_SOURCES = \
 	resolution.cc \
 	resolver.cc \
 	sanitised_dependencies.cc \
+	suggest_restart.cc \
 	use_installed.cc
 
 TESTS_ENVIRONMENT = env PALUDIS_OPTIONS="" \

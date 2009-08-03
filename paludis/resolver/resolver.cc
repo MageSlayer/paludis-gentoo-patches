@@ -27,6 +27,7 @@
 #include <paludis/resolver/decision.hh>
 #include <paludis/resolver/destinations.hh>
 #include <paludis/resolver/resolver_functions.hh>
+#include <paludis/resolver/suggest_restart.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/log.hh>
@@ -949,11 +950,7 @@ Resolver::_suggest_restart_with(const QPN_S & qpn_s,
         const std::tr1::shared_ptr<const Constraint> & constraint,
         const std::tr1::shared_ptr<const Decision> & decision) const
 {
-    std::cout << "Suggesting a restart: for " << qpn_s << ", we originally decided " << *resolution
-        << ", but new constraint " << *constraint << " means we want " << *decision << " instead" << std::endl;
-
-    // throw SuggestRestart(qpn_s, _make_constraint_for_preloading(decision));
-    throw InternalError(PALUDIS_HERE, "need a restart");
+    throw SuggestRestart(qpn_s, resolution->decision(), constraint, decision, _make_constraint_for_preloading(decision));
 }
 
 const std::tr1::shared_ptr<const Constraint>
