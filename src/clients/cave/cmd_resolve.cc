@@ -238,8 +238,7 @@ namespace
                                                    " (default if --everything)")
                     ("unless-same",           's', "Unless the target is the same (version, option flags)")
                     ("unless-same-version",   'v', "Unless the target is the same version")
-                    ("if-necessary",          'i', "If necessary")
-                    ("never",                 'n', "Never"),
+                    ("if-necessary",          'i', "If necessary"),
                     "auto"
                     ),
             a_reinstall(&g_reinstall_options, "reinstall", 'r',
@@ -251,8 +250,7 @@ namespace
                     ("unless-same",           's', "Unless the target is the same (version, option flags)"
                                                    " (default if --complete)")
                     ("unless-same-version",   'v', "Unless the target is the same version")
-                    ("if-necessary",          'i', "If necessary")
-                    ("never",                 'n', "Never"),
+                    ("if-necessary",          'i', "If necessary"),
                     "if-necessary"
                     ),
             a_reinstall_scm(&g_reinstall_options, "reinstall-scm", 's',
@@ -477,16 +475,43 @@ namespace
             resolver->dump(std::cerr, cmdline.a_dump_dependencies.specified());
     }
 
+    UseInstalled use_installed_from_cmdline(const args::EnumArg & a, const bool is_set)
+    {
+        if (a.argument() == "auto")
+            return is_set ? ui_if_possible : ui_never;
+        else if (a.argument() == "always")
+            return ui_never;
+        else if (a.argument() == "unless-transient")
+            return ui_only_if_transient;
+        else if (a.argument() == "unless-same")
+            return ui_if_same;
+        else if (a.argument() == "unless-same-version")
+            return ui_if_same_version;
+        else if (a.argument() == "if-necessary")
+            return ui_if_possible;
+        else
+            throw args::DoHelp("Don't understand argument '" + a.argument() + "' to '--" + a.long_name() + "'");
+    }
+
     struct UseInstalledVisitor
     {
+        const ResolveCommandLine & cmdline;
+        const bool from_set;
+
+        UseInstalledVisitor(const ResolveCommandLine & c, const bool f) :
+            cmdline(c),
+            from_set(f)
+        {
+        }
+
         UseInstalled visit(const DependencyReason &) const
         {
-            return ui_if_same;
+            return use_installed_from_cmdline(cmdline.a_reinstall, false);
         }
 
         UseInstalled visit(const TargetReason &) const
         {
-            return ui_never;
+            return use_installed_from_cmdline(cmdline.a_reinstall_targets, from_set);
         }
 
         UseInstalled visit(const PresetReason &) const
@@ -494,16 +519,17 @@ namespace
             return ui_if_possible;
         }
 
-        UseInstalled visit(const SetReason &) const
+        UseInstalled visit(const SetReason & r) const
         {
-            return ui_if_same;
+            UseInstalledVisitor v(cmdline, true);
+            return r.reason_for_set()->accept_returning<UseInstalled>(v);
         }
     };
 
-    UseInstalled use_installed_fn(const ResolveCommandLine &, const PackageDepSpec &,
+    UseInstalled use_installed_fn(const ResolveCommandLine & cmdline, const PackageDepSpec &,
             const std::tr1::shared_ptr<const Reason> & reason)
     {
-        UseInstalledVisitor v;
+        UseInstalledVisitor v(cmdline, false);
         return reason->accept_returning<UseInstalled>(v);
     }
 }
