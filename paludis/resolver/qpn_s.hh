@@ -46,7 +46,7 @@ namespace paludis
             public:
                 QPN_S(const QualifiedPackageName &, const std::tr1::shared_ptr<const SlotName> &);
                 QPN_S(const PackageDepSpec &, const std::tr1::shared_ptr<const SlotName> &);
-                QPN_S(const std::tr1::shared_ptr<const PackageID> &);
+                explicit QPN_S(const std::tr1::shared_ptr<const PackageID> &);
                 QPN_S(const QPN_S &);
                 ~QPN_S();
 
@@ -56,6 +56,7 @@ namespace paludis
                 Filter make_slot_filter() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 bool operator< (const QPN_S & other) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool operator== (const QPN_S & other) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 

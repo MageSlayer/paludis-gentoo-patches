@@ -108,6 +108,18 @@ QPN_S::operator< (const QPN_S & other) const
     }
 }
 
+bool
+QPN_S::operator== (const QPN_S & other) const
+{
+    if (! (package() == other.package()))
+        return false;
+
+    if (slot_name_or_null())
+        return other.slot_name_or_null() && *slot_name_or_null() == *other.slot_name_or_null();
+    else
+        return ! other.slot_name_or_null();
+}
+
 std::ostream &
 paludis::resolver::operator<< (std::ostream & s, const QPN_S & q)
 {
