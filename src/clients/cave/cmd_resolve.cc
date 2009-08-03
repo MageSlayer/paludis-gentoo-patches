@@ -34,11 +34,13 @@
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/suggest_restart.hh>
 #include <paludis/resolver/qpn_s.hh>
+#include <paludis/resolver/constraint.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
 
 #include <iostream>
 #include <cstdlib>
+#include <map>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -536,7 +538,19 @@ namespace
         UseInstalledVisitor v(cmdline, false);
         return reason->accept_returning<UseInstalled>(v);
     }
+
+    typedef std::map<QPN_S, std::tr1::shared_ptr<Constraints> > InitialConstraints;
+
+    const std::tr1::shared_ptr<Constraints> initial_constraints_for_fn(const InitialConstraints & initial_constraints, const QPN_S & qpn_s)
+    {
+        InitialConstraints::const_iterator i(initial_constraints.find(qpn_s));
+        if (i == initial_constraints.end())
+            return make_shared_ptr(new Constraints);
+        else
+            return i->second;
+    }
 }
+
 
 bool
 ResolveCommand::important() const
@@ -561,7 +575,11 @@ ResolveCommand::run(
 
     int retcode(0);
 
+    InitialConstraints initial_constraints;
+
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
+                value_for<n::get_initial_constraints_for_fn>(std::tr1::bind(&initial_constraints_for_fn,
+                        std::tr1::cref(initial_constraints), std::tr1::placeholders::_1)),
                 value_for<n::get_use_installed_fn>(std::tr1::bind(&use_installed_fn,
                         std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3))
                 ));
@@ -584,10 +602,8 @@ ResolveCommand::run(
                 std::cout << "Restarting: for '" << e.qpn_s() << "' we had chosen '" << *e.previous_decision()
                     << "' but new constraint '" << *e.problematic_constraint() << "' means we now want '"
                     << *e.new_decision() << "' instead" << std::endl;
-                std::tr1::shared_ptr<Resolver> new_resolver(new Resolver(env.get(), resolver_functions));
-                new_resolver->copy_initial_constraints_from(*resolver);
-                new_resolver->add_initial_constraint(e.qpn_s(), e.suggested_preset());
-                resolver = new_resolver;
+                initial_constraints.insert(std::make_pair(e.qpn_s(), make_shared_ptr(new Constraints))).first->second->add(e.suggested_preset());
+                resolver = make_shared_ptr(new Resolver(env.get(), resolver_functions));
             }
         }
 

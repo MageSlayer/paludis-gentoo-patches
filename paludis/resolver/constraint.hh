@@ -65,6 +65,8 @@ namespace paludis
                 typedef WrappedForwardIterator<ConstIteratorTag, const std::tr1::shared_ptr<const Constraint> > ConstIterator;
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                bool empty() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 

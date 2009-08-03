@@ -85,6 +85,12 @@ Constraints::add(const std::tr1::shared_ptr<const Constraint> & c)
     _imp->strictest_use_installed = std::min(_imp->strictest_use_installed, c->use_installed());
 }
 
+bool
+Constraints::empty() const
+{
+    return _imp->constraints.empty();
+}
+
 template class PrivateImplementationPattern<Constraints>;
 template class WrappedForwardIterator<Constraints::ConstIteratorTag, const std::tr1::shared_ptr<const Constraint> >;
 

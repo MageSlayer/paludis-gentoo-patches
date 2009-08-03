@@ -72,7 +72,6 @@ namespace paludis
         const ResolverFunctions fns;
 
         ResolutionsByQPN_SMap resolutions_by_qpn_s;
-        InitialConstraints initial_constraints;
         OrderedResolutionsList ordered_resolutions;
 
         Implementation(const Environment * const e, const ResolverFunctions & f) :
@@ -910,11 +909,7 @@ Resolver::_unable_to_order_more() const
 const std::tr1::shared_ptr<Constraints>
 Resolver::_initial_constraints_for(const QPN_S & qpn_s) const
 {
-    InitialConstraints::const_iterator i(_imp->initial_constraints.find(qpn_s));
-    if (i == _imp->initial_constraints.end())
-        return make_shared_ptr(new Constraints);
-    else
-        return i->second;
+    return _imp->fns.get_initial_constraints_for_fn()(qpn_s);
 }
 
 void
@@ -930,8 +925,7 @@ Resolver::_made_wrong_decision(const QPN_S & qpn_s,
     if (decision)
     {
         /* can we preload and restart? */
-        InitialConstraints::const_iterator x(_imp->initial_constraints.find(qpn_s));
-        if (x == _imp->initial_constraints.end())
+        if (_initial_constraints_for(qpn_s)->empty())
         {
             /* we've not already locked this to something. yes! */
             _suggest_restart_with(qpn_s, resolution, constraint, decision);
@@ -970,24 +964,6 @@ Resolver::_make_constraint_for_preloading(
                     value_for<n::to_destination_slash>(false),
                     value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(qpn_s, d->package_id()->uniquely_identifying_spec(), reason))
                     )));
-}
-
-void
-Resolver::copy_initial_constraints_from(const Resolver & other)
-{
-    for (InitialConstraints::const_iterator i(other._imp->initial_constraints.begin()),
-            i_end(other._imp->initial_constraints.end()) ;
-            i != i_end ; ++i)
-        _imp->initial_constraints.insert(*i);
-}
-
-void
-Resolver::add_initial_constraint(const QPN_S & q, const std::tr1::shared_ptr<const Constraint> & c)
-{
-    InitialConstraints::iterator i(_imp->initial_constraints.find(q));
-    if (i == _imp->initial_constraints.end())
-        i = _imp->initial_constraints.insert(std::make_pair(q, make_shared_ptr(new Constraints))).first;
-    i->second->add(c);
 }
 
 namespace
@@ -1051,14 +1027,6 @@ Resolver::end() const
 void
 Resolver::dump(std::ostream & s, const bool show_deps) const
 {
-    s << "Initial Constraints:" << std::endl;
-    for (InitialConstraints::const_iterator i(_imp->initial_constraints.begin()),
-            i_end(_imp->initial_constraints.end()) ;
-            i != i_end ; ++i)
-        s << "  [*] " << std::left << std::setw(30) << i->first << " " <<
-            join(indirect_iterator(i->second->begin()), indirect_iterator(i->second->end()), ", ") << std::endl;
-    s << std::endl;
-
     s << "Resolutions by QPN:S:" << std::endl;
     for (ResolutionsByQPN_SMap::const_iterator i(_imp->resolutions_by_qpn_s.begin()),
             i_end(_imp->resolutions_by_qpn_s.end()) ;
