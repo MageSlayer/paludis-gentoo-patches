@@ -541,7 +541,7 @@ Resolver::_best_installed_id_for(const QPN_S & qpn_s, const std::tr1::shared_ptr
 {
     const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::AllVersionsSorted(
                 generator::Package(qpn_s.package()) |
-                _make_slot_filter(qpn_s) |
+                qpn_s.make_slot_filter() |
                 filter::SupportsAction<InstalledAction>())]);
 
     return _best_id_from(ids, qpn_s, resolution);
@@ -552,7 +552,7 @@ Resolver::_best_installable_id_for(const QPN_S & qpn_s, const std::tr1::shared_p
 {
     const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::AllVersionsSorted(
                 generator::Package(qpn_s.package()) |
-                _make_slot_filter(qpn_s) |
+                qpn_s.make_slot_filter() |
                 filter::SupportsAction<InstallAction>() |
                 filter::NotMasked())]);
 
@@ -586,15 +586,6 @@ Resolver::_best_id_from(
     }
 
     return make_null_shared_ptr();
-}
-
-Filter
-Resolver::_make_slot_filter(const QPN_S & qpn_s) const
-{
-    if (qpn_s.slot_name_or_null())
-        return filter::Slot(*qpn_s.slot_name_or_null());
-    else
-        return filter::NoSlot();
 }
 
 void
@@ -823,13 +814,13 @@ Resolver::_decision_from_package_id(const QPN_S & qpn_s, const std::tr1::shared_
     if (is_installed)
         comparison_ids = ((*_imp->env)[selection::BestVersionOnly(
                     generator::Package(qpn_s.package()) |
-                    _make_slot_filter(qpn_s) |
+                    qpn_s.make_slot_filter() |
                     filter::SupportsAction<InstallAction>() |
                     filter::NotMasked())]);
     else
         comparison_ids = ((*_imp->env)[selection::BestVersionOnly(
                     generator::Package(qpn_s.package()) |
-                    _make_slot_filter(qpn_s) |
+                    qpn_s.make_slot_filter() |
                     filter::SupportsAction<InstalledAction>())]);
 
     if (comparison_ids->empty())
@@ -862,7 +853,7 @@ Resolver::_unable_to_decide(
 {
     const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::AllVersionsSorted(
                 generator::Package(qpn_s.package()) |
-                _make_slot_filter(qpn_s) |
+                qpn_s.make_slot_filter() |
                 filter::SupportsAction<InstallAction>() |
                 filter::NotMasked())]);
 

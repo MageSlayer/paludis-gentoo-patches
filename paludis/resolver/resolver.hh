@@ -36,7 +36,6 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/name.hh>
-#include <paludis/filter-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <tr1/memory>
@@ -115,8 +114,6 @@ namespace paludis
                         const QPN_S &, const std::tr1::shared_ptr<const Resolution> &) const;
 
                 void _add_dependencies(const QPN_S & our_qpn_s, const std::tr1::shared_ptr<Resolution> & our_resolution);
-
-                Filter _make_slot_filter(const QPN_S &) const;
 
                 bool _care_about_dependency_spec(const QPN_S &, const std::tr1::shared_ptr<const Resolution> &,
                         const SanitisedDependency &) const;

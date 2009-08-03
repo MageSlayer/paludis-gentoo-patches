@@ -18,6 +18,7 @@
  */
 
 #include <paludis/resolver/qpn_s.hh>
+#include <paludis/filter.hh>
 #include <sstream>
 
 using namespace paludis;
@@ -60,5 +61,14 @@ paludis::resolver::operator<< (std::ostream & s, const QPN_S & q)
 
     s << ss.str();
     return s;
+}
+
+Filter
+QPN_S::make_slot_filter() const
+{
+    if (slot_name_or_null())
+        return filter::Slot(*slot_name_or_null());
+    else
+        return filter::NoSlot();
 }
 

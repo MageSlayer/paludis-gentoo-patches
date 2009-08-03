@@ -22,7 +22,9 @@
 
 #include <paludis/resolver/qpn_s-fwd.hh>
 #include <paludis/util/named_value.hh>
+#include <paludis/util/attributes.hh>
 #include <paludis/name.hh>
+#include <paludis/filter-fwd.hh>
 #include <tr1/memory>
 
 namespace paludis
@@ -35,10 +37,13 @@ namespace paludis
 
     namespace resolver
     {
-        struct QPN_S
+        struct PALUDIS_VISIBLE QPN_S
         {
             NamedValue<n::package, QualifiedPackageName> package;
             NamedValue<n::slot_name_or_null, std::tr1::shared_ptr<const SlotName> > slot_name_or_null;
+
+            Filter make_slot_filter() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
         };
 
     }
