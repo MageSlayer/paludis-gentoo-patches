@@ -26,7 +26,6 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/join.hh>
 #include <paludis/spec_tree.hh>
-#include <paludis/package_dep_spec_properties.hh>
 #include <paludis/slot_requirement.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
@@ -72,9 +71,8 @@ namespace
 
         std::list<std::list<PackageDepSpec> > child_groups;
         std::list<PackageDepSpec> * active_sublist;
-        std::set<QualifiedPackageName> seen_qpns;
 
-        bool seen_unadorned, seen_slots, seen_additional_requirements, seen_version_requirements, seen_unknown;
+        bool seen_any;
 
         AnyDepSpecChildHandler(const Resolver & r, const QPN_S & q,
                 const std::tr1::function<SanitisedDependency (const PackageDepSpec &)> & f) :
@@ -84,11 +82,7 @@ namespace
             super_complicated(false),
             nested(false),
             active_sublist(0),
-            seen_unadorned(false),
-            seen_slots(false),
-            seen_additional_requirements(false),
-            seen_version_requirements(false),
-            seen_unknown(false)
+            seen_any(false)
         {
         }
 
@@ -96,7 +90,7 @@ namespace
         {
             if (spec.package_ptr())
             {
-                seen_qpns.insert(*spec.package_ptr());
+                seen_any = true;
 
                 if (active_sublist)
                     active_sublist->push_back(spec);
@@ -106,46 +100,6 @@ namespace
                     l.push_back(spec);
                     child_groups.push_back(l);
                 }
-
-                if (spec.slot_requirement_ptr())
-                    seen_slots = true;
-
-                if (spec.additional_requirements_ptr() && ! spec.additional_requirements_ptr()->empty())
-                    seen_additional_requirements = true;
-
-                if (spec.version_requirements_ptr() && ! spec.version_requirements_ptr()->empty())
-                    seen_version_requirements = true;
-
-                if (package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
-                                value_for<n::has_additional_requirements>(false),
-                                value_for<n::has_category_name_part>(false),
-                                value_for<n::has_from_repository>(false),
-                                value_for<n::has_in_repository>(false),
-                                value_for<n::has_installable_to_path>(false),
-                                value_for<n::has_installable_to_repository>(false),
-                                value_for<n::has_installed_at_path>(false),
-                                value_for<n::has_package>(indeterminate),
-                                value_for<n::has_package_name_part>(false),
-                                value_for<n::has_slot_requirement>(false),
-                                value_for<n::has_tag>(indeterminate),
-                                value_for<n::has_version_requirements>(false)
-                                )))
-                    seen_unadorned = true;
-                else if (! package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
-                                value_for<n::has_additional_requirements>(indeterminate),
-                                value_for<n::has_category_name_part>(false),
-                                value_for<n::has_from_repository>(false),
-                                value_for<n::has_in_repository>(false),
-                                value_for<n::has_installable_to_path>(false),
-                                value_for<n::has_installable_to_repository>(false),
-                                value_for<n::has_installed_at_path>(false),
-                                value_for<n::has_package>(indeterminate),
-                                value_for<n::has_package_name_part>(false),
-                                value_for<n::has_slot_requirement>(indeterminate),
-                                value_for<n::has_tag>(indeterminate),
-                                value_for<n::has_version_requirements>(indeterminate)
-                                )))
-                    seen_unknown = true;
             }
             else
                 super_complicated = true;
@@ -232,97 +186,8 @@ namespace
                 const std::tr1::function<SanitisedDependency (const PackageDepSpec &)> & make_sanitised,
                 const std::tr1::function<void (const SanitisedDependency &)> & apply)
         {
-            if (seen_qpns.empty())
+            if (! seen_any)
             {
-            }
-            else if (1 == seen_qpns.size())
-            {
-                if (nested)
-                    throw InternalError(PALUDIS_HERE, "not implemented");
-
-                if (seen_unadorned)
-                {
-                    if (seen_slots || seen_additional_requirements || seen_version_requirements || seen_unknown)
-                        throw InternalError(PALUDIS_HERE, "not implemented");
-
-                    apply(make_sanitised(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(*seen_qpns.begin())));
-                }
-                else if (seen_slots)
-                {
-                    if (seen_additional_requirements || seen_version_requirements || seen_unknown)
-                        throw InternalError(PALUDIS_HERE, "not implemented");
-
-                    /* we've got a choice of slots. if any of those slots is unrestricted, pick that. otherwise,
-                     * pick the best score, left to right. */
-                    bool done(false);
-                    std::list<std::list<PackageDepSpec> >::const_iterator g_best(child_groups.end());
-                    int best_score(-1);
-
-                    for (std::list<std::list<PackageDepSpec> >::const_iterator g(child_groups.begin()), g_end(child_groups.end()) ;
-                            g != g_end ; ++g)
-                    {
-                        if ((g->size() != 1) || (! g->begin()->slot_requirement_ptr()))
-                            throw InternalError(PALUDIS_HERE, "why did that happen?");
-
-                        IsUnrestrictedSlot u;
-                        if (g->begin()->slot_requirement_ptr()->accept_returning<bool>(u))
-                        {
-                            apply(make_sanitised(*g->begin()));
-                            done = true;
-                            break;
-                        }
-                        else
-                        {
-                            int score(resolver.find_any_score(our_qpn_s, make_sanitised(*g->begin())));
-                            if (score > best_score)
-                            {
-                                best_score = score;
-                                g_best = g;
-                            }
-                        }
-                    }
-
-                    if (! done)
-                    {
-                        if (g_best == child_groups.end())
-                            throw InternalError(PALUDIS_HERE, "why did that happen?");
-                        apply(make_sanitised(*g_best->begin()));
-                    }
-                }
-                else if (seen_additional_requirements || seen_version_requirements)
-                {
-                    if (seen_additional_requirements && seen_version_requirements)
-                        throw InternalError(PALUDIS_HERE, "not implemented");
-                    if (seen_slots || seen_unknown)
-                        throw InternalError(PALUDIS_HERE, "not implemented");
-
-                    /* we've got a choice of additional requirements or version
-                     * requirements. pick the best score, left to right. */
-                    std::list<std::list<PackageDepSpec> >::const_iterator g_best(child_groups.end());
-                    int best_score(-1);
-
-                    for (std::list<std::list<PackageDepSpec> >::const_iterator g(child_groups.begin()), g_end(child_groups.end()) ;
-                            g != g_end ; ++g)
-                    {
-                        if (g->size() != 1)
-                            throw InternalError(PALUDIS_HERE, "why did that happen?");
-
-                        int score(resolver.find_any_score(our_qpn_s, make_sanitised(*g->begin())));
-                        if (score > best_score)
-                        {
-                            best_score = score;
-                            g_best = g;
-                        }
-                    }
-
-                    if (g_best == child_groups.end())
-                        throw InternalError(PALUDIS_HERE, "why did that happen?");
-                    apply(make_sanitised(*g_best->begin()));
-                }
-                else if (seen_unknown)
-                    throw InternalError(PALUDIS_HERE, "not implemented");
-                else
-                    throw InternalError(PALUDIS_HERE, "why did that happen?");
             }
             else if (super_complicated)
                 throw InternalError(PALUDIS_HERE, "can't");
@@ -332,7 +197,8 @@ namespace
                 std::list<std::list<PackageDepSpec> >::const_iterator g_best(child_groups.end());
                 int best_score(-1);
 
-                for (std::list<std::list<PackageDepSpec> >::const_iterator g(child_groups.begin()), g_end(child_groups.end()) ;
+                for (std::list<std::list<PackageDepSpec> >::const_iterator g(child_groups.begin()),
+                        g_end(child_groups.end()) ;
                         g != g_end ; ++g)
                 {
                     int worst_score(-1);
