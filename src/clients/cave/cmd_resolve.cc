@@ -84,10 +84,10 @@ namespace
 //        args::SwitchArg a_execute;
 //        args::SwitchArg a_preserve_world;
 
-//        args::ArgsGroup g_convenience_options;
-//        args::SwitchArg a_lazy;
-//        args::SwitchArg a_complete;
-//        args::SwitchArg a_everything;
+        args::ArgsGroup g_convenience_options;
+        args::SwitchArg a_lazy;
+        args::SwitchArg a_complete;
+        args::SwitchArg a_everything;
 
 //        args::ArgsGroup g_resolution_options;
 //        args::SwitchArg a_permit_slot_uninstalls;
@@ -170,11 +170,11 @@ namespace
 //            a_execute(&g_execution_options, "execute", 'x', "Execute the suggested actions", true),
 //            a_preserve_world(&g_execution_options, "preserve-world", '1', "Do not modify the 'world' set", true),
 //
-//            g_convenience_options(this, "Convenience Options", "Broad behaviour options."),
-//            a_lazy(&g_convenience_options, "lazy", 'z', "Do as little work as possible.", true),
-//            a_complete(&g_convenience_options, "complete", 'c', "Do all optional work.", true),
-//            a_everything(&g_convenience_options, "everything", 'e', "Do all optional work, and also reinstall", true),
-//
+            g_convenience_options(this, "Convenience Options", "Broad behaviour options."),
+            a_lazy(&g_convenience_options, "lazy", 'z', "Do as little work as possible.", true),
+            a_complete(&g_convenience_options, "complete", 'c', "Do all optional work.", true),
+            a_everything(&g_convenience_options, "everything", 'e', "Do all optional work, and also reinstall", true),
+
 //            g_resolution_options(this, "Resolution Options", "Resolution options."),
 //            a_permit_slot_uninstalls(&g_resolution_options, "permit-slot-uninstalls", '\0',
 //                    "Uninstall slots of packages if they are blocked by other slots of that package", true),
@@ -271,7 +271,7 @@ namespace
                     ("always",                'a', "Always")
                     ("daily",                 'd', "If they were installed more than a day ago")
                     ("weekly",                'w', "If they were installed more than a week ago")
-                    ("never",                 'n', "Never"),
+                    ("never",                 'n', "Never (default if --lazy)"),
                     "weekly"
                     ),
 //            a_reinstall_for_removals(&g_reinstall_options, "reinstall-for-removals", '\0',
@@ -802,6 +802,42 @@ ResolveCommand::run(
     {
         cout << cmdline;
         return EXIT_SUCCESS;
+    }
+
+    if (cmdline.a_lazy.specified() + cmdline.a_complete.specified() + cmdline.a_everything.specified() > 1)
+        throw args::DoHelp("At most one of '--" + cmdline.a_lazy.long_name() + "', '--" + cmdline.a_complete.long_name()
+                + "' or '--" + cmdline.a_everything.long_name() + "' may be specified");
+
+    if (cmdline.a_lazy.specified())
+    {
+        if (! cmdline.a_target_slots.specified())
+            cmdline.a_target_slots.set_argument("best");
+        if (! cmdline.a_slots.specified())
+            cmdline.a_slots.set_argument("best");
+        if (! cmdline.a_reinstall_scm.specified())
+            cmdline.a_reinstall_scm.set_argument("never");
+    }
+
+    if (cmdline.a_complete.specified())
+    {
+        if (! cmdline.a_reinstall.specified())
+            cmdline.a_reinstall.set_argument("unless-same");
+        if (! cmdline.a_target_slots.specified())
+            cmdline.a_target_slots.set_argument("all");
+        if (! cmdline.a_slots.specified())
+            cmdline.a_slots.set_argument("all");
+    }
+
+    if (cmdline.a_everything.specified())
+    {
+        if (! cmdline.a_reinstall.specified())
+            cmdline.a_reinstall.set_argument("unless-transient");
+        if (! cmdline.a_reinstall_targets.specified())
+            cmdline.a_reinstall_targets.set_argument("unless-transient");
+        if (! cmdline.a_target_slots.specified())
+            cmdline.a_target_slots.set_argument("all");
+        if (! cmdline.a_slots.specified())
+            cmdline.a_slots.set_argument("all");
     }
 
     int retcode(0);
