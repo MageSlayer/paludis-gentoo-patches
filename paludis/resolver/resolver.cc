@@ -271,7 +271,7 @@ Resolver::add_target_with_reason(const PackageDepSpec & spec, const std::tr1::sh
                 + stringify(*qpn_s) + "':");
 
         const std::tr1::shared_ptr<Resolution> dep_resolution(_resolution_for_qpn_s(*qpn_s, true));
-        const std::tr1::shared_ptr<Constraint> constraint(_make_constraint_from_target(spec, reason));
+        const std::tr1::shared_ptr<Constraint> constraint(_make_constraint_from_target(*qpn_s, spec, reason));
 
         _apply_resolution_constraint(*qpn_s, dep_resolution, constraint);
     }
@@ -418,14 +418,17 @@ Resolver::qpn_s_from_id(const std::tr1::shared_ptr<const PackageID> & id) const
 }
 
 const std::tr1::shared_ptr<Constraint>
-Resolver::_make_constraint_from_target(const PackageDepSpec & spec, const std::tr1::shared_ptr<const Reason> & reason) const
+Resolver::_make_constraint_from_target(
+        const QPN_S & qpn_s,
+        const PackageDepSpec & spec,
+        const std::tr1::shared_ptr<const Reason> & reason) const
 {
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
                     value_for<n::desire_strength>(ds_target),
                     value_for<n::reason>(reason),
                     value_for<n::spec>(spec),
                     value_for<n::to_destination_slash>(true),
-                    value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(spec, reason))
+                    value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(qpn_s, spec, reason))
                     )));
 }
 
@@ -439,7 +442,7 @@ Resolver::_make_constraint_from_dependency(const QPN_S & qpn_s, const SanitisedD
                     value_for<n::reason>(reason),
                     value_for<n::spec>(dep.spec()),
                     value_for<n::to_destination_slash>(_dependency_to_destination_slash(qpn_s, dep)),
-                    value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(dep.spec(), reason))
+                    value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(qpn_s, dep.spec(), reason))
                     )));
 }
 
@@ -950,11 +953,12 @@ Resolver::_suggest_restart_with(const QPN_S & qpn_s,
         const std::tr1::shared_ptr<const Constraint> & constraint,
         const std::tr1::shared_ptr<const Decision> & decision) const
 {
-    throw SuggestRestart(qpn_s, resolution->decision(), constraint, decision, _make_constraint_for_preloading(decision));
+    throw SuggestRestart(qpn_s, resolution->decision(), constraint, decision, _make_constraint_for_preloading(qpn_s, decision));
 }
 
 const std::tr1::shared_ptr<const Constraint>
 Resolver::_make_constraint_for_preloading(
+        const QPN_S & qpn_s,
         const std::tr1::shared_ptr<const Decision> & d) const
 {
     const std::tr1::shared_ptr<PresetReason> reason(new PresetReason);
@@ -964,7 +968,7 @@ Resolver::_make_constraint_for_preloading(
                     value_for<n::reason>(reason),
                     value_for<n::spec>(d->package_id()->uniquely_identifying_spec()),
                     value_for<n::to_destination_slash>(false),
-                    value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(d->package_id()->uniquely_identifying_spec(), reason))
+                    value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(qpn_s, d->package_id()->uniquely_identifying_spec(), reason))
                     )));
 }
 

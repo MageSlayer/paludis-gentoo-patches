@@ -528,7 +528,9 @@ namespace
         }
     };
 
-    UseInstalled use_installed_fn(const ResolveCommandLine & cmdline, const PackageDepSpec &,
+    UseInstalled use_installed_fn(const ResolveCommandLine & cmdline,
+            const QPN_S &,
+            const PackageDepSpec &,
             const std::tr1::shared_ptr<const Reason> & reason)
     {
         UseInstalledVisitor v(cmdline, false);
@@ -561,7 +563,7 @@ ResolveCommand::run(
 
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
                 value_for<n::get_use_installed_fn>(std::tr1::bind(&use_installed_fn,
-                        std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2))
+                        std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3))
                 ));
     std::tr1::shared_ptr<Resolver> resolver(new Resolver(env.get(), resolver_functions));
     try

@@ -58,6 +58,7 @@ namespace paludis
                 const std::tr1::shared_ptr<Resolution> _resolution_for_qpn_s(const QPN_S &) const;
 
                 const std::tr1::shared_ptr<Constraint> _make_constraint_from_target(
+                        const QPN_S &,
                         const PackageDepSpec &,
                         const std::tr1::shared_ptr<const Reason> &) const;
 
@@ -139,6 +140,7 @@ namespace paludis
                         const std::tr1::shared_ptr<const Decision> &) const PALUDIS_ATTRIBUTE((noreturn));
 
                 const std::tr1::shared_ptr<const Constraint> _make_constraint_for_preloading(
+                        const QPN_S &,
                         const std::tr1::shared_ptr<const Decision> &) const;
 
                 DesireStrength _desire_strength_from_sanitised_dependency(

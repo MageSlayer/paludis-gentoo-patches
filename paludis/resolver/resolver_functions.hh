@@ -38,7 +38,9 @@ namespace paludis
     namespace resolver
     {
         typedef std::tr1::function<UseInstalled (
-                const PackageDepSpec &, const std::tr1::shared_ptr<const Reason> &)> GetUseInstalledFunction;
+                const QPN_S &,
+                const PackageDepSpec &,
+                const std::tr1::shared_ptr<const Reason> &)> GetUseInstalledFunction;
 
         struct ResolverFunctions
         {
