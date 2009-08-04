@@ -849,7 +849,7 @@ Resolver::_unable_to_decide(
 void
 Resolver::_unable_to_order_more() const
 {
-    std::cout << "Unable to order any of the follwoing:" << std::endl;
+    std::cout << "Unable to order any of the following:" << std::endl;
 
     for (ResolutionsByQPN_SMap::const_iterator i(_imp->resolutions_by_qpn_s.begin()),
             i_end(_imp->resolutions_by_qpn_s.end()) ;
