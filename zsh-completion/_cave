@@ -31,6 +31,7 @@ _cave()
     'print-repositories:Prints a list of repositories'
     'print-sets:Prints a list of sets'
     'print-sync-protocols:Prints a list of sync protocols'
+    'resolve:Display how to resolve targets and optionally perform that resolution'
     'show:Displays a formatted summary of a given object'
     'sync:Sync all or specified repositories'
   )
@@ -169,6 +170,27 @@ _cave_cmd_print-repositories()
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '--format[Show only repositories of a specific format]:repository format: '
+}
+
+(( ${+functions[_cave_cmd_resolve]} )) ||
+_cave_cmd_resolve()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--execute -x)'{--execute,-x}'[Execute resolution]' \
+    '(--lazy -z --complete -c --everything -e --no-lazy --no-complete --no-everything)'{--lazy,-z,--no-lazy}'[Do as little work as possible]' \
+    '(--lazy -z --complete -c --everything -e --no-lazy --no-complete --no-everything)'{--complete,-c,--no-complete}'[Do all optional work]' \
+    '(--lazy -z --complete -c --everything -e --no-lazy --no-complete --no-everything)'{--everything,-e,--no-everything}'[Do all optional work, and also reinstall]' \
+    '--explain[Explain why decisions are made]:package depspec: ' \
+    '(--keep-targets -K)'{--keep-targets,-K}'[Select whether to keep target packages]:When:((auto never if-transient if-same if-same-version if-possible))' \
+    '(--keep -k)'{--keep,-k}'[Select whether to keep packages that are not targets]:When:((never if-transient if-same if-same-version if-possible))' \
+    '(--reinstall-scm -R)'{--reinstall-scm,-R}'[Select whether to reinstall SCM packages that would otherwise be kept]:When:((always daily weekly never))' \
+    '(--target-slots -S)'{--target-slots,-S}'[Which slots to consider for targets]:Which:((best-or-installed installed-or-best all best))' \
+    '(--slots -s)'{--slots,-s}'[Which slots to consider for packages that are not targets]:Which:((best-or-installed installed-or-best all best))' \
+    '(--follow-installed-build-dependencies --no-follow-installed-build-dependencies -D)'{--follow-installed-build-dependencies,--no-follow-installed-build-dependencies,-D}'[Follow build dependencies for installed packages]' \
+    '(--ignore-installed-dependencies --no-ignore-installed-dependencies -d)'{--ignore-installed-dependencies,--no-ignore-installed-dependencies,-d}'[Ignore dependencies for installed packages]' \
+    '(--dump --no-dump)'{--dump,--no-dump}'[Dump debug output]' \
+    '(--dump-dependencies --no-dump-dependencies)'{--dump-dependencies,--no-dump-dependencies}'[Dump the sanitised dependencies selected for every package]'
 }
 
 (( ${+functions[_cave_cmd_show]} )) ||
