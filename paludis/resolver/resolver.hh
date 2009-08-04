@@ -160,13 +160,18 @@ namespace paludis
                 void add_target(const SetName &);
 
                 void resolve();
-                void dump(std::ostream &, const bool deps) const;
 
                 struct ConstIteratorTag;
                 typedef WrappedForwardIterator<ConstIteratorTag,
                         const std::tr1::shared_ptr<const Resolution> > ConstIterator;
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                struct ResolutionsByQPN_SConstIteratorTag;
+                typedef WrappedForwardIterator<ResolutionsByQPN_SConstIteratorTag,
+                        const std::pair<const QPN_S, std::tr1::shared_ptr<Resolution> > > ResolutionsByQPN_SConstIterator;
+                ResolutionsByQPN_SConstIterator begin_resolutions_by_qpn_s() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                ResolutionsByQPN_SConstIterator end_resolutions_by_qpn_s() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 int find_any_score(const QPN_S &, const SanitisedDependency &) const;
 

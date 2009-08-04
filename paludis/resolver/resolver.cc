@@ -942,30 +942,16 @@ Resolver::end() const
     return ConstIterator(_imp->ordered_resolutions.end());
 }
 
-void
-Resolver::dump(std::ostream & s, const bool show_deps) const
+Resolver::ResolutionsByQPN_SConstIterator
+Resolver::begin_resolutions_by_qpn_s() const
 {
-    s << "Resolutions by QPN:S:" << std::endl;
-    for (ResolutionsByQPN_SMap::const_iterator i(_imp->resolutions_by_qpn_s.begin()),
-            i_end(_imp->resolutions_by_qpn_s.end()) ;
-            i != i_end ; ++i)
-    {
-        s << "  [*] " << std::left << std::setw(30) << i->first << " " << *i->second << std::endl;
-        if (show_deps)
-            for (SanitisedDependencies::ConstIterator d(i->second->sanitised_dependencies()->begin()),
-                    d_end(i->second->sanitised_dependencies()->end()) ;
-                    d != d_end ; ++d)
-                s << "      -> " << *d << std::endl;
-    }
+    return ResolutionsByQPN_SConstIterator(_imp->resolutions_by_qpn_s.begin());
+}
 
-    s << std::endl;
-
-    s << "Ordered Resolutions:" << std::endl;
-    for (OrderedResolutionsList::const_iterator i(_imp->ordered_resolutions.begin()),
-            i_end(_imp->ordered_resolutions.end()) ;
-            i != i_end ; ++i)
-        s << "  [*] " << **i << std::endl;
-    s << std::endl;
+Resolver::ResolutionsByQPN_SConstIterator
+Resolver::end_resolutions_by_qpn_s() const
+{
+    return ResolutionsByQPN_SConstIterator(_imp->resolutions_by_qpn_s.end());
 }
 
 int
@@ -1136,4 +1122,6 @@ Resolver::_find_cycle(const QPN_S & start_qpn_s, const int ignorable_pass) const
 }
 
 template class WrappedForwardIterator<Resolver::ConstIteratorTag, const std::tr1::shared_ptr<const Resolution> >;
+template class WrappedForwardIterator<Resolver::ResolutionsByQPN_SConstIteratorTag,
+         const std::pair<const QPN_S, std::tr1::shared_ptr<Resolution> > >;
 
