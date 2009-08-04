@@ -35,8 +35,8 @@ namespace paludis
     template <>
     struct Implementation<QPN_S>
     {
-        const QualifiedPackageName package;
-        const std::tr1::shared_ptr<const SlotName> slot_name_or_null;
+        QualifiedPackageName package;
+        std::tr1::shared_ptr<const SlotName> slot_name_or_null;
 
         Implementation(const QualifiedPackageName & q, const std::tr1::shared_ptr<const SlotName> & s) :
             package(q),
@@ -141,6 +141,17 @@ QPN_S::make_slot_filter() const
         return filter::Slot(*slot_name_or_null());
     else
         return filter::NoSlot();
+}
+
+QPN_S &
+QPN_S::operator= (const QPN_S & other)
+{
+    if (this != &other)
+    {
+        _imp->package = other._imp->package;
+        _imp->slot_name_or_null = other._imp->slot_name_or_null;
+    }
+    return *this;
 }
 
 template class PrivateImplementationPattern<QPN_S>;

@@ -118,7 +118,8 @@ namespace paludis
 
                 bool _causes_pre_arrow(const DependencyReason &) const;
 
-                bool _can_order_now(const QPN_S &, const std::tr1::shared_ptr<const Resolution> & resolution) const;
+                bool _can_order_now(const QPN_S &, const std::tr1::shared_ptr<const Resolution> & resolution,
+                        const int ignorable_pass) const;
 
                 void _do_order(const QPN_S &, const std::tr1::shared_ptr<Resolution> & resolution);
 
@@ -143,6 +144,10 @@ namespace paludis
 
                 bool _same_slot(const std::tr1::shared_ptr<const PackageID> & a,
                         const std::tr1::shared_ptr<const PackageID> & b) const;
+
+                bool _already_met(const SanitisedDependency & dep) const;
+
+                const std::string _find_cycle(const QPN_S &, const int ignorable_pass) const;
 
             public:
                 Resolver(

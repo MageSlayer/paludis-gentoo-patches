@@ -28,6 +28,7 @@ namespace paludis
 {
     namespace n
     {
+        struct ignorable_pass;
         struct to_qpn_s;
     }
 
@@ -35,6 +36,7 @@ namespace paludis
     {
         struct Arrow
         {
+            NamedValue<n::ignorable_pass, int> ignorable_pass;
             NamedValue<n::to_qpn_s, QPN_S> to_qpn_s;
         };
     }

@@ -588,6 +588,53 @@ namespace
             return 0;
         }
     };
+
+    struct ArrowInfo
+    {
+        bool causes_pre_arrow;
+        bool ignorable;
+
+        ArrowInfo(const DependencyReason & reason) :
+            causes_pre_arrow(false),
+            ignorable(true)
+        {
+            const std::tr1::shared_ptr<const ActiveDependencyLabels> labels(
+                    reason.sanitised_dependency().active_dependency_labels());
+
+            if (labels->type_labels()->empty())
+                throw InternalError(PALUDIS_HERE, "why did that happen?");
+
+            std::for_each(indirect_iterator(labels->type_labels()->begin()),
+                    indirect_iterator(labels->type_labels()->end()), accept_visitor(*this));
+        }
+
+        void visit(const DependencyBuildLabel &)
+        {
+            causes_pre_arrow = true;
+            ignorable = false;
+        }
+
+        void visit(const DependencyRunLabel &)
+        {
+            causes_pre_arrow = true;
+        }
+
+        void visit(const DependencyPostLabel &)
+        {
+        }
+
+        void visit(const DependencyInstallLabel &)
+        {
+            causes_pre_arrow = true;
+            ignorable = false;
+        }
+
+        void visit(const DependencyCompileLabel &)
+        {
+            causes_pre_arrow = true;
+            ignorable = false;
+        }
+    };
 }
 
 void
@@ -610,64 +657,31 @@ Resolver::_resolve_arrows()
             const QPN_S from_qpns(if_dependency_reason->qpn_s());
             const std::tr1::shared_ptr<Resolution> resolution(_resolution_for_qpn_s(from_qpns, false));
 
-            if (_causes_pre_arrow(*if_dependency_reason))
+            ArrowInfo a(*if_dependency_reason);
+            if (a.causes_pre_arrow)
+            {
+                int ignorable_pass(0);
+                if (_already_met(if_dependency_reason->sanitised_dependency()))
+                    ignorable_pass = 1;
+                else if (a.ignorable)
+                    ignorable_pass = 2;
+
                 resolution->arrows()->push_back(make_shared_ptr(new Arrow(make_named_values<Arrow>(
+                                    value_for<n::ignorable_pass>(ignorable_pass),
                                     value_for<n::to_qpn_s>(i->first)
                                     ))));
+            }
         }
     }
-}
-
-namespace
-{
-    struct DependencyTypeLabelCausesPreArrow
-    {
-        bool visit(const DependencyBuildLabel &)
-        {
-            return true;
-        }
-
-        bool visit(const DependencyRunLabel &)
-        {
-            return true;
-        }
-
-        bool visit(const DependencyPostLabel &)
-        {
-            return false;
-        }
-
-        bool visit(const DependencyInstallLabel &)
-        {
-            return true;
-        }
-
-        bool visit(const DependencyCompileLabel &)
-        {
-            return true;
-        }
-    };
 }
 
 bool
-Resolver::_causes_pre_arrow(const DependencyReason & reason) const
+Resolver::_already_met(const SanitisedDependency & dep) const
 {
-    const std::tr1::shared_ptr<const ActiveDependencyLabels> labels(
-            reason.sanitised_dependency().active_dependency_labels());
-
-    if (labels->type_labels()->empty())
-        throw InternalError(PALUDIS_HERE, "why did that happen?");
-
-    for (DependencyTypeLabelSequence::ConstIterator l(labels->type_labels()->begin()),
-            l_end(labels->type_labels()->end()) ;
-            l != l_end ; ++l)
-    {
-        DependencyTypeLabelCausesPreArrow v;
-        if ((*l)->accept_returning<bool>(v))
-            return true;
-    }
-
-    return false;
+    std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::SomeArbitraryVersion(
+                generator::Matches(dep.spec(), MatchPackageOptions()) |
+                filter::SupportsAction<InstalledAction>())]);
+    return ! ids->empty();
 }
 
 void
@@ -687,33 +701,58 @@ Resolver::_resolve_order()
         bool any(false);
         done = true;
 
-        for (ResolutionsByQPN_SMap::iterator i(_imp->resolutions_by_qpn_s.begin()), i_end(_imp->resolutions_by_qpn_s.end()) ;
-                i != i_end ; ++i)
+        int ignore_pass(0);
+        while (true)
         {
-            if (i->second->already_ordered())
-                continue;
-
-            if (_can_order_now(i->first, i->second))
+            for (ResolutionsByQPN_SMap::iterator i(_imp->resolutions_by_qpn_s.begin()), i_end(_imp->resolutions_by_qpn_s.end()) ;
+                    i != i_end ; ++i)
             {
-                _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
-                _do_order(i->first, i->second);
-                any = true;
+                if (i->second->already_ordered())
+                    continue;
+
+                if (_can_order_now(i->first, i->second, ignore_pass))
+                {
+                    if (0 != ignore_pass)
+                        Log::get_instance()->message("resolver.cycle_breaking", ll_warning, lc_context)
+                            << "Had to use cycle breaking with ignore pass " << ignore_pass
+                            << " to order " << i->first << " because of cycle "
+                            << _find_cycle(i->first, false);
+
+                    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
+                    _do_order(i->first, i->second);
+                    any = true;
+
+                    if (0 != ignore_pass)
+                        break;
+                }
+                else
+                    done = false;
+            }
+
+            if ((! done) && (! any))
+            {
+                if (ignore_pass >= 2)
+                    _unable_to_order_more();
+                else
+                    ++ignore_pass;
             }
             else
-                done = false;
+                break;
         }
-
-        if ((! done) && (! any))
-            _unable_to_order_more();
     }
 }
 
 bool
-Resolver::_can_order_now(const QPN_S &, const std::tr1::shared_ptr<const Resolution> & resolution) const
+Resolver::_can_order_now(const QPN_S &, const std::tr1::shared_ptr<const Resolution> & resolution,
+        const int ignorable_pass) const
 {
     for (ArrowSequence::ConstIterator a(resolution->arrows()->begin()), a_end(resolution->arrows()->end()) ;
             a != a_end ; ++a)
     {
+        if (0 != (*a)->ignorable_pass())
+            if ((*a)->ignorable_pass() <= ignorable_pass)
+                continue;
+
         const std::tr1::shared_ptr<const Resolution> dep_resolution(_resolution_for_qpn_s((*a)->to_qpn_s()));
         if (! dep_resolution->already_ordered())
             return false;
@@ -819,7 +858,8 @@ Resolver::_unable_to_order_more() const
         if (i->second->already_ordered())
             continue;
 
-        std::cout << "  * " << *i->second->decision() << std::endl;
+        std::cout << "  * " << *i->second->decision() << " because of cycle " << _find_cycle(i->first, true)
+            << std::endl;
     }
 
     throw InternalError(PALUDIS_HERE, "not implemented");
@@ -1043,6 +1083,56 @@ Resolver::find_any_score(const QPN_S & our_qpn_s, const SanitisedDependency & de
 
     /* yay, people are depping upon packages that don't exist again. I SMELL A LESSPIPE. */
     return 0;
+}
+
+const std::string
+Resolver::_find_cycle(const QPN_S & start_qpn_s, const int ignorable_pass) const
+{
+    std::stringstream result;
+
+    std::set<QPN_S> seen;
+    QPN_S current(start_qpn_s);
+
+    bool first(true);
+    while (true)
+    {
+        if (! first)
+            result << " -> ";
+        first = false;
+
+        result << current;
+
+        if (! seen.insert(current).second)
+            break;
+
+        bool ok(false);
+        const std::tr1::shared_ptr<const Resolution> resolution(_resolution_for_qpn_s(current));
+        for (ArrowSequence::ConstIterator a(resolution->arrows()->begin()), a_end(resolution->arrows()->end()) ;
+                a != a_end ; ++a)
+        {
+            if (_can_order_now(current, resolution, ignorable_pass))
+                continue;
+
+            const std::tr1::shared_ptr<const Resolution> to_resolution(_resolution_for_qpn_s((*a)->to_qpn_s()));
+            if (to_resolution->already_ordered())
+                continue;
+
+            ok = true;
+            current = (*a)->to_qpn_s();
+            break;
+        }
+
+        if (! ok)
+            throw InternalError(PALUDIS_HERE, "why did that happen? start is " + stringify(start_qpn_s)
+                    + ", current is " + stringify(current) + ", seen is { "
+                    + join(seen.begin(), seen.end(), ", ") + " }, result is "
+                    + result.str() + ", resolution->arrows is { "
+                    + join(indirect_iterator(resolution->arrows()->begin()),
+                        indirect_iterator(resolution->arrows()->end()), ", ") + "}"
+                    );
+    }
+
+    return result.str();
 }
 
 template class WrappedForwardIterator<Resolver::ConstIteratorTag, const std::tr1::shared_ptr<const Resolution> >;
