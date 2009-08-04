@@ -35,6 +35,7 @@
 #include <paludis/resolver/suggest_restart.hh>
 #include <paludis/resolver/qpn_s.hh>
 #include <paludis/resolver/constraint.hh>
+#include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/generator.hh>
@@ -637,7 +638,6 @@ namespace
         if ((-1 != n) && installed_is_scm_older_than(env, qpn_s, n))
         {
             result->add(make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                                value_for<n::desire_strength>(ds_target),
                                 value_for<n::reason>(make_shared_ptr(new PresetReason)),
                                 value_for<n::spec>(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(qpn_s.package())),
                                 value_for<n::to_destination_slash>(false),
@@ -780,6 +780,49 @@ namespace
 
         return result;
     }
+
+    struct IsSuggestionVisitor
+    {
+        bool is_suggestion;
+
+        IsSuggestionVisitor() :
+            is_suggestion(true)
+        {
+        }
+
+        void visit(const DependencyRequiredLabel &)
+        {
+            is_suggestion = false;
+        }
+
+        void visit(const DependencyRecommendedLabel &)
+        {
+            is_suggestion = false;
+        }
+
+        void visit(const DependencySuggestedLabel &)
+        {
+        }
+    };
+
+    bool is_suggestion(const SanitisedDependency & dep)
+    {
+        if (dep.active_dependency_labels()->suggest_labels()->empty())
+            return false;
+
+        IsSuggestionVisitor v;
+        for (DependencySuggestLabelSequence::ConstIterator i(dep.active_dependency_labels()->suggest_labels()->begin()),
+                i_end(dep.active_dependency_labels()->suggest_labels()->end()) ;
+                i != i_end ; ++i)
+            (*i)->accept(v);
+        return v.is_suggestion;
+    }
+
+    bool care_about_dep_fn(const Environment * const, const ResolveCommandLine &,
+            const QPN_S &, const std::tr1::shared_ptr<const Resolution> &, const SanitisedDependency & dep)
+    {
+        return ! is_suggestion(dep);
+    }
 }
 
 
@@ -845,6 +888,9 @@ ResolveCommand::run(
     InitialConstraints initial_constraints;
 
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
+                value_for<n::care_about_dep_fn>(std::tr1::bind(&care_about_dep_fn,
+                        env.get(), std::tr1::cref(cmdline), std::tr1::placeholders::_1,
+                        std::tr1::placeholders::_2, std::tr1::placeholders::_3)),
                 value_for<n::get_initial_constraints_for_fn>(std::tr1::bind(&initial_constraints_for_fn,
                         env.get(), std::tr1::cref(cmdline), std::tr1::cref(initial_constraints), std::tr1::placeholders::_1)),
                 value_for<n::get_qpn_s_s_for_fn>(std::tr1::bind(&get_qpn_s_s_for_fn,

@@ -32,6 +32,7 @@ namespace paludis
 {
     namespace n
     {
+        struct care_about_dep_fn;
         struct get_initial_constraints_for_fn;
         struct get_qpn_s_s_for_fn;
         struct get_use_installed_fn;
@@ -39,6 +40,12 @@ namespace paludis
 
     namespace resolver
     {
+        typedef std::tr1::function<bool (
+                const QPN_S &,
+                const std::tr1::shared_ptr<const Resolution> &,
+                const SanitisedDependency &
+                )> CareAboutDepFunction;
+
         typedef std::tr1::function<std::tr1::shared_ptr<Constraints> (
                 const QPN_S &
                 )> GetInitialConstraintsFunction;
@@ -56,6 +63,7 @@ namespace paludis
 
         struct ResolverFunctions
         {
+            NamedValue<n::care_about_dep_fn, CareAboutDepFunction> care_about_dep_fn;
             NamedValue<n::get_initial_constraints_for_fn, GetInitialConstraintsFunction> get_initial_constraints_for_fn;
             NamedValue<n::get_qpn_s_s_for_fn, GetQPNSSForFunction> get_qpn_s_s_for_fn;
             NamedValue<n::get_use_installed_fn, GetUseInstalledFunction> get_use_installed_fn;

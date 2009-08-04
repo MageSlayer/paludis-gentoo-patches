@@ -28,7 +28,6 @@
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/resolver/reason-fwd.hh>
 #include <paludis/resolver/use_installed-fwd.hh>
-#include <paludis/resolver/desire_strength-fwd.hh>
 #include <paludis/resolver/destinations-fwd.hh>
 #include <paludis/resolver/resolver_functions-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
@@ -138,9 +137,6 @@ namespace paludis
                 const std::tr1::shared_ptr<const Constraint> _make_constraint_for_preloading(
                         const QPN_S &,
                         const std::tr1::shared_ptr<const Decision> &) const;
-
-                DesireStrength _desire_strength_from_sanitised_dependency(
-                        const QPN_S &, const SanitisedDependency &) const;
 
                 bool _dependency_to_destination_slash(
                         const QPN_S &, const SanitisedDependency &) const;

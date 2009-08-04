@@ -354,7 +354,6 @@ Resolver::_make_constraint_from_target(
         const std::tr1::shared_ptr<const Reason> & reason) const
 {
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                    value_for<n::desire_strength>(ds_target),
                     value_for<n::reason>(reason),
                     value_for<n::spec>(spec),
                     value_for<n::to_destination_slash>(true),
@@ -367,7 +366,6 @@ Resolver::_make_constraint_from_dependency(const QPN_S & qpn_s, const SanitisedD
         const std::tr1::shared_ptr<const Reason> & reason) const
 {
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                    value_for<n::desire_strength>(_desire_strength_from_sanitised_dependency(qpn_s, dep)),
                     value_for<n::reason>(reason),
                     value_for<n::spec>(dep.spec()),
                     value_for<n::to_destination_slash>(_dependency_to_destination_slash(qpn_s, dep)),
@@ -561,9 +559,9 @@ Resolver::_add_dependencies(const QPN_S & our_qpn_s, const std::tr1::shared_ptr<
 
 bool
 Resolver::_care_about_dependency_spec(const QPN_S & qpn_s,
-        const std::tr1::shared_ptr<const Resolution> &, const SanitisedDependency & dep) const
+        const std::tr1::shared_ptr<const Resolution> & resolution, const SanitisedDependency & dep) const
 {
-    return _desire_strength_from_sanitised_dependency(qpn_s, dep) >= ds_recommendation;
+    return _imp->fns.care_about_dep_fn()(qpn_s, resolution, dep);
 }
 
 namespace
@@ -879,52 +877,11 @@ Resolver::_make_constraint_for_preloading(
     const std::tr1::shared_ptr<PresetReason> reason(new PresetReason);
 
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                    value_for<n::desire_strength>(ds_none),
                     value_for<n::reason>(reason),
                     value_for<n::spec>(d->package_id()->uniquely_identifying_spec()),
                     value_for<n::to_destination_slash>(false),
                     value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(qpn_s, d->package_id()->uniquely_identifying_spec(), reason))
                     )));
-}
-
-namespace
-{
-    struct DesireStrengthFinder
-    {
-        DesireStrength visit(const DependencyRequiredLabel &) const
-        {
-            return ds_requirement;
-        }
-
-        DesireStrength visit(const DependencySuggestedLabel &) const
-        {
-            return ds_suggestion;
-        }
-
-        DesireStrength visit(const DependencyRecommendedLabel &) const
-        {
-            return ds_recommendation;
-        }
-    };
-}
-
-DesireStrength
-Resolver::_desire_strength_from_sanitised_dependency(const QPN_S &, const SanitisedDependency & dep) const
-{
-    DesireStrength result(ds_none);
-
-    if (dep.active_dependency_labels()->suggest_labels()->empty())
-        result = ds_requirement;
-    else
-    {
-        DesireStrengthFinder f;
-        for (DependencySuggestLabelSequence::ConstIterator l(dep.active_dependency_labels()->suggest_labels()->begin()),
-                l_end(dep.active_dependency_labels()->suggest_labels()->end()) ;
-                l != l_end ; ++l)
-            result = std::max(result, (*l)->accept_returning<DesireStrength>(f));
-    }
-
-    return result;
 }
 
 bool
