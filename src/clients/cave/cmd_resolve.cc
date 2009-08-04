@@ -126,9 +126,9 @@ namespace
         args::EnumArg a_target_slots;
         args::EnumArg a_slots;
 
-//        args::ArgsGroup g_dependency_options;
-//        args::SwitchArg a_follow_installed_build_dependencies;
-//        args::SwitchArg a_ignore_installed_dependencies;
+        args::ArgsGroup g_dependency_options;
+        args::SwitchArg a_follow_installed_build_dependencies;
+        args::SwitchArg a_ignore_installed_dependencies;
 
 //        args::ArgsGroup g_suggestion_options;
 //        args::EnumArg a_suggestions;
@@ -306,11 +306,12 @@ namespace
                     "best-or-installed"
                     ),
 
-//            g_dependency_options(this, "Dependency Options", "Control which dependencies are followed."),
-//            a_follow_installed_build_dependencies(&g_dependency_options, "follow-installed-build-dependencies", 'D',
-//                    "Follow build dependencies for installed packages (default if --complete or --everything", true),
-//            a_ignore_installed_dependencies(&g_dependency_options, "ignore-installed-dependencies", 'd',
-//                    "Ignore (non-build) dependencies for installed packages (default if --lazy)", true),
+            g_dependency_options(this, "Dependency Options", "Control which dependencies are followed."),
+            a_follow_installed_build_dependencies(&g_dependency_options, "follow-installed-build-dependencies", 'D',
+                    "Follow build dependencies for installed packages (default if --complete or --everything)", true),
+            a_ignore_installed_dependencies(&g_dependency_options, "ignore-installed-dependencies", 'd',
+                    "Ignore dependencies (except compiled-against dependencies, which are already taken) "
+                    "for installed packages. (default if --lazy)", true),
 //
 //            g_suggestion_options(this, "Suggestion Options", "Control whether suggestions are taken. Suggestions that are "
 //                    "already installed are instead treated as hard dependencies."),
@@ -805,23 +806,95 @@ namespace
         }
     };
 
+    struct IsTypeDepVisitor
+    {
+        bool is_build_dep;
+        bool is_compiled_against_dep;
+
+        IsTypeDepVisitor() :
+            is_build_dep(true),
+            is_compiled_against_dep(false)
+        {
+        }
+
+        void visit(const DependencyBuildLabel &)
+        {
+        }
+
+        void visit(const DependencyRunLabel &)
+        {
+            is_build_dep = false;
+        }
+
+        void visit(const DependencyPostLabel &)
+        {
+            is_build_dep = false;
+        }
+
+        void visit(const DependencyInstallLabel &)
+        {
+        }
+
+        void visit(const DependencyCompileLabel &)
+        {
+            is_compiled_against_dep = true;
+        }
+    };
+
     bool is_suggestion(const SanitisedDependency & dep)
     {
         if (dep.active_dependency_labels()->suggest_labels()->empty())
             return false;
 
         IsSuggestionVisitor v;
-        for (DependencySuggestLabelSequence::ConstIterator i(dep.active_dependency_labels()->suggest_labels()->begin()),
-                i_end(dep.active_dependency_labels()->suggest_labels()->end()) ;
-                i != i_end ; ++i)
-            (*i)->accept(v);
+        std::for_each(indirect_iterator(dep.active_dependency_labels()->suggest_labels()->begin()),
+                indirect_iterator(dep.active_dependency_labels()->suggest_labels()->end()),
+                accept_visitor(v));
         return v.is_suggestion;
     }
 
-    bool care_about_dep_fn(const Environment * const, const ResolveCommandLine &,
-            const QPN_S &, const std::tr1::shared_ptr<const Resolution> &, const SanitisedDependency & dep)
+    bool is_just_build_dep(const SanitisedDependency & dep)
     {
-        return ! is_suggestion(dep);
+        if (dep.active_dependency_labels()->type_labels()->empty())
+            throw InternalError(PALUDIS_HERE, "not implemented");
+
+        IsTypeDepVisitor v;
+        std::for_each(indirect_iterator(dep.active_dependency_labels()->type_labels()->begin()),
+                indirect_iterator(dep.active_dependency_labels()->type_labels()->end()),
+                accept_visitor(v));
+        return v.is_build_dep;
+    }
+
+    bool is_compiled_against_dep(const SanitisedDependency & dep)
+    {
+        if (dep.active_dependency_labels()->type_labels()->empty())
+            throw InternalError(PALUDIS_HERE, "not implemented");
+
+        IsTypeDepVisitor v;
+        std::for_each(indirect_iterator(dep.active_dependency_labels()->type_labels()->begin()),
+                indirect_iterator(dep.active_dependency_labels()->type_labels()->end()),
+                accept_visitor(v));
+        return v.is_compiled_against_dep;
+    }
+
+    bool care_about_dep_fn(const Environment * const, const ResolveCommandLine & cmdline,
+            const QPN_S &, const std::tr1::shared_ptr<const Resolution> & resolution,
+            const SanitisedDependency & dep)
+    {
+        if (is_suggestion(dep))
+            return false;
+
+        if (resolution->decision()->is_installed())
+        {
+            if (! cmdline.a_follow_installed_build_dependencies.specified())
+                if (is_just_build_dep(dep))
+                    return false;
+            if (cmdline.a_ignore_installed_dependencies.specified())
+                if (! is_compiled_against_dep(dep))
+                    return false;
+        }
+
+        return true;
     }
 }
 
@@ -859,6 +932,8 @@ ResolveCommand::run(
             cmdline.a_slots.set_argument("best");
         if (! cmdline.a_reinstall_scm.specified())
             cmdline.a_reinstall_scm.set_argument("never");
+        if (! cmdline.a_ignore_installed_dependencies.specified())
+            cmdline.a_ignore_installed_dependencies.set_specified(true);
     }
 
     if (cmdline.a_complete.specified())
@@ -869,6 +944,8 @@ ResolveCommand::run(
             cmdline.a_target_slots.set_argument("all");
         if (! cmdline.a_slots.specified())
             cmdline.a_slots.set_argument("all");
+        if (! cmdline.a_follow_installed_build_dependencies.specified())
+            cmdline.a_follow_installed_build_dependencies.set_specified(true);
     }
 
     if (cmdline.a_everything.specified())
@@ -881,6 +958,8 @@ ResolveCommand::run(
             cmdline.a_target_slots.set_argument("all");
         if (! cmdline.a_slots.specified())
             cmdline.a_slots.set_argument("all");
+        if (! cmdline.a_follow_installed_build_dependencies.specified())
+            cmdline.a_follow_installed_build_dependencies.set_specified(true);
     }
 
     int retcode(0);
