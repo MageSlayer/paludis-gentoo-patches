@@ -220,7 +220,7 @@ struct ConsoleInstallTask::CallbackDisplayer
         {
             if (! s.empty())
                 s.append(", ");
-            s.append("metadata: " + stringify(metadata));
+            s.append("metadata: " + stringify(metadata) + " ");
         }
 
         stream << std::string(width, '\010');
