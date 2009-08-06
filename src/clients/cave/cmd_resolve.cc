@@ -519,6 +519,7 @@ namespace
         for (args::StringSetArg::ConstIterator i(cmdline.a_explain.begin_args()), i_end(cmdline.a_explain.end_args()) ;
                 i != i_end ; ++i)
         {
+            bool any(false);
             PackageDepSpec spec(parse_user_package_dep_spec(*i, env.get(), UserPackageDepSpecOptions() + updso_allow_wildcards));
             for (Resolver::ResolutionsByQPN_SConstIterator r(resolver->begin_resolutions_by_qpn_s()),
                     r_end(resolver->end_resolutions_by_qpn_s()) ;
@@ -526,6 +527,8 @@ namespace
             {
                 if (! match_package(*env, spec, *r->second->decision()->package_id(), MatchPackageOptions()))
                     continue;
+
+                any = true;
 
                 std::cout << "For " << r->first << ":" << std::endl;
                 std::cout << "    The following constraints were in action:" << std::endl;
@@ -578,6 +581,9 @@ namespace
                 }
                 std::cout << std::endl;
             }
+
+            if (! any)
+                throw args::DoHelp("There is nothing matching '" + *i + "' in the resolution set.");
         }
     }
 
