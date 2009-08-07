@@ -31,8 +31,9 @@ namespace paludis
 {
     namespace n
     {
+        struct base_spec;
+        struct is_blocker;
         struct reason;
-        struct spec;
         struct to_destination_slash;
         struct use_installed;
     }
@@ -41,8 +42,9 @@ namespace paludis
     {
         struct Constraint
         {
+            NamedValue<n::base_spec, PackageDepSpec> base_spec;
+            NamedValue<n::is_blocker, bool> is_blocker;
             NamedValue<n::reason, std::tr1::shared_ptr<const Reason> > reason;
-            NamedValue<n::spec, PackageDepSpec> spec;
             NamedValue<n::to_destination_slash, bool> to_destination_slash;
             NamedValue<n::use_installed, UseInstalled> use_installed;
         };

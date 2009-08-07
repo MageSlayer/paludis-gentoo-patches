@@ -32,7 +32,10 @@ std::ostream &
 paludis::resolver::operator<< (std::ostream & s, const Constraint & c)
 {
     std::stringstream ss;
-    ss << "Constraint(spec: " << c.spec()
+    ss << "Constraint(base spec: " << c.base_spec();
+    if (c.is_blocker())
+        ss << "; blocker";
+    ss
         << "; use_installed: " << stringify(c.use_installed())
         << "; reason: " << (c.reason() ? stringify(*c.reason()) : "none")
         << ")";

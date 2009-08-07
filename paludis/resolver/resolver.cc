@@ -354,8 +354,9 @@ Resolver::_make_constraint_from_target(
         const std::tr1::shared_ptr<const Reason> & reason) const
 {
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                    value_for<n::base_spec>(spec),
+                    value_for<n::is_blocker>(false),
                     value_for<n::reason>(reason),
-                    value_for<n::spec>(spec),
                     value_for<n::to_destination_slash>(true),
                     value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(qpn_s, spec, reason))
                     )));
@@ -366,8 +367,9 @@ Resolver::_make_constraint_from_dependency(const QPN_S & qpn_s, const SanitisedD
         const std::tr1::shared_ptr<const Reason> & reason) const
 {
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                    value_for<n::base_spec>(dep.spec()),
+                    value_for<n::is_blocker>(false),
                     value_for<n::reason>(reason),
-                    value_for<n::spec>(dep.spec()),
                     value_for<n::to_destination_slash>(_dependency_to_destination_slash(qpn_s, dep)),
                     value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(qpn_s, dep.spec(), reason))
                     )));
@@ -431,7 +433,7 @@ Resolver::_constraint_matches(
             break;
     }
 
-    ok = ok && match_package(*_imp->env, c->spec(), *decision->package_id(), MatchPackageOptions());
+    ok = ok && (c->is_blocker() ^ match_package(*_imp->env, c->base_spec(), *decision->package_id(), MatchPackageOptions()));
 
     return ok;
 }
@@ -917,8 +919,9 @@ Resolver::_make_constraint_for_preloading(
     const std::tr1::shared_ptr<PresetReason> reason(new PresetReason);
 
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                    value_for<n::base_spec>(d->package_id()->uniquely_identifying_spec()),
+                    value_for<n::is_blocker>(false),
                     value_for<n::reason>(reason),
-                    value_for<n::spec>(d->package_id()->uniquely_identifying_spec()),
                     value_for<n::to_destination_slash>(false),
                     value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(qpn_s, d->package_id()->uniquely_identifying_spec(), reason))
                     )));

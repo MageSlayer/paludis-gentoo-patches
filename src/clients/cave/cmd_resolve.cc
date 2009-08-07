@@ -536,7 +536,11 @@ namespace
                         c_end(r->second->constraints()->end()) ;
                         c != c_end ; ++c)
                 {
-                    std::cout << "      * " << (*c)->spec();
+                    if ((*c)->is_blocker())
+                        std::cout << "      * blocker " << (*c)->base_spec();
+                    else
+                        std::cout << "      * " << (*c)->base_spec();
+
                     switch ((*c)->use_installed())
                     {
                         case ui_if_same:
@@ -765,8 +769,9 @@ namespace
         if ((-1 != n) && installed_is_scm_older_than(env, qpn_s, n))
         {
             result->add(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                                value_for<n::base_spec>(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(qpn_s.package())),
+                                value_for<n::is_blocker>(false),
                                 value_for<n::reason>(make_shared_ptr(new PresetReason)),
-                                value_for<n::spec>(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(qpn_s.package())),
                                 value_for<n::to_destination_slash>(false),
                                 value_for<n::use_installed>(ui_only_if_transient)
                                 ))));
