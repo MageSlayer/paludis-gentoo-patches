@@ -96,6 +96,7 @@ namespace
         try
         {
             return (*self_ptr)->supports_action(*test_ptr) ? Qtrue : Qfalse;
+        }
         catch (const std::exception & e)
         {
             exception_to_ruby_exception(e);
