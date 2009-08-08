@@ -118,9 +118,9 @@ namespace
 //        args::StringSetArg a_skip_until_phase;
 //        args::EnumArg a_change_phases_for;
 
-        args::ArgsGroup g_reinstall_options;
-        args::EnumArg a_reinstall_targets;
-        args::EnumArg a_reinstall;
+        args::ArgsGroup g_keep_options;
+        args::EnumArg a_keep_targets;
+        args::EnumArg a_keep;
         args::EnumArg a_reinstall_scm;
 //        args::SwitchArg a_reinstall_for_removals;
 
@@ -243,33 +243,35 @@ namespace
 //                    ("last",                       "Only the last package on the list"),
 //                    "all"),
 //
-            g_reinstall_options(this, "Reinstall Options", "Control whether packages are reinstalled."),
-            a_reinstall_targets(&g_reinstall_options, "reinstall-targets", 'R',
-                    "Select whether to reinstall target packages",
+            g_keep_options(this, "Reinstall Options", "Control whether installed packages are kept."),
+            a_keep_targets(&g_keep_options, "keep-targets", 'K',
+                    "Select whether to keep target packages",
                     args::EnumArg::EnumArgOptions
-                    ("auto",                  'x', "If the target is a set, if-same, otherwise always")
-                    ("always",                'a', "Always")
-                    ("unless-transient",      't', "Unless the target is transient (e.g. from 'importare')"
-                                                   " (default if --everything)")
-                    ("unless-same",           's', "Unless the target is the same (version, option flags)")
-                    ("unless-same-version",   'v', "Unless the target is the same version")
-                    ("if-necessary",          'i', "If necessary"),
+                    ("auto",                  'a', "If the target is a set, if-same, otherwise never")
+                    ("never",                 'n', "Never")
+                    ("if-transient",          't', "Only if the installed package is transient "
+                                                   "(e.g. from 'importare')")
+                    ("if-same",               's', "If it is the same as the proposed replacement")
+                    ("if-same-version",       'v', "If it is the same version as the proposed replacement")
+                    ("if-possible",           'p', "If possible"),
+
                     "auto"
                     ),
-            a_reinstall(&g_reinstall_options, "reinstall", 'r',
-                    "Select whether to reinstall packages that are not targets",
+            a_keep(&g_keep_options, "keep", 'k',
+                    "Select whether to keep installed packages that are not targets",
                     args::EnumArg::EnumArgOptions
-                    ("always",                'a', "Always")
-                    ("unless-transient",      't', "Unless the target is transient (e.g. from 'importare')"
-                                                   " (default if --everything)")
-                    ("unless-same",           's', "Unless the target is the same (version, option flags)"
-                                                   " (default if --complete)")
-                    ("unless-same-version",   'v', "Unless the target is the same version")
-                    ("if-necessary",          'i', "If necessary"),
-                    "if-necessary"
+                    ("never",                 'n', "Never")
+                    ("if-transient",          't', "Only if the installed package is transient "
+                                                   "(e.g. from 'importare') (default if --everything)")
+                    ("if-same",               's', "If it is the same as the proposed replacement "
+                                                   "(default if --complete)")
+                    ("if-same-version",       'v', "If it is the same version as the proposed replacement")
+                    ("if-possible",           'p', "If possible"),
+
+                    "if-possible"
                     ),
-            a_reinstall_scm(&g_reinstall_options, "reinstall-scm", '\0',
-                    "Select whether to reinstall SCM packages that would otherwise not be reinstalled",
+            a_reinstall_scm(&g_keep_options, "reinstall-scm", 'R',
+                    "Select whether to reinstall SCM packages that would otherwise be kept",
                     args::EnumArg::EnumArgOptions
                     ("always",                'a', "Always")
                     ("daily",                 'd', "If they were installed more than a day ago")
@@ -633,15 +635,15 @@ namespace
     {
         if (a.argument() == "auto")
             return is_set ? ui_if_same : ui_never;
-        else if (a.argument() == "always")
+        else if (a.argument() == "never")
             return ui_never;
-        else if (a.argument() == "unless-transient")
+        else if (a.argument() == "if-transient")
             return ui_only_if_transient;
-        else if (a.argument() == "unless-same")
+        else if (a.argument() == "if-same")
             return ui_if_same;
-        else if (a.argument() == "unless-same-version")
+        else if (a.argument() == "if-same-version")
             return ui_if_same_version;
-        else if (a.argument() == "if-necessary")
+        else if (a.argument() == "if-possible")
             return ui_if_possible;
         else
             throw args::DoHelp("Don't understand argument '" + a.argument() + "' to '--" + a.long_name() + "'");
@@ -660,12 +662,12 @@ namespace
 
         UseInstalled visit(const DependencyReason &) const
         {
-            return use_installed_from_cmdline(cmdline.a_reinstall, false);
+            return use_installed_from_cmdline(cmdline.a_keep, false);
         }
 
         UseInstalled visit(const TargetReason &) const
         {
-            return use_installed_from_cmdline(cmdline.a_reinstall_targets, from_set);
+            return use_installed_from_cmdline(cmdline.a_keep_targets, from_set);
         }
 
         UseInstalled visit(const PresetReason &) const
@@ -1080,8 +1082,8 @@ ResolveCommand::run(
 
     if (cmdline.a_complete.specified())
     {
-        if (! cmdline.a_reinstall.specified())
-            cmdline.a_reinstall.set_argument("unless-same");
+        if (! cmdline.a_keep.specified())
+            cmdline.a_keep.set_argument("if-same");
         if (! cmdline.a_target_slots.specified())
             cmdline.a_target_slots.set_argument("all");
         if (! cmdline.a_slots.specified())
@@ -1092,10 +1094,10 @@ ResolveCommand::run(
 
     if (cmdline.a_everything.specified())
     {
-        if (! cmdline.a_reinstall.specified())
-            cmdline.a_reinstall.set_argument("unless-transient");
-        if (! cmdline.a_reinstall_targets.specified())
-            cmdline.a_reinstall_targets.set_argument("unless-transient");
+        if (! cmdline.a_keep.specified())
+            cmdline.a_keep.set_argument("if-transient");
+        if (! cmdline.a_keep_targets.specified())
+            cmdline.a_keep_targets.set_argument("if-transient");
         if (! cmdline.a_target_slots.specified())
             cmdline.a_target_slots.set_argument("all");
         if (! cmdline.a_slots.specified())
