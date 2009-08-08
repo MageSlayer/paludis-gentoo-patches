@@ -53,6 +53,8 @@ namespace paludis
                 const std::tr1::shared_ptr<Resolution> _resolution_for_qpn_s(const QPN_S &, const bool create);
                 const std::tr1::shared_ptr<Resolution> _resolution_for_qpn_s(const QPN_S &) const;
 
+                const std::tr1::shared_ptr<const QPN_S_Sequence> _get_qpn_s_s_for_blocker(const BlockDepSpec &) const;
+
                 const std::tr1::shared_ptr<Constraint> _make_constraint_from_target(
                         const QPN_S &,
                         const PackageDepSpec &,

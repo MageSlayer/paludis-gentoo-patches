@@ -472,9 +472,12 @@ namespace
         for (Resolver::ConstIterator c(resolver->begin()), c_end(resolver->end()) ;
                 c != c_end ; ++c)
         {
-            const std::tr1::shared_ptr<const PackageID> id((*c)->decision()->package_id());
-            std::cout << "* " << id->canonical_form(idcf_no_version) << " " << id->canonical_form(idcf_version)
-                << " to " << *(*c)->destinations() << std::endl;
+            const std::tr1::shared_ptr<const PackageID> id((*c)->decision()->if_package_id());
+            if (id)
+                std::cout << "* " << id->canonical_form(idcf_no_version) << " " << id->canonical_form(idcf_version)
+                    << " to " << *(*c)->destinations() << std::endl;
+            else
+                throw InternalError(PALUDIS_HERE, "why did that happen?");
         }
 
         std::cout << std::endl;
@@ -525,7 +528,14 @@ namespace
                     r_end(resolver->end_resolutions_by_qpn_s()) ;
                     r != r_end ; ++r)
             {
-                if (! match_package(*env, spec, *r->second->decision()->package_id(), MatchPackageOptions()))
+                if (! r->second->decision()->if_package_id())
+                {
+                    /* really we want this to work for simple cat/pkg and
+                     * cat/pkg:slot specs anyway, even if we chose nothing */
+                    continue;
+                }
+
+                if (! match_package(*env, spec, *r->second->decision()->if_package_id(), MatchPackageOptions()))
                     continue;
 
                 any = true;
@@ -573,7 +583,7 @@ namespace
                     std::cout << std::endl;
                 }
                 std::cout << "    The decision made was:" << std::endl;
-                std::cout << "        Use " << *r->second->decision()->package_id() << std::endl;
+                std::cout << "        Use " << *r->second->decision()->if_package_id() << std::endl;
                 if (r->second->destinations()->slash())
                 {
                     std::cout << "        Install to / using repository " << r->second->destinations()->slash()->repository() << std::endl;
@@ -771,6 +781,7 @@ namespace
             result->add(make_shared_ptr(new Constraint(make_named_values<Constraint>(
                                 value_for<n::base_spec>(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(qpn_s.package())),
                                 value_for<n::is_blocker>(false),
+                                value_for<n::nothing_is_fine_too>(false),
                                 value_for<n::reason>(make_shared_ptr(new PresetReason)),
                                 value_for<n::to_destination_slash>(false),
                                 value_for<n::use_installed>(ui_only_if_transient)

@@ -33,15 +33,26 @@ namespace paludis
     namespace n
     {
         struct active_dependency_labels;
+        struct if_package;
+        struct if_block;
         struct spec;
     }
 
     namespace resolver
     {
+        struct PackageOrBlockDepSpec
+        {
+            NamedValue<n::if_block, std::tr1::shared_ptr<BlockDepSpec> > if_block;
+            NamedValue<n::if_package, std::tr1::shared_ptr<PackageDepSpec> > if_package;
+
+            PackageOrBlockDepSpec(const BlockDepSpec &);
+            PackageOrBlockDepSpec(const PackageDepSpec &);
+        };
+
         struct SanitisedDependency
         {
             NamedValue<n::active_dependency_labels, std::tr1::shared_ptr<const ActiveDependencyLabels> > active_dependency_labels;
-            NamedValue<n::spec, PackageDepSpec> spec;
+            NamedValue<n::spec, PackageOrBlockDepSpec> spec;
         };
 
         class SanitisedDependencies :

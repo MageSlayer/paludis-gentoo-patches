@@ -28,12 +28,19 @@ paludis::resolver::operator<< (std::ostream & s, const Decision & d)
 {
     std::stringstream ss;
 
-    ss << "Decision(" << *d.package_id();
+    ss << "Decision(";
+
+    if (d.if_package_id())
+        ss << *d.if_package_id();
+    else
+        ss << "(nothing)";
 
     if (d.is_installed())
         ss << ", is installed";
     if (d.is_new())
         ss << ", is new";
+    if (d.is_nothing())
+        ss << ", is nothing";
     if (d.is_same())
         ss << ", is same";
     if (d.is_same_version())

@@ -37,24 +37,6 @@ using namespace paludis::resolver;
 
 namespace
 {
-    struct IsUnrestrictedSlot
-    {
-        bool visit(const SlotExactRequirement &) const
-        {
-            return false;
-        }
-
-        bool visit(const SlotAnyUnlockedRequirement &) const
-        {
-            return true;
-        }
-
-        bool visit(const SlotAnyLockedRequirement &) const
-        {
-            return true;
-        }
-    };
-
     template <typename T_>
     void list_push_back(std::list<T_> * const l, const T_ & t)
     {
@@ -65,17 +47,17 @@ namespace
     {
         const Resolver & resolver;
         const QPN_S our_qpn_s;
-        const std::tr1::function<SanitisedDependency (const PackageDepSpec &)> parent_make_sanitised;
+        const std::tr1::function<SanitisedDependency (const PackageOrBlockDepSpec &)> parent_make_sanitised;
 
         bool super_complicated, nested;
 
-        std::list<std::list<PackageDepSpec> > child_groups;
-        std::list<PackageDepSpec> * active_sublist;
+        std::list<std::list<PackageOrBlockDepSpec> > child_groups;
+        std::list<PackageOrBlockDepSpec> * active_sublist;
 
         bool seen_any;
 
         AnyDepSpecChildHandler(const Resolver & r, const QPN_S & q,
-                const std::tr1::function<SanitisedDependency (const PackageDepSpec &)> & f) :
+                const std::tr1::function<SanitisedDependency (const PackageOrBlockDepSpec &)> & f) :
             resolver(r),
             our_qpn_s(q),
             parent_make_sanitised(f),
@@ -86,33 +68,44 @@ namespace
         {
         }
 
-        void visit_spec(const PackageDepSpec & spec)
+        void visit_package_or_block_spec(const PackageOrBlockDepSpec & spec)
+        {
+            seen_any = true;
+
+            if (active_sublist)
+                active_sublist->push_back(spec);
+            else
+            {
+                std::list<PackageOrBlockDepSpec> l;
+                l.push_back(spec);
+                child_groups.push_back(l);
+            }
+        }
+
+        void visit_package_spec(const PackageDepSpec & spec)
         {
             if (spec.package_ptr())
-            {
-                seen_any = true;
+                visit_package_or_block_spec(PackageOrBlockDepSpec(spec));
+            else
+                super_complicated = true;
+        }
 
-                if (active_sublist)
-                    active_sublist->push_back(spec);
-                else
-                {
-                    std::list<PackageDepSpec> l;
-                    l.push_back(spec);
-                    child_groups.push_back(l);
-                }
-            }
+        void visit_block_spec(const BlockDepSpec & spec)
+        {
+            if (spec.blocked_spec()->package_ptr())
+                visit_package_or_block_spec(PackageOrBlockDepSpec(spec));
             else
                 super_complicated = true;
         }
 
         void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
         {
-            visit_spec(*node.spec());
+            visit_package_spec(*node.spec());
         }
 
-        void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type &)
+        void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type & node)
         {
-            super_complicated = true;
+            visit_block_spec(*node.spec());
         }
 
         void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
@@ -125,8 +118,8 @@ namespace
                     std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
                 else
                 {
-                    Save<std::list<PackageDepSpec> *> save_active_sublist(&active_sublist, 0);
-                    active_sublist = &*child_groups.insert(child_groups.end(), std::list<PackageDepSpec>());
+                    Save<std::list<PackageOrBlockDepSpec> *> save_active_sublist(&active_sublist, 0);
+                    active_sublist = &*child_groups.insert(child_groups.end(), std::list<PackageOrBlockDepSpec>());
                     std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
                 }
             }
@@ -140,8 +133,8 @@ namespace
                 std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
             else
             {
-                Save<std::list<PackageDepSpec> *> save_active_sublist(&active_sublist, 0);
-                active_sublist = &*child_groups.insert(child_groups.end(), std::list<PackageDepSpec>());
+                Save<std::list<PackageOrBlockDepSpec> *> save_active_sublist(&active_sublist, 0);
+                active_sublist = &*child_groups.insert(child_groups.end(), std::list<PackageOrBlockDepSpec>());
                 std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
             }
         }
@@ -160,15 +153,15 @@ namespace
             {
                 for (std::list<SanitisedDependency>::const_iterator i(l.begin()), i_end(l.end()) ;
                         i != i_end ; ++i)
-                    visit_spec(i->spec());
+                    visit_package_or_block_spec(i->spec());
             }
             else
             {
-                Save<std::list<PackageDepSpec> *> save_active_sublist(&active_sublist, 0);
-                active_sublist = &*child_groups.insert(child_groups.end(), std::list<PackageDepSpec>());
+                Save<std::list<PackageOrBlockDepSpec> *> save_active_sublist(&active_sublist, 0);
+                active_sublist = &*child_groups.insert(child_groups.end(), std::list<PackageOrBlockDepSpec>());
                 for (std::list<SanitisedDependency>::const_iterator i(l.begin()), i_end(l.end()) ;
                         i != i_end ; ++i)
-                    visit_spec(i->spec());
+                    visit_package_or_block_spec(i->spec());
             }
         }
 
@@ -183,7 +176,7 @@ namespace
         }
 
         void commit(
-                const std::tr1::function<SanitisedDependency (const PackageDepSpec &)> & make_sanitised,
+                const std::tr1::function<SanitisedDependency (const PackageOrBlockDepSpec &)> & make_sanitised,
                 const std::tr1::function<void (const SanitisedDependency &)> & apply)
         {
             if (! seen_any)
@@ -194,10 +187,10 @@ namespace
             else
             {
                 /* we've got a choice of groups of packages. pick the best score, left to right. */
-                std::list<std::list<PackageDepSpec> >::const_iterator g_best(child_groups.end());
+                std::list<std::list<PackageOrBlockDepSpec> >::const_iterator g_best(child_groups.end());
                 int best_score(-1);
 
-                for (std::list<std::list<PackageDepSpec> >::const_iterator g(child_groups.begin()),
+                for (std::list<std::list<PackageOrBlockDepSpec> >::const_iterator g(child_groups.begin()),
                         g_end(child_groups.end()) ;
                         g != g_end ; ++g)
                 {
@@ -207,10 +200,10 @@ namespace
                         throw InternalError(PALUDIS_HERE, "why did that happen?");
 
                     /* score of a group is the score of the worst child. */
-                    for (std::list<PackageDepSpec>::const_iterator h(g->begin()), h_end(g->end()) ;
+                    for (std::list<PackageOrBlockDepSpec>::const_iterator h(g->begin()), h_end(g->end()) ;
                             h != h_end ; ++h)
                     {
-                        int score(resolver.find_any_score(our_qpn_s, make_sanitised(*h)));
+                        int score(resolver.find_any_score(our_qpn_s, make_sanitised(PackageOrBlockDepSpec(*h))));
                         if ((-1 == worst_score) || (score < worst_score))
                             worst_score = score;
                     }
@@ -224,7 +217,7 @@ namespace
 
                 if (g_best == child_groups.end())
                     throw InternalError(PALUDIS_HERE, "why did that happen?");
-                for (std::list<PackageDepSpec>::const_iterator h(g_best->begin()), h_end(g_best->end()) ;
+                for (std::list<PackageOrBlockDepSpec>::const_iterator h(g_best->begin()), h_end(g_best->end()) ;
                         h != h_end ; ++h)
                     apply(make_sanitised(*h));
             }
@@ -256,7 +249,7 @@ namespace
             sanitised_dependencies.add(dep);
         }
 
-        SanitisedDependency make_sanitised(const PackageDepSpec & spec)
+        SanitisedDependency make_sanitised(const PackageOrBlockDepSpec & spec)
         {
             return make_named_values<SanitisedDependency>(
                     value_for<n::active_dependency_labels>(*labels_stack.begin()),
@@ -269,8 +262,9 @@ namespace
             add(make_sanitised(*node.spec()));
         }
 
-        void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type &)
+        void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type & node)
         {
+            add(make_sanitised(*node.spec()));
         }
 
         void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
@@ -399,5 +393,26 @@ paludis::resolver::operator<< (std::ostream & s, const SanitisedDependency & d)
 
     s << ss.str();
     return s;
+}
+
+std::ostream &
+paludis::resolver::operator<< (std::ostream & s, const PackageOrBlockDepSpec & d)
+{
+    if (d.if_package())
+        return s << *d.if_package();
+    else
+        return s << *d.if_block();
+}
+
+PackageOrBlockDepSpec::PackageOrBlockDepSpec(const BlockDepSpec & s) :
+    if_block(value_for<n::if_block>(make_shared_ptr(new BlockDepSpec(s)))),
+    if_package(value_for<n::if_package>(make_null_shared_ptr()))
+{
+}
+
+PackageOrBlockDepSpec::PackageOrBlockDepSpec(const PackageDepSpec & s) :
+    if_block(value_for<n::if_block>(make_null_shared_ptr())),
+    if_package(value_for<n::if_package>(make_shared_ptr(new PackageDepSpec(s))))
+{
 }
 

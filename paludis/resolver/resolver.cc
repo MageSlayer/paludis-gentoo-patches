@@ -123,6 +123,9 @@ Resolver::_resolve_dependencies()
             done = false;
             _decide(i->first, i->second);
 
+            if (i->second->decision()->is_nothing())
+                continue;
+
             _add_dependencies(i->first, i->second);
         }
     }
@@ -149,7 +152,7 @@ Resolver::_make_destinations_for(const QPN_S & qpn_s,
 {
     Context context("When finding destinations for '" + stringify(qpn_s) + "':");
 
-    if (resolution->decision()->is_installed())
+    if (resolution->decision()->is_installed() || resolution->decision()->is_nothing())
         return make_shared_ptr(new Destinations(make_named_values<Destinations>(
                         value_for<n::slash>(make_null_shared_ptr())
                         )));
@@ -175,7 +178,7 @@ Resolver::_make_slash_destination_for(const QPN_S & qpn_s,
 {
     Context context("When finding / destination for '" + stringify(qpn_s) + "':");
 
-    if (! resolution->decision())
+    if ((! resolution->decision()) || (! resolution->decision()->if_package_id()))
         throw InternalError(PALUDIS_HERE, "not decided. shouldn't happen.");
 
     std::tr1::shared_ptr<const Repository> repo;
@@ -184,7 +187,7 @@ Resolver::_make_slash_destination_for(const QPN_S & qpn_s,
             r != r_end ; ++r)
     {
         if ((*r)->destination_interface() && (*r)->destination_interface()->is_suitable_destination_for(
-                    *resolution->decision()->package_id()))
+                    *resolution->decision()->if_package_id()))
         {
             if (repo)
                 throw InternalError(PALUDIS_HERE, "multiple valid destinations.");
@@ -197,7 +200,7 @@ Resolver::_make_slash_destination_for(const QPN_S & qpn_s,
         throw InternalError(PALUDIS_HERE, "no valid destination for " + stringify(*resolution));
 
     return make_shared_ptr(new Destination(make_named_values<Destination>(
-                    value_for<n::replacing>(_find_replacing(resolution->decision()->package_id(), repo)),
+                    value_for<n::replacing>(_find_replacing(resolution->decision()->if_package_id(), repo)),
                     value_for<n::repository>(repo->name())
                     )));
 }
@@ -356,6 +359,7 @@ Resolver::_make_constraint_from_target(
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
                     value_for<n::base_spec>(spec),
                     value_for<n::is_blocker>(false),
+                    value_for<n::nothing_is_fine_too>(false),
                     value_for<n::reason>(reason),
                     value_for<n::to_destination_slash>(true),
                     value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(qpn_s, spec, reason))
@@ -366,13 +370,26 @@ const std::tr1::shared_ptr<Constraint>
 Resolver::_make_constraint_from_dependency(const QPN_S & qpn_s, const SanitisedDependency & dep,
         const std::tr1::shared_ptr<const Reason> & reason) const
 {
-    return make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                    value_for<n::base_spec>(dep.spec()),
-                    value_for<n::is_blocker>(false),
-                    value_for<n::reason>(reason),
-                    value_for<n::to_destination_slash>(_dependency_to_destination_slash(qpn_s, dep)),
-                    value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(qpn_s, dep.spec(), reason))
-                    )));
+    if (dep.spec().if_package())
+        return make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                        value_for<n::base_spec>(*dep.spec().if_package()),
+                        value_for<n::is_blocker>(false),
+                        value_for<n::nothing_is_fine_too>(false),
+                        value_for<n::reason>(reason),
+                        value_for<n::to_destination_slash>(_dependency_to_destination_slash(qpn_s, dep)),
+                        value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(qpn_s, *dep.spec().if_package(), reason))
+                        )));
+    else if (dep.spec().if_block())
+        return make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                        value_for<n::base_spec>(*dep.spec().if_block()->blocked_spec()),
+                        value_for<n::is_blocker>(true),
+                        value_for<n::nothing_is_fine_too>(true),
+                        value_for<n::reason>(reason),
+                        value_for<n::to_destination_slash>(false),
+                        value_for<n::use_installed>(ui_if_possible)
+                        )));
+    else
+        throw InternalError(PALUDIS_HERE, "huh?");
 }
 
 void
@@ -433,7 +450,10 @@ Resolver::_constraint_matches(
             break;
     }
 
-    ok = ok && (c->is_blocker() ^ match_package(*_imp->env, c->base_spec(), *decision->package_id(), MatchPackageOptions()));
+    if (decision->if_package_id())
+        ok = ok && (c->is_blocker() ^ match_package(*_imp->env, c->base_spec(), *decision->if_package_id(), MatchPackageOptions()));
+    else
+        ok = ok && c->nothing_is_fine_too();
 
     return ok;
 }
@@ -456,6 +476,19 @@ Resolver::_try_to_find_decision_for(const QPN_S & qpn_s,
         const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
     std::tr1::shared_ptr<const PackageID> id;
+
+    bool nothing_is_fine_too(true);
+    for (Constraints::ConstIterator c(resolution->constraints()->begin()),
+            c_end(resolution->constraints()->end()) ;
+            c != c_end ; ++c)
+        if (! (*c)->nothing_is_fine_too())
+        {
+            nothing_is_fine_too = false;
+            break;
+        }
+
+    if (nothing_is_fine_too)
+        return _decision_from_package_id(qpn_s, make_null_shared_ptr());
 
     if (((id = _best_installed_id_for(qpn_s, resolution))))
         return _decision_from_package_id(qpn_s, id);
@@ -524,8 +557,11 @@ Resolver::_add_dependencies(const QPN_S & our_qpn_s, const std::tr1::shared_ptr<
     Context context("When adding dependencies for '" + stringify(our_qpn_s) + "' with '"
             + stringify(*our_resolution) + "':");
 
+    if (! our_resolution->decision()->if_package_id())
+        throw InternalError(PALUDIS_HERE, "not decided. shouldn't happen.");
+
     const std::tr1::shared_ptr<SanitisedDependencies> deps(new SanitisedDependencies);
-    deps->populate(*this, our_resolution->decision()->package_id());
+    deps->populate(*this, our_resolution->decision()->if_package_id());
     our_resolution->sanitised_dependencies() = deps;
 
     for (SanitisedDependencies::ConstIterator s(deps->begin()), s_end(deps->end()) ;
@@ -538,8 +574,14 @@ Resolver::_add_dependencies(const QPN_S & our_qpn_s, const std::tr1::shared_ptr<
 
         const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(our_qpn_s, *s));
 
-        const std::tr1::shared_ptr<const QPN_S_Sequence> qpn_s_s(_imp->fns.get_qpn_s_s_for_fn()(s->spec(), reason));
-        if (qpn_s_s->empty())
+        std::tr1::shared_ptr<const QPN_S_Sequence> qpn_s_s;
+
+        if (s->spec().if_package())
+            qpn_s_s = _imp->fns.get_qpn_s_s_for_fn()(*s->spec().if_package(), reason);
+        else
+            qpn_s_s = _get_qpn_s_s_for_blocker(*s->spec().if_block());
+
+        if (qpn_s_s->empty() && s->spec().if_package())
         {
             if (our_resolution->decision()->is_installed())
                 Log::get_instance()->message("resolver.cannot_find_installed_dep", ll_warning, lc_context)
@@ -563,6 +605,15 @@ bool
 Resolver::_care_about_dependency_spec(const QPN_S & qpn_s,
         const std::tr1::shared_ptr<const Resolution> & resolution, const SanitisedDependency & dep) const
 {
+    /* dirty dirty hack */
+    if (dep.spec().if_block())
+        if (dep.spec().if_block()->blocked_spec()->package_ptr()->category() == CategoryNamePart("virtual"))
+        {
+            Log::get_instance()->message("resolver.virtual_haxx", ll_warning, lc_context)
+                << "Ignoring " << dep << " from " << qpn_s << " for now";
+            return false;
+        }
+
     return _imp->fns.care_about_dep_fn()(qpn_s, resolution, dep);
 }
 
@@ -651,6 +702,12 @@ Resolver::_resolve_arrows()
                 c_end(i->second->constraints()->end()) ;
                 c != c_end ; ++c)
         {
+            if ((*c)->is_blocker())
+            {
+                /* todo: strong blocks do impose arrows */
+                continue;
+            }
+
             GetDependencyReason gdr;
             const DependencyReason * if_dependency_reason((*c)->reason()->accept_returning<const DependencyReason *>(gdr));
             if (! if_dependency_reason)
@@ -680,10 +737,20 @@ Resolver::_resolve_arrows()
 bool
 Resolver::_already_met(const SanitisedDependency & dep) const
 {
-    std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::SomeArbitraryVersion(
-                generator::Matches(dep.spec(), MatchPackageOptions()) |
-                filter::SupportsAction<InstalledAction>())]);
-    return ! ids->empty();
+    if (dep.spec().if_package())
+    {
+        std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::SomeArbitraryVersion(
+                    generator::Matches(*dep.spec().if_package(), MatchPackageOptions()) |
+                    filter::SupportsAction<InstalledAction>())]);
+        return ! ids->empty();
+    }
+    else if (dep.spec().if_block())
+    {
+        /* it's imposing an arrow, so it's a strong block */
+        return false;
+    }
+    else
+        throw InternalError(PALUDIS_HERE, "huh?");
 }
 
 void
@@ -695,7 +762,7 @@ Resolver::_resolve_order()
 
     for (ResolutionsByQPN_SMap::iterator i(_imp->resolutions_by_qpn_s.begin()), i_end(_imp->resolutions_by_qpn_s.end()) ;
             i != i_end ; ++i)
-        if (i->second->decision()->is_installed())
+        if (i->second->decision()->is_installed() || i->second->decision()->is_nothing())
             i->second->already_ordered() = true;
 
     while (! done)
@@ -773,9 +840,10 @@ Resolver::_do_order(const QPN_S &, const std::tr1::shared_ptr<Resolution> & reso
 const std::tr1::shared_ptr<Decision>
 Resolver::_decision_from_package_id(const QPN_S & qpn_s, const std::tr1::shared_ptr<const PackageID> & id) const
 {
-    bool is_installed, is_transient, is_new, is_same, is_same_version;
+    bool is_installed, is_transient, is_new, is_same, is_same_version, is_nothing;
 
-    is_installed = id->supports_action(SupportsActionTest<InstalledAction>());
+    is_nothing = ! id;
+    is_installed = (! is_nothing) && id->supports_action(SupportsActionTest<InstalledAction>());
     is_transient = is_installed && id->transient_key() && id->transient_key()->value();
 
     std::tr1::shared_ptr<const PackageIDSequence> comparison_ids;
@@ -786,32 +854,39 @@ Resolver::_decision_from_package_id(const QPN_S & qpn_s, const std::tr1::shared_
                     qpn_s.make_slot_filter() |
                     filter::SupportsAction<InstallAction>() |
                     filter::NotMasked())]);
-    else
+    else if (! is_nothing)
         comparison_ids = ((*_imp->env)[selection::BestVersionOnly(
                     generator::Package(qpn_s.package()) |
                     qpn_s.make_slot_filter() |
                     filter::SupportsAction<InstalledAction>())]);
 
-    if (comparison_ids->empty())
+    if (comparison_ids && comparison_ids->empty())
     {
         is_new = true;
         is_same = false;
         is_same_version = false;
     }
-    else
+    else if (comparison_ids)
     {
         is_new = false;
         is_same = ((*comparison_ids->begin())->version() == id->version());
         is_same_version = is_same;
     }
+    else
+    {
+        is_new = false;
+        is_same = false;
+        is_same_version = false;
+    }
 
     return make_shared_ptr(new Decision(make_named_values<Decision>(
+                    value_for<n::if_package_id>(id),
                     value_for<n::is_installed>(is_installed),
                     value_for<n::is_new>(is_new),
+                    value_for<n::is_nothing>(is_nothing),
                     value_for<n::is_same>(is_same),
                     value_for<n::is_same_version>(is_same_version),
-                    value_for<n::is_transient>(is_transient),
-                    value_for<n::package_id>(id)
+                    value_for<n::is_transient>(is_transient)
                     )));
 }
 
@@ -918,12 +993,17 @@ Resolver::_make_constraint_for_preloading(
 {
     const std::tr1::shared_ptr<PresetReason> reason(new PresetReason);
 
+    if (! d->if_package_id())
+        throw InternalError(PALUDIS_HERE, "not decided. shouldn't happen.");
+
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                    value_for<n::base_spec>(d->package_id()->uniquely_identifying_spec()),
+                    value_for<n::base_spec>(d->if_package_id()->uniquely_identifying_spec()),
                     value_for<n::is_blocker>(false),
+                    value_for<n::nothing_is_fine_too>(false),
                     value_for<n::reason>(reason),
                     value_for<n::to_destination_slash>(false),
-                    value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(qpn_s, d->package_id()->uniquely_identifying_spec(), reason))
+                    value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(
+                            qpn_s, d->if_package_id()->uniquely_identifying_spec(), reason))
                     )));
 }
 
@@ -963,12 +1043,17 @@ Resolver::find_any_score(const QPN_S & our_qpn_s, const SanitisedDependency & de
     Context context("When working out whether we'd like '" + stringify(dep) + "' because of '"
             + stringify(our_qpn_s) + "':");
 
+    if (dep.spec().if_block())
+        throw InternalError(PALUDIS_HERE, "not yet");
+
+    const PackageDepSpec & spec(*dep.spec().if_package());
+
     int operator_bias(0);
-    if (dep.spec().version_requirements_ptr() && ! dep.spec().version_requirements_ptr()->empty())
+    if (spec.version_requirements_ptr() && ! spec.version_requirements_ptr()->empty())
     {
         int score(-1);
-        for (VersionRequirements::ConstIterator v(dep.spec().version_requirements_ptr()->begin()),
-                v_end(dep.spec().version_requirements_ptr()->end()) ;
+        for (VersionRequirements::ConstIterator v(spec.version_requirements_ptr()->begin()),
+                v_end(spec.version_requirements_ptr()->end()) ;
                 v != v_end ; ++v)
         {
             int local_score(0);
@@ -1001,7 +1086,7 @@ Resolver::find_any_score(const QPN_S & our_qpn_s, const SanitisedDependency & de
             if (score == -1)
                 score = local_score;
             else
-                switch (dep.spec().version_requirements_mode())
+                switch (spec.version_requirements_mode())
                 {
                     case vr_and:
                         score = std::min(score, local_score);
@@ -1027,14 +1112,14 @@ Resolver::find_any_score(const QPN_S & our_qpn_s, const SanitisedDependency & de
     /* best: already installed */
     {
         const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
-                    generator::Matches(dep.spec(), MatchPackageOptions() + mpo_ignore_additional_requirements) |
+                    generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements) |
                     filter::SupportsAction<InstalledAction>())]);
         if (! installed_ids->empty())
             return 40 + operator_bias;
     }
 
     const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(our_qpn_s, dep));
-    const std::tr1::shared_ptr<const QPN_S_Sequence> qpn_s_s(_imp->fns.get_qpn_s_s_for_fn()(dep.spec(), reason));
+    const std::tr1::shared_ptr<const QPN_S_Sequence> qpn_s_s(_imp->fns.get_qpn_s_s_for_fn()(spec, reason));
 
     /* next: will already be installing */
     {
@@ -1064,7 +1149,7 @@ Resolver::find_any_score(const QPN_S & our_qpn_s, const SanitisedDependency & de
     /* next: exists */
     {
         const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::BestVersionOnly(
-                    generator::Matches(dep.spec(), MatchPackageOptions() + mpo_ignore_additional_requirements)
+                    generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements)
                     )]);
         if (! ids->empty())
             return 10 + operator_bias;
@@ -1122,6 +1207,55 @@ Resolver::_find_cycle(const QPN_S & start_qpn_s, const int ignorable_pass) const
     }
 
     return result.str();
+}
+
+namespace
+{
+    struct SlotNameFinder
+    {
+        std::tr1::shared_ptr<SlotName> visit(const SlotExactRequirement & s)
+        {
+            return make_shared_ptr(new SlotName(s.slot()));
+        }
+
+        std::tr1::shared_ptr<SlotName> visit(const SlotAnyUnlockedRequirement &)
+        {
+            return make_null_shared_ptr();
+        }
+
+        std::tr1::shared_ptr<SlotName> visit(const SlotAnyLockedRequirement &)
+        {
+            return make_null_shared_ptr();
+        }
+    };
+}
+
+const std::tr1::shared_ptr<const QPN_S_Sequence>
+Resolver::_get_qpn_s_s_for_blocker(const BlockDepSpec & spec) const
+{
+    Context context("When finding slots for '" + stringify(spec) + "':");
+
+    std::tr1::shared_ptr<SlotName> exact_slot;
+    if (spec.blocked_spec()->slot_requirement_ptr())
+    {
+        SlotNameFinder f;
+        exact_slot = spec.blocked_spec()->slot_requirement_ptr()->accept_returning<std::tr1::shared_ptr<SlotName> >(f);
+    }
+
+    std::tr1::shared_ptr<QPN_S_Sequence> result(new QPN_S_Sequence);
+    if (exact_slot)
+        result->push_back(QPN_S(*spec.blocked_spec(), exact_slot));
+    else
+    {
+        const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::BestVersionInEachSlot(
+                    generator::Package(*spec.blocked_spec()->package_ptr())
+                    )]);
+        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+                i != i_end ; ++i)
+            result->push_back(QPN_S(*i));
+    }
+
+    return result;
 }
 
 template class WrappedForwardIterator<Resolver::ConstIteratorTag, const std::tr1::shared_ptr<const Resolution> >;

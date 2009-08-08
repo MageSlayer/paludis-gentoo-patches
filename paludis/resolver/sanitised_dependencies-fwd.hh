@@ -30,7 +30,10 @@ namespace paludis
         struct SanitisedDependencies;
         struct SanitisedDependency;
 
+        struct PackageOrBlockDepSpec;
+
         std::ostream & operator<< (std::ostream & s, const SanitisedDependency & d) PALUDIS_VISIBLE;
+        std::ostream & operator<< (std::ostream & s, const PackageOrBlockDepSpec & d) PALUDIS_VISIBLE;
     }
 }
 

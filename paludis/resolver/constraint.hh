@@ -33,6 +33,7 @@ namespace paludis
     {
         struct base_spec;
         struct is_blocker;
+        struct nothing_is_fine_too;
         struct reason;
         struct to_destination_slash;
         struct use_installed;
@@ -44,6 +45,7 @@ namespace paludis
         {
             NamedValue<n::base_spec, PackageDepSpec> base_spec;
             NamedValue<n::is_blocker, bool> is_blocker;
+            NamedValue<n::nothing_is_fine_too, bool> nothing_is_fine_too;
             NamedValue<n::reason, std::tr1::shared_ptr<const Reason> > reason;
             NamedValue<n::to_destination_slash, bool> to_destination_slash;
             NamedValue<n::use_installed, UseInstalled> use_installed;

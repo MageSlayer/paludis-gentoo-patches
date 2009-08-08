@@ -35,6 +35,8 @@ paludis::resolver::operator<< (std::ostream & s, const Constraint & c)
     ss << "Constraint(base spec: " << c.base_spec();
     if (c.is_blocker())
         ss << "; blocker";
+    if (c.nothing_is_fine_too())
+        ss << "; nothing is fine too";
     ss
         << "; use_installed: " << stringify(c.use_installed())
         << "; reason: " << (c.reason() ? stringify(*c.reason()) : "none")
