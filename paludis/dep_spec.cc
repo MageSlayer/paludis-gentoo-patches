@@ -287,6 +287,12 @@ BlockDepSpec::BlockDepSpec(const std::tr1::shared_ptr<const PackageDepSpec> & a,
 {
 }
 
+BlockDepSpec::BlockDepSpec(const BlockDepSpec & other) :
+    StringDepSpec(other.text()),
+    _spec(other.blocked_spec())
+{
+}
+
 std::ostream &
 paludis::operator<< (std::ostream & s, const PlainTextDepSpec & a)
 {
