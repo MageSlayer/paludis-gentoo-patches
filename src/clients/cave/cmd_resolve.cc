@@ -494,7 +494,7 @@ namespace
 
         void visit(const DependencyReason & reason)
         {
-            std::cout << "of dependency " << reason.sanitised_dependency() << " from " << reason.qpn_s();
+            std::cout << "of dependency " << reason.sanitised_dependency() << " from " << *reason.from_id();
         }
 
         void visit(const PresetReason &)

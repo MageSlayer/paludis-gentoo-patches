@@ -572,7 +572,8 @@ Resolver::_add_dependencies(const QPN_S & our_qpn_s, const std::tr1::shared_ptr<
         if (! _care_about_dependency_spec(our_qpn_s, our_resolution, *s))
             continue;
 
-        const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(our_qpn_s, *s));
+        const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(
+                    our_resolution->decision()->if_package_id(), *s));
 
         std::tr1::shared_ptr<const QPN_S_Sequence> qpn_s_s;
 
@@ -713,7 +714,7 @@ Resolver::_resolve_arrows()
             if (! if_dependency_reason)
                 continue;
 
-            const QPN_S from_qpns(if_dependency_reason->qpn_s());
+            const QPN_S from_qpns(if_dependency_reason->from_id());
             const std::tr1::shared_ptr<Resolution> resolution(_resolution_for_qpn_s(from_qpns, false));
 
             ArrowInfo a(*if_dependency_reason);
@@ -1118,7 +1119,8 @@ Resolver::find_any_score(const QPN_S & our_qpn_s, const SanitisedDependency & de
             return 40 + operator_bias;
     }
 
-    const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(our_qpn_s, dep));
+    const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(
+                _resolution_for_qpn_s(our_qpn_s)->decision()->if_package_id(), dep));
     const std::tr1::shared_ptr<const QPN_S_Sequence> qpn_s_s(_imp->fns.get_qpn_s_s_for_fn()(spec, reason));
 
     /* next: will already be installing */

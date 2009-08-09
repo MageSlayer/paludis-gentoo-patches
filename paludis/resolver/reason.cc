@@ -48,19 +48,20 @@ namespace paludis
     template <>
     struct Implementation<DependencyReason>
     {
-        const QPN_S qpn_s;
+        const std::tr1::shared_ptr<const PackageID> from_id;
         const SanitisedDependency dep;
 
-        Implementation(const QPN_S & q, const SanitisedDependency & d) :
-            qpn_s(q),
+        Implementation(const std::tr1::shared_ptr<const PackageID> & i, const SanitisedDependency & d) :
+            from_id(i),
             dep(d)
         {
         }
     };
 }
 
-DependencyReason::DependencyReason(const QPN_S & q, const SanitisedDependency & d) :
-    PrivateImplementationPattern<DependencyReason>(new Implementation<DependencyReason>(q, d))
+DependencyReason::DependencyReason(const std::tr1::shared_ptr<const PackageID> & i,
+        const SanitisedDependency & d) :
+    PrivateImplementationPattern<DependencyReason>(new Implementation<DependencyReason>(i, d))
 {
 }
 
@@ -68,10 +69,10 @@ DependencyReason::~DependencyReason()
 {
 }
 
-const QPN_S
-DependencyReason::qpn_s() const
+const std::tr1::shared_ptr<const PackageID>
+DependencyReason::from_id() const
 {
-    return _imp->qpn_s;
+    return _imp->from_id;
 }
 
 const SanitisedDependency &
@@ -83,7 +84,7 @@ DependencyReason::sanitised_dependency() const
 std::string
 DependencyReason::as_string() const
 {
-    return "Dependency(package: " + stringify(_imp->qpn_s) + " dep: " + stringify(_imp->dep) + ")";
+    return "Dependency(package: " + stringify(*_imp->from_id) + " dep: " + stringify(_imp->dep) + ")";
 }
 
 std::string

@@ -27,6 +27,7 @@
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/name-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 #include <tr1/memory>
 
 namespace paludis
@@ -57,12 +58,12 @@ namespace paludis
         {
             public:
                 DependencyReason(
-                        const QPN_S & q,
+                        const std::tr1::shared_ptr<const PackageID> & id,
                         const SanitisedDependency & s);
 
                 ~DependencyReason();
 
-                const QPN_S qpn_s() const;
+                const std::tr1::shared_ptr<const PackageID> from_id() const;
                 const SanitisedDependency & sanitised_dependency() const;
 
                 virtual std::string as_string() const;
