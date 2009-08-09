@@ -544,6 +544,16 @@ PaludisEnvironment::want_choice_enabled(
     return _imp->config->use_conf()->want_choice_enabled(id, choice, value);
 }
 
+const std::string
+PaludisEnvironment::value_for_choice_parameter(
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const Choice> & choice,
+        const UnprefixedChoiceName & value
+        ) const
+{
+    return _imp->config->use_conf()->value_for_choice_parameter(id, choice, value);
+}
+
 std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
 PaludisEnvironment::known_choice_value_names(
         const std::tr1::shared_ptr<const PackageID> & id,

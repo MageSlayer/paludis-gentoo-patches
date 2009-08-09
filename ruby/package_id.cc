@@ -45,7 +45,16 @@ namespace
     {
         std::tr1::shared_ptr<const PackageID> * self_ptr;
         Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
-        return rb_str_new2(((*self_ptr)->canonical_form(static_cast<PackageIDCanonicalForm>(NUM2INT(cf)))).c_str());
+        try
+        {
+            return rb_str_new2(((*self_ptr)->canonical_form(static_cast<PackageIDCanonicalForm>(NUM2INT(cf)))).c_str());
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+
+        return Qnil;
     }
 
     /*
@@ -59,7 +68,16 @@ namespace
     {
         std::tr1::shared_ptr<const PackageID> * self_ptr;
         Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
-        return qualified_package_name_to_value((*self_ptr)->name());
+        try
+        {
+            return qualified_package_name_to_value((*self_ptr)->name());
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+
+        return Qnil;
     }
 
 
@@ -75,7 +93,16 @@ namespace
         std::tr1::shared_ptr<const PackageID> * self_ptr;
         std::tr1::shared_ptr<const SupportsActionTestBase> test_ptr(value_to_supports_action_test_base(test));
         Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
-        return (*self_ptr)->supports_action(*test_ptr) ? Qtrue : Qfalse;
+        try
+        {
+            return (*self_ptr)->supports_action(*test_ptr) ? Qtrue : Qfalse;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+
+        return Qnil;
     }
 
     /*
@@ -113,7 +140,16 @@ namespace
     {
         std::tr1::shared_ptr<const PackageID> * self_ptr;
         Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
-        return version_spec_to_value((*self_ptr)->version());
+        try
+        {
+            return version_spec_to_value((*self_ptr)->version());
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+
+        return Qnil;
     }
 
     /*
@@ -127,7 +163,16 @@ namespace
     {
         std::tr1::shared_ptr<const PackageID> * self_ptr;
         Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
-        return rb_str_new2(stringify((*self_ptr)->repository()->name()).c_str());
+        try
+        {
+            return rb_str_new2(stringify((*self_ptr)->repository()->name()).c_str());
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+
+        return Qnil;
     }
 
     /*
@@ -141,10 +186,19 @@ namespace
     {
         std::tr1::shared_ptr<const PackageID> * self_ptr;
         Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
-        PackageID::MetadataConstIterator it((*self_ptr)->find_metadata(StringValuePtr(raw_name)));
-        if ((*self_ptr)->end_metadata() == it)
-            return Qnil;
-        return metadata_key_to_value(*it);
+        try
+        {
+            PackageID::MetadataConstIterator it((*self_ptr)->find_metadata(StringValuePtr(raw_name)));
+            if ((*self_ptr)->end_metadata() == it)
+                return Qnil;
+            return metadata_key_to_value(*it);
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+
+        return Qnil;
     }
 
     /*
@@ -158,13 +212,21 @@ namespace
     {
         std::tr1::shared_ptr<const PackageID> * self_ptr;
         Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
-        for (PackageID::MetadataConstIterator it((*self_ptr)->begin_metadata()),
-                it_end((*self_ptr)->end_metadata()); it_end != it; ++it)
+        try
         {
-            VALUE val(metadata_key_to_value(*it));
-            if (Qnil != val)
-                rb_yield(val);
+            for (PackageID::MetadataConstIterator it((*self_ptr)->begin_metadata()),
+                    it_end((*self_ptr)->end_metadata()); it_end != it; ++it)
+            {
+                VALUE val(metadata_key_to_value(*it));
+                if (Qnil != val)
+                    rb_yield(val);
+            }
         }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+
         return Qnil;
     }
 
@@ -180,12 +242,21 @@ namespace
         std::tr1::shared_ptr<const PackageID> * self_ptr;
         Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
         VALUE result(rb_ary_new());
-        for (PackageID::MasksConstIterator it((*self_ptr)->begin_masks()),
-                it_end((*self_ptr)->end_masks()); it_end != it; ++it)
+        try
         {
-            rb_ary_push(result, mask_to_value(*it));
+            for (PackageID::MasksConstIterator it((*self_ptr)->begin_masks()),
+                    it_end((*self_ptr)->end_masks()); it_end != it; ++it)
+            {
+                rb_ary_push(result, mask_to_value(*it));
+            }
+            return result;
         }
-        return result;
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+
+        return Qnil;
     }
 
     /*
@@ -202,7 +273,15 @@ namespace
     {
         std::tr1::shared_ptr<const PackageID> * self_ptr;
         Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
-        (*self_ptr)->invalidate_masks();
+        try
+        {
+            (*self_ptr)->invalidate_masks();
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+
         return Qnil;
     }
 
@@ -220,12 +299,21 @@ namespace
         VALUE result(rb_ary_new());
         std::tr1::shared_ptr<const PackageID> * self_ptr;
         Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
-        std::tr1::shared_ptr<const Set<std::string> > breakages((*self_ptr)->breaks_portage());
-        if (breakages)
-            for (Set<std::string>::ConstIterator it(breakages->begin()),
-                     it_end(breakages->end()); it_end != it; ++it)
-                rb_ary_push(result, ID2SYM(rb_intern(it->c_str())));
-        return result;
+        try
+        {
+            std::tr1::shared_ptr<const Set<std::string> > breakages((*self_ptr)->breaks_portage());
+            if (breakages)
+                for (Set<std::string>::ConstIterator it(breakages->begin()),
+                         it_end(breakages->end()); it_end != it; ++it)
+                    rb_ary_push(result, ID2SYM(rb_intern(it->c_str())));
+            return result;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+
+        return Qnil;
     }
 
     /*
@@ -244,7 +332,16 @@ namespace
         {
             std::tr1::shared_ptr<const PackageID> * self_ptr;
             Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
-            return (self_ptr->get()->*m_)() ? Qtrue : Qfalse;
+            try
+            {
+                return (self_ptr->get()->*m_)() ? Qtrue : Qfalse;
+            }
+            catch (const std::exception &e)
+            {
+                exception_to_ruby_exception(e);
+            }
+
+            return Qnil;
         }
     };
 
@@ -370,10 +467,18 @@ namespace
             Data_Get_Struct(self, std::tr1::shared_ptr<const PackageID>, self_ptr);
             std::tr1::shared_ptr<const MetadataKey> ptr = (((**self_ptr).*m_)());
 
-            if (ptr)
+            try
             {
-                return metadata_key_to_value(((**self_ptr).*m_)());
+                if (ptr)
+                {
+                    return metadata_key_to_value(((**self_ptr).*m_)());
+                }
             }
+            catch (const std::exception & e)
+            {
+                exception_to_ruby_exception(e);
+            }
+
             return Qnil;
         }
     };

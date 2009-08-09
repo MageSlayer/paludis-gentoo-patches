@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,7 +25,8 @@ using namespace paludis::erepository;
 
 EChoiceValue::EChoiceValue(const ChoicePrefixName & r, const UnprefixedChoiceName & v, const ChoiceNameWithPrefix & np, const QualifiedPackageName & p,
         const std::tr1::shared_ptr<const UseDesc> & d,
-        bool b, bool def, bool l, bool x, const std::string & o) :
+        bool b, bool def, bool l, bool x, const std::string & o,
+        const std::string & pv) :
     _prefix(r),
     _unprefixed_name(v),
     _name_with_prefix(np),
@@ -35,7 +36,8 @@ EChoiceValue::EChoiceValue(const ChoicePrefixName & r, const UnprefixedChoiceNam
     _enabled_by_default(def),
     _locked(l),
     _explicitly_listed(x),
-    _override_description(o)
+    _override_description(o),
+    _parameter(pv)
 {
 }
 
@@ -83,5 +85,11 @@ bool
 EChoiceValue::explicitly_listed() const
 {
     return _explicitly_listed;
+}
+
+const std::string
+EChoiceValue::parameter() const
+{
+    return _parameter;
 }
 

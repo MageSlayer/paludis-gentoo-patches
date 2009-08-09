@@ -106,6 +106,28 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
+             * What string value, if any, is set for the parameter for a particular
+             * choice for a particular package?
+             *
+             * There is no difference between "not set" and "set to an empty
+             * string".
+             *
+             * Only for use by Repository, to get defaults from the environment.
+             * Clients should query the metadata key directly.
+             *
+             * The third parameter is the name of the value, which might not
+             * have been created yet.
+             *
+             * \since 0.40
+             */
+            virtual const std::string value_for_choice_parameter(
+                    const std::tr1::shared_ptr<const PackageID> &,
+                    const std::tr1::shared_ptr<const Choice> &,
+                    const UnprefixedChoiceName &
+                    ) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
              * Return a collection of known value names for a particular
              * choice.
              *

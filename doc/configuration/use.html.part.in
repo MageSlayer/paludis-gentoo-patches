@@ -29,6 +29,9 @@ specification may be any of:</p>
 
 <ul>
     <li><code>flag</code>, which enables that flag.</li>
+    <li><code>flag=value</code>, which enables that flag and sets its parameter value. Most flags do not
+    use parameters, and so any parameter value specified is ignored. See the <code>BUILD_OPTIONS: jobs</code>
+    flag below for an example of one that does.</li>
     <li><code>-flag</code>, which disables that flag.</li>
     <li><code>label:</code>, which marks any subsequent flags on that line as applying to a particular use expand
     (Gentoo) or suboption (Exherbo) label. Common examples of use expand labels are <code>VIDEO_CARDS</code>,
@@ -59,6 +62,15 @@ default <code>VIDEO_CARDS</code> from your profile, you will need to use <code>*
 
     <dt>optional_tests</dt>
     <dd>If set, Paludis will run any 'optional' tests provided by a package.</dd>
+
+    <dt>expensive_tests</dt>
+    <dd>If set, Paludis will run any 'expensive' tests provided by a package. This option should generally
+    only be set by package maintainers, since tests marked as expensive are probably too painful in terms
+    of CPU time or disk space requirements to run on user systems.</dd>
+
+    <dt>jobs</dt>
+    <dd>If set to an unsigned integer, specifies the number of jobs to run in parallel when build systems
+    support this (e.g. <code>BUILD_OPTIONS: jobs=4</code> would imply <code>make -j4</code>).</dd>
 </dl>
 
 <p>Note that these special flags are <em>not</em> use flags from an ebuild perspective. They are used only by Paludis
@@ -91,5 +103,9 @@ dev-cpp/*              doc
 
 # But we do want split debug symbols for a few packages
 dev-cpp/*              BUILD_OPTIONS: split strip
+
+# We want to run four jobs in parallel if possible (Exheres format packages
+# only; Gentoo EAPIs use the MAKEOPTS environment variable instead)
+*/*                    BUILD_OPTIONS: jobs=4
 </pre>
 

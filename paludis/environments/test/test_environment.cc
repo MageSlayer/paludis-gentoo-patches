@@ -274,6 +274,16 @@ TestEnvironment::want_choice_enabled(
         return Tribool(indeterminate);
 }
 
+const std::string
+TestEnvironment::value_for_choice_parameter(
+        const std::tr1::shared_ptr<const PackageID> &,
+        const std::tr1::shared_ptr<const Choice> &,
+        const UnprefixedChoiceName &
+        ) const
+{
+    return "";
+}
+
 std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
 TestEnvironment::known_choice_value_names(
         const std::tr1::shared_ptr<const PackageID> &,

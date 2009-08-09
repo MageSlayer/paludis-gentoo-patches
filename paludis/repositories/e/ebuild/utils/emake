@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006, 2007 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2009 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,8 +19,13 @@
 
 source "${PALUDIS_EBUILD_DIR}"/die_functions.bash
 
-echo ${EMAKE_WRAPPER} ${MAKE:-make} ${MAKEOPTS} ${EXTRA_EMAKE} "$@" 1>&2
-${EMAKE_WRAPPER} ${MAKE:-make} ${MAKEOPTS} ${EXTRA_EMAKE} "$@"
+PALUDIS_JOBS_ARGS=
+if [[ -n "${PALUDIS_JOBS_VAR}" ]] && [[ -n "${!PALUDIS_JOBS_VAR}" ]] ; then
+    PALUDIS_JOBS_ARGS="-j${!PALUDIS_JOBS_VAR}"
+fi
+
+echo ${EMAKE_WRAPPER} ${MAKE:-make} ${PALUDIS_JOBS_ARGS} ${MAKEOPTS} ${EXTRA_EMAKE} "$@" 1>&2
+${EMAKE_WRAPPER} ${MAKE:-make} ${PALUDIS_JOBS_ARGS} ${MAKEOPTS} ${EXTRA_EMAKE} "$@"
 ret=$?
 [[ 0 != $ret ]] && paludis_die_or_error "emake returned error $ret"
 exit $ret

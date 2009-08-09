@@ -99,7 +99,7 @@ namespace
             {
                 if (! s.empty())
                     s.append(", ");
-                s.append("metadata: " + stringify(metadata));
+                s.append("metadata: " + stringify(metadata) + " ");
             }
 
             std::cout << std::string(width, '\010') << s << std::flush;

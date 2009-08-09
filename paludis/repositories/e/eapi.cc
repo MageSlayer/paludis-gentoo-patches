@@ -82,6 +82,7 @@ namespace
                         value_for<n::env_ebuild_phase>(check_get(k, "env_ebuild_phase")),
                         value_for<n::env_filesdir>(check_get(k, "env_filesdir")),
                         value_for<n::env_iuse_implicit>(check_get(k, "env_iuse_implicit")),
+                        value_for<n::env_jobs>(check_get(k, "env_jobs")),
                         value_for<n::env_kv>(check_get(k, "env_kv")),
                         value_for<n::env_p>(check_get(k, "env_p")),
                         value_for<n::env_pf>(check_get(k, "env_pf")),
