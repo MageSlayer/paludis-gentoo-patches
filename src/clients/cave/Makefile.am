@@ -90,6 +90,10 @@ libcave_a_SOURCES = \
 	cmd_print_sets.cc cmd_print_sets.hh \
 	cmd_print_sync_protocols.cc cmd_print_sync_protocols.hh \
 	cmd_resolve.cc cmd_resolve.hh \
+	cmd_resolve_cmdline.cc cmd_resolve_cmdline.hh \
+	cmd_resolve_display_callback.cc cmd_resolve_display_callback.hh \
+	cmd_resolve_display_explanations.cc cmd_resolve_display_explanations.hh \
+	cmd_resolve_dump.cc cmd_resolve_dump.hh \
 	cmd_show.cc cmd_show.hh \
 	cmd_sync.cc cmd_sync.hh \
 	exceptions.cc exceptions.hh \
