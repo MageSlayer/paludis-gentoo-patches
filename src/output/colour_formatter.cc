@@ -53,7 +53,7 @@ ColourFormatter::format(const ChoiceValue & f, const format::Forced &) const
     std::string s(colour(cl_flag_on, "(" + stringify(f.unprefixed_name())));
     if (! f.parameter().empty())
         s.append("=" + f.parameter());
-    return s + ")";
+    return s + colour(cl_flag_on, ")");
 }
 
 std::string
