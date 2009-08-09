@@ -34,6 +34,8 @@ namespace paludis
             const std::string green();
             const std::string bold_red();
             const std::string red();
+            const std::string bold_yellow();
+            const std::string yellow();
 
             const std::string bold_normal();
             const std::string normal();

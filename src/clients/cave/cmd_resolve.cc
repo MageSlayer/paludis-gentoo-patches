@@ -21,6 +21,7 @@
 #include "cmd_resolve_cmdline.hh"
 #include "cmd_resolve_display_callback.hh"
 #include "cmd_resolve_display_explanations.hh"
+#include "cmd_resolve_display_resolution.hh"
 #include "cmd_resolve_dump.hh"
 #include "exceptions.hh"
 #include "command_command_line.hh"
@@ -98,27 +99,6 @@ namespace
                 seen_sets = true;
             }
         }
-    }
-
-    void display_resolution(
-            const std::tr1::shared_ptr<Environment> &,
-            const std::tr1::shared_ptr<Resolver> & resolver,
-            const ResolveCommandLine &)
-    {
-        Context context("When displaying chosen resolution:");
-
-        for (Resolver::ConstIterator c(resolver->begin()), c_end(resolver->end()) ;
-                c != c_end ; ++c)
-        {
-            const std::tr1::shared_ptr<const PackageID> id((*c)->decision()->if_package_id());
-            if (id)
-                std::cout << "* " << id->canonical_form(idcf_no_version) << " " << id->canonical_form(idcf_version)
-                    << " to " << *(*c)->destinations() << std::endl;
-            else
-                throw InternalError(PALUDIS_HERE, "why did that happen?");
-        }
-
-        std::cout << std::endl;
     }
 
     UseInstalled use_installed_from_cmdline(const args::EnumArg & a, const bool is_set)

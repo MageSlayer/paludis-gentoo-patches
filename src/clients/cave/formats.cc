@@ -59,6 +59,18 @@ paludis::cave::c::bold_red()
 }
 
 const std::string
+paludis::cave::c::yellow()
+{
+    return "\033[0;33m";
+}
+
+const std::string
+paludis::cave::c::bold_yellow()
+{
+    return "\033[1;33m";
+}
+
+const std::string
 paludis::cave::c::normal()
 {
     return "\033[0;0m";
