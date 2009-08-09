@@ -60,7 +60,6 @@ using namespace paludis;
 using namespace paludis::resolver;
 
 typedef std::map<QPN_S, std::tr1::shared_ptr<Resolution> > ResolutionsByQPN_SMap;
-typedef std::map<QPN_S, std::tr1::shared_ptr<Constraints> > InitialConstraints;
 typedef std::list<std::tr1::shared_ptr<const Resolution> > OrderedResolutionsList;
 
 namespace paludis
