@@ -624,6 +624,16 @@ NoConfigEnvironment::want_choice_enabled(
     return Tribool(indeterminate);
 }
 
+const std::string
+NoConfigEnvironment::value_for_choice_parameter(
+        const std::tr1::shared_ptr<const PackageID> &,
+        const std::tr1::shared_ptr<const Choice> &,
+        const UnprefixedChoiceName &
+        ) const
+{
+    return "";
+}
+
 std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
 NoConfigEnvironment::known_choice_value_names(
         const std::tr1::shared_ptr<const PackageID> &,

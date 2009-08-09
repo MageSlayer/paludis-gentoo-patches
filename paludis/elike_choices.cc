@@ -21,6 +21,8 @@
 #include <paludis/environment.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/destringify.hh>
+#include <paludis/util/log.hh>
 
 using namespace paludis;
 
@@ -84,6 +86,12 @@ ELikeStripChoiceValue::explicitly_listed() const
     return true;
 }
 
+const std::string
+ELikeStripChoiceValue::parameter() const
+{
+    return "";
+}
+
 const UnprefixedChoiceName
 ELikeSplitChoiceValue::canonical_unprefixed_name()
 {
@@ -142,6 +150,12 @@ bool
 ELikeSplitChoiceValue::explicitly_listed() const
 {
     return true;
+}
+
+const std::string
+ELikeSplitChoiceValue::parameter() const
+{
+    return "";
 }
 
 const UnprefixedChoiceName
@@ -204,6 +218,12 @@ ELikeOptionalTestsChoiceValue::explicitly_listed() const
     return true;
 }
 
+const std::string
+ELikeOptionalTestsChoiceValue::parameter() const
+{
+    return "";
+}
+
 const UnprefixedChoiceName
 ELikeRecommendedTestsChoiceValue::canonical_unprefixed_name()
 {
@@ -262,6 +282,12 @@ bool
 ELikeRecommendedTestsChoiceValue::explicitly_listed() const
 {
     return true;
+}
+
+const std::string
+ELikeRecommendedTestsChoiceValue::parameter() const
+{
+    return "";
 }
 
 const ChoicePrefixName
@@ -340,5 +366,101 @@ bool
 ELikeExpensiveTestsChoiceValue::explicitly_listed() const
 {
     return true;
+}
+
+const std::string
+ELikeExpensiveTestsChoiceValue::parameter() const
+{
+    return "";
+}
+
+const UnprefixedChoiceName
+ELikeJobsChoiceValue::canonical_unprefixed_name()
+{
+    return UnprefixedChoiceName("jobs");
+}
+
+const ChoiceNameWithPrefix
+ELikeJobsChoiceValue::canonical_name_with_prefix()
+{
+    return ChoiceNameWithPrefix(stringify(canonical_build_options_prefix()) + ":" + stringify(canonical_unprefixed_name()));
+}
+
+namespace
+{
+    std::string get_jobs(const std::tr1::shared_ptr<const PackageID> & id,
+            const std::string & env_value)
+    {
+        if (env_value.empty())
+            return "1";
+
+        try
+        {
+            return stringify(destringify<unsigned>(env_value));
+        }
+        catch (const DestringifyError &)
+        {
+            Context context("When getting value of the jobs option for '" + stringify(*id) + "':");
+            Log::get_instance()->message("elike_jobs_choice_value.invalid", ll_warning, lc_context)
+                << "Value '" << env_value << "' is not an unsigned integer, using \"1\" instead";
+            return "1";
+        }
+    }
+}
+
+ELikeJobsChoiceValue::ELikeJobsChoiceValue(const std::tr1::shared_ptr<const PackageID> & id,
+        const Environment * const env, const std::tr1::shared_ptr<const Choice> & choice) :
+    _enabled(env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_true()),
+    _parameter(get_jobs(id, env->value_for_choice_parameter(id, choice, canonical_unprefixed_name())))
+{
+}
+
+const UnprefixedChoiceName
+ELikeJobsChoiceValue::unprefixed_name() const
+{
+    return canonical_unprefixed_name();
+}
+
+const ChoiceNameWithPrefix
+ELikeJobsChoiceValue::name_with_prefix() const
+{
+    return canonical_name_with_prefix();
+}
+
+bool
+ELikeJobsChoiceValue::enabled() const
+{
+    return _enabled;
+}
+
+bool
+ELikeJobsChoiceValue::enabled_by_default() const
+{
+    return false;
+}
+
+bool
+ELikeJobsChoiceValue::locked() const
+{
+    return false;
+}
+
+const std::string
+ELikeJobsChoiceValue::description() const
+{
+    return "Set with an integer value to specify how many jobs the package's build "
+        "system should use, where supported";
+}
+
+bool
+ELikeJobsChoiceValue::explicitly_listed() const
+{
+    return true;
+}
+
+const std::string
+ELikeJobsChoiceValue::parameter() const
+{
+    return _parameter;
 }
 

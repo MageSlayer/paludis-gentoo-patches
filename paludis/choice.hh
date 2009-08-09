@@ -317,6 +317,9 @@ namespace paludis
      *
      * For example, the 'nls' flag in 'USE'.
      *
+     * Some choice values have an associated parameter. For example,
+     * build_options:jobs=4.
+     *
      * \ingroup g_choices
      * \since 0.32
      */
@@ -371,6 +374,13 @@ namespace paludis
              * in IUSE but that end up as a ChoiceValue anyway.
              */
             virtual bool explicitly_listed() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * This flag's parameter, or an empty string if it doesn't have one.
+             *
+             * \since 0.40
+             */
+            virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
     };

@@ -1329,7 +1329,7 @@ EbuildID::make_choice_value(
 
     return make_shared_ptr(new EChoiceValue(choice->prefix(), value_name, ChoiceNameWithPrefix(name_with_prefix), name(),
                 _imp->repository->use_desc(),
-                enabled, enabled_by_default, force_locked || locked, explicitly_listed, override_description));
+                enabled, enabled_by_default, force_locked || locked, explicitly_listed, override_description, ""));
 }
 
 namespace
@@ -1427,6 +1427,16 @@ EbuildID::add_build_options(const std::tr1::shared_ptr<Choices> & choices) const
         {
             build_options->add(make_shared_ptr(new ELikeSplitChoiceValue(shared_from_this(), _imp->environment, build_options)));
             build_options->add(make_shared_ptr(new ELikeStripChoiceValue(shared_from_this(), _imp->environment, build_options)));
+        }
+
+        /* jobs */
+        if (! eapi()->supported()->ebuild_environment_variables()->env_jobs().empty())
+        {
+            if (! _imp->defined_phases)
+                throw InternalError(PALUDIS_HERE, "bug! no defined_phases yet");
+
+            build_options->add(make_shared_ptr(new ELikeJobsChoiceValue(
+                            shared_from_this(), _imp->environment, build_options)));
         }
     }
 }

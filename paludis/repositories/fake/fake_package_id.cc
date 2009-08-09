@@ -470,6 +470,11 @@ namespace
         {
             return true;
         }
+
+        virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            return env->value_for_choice_parameter(id, choice, value_name);
+        }
     };
 }
 

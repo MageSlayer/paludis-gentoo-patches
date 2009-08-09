@@ -48,6 +48,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
+#include <paludis/elike_choices.hh>
 
 #include <sys/resource.h>
 #include <sys/time.h>
@@ -87,6 +88,21 @@ bool
 EbuildCommand::failure()
 {
     return false;
+}
+
+namespace
+{
+    std::string get_jobs(const std::tr1::shared_ptr<const PackageID> & id)
+    {
+        std::tr1::shared_ptr<const ChoiceValue> choice;
+        if (id->choices_key())
+            choice = id->choices_key()->value()->find_by_name_with_prefix(
+                    ELikeJobsChoiceValue::canonical_name_with_prefix());
+        if (choice && choice->enabled())
+            return choice->parameter();
+        else
+            return "";
+    }
 }
 
 bool
@@ -274,6 +290,12 @@ EbuildCommand::operator() ()
         cmd
             .with_setenv("EXLIBSDIRS", join(params.exlibsdirs()->begin(),
                         params.exlibsdirs()->end(), " "));
+
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_jobs().empty())
+        cmd
+            .with_setenv("PALUDIS_JOBS_VAR", params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_jobs())
+            .with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_jobs(),
+                    get_jobs(params.package_id()));
 
     if (params.package_id()->eapi()->supported()->ebuild_options()->want_portage_emulation_vars())
         cmd = add_portage_vars(cmd);

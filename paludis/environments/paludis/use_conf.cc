@@ -39,6 +39,7 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/choice.hh>
 #include <tr1/unordered_map>
@@ -49,9 +50,36 @@
 using namespace paludis;
 using namespace paludis::paludis_environment;
 
+namespace paludis
+{
+    namespace n
+    {
+        struct enabled;
+        struct parameter;
+    }
+}
+
+namespace
+{
+    struct FlagNameState
+    {
+        NamedValue<n::enabled, Tribool> enabled;
+        NamedValue<n::parameter, std::string> parameter;
+    };
+
+    std::pair<std::string, std::string> split_equals(const std::string & s)
+    {
+        std::string::size_type p(s.find('='));
+        if (std::string::npos == p)
+            return std::make_pair(s, "");
+        else
+            return std::make_pair(s.substr(0, p), s.substr(p + 1));
+    }
+}
+
 typedef std::pair<ChoicePrefixName, UnprefixedChoiceName> FlagNamePair;
 
-typedef std::tr1::unordered_map<FlagNamePair, Tribool, Hash<FlagNamePair> > FlagNamePairWithStateMap;
+typedef std::tr1::unordered_map<FlagNamePair, FlagNameState, Hash<FlagNamePair> > FlagNamePairWithStateMap;
 typedef std::list<ChoicePrefixName> MinusStarPrefixList;
 typedef std::pair<FlagNamePairWithStateMap, MinusStarPrefixList> UseInfo;
 typedef std::pair<std::tr1::shared_ptr<const PackageDepSpec>, UseInfo> PDSWithUseInfo;
@@ -132,8 +160,15 @@ UseConf::add(const FSEntry & filename)
                     if (*t == "-*")
                         i->second.second.push_back(prefix);
                     else if ('-' == t->at(0))
+                    {
+                        std::pair<std::string, std::string> ts(split_equals(t->substr(1)));
+                        FlagNameState s(make_named_values<FlagNameState>(
+                                    value_for<n::enabled>(false),
+                                    value_for<n::parameter>(ts.second)
+                                    ));
                         i->second.first.insert(std::make_pair(
-                                    FlagNamePair(prefix, UnprefixedChoiceName(t->substr(1))), false)).first->second = false;
+                                    FlagNamePair(prefix, UnprefixedChoiceName(ts.first)), s)).first->second = s;
+                    }
                     else if (':' == t->at(t->length() - 1))
                     {
                         std::string p;
@@ -141,7 +176,15 @@ UseConf::add(const FSEntry & filename)
                         prefix = ChoicePrefixName(p);
                     }
                     else
-                        i->second.first.insert(std::make_pair(FlagNamePair(prefix, UnprefixedChoiceName(*t)), true)).first->second = true;
+                    {
+                        std::pair<std::string, std::string> ts(split_equals(*t));
+                        FlagNameState s(make_named_values<FlagNameState>(
+                                    value_for<n::enabled>(true),
+                                    value_for<n::parameter>(ts.second)
+                                    ));
+                        i->second.first.insert(std::make_pair(
+                                    FlagNamePair(prefix, UnprefixedChoiceName(ts.first)), s)).first->second = s;
+                    }
                 }
             }
             else
@@ -155,8 +198,16 @@ UseConf::add(const FSEntry & filename)
                     if (*t == "-*")
                         i->second.second.push_back(prefix);
                     else if ('-' == t->at(0))
+                    {
+                        std::pair<std::string, std::string> ts(split_equals(t->substr(1)));
+                        FlagNameState s(make_named_values<FlagNameState>(
+                                    value_for<n::enabled>(false),
+                                    value_for<n::parameter>(ts.second)
+                                    ));
                         i->second.first.insert(
-                                std::make_pair(FlagNamePair(prefix, UnprefixedChoiceName(t->substr(1))), false)).first->second = false;
+                                std::make_pair(FlagNamePair(
+                                        prefix, UnprefixedChoiceName(ts.first)), s)).first->second = s;
+                    }
                     else if (':' == t->at(t->length() - 1))
                     {
                         std::string p;
@@ -164,7 +215,15 @@ UseConf::add(const FSEntry & filename)
                         prefix = ChoicePrefixName(p);
                     }
                     else
-                        i->second.first.insert(std::make_pair(FlagNamePair(prefix, UnprefixedChoiceName(*t)), true)).first->second = true;
+                    {
+                        std::pair<std::string, std::string> ts(split_equals(*t));
+                        FlagNameState s(make_named_values<FlagNameState>(
+                                    value_for<n::enabled>(true),
+                                    value_for<n::parameter>(ts.second)
+                                    ));
+                        i->second.first.insert(std::make_pair(FlagNamePair(
+                                        prefix, UnprefixedChoiceName(ts.first)), s)).first->second = s;
+                    }
                 }
             }
         }
@@ -178,8 +237,15 @@ UseConf::add(const FSEntry & filename)
                 if (*t == "-*")
                     i->second.second.second.push_back(prefix);
                 else if ('-' == t->at(0))
+                {
+                    std::pair<std::string, std::string> ts(split_equals(t->substr(1)));
+                    FlagNameState s(make_named_values<FlagNameState>(
+                                value_for<n::enabled>(false),
+                                value_for<n::parameter>(ts.second)
+                                ));
                     i->second.second.first.insert(std::make_pair(
-                                FlagNamePair(prefix, UnprefixedChoiceName(t->substr(1))), false)).first->second = false;
+                                FlagNamePair(prefix, UnprefixedChoiceName(ts.first)), s)).first->second = s;
+                }
                 else if (':' == t->at(t->length() - 1))
                 {
                     std::string p;
@@ -187,8 +253,15 @@ UseConf::add(const FSEntry & filename)
                     prefix = ChoicePrefixName(p);
                 }
                 else
+                {
+                    std::pair<std::string, std::string> ts(split_equals(*t));
+                    FlagNameState s(make_named_values<FlagNameState>(
+                                value_for<n::enabled>(true),
+                                value_for<n::parameter>(ts.second)
+                                ));
                     i->second.second.first.insert(std::make_pair(
-                                FlagNamePair(prefix, UnprefixedChoiceName(*t)), true)).first->second = true;
+                                FlagNamePair(prefix, UnprefixedChoiceName(ts.first)), s)).first->second = s;
+                }
             }
         }
     }
@@ -219,7 +292,7 @@ UseConf::want_choice_enabled(
 
             FlagNamePairWithStateMap::const_iterator i(p->second.first.find(std::make_pair(choice->prefix(), f)));
             if (p->second.first.end() != i)
-                result = i->second;
+                result = i->second.enabled();
 
             if (result.is_indeterminate())
                 for (MinusStarPrefixList::const_iterator m(p->second.second.begin()), m_end(p->second.second.end()) ;
@@ -260,7 +333,7 @@ UseConf::want_choice_enabled(
 
         FlagNamePairWithStateMap::const_iterator i(r->second.second.first.find(std::make_pair(choice->prefix(), f)));
         if (i != r->second.second.first.end())
-            result = i->second;
+            result = i->second.enabled();
 
         if (result.is_indeterminate())
             for (MinusStarPrefixList::const_iterator m(r->second.second.second.begin()), m_end(r->second.second.second.end()) ;
@@ -289,7 +362,7 @@ UseConf::want_choice_enabled(
 
         FlagNamePairWithStateMap::const_iterator i(p->second.first.find(std::make_pair(choice->prefix(), f)));
         if (p->second.first.end() != i)
-            result = i->second;
+            result = i->second.enabled();
 
         if (result.is_indeterminate())
             for (MinusStarPrefixList::const_iterator m(p->second.second.begin()), m_end(p->second.second.end()) ;
@@ -308,6 +381,85 @@ UseConf::want_choice_enabled(
 
     return result;
 }
+
+const std::string
+UseConf::value_for_choice_parameter(
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const Choice> & choice,
+        const UnprefixedChoiceName & f
+        ) const
+{
+    Context context("When checking parameter of flag prefix '" + stringify(choice->prefix()) +
+            "' name '" + stringify(f) + "' for '" + stringify(*id) + "':");
+
+    std::string result;
+    bool found(false);
+
+    /* highest priority: specific */
+    Qualified::const_iterator q(_imp->qualified.find(id->name()));
+    if (_imp->qualified.end() != q)
+    {
+        for (PDSWithUseInfoList::const_iterator p(q->second.begin()), p_end(q->second.end()) ; p != p_end ; ++p)
+        {
+            if (! match_package(*_imp->env, *p->first, *id, MatchPackageOptions()))
+                continue;
+
+            FlagNamePairWithStateMap::const_iterator i(p->second.first.find(std::make_pair(choice->prefix(), f)));
+            if (p->second.first.end() != i)
+            {
+                result = i->second.parameter();
+                found = true;
+            }
+        }
+    }
+
+    if (found)
+        return result;
+
+    /* next: named sets */
+    for (Sets::iterator r(_imp->sets.begin()), r_end(_imp->sets.end()) ; r != r_end ; ++r)
+    {
+        Lock lock(_imp->set_mutex);
+        if (! r->second.first)
+        {
+            r->second.first = _imp->env->set(r->first);
+            if (! r->second.first)
+            {
+                Log::get_instance()->message("paludis_environment.use_conf.unknown_set", ll_warning, lc_no_context) << "Set name '"
+                    << r->first << "' does not exist";
+                r->second.first.reset(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+            }
+        }
+
+        if (! match_package_in_set(*_imp->env, *r->second.first, *id, MatchPackageOptions()))
+            continue;
+
+        FlagNamePairWithStateMap::const_iterator i(r->second.second.first.find(std::make_pair(choice->prefix(), f)));
+        if (i != r->second.second.first.end())
+        {
+            result = i->second.parameter();
+            found = true;
+        }
+    }
+
+    if (found)
+        return result;
+
+    /* last: unspecific */
+
+    for (Unqualified::const_iterator p(_imp->unqualified.begin()), p_end(_imp->unqualified.end()) ; p != p_end ; ++p)
+    {
+        if (! match_package(*_imp->env, *p->first, *id, MatchPackageOptions()))
+            continue;
+
+        FlagNamePairWithStateMap::const_iterator i(p->second.first.find(std::make_pair(choice->prefix(), f)));
+        if (p->second.first.end() != i)
+            result = i->second.parameter();
+    }
+
+    return result;
+}
+
 
 std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
 UseConf::known_choice_value_names(

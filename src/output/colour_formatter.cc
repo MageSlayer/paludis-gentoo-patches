@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,7 +35,10 @@ ColourFormatter::format(const ChoiceValue & f, const format::Plain &) const
 std::string
 ColourFormatter::format(const ChoiceValue & f, const format::Enabled &) const
 {
-    return colour(cl_flag_on, stringify(f.unprefixed_name()));
+    std::string s(colour(cl_flag_on, stringify(f.unprefixed_name())));
+    if (! f.parameter().empty())
+        s.append("=" + f.parameter());
+    return s;
 }
 
 std::string
@@ -47,7 +50,10 @@ ColourFormatter::format(const ChoiceValue & f, const format::Disabled &) const
 std::string
 ColourFormatter::format(const ChoiceValue & f, const format::Forced &) const
 {
-    return colour(cl_flag_on, "(" + stringify(f.unprefixed_name()) + ")");
+    std::string s(colour(cl_flag_on, "(" + stringify(f.unprefixed_name())));
+    if (! f.parameter().empty())
+        s.append("=" + f.parameter());
+    return s + ")";
 }
 
 std::string
