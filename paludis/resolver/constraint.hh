@@ -23,6 +23,7 @@
 #include <paludis/resolver/constraint-fwd.hh>
 #include <paludis/resolver/reason-fwd.hh>
 #include <paludis/resolver/use_installed-fwd.hh>
+#include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/dep_spec.hh>
 #include <tr1/memory>
@@ -31,10 +32,9 @@ namespace paludis
 {
     namespace n
     {
-        struct base_spec;
-        struct is_blocker;
         struct nothing_is_fine_too;
         struct reason;
+        struct spec;
         struct to_destination_slash;
         struct use_installed;
     }
@@ -43,10 +43,9 @@ namespace paludis
     {
         struct Constraint
         {
-            NamedValue<n::base_spec, PackageDepSpec> base_spec;
-            NamedValue<n::is_blocker, bool> is_blocker;
             NamedValue<n::nothing_is_fine_too, bool> nothing_is_fine_too;
             NamedValue<n::reason, std::tr1::shared_ptr<const Reason> > reason;
+            NamedValue<n::spec, PackageOrBlockDepSpec> spec;
             NamedValue<n::to_destination_slash, bool> to_destination_slash;
             NamedValue<n::use_installed, UseInstalled> use_installed;
         };

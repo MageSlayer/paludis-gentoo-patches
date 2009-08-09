@@ -356,10 +356,9 @@ Resolver::_make_constraint_from_target(
         const std::tr1::shared_ptr<const Reason> & reason) const
 {
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                    value_for<n::base_spec>(spec),
-                    value_for<n::is_blocker>(false),
                     value_for<n::nothing_is_fine_too>(false),
                     value_for<n::reason>(reason),
+                    value_for<n::spec>(spec),
                     value_for<n::to_destination_slash>(true),
                     value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(qpn_s, spec, reason))
                     )));
@@ -371,19 +370,17 @@ Resolver::_make_constraint_from_dependency(const QPN_S & qpn_s, const SanitisedD
 {
     if (dep.spec().if_package())
         return make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                        value_for<n::base_spec>(*dep.spec().if_package()),
-                        value_for<n::is_blocker>(false),
                         value_for<n::nothing_is_fine_too>(false),
                         value_for<n::reason>(reason),
+                        value_for<n::spec>(*dep.spec().if_package()),
                         value_for<n::to_destination_slash>(_dependency_to_destination_slash(qpn_s, dep)),
                         value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(qpn_s, *dep.spec().if_package(), reason))
                         )));
     else if (dep.spec().if_block())
         return make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                        value_for<n::base_spec>(*dep.spec().if_block()->blocked_spec()),
-                        value_for<n::is_blocker>(true),
                         value_for<n::nothing_is_fine_too>(true),
                         value_for<n::reason>(reason),
+                        value_for<n::spec>(dep.spec()),
                         value_for<n::to_destination_slash>(true),
                         value_for<n::use_installed>(ui_if_possible)
                         )));
@@ -450,7 +447,12 @@ Resolver::_constraint_matches(
     }
 
     if (decision->if_package_id())
-        ok = ok && (c->is_blocker() ^ match_package(*_imp->env, c->base_spec(), *decision->if_package_id(), MatchPackageOptions()));
+    {
+        if (c->spec().if_block())
+            ok = ok && ! match_package(*_imp->env, *c->spec().if_block()->blocked_spec(), *decision->if_package_id(), MatchPackageOptions());
+        else
+            ok = ok && match_package(*_imp->env, *c->spec().if_package(), *decision->if_package_id(), MatchPackageOptions());
+    }
     else
         ok = ok && c->nothing_is_fine_too();
 
@@ -709,7 +711,7 @@ Resolver::_resolve_arrows()
                 c_end(i->second->constraints()->end()) ;
                 c != c_end ; ++c)
         {
-            if ((*c)->is_blocker())
+            if ((*c)->spec().if_block())
             {
                 /* todo: strong blocks do impose arrows */
                 continue;
@@ -1004,10 +1006,9 @@ Resolver::_make_constraint_for_preloading(
         throw InternalError(PALUDIS_HERE, "not decided. shouldn't happen.");
 
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                    value_for<n::base_spec>(d->if_package_id()->uniquely_identifying_spec()),
-                    value_for<n::is_blocker>(false),
                     value_for<n::nothing_is_fine_too>(false),
                     value_for<n::reason>(reason),
+                    value_for<n::spec>(d->if_package_id()->uniquely_identifying_spec()),
                     value_for<n::to_destination_slash>(false),
                     value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(
                             qpn_s, d->if_package_id()->uniquely_identifying_spec(), reason))
