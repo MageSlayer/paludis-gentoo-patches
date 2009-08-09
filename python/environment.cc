@@ -421,6 +421,15 @@ class EnvironmentImplementationWrapper :
             throw PythonMethodNotImplemented("EnvironmentImplementation", "want_choice_enabled");
         }
 
+        virtual const std::string value_for_choice_parameter(
+                const std::tr1::shared_ptr<const PackageID> &,
+                const std::tr1::shared_ptr<const Choice> &,
+                const UnprefixedChoiceName &
+                ) const
+        {
+            throw PythonMethodNotImplemented("EnvironmentImplementation", "value_for_choice_parameter");
+        }
+
         virtual std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
                 const std::tr1::shared_ptr<const PackageID> &,
                 const std::tr1::shared_ptr<const Choice> &
