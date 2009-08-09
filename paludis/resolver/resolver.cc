@@ -487,6 +487,13 @@ Resolver::_try_to_find_decision_for(const QPN_S & qpn_s,
             break;
         }
 
+    /* nothing is only fine if there's nothing installed in that qpn:s */
+    if (nothing_is_fine_too)
+        nothing_is_fine_too = (*_imp->env)[selection::SomeArbitraryVersion(
+                generator::Package(qpn_s.package()) |
+                qpn_s.make_slot_filter() |
+                filter::SupportsAction<InstalledAction>())]->empty();
+
     if (nothing_is_fine_too)
         return _decision_from_package_id(qpn_s, make_null_shared_ptr());
 
