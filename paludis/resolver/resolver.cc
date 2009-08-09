@@ -385,7 +385,7 @@ Resolver::_make_constraint_from_dependency(const QPN_S & qpn_s, const SanitisedD
                         value_for<n::is_blocker>(true),
                         value_for<n::nothing_is_fine_too>(true),
                         value_for<n::reason>(reason),
-                        value_for<n::to_destination_slash>(false),
+                        value_for<n::to_destination_slash>(true),
                         value_for<n::use_installed>(ui_if_possible)
                         )));
     else
