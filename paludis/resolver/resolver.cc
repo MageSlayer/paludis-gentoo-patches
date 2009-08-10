@@ -857,13 +857,7 @@ Resolver::_decision_from_package_id(const QPN_S & qpn_s, const std::tr1::shared_
 
     std::tr1::shared_ptr<const PackageIDSequence> comparison_ids;
 
-    if (is_installed)
-        comparison_ids = ((*_imp->env)[selection::BestVersionOnly(
-                    generator::Package(qpn_s.package()) |
-                    qpn_s.make_slot_filter() |
-                    filter::SupportsAction<InstallAction>() |
-                    filter::NotMasked())]);
-    else if (! is_nothing)
+    if (! is_nothing)
         comparison_ids = ((*_imp->env)[selection::BestVersionOnly(
                     generator::Package(qpn_s.package()) |
                     qpn_s.make_slot_filter() |
