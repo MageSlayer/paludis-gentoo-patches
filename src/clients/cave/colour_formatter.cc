@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,6 +22,7 @@
 #include "format_general.hh"
 #include <paludis/util/stringify.hh>
 #include <paludis/name.hh>
+#include <paludis/choice.hh>
 
 using namespace paludis;
 using namespace cave;
@@ -29,6 +30,50 @@ using namespace cave;
 ColourFormatter::ColourFormatter(const int initial_indent) :
     _initial_indent(initial_indent)
 {
+}
+
+std::string
+ColourFormatter::format(const paludis::ChoiceValue & s, const paludis::format::Plain &) const
+{
+    return format_general_s(f::colour_formatter_choice_value_plain(), stringify(s.name_with_prefix()));
+}
+
+std::string
+ColourFormatter::format(const paludis::ChoiceValue & s, const paludis::format::Enabled &) const
+{
+    return format_general_kv(f::colour_formatter_choice_value_enabled(),
+            stringify(s.unprefixed_name()), s.parameter().empty() ? "" : "=" + s.parameter());
+}
+
+std::string
+ColourFormatter::format(const paludis::ChoiceValue & s, const paludis::format::Disabled &) const
+{
+    return format_general_s(f::colour_formatter_choice_value_disabled(), stringify(s.unprefixed_name()));
+}
+
+std::string
+ColourFormatter::format(const paludis::ChoiceValue & s, const paludis::format::Forced &) const
+{
+    return format_general_kv(f::colour_formatter_choice_value_forced(),
+            stringify(s.unprefixed_name()), s.parameter().empty() ? "" : "=" + s.parameter());
+}
+
+std::string
+ColourFormatter::format(const paludis::ChoiceValue & s, const paludis::format::Masked &) const
+{
+    return format_general_s(f::colour_formatter_choice_value_masked(), stringify(s.unprefixed_name()));
+}
+
+std::string
+ColourFormatter::decorate(const paludis::ChoiceValue &, const std::string & f, const paludis::format::Added &) const
+{
+    return f + "+";
+}
+
+std::string
+ColourFormatter::decorate(const paludis::ChoiceValue &, const std::string & f, const paludis::format::Changed &) const
+{
+    return f + "*";
 }
 
 std::string

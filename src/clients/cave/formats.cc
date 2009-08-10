@@ -275,6 +275,36 @@ paludis::cave::f::colour_formatter_license_dep_spec_unaccepted()
 }
 
 const std::string
+paludis::cave::f::colour_formatter_choice_value_plain()
+{
+    return "%s";
+}
+
+const std::string
+paludis::cave::f::colour_formatter_choice_value_enabled()
+{
+    return c::green() + "%k" + c::normal() + "%v";
+}
+
+const std::string
+paludis::cave::f::colour_formatter_choice_value_disabled()
+{
+    return c::red() + "-%s" + c::normal();
+}
+
+const std::string
+paludis::cave::f::colour_formatter_choice_value_forced()
+{
+    return c::green() + "(%k%v)" + c::normal();
+}
+
+const std::string
+paludis::cave::f::colour_formatter_choice_value_masked()
+{
+    return c::red() + "(-%s)" + c::normal();
+}
+
+const std::string
 paludis::cave::f::colour_formatter_conditional_dep_spec_plain()
 {
     return "%s";

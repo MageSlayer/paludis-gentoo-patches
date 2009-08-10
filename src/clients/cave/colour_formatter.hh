@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -42,6 +42,7 @@ namespace paludis
             public CanFormat<BlockDepSpec>,
             public CanFormat<NamedSetDepSpec>,
             public CanFormat<PlainTextLabelDepSpec>,
+            public CanFormat<ChoiceValue>,
             public CanSpace
         {
             private:
@@ -49,6 +50,14 @@ namespace paludis
 
             public:
                 ColourFormatter(const int initial_indent);
+
+                std::string format(const paludis::ChoiceValue &, const paludis::format::Plain &) const;
+                std::string format(const paludis::ChoiceValue &, const paludis::format::Enabled &) const;
+                std::string format(const paludis::ChoiceValue &, const paludis::format::Disabled &) const;
+                std::string format(const paludis::ChoiceValue &, const paludis::format::Forced &) const;
+                std::string format(const paludis::ChoiceValue &, const paludis::format::Masked &) const;
+                std::string decorate(const paludis::ChoiceValue &, const std::string &, const paludis::format::Added &) const;
+                std::string decorate(const paludis::ChoiceValue &, const std::string &, const paludis::format::Changed &) const;
 
                 std::string format(const KeywordName &, const format::Plain &) const;
                 std::string format(const KeywordName &, const format::Accepted &) const;

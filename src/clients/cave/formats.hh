@@ -85,6 +85,12 @@ namespace paludis
             const std::string colour_formatter_keyword_name_accepted();
             const std::string colour_formatter_keyword_name_unaccepted();
 
+            const std::string colour_formatter_choice_value_plain();
+            const std::string colour_formatter_choice_value_enabled();
+            const std::string colour_formatter_choice_value_disabled();
+            const std::string colour_formatter_choice_value_forced();
+            const std::string colour_formatter_choice_value_masked();
+
             const std::string colour_formatter_string_plain();
 
             const std::string colour_formatter_package_id_plain();
