@@ -29,6 +29,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/iterator_funcs.hh>
 #include <paludis/package_id.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>

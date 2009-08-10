@@ -25,6 +25,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/slot_requirement.hh>
 #include <paludis/metadata_key.hh>
@@ -415,4 +416,6 @@ PackageOrBlockDepSpec::PackageOrBlockDepSpec(const PackageDepSpec & s) :
     if_package(value_for<n::if_package>(make_shared_ptr(new PackageDepSpec(s))))
 {
 }
+
+template class WrappedForwardIterator<SanitisedDependencies::ConstIteratorTag, const SanitisedDependency>;
 
