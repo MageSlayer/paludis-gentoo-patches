@@ -210,13 +210,17 @@ ebuild_source_profile()
 
 ebuild_scrub_environment()
 {
+    local paludis_declared_functions
+    paludis_declared_functions=$(declare -F | while read paludis_v ; do
+        echo -n ${paludis_v#declare -f } " "
+    done )
+
     (
         ebuild_safe_source "${1}" PATH PALUDIS_SOURCE_MERGED_VARIABLES \
-            PALUDIS_BRACKET_MERGED_VARIABLES LD_LIBRARY_PATH || exit 1
+            PALUDIS_BRACKET_MERGED_VARIABLES LD_LIBRARY_PATH paludis_declared_functions || exit 1
 
-        unset -f diefunc perform_hook inherit builtin_loadenv builtin_saveenv
-        unset -f ebuild_safe_source portageq best_version has_version paludis_pipe_command
-        unset -f paludis_rewrite_var default
+        unset -f ${paludis_declared_functions}
+        unset -v paludis_declared_functions
 
         if [[ "${2}" == "--pivot" ]] ; then
             unset -f ${PALUDIS_IGNORE_PIVOT_ENV_FUNCTIONS}
