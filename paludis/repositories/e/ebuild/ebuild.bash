@@ -212,7 +212,8 @@ ebuild_scrub_environment()
 {
     local paludis_declared_functions
     paludis_declared_functions=$(declare -F | while read paludis_v ; do
-        echo -n ${paludis_v#declare -f } " "
+        f=${paludis_v#declare -f }
+        has ${f} ${PALUDIS_EBUILD_FUNCTIONS} || echo -n ${f} " "
     done )
 
     (
