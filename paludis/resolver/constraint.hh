@@ -58,6 +58,8 @@ namespace paludis
                 ~Constraints();
 
                 UseInstalled strictest_use_installed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool nothing_is_fine_too() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool to_destination_slash() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void add(const std::tr1::shared_ptr<const Constraint> &);
 

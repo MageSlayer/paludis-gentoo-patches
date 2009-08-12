@@ -50,10 +50,14 @@ namespace paludis
     struct Implementation<Constraints>
     {
         UseInstalled strictest_use_installed;
+        bool nothing_is_fine_too;
+        bool to_destination_slash;
         std::list<std::tr1::shared_ptr<const Constraint> > constraints;
 
         Implementation() :
-            strictest_use_installed(ui_if_possible)
+            strictest_use_installed(ui_if_possible),
+            nothing_is_fine_too(true),
+            to_destination_slash(false)
         {
         }
     };
@@ -85,12 +89,32 @@ Constraints::add(const std::tr1::shared_ptr<const Constraint> & c)
 {
     _imp->constraints.push_back(c);
     _imp->strictest_use_installed = std::min(_imp->strictest_use_installed, c->use_installed());
+    _imp->nothing_is_fine_too = _imp->nothing_is_fine_too && c->nothing_is_fine_too();
+    _imp->to_destination_slash = _imp->to_destination_slash || c->to_destination_slash();
 }
 
 bool
 Constraints::empty() const
 {
     return _imp->constraints.empty();
+}
+
+UseInstalled
+Constraints::strictest_use_installed() const
+{
+    return _imp->strictest_use_installed;
+}
+
+bool
+Constraints::nothing_is_fine_too() const
+{
+    return _imp->nothing_is_fine_too;
+}
+
+bool
+Constraints::to_destination_slash() const
+{
+    return _imp->to_destination_slash;
 }
 
 template class PrivateImplementationPattern<Constraints>;

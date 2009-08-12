@@ -64,9 +64,6 @@ namespace paludis
                         const QPN_S &, const SanitisedDependency &,
                         const std::tr1::shared_ptr<const Reason> &) const;
 
-                const std::tr1::shared_ptr<Decision> _decision_from_package_id(
-                        const QPN_S &, const std::tr1::shared_ptr<const PackageID> &) const;
-
                 void _apply_resolution_constraint(const QPN_S &,
                         const std::tr1::shared_ptr<Resolution> &,
                         const std::tr1::shared_ptr<const Constraint> &);
@@ -74,14 +71,6 @@ namespace paludis
                 void _verify_new_constraint(const QPN_S &,
                         const std::tr1::shared_ptr<const Resolution> &,
                         const std::tr1::shared_ptr<const Constraint> &);
-
-                void _made_wrong_decision(const QPN_S &,
-                        const std::tr1::shared_ptr<const Resolution> &,
-                        const std::tr1::shared_ptr<const Constraint> &) PALUDIS_ATTRIBUTE((noreturn));
-
-                bool _constraint_matches(
-                        const std::tr1::shared_ptr<const Constraint> &,
-                        const std::tr1::shared_ptr<const Decision> &) const;
 
                 const std::tr1::shared_ptr<Destinations> _make_destinations_for(const QPN_S &,
                         const std::tr1::shared_ptr<const Resolution> &) const;
@@ -103,16 +92,6 @@ namespace paludis
                 const std::tr1::shared_ptr<Decision> _try_to_find_decision_for(
                         const QPN_S &, const std::tr1::shared_ptr<const Resolution> & resolution) const;
 
-                const std::tr1::shared_ptr<const PackageID> _best_installed_id_for(
-                        const QPN_S &, const std::tr1::shared_ptr<const Resolution> &) const;
-
-                const std::tr1::shared_ptr<const PackageID> _best_installable_id_for(
-                        const QPN_S &, const std::tr1::shared_ptr<const Resolution> &) const;
-
-                const std::tr1::shared_ptr<const PackageID> _best_id_from(
-                        const std::tr1::shared_ptr<const PackageIDSequence> &,
-                        const QPN_S &, const std::tr1::shared_ptr<const Resolution> &) const;
-
                 void _add_dependencies(const QPN_S & our_qpn_s, const std::tr1::shared_ptr<Resolution> & our_resolution);
 
                 bool _care_about_dependency_spec(const QPN_S &, const std::tr1::shared_ptr<const Resolution> &,
@@ -132,15 +111,6 @@ namespace paludis
 
                 const std::tr1::shared_ptr<Constraints> _initial_constraints_for(const QPN_S &) const;
 
-                void _suggest_restart_with(const QPN_S &,
-                        const std::tr1::shared_ptr<const Resolution> &,
-                        const std::tr1::shared_ptr<const Constraint> &,
-                        const std::tr1::shared_ptr<const Decision> &) const PALUDIS_ATTRIBUTE((noreturn));
-
-                const std::tr1::shared_ptr<const Constraint> _make_constraint_for_preloading(
-                        const QPN_S &,
-                        const std::tr1::shared_ptr<const Decision> &) const;
-
                 bool _dependency_to_destination_slash(
                         const QPN_S &, const SanitisedDependency &) const;
 
@@ -150,6 +120,12 @@ namespace paludis
                 bool _already_met(const SanitisedDependency & dep) const;
 
                 const std::string _find_cycle(const QPN_S &, const int ignorable_pass) const;
+
+                const std::tr1::shared_ptr<const PackageID> _find_installed_id_for(const QPN_S &, const std::tr1::shared_ptr<const Resolution> &) const;
+                const std::tr1::shared_ptr<const PackageID> _find_installable_id_for(const QPN_S &, const std::tr1::shared_ptr<const Resolution> &) const;
+                const std::tr1::shared_ptr<const PackageID> _find_id_for_from(
+                        const QPN_S &, const std::tr1::shared_ptr<const Resolution> &,
+                        const std::tr1::shared_ptr<const PackageIDSequence> &) const;
 
             public:
                 Resolver(

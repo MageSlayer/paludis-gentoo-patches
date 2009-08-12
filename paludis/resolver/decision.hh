@@ -30,7 +30,6 @@ namespace paludis
     {
         struct if_package_id;
         struct is_installed;
-        struct is_new;
         struct is_nothing;
         struct is_same;
         struct is_same_version;
@@ -43,7 +42,6 @@ namespace paludis
         {
             NamedValue<n::if_package_id, std::tr1::shared_ptr<const PackageID> > if_package_id;
             NamedValue<n::is_installed, bool> is_installed;
-            NamedValue<n::is_new, bool> is_new;
             NamedValue<n::is_nothing, bool> is_nothing;
             NamedValue<n::is_same, bool> is_same;
             NamedValue<n::is_same_version, bool> is_same_version;

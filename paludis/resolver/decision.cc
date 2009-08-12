@@ -37,8 +37,6 @@ paludis::resolver::operator<< (std::ostream & s, const Decision & d)
 
     if (d.is_installed())
         ss << ", is installed";
-    if (d.is_new())
-        ss << ", is new";
     if (d.is_nothing())
         ss << ", is nothing";
     if (d.is_same())
