@@ -20,15 +20,32 @@
 #include "cmd_resolve_display_callback.hh"
 #include <paludis/notifier_callback.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <iostream>
+#include <map>
 
 using namespace paludis;
 using namespace cave;
 
+namespace paludis
+{
+    template <>
+    struct Implementation<DisplayCallback>
+    {
+        mutable Mutex mutex;
+        mutable unsigned width;
+        mutable std::map<std::string, int> metadata, steps;
+
+        Implementation() :
+            width(0)
+        {
+        }
+    };
+}
+
+
 DisplayCallback::DisplayCallback() :
-    width(0),
-    metadata(0),
-    steps(0)
+    PrivateImplementationPattern<DisplayCallback>(new Implementation<DisplayCallback>)
 {
     std::cout << "Resolving: " << std::flush;
 }
@@ -45,18 +62,18 @@ DisplayCallback::operator() (const NotifierCallbackEvent & event) const
 }
 
 void
-DisplayCallback::visit(const NotifierCallbackGeneratingMetadataEvent &) const
+DisplayCallback::visit(const NotifierCallbackGeneratingMetadataEvent & e) const
 {
-    Lock lock(mutex);
-    ++metadata;
+    Lock lock(_imp->mutex);
+    ++_imp->metadata.insert(std::make_pair(stringify(e.repository()), 0)).first->second;
     update();
 }
 
 void
 DisplayCallback::visit(const NotifierCallbackResolverStepEvent &) const
 {
-    Lock lock(mutex);
-    ++steps;
+    Lock lock(_imp->mutex);
+    ++_imp->steps.insert(std::make_pair("steps", 0)).first->second;
     update();
 }
 
@@ -64,17 +81,62 @@ void
 DisplayCallback::update() const
 {
     std::string s;
-    if (0 != steps)
-        s.append("steps: " + stringify(steps));
-
-    if (0 != metadata)
+    if (! _imp->steps.empty())
     {
-        if (! s.empty())
-            s.append(", ");
-        s.append("metadata: " + stringify(metadata) + " ");
+        for (std::map<std::string, int>::const_iterator i(_imp->steps.begin()), i_end(_imp->steps.end()) ;
+                i != i_end ; ++i)
+        {
+            if (! s.empty())
+                s.append(", ");
+
+            s.append(stringify(i->second) + " " + i->first);
+        }
     }
 
-    std::cout << std::string(width, '\010') << s << std::flush;
-    width = s.length();
+    if (! _imp->metadata.empty())
+    {
+        std::multimap<int, std::string> biggest;
+        for (std::map<std::string, int>::const_iterator i(_imp->metadata.begin()), i_end(_imp->metadata.end()) ;
+                i != i_end ; ++i)
+            biggest.insert(std::make_pair(i->second, i->first));
+
+        int t(0), n(0);
+        std::string ss;
+        for (std::multimap<int, std::string>::const_reverse_iterator i(biggest.rbegin()), i_end(biggest.rend()) ;
+                i != i_end ; ++i)
+        {
+            ++n;
+
+            if (n == 4)
+            {
+                ss.append(", ...");
+                break;
+            }
+
+            if (n < 4)
+            {
+                if (! ss.empty())
+                    ss.append(", ");
+
+                ss.append(stringify(i->first) + " " + i->second);
+            }
+
+            t += i->first;
+        }
+
+        if (! s.empty())
+            s.append(", ");
+        s.append(stringify(t) + " metadata (" + ss + ")");
+    }
+
+    std::cout << std::string(_imp->width, '\010') << s;
+
+    if (_imp->width > s.length())
+        std::cout
+            << std::string(_imp->width - s.length(), ' ')
+            << std::string(_imp->width - s.length(), '\010');
+
+    _imp->width = s.length();
+    std::cout << std::flush;
 }
 

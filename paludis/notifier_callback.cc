@@ -24,6 +24,17 @@
 
 using namespace paludis;
 
+NotifierCallbackGeneratingMetadataEvent::NotifierCallbackGeneratingMetadataEvent(const RepositoryName & r) :
+    _repo(r)
+{
+}
+
+const RepositoryName
+NotifierCallbackGeneratingMetadataEvent::repository() const
+{
+    return _repo;
+}
+
 namespace paludis
 {
     template <>

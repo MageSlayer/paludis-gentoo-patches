@@ -21,27 +21,28 @@
 #define PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_RESOLVE_DISPLAY_CALLBACK_HH 1
 
 #include <paludis/util/mutex.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/notifier_callback-fwd.hh>
 
 namespace paludis
 {
     namespace cave
     {
-        struct DisplayCallback
+        struct DisplayCallback :
+            private PrivateImplementationPattern<DisplayCallback>
         {
-            mutable Mutex mutex;
-            mutable int width, metadata, steps;
+            private:
+                void update() const;
 
-            DisplayCallback();
-            ~DisplayCallback();
+            public:
+                DisplayCallback();
+                ~DisplayCallback();
 
-            void operator() (const NotifierCallbackEvent & event) const;
+                void operator() (const NotifierCallbackEvent & event) const;
 
-            void visit(const NotifierCallbackGeneratingMetadataEvent &) const;
+                void visit(const NotifierCallbackGeneratingMetadataEvent &) const;
 
-            void visit(const NotifierCallbackResolverStepEvent &) const;
-
-            void update() const;
+                void visit(const NotifierCallbackResolverStepEvent &) const;
         };
     }
 }

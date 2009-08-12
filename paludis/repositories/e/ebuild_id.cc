@@ -225,7 +225,8 @@ EbuildID::need_keys_added() const
             Log::get_instance()->message("e.ebuild.cache.no_usable", ll_qa, lc_no_context)
                 << "No usable cache entry for '" + canonical_form(idcf_full);
 
-        _imp->environment->trigger_notifier_callback(NotifierCallbackGeneratingMetadataEvent());
+        _imp->environment->trigger_notifier_callback(NotifierCallbackGeneratingMetadataEvent(
+                    _imp->repository->name()));
 
         _imp->eapi = EAPIData::get_instance()->eapi_from_string(_imp->guessed_eapi);
 
