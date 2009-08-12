@@ -403,7 +403,7 @@ Resolver::_apply_resolution_constraint(
 }
 
 void
-Resolver::_verify_new_constraint(const QPN_S &,
+Resolver::_verify_new_constraint(const QPN_S & qpn_s,
         const std::tr1::shared_ptr<const Resolution> & resolution,
         const std::tr1::shared_ptr<const Constraint> & constraint)
 {
@@ -448,7 +448,65 @@ Resolver::_verify_new_constraint(const QPN_S &,
     }
 
     if (! ok)
-        throw InternalError(PALUDIS_HERE, "not implemented");
+        _made_wrong_decision(qpn_s, resolution, constraint);
+}
+
+void
+Resolver::_made_wrong_decision(const QPN_S & qpn_s,
+        const std::tr1::shared_ptr<const Resolution> & resolution,
+        const std::tr1::shared_ptr<const Constraint> & constraint)
+{
+    /* can we find a resolution that works for all our constraints? */
+    std::tr1::shared_ptr<Resolution> adapted_resolution(make_shared_ptr(new Resolution(*resolution)));
+    adapted_resolution->constraints()->add(constraint);
+
+    const std::tr1::shared_ptr<Decision> decision(_try_to_find_decision_for(qpn_s, adapted_resolution));
+    if (decision)
+    {
+        /* can we preload and restart? */
+        if (_initial_constraints_for(qpn_s)->empty())
+        {
+            /* we've not already locked this to something. yes! */
+            _suggest_restart_with(qpn_s, resolution, constraint, decision);
+        }
+        else
+        {
+            /* we can restart if we've selected the same or a newer version
+             * than before. but we don't support that yet. */
+            throw InternalError(PALUDIS_HERE, "should have selected " + stringify(*decision));
+        }
+    }
+    else
+        _unable_to_decide(qpn_s, adapted_resolution);
+}
+
+void
+Resolver::_suggest_restart_with(const QPN_S & qpn_s,
+        const std::tr1::shared_ptr<const Resolution> & resolution,
+        const std::tr1::shared_ptr<const Constraint> & constraint,
+        const std::tr1::shared_ptr<const Decision> & decision) const
+{
+    throw SuggestRestart(qpn_s, resolution->decision(), constraint, decision, _make_constraint_for_preloading(qpn_s, decision));
+}
+
+const std::tr1::shared_ptr<const Constraint>
+Resolver::_make_constraint_for_preloading(
+        const QPN_S & qpn_s,
+        const std::tr1::shared_ptr<const Decision> & d) const
+{
+    const std::tr1::shared_ptr<PresetReason> reason(new PresetReason);
+
+    if (! d->if_package_id())
+        throw InternalError(PALUDIS_HERE, "not decided. shouldn't happen.");
+
+    return make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                    value_for<n::nothing_is_fine_too>(false),
+                    value_for<n::reason>(reason),
+                    value_for<n::spec>(d->if_package_id()->uniquely_identifying_spec()),
+                    value_for<n::to_destination_slash>(false),
+                    value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(
+                            qpn_s, d->if_package_id()->uniquely_identifying_spec(), reason))
+                    )));
 }
 
 void

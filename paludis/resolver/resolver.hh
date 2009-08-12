@@ -72,6 +72,19 @@ namespace paludis
                         const std::tr1::shared_ptr<const Resolution> &,
                         const std::tr1::shared_ptr<const Constraint> &);
 
+                void _made_wrong_decision(const QPN_S & qpn_s,
+                        const std::tr1::shared_ptr<const Resolution> & resolution,
+                        const std::tr1::shared_ptr<const Constraint> & constraint) PALUDIS_ATTRIBUTE((noreturn));
+
+                void _suggest_restart_with(const QPN_S & qpn_s,
+                        const std::tr1::shared_ptr<const Resolution> & resolution,
+                        const std::tr1::shared_ptr<const Constraint> & constraint,
+                        const std::tr1::shared_ptr<const Decision> & decision) const PALUDIS_ATTRIBUTE((noreturn));
+
+                const std::tr1::shared_ptr<const Constraint> _make_constraint_for_preloading(
+                        const QPN_S & qpn_s,
+                        const std::tr1::shared_ptr<const Decision> & d) const;
+
                 const std::tr1::shared_ptr<Destinations> _make_destinations_for(const QPN_S &,
                         const std::tr1::shared_ptr<const Resolution> &) const;
 
