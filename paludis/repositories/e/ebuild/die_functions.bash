@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006, 2007 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2009 Ciaran McCreesh
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -37,7 +37,7 @@ diefunc()
     local func="$1" line="$2"
     shift 2
     echo 1>&2
-    echo "!!! ERROR in ${CATEGORY:-?}/${!PALUDIS_NAME_VERSION_REVISION_VAR:-?}:" 1>&2
+    echo "!!! ERROR in ${CATEGORY:-?}/${!PALUDIS_NAME_VERSION_REVISION_VAR:-?}::${REPOSITORY:-?}:" 1>&2
     echo "!!! In ${func:-?} at line ${line:-?}" 1>&2
     echo "!!! ${*:-(no message provided)}" 1>&2
     echo 1>&2
