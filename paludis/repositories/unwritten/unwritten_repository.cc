@@ -94,7 +94,6 @@ UnwrittenRepository::UnwrittenRepository(const UnwrittenRepositoryParams & p) :
                 value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),
                 value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
                 value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
-                value_for<n::sets_interface>(static_cast<RepositorySetsInterface *>(0)),
                 value_for<n::syncable_interface>(this),
                 value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
                 )),
@@ -343,6 +342,11 @@ UnwrittenRepository::repository_factory_dependencies(
         const std::tr1::function<std::string (const std::string &)> &)
 {
     return make_shared_ptr(new RepositoryNameSet);
+}
+
+void
+UnwrittenRepository::populate_sets() const
+{
 }
 
 template class PrivateImplementationPattern<unwritten_repository::UnwrittenRepository>;

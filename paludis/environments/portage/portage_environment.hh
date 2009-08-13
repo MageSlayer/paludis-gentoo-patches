@@ -80,13 +80,8 @@ namespace paludis
             void _remove_string_from_world(const std::string &) const;
 
         protected:
-            virtual const std::tr1::shared_ptr<const SetSpecTree> local_set(const SetName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual const std::tr1::shared_ptr<const SetSpecTree> world_set() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
             virtual void need_keys_added() const;
+            virtual void populate_sets() const;
 
         public:
             ///\name Basic operations
@@ -169,9 +164,6 @@ namespace paludis
             virtual void remove_from_world(const QualifiedPackageName &) const;
 
             virtual void remove_from_world(const SetName &) const;
-
-            virtual std::tr1::shared_ptr<const SetNameSet> set_names() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
             virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > config_location_key() const;

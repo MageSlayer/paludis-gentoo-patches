@@ -109,10 +109,6 @@ class TestCase_02_RepositoryInterfaces(unittest.TestCase):
         repo = db.fetch_repository("testrepo")
         irepo = db.fetch_repository("installed")
 
-    def test_02_sets_interface(self):
-        si = repo.sets_interface
-        self.assert_(isinstance(si, RepositorySetsInterface))
-
     def test_03_syncable_interface(self):
         si = repo.syncable_interface
         self.assert_(isinstance(si, RepositorySyncableInterface))

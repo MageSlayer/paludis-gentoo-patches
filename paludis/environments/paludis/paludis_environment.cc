@@ -274,66 +274,6 @@ PaludisEnvironment::syncers_dirs() const
     return result;
 }
 
-const std::tr1::shared_ptr<const SetSpecTree>
-PaludisEnvironment::local_set(const SetName & ss) const
-{
-    using namespace std::tr1::placeholders;
-
-    Context context("When looking for package set '" + stringify(ss) + "' in paludis environment:");
-
-    Lock l(_imp->sets_mutex);
-
-    std::map<SetName, std::tr1::shared_ptr<const SetSpecTree> >::const_iterator i(_imp->sets.find(ss));
-    if (i != _imp->sets.end())
-        return i->second;
-
-    std::pair<SetName, SetFileSetOperatorMode> s(find_base_set_name_and_suffix_mode(ss));
-
-    FSEntry dir(FSEntry(_imp->config->config_dir()) / "sets");
-    std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(ss, stringify(s.first) + ".conf"));
-
-    if ((dir / (stringify(s.first) + ".bash")).exists())
-    {
-        SetFile f(make_named_values<SetFileParams>(
-                    value_for<n::environment>(this),
-                    value_for<n::file_name>(dir / (stringify(s.first) + ".bash")),
-                    value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, this, UserPackageDepSpecOptions() + updso_allow_wildcards + updso_no_disambiguation + updso_throw_if_set, filter::All())),
-                    value_for<n::set_operator_mode>(s.second),
-                    value_for<n::tag>(tag),
-                    value_for<n::type>(sft_paludis_bash)
-                    ));
-
-        _imp->sets.insert(std::make_pair(ss, f.contents()));
-        return f.contents();
-    }
-    else if ((dir / (stringify(s.first) + ".conf")).exists())
-    {
-        SetFile f(make_named_values<SetFileParams>(
-                value_for<n::environment>(this),
-                value_for<n::file_name>(dir / (stringify(s.first) + ".conf")),
-                value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, this,
-                        UserPackageDepSpecOptions() + updso_allow_wildcards, filter::All())),
-                value_for<n::set_operator_mode>(s.second),
-                value_for<n::tag>(tag),
-                value_for<n::type>(sft_paludis_conf)
-                ));
-
-        _imp->sets.insert(std::make_pair(ss, f.contents()));
-        return f.contents();
-    }
-    else
-    {
-        _imp->sets.insert(std::make_pair(ss, make_null_shared_ptr()));
-        return make_null_shared_ptr();
-    }
-}
-
-const std::tr1::shared_ptr<const SetSpecTree>
-PaludisEnvironment::world_set() const
-{
-    return _imp->config->world()->world_set();
-}
-
 void
 PaludisEnvironment::add_to_world(const QualifiedPackageName & q) const
 {
@@ -356,26 +296,6 @@ void
 PaludisEnvironment::remove_from_world(const SetName & s) const
 {
     _imp->config->world()->remove_from_world(s);
-}
-
-std::tr1::shared_ptr<const SetNameSet>
-PaludisEnvironment::set_names() const
-{
-    std::tr1::shared_ptr<SetNameSet> result(new SetNameSet);
-
-    if ((FSEntry(_imp->config->config_dir()) / "sets").exists())
-        for (DirIterator d(FSEntry(_imp->config->config_dir()) / "sets"), d_end ;
-                d != d_end ; ++d)
-        {
-            if (is_file_with_extension(*d, ".conf", IsFileWithOptions()))
-                result->insert(SetName(strip_trailing_string(d->basename(), ".conf")));
-            else if (is_file_with_extension(*d, ".bash", IsFileWithOptions()))
-                result->insert(SetName(strip_trailing_string(d->basename(), ".bash")));
-        }
-
-    result->insert(SetName("world"));
-
-    return result;
 }
 
 std::tr1::shared_ptr<const MirrorsSequence>
@@ -573,5 +493,71 @@ const std::tr1::shared_ptr<OutputManager>
 PaludisEnvironment::create_named_output_manager(const std::string & s, const CreateOutputManagerInfo & i) const
 {
     return _imp->config->output_managers()->create_named_output_manager(s, i);
+}
+
+namespace
+{
+    std::tr1::shared_ptr<const SetSpecTree> make_world_set(const std::tr1::shared_ptr<const World> & world)
+    {
+        return world->world_set();
+    }
+
+    std::tr1::shared_ptr<const SetSpecTree> make_set(
+            const Environment * const env,
+            const FSEntry & f,
+            const SetName & n,
+            SetFileSetOperatorMode mode,
+            SetFileType type)
+    {
+        Context context("When making set '" + stringify(f) + "':");
+
+        const std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(n, stringify(f.basename())));
+
+        SetFile s(make_named_values<SetFileParams>(
+                    value_for<n::environment>(env),
+                    value_for<n::file_name>(f),
+                    value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec,
+                            std::tr1::placeholders::_1, env, UserPackageDepSpecOptions() + updso_allow_wildcards,
+                            filter::All())),
+                    value_for<n::set_operator_mode>(mode),
+                    value_for<n::tag>(tag),
+                    value_for<n::type>(type)
+                    ));
+        return s.contents();
+    }
+}
+
+void
+PaludisEnvironment::populate_sets() const
+{
+    Lock lock(_imp->sets_mutex);
+    add_set(SetName("world"), SetName("world::environment"), std::tr1::bind(&make_world_set, _imp->config->world()), true);
+
+    FSEntry sets_dir(FSEntry(_imp->config->config_dir()) / "sets");
+    Context context("When looking in sets directory '" + stringify(sets_dir) + "':");
+
+    if (! sets_dir.exists())
+        return;
+
+    for (DirIterator d(sets_dir, DirIteratorOptions() + dio_inode_sort), d_end ;
+            d != d_end ; ++d)
+    {
+        if (is_file_with_extension(*d, ".bash", IsFileWithOptions()))
+        {
+            SetName n(strip_trailing_string(d->basename(), ".bash"));
+            add_set(n, n, std::tr1::bind(&make_set, this, *d, n, sfsmo_natural, sft_paludis_bash), false);
+
+            SetName n_s(stringify(n) + "*");
+            add_set(n_s, n_s, std::tr1::bind(&make_set, this, *d, n_s, sfsmo_star, sft_paludis_bash), false);
+        }
+        else if (is_file_with_extension(*d, ".conf", IsFileWithOptions()))
+        {
+            SetName n(strip_trailing_string(d->basename(), ".conf"));
+            add_set(n, n, std::tr1::bind(&make_set, this, *d, n, sfsmo_natural, sft_paludis_conf), false);
+
+            SetName n_s(stringify(n) + "*");
+            add_set(n_s, n_s, std::tr1::bind(&make_set, this, *d, n_s, sfsmo_star, sft_paludis_conf), false);
+        }
+    }
 }
 

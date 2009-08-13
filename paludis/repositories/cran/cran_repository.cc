@@ -116,7 +116,6 @@ CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
                 value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),
                 value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
                 value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
-                value_for<n::sets_interface>(this),
                 value_for<n::syncable_interface>(this),
                 value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
                 )),
@@ -342,31 +341,6 @@ CRANRepository::do_install(const std::tr1::shared_ptr<const PackageID> & id_unca
 }
 #endif
 
-const std::tr1::shared_ptr<const SetSpecTree>
-CRANRepository::package_set(const SetName & s) const
-{
-    if ("base" == s.data())
-    {
-        /**
-         * \todo Implement system as all package which are installed
-         * by dev-lang/R by default.
-         */
-        return make_shared_ptr(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
-    }
-    else
-        return make_null_shared_ptr();
-}
-
-std::tr1::shared_ptr<const SetNameSet>
-CRANRepository::sets_list() const
-{
-    Context context("While generating the list of sets:");
-
-    std::tr1::shared_ptr<SetNameSet> result(new SetNameSet);
-    result->insert(SetName("base"));
-    return result;
-}
-
 bool
 CRANRepository::sync(const std::tr1::shared_ptr<OutputManager> & output_manager) const
 {
@@ -569,5 +543,10 @@ const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 CRANRepository::installed_root_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+}
+
+void
+CRANRepository::populate_sets() const
+{
 }
 

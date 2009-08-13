@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2006 Danny van Dyk
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -64,7 +64,6 @@ namespace paludis
      */
     class PALUDIS_VISIBLE CRANInstalledRepository :
         public Repository,
-        public RepositorySetsInterface,
         public RepositoryDestinationInterface,
         public PrivateImplementationPattern<CRANInstalledRepository>
     {
@@ -108,11 +107,6 @@ namespace paludis
             virtual void invalidate();
             virtual void invalidate_masks();
 
-            /* RepositorySetsInterface */
-
-            virtual std::tr1::shared_ptr<const SetNameSet> sets_list() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
             /* RepositoryDestinationInterface */
 
             virtual bool is_suitable_destination_for(const PackageID &) const
@@ -147,16 +141,18 @@ namespace paludis
 
             virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
 
-            /* RepositorySetsInterface */
-
-            virtual const std::tr1::shared_ptr<const SetSpecTree> package_set(const SetName & id) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
             /* Keys */
 
             virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
             virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
             virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+
+            ///\name Set methods
+            ///\{
+
+            virtual void populate_sets() const;
+
+            ///\}
     };
 
     /**

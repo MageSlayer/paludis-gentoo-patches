@@ -46,6 +46,18 @@ namespace paludis
         s << *e.package_id();
         return s;
     }
+
+    template <typename T_>
+    T_ make_k_result(T_ t)
+    {
+        return t;
+    }
+
+    template <typename T_>
+    std::tr1::function<T_ ()> make_k(T_ t)
+    {
+        return std::tr1::bind(&make_k_result<T_>, t);
+    }
 }
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY
@@ -373,7 +385,7 @@ namespace test_cases
         {
             std::tr1::shared_ptr<SetSpecTree> world(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
             world->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("foo/moo", &env, UserPackageDepSpecOptions()))));
-            installed_repo->add_package_set(SetName("world"), world);
+            env.add_set(SetName("world"), SetName("world"), make_k<std::tr1::shared_ptr<const SetSpecTree> >(world), false);
         }
 
         void populate_targets()
@@ -413,7 +425,7 @@ namespace test_cases
             std::tr1::shared_ptr<SetSpecTree> world(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
             world->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("foo/moo", &env, UserPackageDepSpecOptions()))));
             world->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("foo/bar", &env, UserPackageDepSpecOptions()))));
-            installed_repo->add_package_set(SetName("world"), world);
+            env.add_set(SetName("world"), SetName("world"), make_k(world), false);
         }
 
         void populate_targets()
@@ -455,7 +467,7 @@ namespace test_cases
             world->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/needs-b", &env, UserPackageDepSpecOptions()))));
             world->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/needs-c", &env, UserPackageDepSpecOptions()))));
             world->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/needs-d", &env, UserPackageDepSpecOptions()))));
-            installed_repo->add_package_set(SetName("world"), world);
+            env.add_set(SetName("world"), SetName("world"), make_k(world), false);
         }
 
         void populate_targets()

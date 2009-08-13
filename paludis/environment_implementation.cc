@@ -28,6 +28,8 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/mutex.hh>
+#include <paludis/util/member_iterator-impl.hh>
 #include <paludis/hook.hh>
 #include <paludis/distribution.hh>
 #include <paludis/selection.hh>
@@ -37,12 +39,82 @@
 
 using namespace paludis;
 
+namespace
+{
+    typedef std::tr1::function<void (const SetName &) > CombiningFunction;
+
+    struct CombineSets
+    {
+        std::tr1::shared_ptr<AllDepSpec> root;
+        std::tr1::shared_ptr<SetSpecTree> tree;
+
+        void add(const SetName & s)
+        {
+            tree->root()->append(make_shared_ptr(new NamedSetDepSpec(s)));
+        }
+
+        CombineSets() :
+            root(new AllDepSpec),
+            tree(new SetSpecTree(root))
+        {
+        }
+
+        CombineSets(const CombineSets & other) :
+            root(other.root),
+            tree(other.tree)
+        {
+        }
+
+        std::tr1::shared_ptr<const SetSpecTree> result() const
+        {
+            return tree;
+        }
+    };
+
+    typedef std::map<SetName, std::pair<std::tr1::function<std::tr1::shared_ptr<const SetSpecTree> ()>, CombiningFunction> > SetsStore;
+
+    template <typename F_>
+    struct Cache
+    {
+        F_ func;
+        std::tr1::shared_ptr<typename std::tr1::remove_reference<typename F_::result_type>::type> result;
+
+        Cache(const F_ & f) :
+            func(f)
+        {
+        }
+
+        typename F_::result_type operator() ()
+        {
+            if (! result)
+                result.reset(new typename std::tr1::remove_reference<typename F_::result_type>::type(func()));
+            return *result;
+        }
+    };
+
+    template <typename F_>
+    F_ cache(const F_ & f)
+    {
+        return Cache<F_>(f);
+    }
+}
+
 namespace paludis
 {
     template <>
     struct Implementation<EnvironmentImplementation>
     {
         std::map<unsigned, NotifierCallbackFunction> notifier_callbacks;
+
+        mutable Mutex sets_mutex;
+        mutable bool loaded_sets;
+        std::tr1::shared_ptr<SetNameSet> set_names;
+        SetsStore sets;
+
+        Implementation() :
+            loaded_sets(false)
+        {
+        }
     };
 }
 
@@ -102,71 +174,11 @@ EnvironmentImplementation::default_destinations() const
     return result;
 }
 
-const std::tr1::shared_ptr<const SetSpecTree>
-EnvironmentImplementation::set(const SetName & s) const
-{
-    {
-        const std::tr1::shared_ptr<const SetSpecTree> l(local_set(s));
-        if (l)
-        {
-            Log::get_instance()->message("environment_implementation.local_set", ll_debug, lc_context) << "Set '" << s << "' is a local set";
-            return l;
-        }
-    }
-
-    std::tr1::shared_ptr<SetSpecTree> result;;
-
-    /* these sets always exist, even if empty */
-    if (s.data() == "everything" || s.data() == "system" || s.data() == "world" || s.data() == "security")
-    {
-        Log::get_instance()->message("environment_implementation.standard_set", ll_debug, lc_context) << "Set '" << s << "' is a standard set";
-        result.reset(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
-    }
-
-    for (PackageDatabase::RepositoryConstIterator r(package_database()->begin_repositories()),
-            r_end(package_database()->end_repositories()) ;
-            r != r_end ; ++r)
-    {
-        if (! (**r).sets_interface())
-            continue;
-
-        std::tr1::shared_ptr<const SetSpecTree> add((**r).sets_interface()->package_set(s));
-        if (add)
-        {
-            Log::get_instance()->message("environment_implementation.set_found_in_repository", ll_debug, lc_context)
-                << "Set '" << s << "' found in '" << (*r)->name() << "'";
-            if (! result)
-                result.reset(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
-            result->root()->append_node(add->root());
-        }
-    }
-
-    if ("everything" == s.data() || "world" == s.data())
-        result->root()->append(make_shared_ptr(new NamedSetDepSpec(SetName("system"))));
-
-    if ("world" == s.data())
-    {
-        std::tr1::shared_ptr<const SetSpecTree> w(world_set());
-        if (w)
-            result->root()->append_node(w->root());
-    }
-
-    if (! result)
-        Log::get_instance()->message("environment_implementation.no_match_for_set", ll_debug, lc_context) << "No match for set '" << s << "'";
-    return result;
-}
-
 std::string
 EnvironmentImplementation::distribution() const
 {
     static const std::string result(getenv_with_default("PALUDIS_DISTRIBUTION", DEFAULT_DISTRIBUTION));
     return result;
-}
-
-std::tr1::shared_ptr<const SetNameSet>
-EnvironmentImplementation::set_names() const
-{
-    return make_shared_ptr(new SetNameSet);
 }
 
 bool
@@ -205,5 +217,113 @@ EnvironmentImplementation::trigger_notifier_callback(const NotifierCallbackEvent
             i_end(_imp->notifier_callbacks.end()) ;
             i != i_end ; ++i)
         (i->second)(e);
+}
+
+void
+EnvironmentImplementation::add_set(
+        const SetName & name,
+        const SetName & combined_name,
+        const std::tr1::function<std::tr1::shared_ptr<const SetSpecTree> ()> & func,
+        const bool combine) const
+{
+    Lock lock(_imp->sets_mutex);
+    Context context("When adding set named '" + stringify(name) + ":");
+
+    if (combine)
+    {
+        if (! _imp->sets.insert(std::make_pair(combined_name, std::make_pair(cache(func), CombiningFunction()))).second)
+            throw DuplicateSetError(combined_name);
+
+        std::tr1::shared_ptr<CombineSets> c_s(new CombineSets);
+        CombiningFunction c_func(_imp->sets.insert(std::make_pair(name, std::make_pair(
+                            std::tr1::bind(&CombineSets::result, c_s),
+                            std::tr1::bind(&CombineSets::add, c_s, std::tr1::placeholders::_1)
+                            ))).first->second.second);
+        if (! c_func)
+            throw DuplicateSetError(name);
+        c_func(combined_name);
+    }
+    else
+    {
+        if (! _imp->sets.insert(std::make_pair(name, std::make_pair(cache(func), CombiningFunction()))).second)
+            throw DuplicateSetError(name);
+    }
+}
+
+std::tr1::shared_ptr<const SetNameSet>
+EnvironmentImplementation::set_names() const
+{
+    Lock lock(_imp->sets_mutex);
+    _need_sets();
+
+    return _imp->set_names;
+}
+
+const std::tr1::shared_ptr<const SetSpecTree>
+EnvironmentImplementation::set(const SetName & s) const
+{
+    Lock lock(_imp->sets_mutex);
+    _need_sets();
+
+    SetsStore::const_iterator i(_imp->sets.find(s));
+    if (_imp->sets.end() != i)
+        return i->second.first();
+    else
+        return make_null_shared_ptr();
+}
+
+void
+EnvironmentImplementation::_need_sets() const
+{
+    if (_imp->loaded_sets)
+        return;
+
+    for (PackageDatabase::RepositoryConstIterator r(package_database()->begin_repositories()),
+            r_end(package_database()->end_repositories()) ;
+            r != r_end ; ++r)
+        (*r)->populate_sets();
+
+    populate_sets();
+    populate_standard_sets();
+
+    _imp->set_names.reset(new SetNameSet);
+    std::copy(first_iterator(_imp->sets.begin()), first_iterator(_imp->sets.end()), _imp->set_names->inserter());
+
+    _imp->loaded_sets = true;
+}
+
+void
+EnvironmentImplementation::populate_standard_sets() const
+{
+    set_always_exists(SetName("system"));
+    set_always_exists(SetName("world"));
+    set_always_exists(SetName("everything"));
+
+    SetsStore::iterator i(_imp->sets.find(SetName("world")));
+    /* some test cases build world through evil haxx. don't inject system in
+     * then. */
+    if (i->second.second)
+        i->second.second(SetName("system"));
+}
+
+namespace
+{
+    std::tr1::shared_ptr<const SetSpecTree> make_empty_set()
+    {
+        return make_shared_ptr(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+    }
+}
+
+void
+EnvironmentImplementation::set_always_exists(const SetName & s) const
+{
+    SetsStore::const_iterator i(_imp->sets.find(s));
+    if (_imp->sets.end() == i)
+        add_set(s, SetName(stringify(s) + "::default"), make_empty_set, true);
+}
+
+DuplicateSetError::DuplicateSetError(const SetName & s) throw () :
+    Exception("A set named '" + stringify(s) + "' already exists")
+{
 }
 

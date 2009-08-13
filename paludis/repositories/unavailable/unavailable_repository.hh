@@ -110,7 +110,14 @@ namespace paludis
                         const std::tr1::function<std::string (const std::string &)> &);
 
                 ///\}
-        };
+
+                ///\name Set methods
+                ///\{
+
+                virtual void populate_sets() const;
+
+                ///\}
+            };
     }
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE

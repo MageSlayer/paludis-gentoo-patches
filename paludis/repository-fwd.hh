@@ -42,7 +42,6 @@ namespace paludis
     class HookResult;
 
     class Repository;
-    class RepositorySetsInterface;
     class RepositorySyncableInterface;
     class RepositoryEnvironmentVariableInterface;
     class RepositoryMirrorsInterface;

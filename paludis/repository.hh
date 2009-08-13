@@ -76,7 +76,6 @@ namespace paludis
         struct provided_by_spec;
         struct provides_interface;
         struct qa_interface;
-        struct sets_interface;
         struct status;
         struct syncable_interface;
         struct used_this_for_config_protect;
@@ -102,7 +101,6 @@ namespace paludis
         NamedValue<n::mirrors_interface, RepositoryMirrorsInterface *> mirrors_interface;
         NamedValue<n::provides_interface, RepositoryProvidesInterface *> provides_interface;
         NamedValue<n::qa_interface, RepositoryQAInterface *> qa_interface;
-        NamedValue<n::sets_interface, RepositorySetsInterface *> sets_interface;
         NamedValue<n::syncable_interface, RepositorySyncableInterface *> syncable_interface;
         NamedValue<n::virtuals_interface, RepositoryVirtualsInterface *> virtuals_interface;
     };
@@ -206,19 +204,14 @@ namespace paludis
 
             NoSuchSetError(const std::string & name) throw ();
 
-            virtual ~NoSuchSetError() throw ()
-            {
-            }
+            virtual ~NoSuchSetError() throw ();
 
             ///\}
 
             /**
              * Name of the set.
              */
-            const std::string & name() const
-            {
-                return _name;
-            }
+            const std::string name() const;
     };
 
     /**
@@ -240,19 +233,14 @@ namespace paludis
 
             RecursivelyDefinedSetError(const std::string & name) throw ();
 
-            virtual ~RecursivelyDefinedSetError() throw ()
-            {
-            }
+            virtual ~RecursivelyDefinedSetError() throw ();
 
             ///\}
 
             /**
              * Name of the set.
              */
-            const std::string & name() const
-            {
-                return _name;
-            }
+            const std::string name() const;
     };
 
     /**
@@ -407,35 +395,20 @@ namespace paludis
 
             ///\}
 
-    };
-
-    /**
-     * Interface for package sets for repositories.
-     *
-     * \see Repository
-     * \ingroup g_repository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE RepositorySetsInterface
-    {
-        public:
-            ///\name Set queries
+            ///\name Set methods
             ///\{
 
             /**
-             * Fetch a package set.
+             * Call Environment::add_set for every set we define.
+             *
+             * Environment will call this method at most once, so no cache or check for
+             * repeats is required. Nothing else should call this method.
+             *
+             * \since 0.40
              */
-            virtual const std::tr1::shared_ptr<const SetSpecTree> package_set(const SetName & s) const = 0;
-
-            /**
-             * Gives a list of the names of all the sets provided by this repo.
-             */
-            virtual std::tr1::shared_ptr<const SetNameSet> sets_list() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            virtual void populate_sets() const = 0;
 
             ///\}
-
-            virtual ~RepositorySetsInterface();
     };
 
     /**

@@ -44,7 +44,6 @@ namespace paludis
      */
     class PALUDIS_VISIBLE FakeRepositoryBase :
         public Repository,
-        public RepositorySetsInterface,
         private PrivateImplementationPattern<FakeRepositoryBase>,
         public std::tr1::enable_shared_from_this<FakeRepositoryBase>
     {
@@ -90,11 +89,6 @@ namespace paludis
             std::tr1::shared_ptr<FakePackageID> add_version(const std::string & c, const std::string & p,
                     const std::string & v);
 
-            /**
-             * Add a package set.
-             */
-            void add_package_set(const SetName &, const std::tr1::shared_ptr<const SetSpecTree> &);
-
             virtual void invalidate();
 
             virtual void invalidate_masks();
@@ -103,14 +97,6 @@ namespace paludis
              * Fetch our associated environment.
              */
             const Environment * environment() const;
-
-            /* RepositorySetsInterface */
-
-            virtual const std::tr1::shared_ptr<const SetSpecTree> package_set(const SetName & id) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual std::tr1::shared_ptr<const SetNameSet> sets_list() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* Repository */
 
@@ -130,6 +116,13 @@ namespace paludis
 
             virtual bool has_category_named(const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            ///\name Set methods
+            ///\{
+
+            virtual void populate_sets() const;
+
+            ///\}
     };
 }
 

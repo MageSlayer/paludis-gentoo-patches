@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -312,6 +312,8 @@ namespace test_cases
             SetName k("set0_-");
             SetName k1("set0_-");
             SetName k2("set0*");
+            SetName k3("set::foo");
+            SetName k4("set::foo*");
             TEST_CHECK_THROWS(k = SetName(""), NameError);
             TEST_CHECK_THROWS(k = SetName("!!!"), NameError);
             TEST_CHECK_THROWS(k = SetName("~"), NameError);
@@ -323,6 +325,12 @@ namespace test_cases
             TEST_CHECK_THROWS(k = SetName("set**"), NameError);
             TEST_CHECK_THROWS(k = SetName("set*?"), NameError);
             TEST_CHECK_THROWS(k = SetName("set?"), NameError);
+            TEST_CHECK_THROWS(k = SetName("set:::"), NameError);
+            TEST_CHECK_THROWS(k = SetName("set::"), NameError);
+            TEST_CHECK_THROWS(k = SetName("set:"), NameError);
+            TEST_CHECK_THROWS(k = SetName("set:foo"), NameError);
+            TEST_CHECK_THROWS(k = SetName("set:::foo"), NameError);
+            TEST_CHECK_THROWS(k = SetName("set::foo::bar"), NameError);
         }
     } test_set_name_validator;
 }

@@ -119,7 +119,6 @@ InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * con
                 value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),
                 value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
                 value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
-                value_for<n::sets_interface>(static_cast<RepositorySetsInterface *>(0)),
                 value_for<n::syncable_interface>(static_cast<RepositorySyncableInterface *>(0)),
                 value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
             )),
@@ -387,5 +386,10 @@ void
 InstalledVirtualsRepository::merge(const MergeParams &)
 {
     throw InternalError(PALUDIS_HERE, "can't merge to installed virtuals");
+}
+
+void
+InstalledVirtualsRepository::populate_sets() const
+{
 }
 

@@ -79,7 +79,7 @@ namespace
         if (s.empty())
             throw PackageDepSpecError("Got empty dep spec");
 
-        if (options[updso_throw_if_set] && std::string::npos == s.find_first_of("/:[<>=~"))
+        if (options[updso_throw_if_set] && std::string::npos == s.find_first_of("/[<>=~"))
             try
             {
                 SetName sn(s);

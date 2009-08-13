@@ -76,7 +76,6 @@ namespace paludis
     class PALUDIS_VISIBLE CRANRepository :
         public Repository,
         public RepositorySyncableInterface,
-        public RepositorySetsInterface,
         private PrivateImplementationPattern<CRANRepository>,
         public std::tr1::enable_shared_from_this<CRANRepository>
     {
@@ -128,12 +127,6 @@ namespace paludis
 
             /* RepositorySyncableInterface */
 
-            virtual const std::tr1::shared_ptr<const SetSpecTree> package_set(const SetName &) const;
-
-            virtual std::tr1::shared_ptr<const SetNameSet> sets_list() const;
-
-            /* RepositorySyncableInterface */
-
             virtual bool sync(const std::tr1::shared_ptr<OutputManager> & output_deviant) const;
 
             /* Repository */
@@ -162,6 +155,13 @@ namespace paludis
             virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
             virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
             virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+
+            ///\name Set methods
+            ///\{
+
+            virtual void populate_sets() const;
+
+            ///\}
     };
 
     /**

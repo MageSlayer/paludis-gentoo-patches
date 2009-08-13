@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -164,14 +164,13 @@ void do_find_insecure_packages(const NoConfigEnvironment & env)
         if (env.master_repository() && r->name() == env.master_repository()->name())
             continue;
 
-        if (! (*r).sets_interface())
+        std::tr1::shared_ptr<const SetSpecTree> all_insecure(env.set(SetName("insecurity::"
+                        + stringify(r->name()))));
+        if (! all_insecure)
             continue;
 
         write_repository_header(r->name());
 
-        std::tr1::shared_ptr<const SetSpecTree> all_insecure((*r).sets_interface()->package_set(SetName("insecurity")));
-        if (! all_insecure)
-            continue;
         ListInsecureVisitor v(env);
         all_insecure->root()->accept(v);
         cout << v << endl;

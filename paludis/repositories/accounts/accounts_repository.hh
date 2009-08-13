@@ -56,7 +56,6 @@ namespace paludis
             private PrivateImplementationPattern<AccountsRepository>,
             public Repository,
             public RepositoryDestinationInterface,
-            public RepositorySetsInterface,
             public std::tr1::enable_shared_from_this<AccountsRepository>
         {
             private:
@@ -154,12 +153,10 @@ namespace paludis
 
                 ///\}
 
-                ///\name Set queries
+                ///\name Set methods
                 ///\{
 
-                virtual const std::tr1::shared_ptr<const SetSpecTree> package_set(const SetName & s) const;
-                virtual std::tr1::shared_ptr<const SetNameSet> sets_list() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual void populate_sets() const;
 
                 ///\}
         };

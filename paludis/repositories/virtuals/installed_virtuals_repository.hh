@@ -126,6 +126,11 @@ namespace paludis
 
             virtual void merge(const MergeParams &) PALUDIS_ATTRIBUTE((noreturn));
 
+            ///\name Set methods
+            ///\{
+
+            virtual void populate_sets() const;
+
             ///\}
     };
 }

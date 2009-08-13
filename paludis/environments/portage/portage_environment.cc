@@ -767,12 +767,6 @@ PortageEnvironment::mirrors(const std::string & m) const
     return result;
 }
 
-const std::tr1::shared_ptr<const SetSpecTree>
-PortageEnvironment::local_set(const SetName &) const
-{
-    return make_null_shared_ptr();
-}
-
 bool
 PortageEnvironment::accept_license(const std::string &, const PackageID &) const
 {
@@ -961,37 +955,6 @@ PortageEnvironment::_remove_string_from_world(const std::string & s) const
     }
 }
 
-const std::tr1::shared_ptr<const SetSpecTree>
-PortageEnvironment::world_set() const
-{
-    Context context("When fetching environment world set:");
-
-    std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("world"), stringify("Environment")));
-
-    using namespace std::tr1::placeholders;
-
-    Lock l(_imp->world_mutex);
-
-    if (_imp->world_file.exists())
-    {
-        SetFile world(make_named_values<SetFileParams>(
-                    value_for<n::environment>(this),
-                    value_for<n::file_name>(_imp->world_file),
-                    value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, this,
-                            UserPackageDepSpecOptions() + updso_no_disambiguation, filter::All())),
-                    value_for<n::set_operator_mode>(sfsmo_natural),
-                    value_for<n::tag>(tag),
-                    value_for<n::type>(sft_simple)
-                ));
-        return world.contents();
-    }
-    else
-        Log::get_instance()->message("portage_environment.world_file.does_not_exist", ll_warning, lc_no_context) <<
-            "World file '" << _imp->world_file << "' doesn't exist";
-
-    return make_shared_ptr(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
-}
-
 void
 PortageEnvironment::need_keys_added() const
 {
@@ -1009,17 +972,45 @@ PortageEnvironment::config_location_key() const
     return _imp->config_location_key;
 }
 
-std::tr1::shared_ptr<const SetNameSet>
-PortageEnvironment::set_names() const
-{
-    std::tr1::shared_ptr<SetNameSet> result(new SetNameSet);
-    result->insert(SetName("world"));
-    return result;
-}
-
 const std::tr1::shared_ptr<OutputManager>
 PortageEnvironment::create_output_manager(const CreateOutputManagerInfo &) const
 {
     return make_shared_ptr(new StandardOutputManager);
+}
+
+namespace
+{
+    std::tr1::shared_ptr<const SetSpecTree> make_world_set(
+            const Environment * const env,
+            const FSEntry & f)
+    {
+        Context context("When loading world from '" + stringify(f) + "':");
+
+        if (! f.exists())
+        {
+            Log::get_instance()->message("portage_environment.world.does_not_exist", ll_warning, lc_no_context)
+                << "World file '" << f << "' doesn't exist";
+            return make_shared_ptr(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+        }
+
+        const std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("world::environment"), "Environment"));
+        SetFile world(make_named_values<SetFileParams>(
+                    value_for<n::environment>(env),
+                    value_for<n::file_name>(f),
+                    value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, std::tr1::placeholders::_1,
+                            env, UserPackageDepSpecOptions() + updso_no_disambiguation, filter::All())),
+                    value_for<n::set_operator_mode>(sfsmo_natural),
+                    value_for<n::tag>(tag),
+                    value_for<n::type>(sft_simple)
+                    ));
+        return world.contents();
+    }
+}
+
+void
+PortageEnvironment::populate_sets() const
+{
+    Lock l(_imp->world_mutex);
+    add_set(SetName("world::environment"), SetName("world"), std::tr1::bind(&make_world_set, this, _imp->world_file), true);
 }
 
