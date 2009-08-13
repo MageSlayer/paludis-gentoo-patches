@@ -24,6 +24,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
+#include <paludis/name.hh>
 #include <paludis/environment-fwd.hh>
 
 namespace paludis
@@ -39,6 +40,13 @@ namespace paludis
         public NotifierCallbackEvent,
         public ImplementAcceptMethods<NotifierCallbackEvent, NotifierCallbackGeneratingMetadataEvent>
     {
+        private:
+            const RepositoryName _repo;
+
+        public:
+            NotifierCallbackGeneratingMetadataEvent(const RepositoryName & r);
+
+            const RepositoryName repository() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE NotifierCallbackResolverStepEvent :
