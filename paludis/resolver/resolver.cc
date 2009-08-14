@@ -947,6 +947,16 @@ Resolver::find_any_score(const QPN_S & our_qpn_s, const SanitisedDependency & de
     /* best: already installed */
     {
         const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
+                    generator::Matches(spec, MatchPackageOptions()) |
+                    filter::SupportsAction<InstalledAction>())]);
+        if (! installed_ids->empty())
+            return 50 + operator_bias;
+    }
+
+    /* next: already installed, except with the wrong options */
+    if (spec.additional_requirements_ptr())
+    {
+        const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
                     generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements) |
                     filter::SupportsAction<InstalledAction>())]);
         if (! installed_ids->empty())
