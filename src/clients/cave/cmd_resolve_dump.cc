@@ -47,7 +47,7 @@ paludis::cave::dump_if_requested(
     {
         std::cout << c->first << std::endl;
         std::cout << "  = " << *c->second << std::endl;
-        if (cmdline.a_dump_dependencies.specified())
+        if (cmdline.a_dump_dependencies.specified() && c->second->sanitised_dependencies())
             for (SanitisedDependencies::ConstIterator d(c->second->sanitised_dependencies()->begin()),
                     d_end(c->second->sanitised_dependencies()->end()) ;
                     d != d_end ; ++d)
