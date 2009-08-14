@@ -354,7 +354,7 @@ namespace
                 best = make_shared_ptr(new QPN_S(*ids->begin()));
 
             const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*env)[selection::BestVersionInEachSlot(
-                        generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements) |
+                        generator::Matches(spec, MatchPackageOptions()) |
                         filter::SupportsAction<InstalledAction>())]);
 
             for (PackageIDSequence::ConstIterator i(installed_ids->begin()), i_end(installed_ids->end()) ;
