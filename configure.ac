@@ -105,6 +105,7 @@ need_xml_check=
 need_pcrecpp_check=
 need_syck_check=
 need_gem_check=
+need_resolver=
 
 dnl {{{ we can use abi::__cxa_demangle
 AC_MSG_CHECKING([for abi::__cxa_demangle])
@@ -1445,6 +1446,19 @@ AC_SUBST([BUILD_CLIENTS])
 if echo $clients | tr ' ' '\n' | grep '^inquisitio$' >/dev/null ; then
 	need_pcrecpp_check=yes
 fi
+
+if echo $clients | tr ' ' '\n' | grep '^cave$' >/dev/null ; then
+	need_resolver=yes
+fi
+dnl }}}
+
+dnl {{{ new resolver
+
+if test "x$need_resolver" = "xyes" ; then
+	AC_DEFINE([ENABLE_NEW_RESOLVER], [1], [Enable new resolver])
+fi
+AM_CONDITIONAL([ENABLE_NEW_RESOLVER], test "x$need_resolver" = "xyes")
+
 dnl }}}
 
 dnl {{{ libxml2 check
@@ -1622,6 +1636,7 @@ AC_OUTPUT(
 	paludis/repositories/unpackaged/Makefile
 	paludis/repositories/unwritten/Makefile
 	paludis/repositories/virtuals/Makefile
+	paludis/resolver/Makefile
 	paludis/selinux/Makefile
 	paludis/syncers/Makefile
 	paludis/util/Makefile

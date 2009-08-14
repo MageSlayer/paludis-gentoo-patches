@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,6 +35,7 @@ namespace paludis
     class PALUDIS_VISIBLE InstalledVirtualsRepository :
         public Repository,
         public RepositoryHookInterface,
+        public RepositoryDestinationInterface,
         public std::tr1::enable_shared_from_this<InstalledVirtualsRepository>,
         private PrivateImplementationPattern<InstalledVirtualsRepository>
     {
@@ -111,6 +112,21 @@ namespace paludis
             virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
             virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
             virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+
+            /* RepositoryDestinationInterface */
+
+            virtual bool is_suitable_destination_for(const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool is_default_destination() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool want_pre_post_phases() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual void merge(const MergeParams &) PALUDIS_ATTRIBUTE((noreturn));
+
+            ///\}
     };
 }
 

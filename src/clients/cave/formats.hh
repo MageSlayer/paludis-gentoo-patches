@@ -34,6 +34,8 @@ namespace paludis
             const std::string green();
             const std::string bold_red();
             const std::string red();
+            const std::string bold_yellow();
+            const std::string yellow();
 
             const std::string bold_normal();
             const std::string normal();
@@ -82,6 +84,12 @@ namespace paludis
             const std::string colour_formatter_keyword_name_plain();
             const std::string colour_formatter_keyword_name_accepted();
             const std::string colour_formatter_keyword_name_unaccepted();
+
+            const std::string colour_formatter_choice_value_plain();
+            const std::string colour_formatter_choice_value_enabled();
+            const std::string colour_formatter_choice_value_disabled();
+            const std::string colour_formatter_choice_value_forced();
+            const std::string colour_formatter_choice_value_masked();
 
             const std::string colour_formatter_string_plain();
 

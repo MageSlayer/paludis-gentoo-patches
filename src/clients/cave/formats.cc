@@ -59,6 +59,18 @@ paludis::cave::c::bold_red()
 }
 
 const std::string
+paludis::cave::c::yellow()
+{
+    return "\033[0;33m";
+}
+
+const std::string
+paludis::cave::c::bold_yellow()
+{
+    return "\033[1;33m";
+}
+
+const std::string
 paludis::cave::c::normal()
 {
     return "\033[0;0m";
@@ -260,6 +272,36 @@ const std::string
 paludis::cave::f::colour_formatter_license_dep_spec_unaccepted()
 {
     return c::red() + "%s" + c::normal();
+}
+
+const std::string
+paludis::cave::f::colour_formatter_choice_value_plain()
+{
+    return "%s";
+}
+
+const std::string
+paludis::cave::f::colour_formatter_choice_value_enabled()
+{
+    return c::green() + "%k" + c::normal() + "%v";
+}
+
+const std::string
+paludis::cave::f::colour_formatter_choice_value_disabled()
+{
+    return c::red() + "-%s" + c::normal();
+}
+
+const std::string
+paludis::cave::f::colour_formatter_choice_value_forced()
+{
+    return c::green() + "(%k%v)" + c::normal();
+}
+
+const std::string
+paludis::cave::f::colour_formatter_choice_value_masked()
+{
+    return c::red() + "(-%s)" + c::normal();
 }
 
 const std::string
