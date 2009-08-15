@@ -43,6 +43,7 @@
 #include "cmd_resolve.hh"
 #include "cmd_show.hh"
 #include "cmd_sync.hh"
+#include "cmd_update_world.hh"
 
 using namespace paludis;
 using namespace cave;
@@ -87,6 +88,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("resolve", make_command<ResolveCommand>));
     _imp->handlers.insert(std::make_pair("show", make_command<ShowCommand>));
     _imp->handlers.insert(std::make_pair("sync", make_command<SyncCommand>));
+    _imp->handlers.insert(std::make_pair("update-world", make_command<UpdateWorldCommand>));
 }
 
 CommandFactory::~CommandFactory()

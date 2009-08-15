@@ -97,6 +97,7 @@ libcave_a_SOURCES = \
 	cmd_resolve_dump.cc cmd_resolve_dump.hh \
 	cmd_show.cc cmd_show.hh \
 	cmd_sync.cc cmd_sync.hh \
+	cmd_update_world.cc cmd_update_world.hh \
 	exceptions.cc exceptions.hh \
 	format_general.cc format_general.hh \
 	format_plain_contents_entry.cc format_plain_contents_entry.hh \
