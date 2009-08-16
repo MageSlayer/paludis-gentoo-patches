@@ -39,6 +39,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/iterator_funcs.hh>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>

@@ -29,6 +29,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/sequence.hh>
 #include <iostream>
+#include <cstdlib>
 
 #include "command_command_line.hh"
 
