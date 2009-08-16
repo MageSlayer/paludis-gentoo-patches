@@ -32,7 +32,8 @@ command_MANS = \
 	cave-print-sync-protocols.1 \
 	cave-resolve.1 \
 	cave-show.1 \
-	cave-sync.1
+	cave-sync.1 \
+	cave-update-world.1
 
 man_MANS = \
 	cave.1 \
