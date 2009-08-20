@@ -19,6 +19,7 @@ _cave()
 
   _cave_commands=(
     'help:Display help information for a particular command'
+    'perform:Perform an action upon a package'
     'print-categories:Prints a list of known categories'
     'print-commands:Prints a list of known cave commands'
     'print-environment-metadata:Prints environment metadata'
@@ -77,6 +78,15 @@ _cave_cmd_help()
       _describe -t commands 'cave command' _cave_commands
       ;;
   esac
+}
+
+(( ${+functions[_cave_cmd_perform]} )) ||
+_cave_cmd_perform()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--if-supported --no-if-supported)'{--if-supported,--no-if-supported}'[Exit with success rather than erroring, if the action is not supported]' \
+    '(--hooks --no-hooks)'{--hooks,--no-hooks}'[Execute appropriate hooks for the action]'
 }
 
 (( ${+functions[_cave_cmd_print-categories]} )) ||
