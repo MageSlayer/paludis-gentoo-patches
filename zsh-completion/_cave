@@ -34,6 +34,7 @@ _cave()
     'resolve:Display how to resolve targets and optionally perform that resolution'
     'show:Displays a formatted summary of a given object'
     'sync:Sync all or specified repositories'
+    'update-world:Update the world set'
   )
 
   for (( i=1; i <= ${CURRENT}; i++ )); do
@@ -210,6 +211,15 @@ _cave_cmd_sync()
   # TODO: Complete repository names
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]'
+}
+
+(( ${+functions[_cave_cmd_update-world]} )) ||
+_cave_cmd_update-world()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--remove --no-remove -r)'{--remove,--no-remove,-r}'[Remove the specified items]' \
+    '(--set --no-set -s)'{--set,--no-set,-s}'[Parameters are set names, not package names]'
 }
 
 _cave "${@}"
