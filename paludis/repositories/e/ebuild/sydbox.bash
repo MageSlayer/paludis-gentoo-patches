@@ -71,3 +71,13 @@ rmpredict()
     sydboxcmd unpredict "${1}"
 }
 
+addfilter()
+{
+    sydboxcmd addfilter "${1}"
+}
+
+rmfilter()
+{
+    sydboxcmd rmfilter "${1}"
+}
+
