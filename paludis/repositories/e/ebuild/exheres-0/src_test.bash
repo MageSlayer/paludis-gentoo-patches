@@ -47,12 +47,6 @@ src_test()
 
 exheres_internal_test()
 {
-    local old_sandbox_predict="${SANDBOX_PREDICT}"
-    if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
-        SANDBOX_PREDICT="${SANDBOX_PREDICT+${SANDBOX_PREDICT}:}/"
-        sydboxcheck >/dev/null 2>&1 && addpredict "/"
-    fi
-
     local save_PALUDIS_EXTRA_DIE_MESSAGE="${PALUDIS_EXTRA_DIE_MESSAGE}"
 
     if [[ -d "${WORK}" ]] ; then
@@ -70,10 +64,5 @@ exheres_internal_test()
     fi
 
     export PALUDIS_EXTRA_DIE_MESSAGE="${save_PALUDIS_EXTRA_DIE_MESSAGE}"
-
-    if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
-        SANDBOX_PREDICT="${old_sandbox_predict}"
-        sydboxcheck >/dev/null 2>&1 && rmpredict "/"
-    fi
     true
 }
