@@ -58,7 +58,7 @@ adddeny()
 
 addpredict()
 {
-    sydboxcmd predict "${1}"
+    die "${FUNCNAME} is dead! Use addfilter instead!"
 }
 
 rmwrite()
@@ -68,7 +68,7 @@ rmwrite()
 
 rmpredict()
 {
-    sydboxcmd unpredict "${1}"
+    die "${FUNCNAME} is dead! Use rmfilter instead!"
 }
 
 addfilter()
