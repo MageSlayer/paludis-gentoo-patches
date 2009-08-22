@@ -32,9 +32,6 @@ src_test_expensive()
 
 exheres_internal_test_expensive()
 {
-    local old_sandbox_predict="${SANDBOX_PREDICT}"
-    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_PREDICT="${SANDBOX_PREDICT+${SANDBOX_PREDICT}:}/"
-
     local save_PALUDIS_EXTRA_DIE_MESSAGE="${PALUDIS_EXTRA_DIE_MESSAGE}"
 
     if [[ -d "${WORK}" ]] ; then
@@ -52,7 +49,5 @@ exheres_internal_test_expensive()
     fi
 
     export PALUDIS_EXTRA_DIE_MESSAGE="${save_PALUDIS_EXTRA_DIE_MESSAGE}"
-
-    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_PREDICT="${old_sandbox_predict}"
     true
 }
