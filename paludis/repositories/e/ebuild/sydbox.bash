@@ -22,21 +22,17 @@
 
 sydboxcheck()
 {
-    if [[ -z "${1}" ]]; then
-        [[ -e /dev/sydbox ]]
-    else
-        [[ -e /dev/sydbox/${1} ]]
-    fi
+    [[ -e /dev/sydbox ]]
 }
 
 sydboxcmd()
 {
-    if sydboxcheck ${1}; then
+    if sydboxcheck; then
         if [[ -n "${2}" ]]; then
             [[ "/" != "${2:0:1}" ]] && die "${FUNCNAME} ${1}: non-absolute path"
-            : > /dev/sydbox/${1}/"${2}"
+            [[ -e /dev/sydbox/${1}/"${2}" ]]
         else
-            : > /dev/sydbox/${1}
+            [[ -e /dev/sydbox/${1} ]]
         fi
     fi
 }

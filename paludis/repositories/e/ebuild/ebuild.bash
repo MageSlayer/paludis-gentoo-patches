@@ -461,7 +461,7 @@ perform_hook()
 
     local old_sandbox_on="${SANDBOX_ON}"
     local old_sydbox_enabled
-    sydboxcheck enabled 2>/dev/null && old_sydbox_enabled=true || old_sydbox_enabled=false
+    sydboxcmd enabled 2>/dev/null && old_sydbox_enabled=true || old_sydbox_enabled=false
     if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
         export SANDBOX_ON="0"
         if sydboxcheck 2>/dev/null; then
