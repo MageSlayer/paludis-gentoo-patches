@@ -867,37 +867,6 @@ AC_SUBST([PALUDIS_CXXFLAGS_NO_DEBUGGING])
 
 dnl }}}
 
-dnl {{{ sandbox and sydbox
-AC_MSG_CHECKING([whether to enable sandbox])
-AC_ARG_ENABLE([sandbox],
-			  AS_HELP_STRING([--enable-sandbox], [Enable sandbox]),
-			  [HAVE_SANDBOX=$enableval
-			   AC_MSG_RESULT([$enableval])],
-			  [AC_MSG_RESULT([autodetect])
-			   AC_CHECK_PROG(HAVE_SANDBOX, [sandbox], [yes], [no])])
-AC_SUBST([HAVE_SANDBOX])
-AM_CONDITIONAL([HAVE_SANDBOX], test "x$HAVE_SANDBOX" = "xyes")
-if test x"$HAVE_SANDBOX" = "xyes" ; then
-	AC_DEFINE([HAVE_SANDBOX], 1, [Do we have sandbox?])
-else
-	AC_DEFINE([HAVE_SANDBOX], 0)
-fi
-AC_MSG_CHECKING([whether to enable sydbox])
-AC_ARG_ENABLE([sydbox],
-			  AS_HELP_STRING([--enable-sydbox], [Enable sydbox]),
-			  [HAVE_SYDBOX=$enableval
-			   AC_MSG_RESULT([$enableval])],
-			  [AC_MSG_RESULT([autodetect])
-			   AC_CHECK_PROG(HAVE_SYDBOX, [sydbox], [yes], [no])])
-AC_SUBST([HAVE_SYDBOX])
-AM_CONDITIONAL([HAVE_SYDBOX], test "x$HAVE_SYDBOX" = "xyes")
-if test x"$HAVE_SYDBOX" = "xyes" ; then
-	AC_DEFINE([HAVE_SYDBOX], 1, [Do we have sydbox?])
-else
-	AC_DEFINE([HAVE_SYDBOX], 0)
-fi
-dnl }}}
-
 dnl {{{ doxygen
 AC_MSG_CHECKING([whether to enable doxygen])
 AC_ARG_ENABLE([doxygen],

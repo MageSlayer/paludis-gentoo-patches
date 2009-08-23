@@ -293,23 +293,38 @@ Command::with_ptys()
     return *this;
 }
 
+namespace
+{
+    bool check_cmd(const std::string & s)
+    {
+        bool result(0 == run_command(Command(s + " --version >/dev/null 2>/dev/null")));
+        if (! result)
+            Log::get_instance()->message("util.system.boxless", ll_warning, lc_context) <<
+                "I don't seem to be able to use " + s;
+        return result;
+    }
+}
+
 Command &
 Command::with_sandbox()
 {
-#if HAVE_SANDBOX
-    if (! getenv_with_default("PALUDIS_DO_NOTHING_SANDBOXY", "").empty())
-        Log::get_instance()->message("util.system.nothing_sandboxy", ll_debug, lc_no_context)
-            << "PALUDIS_DO_NOTHING_SANDBOXY is set, not using sandbox";
-    else if (! getenv_with_default("SANDBOX_ACTIVE", "").empty())
-        Log::get_instance()->message("util.system.sandbox_in_sandbox", ll_warning, lc_no_context)
-            << "Already inside sandbox, not spawning another sandbox instance";
-    else
+    static bool can_use_sandbox(check_cmd("sandbox"));
+
+    if (can_use_sandbox)
     {
-        _imp->command = "sandbox " + _imp->command;
-        if (getenv_with_default("BASH_ENV", "").empty())
-            with_setenv("BASH_ENV", "/dev/null");
+        if (! getenv_with_default("PALUDIS_DO_NOTHING_SANDBOXY", "").empty())
+            Log::get_instance()->message("util.system.nothing_sandboxy", ll_debug, lc_no_context)
+                << "PALUDIS_DO_NOTHING_SANDBOXY is set, not using sandbox";
+        else if (! getenv_with_default("SANDBOX_ACTIVE", "").empty())
+            Log::get_instance()->message("util.system.sandbox_in_sandbox", ll_warning, lc_no_context)
+                << "Already inside sandbox, not spawning another sandbox instance";
+        else
+        {
+            _imp->command = "sandbox " + _imp->command;
+            if (getenv_with_default("BASH_ENV", "").empty())
+                with_setenv("BASH_ENV", "/dev/null");
+        }
     }
-#endif
 
     return *this;
 }
@@ -317,17 +332,20 @@ Command::with_sandbox()
 Command &
 Command::with_sydbox()
 {
-#if HAVE_SYDBOX
-    struct stat buf;
-    if (! getenv_with_default("PALUDIS_DO_NOTHING_SANDBOXY", "").empty())
-        Log::get_instance()->message("util.system.nothing_sandboxy", ll_debug, lc_no_context)
-            << "PALUDIS_DO_NOTHING_SANDBOXY is set, not using sydbox";
-    else if (-1 != stat("/dev/sydbox", &buf))
-        Log::get_instance()->message("util.system.sandbox_in_sandbox", ll_warning, lc_no_context)
-            << "Already inside sydbox, not spawning another sydbox instance";
-    else
-        _imp->command = "sydbox -- " + _imp->command;
-#endif
+    static bool can_use_sydbox(check_cmd("sydbox"));
+
+    if (can_use_sydbox)
+    {
+        struct stat buf;
+        if (! getenv_with_default("PALUDIS_DO_NOTHING_SANDBOXY", "").empty())
+            Log::get_instance()->message("util.system.nothing_sandboxy", ll_debug, lc_no_context)
+                << "PALUDIS_DO_NOTHING_SANDBOXY is set, not using sydbox";
+        else if (-1 != stat("/dev/sydbox", &buf))
+            Log::get_instance()->message("util.system.sandbox_in_sandbox", ll_warning, lc_no_context)
+                << "Already inside sydbox, not spawning another sydbox instance";
+        else
+            _imp->command = "sydbox -- " + _imp->command;
+    }
 
     return *this;
 }
