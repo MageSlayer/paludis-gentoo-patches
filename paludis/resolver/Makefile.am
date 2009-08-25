@@ -18,6 +18,7 @@ noinst_HEADERS = \
 	qpn_s.hh qpn_s-fwd.hh \
 	reason.hh reason-fwd.hh \
 	resolution.hh resolution-fwd.hh \
+	resolutions.hh resolutions-fwd.hh \
 	resolver.hh resolver-fwd.hh \
 	resolver_functions.hh resolver_functions-fwd.hh \
 	sanitised_dependencies.hh sanitised_dependencies-fwd.hh \
@@ -32,6 +33,7 @@ libpaludisresolver_a_SOURCES = \
 	qpn_s.cc \
 	reason.cc \
 	resolution.cc \
+	resolutions.cc \
 	resolver.cc \
 	sanitised_dependencies.cc \
 	suggest_restart.cc \

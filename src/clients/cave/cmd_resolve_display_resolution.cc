@@ -26,6 +26,7 @@
 #include <paludis/resolver/destinations.hh>
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/reason.hh>
+#include <paludis/resolver/resolutions.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/join.hh>
@@ -78,7 +79,7 @@ paludis::cave::display_resolution(
 
     std::cout << "These are the actions I will take, in order:" << std::endl << std::endl;
 
-    for (Resolver::ConstIterator c(resolver->begin()), c_end(resolver->end()) ;
+    for (Resolutions::ConstIterator c(resolver->resolutions()->begin()), c_end(resolver->resolutions()->end()) ;
             c != c_end ; ++c)
     {
         const std::tr1::shared_ptr<const PackageID> id((*c)->decision()->if_package_id());

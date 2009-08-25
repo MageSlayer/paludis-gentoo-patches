@@ -29,6 +29,7 @@
 #include <paludis/resolver/reason-fwd.hh>
 #include <paludis/resolver/use_installed-fwd.hh>
 #include <paludis/resolver/destinations-fwd.hh>
+#include <paludis/resolver/resolutions-fwd.hh>
 #include <paludis/resolver/resolver_functions-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
@@ -152,11 +153,7 @@ namespace paludis
 
                 void resolve();
 
-                struct ConstIteratorTag;
-                typedef WrappedForwardIterator<ConstIteratorTag,
-                        const std::tr1::shared_ptr<const Resolution> > ConstIterator;
-                ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::tr1::shared_ptr<const Resolutions> resolutions() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 struct ResolutionsByQPN_SConstIteratorTag;
                 typedef WrappedForwardIterator<ResolutionsByQPN_SConstIteratorTag,

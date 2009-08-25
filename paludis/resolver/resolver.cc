@@ -28,6 +28,7 @@
 #include <paludis/resolver/destinations.hh>
 #include <paludis/resolver/resolver_functions.hh>
 #include <paludis/resolver/suggest_restart.hh>
+#include <paludis/resolver/resolutions.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/log.hh>
@@ -60,7 +61,6 @@ using namespace paludis;
 using namespace paludis::resolver;
 
 typedef std::map<QPN_S, std::tr1::shared_ptr<Resolution> > ResolutionsByQPN_SMap;
-typedef std::list<std::tr1::shared_ptr<const Resolution> > OrderedResolutionsList;
 
 namespace paludis
 {
@@ -71,11 +71,12 @@ namespace paludis
         const ResolverFunctions fns;
 
         ResolutionsByQPN_SMap resolutions_by_qpn_s;
-        OrderedResolutionsList ordered_resolutions;
+        std::tr1::shared_ptr<Resolutions> resolutions;
 
         Implementation(const Environment * const e, const ResolverFunctions & f) :
             env(e),
-            fns(f)
+            fns(f),
+            resolutions(new Resolutions)
         {
         }
     };
@@ -805,7 +806,7 @@ Resolver::_can_order_now(const QPN_S &, const std::tr1::shared_ptr<const Resolut
 void
 Resolver::_do_order(const QPN_S &, const std::tr1::shared_ptr<Resolution> & resolution)
 {
-    _imp->ordered_resolutions.push_back(resolution);
+    _imp->resolutions->append(resolution);
     resolution->already_ordered() = true;
 }
 
@@ -846,18 +847,6 @@ bool
 Resolver::_dependency_to_destination_slash(const QPN_S &, const SanitisedDependency &) const
 {
     return true;
-}
-
-Resolver::ConstIterator
-Resolver::begin() const
-{
-    return ConstIterator(_imp->ordered_resolutions.begin());
-}
-
-Resolver::ConstIterator
-Resolver::end() const
-{
-    return ConstIterator(_imp->ordered_resolutions.end());
 }
 
 Resolver::ResolutionsByQPN_SConstIterator
@@ -1307,7 +1296,12 @@ Resolver::_find_id_for_from(
     return make_null_shared_ptr();
 }
 
-template class WrappedForwardIterator<Resolver::ConstIteratorTag, const std::tr1::shared_ptr<const Resolution> >;
+const std::tr1::shared_ptr<const Resolutions>
+Resolver::resolutions() const
+{
+    return _imp->resolutions;
+}
+
 template class WrappedForwardIterator<Resolver::ResolutionsByQPN_SConstIteratorTag,
          const std::pair<const QPN_S, std::tr1::shared_ptr<Resolution> > >;
 
