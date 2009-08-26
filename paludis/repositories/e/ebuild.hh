@@ -141,6 +141,25 @@ namespace paludis
         };
 
         /**
+         * Parameters for an EbuildFetchExtraCommand.
+         *
+         * \see EbuildFetchExtraCommand
+         * \ingroup grpebuildinterface
+         * \nosubgrouping
+         */
+        struct EbuildFetchExtraCommandParams
+        {
+            NamedValue<n::a, std::string> a;
+            NamedValue<n::aa, std::string> aa;
+            NamedValue<n::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > > expand_vars;
+            NamedValue<n::profiles, std::tr1::shared_ptr<const FSEntrySequence> > profiles;
+            NamedValue<n::root, std::string> root;
+            NamedValue<n::use, std::string> use;
+            NamedValue<n::use_expand, std::string> use_expand;
+            NamedValue<n::use_expand_hidden, std::string> use_expand_hidden;
+        };
+
+        /**
          * Parameters for an EbuildInstallCommand.
          *
          * \see EbuildInstallCommand
@@ -462,6 +481,32 @@ namespace paludis
                  * Constructor.
                  */
                 EbuildInstallCommand(const EbuildCommandParams &, const EbuildInstallCommandParams &);
+        };
+
+        /**
+         * An EbuildFetchExtraCommand is used to perform extra fetches for an exheres from
+         * ERepository. On failure it throws.
+         *
+         * \ingroup grpebuildinterface
+         */
+        class EbuildFetchExtraCommand :
+            public EbuildCommand
+        {
+            protected:
+                /// Parameters for install.
+                const EbuildFetchExtraCommandParams fetch_extra_params;
+
+                virtual std::string commands() const;
+
+                virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
+
+                virtual Command extend_command(const Command &);
+
+            public:
+                /**
+                 * Constructor.
+                 */
+                EbuildFetchExtraCommand(const EbuildCommandParams &, const EbuildFetchExtraCommandParams &);
         };
 
         /**

@@ -64,6 +64,7 @@ namespace paludis
         struct ebuild_bad_options;
         struct ebuild_config;
         struct ebuild_environment_variables;
+        struct ebuild_fetch_extra;
         struct ebuild_functions;
         struct ebuild_info;
         struct ebuild_install;
@@ -393,6 +394,7 @@ namespace paludis
         {
             NamedValue<n::ebuild_bad_options, std::string> ebuild_bad_options;
             NamedValue<n::ebuild_config, std::string> ebuild_config;
+            NamedValue<n::ebuild_fetch_extra, std::string> ebuild_fetch_extra;
             NamedValue<n::ebuild_info, std::string> ebuild_info;
             NamedValue<n::ebuild_install, std::string> ebuild_install;
             NamedValue<n::ebuild_metadata, std::string> ebuild_metadata;

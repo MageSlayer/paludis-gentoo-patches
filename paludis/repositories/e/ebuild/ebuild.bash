@@ -166,7 +166,8 @@ done
     builtin_saveenv builtin_tidyup builtin_tidyuprm builtin_variable
     pkg_config pkg_info pkg_nofetch pkg_postinst pkg_postrm
     pkg_preinst pkg_prerm pkg_pretend pkg_setup pkg_bad_options
-    src_compile src_configure src_install src_prepare src_test src_unpack"
+    src_compile src_configure src_install src_prepare src_test src_unpack
+    src_fetch_extra"
 
 # keep the upgrade from 0.36 to 0.38 working
 [[ -z ${PALUDIS_EBUILD_PHASE_VAR} ]] && export PALUDIS_EBUILD_PHASE_VAR="EBUILD_PHASE"

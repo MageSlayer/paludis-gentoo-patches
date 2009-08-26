@@ -36,6 +36,7 @@ libexecprogexheres_SCRIPTS = \
 	portage_stubs.bash \
 	src_compile.bash \
 	src_configure.bash \
+	src_fetch_extra.bash \
 	src_install.bash \
 	src_test.bash \
 	src_test_expensive.bash \

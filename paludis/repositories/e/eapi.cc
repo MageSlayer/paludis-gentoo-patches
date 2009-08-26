@@ -196,6 +196,7 @@ namespace
         return make_shared_ptr(new EAPIEbuildPhases(make_named_values<EAPIEbuildPhases>(
                         value_for<n::ebuild_bad_options>(check_get(k, "ebuild_bad_options")),
                         value_for<n::ebuild_config>(check_get(k, "ebuild_config")),
+                        value_for<n::ebuild_fetch_extra>(check_get(k, "ebuild_fetch_extra")),
                         value_for<n::ebuild_info>(check_get(k, "ebuild_info")),
                         value_for<n::ebuild_install>(check_get(k, "ebuild_install")),
                         value_for<n::ebuild_metadata>(check_get(k, "ebuild_metadata")),

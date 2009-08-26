@@ -429,6 +429,13 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
     std::tr1::shared_ptr<OutputManager> output_manager(fetch_action.options.make_output_manager()(fetch_action));
 
+    CheckFetchedFilesVisitor c(_imp->environment, id, _imp->e_repository->params().distdir(),
+            fetch_action.options.fetch_unneeded(), fetch_restrict,
+            ((_imp->e_repository->layout()->package_directory(id->name())) / "Manifest"),
+            _imp->e_repository->params().use_manifest(),
+            output_manager, fetch_action.options.exclude_unmirrorable(),
+            fetch_action.options.ignore_unfetched());
+
     if (id->fetches_key())
     {
         /* always use mirror://gentoo/, where gentoo is the name of our first master repository,
@@ -448,25 +455,68 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
             id->fetches_key()->value()->root()->accept(f);
         }
 
-        CheckFetchedFilesVisitor c(_imp->environment, id, _imp->e_repository->params().distdir(),
-                fetch_action.options.fetch_unneeded(), fetch_restrict,
-                ((_imp->e_repository->layout()->package_directory(id->name())) / "Manifest"),
-                _imp->e_repository->params().use_manifest(),
-                output_manager, fetch_action.options.exclude_unmirrorable(),
-                fetch_action.options.ignore_unfetched());
         id->fetches_key()->value()->root()->accept(c);
+    }
+
+    if ((c.need_nofetch()) || (! id->eapi()->supported()->ebuild_phases()->ebuild_fetch_extra().empty()))
+    {
+        bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()) &&
+                check_userpriv(FSEntry(_imp->params.builddir()), _imp->environment,
+                    id->eapi()->supported()->userpriv_cannot_use_root()));
+        std::string use(make_use(_imp->params.environment(), *id, p));
+        std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
+                    _imp->params.environment(), *id, p));
+
+        std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
+
+        EAPIPhases fetch_extra_phases(id->eapi()->supported()->ebuild_phases()->ebuild_fetch_extra());
+        if (fetch_extra_phases.begin_phases() != fetch_extra_phases.end_phases())
+        {
+            for (EAPIPhases::ConstIterator phase(fetch_extra_phases.begin_phases()), phase_end(fetch_extra_phases.end_phases()) ;
+                    phase != phase_end ; ++phase)
+            {
+                EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
+                        value_for<n::builddir>(_imp->params.builddir()),
+                        value_for<n::clearenv>(phase->option("clearenv")),
+                        value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
+                        value_for<n::distdir>(_imp->params.distdir()),
+                        value_for<n::ebuild_dir>(_imp->e_repository->layout()->package_directory(id->name())),
+                        value_for<n::ebuild_file>(id->fs_location_key()->value()),
+                        value_for<n::eclassdirs>(_imp->params.eclassdirs()),
+                        value_for<n::environment>(_imp->params.environment()),
+                        value_for<n::exlibsdirs>(exlibsdirs),
+                        value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
+                        value_for<n::maybe_output_manager>(output_manager),
+                        value_for<n::package_builddir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-fetch_extra")),
+                        value_for<n::package_id>(id),
+                        value_for<n::portdir>(
+                            (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
+                            (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
+                        value_for<n::sandbox>(phase->option("sandbox")),
+                        value_for<n::sydbox>(phase->option("sydbox")),
+                        value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
+                        ));
+
+                EbuildFetchExtraCommand fetch_extra_cmd(command_params,
+                        make_named_values<EbuildFetchExtraCommandParams>(
+                        value_for<n::a>(archives),
+                        value_for<n::aa>(all_archives),
+                        value_for<n::expand_vars>(expand_vars),
+                        value_for<n::profiles>(_imp->params.profiles()),
+                        value_for<n::root>("/"),
+                        value_for<n::use>(use),
+                        value_for<n::use_expand>(join(p->use_expand()->begin(), p->use_expand()->end(), " ")),
+                        value_for<n::use_expand_hidden>(join(p->use_expand_hidden()->begin(), p->use_expand_hidden()->end(), " "))
+                        ));
+
+                if (! fetch_extra_cmd())
+                    throw FetchActionError("Fetch of '" + stringify(*id) + "' failed", make_shared_ptr(
+                                new Sequence<FetchActionFailure>));
+            }
+        }
 
         if (c.need_nofetch())
         {
-            bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()) &&
-                    check_userpriv(FSEntry(_imp->params.builddir()), _imp->environment,
-                        id->eapi()->supported()->userpriv_cannot_use_root()));
-            std::string use(make_use(_imp->params.environment(), *id, p));
-            std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
-                        _imp->params.environment(), *id, p));
-
-            std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
-
             EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_nofetch());
             for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
                     phase != phase_end ; ++phase)

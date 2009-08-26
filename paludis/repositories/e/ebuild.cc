@@ -1267,4 +1267,59 @@ EbuildBadOptionsCommand::EbuildBadOptionsCommand(const EbuildCommandParams & p,
 {
 }
 
+std::string
+EbuildFetchExtraCommand::commands() const
+{
+    return params.commands();
+}
+
+bool
+EbuildFetchExtraCommand::failure()
+{
+    throw InstallActionError("Extra fetch failed for '" + stringify(*params.package_id()) + "'");
+}
+
+Command
+EbuildFetchExtraCommand::extend_command(const Command & cmd)
+{
+    Command result(Command(cmd)
+            .with_setenv("ROOT", fetch_extra_params.root())
+            .with_setenv("PALUDIS_PROFILE_DIR", stringify(*fetch_extra_params.profiles()->begin()))
+            .with_setenv("PALUDIS_PROFILE_DIRS", join(fetch_extra_params.profiles()->begin(),
+                                          fetch_extra_params.profiles()->end(), " "))
+            .with_setenv("PALUDIS_ARCHIVES_VAR",
+                    params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_a())
+            );
+
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_a().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_a(),
+                fetch_extra_params.a());
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_aa().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_aa(),
+                fetch_extra_params.aa());
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use(),
+                fetch_extra_params.use());
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand(),
+                fetch_extra_params.use_expand());
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand_hidden().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand_hidden(),
+                fetch_extra_params.use_expand_hidden());
+
+    for (Map<std::string, std::string>::ConstIterator
+            i(fetch_extra_params.expand_vars()->begin()),
+            j(fetch_extra_params.expand_vars()->end()) ; i != j ; ++i)
+        result.with_setenv(i->first, i->second);
+
+    return result;
+}
+
+EbuildFetchExtraCommand::EbuildFetchExtraCommand(const EbuildCommandParams & p,
+        const EbuildFetchExtraCommandParams & f) :
+    EbuildCommand(p),
+    fetch_extra_params(f)
+{
+}
+
 
