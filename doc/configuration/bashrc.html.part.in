@@ -17,6 +17,8 @@ may be in operation.</p>
 # Set basic build options
 CFLAGS="-O2 -march=pentium4 -fomit-frame-pointer"
 CXXFLAGS="${CFLAGS}"
+
+# For Exherbo, use build_options:jobs rather than MAKEOPTS
 MAKEOPTS="-j2"
 
 # For some profiles, you <strong>must</strong> set CHOST
