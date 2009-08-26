@@ -103,6 +103,15 @@ namespace
         else
             return "";
     }
+
+    bool get_trace(const std::tr1::shared_ptr<const PackageID> & id)
+    {
+        std::tr1::shared_ptr<const ChoiceValue> choice;
+        if (id->choices_key())
+            choice = id->choices_key()->value()->find_by_name_with_prefix(
+                    ELikeTraceChoiceValue::canonical_name_with_prefix());
+        return choice && choice->enabled();
+    }
 }
 
 bool
@@ -296,6 +305,9 @@ EbuildCommand::operator() ()
             .with_setenv("PALUDIS_JOBS_VAR", params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_jobs())
             .with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_jobs(),
                     get_jobs(params.package_id()));
+
+    cmd
+        .with_setenv("PALUDIS_TRACE", get_trace(params.package_id()) ? "yes" : "");
 
     if (params.package_id()->eapi()->supported()->ebuild_options()->want_portage_emulation_vars())
         cmd = add_portage_vars(cmd);
@@ -1321,5 +1333,4 @@ EbuildFetchExtraCommand::EbuildFetchExtraCommand(const EbuildCommandParams & p,
     fetch_extra_params(f)
 {
 }
-
 

@@ -464,3 +464,70 @@ ELikeJobsChoiceValue::parameter() const
     return _parameter;
 }
 
+const UnprefixedChoiceName
+ELikeTraceChoiceValue::canonical_unprefixed_name()
+{
+    return UnprefixedChoiceName("trace");
+}
+
+const ChoiceNameWithPrefix
+ELikeTraceChoiceValue::canonical_name_with_prefix()
+{
+    return ChoiceNameWithPrefix(stringify(canonical_build_options_prefix()) + ":" +
+            stringify(canonical_unprefixed_name()));
+}
+
+ELikeTraceChoiceValue::ELikeTraceChoiceValue(const std::tr1::shared_ptr<const PackageID> & id,
+        const Environment * const env, const std::tr1::shared_ptr<const Choice> & choice) :
+    _enabled(env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_true())
+{
+}
+
+const UnprefixedChoiceName
+ELikeTraceChoiceValue::unprefixed_name() const
+{
+    return canonical_unprefixed_name();
+}
+
+const ChoiceNameWithPrefix
+ELikeTraceChoiceValue::name_with_prefix() const
+{
+    return canonical_name_with_prefix();
+}
+
+bool
+ELikeTraceChoiceValue::enabled() const
+{
+    return _enabled;
+}
+
+bool
+ELikeTraceChoiceValue::enabled_by_default() const
+{
+    return false;
+}
+
+bool
+ELikeTraceChoiceValue::locked() const
+{
+    return false;
+}
+
+const std::string
+ELikeTraceChoiceValue::description() const
+{
+    return "Trace actions executed by the package (very noisy, for debugging broken builds only)";
+}
+
+bool
+ELikeTraceChoiceValue::explicitly_listed() const
+{
+    return true;
+}
+
+const std::string
+ELikeTraceChoiceValue::parameter() const
+{
+    return "";
+}
+

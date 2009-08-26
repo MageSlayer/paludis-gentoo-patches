@@ -23,6 +23,8 @@
 unalias -a
 set +C
 
+[[ -n "${PALUDIS_TRACE}" ]] && set -x
+
 ebuild_sanitise_envvars()
 {
     # Force a few more things into PATH, since some users have crazy setups.

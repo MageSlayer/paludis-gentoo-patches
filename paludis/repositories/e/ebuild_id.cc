@@ -1430,6 +1430,10 @@ EbuildID::add_build_options(const std::tr1::shared_ptr<Choices> & choices) const
             build_options->add(make_shared_ptr(new ELikeStripChoiceValue(shared_from_this(), _imp->environment, build_options)));
         }
 
+        /* trace */
+        build_options->add(make_shared_ptr(new ELikeTraceChoiceValue(
+                        shared_from_this(), _imp->environment, build_options)));
+
         /* jobs */
         if (! eapi()->supported()->ebuild_environment_variables()->env_jobs().empty())
         {

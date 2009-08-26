@@ -68,6 +68,11 @@ default <code>VIDEO_CARDS</code> from your profile, you will need to use <code>*
     only be set by package maintainers, since tests marked as expensive are probably too painful in terms
     of CPU time or disk space requirements to run on user systems.</dd>
 
+    <dt>trace</dt>
+    <dd>If set, Paludis will ask bash to display extremely verbose information about what an ebuild or exheres is doing
+    (using <code>set -x</code>). Not generally a good idea, but can be handy to track down why an ebuild is
+    misbehaving.</dd>
+
     <dt>jobs</dt>
     <dd>If set to an unsigned integer, specifies the number of jobs to run in parallel when build systems
     support this (e.g. <code>BUILD_OPTIONS: jobs=4</code> would imply <code>make -j4</code>).</dd>
