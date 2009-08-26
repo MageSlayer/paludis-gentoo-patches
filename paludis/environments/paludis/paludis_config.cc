@@ -728,7 +728,11 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             if (! file->exists())
                 continue;
 
-            _imp->output_managers->add(*file);
+            std::tr1::shared_ptr<Map<std::string, std::string> > predefined_variables(
+                    new Map<std::string, std::string>);
+            predefined_variables->insert("root", _imp->root);
+            predefined_variables->insert("ROOT", _imp->root);
+            _imp->output_managers->add(*file, predefined_variables);
             any = true;
         }
 

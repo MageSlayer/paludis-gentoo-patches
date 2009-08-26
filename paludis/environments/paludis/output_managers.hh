@@ -28,6 +28,7 @@
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/create_output_manager_info-fwd.hh>
 #include <tr1/memory>
+#include <string>
 
 namespace paludis
 {
@@ -56,7 +57,7 @@ namespace paludis
                 /**
                  * Add another file.
                  */
-                void add(const FSEntry &);
+                void add(const FSEntry &, const std::tr1::shared_ptr<const Map<std::string, std::string> > &);
 
                 const std::tr1::shared_ptr<OutputManager> create_named_output_manager(
                         const std::string &,

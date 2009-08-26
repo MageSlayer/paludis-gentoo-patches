@@ -24,9 +24,23 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/map.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <tr1/functional>
 
 using namespace paludis;
 using namespace paludis::paludis_environment;
+
+std::string defined_vars_to_kv_func(
+        const std::tr1::shared_ptr<const Map<std::string, std::string> > v,
+        const KeyValueConfigFile &,
+        const std::string & k)
+{
+    Map<std::string, std::string>::ConstIterator i(v->find(k));
+    if (i != v->end())
+        return i->second;
+    return "";
+}
 
 std::tr1::shared_ptr<LineConfigFile>
 paludis::paludis_environment::make_bashable_conf(const FSEntry & f)
@@ -60,7 +74,7 @@ paludis::paludis_environment::make_bashable_conf(const FSEntry & f)
 }
 
 std::tr1::shared_ptr<KeyValueConfigFile>
-paludis::paludis_environment::make_bashable_kv_conf(const FSEntry & f)
+paludis::paludis_environment::make_bashable_kv_conf(const FSEntry & f, const std::tr1::shared_ptr<const Map<std::string, std::string> > & predefined_variables)
 {
     Context context("When making a key=value config file out of '" + stringify(f) + "':");
 
@@ -74,6 +88,9 @@ paludis::paludis_environment::make_bashable_kv_conf(const FSEntry & f)
                 .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
                 .with_stderr_prefix(f.basename() + "> ")
                 .with_captured_stdout_stream(&s));
+        for (Map<std::string, std::string>::ConstIterator i(predefined_variables->begin()),
+                end(predefined_variables->end()); i != end; ++i)
+            cmd.with_setenv(i->first, i->second);
         int exit_status(run_command(cmd));
         result.reset(new KeyValueConfigFile(s, KeyValueConfigFileOptions(), &KeyValueConfigFile::no_defaults,
                     &KeyValueConfigFile::no_transformation));
@@ -86,8 +103,15 @@ paludis::paludis_environment::make_bashable_kv_conf(const FSEntry & f)
         }
     }
     else
-        result.reset(new KeyValueConfigFile(f, KeyValueConfigFileOptions(), &KeyValueConfigFile::no_defaults,
+    {
+        result.reset(new KeyValueConfigFile(f, KeyValueConfigFileOptions(),
+                    std::tr1::bind(
+                        &defined_vars_to_kv_func,
+                        predefined_variables,
+                        std::tr1::placeholders::_1,
+                        std::tr1::placeholders::_2),
                     &KeyValueConfigFile::no_transformation));
+    }
 
     return result;
 }

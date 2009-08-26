@@ -22,14 +22,16 @@
 
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/config_file-fwd.hh>
+#include <paludis/util/map-fwd.hh>
 #include <tr1/memory>
+#include <string>
 
 namespace paludis
 {
     namespace paludis_environment
     {
         std::tr1::shared_ptr<LineConfigFile> make_bashable_conf(const FSEntry &);
-        std::tr1::shared_ptr<KeyValueConfigFile> make_bashable_kv_conf(const FSEntry &);
+        std::tr1::shared_ptr<KeyValueConfigFile> make_bashable_kv_conf(const FSEntry &, const std::tr1::shared_ptr<const Map<std::string, std::string> > &);
     }
 }
 
