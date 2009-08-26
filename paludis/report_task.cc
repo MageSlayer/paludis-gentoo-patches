@@ -147,28 +147,19 @@ ReportTask::execute()
     bool once(true);
 
     VulnerableChecker vuln(*e);
-    for (PackageDatabase::RepositoryConstIterator r(e->package_database()->begin_repositories()),
-            r_end(e->package_database()->end_repositories()) ; r != r_end ; ++r)
+    try
     {
-        std::tr1::shared_ptr<const Repository> rr(e->package_database()->fetch_repository((*r)->name()));
-        if (! (*rr).sets_interface())
-            continue;
-
-        try
-        {
-            std::tr1::shared_ptr<const SetSpecTree> insecure((*rr).sets_interface()->package_set(SetName("insecurity")));
-            if (! insecure)
-                continue;
+        std::tr1::shared_ptr<const SetSpecTree> insecure(_imp->env->set(SetName("insecurity")));
+        if (insecure)
             insecure->root()->accept(vuln);
-        }
-        catch (const NotAvailableError &)
+    }
+    catch (const NotAvailableError &)
+    {
+        if (once)
         {
-            if (once)
-            {
-                Log::get_instance()->message("report_task.skipping_glsas", ll_warning, lc_no_context)
-                        << "Skipping GLSA checks because Paludis was built without XML support";
-                once = false;
-            }
+            Log::get_instance()->message("report_task.skipping_glsas", ll_warning, lc_no_context)
+                << "Skipping GLSA checks because Paludis was built without XML support";
+            once = false;
         }
     }
 

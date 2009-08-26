@@ -43,7 +43,6 @@ namespace paludis
 
         class EInstalledRepository :
             public Repository,
-            public RepositorySetsInterface,
             public RepositoryEnvironmentVariableInterface,
             public RepositoryDestinationInterface,
             public RepositoryHookInterface,
@@ -57,14 +56,6 @@ namespace paludis
                 ~EInstalledRepository();
 
             public:
-                /* RepositorySetsInterface */
-
-                virtual const std::tr1::shared_ptr<const SetSpecTree> package_set(const SetName & id) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::tr1::shared_ptr<const SetNameSet> sets_list() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
                 /* RepositoryEnvironmentVariableInterface */
 
                 virtual std::string get_environment_variable(
@@ -108,6 +99,13 @@ namespace paludis
                 virtual void perform_info(
                         const std::tr1::shared_ptr<const erepository::ERepositoryID> & id,
                         const InfoAction &) const;
+
+                ///\}
+
+                ///\name Set methods
+                ///\{
+
+                virtual void populate_sets() const;
 
                 ///\}
         };

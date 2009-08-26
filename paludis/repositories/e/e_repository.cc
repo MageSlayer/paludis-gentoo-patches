@@ -509,7 +509,6 @@ ERepository::ERepository(const ERepositoryParams & p) :
 #else
                 value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
 #endif
-                value_for<n::sets_interface>(this),
                 value_for<n::syncable_interface>(this),
                 value_for<n::virtuals_interface>((*DistributionData::get_instance()->distribution_from_string(p.environment()->distribution())).support_old_style_virtuals() ? this : 0)
                 )),
@@ -731,24 +730,6 @@ ERepository::need_mirrors() const
 
         _imp->has_mirrors = true;
     }
-}
-
-const std::tr1::shared_ptr<const SetSpecTree>
-ERepository::package_set(const SetName & s) const
-{
-    if (s.data() == "system")
-    {
-        _imp->need_profiles();
-        return _imp->profile_ptr->system_packages();
-    }
-
-    return _imp->sets_ptr->package_set(s);
-}
-
-std::tr1::shared_ptr<const SetNameSet>
-ERepository::sets_list() const
-{
-    return _imp->sets_ptr->sets_list();
 }
 
 bool
@@ -1756,5 +1737,54 @@ ERepository::eapi_for_file(const FSEntry & f) const
                         dir, _imp->params.profile_eapi_when_unspecified())).first;
     }
     return i->second;
+}
+
+namespace
+{
+    std::tr1::shared_ptr<const SetSpecTree> get_system_set(const std::tr1::shared_ptr<const SetSpecTree> s)
+    {
+        return s;
+    }
+
+    std::tr1::shared_ptr<const SetSpecTree> get_set(
+            const std::tr1::shared_ptr<const ERepositorySets> & s,
+            const SetName & n)
+    {
+        return s->package_set(n);
+    }
+}
+
+void
+ERepository::populate_sets() const
+{
+    const std::tr1::shared_ptr<const SetNameSet> sets(_imp->sets_ptr->sets_list());
+    for (SetNameSet::ConstIterator s(sets->begin()), s_end(sets->end()) ;
+            s != s_end ; ++s)
+    {
+        if (stringify(*s) == "system")
+        {
+            _imp->need_profiles();
+            _imp->params.environment()->add_set(
+                    *s,
+                    SetName(stringify(*s) + "::" + stringify(name())),
+                    std::tr1::bind(&get_system_set, _imp->profile_ptr->system_packages()),
+                    true);
+        }
+        else
+        {
+            _imp->params.environment()->add_set(
+                    *s,
+                    SetName(stringify(*s) + "::" + stringify(name())),
+                    std::tr1::bind(&get_set, _imp->sets_ptr, *s),
+                    true);
+
+            if (stringify(*s) != "security" && stringify(*s) != "insecurity")
+                _imp->params.environment()->add_set(
+                        SetName(stringify(*s) + "*"),
+                        SetName(stringify(*s) + "::" + stringify(name()) + "*"),
+                        std::tr1::bind(&get_set, _imp->sets_ptr, SetName(stringify(*s) + "*")),
+                        true);
+        }
+    }
 }
 

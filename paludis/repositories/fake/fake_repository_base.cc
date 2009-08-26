@@ -48,7 +48,6 @@ namespace paludis
         std::tr1::shared_ptr<CategoryNamePartSet> category_names;
         std::map<CategoryNamePart, std::tr1::shared_ptr<PackageNamePartSet> > package_names;
         std::map<QualifiedPackageName, std::tr1::shared_ptr<PackageIDSequence> > ids;
-        std::map<SetName, std::tr1::shared_ptr<const SetSpecTree> > sets;
 
         const Environment * const env;
 
@@ -164,31 +163,6 @@ FakeRepositoryBase::invalidate_masks()
             (*it2)->invalidate_masks();
 }
 
-void
-FakeRepositoryBase::add_package_set(const SetName & n, const std::tr1::shared_ptr<const SetSpecTree> & s)
-{
-    _imp->sets.insert(std::make_pair(n, s));
-}
-
-const std::tr1::shared_ptr<const SetSpecTree>
-FakeRepositoryBase::package_set(const SetName & id) const
-{
-    std::map<SetName, std::tr1::shared_ptr<const SetSpecTree> >::const_iterator i(_imp->sets.find(id));
-    if (_imp->sets.end() == i)
-        return std::tr1::shared_ptr<const SetSpecTree>();
-    else
-        return i->second;
-}
-
-std::tr1::shared_ptr<const SetNameSet>
-FakeRepositoryBase::sets_list() const
-{
-    std::tr1::shared_ptr<SetNameSet> result(new SetNameSet);
-    std::transform(_imp->sets.begin(), _imp->sets.end(), result->inserter(),
-            std::tr1::mem_fn(&std::pair<const SetName, std::tr1::shared_ptr<const SetSpecTree> >::first));
-    return result;
-}
-
 const Environment *
 FakeRepositoryBase::environment() const
 {
@@ -197,6 +171,11 @@ FakeRepositoryBase::environment() const
 
 void
 FakeRepositoryBase::need_keys_added() const
+{
+}
+
+void
+FakeRepositoryBase::populate_sets() const
 {
 }
 

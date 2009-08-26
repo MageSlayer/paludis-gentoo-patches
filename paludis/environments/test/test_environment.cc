@@ -130,16 +130,6 @@ TestEnvironment::fetch_package_id(const QualifiedPackageName & q,
     throw NoSuchPackageError(stringify(q) + "-" + stringify(v) + "::" + stringify(r));
 }
 
-const std::tr1::shared_ptr<const SetSpecTree>
-TestEnvironment::local_set(const SetName & s) const
-{
-    Sets::const_iterator i(_imp->sets.find(s));
-    if (_imp->sets.end() == i)
-        return make_null_shared_ptr();
-    else
-        return i->second;
-}
-
 uid_t
 TestEnvironment::reduced_uid() const
 {
@@ -200,12 +190,6 @@ bool
 TestEnvironment::unmasked_by_user(const PackageID &) const
 {
     return false;
-}
-
-const std::tr1::shared_ptr<const SetSpecTree>
-TestEnvironment::world_set() const
-{
-    return local_set(SetName("world"));
 }
 
 void
@@ -303,5 +287,10 @@ void
 TestEnvironment::set_want_choice_enabled(const ChoicePrefixName & p, const UnprefixedChoiceName & n, const Tribool v)
 {
     _imp->override_want_choice_enabled[stringify(p) + ":" + stringify(n)] = v;
+}
+
+void
+TestEnvironment::populate_sets() const
+{
 }
 

@@ -53,12 +53,13 @@ namespace paludis
         private:
             PrivateImplementationPattern<EnvironmentImplementation>::ImpPtr & _imp;
 
-        protected:
-            virtual const std::tr1::shared_ptr<const SetSpecTree> local_set(const SetName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            void _need_sets() const;
 
-            virtual const std::tr1::shared_ptr<const SetSpecTree> world_set() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+        protected:
+            virtual void populate_sets() const = 0;
+
+            virtual void populate_standard_sets() const;
+            void set_always_exists(const SetName &) const;
 
         public:
             ///\name Basic operations
@@ -78,12 +79,6 @@ namespace paludis
             virtual std::tr1::shared_ptr<const FSEntrySequence> fetchers_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const SetNameSet> set_names() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual const std::tr1::shared_ptr<const SetSpecTree> set(const SetName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
             virtual std::tr1::shared_ptr<const DestinationsSet> default_destinations() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -101,6 +96,25 @@ namespace paludis
             virtual void remove_notifier_callback(const NotifierCallbackID);
 
             virtual void trigger_notifier_callback(const NotifierCallbackEvent &) const;
+
+            virtual void add_set(
+                    const SetName &,
+                    const SetName &,
+                    const std::tr1::function<std::tr1::shared_ptr<const SetSpecTree> ()> &,
+                    const bool combine) const;
+
+            virtual std::tr1::shared_ptr<const SetNameSet> set_names() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const std::tr1::shared_ptr<const SetSpecTree> set(const SetName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+    class PALUDIS_VISIBLE DuplicateSetError :
+        public Exception
+    {
+        public:
+            DuplicateSetError(const SetName & s) throw ();
     };
 }
 

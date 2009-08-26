@@ -311,14 +311,6 @@ namespace
      * Returns self if the repository supports the interface, otherwise Nil.
      */
     /*
-     * Document-method: sets_interface
-     *
-     * call-seq:
-     *     sets_interface -> self or Nil
-     *
-     * Returns self if the repository supports the interface, otherwise Nil.
-     */
-    /*
      * Document-method: uninstallable_interface
      *
      * call-seq:
@@ -951,8 +943,6 @@ namespace
         rb_define_method(c_repository, "package_names", RUBY_FUNC_CAST(&repository_package_names), 1);
         rb_define_method(c_repository, "package_ids", RUBY_FUNC_CAST(&repository_package_ids), 1);
 
-        rb_define_method(c_repository, "sets_interface", RUBY_FUNC_CAST((&Interface<
-                        n::sets_interface, RepositorySetsInterface, &Repository::sets_interface>::fetch)), 0);
         rb_define_method(c_repository, "syncable_interface", RUBY_FUNC_CAST((&Interface<
                         n::syncable_interface, RepositorySyncableInterface, &Repository::syncable_interface>::fetch)), 0);
         rb_define_method(c_repository, "mirrors_interface", RUBY_FUNC_CAST((&Interface<

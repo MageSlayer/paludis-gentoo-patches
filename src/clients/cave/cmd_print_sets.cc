@@ -81,25 +81,7 @@ PrintSetsCommand::run(
     if (cmdline.begin_parameters() != cmdline.end_parameters())
         throw args::DoHelp("print-sets takes no parameters");
 
-    std::set<SetName> sets;
-
-    for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
-            r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories());
-            r != r_end; ++r)
-    {
-        if ((*r).sets_interface() == 0)
-            continue;
-
-        std::tr1::shared_ptr<const SetNameSet> set_names((*r).sets_interface()->sets_list());
-
-        std::copy(set_names->begin(), set_names->end(), std::inserter(sets, sets.begin()));
-    }
-
-    std::tr1::shared_ptr<const SetNameSet> user_sets(env->set_names());
-    if (user_sets)
-        std::copy(user_sets->begin(), user_sets->end(), std::inserter(sets, sets.begin()));
-
-    std::copy(sets.begin(), sets.end(), std::ostream_iterator<SetName>(cout, "\n"));
+    std::copy(env->set_names()->begin(), env->set_names()->end(), std::ostream_iterator<SetName>(cout, "\n"));
 
     return EXIT_SUCCESS;
 }

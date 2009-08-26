@@ -55,10 +55,7 @@ namespace paludis
 
         protected:
             virtual void need_keys_added() const;
-
-            virtual const std::tr1::shared_ptr<const SetSpecTree> local_set(const SetName & id) const;
-
-            virtual const std::tr1::shared_ptr<const SetSpecTree> world_set() const;
+            virtual void populate_sets() const;
 
         public:
             ///\name Basic operations
@@ -102,9 +99,6 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::tr1::shared_ptr<const MirrorsSequence> mirrors(const std::string &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual std::tr1::shared_ptr<const SetNameSet> set_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual HookResult perform_hook(const Hook &) const

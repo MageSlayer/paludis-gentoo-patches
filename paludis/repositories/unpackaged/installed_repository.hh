@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -47,8 +47,7 @@ namespace paludis
     class PALUDIS_VISIBLE InstalledUnpackagedRepository :
         private PrivateImplementationPattern<InstalledUnpackagedRepository>,
         public Repository,
-        public RepositoryDestinationInterface,
-        public RepositorySetsInterface
+        public RepositoryDestinationInterface
     {
         private:
             PrivateImplementationPattern<InstalledUnpackagedRepository>::ImpPtr & _imp;
@@ -80,9 +79,6 @@ namespace paludis
 
             void deindex(const QualifiedPackageName &) const;
 
-            virtual std::tr1::shared_ptr<const SetNameSet> sets_list() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
             virtual std::tr1::shared_ptr<const PackageIDSequence> package_ids(
                     const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -106,9 +102,6 @@ namespace paludis
 
             virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
 
-            virtual const std::tr1::shared_ptr<const SetSpecTree> package_set(const SetName & id) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
             /* Keys */
 
             virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
@@ -129,6 +122,13 @@ namespace paludis
             static std::tr1::shared_ptr<const RepositoryNameSet> repository_factory_dependencies(
                     const Environment * const env,
                     const std::tr1::function<std::string (const std::string &)> &);
+
+            ///\}
+
+            ///\name Set methods
+            ///\{
+
+            virtual void populate_sets() const;
 
             ///\}
     };

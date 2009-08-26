@@ -305,6 +305,30 @@ namespace paludis
             ///\{
 
             /**
+             * Add a package set.
+             *
+             * Generally called by repositories, when Repository::populate_sets is called.
+             *
+             * \param base_name The basic name of the set, such as 'security'.
+             *
+             * \param combined_name The name to use for this set when combine is true, such
+             *     as 'security.myrepo'. If combine is false, should be the same as base_name.
+             *
+             * \param func A function that returns the set.
+             *
+             * \param combine If true, rename the set from foo to foo.reponame, and make
+             *     the foo set contain foo.reponame, along with any other repositories'
+             *     sets named foo. If false, throw if the set already exists.
+             *
+             * \since 0.40
+             */
+            virtual void add_set(
+                    const SetName & base_name,
+                    const SetName & combined_name,
+                    const std::tr1::function<std::tr1::shared_ptr<const SetSpecTree> ()> & func,
+                    const bool combine) const = 0;
+
+            /**
              * Return all known named sets.
              */
             virtual std::tr1::shared_ptr<const SetNameSet> set_names() const

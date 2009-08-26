@@ -505,18 +505,6 @@ NoConfigEnvironment::accept_keywords(const std::tr1::shared_ptr<const KeywordNam
     return false;
 }
 
-const std::tr1::shared_ptr<const SetSpecTree>
-NoConfigEnvironment::local_set(const SetName &) const
-{
-    return make_null_shared_ptr();
-}
-
-const std::tr1::shared_ptr<const SetSpecTree>
-NoConfigEnvironment::world_set() const
-{
-    return make_null_shared_ptr();
-}
-
 void
 NoConfigEnvironment::add_to_world(const QualifiedPackageName &) const
 {
@@ -647,5 +635,10 @@ const std::tr1::shared_ptr<OutputManager>
 NoConfigEnvironment::create_output_manager(const CreateOutputManagerInfo &) const
 {
     return make_shared_ptr(new StandardOutputManager);
+}
+
+void
+NoConfigEnvironment::populate_sets() const
+{
 }
 

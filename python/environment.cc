@@ -48,17 +48,20 @@ class EnvironmentImplementationWrapper :
     private:
         std::tr1::shared_ptr<PackageDatabase> _db;
 
-    protected:
-        virtual const std::tr1::shared_ptr<const SetSpecTree> local_set(const SetName & s) const
-            PALUDIS_ATTRIBUTE((warn_unused_result))
-        {
-            return make_null_shared_ptr();
-        }
-
     public:
         EnvironmentImplementationWrapper() :
             _db(new PackageDatabase(this))
         {
+        }
+
+        virtual void populate_sets() const
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("populate_sets"))
+                f();
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "populate_sets");
         }
 
         virtual bool accept_license(const std::string & s, const PackageID & p) const
@@ -357,15 +360,6 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "remove_from_world");
         }
 
-        virtual const std::tr1::shared_ptr<const SetSpecTree> world_set() const
-        {
-            Lock l(get_mutex());
-            if (bp::override f = get_override("world_set"))
-                return f();
-            else
-                throw PythonMethodNotImplemented("EnvironmentImplementation", "world_set");
-        }
-
         virtual std::tr1::shared_ptr<PackageIDSequence> operator[] (const Selection & fg) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
@@ -566,8 +560,6 @@ void expose_environment()
          "This class can be subclassed in Python.",
          bp::init<>()
         )
-        //FIXME - local_set is protected
-        //.def("local_set", bp::pure_virtual(&EnvImp::local_set))
 
         .def("accept_license", bp::pure_virtual(&EnvImp::accept_license),
                 "accept_license(str, PackageID) -> bool\n"

@@ -62,13 +62,12 @@ namespace test_cases
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const SetNameSet> sets_list(repo->sets_interface()->sets_list());
-            TEST_CHECK_EQUAL(sets_list->size(), 4U);
-            TEST_CHECK(sets_list->end() != sets_list->find(SetName("system")));
-            TEST_CHECK(sets_list->end() != sets_list->find(SetName("security")));
-            TEST_CHECK(sets_list->end() != sets_list->find(SetName("insecurity")));
-            TEST_CHECK(sets_list->end() != sets_list->find(SetName("set1")));
+            std::tr1::shared_ptr<const SetNameSet> sets_list(env.set_names());
+            TEST_CHECK_EQUAL(join(sets_list->begin(), sets_list->end(), " "), "everything everything::default insecurity "
+                    "insecurity::test-repo-1 security security::test-repo-1 set1 set1* set1::test-repo-1 set1::test-repo-1* "
+                    "system system::test-repo-1 world world::default");
         }
     } test_e_repository_sets_sets_list;
 
@@ -90,8 +89,10 @@ namespace test_cases
                 new FakeInstalledRepository(&env, RepositoryName("installed")));
             installed->add_version("cat-two", "bar", "1.5");
             env.package_database()->add_repository(0, installed);
+            env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const SetSpecTree> set1(repo->sets_interface()->package_set(SetName("set1")));
+            std::tr1::shared_ptr<const SetSpecTree> set1(env.set(SetName("set1::test-repo-1")));
+            TEST_CHECK(set1);
             StringifyFormatter ff;
             erepository::DepSpecPrettyPrinter pretty(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
             set1->root()->accept(pretty);
@@ -121,7 +122,7 @@ namespace test_cases
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const SetSpecTree> insecurity(repo->sets_interface()->package_set(SetName("insecurity")));
+            std::tr1::shared_ptr<const SetSpecTree> insecurity(env.set(SetName("insecurity::test-repo-1")));
             StringifyFormatter ff;
             erepository::DepSpecPrettyPrinter pretty(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
             insecurity->root()->accept(pretty);
@@ -161,7 +162,7 @@ namespace test_cases
             installed->add_version("cat-four", "xyzzy", "2.0.1")->set_slot(SlotName("2"));
             env.package_database()->add_repository(0, installed);
 
-            std::tr1::shared_ptr<const SetSpecTree> security(repo->sets_interface()->package_set(SetName("security")));
+            std::tr1::shared_ptr<const SetSpecTree> security(env.set(SetName("security::test-repo-1")));
             StringifyFormatter ff;
             erepository::DepSpecPrettyPrinter pretty(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
             security->root()->accept(pretty);

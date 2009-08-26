@@ -39,12 +39,6 @@ struct RepositoryWrapper :
     Repository,
     bp::wrapper<Repository>
 {
-    static RepositorySetsInterface *
-    get_sets_interface(const Repository & self)
-    {
-        return self.sets_interface();
-    }
-
     static RepositorySyncableInterface *
     get_syncable_interface(const Repository & self)
     {
@@ -216,11 +210,6 @@ void expose_repository()
                 "entirely when looking for installable packages."
             )
 
-        .add_property("sets_interface", bp::make_function(&RepositoryWrapper::get_sets_interface,
-                    bp::return_internal_reference<>()),
-                "[ro] RepositorySetsInterface"
-                )
-
         .add_property("syncable_interface", bp::make_function(&RepositoryWrapper::get_syncable_interface,
                     bp::return_internal_reference<>()),
                 "[ro] RepositorySyncableInterface"
@@ -306,16 +295,6 @@ void expose_repository()
                 &named_values_getter<RepositoryEInterfaceProfilesDescLine, n::status, std::string, &RepositoryEInterfaceProfilesDescLine::status>
                 )
         ;
-
-    /**
-     * RepositorySetsInterface
-     */
-    bp::class_<RepositorySetsInterface, boost::noncopyable>
-        (
-         "RepositorySetsInterface",
-         "Interface for package sets for repositories.",
-         bp::no_init
-        );
 
     /**
      * RepositorySyncableInterface

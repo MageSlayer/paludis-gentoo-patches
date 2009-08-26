@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -194,58 +194,19 @@ do_list_sets(const std::tr1::shared_ptr<Environment> & env)
 
     Context context("While performing list-sets action from command line:");
 
-    std::map<SetName, std::list<std::string> > sets;
-
-    for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
-            r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
-            r != r_end ; ++r)
-    {
-        if ((*r).sets_interface() == 0)
-            continue;
-
-        if (CommandLine::get_instance()->a_repository.specified())
-            if (CommandLine::get_instance()->a_repository.end_args() == std::find(
-                        CommandLine::get_instance()->a_repository.begin_args(),
-                        CommandLine::get_instance()->a_repository.end_args(),
-                        stringify(r->name())))
-                continue;
-        if (CommandLine::get_instance()->a_repository_format.specified())
-            if (CommandLine::get_instance()->a_repository_format.end_args() == std::find(
-                        CommandLine::get_instance()->a_repository_format.begin_args(),
-                        CommandLine::get_instance()->a_repository_format.end_args(),
-                        r->format_key() ? r->format_key()->value() : "?"))
-                continue;
-
-        std::tr1::shared_ptr<const SetNameSet> set_names((*r).sets_interface()->sets_list());
-        for (SetNameSet::ConstIterator s(set_names->begin()), s_end(set_names->end()) ;
-                s != s_end ; ++s)
-            sets[*s].push_back(stringify(r->name()));
-    }
-
-    if (! CommandLine::get_instance()->a_repository.specified())
-    {
-        std::tr1::shared_ptr<const SetNameSet> set_names(env->set_names());
-        for (SetNameSet::ConstIterator s(set_names->begin()), s_end(set_names->end()) ;
-                s != s_end ; ++s)
-            sets[*s].push_back("environment");
-    }
-
-    for (std::map<SetName, std::list<std::string> >::const_iterator
-            s(sets.begin()), s_end(sets.end()) ; s != s_end ; ++s)
+    for (SetNameSet::ConstIterator s(env->set_names()->begin()), s_end(env->set_names()->end()) ;
+            s != s_end ; ++s)
     {
         if (CommandLine::get_instance()->a_set.specified())
             if (CommandLine::get_instance()->a_set.end_args() == std::find(
                         CommandLine::get_instance()->a_set.begin_args(),
                         CommandLine::get_instance()->a_set.end_args(),
-                        stringify(s->first)))
+                        stringify(*s)))
                 continue;
 
         ret_code = 0;
 
-        std::cout << "* " << colour(cl_package_name, s->first) << std::endl;
-        std::cout << "    " << std::setw(22) << std::left << "found in:" <<
-            std::setw(0) << " " << join(s->second.begin(), s->second.end(), ", ") << std::endl;
-        std::cout << std::endl;
+        std::cout << "* " << colour(cl_package_name, *s) << std::endl;
     }
 
     return ret_code;

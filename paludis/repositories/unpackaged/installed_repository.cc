@@ -42,6 +42,10 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/generator.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/selection.hh>
 #include <sstream>
 #include <sys/time.h>
 
@@ -95,7 +99,6 @@ InstalledUnpackagedRepository::InstalledUnpackagedRepository(
                 value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),
                 value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
                 value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
-                value_for<n::sets_interface>(this),
                 value_for<n::syncable_interface>(static_cast<RepositorySyncableInterface *>(0)),
                 value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
             )),
@@ -417,50 +420,6 @@ InstalledUnpackagedRepository::deindex(const QualifiedPackageName & q) const
     _imp->ndbam.deindex(q);
 }
 
-const std::tr1::shared_ptr<const SetSpecTree>
-InstalledUnpackagedRepository::package_set(const SetName & s) const
-{
-    using namespace std::tr1::placeholders;
-
-    Context context("When fetching package set '" + stringify(s) + "' from '" +
-            stringify(name()) + "':");
-
-    if ("everything" == s.data())
-    {
-        std::tr1::shared_ptr<SetSpecTree> result(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
-        std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(s, stringify(name())));
-
-        std::tr1::shared_ptr<const CategoryNamePartSet> cats(category_names());
-        for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
-                c != c_end ; ++c)
-        {
-            std::tr1::shared_ptr<const QualifiedPackageNameSet> pkgs(package_names(*c));
-            for (QualifiedPackageNameSet::ConstIterator e(pkgs->begin()), e_end(pkgs->end()) ;
-                    e != e_end ; ++e)
-            {
-                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()
-                                ).package(QualifiedPackageName(*e))));
-                spec->set_tag(tag);
-                result->root()->append(spec);
-            }
-        }
-
-        return result;
-    }
-    else
-        return make_null_shared_ptr();
-}
-
-std::tr1::shared_ptr<const SetNameSet>
-InstalledUnpackagedRepository::sets_list() const
-{
-    Context context("While generating the list of sets:");
-
-    std::tr1::shared_ptr<SetNameSet> result(new SetNameSet);
-    result->insert(SetName("everything"));
-    return result;
-}
-
 void
 InstalledUnpackagedRepository::need_keys_added() const
 {
@@ -521,5 +480,38 @@ InstalledUnpackagedRepository::repository_factory_dependencies(
         const std::tr1::function<std::string (const std::string &)> &)
 {
     return make_shared_ptr(new RepositoryNameSet);
+}
+
+namespace
+{
+    std::tr1::shared_ptr<SetSpecTree> get_everything_set(
+            const Environment * const env,
+            const Repository * const repo)
+    {
+        Context context("When making 'everything' set from '" + stringify(repo->name()) + "':");
+
+        std::tr1::shared_ptr<SetSpecTree> result(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+
+        std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
+                    generator::InRepository(repo->name()))]);
+        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+                i != i_end ; ++i)
+            result->root()->append(make_shared_ptr(new PackageDepSpec(
+                            make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
+                            .package((*i)->name())
+                            )));
+
+        return result;
+    }
+}
+
+void
+InstalledUnpackagedRepository::populate_sets() const
+{
+    _imp->params.environment()->add_set(
+            SetName("everything"),
+            SetName("everything::" + stringify(name())),
+            std::tr1::bind(get_everything_set, _imp->params.environment(), this),
+            true);
 }
 

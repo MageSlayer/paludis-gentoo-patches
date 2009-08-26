@@ -65,9 +65,17 @@ NoSuchSetError::NoSuchSetError(const std::string & our_name) throw () :
 {
 }
 
+NoSuchSetError::~NoSuchSetError() throw ()
+{
+}
+
 RecursivelyDefinedSetError::RecursivelyDefinedSetError(const std::string & our_name) throw () :
     Exception("Set '" + our_name + "' is recursively defined"),
     _name(our_name)
+{
+}
+
+RecursivelyDefinedSetError::~RecursivelyDefinedSetError() throw ()
 {
 }
 
@@ -182,10 +190,6 @@ Repository::regenerate_cache() const
 
 void
 Repository::purge_invalid_cache() const
-{
-}
-
-RepositorySetsInterface::~RepositorySetsInterface()
 {
 }
 

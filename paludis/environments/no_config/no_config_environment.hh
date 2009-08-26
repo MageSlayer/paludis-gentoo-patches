@@ -79,14 +79,10 @@ namespace paludis
         private:
             PrivateImplementationPattern<NoConfigEnvironment>::ImpPtr & _imp;
 
-        protected:
-            virtual const std::tr1::shared_ptr<const SetSpecTree> local_set(const SetName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual const std::tr1::shared_ptr<const SetSpecTree> world_set() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
             virtual void need_keys_added() const;
+
+        protected:
+            virtual void populate_sets() const;
 
         public:
             ///\name Basic operations

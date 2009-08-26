@@ -52,7 +52,6 @@ namespace paludis
     class PALUDIS_VISIBLE ERepository :
         public Repository,
         public RepositorySyncableInterface,
-        public RepositorySetsInterface,
         public RepositoryEnvironmentVariableInterface,
         public RepositoryMirrorsInterface,
         public RepositoryVirtualsInterface,
@@ -126,12 +125,6 @@ namespace paludis
 
             /* RepositoryManifestInterface */
             virtual void make_manifest(const QualifiedPackageName & qpn);
-
-            /* RepositorySetsInterface */
-
-            virtual const std::tr1::shared_ptr<const SetSpecTree> package_set(const SetName & id) const;
-
-            virtual std::tr1::shared_ptr<const SetNameSet> sets_list() const;
 
             /* RepositorySyncableInterface */
 
@@ -238,6 +231,13 @@ namespace paludis
             const std::tr1::shared_ptr<const UseDesc> use_desc() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             const std::string eapi_for_file(const FSEntry &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            ///\name Set methods
+            ///\{
+
+            virtual void populate_sets() const;
+
+            ///\}
     };
 }
 

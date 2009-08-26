@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -343,7 +343,7 @@ SetNameValidator::validate(const std::string & s)
     static const std::string allowed_chars(
             "abcdefghijklmnopqrstuvwxyz"
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            "0123456789-+_");
+            "0123456789-+_:");
 
     do
     {
@@ -362,6 +362,20 @@ SetNameValidator::validate(const std::string & s)
 
         if (std::string::npos != s.find_first_not_of(allowed_chars))
             break;
+
+        std::string::size_type p(s.find(':'));
+        if (std::string::npos != p)
+        {
+            if (++p >= s.length())
+                break;
+            if (s[p] != ':')
+                break;
+
+            if (++p >= s.length())
+                break;
+            if (std::string::npos != s.find(':', p))
+                break;
+        }
 
         return;
 
