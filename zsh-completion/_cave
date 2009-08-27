@@ -86,7 +86,53 @@ _cave_cmd_perform()
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '(--if-supported --no-if-supported)'{--if-supported,--no-if-supported}'[Exit with success rather than erroring, if the action is not supported]' \
-    '(--hooks --no-hooks)'{--hooks,--no-hooks}'[Execute appropriate hooks for the action]'
+    '(--hooks --no-hooks)'{--hooks,--no-hooks}'[Execute appropriate hooks for the action]' \
+    '--x-of-y[Set the value of the X_OF_Y variable that is passed to hooks]:value: ' \
+    '(--background --no-background)'{--background,--no-background}'[Indicate that we are being run in the background]' \
+    ':subcommand:->subcommand' \
+    '*::options:->options' && ret=0
+
+    case ${state} in
+      (subcommand)
+        declare -a subcommand
+        subcommand=(
+          'config'
+          'fetch'
+          'info'
+          'install'
+          'pretend'
+          'pretend-fetch'
+          'uninstall'
+        )
+
+        _describe -t subcommand command subcommand && ret=0
+        ;;
+      (options)
+        declare -a arguments
+
+        case ${line[1]} in
+          config|info)
+            ;;
+          fetch|pretend-fetch)
+            _arguments -s : \
+              '(--exclude-unmirrorable --no-exclude-unmirrorable)'{--exclude-unmirrorable,--no-exclude-unmirrorable}'[Do not include unmirrorable components]' \
+              '(--fetch-unneeded --no-fetch-unneeded)'{--fetch-unneeded,--no-fetch-unneeded}'[Fetch components that aren'\''t needed]' \
+              '(--ignore-unfetched --no-ignore-unfetched)'{--ignore-unfetched,--no-ignore-unfetched}'[Only verify components that have already been downloaded]' && ret=0
+            ;;
+          install|pretend)
+            _arguments -s : \
+              '--destination[Repository to which the install should take place]:repository name:_cave_repositories' \
+              '--replacing[Spec uniquely identifying the ID to be replaced]:package spec: ' \
+              '--skip-phase[Skip the named phase]:phase: ' \
+              '--skip-until-phase[Skip every phase until a named phase is encountered]:phase: '
+            ;;
+          uninstall)
+            _arguments -s : \
+              '--config-protect[Specify additional items to include in the config protection list]:file:_files'
+            ;;
+        esac
+        ;;
+    esac
 }
 
 (( ${+functions[_cave_cmd_print-categories]} )) ||
