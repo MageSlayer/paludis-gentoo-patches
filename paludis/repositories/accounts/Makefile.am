@@ -26,6 +26,7 @@ paludis_repositories_accounts_include_HEADERS = \
 	passwd_accounts_handler.hh \
 	accounts_id.hh \
 	accounts_dep_key.hh \
+	accounts_installed_mask.hh \
 	installed_accounts_id.hh
 
 libpaludisaccountsrepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
@@ -35,6 +36,7 @@ libpaludisaccountsrepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	accounts_repository_store.cc \
 	accounts_id.cc \
 	accounts_dep_key.cc \
+	accounts_installed_mask.cc \
 	installed_accounts_id.cc \
 	dummy_accounts_handler.cc \
 	passwd_accounts_handler.cc \

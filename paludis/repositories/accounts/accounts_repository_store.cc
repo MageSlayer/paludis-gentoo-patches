@@ -186,6 +186,8 @@ AccountsRepositoryStore::_load_one_user(
     QualifiedPackageName qpn(cat + pkg);
     std::string username(stringify(pkg));
 
+    bool masked(false);
+
     if (_imp->installed)
     {
         if (! getpwnam(username.c_str()))
@@ -194,7 +196,7 @@ AccountsRepositoryStore::_load_one_user(
     else
     {
         if (getpwnam(username.c_str()))
-            return;
+            masked = true;
     }
 
     PackageNames::iterator p(_imp->package_names.find(cat));
@@ -212,7 +214,7 @@ AccountsRepositoryStore::_load_one_user(
     if (_imp->installed)
         q->second->push_back(make_shared_ptr(new InstalledAccountsID(_imp->env, qpn, repo, true)));
     else
-        q->second->push_back(make_shared_ptr(new AccountsID(_imp->env, qpn, repo, from_repo, filename, true)));
+        q->second->push_back(make_shared_ptr(new AccountsID(_imp->env, qpn, repo, from_repo, filename, true, masked)));
 }
 
 void
@@ -240,6 +242,8 @@ AccountsRepositoryStore::_load_one_group(
     QualifiedPackageName qpn(cat + pkg);
     std::string groupname(stringify(pkg));
 
+    bool masked(false);
+
     if (_imp->installed)
     {
         if (! getgrnam(groupname.c_str()))
@@ -248,7 +252,7 @@ AccountsRepositoryStore::_load_one_group(
     else
     {
         if (getgrnam(groupname.c_str()))
-            return;
+            masked = true;
     }
 
     PackageNames::iterator p(_imp->package_names.find(cat));
@@ -266,7 +270,7 @@ AccountsRepositoryStore::_load_one_group(
     if (_imp->installed)
         q->second->push_back(make_shared_ptr(new InstalledAccountsID(_imp->env, qpn, repo, false)));
     else
-        q->second->push_back(make_shared_ptr(new AccountsID(_imp->env, qpn, repo, from_repo, filename, false)));
+        q->second->push_back(make_shared_ptr(new AccountsID(_imp->env, qpn, repo, from_repo, filename, false, masked)));
 }
 
 bool

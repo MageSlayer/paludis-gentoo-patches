@@ -49,7 +49,7 @@ namespace paludis
                 AccountsID(const Environment * const,
                         const QualifiedPackageName &, const std::tr1::shared_ptr<const Repository> &,
                         const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > &,
-                        const FSEntry &, const bool is_user);
+                        const FSEntry &, const bool is_user, const bool masked);
                 ~AccountsID();
 
                 virtual const std::string canonical_form(const PackageIDCanonicalForm) const;

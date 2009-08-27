@@ -19,6 +19,7 @@
 
 #include <paludis/repositories/accounts/accounts_id.hh>
 #include <paludis/repositories/accounts/accounts_dep_key.hh>
+#include <paludis/repositories/accounts/accounts_installed_mask.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/config_file.hh>
@@ -54,6 +55,7 @@ namespace paludis
 
         const std::tr1::shared_ptr<const LiteralMetadataValueKey<FSEntry> > fs_location_key;
         const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key;
+        const std::tr1::shared_ptr<const AccountsInstalledMask> mask;
 
         const bool is_user;
 
@@ -76,13 +78,14 @@ namespace paludis
         Implementation(const Environment * const e,
                 const QualifiedPackageName & q, const std::tr1::shared_ptr<const Repository> & r,
                 const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & f,
-                const FSEntry & l, const bool u) :
+                const FSEntry & l, const bool u, const bool m) :
             env(e),
             name(q),
             version("0", VersionSpecOptions()),
             repository(r),
             fs_location_key(new LiteralMetadataValueKey<FSEntry>("location", "Location", mkt_internal, l)),
             from_repositories_key(f),
+            mask(m ? make_shared_ptr(new AccountsInstalledMask) : make_null_shared_ptr()),
             is_user(u),
             has_file_keys(false),
             has_metadata_keys(false)
@@ -94,10 +97,12 @@ namespace paludis
 AccountsID::AccountsID(const Environment * const e,
         const QualifiedPackageName & q, const std::tr1::shared_ptr<const Repository> & r,
         const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & f, const FSEntry & l,
-        const bool u) :
-    PrivateImplementationPattern<AccountsID>(new Implementation<AccountsID>(e, q, r, f, l, u)),
+        const bool u, const bool m) :
+    PrivateImplementationPattern<AccountsID>(new Implementation<AccountsID>(e, q, r, f, l, u, m)),
     _imp(PrivateImplementationPattern<AccountsID>::_imp)
 {
+    if (_imp->mask)
+        add_mask(_imp->mask);
 }
 
 AccountsID::~AccountsID()
