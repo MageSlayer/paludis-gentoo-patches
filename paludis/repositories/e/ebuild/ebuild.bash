@@ -548,7 +548,7 @@ ebuild_main()
     done
 
     if [[ $1 == metadata ]] || [[ $1 == variable ]] || [[ $1 == pretend ]] || \
-            [[ $1 == bad_options ]] ; then
+            [[ $1 == bad_options ]] || [[ $1 == fetch_extra ]] ; then
         export ${PALUDIS_EBUILD_PHASE_VAR}="${1}"
         perform_hook ebuild_${action}_pre
         if [[ $1 == metadata ]]; then

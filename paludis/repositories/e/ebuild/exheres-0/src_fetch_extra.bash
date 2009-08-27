@@ -28,8 +28,6 @@ src_fetch_extra()
 
 exheres_internal_fetch_extra()
 {
-    cd "${WORK}" || die "cd to \${WORK} (\"${WORK}\") failed"
-
     if hasq "fetch_extra" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping src_fetch_extra (SKIP_FUNCTIONS)"
     else
