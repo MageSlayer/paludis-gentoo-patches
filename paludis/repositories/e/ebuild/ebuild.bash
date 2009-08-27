@@ -554,7 +554,7 @@ ebuild_main()
         if [[ $1 == metadata ]]; then
             # Ban execve() calls if we're running under sydbox
             if sydboxcheck 2>/dev/null; then
-                sydboxcmd sandbox_exec || ebuild_notice "warning" "sydboxcmd sandbox_exec returned failure"
+                sydboxcmd sandbox/exec || ebuild_notice "warning" "sydboxcmd sandbox/exec returned failure"
             else
                 for f in cut tr date ; do
                     eval "${f}() { ebuild_notice qa 'global scope ${f}' ; $(type -P ${f} ) \"\$@\" ; }"
@@ -566,7 +566,7 @@ ebuild_main()
             PATH="" ebuild_load_ebuild "${EBUILD}"
             # Unban execve() calls if we're running under sydbox
             if sydboxcheck 2>/dev/null; then
-                sydboxcmd unsandbox_exec || ebuild_notice "warning" "sydboxcmd unsandbox_exec returned failure"
+                sydboxcmd sandunbox/exec || ebuild_notice "warning" "sydboxcmd sandunbox/exec returned failure"
             fi
         else
             ebuild_load_em_up_dan
@@ -583,13 +583,17 @@ ebuild_main()
             # Restrict network access to local if running under sydbox
             if [[ $action != unpack ]]; then
                 if sydboxcheck 2>/dev/null; then
-                    sydboxcmd net/local_self || ebuild_notice "warning" "sydboxcmd net/local_self returned failure"
+                    sydboxcmd sandbox/net || ebuild_notice "warning" "sydboxcmd sandbox/net returned failure"
+                    sydboxcmd net/local || ebuild_notice "warning" "sydboxcmd net/local returned failure"
+                    sydboxcmd net/restrict/connect || ebuild_notice "warning" "sydboxcmd net/restrict_connect return failure"
                 fi
             fi
             if ! ${PALUDIS_F_FUNCTION_PREFIX:-ebuild_f}_${action} ; then
                 if [[ $action != unpack ]]; then
                     if sydboxcheck 2>/dev/null; then
+                        sydboxcmd sandunbox/net || ebuild_notice "warning" "sydboxcmd sandunbox/net returned failure"
                         sydboxcmd net/allow || ebuild_notice "warning" "sydboxcmd net/allow returned failure"
+                        sydboxcmd net/unrestrict/connect || ebuild_notice "warning" "sydboxcmd net/unrestrict/connect returned failure"
                     fi
                 fi
                 perform_hook ebuild_${action}_fail
@@ -597,7 +601,9 @@ ebuild_main()
             fi
             if [[ $action != unpack ]]; then
                 if sydboxcheck 2>/dev/null; then
+                    sydboxcmd sandunbox/net || ebuild_notice "warning" "sydboxcmd sandunbox/net returned failure"
                     sydboxcmd net/allow || ebuild_notice "warning" "sydboxcmd net/allow returned failure"
+                    sydboxcmd net/unrestrict/connect || ebuild_notice "warning" "sydboxcmd net/unrestrict/connect returned failure"
                 fi
             fi
             perform_hook ebuild_${action}_post

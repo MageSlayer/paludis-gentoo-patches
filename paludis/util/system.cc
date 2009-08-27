@@ -340,7 +340,7 @@ Command::with_sydbox()
         if (! getenv_with_default("PALUDIS_DO_NOTHING_SANDBOXY", "").empty())
             Log::get_instance()->message("util.system.nothing_sandboxy", ll_debug, lc_no_context)
                 << "PALUDIS_DO_NOTHING_SANDBOXY is set, not using sydbox";
-        else if (-1 != stat("/dev/sydbox", &buf))
+        else if (! getenv_with_default("SYDBOX_ACTIVE", "").empty())
             Log::get_instance()->message("util.system.sandbox_in_sandbox", ll_warning, lc_no_context)
                 << "Already inside sydbox, not spawning another sydbox instance";
         else
