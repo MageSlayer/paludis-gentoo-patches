@@ -34,6 +34,7 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/indirect_iterator.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/package_id.hh>
 #include <paludis/environment.hh>
@@ -47,6 +48,8 @@
 #include <paludis/choice.hh>
 #include <vector>
 #include <limits>
+#include <sstream>
+#include <algorithm>
 
 using namespace paludis;
 
@@ -56,6 +59,59 @@ namespace
     {
         return stringify(id.name()) + "-" + stringify(id.version());
     }
+
+    struct MyOptionsRewriter
+    {
+        StringifyFormatter f;
+        std::stringstream str;
+
+        void visit(const PlainTextSpecTree::NodeType<AllDepSpec>::Type & node)
+        {
+            str << "( ";
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+            str << " ) ";
+            do_annotations(*node.spec());
+        }
+
+        void visit(const PlainTextSpecTree::NodeType<ConditionalDepSpec>::Type & node)
+        {
+            str << f.format(*node.spec(), format::Plain()) << " ( ";
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+            str << " ) ";
+            do_annotations(*node.spec());
+        }
+
+        void visit(const PlainTextSpecTree::NodeType<PlainTextDepSpec>::Type & node)
+        {
+            str << f.format(*node.spec(), format::Plain()) << " ";
+            do_annotations(*node.spec());
+        }
+
+        void visit(const PlainTextSpecTree::NodeType<PlainTextLabelDepSpec>::Type & node)
+        {
+            str << f.format(*node.spec(), format::Plain()) << " ";
+            do_annotations(*node.spec());
+        }
+
+        void do_annotations(const DepSpec & p)
+        {
+            if (p.annotations_key() && (p.annotations_key()->begin_metadata() != p.annotations_key()->end_metadata()))
+            {
+                str << " [[ ";
+                for (MetadataSectionKey::MetadataConstIterator k(p.annotations_key()->begin_metadata()),
+                        k_end(p.annotations_key()->end_metadata()) ;
+                        k != k_end ; ++k)
+                {
+                    const MetadataValueKey<std::string> * r(
+                            simple_visitor_cast<const MetadataValueKey<std::string> >(**k));
+                    if (! r)
+                        throw InternalError(PALUDIS_HERE, "annotations must be string keys");
+                    str << (*k)->raw_name() << " = [" << (r->value().empty() ? " " : " " + r->value() + " ") << "] ";
+                }
+                str << "]] ";
+            }
+        }
+    };
 }
 
 std::string
@@ -348,6 +404,24 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 DepSpecPrettyPrinter p(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
                 after->root()->accept(p);
                 return "O0;" + stringify(p);
+            }
+            else if (var == eapi->supported()->ebuild_metadata_variables()->myoptions()->name())
+            {
+                /* if options have a global description and no local description, rewrite it as
+                 * a local description so that descriptions carry on working for installed stuff. */
+                PackageID::MetadataConstIterator m(package_id->find_metadata(var));
+                if (m == package_id->end_metadata())
+                    throw InternalError(PALUDIS_HERE, "oops. can't find key '" + var + "'");
+
+                const MetadataSpecTreeKey<PlainTextSpecTree> * mm(
+                        simple_visitor_cast<const MetadataSpecTreeKey<PlainTextSpecTree> >(**m));
+                if (! mm)
+                    throw InternalError(PALUDIS_HERE, "oops. key '" + var + "' isn't a PlainTextSpecTree key");
+
+                StringifyFormatter ff;
+                MyOptionsRewriter p;
+                mm->value()->root()->accept(p);
+                return "O0;" + p.str.str();
             }
 
             return "O0;" + join(tokens.begin() + 4, tokens.end(), " ");
