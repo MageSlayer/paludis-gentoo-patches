@@ -336,7 +336,6 @@ Command::with_sydbox()
 
     if (can_use_sydbox)
     {
-        struct stat buf;
         if (! getenv_with_default("PALUDIS_DO_NOTHING_SANDBOXY", "").empty())
             Log::get_instance()->message("util.system.nothing_sandboxy", ll_debug, lc_no_context)
                 << "PALUDIS_DO_NOTHING_SANDBOXY is set, not using sydbox";
