@@ -106,6 +106,12 @@ AccountsDepKey::initial_labels() const
 std::string
 AccountsDepKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
 {
+    return f.indent(0) + pretty_print_flat(f) + "\n";
+}
+
+std::string
+AccountsDepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
+{
     std::stringstream s;
 
     for (Sequence<std::tr1::shared_ptr<PackageDepSpec> >::ConstIterator i(_imp->specs->begin()),
@@ -130,11 +136,5 @@ AccountsDepKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
     }
 
     return s.str();
-}
-
-std::string
-AccountsDepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
-{
-    return pretty_print(f);
 }
 
