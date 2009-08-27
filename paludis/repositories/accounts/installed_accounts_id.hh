@@ -87,7 +87,7 @@ namespace paludis
                 ///\{
 
                 virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual void perform_action(Action &) const;
+                virtual void perform_action(Action &) const PALUDIS_ATTRIBUTE((noreturn));
 
                 ///\}
 
