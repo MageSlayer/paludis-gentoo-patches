@@ -57,12 +57,11 @@ namespace
     struct DisplayCallback
     {
         mutable Mutex mutex;
-        mutable int width, metadata, searched;
+        mutable unsigned width;
+        mutable std::map<std::string, int> metadata, steps;
 
         DisplayCallback() :
-            width(0),
-            metadata(0),
-            searched(0)
+            width(0)
         {
         }
 
@@ -71,39 +70,87 @@ namespace
             event.accept(*this);
         }
 
-        void visit(const NotifierCallbackGeneratingMetadataEvent &) const
+        void visit(const NotifierCallbackGeneratingMetadataEvent & e) const
         {
             Lock lock(mutex);
-            ++metadata;
+            ++metadata.insert(std::make_pair(stringify(e.repository()), 0)).first->second;
             update();
         }
 
         void visit(const NotifierCallbackResolverStepEvent &) const
         {
+            Lock lock(mutex);
+            ++steps.insert(std::make_pair("steps", 0)).first->second;
+            update();
         }
 
         void visit(const Searched &) const
         {
             Lock lock(mutex);
-            ++searched;
+            ++steps.insert(std::make_pair("searched", 0)).first->second;
             update();
         }
 
         void update() const
         {
             std::string s;
-            if (0 != searched)
-                s.append("searched: " + stringify(searched));
-
-            if (0 != metadata)
+            if (! steps.empty())
             {
-                if (! s.empty())
-                    s.append(", ");
-                s.append("metadata: " + stringify(metadata) + " ");
+                for (std::map<std::string, int>::const_iterator i(steps.begin()), i_end(steps.end()) ;
+                        i != i_end ; ++i)
+                {
+                    if (! s.empty())
+                        s.append(", ");
+
+                    s.append(stringify(i->second) + " " + i->first);
+                }
             }
 
-            std::cout << std::string(width, '\010') << s << std::flush;
+            if (! metadata.empty())
+            {
+                std::multimap<int, std::string> biggest;
+                for (std::map<std::string, int>::const_iterator i(metadata.begin()), i_end(metadata.end()) ;
+                        i != i_end ; ++i)
+                    biggest.insert(std::make_pair(i->second, i->first));
+
+                int t(0), n(0);
+                std::string ss;
+                for (std::multimap<int, std::string>::const_reverse_iterator i(biggest.rbegin()), i_end(biggest.rend()) ;
+                        i != i_end ; ++i)
+                {
+                    ++n;
+
+                    if (n == 4)
+                    {
+                        ss.append(", ...");
+                        break;
+                    }
+
+                    if (n < 4)
+                    {
+                        if (! ss.empty())
+                            ss.append(", ");
+
+                        ss.append(stringify(i->first) + " " + i->second);
+                    }
+
+                    t += i->first;
+                }
+
+                if (! s.empty())
+                    s.append(", ");
+                s.append(stringify(t) + " metadata (" + ss + ")");
+            }
+
+            std::cout << std::string(width, '\010') << s;
+
+            if (width > s.length())
+                std::cout
+                    << std::string(width - s.length(), ' ')
+                    << std::string(width - s.length(), '\010');
+
             width = s.length();
+            std::cout << std::flush;
         }
     };
 
