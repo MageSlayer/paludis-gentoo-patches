@@ -581,7 +581,7 @@ ebuild_main()
             export ${PALUDIS_EBUILD_PHASE_VAR}="${action}"
             perform_hook ebuild_${action}_pre
             # Restrict network access to local if running under sydbox
-            if [[ $action != unpack ]]; then
+            if [[ $action != unpack ]] && [[ $action != fetch_extra ]] ; then
                 if sydboxcheck 2>/dev/null; then
                     sydboxcmd sandbox/net || ebuild_notice "warning" "sydboxcmd sandbox/net returned failure"
                     sydboxcmd net/local || ebuild_notice "warning" "sydboxcmd net/local returned failure"
@@ -589,7 +589,7 @@ ebuild_main()
                 fi
             fi
             if ! ${PALUDIS_F_FUNCTION_PREFIX:-ebuild_f}_${action} ; then
-                if [[ $action != unpack ]]; then
+                if [[ $action != unpack ]] && [[ $action != fetch_extra ]] ; then
                     if sydboxcheck 2>/dev/null; then
                         sydboxcmd sandunbox/net || ebuild_notice "warning" "sydboxcmd sandunbox/net returned failure"
                         sydboxcmd net/allow || ebuild_notice "warning" "sydboxcmd net/allow returned failure"
@@ -599,7 +599,7 @@ ebuild_main()
                 perform_hook ebuild_${action}_fail
                 die "${action} failed"
             fi
-            if [[ $action != unpack ]]; then
+            if [[ $action != unpack ]] && [[ $action != fetch_extra ]] ; then
                 if sydboxcheck 2>/dev/null; then
                     sydboxcmd sandunbox/net || ebuild_notice "warning" "sydboxcmd sandunbox/net returned failure"
                     sydboxcmd net/allow || ebuild_notice "warning" "sydboxcmd net/allow returned failure"
