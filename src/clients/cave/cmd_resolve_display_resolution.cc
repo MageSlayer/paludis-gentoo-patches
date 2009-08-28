@@ -46,25 +46,29 @@ namespace
 {
     struct ReasonNameGetter
     {
-        std::string visit(const DependencyReason & r) const
+        std::pair<std::string, bool> visit(const DependencyReason & r) const
         {
-            return stringify(r.from_id()->name());
+            if (r.sanitised_dependency().spec().if_block())
+                return std::make_pair(stringify(r.from_id()->name()) + " blocker " +
+                            stringify(*r.sanitised_dependency().spec().if_block()), true);
+            else
+                return std::make_pair(stringify(r.from_id()->name()), false);
         }
 
-        std::string visit(const TargetReason &) const
+        std::pair<std::string, bool> visit(const TargetReason &) const
         {
-            return "target";
+            return std::make_pair("target", true);
         }
 
-        std::string visit(const SetReason & r) const
+        std::pair<std::string, bool> visit(const SetReason & r) const
         {
-            return r.reason_for_set()->accept_returning<std::string>(*this) +
-                " (" + stringify(r.set_name()) + ")";
+            std::pair<std::string, bool> rr(r.reason_for_set()->accept_returning<std::pair<std::string, bool> >(*this));
+            return std::make_pair(rr.first + " (" + stringify(r.set_name()) + ")", rr.second);
         }
 
-        std::string visit(const PresetReason &) const
+        std::pair<std::string, bool> visit(const PresetReason &) const
         {
-            return "";
+            return std::make_pair("", false);
         }
     };
 }
@@ -233,24 +237,43 @@ paludis::cave::display_resolution(
         if (id->short_description_key())
             std::cout << "    \"" << id->short_description_key()->value() << "\"" << std::endl;
 
-        std::set<std::string> reason_names;
+        std::set<std::string> reason_names, special_reason_names;
         for (Constraints::ConstIterator r((*c)->constraints()->begin()),
                 r_end((*c)->constraints()->end()) ;
                 r != r_end ; ++r)
         {
             ReasonNameGetter g;
-            std::string s((*r)->reason()->accept_returning<std::string>(g));
-            if (! s.empty())
-                reason_names.insert(s);
+            std::pair<std::string, bool> s((*r)->reason()->accept_returning<std::pair<std::string, bool> >(g));
+            if (! s.first.empty())
+            {
+                if (s.second)
+                    special_reason_names.insert(s.first);
+                else
+                    reason_names.insert(s.first);
+            }
         }
 
-        if (! reason_names.empty())
+        if ((! special_reason_names.empty()) || (! reason_names.empty()))
         {
-            if (reason_names.size() > 4)
-                std::cout << "    Because of " << join(reason_names.begin(), next(reason_names.begin(), 3), ", ")
-                    << ", " << (reason_names.size() - 3) << " more" << std::endl;
-            else
-                std::cout << "    Because of " << join(reason_names.begin(), reason_names.end(), ", ") << std::endl;
+            std::cout << "    Because of ";
+
+            if (! special_reason_names.empty())
+                std::cout << c::bold_yellow() << join(special_reason_names.begin(), special_reason_names.end(), ", ")
+                    << c::normal();
+
+            if (! reason_names.empty())
+            {
+                if (! special_reason_names.empty())
+                    std::cout << ", ";
+
+                if (reason_names.size() > 4)
+                    std::cout << join(reason_names.begin(), next(reason_names.begin(), 3), ", ")
+                        << ", " << (reason_names.size() - 3) << " more";
+                else
+                    std::cout << join(reason_names.begin(), reason_names.end(), ", ");
+            }
+
+            std::cout << std::endl;
         }
     }
 
