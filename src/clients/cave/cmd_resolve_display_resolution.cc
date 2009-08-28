@@ -275,7 +275,7 @@ paludis::cave::display_resolution(
 
             if ((! (*c)->decision()->is_best()) && (! (*c)->decision()->is_nothing())
                     && (! (*c)->decision()->is_installed()))
-                std::cout << c::bold_red() << " which prevented selection of the best candidate";
+                std::cout << c::bold_red() << " which prevented selection of the best candidate" << c::normal();
 
             std::cout << std::endl;
         }
