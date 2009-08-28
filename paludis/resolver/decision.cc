@@ -35,6 +35,8 @@ paludis::resolver::operator<< (std::ostream & s, const Decision & d)
     else
         ss << "(nothing)";
 
+    if (d.is_best())
+        ss << ", is best";
     if (d.is_installed())
         ss << ", is installed";
     if (d.is_nothing())

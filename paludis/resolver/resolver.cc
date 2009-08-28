@@ -1099,13 +1099,16 @@ Resolver::_try_to_find_decision_for(
         const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
     const std::tr1::shared_ptr<const PackageID> installed_id(_find_installed_id_for(qpn_s, resolution));
-    const std::tr1::shared_ptr<const PackageID> installable_id(_find_installable_id_for(qpn_s, resolution));
+    std::pair<const std::tr1::shared_ptr<const PackageID>, bool> installable_id_best(_find_installable_id_for(qpn_s, resolution));
+    const std::tr1::shared_ptr<const PackageID> installable_id(installable_id_best.first);
+    bool best(installable_id_best.second);
 
     if (resolution->constraints()->nothing_is_fine_too() && ! installed_id)
     {
         /* nothing installed, but nothing's ok */
         return make_shared_ptr(new Decision(make_named_values<Decision>(
                         value_for<n::if_package_id>(make_null_shared_ptr()),
+                        value_for<n::is_best>(false),
                         value_for<n::is_installed>(false),
                         value_for<n::is_nothing>(true),
                         value_for<n::is_same>(false),
@@ -1118,6 +1121,7 @@ Resolver::_try_to_find_decision_for(
         /* there's nothing suitable installed. */
         return make_shared_ptr(new Decision(make_named_values<Decision>(
                         value_for<n::if_package_id>(installable_id),
+                        value_for<n::is_best>(best),
                         value_for<n::is_installed>(false),
                         value_for<n::is_nothing>(false),
                         value_for<n::is_same>(false),
@@ -1151,6 +1155,7 @@ Resolver::_try_to_find_decision_for(
 
         return make_shared_ptr(new Decision(make_named_values<Decision>(
                         value_for<n::if_package_id>(installed_id),
+                        value_for<n::is_best>(false),
                         value_for<n::is_installed>(true),
                         value_for<n::is_nothing>(false),
                         value_for<n::is_same>(true),
@@ -1177,6 +1182,7 @@ Resolver::_try_to_find_decision_for(
             case ui_never:
                 return make_shared_ptr(new Decision(make_named_values<Decision>(
                                 value_for<n::if_package_id>(installable_id),
+                                value_for<n::is_best>(best),
                                 value_for<n::is_installed>(false),
                                 value_for<n::is_nothing>(false),
                                 value_for<n::is_same>(is_same),
@@ -1188,6 +1194,7 @@ Resolver::_try_to_find_decision_for(
                 if (is_same)
                     return make_shared_ptr(new Decision(make_named_values<Decision>(
                                     value_for<n::if_package_id>(installed_id),
+                                    value_for<n::is_best>(false),
                                     value_for<n::is_installed>(true),
                                     value_for<n::is_nothing>(false),
                                     value_for<n::is_same>(is_same),
@@ -1197,6 +1204,7 @@ Resolver::_try_to_find_decision_for(
                 else
                     return make_shared_ptr(new Decision(make_named_values<Decision>(
                                     value_for<n::if_package_id>(installable_id),
+                                    value_for<n::is_best>(best),
                                     value_for<n::is_installed>(false),
                                     value_for<n::is_nothing>(false),
                                     value_for<n::is_same>(is_same),
@@ -1208,6 +1216,7 @@ Resolver::_try_to_find_decision_for(
                 if (is_same_version)
                     return make_shared_ptr(new Decision(make_named_values<Decision>(
                                     value_for<n::if_package_id>(installed_id),
+                                    value_for<n::is_best>(false),
                                     value_for<n::is_installed>(true),
                                     value_for<n::is_nothing>(false),
                                     value_for<n::is_same>(is_same),
@@ -1217,6 +1226,7 @@ Resolver::_try_to_find_decision_for(
                 else
                     return make_shared_ptr(new Decision(make_named_values<Decision>(
                                     value_for<n::if_package_id>(installable_id),
+                                    value_for<n::is_best>(best),
                                     value_for<n::is_installed>(false),
                                     value_for<n::is_nothing>(false),
                                     value_for<n::is_same>(is_same),
@@ -1227,6 +1237,7 @@ Resolver::_try_to_find_decision_for(
             case ui_if_possible:
                 return make_shared_ptr(new Decision(make_named_values<Decision>(
                                 value_for<n::if_package_id>(installed_id),
+                                value_for<n::is_best>(false),
                                 value_for<n::is_installed>(true),
                                 value_for<n::is_nothing>(false),
                                 value_for<n::is_same>(is_same),
@@ -1251,10 +1262,10 @@ Resolver::_find_installed_id_for(const QPN_S & qpn_s, const std::tr1::shared_ptr
                 filter::SupportsAction<InstalledAction>()
                 )]);
 
-    return _find_id_for_from(qpn_s, resolution, ids);
+    return _find_id_for_from(qpn_s, resolution, ids).first;
 }
 
-const std::tr1::shared_ptr<const PackageID>
+const std::pair<const std::tr1::shared_ptr<const PackageID>, bool>
 Resolver::_find_installable_id_for(const QPN_S & qpn_s, const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
     const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::AllVersionsSorted(
@@ -1267,11 +1278,12 @@ Resolver::_find_installable_id_for(const QPN_S & qpn_s, const std::tr1::shared_p
     return _find_id_for_from(qpn_s, resolution, ids);
 }
 
-const std::tr1::shared_ptr<const PackageID>
+const std::pair<const std::tr1::shared_ptr<const PackageID>, bool>
 Resolver::_find_id_for_from(
         const QPN_S &, const std::tr1::shared_ptr<const Resolution> & resolution,
         const std::tr1::shared_ptr<const PackageIDSequence> & ids) const
 {
+    bool best(true);
     for (PackageIDSequence::ReverseConstIterator i(ids->rbegin()), i_end(ids->rend()) ;
             i != i_end ; ++i)
     {
@@ -1290,10 +1302,12 @@ Resolver::_find_id_for_from(
         }
 
         if (ok)
-            return *i;
+            return std::make_pair(*i, best);
+
+        best = false;
     }
 
-    return make_null_shared_ptr();
+    return std::make_pair(make_null_shared_ptr(), false);
 }
 
 const std::tr1::shared_ptr<const Resolutions>

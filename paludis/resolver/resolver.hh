@@ -135,9 +135,11 @@ namespace paludis
 
                 const std::string _find_cycle(const QPN_S &, const int ignorable_pass) const;
 
-                const std::tr1::shared_ptr<const PackageID> _find_installed_id_for(const QPN_S &, const std::tr1::shared_ptr<const Resolution> &) const;
-                const std::tr1::shared_ptr<const PackageID> _find_installable_id_for(const QPN_S &, const std::tr1::shared_ptr<const Resolution> &) const;
-                const std::tr1::shared_ptr<const PackageID> _find_id_for_from(
+                const std::tr1::shared_ptr<const PackageID> _find_installed_id_for(
+                        const QPN_S &, const std::tr1::shared_ptr<const Resolution> &) const;
+                const std::pair<const std::tr1::shared_ptr<const PackageID>, bool> _find_installable_id_for(
+                        const QPN_S &, const std::tr1::shared_ptr<const Resolution> &) const;
+                const std::pair<const std::tr1::shared_ptr<const PackageID>, bool> _find_id_for_from(
                         const QPN_S &, const std::tr1::shared_ptr<const Resolution> &,
                         const std::tr1::shared_ptr<const PackageIDSequence> &) const;
 
