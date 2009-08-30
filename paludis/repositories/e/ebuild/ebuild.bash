@@ -581,9 +581,9 @@ ebuild_main()
             export ${PALUDIS_EBUILD_PHASE_VAR}="${action}"
             perform_hook ebuild_${action}_pre
             # Restrict network access to local if running under sydbox
+            # We don't do sydboxcmd sand{un,}box/net here to allow the user set it in the configuration file.
             if [[ $action != unpack ]] && [[ $action != fetch_extra ]] ; then
                 if sydboxcheck 2>/dev/null; then
-                    sydboxcmd sandbox/net || ebuild_notice "warning" "sydboxcmd sandbox/net returned failure"
                     sydboxcmd net/local || ebuild_notice "warning" "sydboxcmd net/local returned failure"
                     sydboxcmd net/restrict/connect || ebuild_notice "warning" "sydboxcmd net/restrict_connect return failure"
                 fi
@@ -591,7 +591,6 @@ ebuild_main()
             if ! ${PALUDIS_F_FUNCTION_PREFIX:-ebuild_f}_${action} ; then
                 if [[ $action != unpack ]] && [[ $action != fetch_extra ]] ; then
                     if sydboxcheck 2>/dev/null; then
-                        sydboxcmd sandunbox/net || ebuild_notice "warning" "sydboxcmd sandunbox/net returned failure"
                         sydboxcmd net/allow || ebuild_notice "warning" "sydboxcmd net/allow returned failure"
                         sydboxcmd net/unrestrict/connect || ebuild_notice "warning" "sydboxcmd net/unrestrict/connect returned failure"
                     fi
@@ -601,7 +600,6 @@ ebuild_main()
             fi
             if [[ $action != unpack ]] && [[ $action != fetch_extra ]] ; then
                 if sydboxcheck 2>/dev/null; then
-                    sydboxcmd sandunbox/net || ebuild_notice "warning" "sydboxcmd sandunbox/net returned failure"
                     sydboxcmd net/allow || ebuild_notice "warning" "sydboxcmd net/allow returned failure"
                     sydboxcmd net/unrestrict/connect || ebuild_notice "warning" "sydboxcmd net/unrestrict/connect returned failure"
                 fi
