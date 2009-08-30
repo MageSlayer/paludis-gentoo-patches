@@ -1296,11 +1296,13 @@ EbuildFetchExtraCommand::extend_command(const Command & cmd)
 {
     Command result(Command(cmd)
             .with_setenv("ROOT", fetch_extra_params.root())
+            .with_setenv("PALUDIS_LOADSAVEENV_DIR", stringify(fetch_extra_params.loadsaveenv_dir()))
             .with_setenv("PALUDIS_PROFILE_DIR", stringify(*fetch_extra_params.profiles()->begin()))
             .with_setenv("PALUDIS_PROFILE_DIRS", join(fetch_extra_params.profiles()->begin(),
                                           fetch_extra_params.profiles()->end(), " "))
             .with_setenv("PALUDIS_ARCHIVES_VAR",
                     params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_a())
+            .with_setenv("SLOT", stringify(fetch_extra_params.slot()))
             );
 
     if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_a().empty())

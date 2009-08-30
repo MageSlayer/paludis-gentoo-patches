@@ -152,8 +152,10 @@ namespace paludis
             NamedValue<n::a, std::string> a;
             NamedValue<n::aa, std::string> aa;
             NamedValue<n::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > > expand_vars;
+            NamedValue<n::loadsaveenv_dir, FSEntry> loadsaveenv_dir;
             NamedValue<n::profiles, std::tr1::shared_ptr<const FSEntrySequence> > profiles;
             NamedValue<n::root, std::string> root;
+            NamedValue<n::slot, std::string> slot;
             NamedValue<n::use, std::string> use;
             NamedValue<n::use_expand, std::string> use_expand;
             NamedValue<n::use_expand_hidden, std::string> use_expand_hidden;

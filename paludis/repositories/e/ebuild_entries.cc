@@ -473,9 +473,15 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
         EAPIPhases fetch_extra_phases(id->eapi()->supported()->ebuild_phases()->ebuild_fetch_extra());
         if ((! fetch_action.options.ignore_unfetched()) && (fetch_extra_phases.begin_phases() != fetch_extra_phases.end_phases()))
         {
+            FSEntry package_builddir(_imp->params.builddir() / (stringify(id->name().category()) + "-" +
+                    stringify(id->name().package()) + "-" + stringify(id->version()) + "-fetch_extra"));
+
             for (EAPIPhases::ConstIterator phase(fetch_extra_phases.begin_phases()), phase_end(fetch_extra_phases.end_phases()) ;
                     phase != phase_end ; ++phase)
             {
+                if (can_skip_phase(id, *phase))
+                    continue;
+
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                         value_for<n::builddir>(_imp->params.builddir()),
                         value_for<n::clearenv>(phase->option("clearenv")),
@@ -488,7 +494,7 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                         value_for<n::exlibsdirs>(exlibsdirs),
                         value_for<n::files_dir>(_imp->e_repository->layout()->package_directory(id->name()) / "files"),
                         value_for<n::maybe_output_manager>(output_manager),
-                        value_for<n::package_builddir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-fetch_extra")),
+                        value_for<n::package_builddir>(package_builddir),
                         value_for<n::package_id>(id),
                         value_for<n::portdir>(
                             (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
@@ -503,8 +509,10 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                         value_for<n::a>(archives),
                         value_for<n::aa>(all_archives),
                         value_for<n::expand_vars>(expand_vars),
+                        value_for<n::loadsaveenv_dir>(package_builddir / "temp"),
                         value_for<n::profiles>(_imp->params.profiles()),
                         value_for<n::root>("/"),
+                        value_for<n::slot>(id->slot_key() ? stringify(id->slot_key()->value()) : ""),
                         value_for<n::use>(use),
                         value_for<n::use_expand>(join(p->use_expand()->begin(), p->use_expand()->end(), " ")),
                         value_for<n::use_expand_hidden>(join(p->use_expand_hidden()->begin(), p->use_expand_hidden()->end(), " "))
