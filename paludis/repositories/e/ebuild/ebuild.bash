@@ -562,6 +562,7 @@ ebuild_main()
             fi
             for f in locked_pipe_command ; do
                 eval "${f}() { $(type -P ${f} ) \"\$@\" ; }"
+                sydboxcmd addexec "$(type -P ${f})"
             done
             PATH="" ebuild_load_ebuild "${EBUILD}"
             # Unban execve() calls if we're running under sydbox
