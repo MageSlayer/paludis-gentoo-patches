@@ -1154,6 +1154,13 @@ Merger::try_to_copy_xattrs(const FSEntry & src, int dst_fd, MergeStatusFlags & f
                 "Got error '" << ::strerror(errno) << "' when trying to find extended attributes size for '" << src << "'";
         return;
     }
+    else if (list_sz > (2 << 29))
+    {
+        Log::get_instance()->message("merger.xattrs.your_fs_sucks", ll_warning, lc_context) <<
+            "flistxattr returned " << list_sz << ", which clearly isn't right. Are you using some crazy "
+            "ricer filesystem or kernel?";
+        return;
+    }
 
     std::tr1::shared_ptr<char> list_holder(static_cast<char *>(::operator new(list_sz)));
     list_sz = flistxattr(src_fd, list_holder.get(), list_sz);
