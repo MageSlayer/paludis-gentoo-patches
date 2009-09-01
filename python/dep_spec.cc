@@ -1023,6 +1023,19 @@ struct RegisterSpecTreeSharedPtrFromPython
     }
 };
 
+namespace
+{
+    PackageDepSpec wrapped_parse_user_package_dep_spec(
+            const std::string & s,
+            const Environment * const e,
+            const UserPackageDepSpecOptions & o,
+            const Filter & f = filter::All()
+            )
+    {
+        return parse_user_package_dep_spec(s, e, o, f);
+    }
+}
+
 void expose_dep_spec()
 {
     /**
@@ -1165,7 +1178,7 @@ void expose_dep_spec()
      * PackageDepSpec
      */
 
-    bp::def("parse_user_package_dep_spec", &parse_user_package_dep_spec,
+    bp::def("parse_user_package_dep_spec", &wrapped_parse_user_package_dep_spec,
             (bp::arg("str"), bp::arg("env"), bp::arg("options"), bp::arg("filter")=filter::All()),
             "parse_user_package_dep_spec(str, Environment, options=UserPackageDepSpecOptions(), Filter)"
             " -> PackageDepSpec\n"
