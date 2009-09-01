@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,6 +19,8 @@
 
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_REMOVE_SHARED_PTR_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_REMOVE_SHARED_PTR_HH 1
+
+#include <tr1/memory>
 
 namespace paludis
 {
