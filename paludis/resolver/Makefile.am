@@ -54,7 +54,7 @@ check_PROGRAMS = $(TESTS)
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
-DISTCHECK_DEPS =
+DISTCHECK_DEPS = libpaludisresolver.a
 
 distcheck-deps-local : $(DISTCHECK_DEPS)
 
