@@ -22,6 +22,7 @@
 
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
 #include <paludis/resolver/resolver-fwd.hh>
+#include <paludis/resolver/serialise-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/dep_label-fwd.hh>
 #include <paludis/dep_spec.hh>
@@ -47,12 +48,24 @@ namespace paludis
 
             PackageOrBlockDepSpec(const BlockDepSpec &);
             PackageOrBlockDepSpec(const PackageDepSpec &);
+
+            void serialise(Serialiser &) const;
+
+            static PackageOrBlockDepSpec deserialise(
+                    Deserialisation & d,
+                    const std::tr1::shared_ptr<const PackageID> & for_id) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         struct SanitisedDependency
         {
             NamedValue<n::active_dependency_labels, std::tr1::shared_ptr<const ActiveDependencyLabels> > active_dependency_labels;
             NamedValue<n::spec, PackageOrBlockDepSpec> spec;
+
+            void serialise(Serialiser &) const;
+
+            static SanitisedDependency deserialise(
+                    Deserialisation & d,
+                    const std::tr1::shared_ptr<const PackageID> & for_id) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class SanitisedDependencies :

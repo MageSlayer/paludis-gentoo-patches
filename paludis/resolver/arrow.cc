@@ -18,8 +18,10 @@
  */
 
 #include <paludis/resolver/arrow.hh>
+#include <paludis/resolver/serialise-impl.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/make_named_values.hh>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -32,6 +34,25 @@ paludis::resolver::operator<< (std::ostream & s, const Arrow & a)
         s << ", ignorable pass " << a.ignorable_pass();
     s << ")";
     return s;
+}
+
+void
+Arrow::serialise(Serialiser & s) const
+{
+    s.object("Arrow")
+        .member(SerialiserFlags<>(), "ignorable_pass", ignorable_pass())
+        .member(SerialiserFlags<>(), "to_qpn_s", to_qpn_s())
+        ;
+}
+
+const std::tr1::shared_ptr<Arrow>
+Arrow::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "Arrow");
+    return make_shared_ptr(new Arrow(make_named_values<Arrow>(
+                    value_for<n::ignorable_pass>(v.member<bool>("ignorable_pass")),
+                    value_for<n::to_qpn_s>(v.member<QPN_S>("to_qpn_s"))
+                    )));
 }
 
 template class Sequence<std::tr1::shared_ptr<Arrow> >;

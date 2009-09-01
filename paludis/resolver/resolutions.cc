@@ -18,9 +18,12 @@
  */
 
 #include <paludis/resolver/resolutions.hh>
+#include <paludis/resolver/resolution.hh>
+#include <paludis/resolver/serialise-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <list>
+#include <paludis/util/sequence-impl.hh>
+#include <paludis/util/stringify.hh>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -30,7 +33,7 @@ namespace paludis
     template <>
     struct Implementation<Resolutions>
     {
-        std::list<std::tr1::shared_ptr<const Resolution> > resolutions;
+        Sequence<std::tr1::shared_ptr<const Resolution> > resolutions;
     };
 }
 
@@ -59,6 +62,25 @@ Resolutions::ConstIterator
 Resolutions::end() const
 {
     return ConstIterator(_imp->resolutions.end());
+}
+
+void
+Resolutions::serialise(Serialiser & s) const
+{
+    s.object("Resolutions")
+        .member(SerialiserFlags<serialise::container>(), "items", _imp->resolutions)
+        ;
+}
+
+const std::tr1::shared_ptr<Resolutions>
+Resolutions::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "Resolutions");
+    Deserialisator vv(*v.find_remove_member("items"), "c");
+    std::tr1::shared_ptr<Resolutions> result(new Resolutions);
+    for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
+        result->append(vv.member<std::tr1::shared_ptr<Resolution> >(stringify(n)));
+    return result;
 }
 
 template class PrivateImplementationPattern<Resolutions>;

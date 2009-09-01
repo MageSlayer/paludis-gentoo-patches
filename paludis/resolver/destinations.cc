@@ -18,10 +18,12 @@
  */
 
 #include <paludis/resolver/destinations.hh>
+#include <paludis/resolver/serialise-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/package_id.hh>
 #include <ostream>
 #include <sstream>
@@ -54,5 +56,47 @@ paludis::resolver::operator<< (std::ostream & s, const Destinations & d)
 
     s << ss.str();
     return s;
+}
+
+void
+Destinations::serialise(Serialiser & s) const
+{
+    s.object("Destinations")
+        .member(SerialiserFlags<serialise::might_be_null>(), "slash", slash())
+        ;
+}
+
+void
+Destination::serialise(Serialiser & s) const
+{
+    s.object("Destination")
+        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "replacing", replacing())
+        .member(SerialiserFlags<>(), "repository", stringify(repository()))
+        ;
+}
+
+const std::tr1::shared_ptr<Destinations>
+Destinations::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "Destinations");
+    return make_shared_ptr(new Destinations(make_named_values<Destinations>(
+                    value_for<n::slash>(v.member<std::tr1::shared_ptr<Destination> >("slash"))
+                    )));
+}
+
+const std::tr1::shared_ptr<Destination>
+Destination::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "Destination");
+
+    std::tr1::shared_ptr<PackageIDSequence> replacing(new PackageIDSequence);
+    Deserialisator vv(*v.find_remove_member("replacing"), "c");
+    for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
+        replacing->push_back(vv.member<std::tr1::shared_ptr<const PackageID> >(stringify(n)));
+
+    return make_shared_ptr(new Destination(make_named_values<Destination>(
+                    value_for<n::replacing>(replacing),
+                    value_for<n::repository>(RepositoryName(v.member<std::string>("repository")))
+                    )));
 }
 

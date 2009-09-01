@@ -18,6 +18,8 @@
  */
 
 #include <paludis/resolver/decision.hh>
+#include <paludis/resolver/serialise-impl.hh>
+#include <paludis/util/make_named_values.hh>
 #include <sstream>
 
 using namespace paludis;
@@ -50,5 +52,34 @@ paludis::resolver::operator<< (std::ostream & s, const Decision & d)
 
     s << ss.str();
     return s;
+}
+
+void
+Decision::serialise(Serialiser & s) const
+{
+    s.object("Decision")
+        .member(SerialiserFlags<serialise::might_be_null>(), "if_package_id", if_package_id())
+        .member(SerialiserFlags<>(), "is_best", is_best())
+        .member(SerialiserFlags<>(), "is_installed", is_installed())
+        .member(SerialiserFlags<>(), "is_nothing", is_nothing())
+        .member(SerialiserFlags<>(), "is_same", is_same())
+        .member(SerialiserFlags<>(), "is_same_version", is_same_version())
+        .member(SerialiserFlags<>(), "is_transient", is_transient())
+        ;
+}
+
+const std::tr1::shared_ptr<Decision>
+Decision::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "Decision");
+    return make_shared_ptr(new Decision(make_named_values<Decision>(
+                    value_for<n::if_package_id>(v.member<std::tr1::shared_ptr<const PackageID> >("if_package_id")),
+                    value_for<n::is_best>(v.member<bool>("is_best")),
+                    value_for<n::is_installed>(v.member<bool>("is_installed")),
+                    value_for<n::is_nothing>(v.member<bool>("is_nothing")),
+                    value_for<n::is_same>(v.member<bool>("is_same")),
+                    value_for<n::is_same_version>(v.member<bool>("is_same_version")),
+                    value_for<n::is_transient>(v.member<bool>("is_transient"))
+                    )));
 }
 

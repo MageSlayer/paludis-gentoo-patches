@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_DECISION_HH 1
 
 #include <paludis/resolver/decision-fwd.hh>
+#include <paludis/resolver/serialise-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/package_id.hh>
 
@@ -48,6 +49,11 @@ namespace paludis
             NamedValue<n::is_same, bool> is_same;
             NamedValue<n::is_same_version, bool> is_same_version;
             NamedValue<n::is_transient, bool> is_transient;
+
+            void serialise(Serialiser &) const;
+
+            static const std::tr1::shared_ptr<Decision> deserialise(
+                    Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

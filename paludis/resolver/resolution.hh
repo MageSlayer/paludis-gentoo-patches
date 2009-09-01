@@ -51,6 +51,11 @@ namespace paludis
             NamedValue<n::decision, std::tr1::shared_ptr<Decision> > decision;
             NamedValue<n::destinations, std::tr1::shared_ptr<Destinations> > destinations;
             NamedValue<n::sanitised_dependencies, std::tr1::shared_ptr<SanitisedDependencies> > sanitised_dependencies;
+
+            void serialise(Serialiser &) const;
+
+            static const std::tr1::shared_ptr<Resolution> deserialise(
+                    Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

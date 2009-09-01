@@ -20,6 +20,7 @@
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/qpn_s.hh>
+#include <paludis/resolver/serialise-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
@@ -30,6 +31,7 @@
 #include <paludis/slot_requirement.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
+#include <paludis/user_dep_spec.hh>
 #include <set>
 #include <list>
 
@@ -415,6 +417,54 @@ PackageOrBlockDepSpec::PackageOrBlockDepSpec(const PackageDepSpec & s) :
     if_block(value_for<n::if_block>(make_null_shared_ptr())),
     if_package(value_for<n::if_package>(make_shared_ptr(new PackageDepSpec(s))))
 {
+}
+
+void
+PackageOrBlockDepSpec::serialise(Serialiser & s) const
+{
+    s.object("PackageOrBlockDepSpec")
+        .member(SerialiserFlags<>(), "if_block", if_block() ? stringify(*if_block()) : "null")
+        .member(SerialiserFlags<>(), "if_package", if_package() ? stringify(*if_package()) : "null")
+        ;
+}
+
+PackageOrBlockDepSpec
+PackageOrBlockDepSpec::deserialise(Deserialisation & d, const std::tr1::shared_ptr<const PackageID> & for_id)
+{
+    Deserialisator v(d, "PackageOrBlockDepSpec");
+
+    std::string if_block(v.member<std::string>("if_block"));
+    std::string if_package(v.member<std::string>("if_package"));
+
+    if (if_block == "null")
+        return PackageOrBlockDepSpec(parse_user_package_dep_spec(if_package,
+                    d.deserialiser().environment(), UserPackageDepSpecOptions() + updso_serialised,
+                    filter::All(), for_id));
+    else
+        return PackageOrBlockDepSpec(BlockDepSpec(make_shared_ptr(new PackageDepSpec(
+                            parse_user_package_dep_spec(if_block.substr(if_block.find_first_not_of("!")),
+                                d.deserialiser().environment(), UserPackageDepSpecOptions() + updso_serialised,
+                                filter::All(), for_id))), if_block));
+}
+
+void
+SanitisedDependency::serialise(Serialiser & s) const
+{
+    s.object("SanitisedDependency")
+        .member(SerialiserFlags<>(), "spec", spec())
+        ;
+}
+
+SanitisedDependency
+SanitisedDependency::deserialise(Deserialisation & d, const std::tr1::shared_ptr<const PackageID> & from_id)
+{
+    Deserialisator v(d, "SanitisedDependency");
+
+    return make_named_values<SanitisedDependency>(
+            value_for<n::active_dependency_labels>(make_null_shared_ptr()),
+            value_for<n::spec>(PackageOrBlockDepSpec::deserialise(*v.find_remove_member("spec"),
+                    from_id))
+            );
 }
 
 template class WrappedForwardIterator<SanitisedDependencies::ConstIteratorTag, const SanitisedDependency>;

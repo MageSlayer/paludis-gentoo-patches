@@ -21,10 +21,14 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/arrow.hh>
 #include <paludis/resolver/decision.hh>
+#include <paludis/resolver/serialise-impl.hh>
+#include <paludis/resolver/destinations.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <sstream>
 
 using namespace paludis;
@@ -43,5 +47,37 @@ paludis::resolver::operator<< (std::ostream & s, const Resolution & r)
         << ")";
     s << ss.str();
     return s;
+}
+
+void
+Resolution::serialise(Serialiser & s) const
+{
+    s.object("Resolution")
+        .member(SerialiserFlags<>(), "already_ordered", already_ordered())
+        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "arrows", arrows())
+        .member(SerialiserFlags<>(), "constraints", *constraints())
+        .member(SerialiserFlags<serialise::might_be_null>(), "decision", decision())
+        .member(SerialiserFlags<serialise::might_be_null>(), "destinations", destinations())
+        ;
+}
+
+const std::tr1::shared_ptr<Resolution>
+Resolution::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "Resolution");
+
+    std::tr1::shared_ptr<ArrowSequence> arrows(new ArrowSequence);
+    Deserialisator vv(*v.find_remove_member("arrows"), "c");
+    for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
+        arrows->push_back(vv.member<std::tr1::shared_ptr<Arrow> >(stringify(n)));
+
+    return make_shared_ptr(new Resolution(make_named_values<Resolution>(
+                    value_for<n::already_ordered>(v.member<bool>("already_ordered")),
+                    value_for<n::arrows>(arrows),
+                    value_for<n::constraints>(v.member<std::tr1::shared_ptr<Constraints> >("constraints")),
+                    value_for<n::decision>(v.member<std::tr1::shared_ptr<Decision> >("decision")),
+                    value_for<n::destinations>(v.member<std::tr1::shared_ptr<Destinations> >("destinations")),
+                    value_for<n::sanitised_dependencies>(make_null_shared_ptr())
+                    )));
 }
 

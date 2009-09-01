@@ -23,6 +23,7 @@
 #include <paludis/resolver/reason-fwd.hh>
 #include <paludis/resolver/qpn_s-fwd.hh>
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
+#include <paludis/resolver/serialise-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
@@ -41,6 +42,11 @@ namespace paludis
             public:
                 virtual ~Reason() = 0;
                 virtual std::string as_string() const = 0;
+
+                virtual void serialise(Serialiser &) const = 0;
+
+                static const std::tr1::shared_ptr<Reason> deserialise(
+                        Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class TargetReason :
@@ -49,6 +55,8 @@ namespace paludis
         {
             public:
                 virtual std::string as_string() const;
+
+                virtual void serialise(Serialiser &) const;
         };
 
         class DependencyReason :
@@ -67,6 +75,8 @@ namespace paludis
                 const SanitisedDependency & sanitised_dependency() const;
 
                 virtual std::string as_string() const;
+
+                virtual void serialise(Serialiser &) const;
         };
 
         class PresetReason :
@@ -75,6 +85,8 @@ namespace paludis
         {
             public:
                 virtual std::string as_string() const;
+
+                virtual void serialise(Serialiser &) const;
         };
 
         class SetReason :
@@ -90,6 +102,8 @@ namespace paludis
                 const std::tr1::shared_ptr<const Reason> reason_for_set() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string as_string() const;
+
+                virtual void serialise(Serialiser &) const;
         };
     }
 

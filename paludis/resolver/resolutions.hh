@@ -46,6 +46,10 @@ namespace paludis
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
+                void serialise(Serialiser &) const;
+
+                static const std::tr1::shared_ptr<Resolutions> deserialise(
+                        Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 
