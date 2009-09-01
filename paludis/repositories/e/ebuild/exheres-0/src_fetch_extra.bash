@@ -28,6 +28,12 @@ src_fetch_extra()
 
 exheres_internal_fetch_extra()
 {
+    local old_sandbox_write="${SANDBOX_WRITE}"
+    if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
+        SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${FETCHEDDIR}"
+        sydboxcheck >/dev/null 2>&1 && addwrite "${FETCHEDDIR}"
+    fi
+
     if hasq "fetch_extra" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping src_fetch_extra (SKIP_FUNCTIONS)"
     else
@@ -35,6 +41,12 @@ exheres_internal_fetch_extra()
         src_fetch_extra
         ebuild_section "Done src_fetch_extra"
     fi
+
+    if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
+        SANDBOX_WRITE="${old_sandbox_write}"
+        sydboxcheck >/dev/null 2>&1 && rmwrite "${FETCHEDDIR}"
+    fi
+    true
 }
 
 
