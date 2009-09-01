@@ -92,8 +92,11 @@ namespace
     }
 
     bool user_remove_trailing_square_bracket_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
-            bool & had_bracket_version_requirements)
+            bool & had_bracket_version_requirements, const ELikeUseRequirementOptions & options,
+            const std::tr1::shared_ptr<const PackageID> & for_id)
     {
+        Context context("When removing trailing square bracket parts:");
+
         std::string::size_type use_group_p;
         if (std::string::npos == ((use_group_p = s.rfind('['))))
             return false;
@@ -186,7 +189,7 @@ namespace
             default:
                 {
                     std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req(parse_elike_use_requirement(flag,
-                                std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions()));
+                                for_id, options));
                     result.additional_requirement(req);
                 }
                 break;
@@ -287,7 +290,8 @@ namespace
 
 PackageDepSpec
 paludis::parse_user_package_dep_spec(const std::string & ss, const Environment * const env,
-        const UserPackageDepSpecOptions & options, const Filter & filter)
+        const UserPackageDepSpecOptions & options, const Filter & filter,
+        const std::tr1::shared_ptr<const PackageID> & for_id)
 {
     using namespace std::tr1::placeholders;
 
@@ -295,6 +299,15 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const Environment *
 
     bool had_bracket_version_requirements(false);
     PartiallyMadePackageDepSpecOptions o;
+
+    ELikePackageDepSpecOptions eo(ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps + epdso_nice_equal_star);
+    ELikeUseRequirementOptions uo;
+    if (options[updso_serialised])
+    {
+        eo = eo + epdso_allow_ranged_deps + epdso_allow_use_deps + epdso_allow_use_deps_portage + epdso_allow_use_dep_defaults
+            + epdso_allow_repository_deps + epdso_allow_slot_star_deps + epdso_allow_slot_equal_deps + epdso_allow_slot_deps;
+        uo = uo + euro_allow_self_deps + euro_both_syntaxes + euro_portage_syntax + euro_allow_default_values + euro_strict_parsing;
+    }
 
     return partial_parse_generic_elike_package_dep_spec(ss, make_named_values<GenericELikePackageDepSpecParseFunctions>(
             value_for<n::add_package_requirement>(std::tr1::bind(&user_add_package_requirement, _1, _2, env, options, filter)),
@@ -305,12 +318,12 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const Environment *
             value_for<n::get_remove_version_operator>(std::tr1::bind(&elike_get_remove_version_operator, _1,
                     ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps + epdso_nice_equal_star)),
             value_for<n::has_version_operator>(std::tr1::bind(&elike_has_version_operator, _1,
-                    std::tr1::cref(had_bracket_version_requirements), ELikePackageDepSpecOptions())),
+                    std::tr1::cref(had_bracket_version_requirements), eo)),
             value_for<n::options_for_partially_made_package_dep_spec>(std::tr1::bind(&fixed_options_for_partially_made_package_dep_spec, o)),
             value_for<n::remove_trailing_repo_if_exists>(std::tr1::bind(&user_remove_trailing_repo_if_exists, _1, _2)),
             value_for<n::remove_trailing_slot_if_exists>(std::tr1::bind(&user_remove_trailing_slot_if_exists, _1, _2)),
             value_for<n::remove_trailing_square_bracket_if_exists>(std::tr1::bind(&user_remove_trailing_square_bracket_if_exists,
-                    _1, _2, std::tr1::ref(had_bracket_version_requirements)))
+                    _1, _2, std::tr1::ref(had_bracket_version_requirements), uo, for_id))
             ));
 }
 

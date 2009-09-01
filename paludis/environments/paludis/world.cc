@@ -118,7 +118,9 @@ World::_add_string_to_world(const std::string & n) const
     SetFile world(make_named_values<SetFileParams>(
                 value_for<n::environment>(_imp->env),
                 value_for<n::file_name>(*_imp->maybe_world_file),
-                value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All())),
+                value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env,
+                        UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All(),
+                        make_null_shared_ptr())),
                 value_for<n::set_operator_mode>(sfsmo_natural),
                 value_for<n::tag>(std::tr1::shared_ptr<DepTag>()),
                 value_for<n::type>(sft_simple)
@@ -148,7 +150,9 @@ World::_remove_string_from_world(const std::string & n) const
         SetFile world(make_named_values<SetFileParams>(
                 value_for<n::environment>(_imp->env),
                 value_for<n::file_name>(*_imp->maybe_world_file),
-                value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All())),
+                value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env,
+                        UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All(),
+                        make_null_shared_ptr())),
                 value_for<n::set_operator_mode>(sfsmo_natural),
                 value_for<n::tag>(std::tr1::shared_ptr<DepTag>()),
                 value_for<n::type>(sft_simple)
@@ -173,7 +177,9 @@ World::world_set() const
             SetFile world(make_named_values<SetFileParams>(
                     value_for<n::environment>(_imp->env),
                     value_for<n::file_name>(*_imp->maybe_world_file),
-                    value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All())),
+                    value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env,
+                            UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All(),
+                            make_null_shared_ptr())),
                     value_for<n::set_operator_mode>(sfsmo_natural),
                     value_for<n::tag>(tag),
                     value_for<n::type>(sft_simple)

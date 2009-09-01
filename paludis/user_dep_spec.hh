@@ -31,6 +31,9 @@ namespace paludis
     /**
      * Create a PackageDepSpec from user input.
      *
+     * \param package_id should generally be null, unless updso_serialised and there
+     * might be [use=] deps. \since 0.40
+     *
      * \ingroup g_dep_spec
      * \since 0.28
      */
@@ -38,7 +41,9 @@ namespace paludis
             const std::string &,
             const Environment * const,
             const UserPackageDepSpecOptions &,
-            const Filter & = filter::All()) PALUDIS_VISIBLE;
+            const Filter & = filter::All(),
+            const std::tr1::shared_ptr<const PackageID> & = std::tr1::shared_ptr<const PackageID>()
+            ) PALUDIS_VISIBLE;
 
     class PALUDIS_VISIBLE UserSlotExactRequirement :
         public SlotExactRequirement
