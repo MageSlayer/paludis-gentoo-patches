@@ -167,6 +167,7 @@ paludis::match_package(
             if (entry.masked())
                 return false;
 
+        bool ok(false);
         for (PackageDatabase::RepositoryConstIterator d(env.package_database()->begin_repositories()),
                 d_end(env.package_database()->end_repositories()) ;
                 d != d_end ; ++d)
@@ -179,9 +180,13 @@ paludis::match_package(
                 continue;
             if (! (*d)->destination_interface()->is_suitable_destination_for(entry))
                 continue;
+
+            ok = true;
+            break;
         }
 
-        return false;
+        if (! ok)
+            return false;
     }
 
     if (spec.slot_requirement_ptr())
