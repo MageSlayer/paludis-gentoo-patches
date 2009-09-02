@@ -22,12 +22,13 @@
 using namespace paludis;
 using namespace cave;
 
-ResolveCommandLine::ResolveCommandLine() :
+ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::ArgsHandler * const h) :
+    ArgsSection(h, "Resolution Options"),
 //            g_execution_options(this, "Execution Options", "Control execution."),
 //            a_execute(&g_execution_options, "execute", 'x', "Execute the suggested actions", true),
 //            a_preserve_world(&g_execution_options, "preserve-world", '1', "Do not modify the 'world' set", true),
 //
-    g_convenience_options(main_options_section(), "Convenience Options", "Broad behaviour options."),
+    g_convenience_options(this, "Convenience Options", "Broad behaviour options."),
     a_lazy(&g_convenience_options, "lazy", 'z', "Do as little work as possible.", true),
     a_complete(&g_convenience_options, "complete", 'c', "Do all optional work.", true),
     a_everything(&g_convenience_options, "everything", 'e', "Do all optional work, and also reinstall", true),
@@ -77,7 +78,7 @@ ResolveCommandLine::ResolveCommandLine() :
 //                    "new"
 //                    ),
 
-    g_explanations(main_options_section(), "Explanations", "Options requesting the resolver explain a particular decision "
+    g_explanations(this, "Explanations", "Options requesting the resolver explain a particular decision "
             "that it made"),
     a_explain(&g_explanations, "explain", '\0', "Explain why the resolver made a particular decision. The "
             "argument is a package dependency specification, so --explain dev-libs/boost or --explain qt:3"
@@ -97,7 +98,7 @@ ResolveCommandLine::ResolveCommandLine() :
 //                    ("last",                       "Only the last package on the list"),
 //                    "all"),
 //
-    g_keep_options(main_options_section(), "Reinstall Options", "Control whether installed packages are kept."),
+    g_keep_options(this, "Reinstall Options", "Control whether installed packages are kept."),
     a_keep_targets(&g_keep_options, "keep-targets", 'K',
             "Select whether to keep target packages",
             args::EnumArg::EnumArgOptions
@@ -136,7 +137,7 @@ ResolveCommandLine::ResolveCommandLine() :
 //            a_reinstall_for_removals(&g_reinstall_options, "reinstall-for-removals", '\0',
 //                    "Select whether to rebuild packages if rebuilding would avoid an unsafe removal", true),
 //
-    g_slot_options(main_options_section(), "Slot Options", "Control which slots are considered."),
+    g_slot_options(this, "Slot Options", "Control which slots are considered."),
     a_target_slots(&g_slot_options, "target-slots", 'S',
             "Which slots to consider for targets",
             args::EnumArg::EnumArgOptions
@@ -164,7 +165,7 @@ ResolveCommandLine::ResolveCommandLine() :
             "best-or-installed"
             ),
 
-    g_dependency_options(main_options_section(), "Dependency Options", "Control which dependencies are followed."),
+    g_dependency_options(this, "Dependency Options", "Control which dependencies are followed."),
     a_follow_installed_build_dependencies(&g_dependency_options, "follow-installed-build-dependencies", 'D',
             "Follow build dependencies for installed packages (default if --complete or --everything)", true),
     a_ignore_installed_dependencies(&g_dependency_options, "ignore-installed-dependencies", 'd',
@@ -217,11 +218,16 @@ ResolveCommandLine::ResolveCommandLine() :
 //            a_install_to_chroot(&g_destination_options, "install-to-chroot", '\0', "Install packages to the environment-configured chroot", true),
 //            a_install_to_root(&g_destination_options, "install-to-root", '\0', "Install packages to /", true),
 
-    g_dump_options(main_options_section(), "Dump Options", "Dump the resolver's state to stdout after completion, or when an "
+    g_dump_options(this, "Dump Options", "Dump the resolver's state to stdout after completion, or when an "
             "error occurs. For debugging purposes; produces rather a lot of noise."),
     a_dump(&g_dump_options, "dump", '\0', "Dump debug output", true),
     a_dump_dependencies(&g_dump_options, "dump-dependencies", '\0', "If dumping, also dump the "
             "sanitised dependencies selected for every package" , true)
+{
+}
+
+ResolveCommandLine::ResolveCommandLine() :
+    resolution_options(this)
 {
     add_usage_line("[ -x|--execute ] [ -z|--lazy or -c|--complete or -e|--everything ] spec ...");
     add_usage_line("[ -x|--execute ] [ -z|--lazy or -c|--complete or -e|--everything ] set");

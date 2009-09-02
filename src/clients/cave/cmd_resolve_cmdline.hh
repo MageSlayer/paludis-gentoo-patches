@@ -26,12 +26,10 @@ namespace paludis
 {
     namespace cave
     {
-        struct ResolveCommandLine :
-            CaveCommandCommandLine
+        struct ResolveCommandLineResolutionOptions :
+            args::ArgsSection
         {
-            virtual std::string app_name() const;
-            virtual std::string app_synopsis() const;
-            virtual std::string app_description() const;
+            ResolveCommandLineResolutionOptions(args::ArgsHandler * const);
 
     //        args::ArgsGroup g_execution_options;
     //        args::SwitchArg a_execute;
@@ -118,7 +116,18 @@ namespace paludis
             args::SwitchArg a_dump;
             args::SwitchArg a_dump_dependencies;
 
+        };
+
+        struct ResolveCommandLine :
+            CaveCommandCommandLine
+        {
+            virtual std::string app_name() const;
+            virtual std::string app_synopsis() const;
+            virtual std::string app_description() const;
+
             ResolveCommandLine();
+
+            ResolveCommandLineResolutionOptions resolution_options;
         };
     }
 }

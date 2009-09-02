@@ -134,12 +134,12 @@ namespace
 
         UseInstalled visit(const DependencyReason &) const
         {
-            return use_installed_from_cmdline(cmdline.a_keep, false);
+            return use_installed_from_cmdline(cmdline.resolution_options.a_keep, false);
         }
 
         UseInstalled visit(const TargetReason &) const
         {
-            return use_installed_from_cmdline(cmdline.a_keep_targets, from_set);
+            return use_installed_from_cmdline(cmdline.resolution_options.a_keep_targets, from_set);
         }
 
         UseInstalled visit(const PresetReason &) const
@@ -165,17 +165,17 @@ namespace
 
     int reinstall_scm_days(const ResolveCommandLine & cmdline)
     {
-        if (cmdline.a_reinstall_scm.argument() == "always")
+        if (cmdline.resolution_options.a_reinstall_scm.argument() == "always")
             return 0;
-        else if (cmdline.a_reinstall_scm.argument() == "daily")
+        else if (cmdline.resolution_options.a_reinstall_scm.argument() == "daily")
             return 1;
-        else if (cmdline.a_reinstall_scm.argument() == "weekly")
+        else if (cmdline.resolution_options.a_reinstall_scm.argument() == "weekly")
             return 7;
-        else if (cmdline.a_reinstall_scm.argument() == "never")
+        else if (cmdline.resolution_options.a_reinstall_scm.argument() == "never")
             return -1;
         else
-            throw args::DoHelp("Don't understand argument '" + cmdline.a_reinstall_scm.argument() + "' to '--"
-                    + cmdline.a_reinstall_scm.long_name() + "'");
+            throw args::DoHelp("Don't understand argument '" + cmdline.resolution_options.a_reinstall_scm.argument() + "' to '--"
+                    + cmdline.resolution_options.a_reinstall_scm.long_name() + "'");
     }
 
     bool is_scm_name(const QualifiedPackageName & n)
@@ -363,7 +363,7 @@ namespace
                     i != i_end ; ++i)
                 installed.push_back(QPN_S(*i));
 
-            const args::EnumArg & arg(is_target(reason) ? cmdline.a_target_slots : cmdline.a_slots);
+            const args::EnumArg & arg(is_target(reason) ? cmdline.resolution_options.a_target_slots : cmdline.resolution_options.a_slots);
 
             if (! best)
                 std::copy(installed.begin(), installed.end(), result->back_inserter());
@@ -501,10 +501,10 @@ namespace
 
         if (resolution->decision()->is_installed())
         {
-            if (! cmdline.a_follow_installed_build_dependencies.specified())
+            if (! cmdline.resolution_options.a_follow_installed_build_dependencies.specified())
                 if (is_just_build_dep(dep))
                     return false;
-            if (cmdline.a_ignore_installed_dependencies.specified())
+            if (cmdline.resolution_options.a_ignore_installed_dependencies.specified())
                 if (! is_compiled_against_dep(dep))
                     return false;
         }
@@ -535,46 +535,48 @@ ResolveCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.a_lazy.specified() + cmdline.a_complete.specified() + cmdline.a_everything.specified() > 1)
-        throw args::DoHelp("At most one of '--" + cmdline.a_lazy.long_name() + "', '--" + cmdline.a_complete.long_name()
-                + "' or '--" + cmdline.a_everything.long_name() + "' may be specified");
+    if (cmdline.resolution_options.a_lazy.specified() +
+            cmdline.resolution_options.a_complete.specified() +
+            cmdline.resolution_options.a_everything.specified() > 1)
+        throw args::DoHelp("At most one of '--" + cmdline.resolution_options.a_lazy.long_name() + "', '--" + cmdline.resolution_options.a_complete.long_name()
+                + "' or '--" + cmdline.resolution_options.a_everything.long_name() + "' may be specified");
 
-    if (cmdline.a_lazy.specified())
+    if (cmdline.resolution_options.a_lazy.specified())
     {
-        if (! cmdline.a_target_slots.specified())
-            cmdline.a_target_slots.set_argument("best");
-        if (! cmdline.a_slots.specified())
-            cmdline.a_slots.set_argument("best");
-        if (! cmdline.a_reinstall_scm.specified())
-            cmdline.a_reinstall_scm.set_argument("never");
-        if (! cmdline.a_ignore_installed_dependencies.specified())
-            cmdline.a_ignore_installed_dependencies.set_specified(true);
+        if (! cmdline.resolution_options.a_target_slots.specified())
+            cmdline.resolution_options.a_target_slots.set_argument("best");
+        if (! cmdline.resolution_options.a_slots.specified())
+            cmdline.resolution_options.a_slots.set_argument("best");
+        if (! cmdline.resolution_options.a_reinstall_scm.specified())
+            cmdline.resolution_options.a_reinstall_scm.set_argument("never");
+        if (! cmdline.resolution_options.a_ignore_installed_dependencies.specified())
+            cmdline.resolution_options.a_ignore_installed_dependencies.set_specified(true);
     }
 
-    if (cmdline.a_complete.specified())
+    if (cmdline.resolution_options.a_complete.specified())
     {
-        if (! cmdline.a_keep.specified())
-            cmdline.a_keep.set_argument("if-same");
-        if (! cmdline.a_target_slots.specified())
-            cmdline.a_target_slots.set_argument("all");
-        if (! cmdline.a_slots.specified())
-            cmdline.a_slots.set_argument("all");
-        if (! cmdline.a_follow_installed_build_dependencies.specified())
-            cmdline.a_follow_installed_build_dependencies.set_specified(true);
+        if (! cmdline.resolution_options.a_keep.specified())
+            cmdline.resolution_options.a_keep.set_argument("if-same");
+        if (! cmdline.resolution_options.a_target_slots.specified())
+            cmdline.resolution_options.a_target_slots.set_argument("all");
+        if (! cmdline.resolution_options.a_slots.specified())
+            cmdline.resolution_options.a_slots.set_argument("all");
+        if (! cmdline.resolution_options.a_follow_installed_build_dependencies.specified())
+            cmdline.resolution_options.a_follow_installed_build_dependencies.set_specified(true);
     }
 
-    if (cmdline.a_everything.specified())
+    if (cmdline.resolution_options.a_everything.specified())
     {
-        if (! cmdline.a_keep.specified())
-            cmdline.a_keep.set_argument("if-transient");
-        if (! cmdline.a_keep_targets.specified())
-            cmdline.a_keep_targets.set_argument("if-transient");
-        if (! cmdline.a_target_slots.specified())
-            cmdline.a_target_slots.set_argument("all");
-        if (! cmdline.a_slots.specified())
-            cmdline.a_slots.set_argument("all");
-        if (! cmdline.a_follow_installed_build_dependencies.specified())
-            cmdline.a_follow_installed_build_dependencies.set_specified(true);
+        if (! cmdline.resolution_options.a_keep.specified())
+            cmdline.resolution_options.a_keep.set_argument("if-transient");
+        if (! cmdline.resolution_options.a_keep_targets.specified())
+            cmdline.resolution_options.a_keep_targets.set_argument("if-transient");
+        if (! cmdline.resolution_options.a_target_slots.specified())
+            cmdline.resolution_options.a_target_slots.set_argument("all");
+        if (! cmdline.resolution_options.a_slots.specified())
+            cmdline.resolution_options.a_slots.set_argument("all");
+        if (! cmdline.resolution_options.a_follow_installed_build_dependencies.specified())
+            cmdline.resolution_options.a_follow_installed_build_dependencies.set_specified(true);
     }
 
     int retcode(0);
