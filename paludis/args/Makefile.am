@@ -17,6 +17,7 @@ paludis_args_include_HEADERS = \
 	args_handler.hh        \
 	args_handler-se.hh     \
 	args_option.hh         \
+	args_section.hh        \
 	bad_argument.hh        \
 	args_visitor.hh        \
 	args_dumper.hh         \
@@ -33,6 +34,7 @@ libpaludisargs_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	args_group.cc \
 	args_handler.cc \
 	args_option.cc \
+	args_section.cc \
 	bad_argument.cc \
 	args_visitor.cc \
 	args_dumper.cc \

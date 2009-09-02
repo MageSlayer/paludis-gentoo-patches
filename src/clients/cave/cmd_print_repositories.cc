@@ -67,7 +67,7 @@ namespace
         args::StringSetArg a_repository_format;
 
         PrintRepositoriesCommandLine() :
-            g_filters(this, "Filters", "Filter the output."),
+            g_filters(main_options_section(), "Filters", "Filter the output."),
             a_repository_format(&g_filters, "format", '\0', "Show only repositories of a specific format")
         {
             add_usage_line("[ --format type ]");

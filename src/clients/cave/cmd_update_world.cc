@@ -63,7 +63,7 @@ namespace
         args::SwitchArg a_set;
 
         UpdateWorldCommandLine() :
-            g_update_options(this, "Update Options", "Alter how updates are performed."),
+            g_update_options(main_options_section(), "Update Options", "Alter how updates are performed."),
             a_remove(&g_update_options, "remove", 'r', "Remove the specified items instead of adding them", true),
             a_set(&g_update_options, "set", 's', "The parameters are set names, not package names", true)
         {

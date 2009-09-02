@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -76,9 +76,9 @@ namespace
         args::StringArg a_format;
 
         PrintContentsCommandLine() :
-            g_spec_options(this, "Spec Options", "Alter how the supplied spec is used."),
+            g_spec_options(main_options_section(), "Spec Options", "Alter how the supplied spec is used."),
             a_best(&g_spec_options, "best", '\0', "If the spec matches multiple IDs, select the best ID rather than giving an error.", true),
-            g_display_options(this, "Display Options", "Controls the output format."),
+            g_display_options(main_options_section(), "Display Options", "Controls the output format."),
             a_format(&g_display_options, "format", '\0', "Select the output format. Special tokens recognised are "
                     "%n for filename, %d for dirname, %b for basename, %t for symlink targets (blank for non-symlinks), "
                     "%a for ' -> ' if we're a symlink and '' otherwise, %/ for '/' if we're a directory and '' otherwise, "

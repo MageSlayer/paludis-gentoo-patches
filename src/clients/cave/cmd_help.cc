@@ -44,7 +44,7 @@ namespace
         args::SwitchArg a_all;
 
         HelpCommandLine() :
-            g_general(this, "General Options", "General Options"),
+            g_general(main_options_section(), "General Options", "General Options"),
             a_all(&g_general, "all", 'a', "Print all available commands to standard output.", false)
         {
             add_usage_line("[-a|--all] [COMMAND]");

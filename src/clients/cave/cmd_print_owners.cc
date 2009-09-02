@@ -72,7 +72,7 @@ namespace
         args::EnumArg a_match;
 
         PrintOwnersCommandLine() :
-            g_owner_options(this, "Owner options", "Alter how the search is performed."),
+            g_owner_options(main_options_section(), "Owner options", "Alter how the search is performed."),
             a_match(&g_owner_options, "match", 'm', "Which match algorithm to use",
                     args::EnumArg::EnumArgOptions
                     ("auto",          "If pattern starts with a /, full; if it contains a /, partial; otherwise, basename")

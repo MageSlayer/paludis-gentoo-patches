@@ -27,7 +27,7 @@
 using namespace paludis;
 using namespace paludis::args;
 
-InstallArgsGroup::InstallArgsGroup(ArgsHandler * h, const std::string & our_name,
+InstallArgsGroup::InstallArgsGroup(ArgsSection * h, const std::string & our_name,
                                    const std::string & our_description) :
     ArgsGroup(h, our_name, our_description),
 

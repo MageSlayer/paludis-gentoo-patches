@@ -28,14 +28,14 @@ template class InstantiationPolicy<CommandLine, instantiation_method::SingletonT
 CommandLine::CommandLine() :
     ArgsHandler(),
 
-    action_args(this, "Actions",
+    action_args(main_options_section(), "Actions",
             "Selects which basic action to perform. At most one action should "
             "be specified."),
     a_fix_linkage(&action_args, "fix-linkage", '\0', "Search for and rebuild packages linked against non-existant libraries (default)", false),
     a_version(&action_args,     "version",     'V',  "Display program version", false),
     a_help(&action_args,        "help",        'h',  "Display program help", false),
 
-    general_args(this, "General options",
+    general_args(main_options_section(), "General options",
             "Options which are relevant for most or all actions."),
     a_log_level(&general_args,      "log-level",      '\0'),
     a_no_colour(&general_args, "no-colour", '\0', "Do not use colour", false),
@@ -46,13 +46,13 @@ CommandLine::CommandLine() :
             "Save the resume command to a file. If the filename contains 'XXXXXX', use mkstemp(3) to generate the filename"),
     a_compact(&general_args, "compact", '\0', "Display output using one line per entry", true),
 
-    fix_linkage_args(this, "Fix Linkage options",
+    fix_linkage_args(main_options_section(), "Fix Linkage options",
             "Options which are relevant for --fix-linkage."),
     a_library(&fix_linkage_args, "library", '\0', "Only rebuild packages linked against this library, even if it exists"),
 
-    install_args(this, "Install options",
+    install_args(main_options_section(), "Install options",
             "Options which are relevant for the install process."),
-    dl_args(this)
+    dl_args(main_options_section())
 {
     add_usage_line("[ --fix-linkage ] [fix linkage options]");
     add_usage_line("--help");

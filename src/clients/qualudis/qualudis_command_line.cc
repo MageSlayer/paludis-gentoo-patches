@@ -25,7 +25,7 @@ template class paludis::InstantiationPolicy<QualudisCommandLine, paludis::instan
 QualudisCommandLine::QualudisCommandLine() :
     ArgsHandler(),
 
-    action_args(this, "Actions",
+    action_args(main_options_section(), "Actions",
             "Selects which basic action to perform. Up to one action should "
             "be specified. If no action is specified, the directories specifed "
             "on the command line (or, if none, the current directory) are "
@@ -33,7 +33,7 @@ QualudisCommandLine::QualudisCommandLine() :
     a_version(&action_args,  "version",      'V', "Display program version", false),
     a_help(&action_args,     "help",         'h', "Display program help", false),
 
-    check_options(this, "Options for general checks",
+    check_options(main_options_section(), "Options for general checks",
             "Options relevant for the --owner actions."),
     a_log_level(&check_options, "log-level", 'L'),
 
@@ -57,7 +57,7 @@ QualudisCommandLine::QualudisCommandLine() :
     a_repository_directory(&check_options, "repository-dir", 'D',
             "Where to find the repository (default: detected from ./ or ../ or ../..)"),
 
-    configuration_options(this, "Configuration options",
+    configuration_options(main_options_section(), "Configuration options",
             "Options that control general configuration."),
     a_write_cache_dir(&configuration_options, "write-cache-dir", '\0',
             "Use a subdirectory named for the repository name under the specified directory for repository write cache"),

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,21 +28,21 @@ template class paludis::InstantiationPolicy<CommandLine, paludis::instantiation_
 CommandLine::CommandLine() :
     ArgsHandler(),
 
-    action_args(this, "Actions",
+    action_args(main_options_section(), "Actions",
             "Selects which basic action to perform. Exactly one action should "
             "be specified."),
     a_search(&action_args,     "search",        's',  "Search for a package", false),
     a_version(&action_args,   "version",      'V',  "Display program version", false),
     a_help(&action_args,      "help",         'h',  "Display program help", false),
 
-    general_args(this, "General options",
+    general_args(main_options_section(), "General options",
             "Options that are relevant for most or all actions."),
     a_log_level(&general_args, "log-level",  '\0'),
     a_no_colour(&general_args, "no-colour", '\0', "Do not use colour", false),
     a_no_color(&a_no_colour, "no-color"),
     a_environment(&general_args, "environment", 'E', "Environment specification (class:suffix, both parts optional)"),
 
-    match_args(this, "Matching options",
+    match_args(main_options_section(), "Matching options",
             "Options that control which packages are matched."),
     a_keys(&match_args, "keys", 'k', "Match using listed metadata keys, rather than name and description"),
     a_matcher(&match_args, "matcher", 'm', "Which match algorithm to use",
@@ -55,7 +55,7 @@ CommandLine::CommandLine() :
     a_enabled_only(&match_args, "enabled-only", 'e', "When searching spec trees, only look in enabled subtrees", true),
     a_not(&match_args, "not", 'n', "Select packages that do not match", true),
 
-    filter_args(this, "Filter options",
+    filter_args(main_options_section(), "Filter options",
             "Options that control whether or not a package is considered for matching."),
 
     a_repository(&filter_args, "repository", 'r', "Matches with this repository name only",
@@ -74,7 +74,7 @@ CommandLine::CommandLine() :
             ("all",                "All packages (default if --repository specified)"),
             "installable"),
 
-    output_args(this, "Output options",
+    output_args(main_options_section(), "Output options",
             "Options that control how output is generated."),
 
     a_compact(&output_args, "compact", '\0', "Display output using one line per entry", true),

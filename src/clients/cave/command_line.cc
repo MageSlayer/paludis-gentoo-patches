@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,7 +23,7 @@ using namespace paludis;
 using namespace cave;
 
 CaveCommandLine::CaveCommandLine() :
-    g_global_options(this, "Global Options", "Global options, used by every subcommand."),
+    g_global_options(main_options_section(), "Global Options", "Global options, used by every subcommand."),
     a_environment(&g_global_options, "environment", 'E',
             "Environment specification (class:suffix, both parts optional)"),
     a_log_level(&g_global_options, "log-level", '\0')

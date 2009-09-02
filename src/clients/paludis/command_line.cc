@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,7 +27,7 @@ template class paludis::InstantiationPolicy<CommandLine, paludis::instantiation_
 CommandLine::CommandLine() :
     ArgsHandler(),
 
-    action_args(this, "Actions",
+    action_args(main_options_section(), "Actions",
             "Selects which basic action to perform. Exactly one action should "
             "be specified."),
     a_query(&action_args,     "query",        'q',  "Query for package information", false),
@@ -44,7 +44,7 @@ CommandLine::CommandLine() :
     a_info(&action_args,      "info",         'I',  "Display program version and system information", false),
     a_help(&action_args,      "help",         'h',  "Display program help", false),
 
-    action_args_internal(this, "More actions",
+    action_args_internal(main_options_section(), "More actions",
             "Additional actions, mostly for script and internal use."),
     a_has_version(&action_args_internal, "has-version", '\0', "Check whether the specified spec is installed", false),
     a_best_version(&action_args_internal, "best-version", '\0', "Display the best version of the specified spec", false),
@@ -65,7 +65,7 @@ CommandLine::CommandLine() :
     a_regenerate_installable_cache(&action_args_internal, "regenerate-installable-cache", '\0',
             "Regenerate (non-metadata) cache for installable repositories", false),
 
-    general_args(this, "General options",
+    general_args(main_options_section(), "General options",
             "Options which are relevant for most or all actions."),
     a_log_level(&general_args, "log-level",  '\0'),
     a_no_colour(&general_args, "no-colour", '\0', "Do not use colour", false),
@@ -77,13 +77,13 @@ CommandLine::CommandLine() :
     a_multitask(&general_args, "multitask", '\0', "Perform tasks in parallel, where supported (currently --sync only)", true),
     a_compact(&general_args, "compact", '\0', "Display output using one line per entry (--install, --query)", true),
 
-    query_args(this, "Query options",
+    query_args(main_options_section(), "Query options",
             "Options which are relevant for --query."),
     a_show_deps(&query_args,        "show-deps",    'D', "Show dependencies", true),
     a_show_authors(&query_args, "show-authors", 'A', "Show author information", true),
     a_show_metadata(&query_args,    "show-metadata", 'M', "Show raw metadata", true),
 
-    install_args(this, "Install, Uninstall options",
+    install_args(main_options_section(), "Install, Uninstall options",
             "Options which are relevant for --install, --uninstall or --uninstall-unused."),
 
     a_serialised(&install_args, "serialised", '\0',
@@ -91,7 +91,7 @@ CommandLine::CommandLine() :
             "list. The parameter to this option specifies the format version. Used by resume commands and Paludis "
             "exec()ing itself upon an upgrade; not to be used manually"),
 
-    uninstall_args(this, "Uninstall options",
+    uninstall_args(main_options_section(), "Uninstall options",
             "Options which are relevant for --uninstall."),
     a_with_unused_dependencies(&uninstall_args, "with-unused-dependencies", '\0',
             "Also uninstall any dependencies of the target that are no longer used", true),
@@ -102,9 +102,9 @@ CommandLine::CommandLine() :
     a_permit_unsafe_uninstalls(&uninstall_args, "permit-unsafe-uninstalls", '\0',
             "Allow depended-upon packages to uninstalled", true),
 
-    dl_args(this),
+    dl_args(main_options_section()),
 
-    list_args(this, "List options",
+    list_args(main_options_section(), "List options",
             "Options relevant for one or more of the --list actions."),
     a_repository(&list_args, "repository", '\0', "Matches with this repository name only",
             paludis::args::StringSetArg::StringSetArgOptions(), &paludis::RepositoryNameValidator::validate),
@@ -116,7 +116,7 @@ CommandLine::CommandLine() :
     a_set(&list_args,        "set",        '\0', "Matches with this package set name only",
             paludis::args::StringSetArg::StringSetArgOptions(), &paludis::SetNameValidator::validate),
 
-    owner_args(this, "Owner options",
+    owner_args(main_options_section(), "Owner options",
             "Options relevant for the --owner actions."),
     a_full_match(&owner_args, "full-match", '\0', "Match whole filename", true)
 {

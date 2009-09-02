@@ -26,7 +26,7 @@ template class paludis::InstantiationPolicy<CommandLine, paludis::instantiation_
 CommandLine::CommandLine() :
     ArgsHandler(),
 
-    tree_action_args(this, "Tree-Oriented Actions",
+    tree_action_args(main_options_section(), "Tree-Oriented Actions",
             "Selects which basic tree-oriented action to perform. Exactly one action should "
             "be specified."),
 
@@ -45,7 +45,7 @@ CommandLine::CommandLine() :
     a_what_needs_keywording(&tree_action_args,
             "what-needs-keywording", 'w', "Display what needs to be done to keyword a target", false),
 
-    profile_action_args(this, "Profile-Oriented Actions",
+    profile_action_args(main_options_section(), "Profile-Oriented Actions",
             "Selects which basic profile-oriented action to perform. Exactly one action should "
             "be specified."),
 
@@ -53,7 +53,7 @@ CommandLine::CommandLine() :
             "display-default-system-resolution", 'S', "Display package names and versions that are included in "
             "the default resolution of the system set", false),
 
-    downgrade_check_args(this, "Downgrade Check Actions",
+    downgrade_check_args(main_options_section(), "Downgrade Check Actions",
             "Selects which downgrade check related action to perform. Exactly one action should "
             "be specified."),
 
@@ -62,7 +62,7 @@ CommandLine::CommandLine() :
     a_downgrade_check(&downgrade_check_args,
             "downgrade-check", '\0', "Perform the dowgrade check", false),
 
-    general_action_args(this, "General Actions",
+    general_action_args(main_options_section(), "General Actions",
             "Selects which basic general action to perform. Exactly one action should "
             "be specified."),
 
@@ -71,7 +71,7 @@ CommandLine::CommandLine() :
     a_help(&general_action_args,
             "help",                   'h',  "Display program help", false),
 
-    general_args(this, "General options",
+    general_args(main_options_section(), "General options",
             "Options which are relevant for most or all actions."),
     a_log_level(&general_args, "log-level",  '\0'),
     a_no_colour(&general_args, "no-colour", '\0', "Do not use colour", false),
@@ -81,7 +81,7 @@ CommandLine::CommandLine() :
     a_repository_directory(&general_args, "repository-dir", 'D',
             "Where to find the repository (default: detected from ./ or ../ or ../..)"),
 
-    tree_args(this, "Tree action options",
+    tree_args(main_options_section(), "Tree action options",
             "Options which are relevant for tree actions."),
     a_category(&tree_args,   "category",   'C',
             "Matches with this category name only (may be specified multiple times)",
@@ -90,14 +90,14 @@ CommandLine::CommandLine() :
             "Matches with this package name only (may be specified multiple times)",
             paludis::args::StringSetArg::StringSetArgOptions(), &paludis::PackageNamePartValidator::validate),
 
-    profile_args(this, "Profile action options",
+    profile_args(main_options_section(), "Profile action options",
             "Options which are relevant for profile actions."),
     a_profile(&profile_args,    "profile",    '\0',
             "Display results for this profile path, rather than all profiles (may be specified multiple times)"),
     a_unstable(&profile_args,   "unstable",    '\0',
             "Accept ~arch as well as arch", true),
 
-    configuration_options(this, "Configuration options",
+    configuration_options(main_options_section(), "Configuration options",
             "Options that control general configuration."),
     a_write_cache_dir(&configuration_options, "write-cache-dir", '\0',
             "Use a subdirectory named for the repository name under the specified directory for repository write cache"),

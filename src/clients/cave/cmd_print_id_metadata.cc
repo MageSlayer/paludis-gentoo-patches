@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -77,14 +77,14 @@ namespace
         args::StringArg a_format;
 
         PrintIDMetadataCommandLine() :
-            g_spec_options(this, "Spec Options", "Alter how the supplied spec is used."),
+            g_spec_options(main_options_section(), "Spec Options", "Alter how the supplied spec is used."),
             a_best(&g_spec_options, "best", '\0', "If the spec matches multiple IDs, select the best ID rather than giving an error.", true),
-            g_filters(this, "Filters", "Filter the output. Each filter may be specified more than once."),
+            g_filters(main_options_section(), "Filters", "Filter the output. Each filter may be specified more than once."),
             a_raw_name(&g_filters, "raw-name", '\0', "Show only keys with this raw name. If specified more than once, "
                     "any name match is accepted."),
             a_human_name(&g_filters, "human-name", '\0', "Show only keys with this human name. If specified more than once, "
                     "any name match is accepted."),
-            g_display_options(this, "Display Options", "Controls the output format."),
+            g_display_options(main_options_section(), "Display Options", "Controls the output format."),
             a_format(&g_display_options, "format", '\0', "Select the output format. Special tokens recognised are "
                     "%r for raw name, %h for human name, %v for value, %i for one space per subkey level, "
                     "\\n for newline, \\t for tab. Default is '%i%i%r=%v\\n'.")

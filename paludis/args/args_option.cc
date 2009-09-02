@@ -69,7 +69,7 @@ ArgsOption::ArgsOption(ArgsGroup * const g, const std::string & our_long_name,
     _specified(false)
 {
     g->add(this);
-    g->handler()->add_option(this, our_long_name, our_short_name);
+    g->section()->handler()->add_option(this, our_long_name, our_short_name);
 }
 
 ArgsOption::~ArgsOption()
@@ -80,7 +80,7 @@ void
 ArgsOption::remove()
 {
     _group->remove(this);
-    _group->handler()->remove_option(_long_name, _short_name);
+    _group->section()->handler()->remove_option(_long_name, _short_name);
 }
 
 SwitchArg::SwitchArg(ArgsGroup * const our_group, const std::string & our_long_name, char our_short_name,
@@ -98,7 +98,7 @@ AliasArg::AliasArg(ArgsOption * const o, const std::string & our_long_name, bool
     ArgsOption(o->group(), our_long_name, '\0', "Alias for --" + o->long_name()),
     _other(o), _hidden(is_hidden)
 {
-    o->group()->handler()->add_option(o, our_long_name);
+    o->group()->section()->handler()->add_option(o, our_long_name);
 }
 
 StringArg::StringArg(ArgsGroup * const g, const std::string & our_long_name,

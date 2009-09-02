@@ -23,7 +23,7 @@ using namespace paludis;
 using namespace cave;
 
 CaveCommandCommandLine::CaveCommandCommandLine() :
-    g_global_options(this, "Global Options", "Global options, used by every subcommand."),
+    g_global_options(main_options_section(), "Global Options", "Global options, used by every subcommand."),
     a_help(&g_global_options, "help", 'h', "display help message", false)
 {
 }

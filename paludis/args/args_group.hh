@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -40,7 +40,7 @@ namespace paludis
 
     namespace args
     {
-        class ArgsHandler;
+        class ArgsSection;
 
         /**
          * Contains a related group of command line arguments.
@@ -56,15 +56,15 @@ namespace paludis
                 const std::string _name;
                 const std::string _description;
 
-                ArgsHandler * _handler;
+                ArgsSection * _section;
 
             public:
                 /**
-                 * Fetch our handler.
+                 * Fetch our section.
                  */
-                ArgsHandler * handler()
+                ArgsSection * section() const
                 {
-                    return _handler;
+                    return _section;
                 }
 
                 /**
@@ -93,7 +93,7 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
 
-                ArgsGroup(ArgsHandler * h, const std::string & name,
+                ArgsGroup(ArgsSection * s, const std::string & name,
                         const std::string & description);
 
                 ~ArgsGroup();
@@ -114,14 +114,6 @@ namespace paludis
                 const std::string & description() const
                 {
                     return _description;
-                }
-
-                /**
-                 * Fetch our handler.
-                 */
-                ArgsHandler * handler() const
-                {
-                    return _handler;
                 }
         };
     }

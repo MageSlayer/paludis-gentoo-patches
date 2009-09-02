@@ -27,14 +27,14 @@ template class paludis::InstantiationPolicy<CommandLine, paludis::instantiation_
 CommandLine::CommandLine() :
     ArgsHandler(),
 
-    action_args(this, "Actions",
+    action_args(main_options_section(), "Actions",
             "Selects which basic action to perform. Exactly one action should "
             "be specified."),
     a_generate_cache(&action_args, "generate-cache", 'g', "Generate cache", false),
     a_version(&action_args,        "version",        'V', "Display program version", false),
     a_help(&action_args,           "help",           'h', "Display program help", false),
 
-    general_args(this, "General options",
+    general_args(main_options_section(), "General options",
             "Options which are relevant for most or all actions."),
     a_log_level(&general_args, "log-level",  '\0'),
     a_no_colour(&general_args, "no-colour", '\0', "Do not use colour", false),

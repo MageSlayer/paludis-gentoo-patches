@@ -93,14 +93,14 @@ namespace
         args::StringArg a_config_protect;
 
         PerformCommandLine() :
-            g_general_options(this, "General Options",
+            g_general_options(main_options_section(), "General Options",
                     "General options for all actions"),
             a_if_supported(&g_general_options, "if-supported", '\0',
                     "If the action is not supported, exit silently with success rather than erroring.", true),
             a_hooks(&g_general_options, "hooks", '\0',
                     "Also execute the appropriate hooks for the action.", true),
 
-            g_fetch_action_options(this, "Fetch Action Options",
+            g_fetch_action_options(main_options_section(), "Fetch Action Options",
                     "Options for if the action is 'fetch' or 'pretend-fetch'"),
             a_exclude_unmirrorable(&g_fetch_action_options, "exclude-unmirrorable", '\0',
                     "Do not include unmirrorable components", true),
@@ -111,7 +111,7 @@ namespace
                     "Do not fetch any component that has not already been downloaded (but do verify "
                     "components that have already been downloaded", true),
 
-            g_install_action_options(this, "Install Action Options",
+            g_install_action_options(main_options_section(), "Install Action Options",
                     "Options for if the action is 'install'"),
             a_destination(&g_install_action_options, "destination", '\0',
                     "The name of the repository to which the install should take place"),
@@ -125,7 +125,7 @@ namespace
             a_skip_until_phase(&g_install_action_options, "skip-until-phase", '\0',
                     "Skip every phase until a named phase is encounted"),
 
-            g_uninstall_action_options(this, "Uninstall Action Options",
+            g_uninstall_action_options(main_options_section(), "Uninstall Action Options",
                     "Options for if the action is 'uninstall'"),
             a_config_protect(&g_uninstall_action_options, "config-protect", '\0',
                     "Specify additional items to include in the config protection list")

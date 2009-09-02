@@ -20,6 +20,7 @@
 #ifndef PALUDIS_GUARD_ARGS_ARGS_HANDLER_HH
 #define PALUDIS_GUARD_ARGS_ARGS_HANDLER_HH 1
 
+#include <paludis/args/args_section.hh>
 #include <paludis/args/args_group.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
@@ -58,7 +59,7 @@ namespace paludis
             private InstantiationPolicy<ArgsHandler, instantiation_method::NonCopyableTag>,
             private PrivateImplementationPattern<ArgsHandler>
         {
-            friend class ArgsGroup;
+            friend class ArgsSection;
             friend std::ostream & operator<< (std::ostream &, const ArgsHandler &);
 
             protected:
@@ -88,9 +89,9 @@ namespace paludis
                 void add_description_line(const std::string & l);
 
                 /**
-                 * Add an new ArgsGroup (called by the ArgsGroup constructor).
+                 * Add an new ArgsSection (called by the ArgsSection constructor).
                  */
-                void add(ArgsGroup * const);
+                void add(ArgsSection * const);
 
                 /**
                  * Dump, for --help output (called by operator<<).
@@ -203,15 +204,21 @@ namespace paludis
 
                 ///\}
 
-                ///\name Iterate over our groups
+                ///\name Iterate over our sections
                 ///\{
 
-                struct ArgsGroupsConstIteratorTag;
-                typedef WrappedForwardIterator<ArgsGroupsConstIteratorTag, ArgsGroup * const> ArgsGroupsConstIterator;
+                struct ArgsSectionsConstIteratorTag;
+                typedef WrappedForwardIterator<ArgsSectionsConstIteratorTag, const ArgsSection> ArgsSectionsConstIterator;
 
-                ArgsGroupsConstIterator begin_args_groups() const;
+                ArgsSectionsConstIterator begin_args_sections() const;
+                ArgsSectionsConstIterator end_args_sections() const;
 
-                ArgsGroupsConstIterator end_args_groups() const;
+                /**
+                 * The 'Options' section.
+                 *
+                 * Created if it does not exist.
+                 */
+                ArgsSection * main_options_section() PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 ///\}
 

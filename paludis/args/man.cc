@@ -24,6 +24,7 @@
 #include <ostream>
 #include <sstream>
 #include <algorithm>
+#include <ctype.h>
 
 using namespace paludis;
 using namespace paludis::args;
@@ -111,28 +112,31 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
         dw.extra_description(*u);
     dw.end_description();
 
-    dw.start_options();
-    for (ArgsHandler::ArgsGroupsConstIterator a(h->begin_args_groups()),
-            a_end(h->end_args_groups()) ; a != a_end ; ++a)
+    for (ArgsHandler::ArgsSectionsConstIterator s(h->begin_args_sections()), s_end(h->end_args_sections()) ;
+            s != s_end ; ++s)
     {
-        dw.start_arg_group((*a)->name(), (*a)->description());
-
-        for (paludis::args::ArgsGroup::ConstIterator b((*a)->begin()), b_end((*a)->end()) ;
-                b != b_end ; ++b)
+        dw.start_options(s->name());
+        for (ArgsSection::GroupsConstIterator a(s->begin()),
+                a_end(s->end()) ; a != a_end ; ++a)
         {
-            if (simple_visitor_cast<const paludis::args::AliasArg>(**b) &&
-                    simple_visitor_cast<const paludis::args::AliasArg>(**b)->hidden())
-                continue;
+            dw.start_arg_group(a->name(), a->description());
 
-            dw.arg_group_item((*b)->short_name(), (*b)->long_name(),
-                    (*b)->can_be_negated() ? "no-" + (*b)->long_name() : "", (*b)->description());
+            for (paludis::args::ArgsGroup::ConstIterator b(a->begin()), b_end(a->end()) ;
+                    b != b_end ; ++b)
+            {
+                if (simple_visitor_cast<const paludis::args::AliasArg>(**b) &&
+                        simple_visitor_cast<const paludis::args::AliasArg>(**b)->hidden())
+                    continue;
 
-            ExtraText t(dw);
-            (*b)->accept(t);
+                dw.arg_group_item((*b)->short_name(), (*b)->long_name(),
+                        (*b)->can_be_negated() ? "no-" + (*b)->long_name() : "", (*b)->description());
 
+                ExtraText t(dw);
+                (*b)->accept(t);
+
+            }
+            dw.end_arg_group();
         }
-
-        dw.end_arg_group();
     }
     dw.end_options();
 
@@ -203,9 +207,9 @@ HtmlWriter::start_description(const std::string & description)
 }
 
 void
-HtmlWriter::start_options()
+HtmlWriter::start_options(const std::string & s)
 {
-    _os << "<h2>Options</h2>" << endl;
+    _os << "<h2>" << s << "</h2>" << endl;
 }
 
 void
@@ -393,9 +397,11 @@ ManWriter::start_description(const std::string & description)
 }
 
 void
-ManWriter::start_options()
+ManWriter::start_options(const std::string & s)
 {
-    _os << ".SH OPTIONS" << endl;
+    std::string upper_s;
+    std::transform(s.begin(), s.end(), std::back_inserter(upper_s), &::toupper);
+    _os << ".SH " << upper_s << endl;
 }
 
 void

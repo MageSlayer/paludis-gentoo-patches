@@ -35,7 +35,7 @@ namespace
         paludis::args::SwitchArg a_html;
 
         ManCommandLine() :
-            group(this, "", ""),
+            group(main_options_section(), "", ""),
             a_html(&group, "html", '\0', "", false)
         {
         }

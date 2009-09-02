@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,14 +27,14 @@ template class paludis::InstantiationPolicy<CommandLine, paludis::instantiation_
 CommandLine::CommandLine() :
     ArgsHandler(),
 
-    action_args(this, "Actions",
+    action_args(main_options_section(), "Actions",
             "Selects which basic action to perform. Exactly one action should "
             "be specified."),
     a_install(&action_args,   "install",      'i',  "Install one or more packages (default)", false),
     a_version(&action_args,   "version",      'V',  "Display program version", false),
     a_help(&action_args,      "help",         'h',  "Display program help", false),
 
-    general_args(this, "General options",
+    general_args(main_options_section(), "General options",
             "Options which are relevant for most or all actions."),
     a_log_level(&general_args, "log-level",  '\0'),
     a_no_colour(&general_args, "no-colour", '\0', "Do not use colour", false),
@@ -42,24 +42,24 @@ CommandLine::CommandLine() :
     a_environment(&general_args, "environment", 'E', "Environment specification (class:suffix, both parts optional)"),
     a_compact(&general_args, "compact", '\0', "Display output using one line per entry", true),
 
-    source_args(this, "Source options",
+    source_args(main_options_section(), "Source options",
             "Options affecting the source image"),
     a_location(&source_args, "location", 'l', "Location of source image (default: current directory)"),
     a_install_under(&source_args, "install-under", 'u', "Install under a given directory (default: /)"),
     a_rewrite_ids_over_to_root(&source_args, "rewrite-ids-over-to-root", 'r',
             "Change any UID or GID over this value to 0 (-1 disables, default)"),
 
-    metadata_args(this, "Metadata options",
+    metadata_args(main_options_section(), "Metadata options",
             "Options affecting generated metadata"),
     a_description(&metadata_args, "description", 'D', "Specify a package description"),
     a_build_dependency(&metadata_args, "build-dependency", 'B', "Specify a build dependency"),
     a_run_dependency(&metadata_args, "run-dependency", 'R', "Specify a run dependency"),
     a_preserve_metadata(&metadata_args, "preserve-metadata", 'P', "If replacing a package, copy its description and dependencies", true),
 
-    install_args(this, "Install options",
+    install_args(main_options_section(), "Install options",
             "Options which are relevant for --install"),
 
-    dl_args(this)
+    dl_args(main_options_section())
 {
     add_usage_line("[ --install ] [ --location path/ ] category/package [ version ] [ slot ]");
 

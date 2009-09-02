@@ -28,14 +28,14 @@ template class InstantiationPolicy<CommandLine, instantiation_method::SingletonT
 CommandLine::CommandLine() :
     ArgsHandler(),
 
-    action_args(this, "Actions",
+    action_args(main_options_section(), "Actions",
             "Selects which basic action to perform. Exactly one action should "
             "be specified."),
     a_manifest(&action_args,     "manifest",        'm',  "Create manifest file", false),
     a_version(&action_args,   "version",      'V',  "Display program version", false),
     a_help(&action_args,      "help",         'h',  "Display program help", false),
 
-    general_args(this, "General options",
+    general_args(main_options_section(), "General options",
             "Options which are relevant for most or all actions."),
     a_log_level(&general_args, "log-level",  '\0'),
     a_no_colour(&general_args, "no-colour", '\0', "Do not use colour", false),
@@ -53,7 +53,7 @@ CommandLine::CommandLine() :
             "Use a subdirectory named for the repository name under the specified directory for repository write cache"),
     a_report_file(&general_args, "report-file", 'r',
             "Write report to the specified file, rather than stdout"),
-    tree_args(this, "Tree action options",
+    tree_args(main_options_section(), "Tree action options",
                 "Options which are relevant for tree actions."),
     a_category(&tree_args,   "category",   'C',
             "Matches with this category name only (may be specified multiple times)",

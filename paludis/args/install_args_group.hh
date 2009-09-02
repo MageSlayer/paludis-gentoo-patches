@@ -52,7 +52,7 @@ namespace paludis
         {
             public:
                 /// Constructor.
-                InstallArgsGroup(ArgsHandler *, const std::string &, const std::string &);
+                InstallArgsGroup(ArgsSection *, const std::string &, const std::string &);
 
                 /// Destructor
                 ~InstallArgsGroup();

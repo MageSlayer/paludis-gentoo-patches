@@ -27,6 +27,7 @@
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <tr1/memory>
 #include <algorithm>
 #include <sstream>
 #include <list>
@@ -41,7 +42,7 @@ template class WrappedForwardIterator<ArgsHandler::EnvironmentLineConstIteratorT
          const std::pair<std::string, std::string> >;
 template class WrappedForwardIterator<ArgsHandler::ExamplesConstIteratorTag,
          const std::pair<std::string, std::string> >;
-template class WrappedForwardIterator<ArgsHandler::ArgsGroupsConstIteratorTag, ArgsGroup * const>;
+template class WrappedForwardIterator<ArgsHandler::ArgsSectionsConstIteratorTag, const ArgsSection>;
 template class WrappedForwardIterator<ArgsHandler::NotesIteratorTag, const std::string>;
 template class WrappedForwardIterator<ArgsHandler::DescriptionLineConstIterator, const std::string>;
 
@@ -55,7 +56,7 @@ namespace paludis
     template<>
     struct Implementation<ArgsHandler>
     {
-        std::list<ArgsGroup *> groups;
+        std::list<ArgsSection *> sections;
         std::list<std::string> parameters;
         std::list<std::string> usage_lines;
         std::list<std::pair<std::string, std::string> > environment_lines;
@@ -65,6 +66,8 @@ namespace paludis
 
         std::map<std::string, ArgsOption *> longopts;
         std::map<char, ArgsOption *> shortopts;
+
+        std::tr1::shared_ptr<ArgsSection> main_options_section;
     };
 }
 
@@ -102,10 +105,9 @@ ArgsHandler::add_note(const std::string & e)
 }
 
 void
-ArgsHandler::add(ArgsGroup * const g)
+ArgsHandler::add(ArgsSection * const s)
 {
-    /// \bug Should check for name uniqueness.
-    _imp->groups.push_back(g);
+    _imp->sections.push_back(s);
 }
 
 void
@@ -220,14 +222,18 @@ void
 ArgsHandler::dump_to_stream(std::ostream & s) const
 {
     ArgsDumper dump(s);
-    std::list<ArgsGroup *>::const_iterator g(_imp->groups.begin()), g_end(_imp->groups.end());
-    for ( ; g != g_end ; ++g)
+    for (ArgsSectionsConstIterator a(begin_args_sections()), a_end(end_args_sections()) ;
+            a != a_end ; ++a)
     {
-        s << (*g)->name() << ":" << std::endl;
+        for (ArgsSection::GroupsConstIterator g(a->begin()), g_end(a->end()) ;
+                g != g_end ; ++g)
+        {
+            s << g->name() << ":" << std::endl;
 
-        std::for_each(indirect_iterator((*g)->begin()), indirect_iterator((*g)->end()), accept_visitor(dump));
+            std::for_each(indirect_iterator(g->begin()), indirect_iterator(g->end()), accept_visitor(dump));
 
-        s << std::endl;
+            s << std::endl;
+        }
     }
 }
 
@@ -321,16 +327,24 @@ ArgsHandler::end_notes() const
     return NotesIterator(_imp->notes.end());
 }
 
-ArgsHandler::ArgsGroupsConstIterator
-ArgsHandler::begin_args_groups() const
+ArgsHandler::ArgsSectionsConstIterator
+ArgsHandler::begin_args_sections() const
 {
-    return ArgsGroupsConstIterator(_imp->groups.begin());
+    return ArgsSectionsConstIterator(indirect_iterator(_imp->sections.begin()));
 }
 
-ArgsHandler::ArgsGroupsConstIterator
-ArgsHandler::end_args_groups() const
+ArgsHandler::ArgsSectionsConstIterator
+ArgsHandler::end_args_sections() const
 {
-    return ArgsGroupsConstIterator(_imp->groups.end());
+    return ArgsSectionsConstIterator(indirect_iterator(_imp->sections.end()));
+}
+
+ArgsSection *
+ArgsHandler::main_options_section()
+{
+    if (! _imp->main_options_section)
+        _imp->main_options_section.reset(new ArgsSection(this, "Options"));
+    return _imp->main_options_section.get();
 }
 
 ArgsHandler::DescriptionLineConstIterator

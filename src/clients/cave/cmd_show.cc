@@ -91,7 +91,7 @@ namespace
         args::SwitchArg a_flat;
 
         ShowCommandLine() :
-            g_object_options(this, "Object Options", "Alter how objects are interpreted."),
+            g_object_options(main_options_section(), "Object Options", "Alter how objects are interpreted."),
             a_type(&g_object_options, "type", '\0', "Specify the type of the specified objects.",
                     args::EnumArg::EnumArgOptions
                     ("auto",               "Automatically determine the type")
@@ -100,12 +100,12 @@ namespace
                     ("wildcard",           "Treat the objects as a wildcarded package spec")
                     ("package",            "Treat the objects as an unwildcarded package spec, showing all matches for wildcards"),
                     "auto"),
-            g_key_options(this, "Key Options", "Control which keys are shown."),
+            g_key_options(main_options_section(), "Key Options", "Control which keys are shown."),
             a_complex_keys(&g_key_options, "complex-keys", 'c',
                     "Show complex keys", true),
             a_internal_keys(&g_key_options, "internal-keys", 'i',
                     "Show keys regardless of importance, including internal-only values", true),
-            g_display_options(this, "Display Options", "Controls the output format."),
+            g_display_options(main_options_section(), "Display Options", "Controls the output format."),
             a_flat(&g_display_options, "flat", 'f',
                     "Do not spread key values over multiple lines", true)
         {

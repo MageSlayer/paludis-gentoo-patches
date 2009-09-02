@@ -63,7 +63,7 @@ namespace paludis
                 virtual void extra_description(const std::string & description) = 0;
                 virtual void end_description() = 0;
 
-                virtual void start_options() = 0;
+                virtual void start_options(const std::string &) = 0;
                 virtual void start_arg_group(const std::string & name, const std::string & description) = 0;
                 virtual void arg_group_item(const char & short_name, const std::string & long_name,
                         const std::string & negated_long_name, const std::string & description) = 0;
@@ -122,7 +122,7 @@ namespace paludis
                 void extra_description(const std::string & description);
                 void end_description();
 
-                void start_options();
+                void start_options(const std::string &);
                 void start_arg_group(const std::string & name, const std::string & description);
                 void arg_group_item(const char & short_name, const std::string & long_name,
                         const std::string & negated_long_name, const std::string & description);
@@ -179,7 +179,7 @@ namespace paludis
                 void extra_description(const std::string & description);
                 void end_description();
 
-                void start_options();
+                void start_options(const std::string &);
                 void start_arg_group(const std::string & name, const std::string & description);
                 void arg_group_item(const char & short_name, const std::string & long_name,
                         const std::string & negated_long_name, const std::string & description);
