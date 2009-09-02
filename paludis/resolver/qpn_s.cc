@@ -18,9 +18,12 @@
  */
 
 #include <paludis/resolver/qpn_s.hh>
+#include <paludis/resolver/serialise-impl.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/filter.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_id.hh>
@@ -128,7 +131,7 @@ paludis::resolver::operator<< (std::ostream & s, const QPN_S & q)
     if (q.slot_name_or_null())
         ss << ":" << *q.slot_name_or_null();
     else
-        ss << ":(no slot)";
+        ss << " (no slot)";
 
     s << ss.str();
     return s;
@@ -152,6 +155,25 @@ QPN_S::operator= (const QPN_S & other)
         _imp->slot_name_or_null = other._imp->slot_name_or_null;
     }
     return *this;
+}
+
+void
+QPN_S::serialise(Serialiser & s) const
+{
+    s.object("QPN_S")
+        .member(SerialiserFlags<>(), "package", stringify(package()))
+        .member(SerialiserFlags<>(), "slot", slot_name_or_null() ? stringify(*slot_name_or_null()) : "")
+        ;
+}
+
+QPN_S
+QPN_S::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "QPN_S");
+    std::string slot_str(v.member<std::string>("slot"));
+    return QPN_S(
+            QualifiedPackageName(v.member<std::string>("package")),
+            ! slot_str.empty() ? make_shared_ptr(new SlotName(slot_str)) : make_null_shared_ptr());
 }
 
 template class PrivateImplementationPattern<QPN_S>;

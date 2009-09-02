@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_RESOLVE_DISPLAY_RESOLUTION_HH 1
 
 #include <paludis/environment-fwd.hh>
-#include <paludis/resolver/resolver-fwd.hh>
+#include <paludis/resolver/resolutions-fwd.hh>
 #include "cmd_resolve_cmdline.hh"
 
 namespace paludis
@@ -30,7 +30,7 @@ namespace paludis
     {
         void display_resolution(
                 const std::tr1::shared_ptr<Environment> &,
-                const std::tr1::shared_ptr<resolver::Resolver> & resolver,
+                const std::tr1::shared_ptr<resolver::Resolutions> &,
                 const ResolveCommandLine &);
     }
 }

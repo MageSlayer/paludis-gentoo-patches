@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -204,6 +204,21 @@ namespace paludis
             Command & with_captured_stderr_stream(std::ostream * const);
 
             /**
+             * Send the contents of a stream in via a particular FD.
+             *
+             * May only be called once.
+             *
+             * \param fd Send the stream to this FD. If -1, pick an unused FD.
+             * \param env_var If not empty, put the FD chosen in this env var.
+             *
+             * \since 0.40
+             */
+            Command & with_input_stream(
+                    std::istream * const,
+                    int fd,
+                    const std::string & env_var);
+
+            /**
              * Use ptys instead of pipes to capture stdout and/or stderr.
              *
              * \since 0.38
@@ -277,6 +292,27 @@ namespace paludis
              * \since 0.30
              */
             std::ostream * captured_stderr_stream() const;
+
+            /**
+             * The input stream, or null.
+             *
+             * \since 0.40
+             */
+            std::istream * input_stream() const;
+
+            /**
+             * The input FD, if input_stream() not null.
+             *
+             * \since 0.40
+             */
+            int input_fd() const;
+
+            /**
+             * The input FD env var, if input_stream() not null.
+             *
+             * \since 0.40
+             */
+            const std::string input_fd_env_var() const;
 
             /**
              * Uses ptys instead of pipes?

@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_DESTINATIONS_HH 1
 
 #include <paludis/resolver/destinations-fwd.hh>
+#include <paludis/resolver/serialise-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/name.hh>
 #include <paludis/package_id-fwd.hh>
@@ -41,11 +42,21 @@ namespace paludis
         {
             NamedValue<n::replacing, std::tr1::shared_ptr<const PackageIDSequence> > replacing;
             NamedValue<n::repository, RepositoryName> repository;
+
+            void serialise(Serialiser &) const;
+
+            static const std::tr1::shared_ptr<Destination> deserialise(
+                    Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         struct Destinations
         {
             NamedValue<n::slash, std::tr1::shared_ptr<Destination> > slash;
+
+            void serialise(Serialiser &) const;
+
+            static const std::tr1::shared_ptr<Destinations> deserialise(
+                    Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

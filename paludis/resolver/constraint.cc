@@ -19,9 +19,12 @@
 
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/reason.hh>
+#include <paludis/resolver/serialise-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/sequence-impl.hh>
+#include <paludis/util/make_named_values.hh>
 #include <sstream>
 #include <list>
 
@@ -52,7 +55,7 @@ namespace paludis
         UseInstalled strictest_use_installed;
         bool nothing_is_fine_too;
         bool to_destination_slash;
-        std::list<std::tr1::shared_ptr<const Constraint> > constraints;
+        Sequence<std::tr1::shared_ptr<const Constraint> > constraints;
 
         Implementation() :
             strictest_use_installed(ui_if_possible),
@@ -115,6 +118,81 @@ bool
 Constraints::to_destination_slash() const
 {
     return _imp->to_destination_slash;
+}
+
+void
+Constraints::serialise(Serialiser & s) const
+{
+    s.object("Constraints")
+        .member(SerialiserFlags<serialise::container>(), "items", _imp->constraints)
+        ;
+}
+
+const std::tr1::shared_ptr<Constraints>
+Constraints::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "Constraints");
+    Deserialisator vv(*v.find_remove_member("items"), "c");
+    std::tr1::shared_ptr<Constraints> result(new Constraints);
+    for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
+        result->add(vv.member<std::tr1::shared_ptr<Constraint> >(stringify(n)));
+    return result;
+}
+
+void
+Constraint::serialise(Serialiser & s) const
+{
+    s.object("Constraint")
+        .member(SerialiserFlags<>(), "nothing_is_fine_too", nothing_is_fine_too())
+        .member(SerialiserFlags<serialise::might_be_null>(), "reason", reason())
+        .member(SerialiserFlags<>(), "spec", spec())
+        .member(SerialiserFlags<>(), "to_destination_slash", to_destination_slash())
+        .member(SerialiserFlags<>(), "use_installed", stringify(use_installed()))
+        ;
+}
+
+namespace
+{
+    struct IDFinder
+    {
+        const std::tr1::shared_ptr<const PackageID> visit(const DependencyReason & r) const
+        {
+            return r.from_id();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const SetReason &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const PresetReason &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const TargetReason &) const
+        {
+            return make_null_shared_ptr();
+        }
+    };
+}
+
+const std::tr1::shared_ptr<Constraint>
+Constraint::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "Constraint");
+
+    const std::tr1::shared_ptr<Reason> reason(v.member<std::tr1::shared_ptr<Reason> >("reason"));
+    IDFinder id_finder;
+
+    return make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                    value_for<n::nothing_is_fine_too>(v.member<bool>("nothing_is_fine_too")),
+                    value_for<n::reason>(reason),
+                    value_for<n::spec>(PackageOrBlockDepSpec::deserialise(*v.find_remove_member("spec"),
+                            reason->accept_returning<std::tr1::shared_ptr<const PackageID> >(id_finder))),
+                    value_for<n::to_destination_slash>(v.member<bool>("to_destination_slash")),
+                    value_for<n::use_installed>(destringify<UseInstalled>(v.member<std::string>("use_installed")))
+            )));
 }
 
 template class PrivateImplementationPattern<Constraints>;

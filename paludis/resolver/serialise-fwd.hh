@@ -17,20 +17,17 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLUTION_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLUTION_FWD_HH 1
-
-#include <paludis/util/attributes.hh>
-#include <paludis/resolver/serialise-fwd.hh>
-#include <iosfwd>
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_SERIALISE_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_SERIALISE_FWD_HH 1
 
 namespace paludis
 {
     namespace resolver
     {
-        struct Resolution;
+        struct Serialiser;
 
-        std::ostream & operator<< (std::ostream & s, const Resolution & r) PALUDIS_VISIBLE;
+        struct Deserialiser;
+        struct Deserialisation;
     }
 }
 

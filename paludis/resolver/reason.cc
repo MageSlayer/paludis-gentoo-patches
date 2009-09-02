@@ -20,6 +20,7 @@
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/qpn_s.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
+#include <paludis/resolver/serialise-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 
@@ -41,6 +42,13 @@ std::string
 TargetReason::as_string() const
 {
     return "Target()";
+}
+
+void
+TargetReason::serialise(Serialiser & s) const
+{
+    s.object("TargetReason")
+        ;
 }
 
 namespace paludis
@@ -87,10 +95,26 @@ DependencyReason::as_string() const
     return "Dependency(package: " + stringify(*_imp->from_id) + " dep: " + stringify(_imp->dep) + ")";
 }
 
+void
+DependencyReason::serialise(Serialiser & s) const
+{
+    s.object("DependencyReason")
+        .member(SerialiserFlags<serialise::might_be_null>(), "from_id", from_id())
+        .member(SerialiserFlags<>(), "sanitised_dependency", sanitised_dependency())
+        ;
+}
+
 std::string
 PresetReason::as_string() const
 {
     return "Preset()";
+}
+
+void
+PresetReason::serialise(Serialiser & s) const
+{
+    s.object("PresetReason")
+        ;
 }
 
 namespace paludis
@@ -134,6 +158,49 @@ std::string
 SetReason::as_string() const
 {
     return "Set(set: " + stringify(_imp->set_name) + " because: " + stringify(*_imp->reason_for_set) + ")";
+}
+
+void
+SetReason::serialise(Serialiser & s) const
+{
+    s.object("SetReason")
+        .member(SerialiserFlags<serialise::might_be_null>(), "reason_for_set", reason_for_set())
+        .member(SerialiserFlags<>(), "set_name", stringify(set_name()))
+        ;
+}
+
+const std::tr1::shared_ptr<Reason>
+Reason::deserialise(Deserialisation & d)
+{
+    if (d.class_name() == "TargetReason")
+    {
+        Deserialisator v(d, "TargetReason");
+        return make_shared_ptr(new TargetReason);
+    }
+    else if (d.class_name() == "PresetReason")
+    {
+        Deserialisator v(d, "PresetReason");
+        return make_shared_ptr(new PresetReason);
+    }
+    else if (d.class_name() == "SetReason")
+    {
+        Deserialisator v(d, "SetReason");
+        return make_shared_ptr(new SetReason(
+                    SetName(v.member<std::string>("set_name")),
+                    v.member<std::tr1::shared_ptr<Reason> >("reason_for_set")
+                    ));
+    }
+    else if (d.class_name() == "DependencyReason")
+    {
+        Deserialisator v(d, "DependencyReason");
+        const std::tr1::shared_ptr<const PackageID> from_id(v.member<std::tr1::shared_ptr<const PackageID> >("from_id"));
+        return make_shared_ptr(new DependencyReason(
+                    from_id,
+                    SanitisedDependency::deserialise(*v.find_remove_member("sanitised_dependency"), from_id))
+                );
+    }
+    else
+        throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 }
 
 template class PrivateImplementationPattern<DependencyReason>;

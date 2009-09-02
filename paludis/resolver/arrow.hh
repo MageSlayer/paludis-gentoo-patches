@@ -22,6 +22,7 @@
 
 #include <paludis/resolver/arrow-fwd.hh>
 #include <paludis/resolver/qpn_s.hh>
+#include <paludis/resolver/serialise-fwd.hh>
 #include <paludis/util/named_value.hh>
 
 namespace paludis
@@ -38,6 +39,11 @@ namespace paludis
         {
             NamedValue<n::ignorable_pass, int> ignorable_pass;
             NamedValue<n::to_qpn_s, QPN_S> to_qpn_s;
+
+            void serialise(Serialiser &) const;
+
+            static const std::tr1::shared_ptr<Arrow> deserialise(
+                    Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

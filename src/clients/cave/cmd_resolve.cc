@@ -41,6 +41,8 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/destinations.hh>
+#include <paludis/resolver/serialise-impl.hh>
+#include <paludis/resolver/resolutions.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/generator.hh>
@@ -616,7 +618,14 @@ ResolveCommand::run(
             }
         }
 
-        display_resolution(env, resolver, cmdline);
+        std::stringstream ser;
+        Serialiser s(ser);
+        resolver->resolutions()->serialise(s);
+
+        std::tr1::shared_ptr<Resolutions> copied_resolutions(deserialise<Resolutions>(
+                    env.get(), ser.str(), "Resolutions"));
+
+        display_resolution(env, copied_resolutions, cmdline);
         display_explanations(env, resolver, cmdline);
     }
     catch (...)

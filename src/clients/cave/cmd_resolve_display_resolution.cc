@@ -76,14 +76,14 @@ namespace
 void
 paludis::cave::display_resolution(
         const std::tr1::shared_ptr<Environment> &,
-        const std::tr1::shared_ptr<Resolver> & resolver,
+        const std::tr1::shared_ptr<Resolutions> & resolutions,
         const ResolveCommandLine &)
 {
     Context context("When displaying chosen resolution:");
 
     std::cout << "These are the actions I will take, in order:" << std::endl << std::endl;
 
-    for (Resolutions::ConstIterator c(resolver->resolutions()->begin()), c_end(resolver->resolutions()->end()) ;
+    for (Resolutions::ConstIterator c(resolutions->begin()), c_end(resolutions->end()) ;
             c != c_end ; ++c)
     {
         const std::tr1::shared_ptr<const PackageID> id((*c)->decision()->if_package_id());

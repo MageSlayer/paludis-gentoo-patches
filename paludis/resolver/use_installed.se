@@ -12,5 +12,7 @@ make_enum_UseInstalled()
     key ui_if_same             "If it is the same"
     key ui_if_same_version     "If it is the same version"
     key ui_if_possible         "If possible"
+
+    want_destringify
 }
 

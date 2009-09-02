@@ -24,6 +24,7 @@
 #include <paludis/resolver/reason-fwd.hh>
 #include <paludis/resolver/use_installed-fwd.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
+#include <paludis/resolver/serialise-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/dep_spec.hh>
 #include <tr1/memory>
@@ -48,6 +49,11 @@ namespace paludis
             NamedValue<n::spec, PackageOrBlockDepSpec> spec;
             NamedValue<n::to_destination_slash, bool> to_destination_slash;
             NamedValue<n::use_installed, UseInstalled> use_installed;
+
+            void serialise(Serialiser &) const;
+
+            static const std::tr1::shared_ptr<Constraint> deserialise(
+                    Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class PALUDIS_VISIBLE Constraints :
@@ -69,6 +75,11 @@ namespace paludis
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 bool empty() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                void serialise(Serialiser &) const;
+
+                static const std::tr1::shared_ptr<Constraints> deserialise(
+                        Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 

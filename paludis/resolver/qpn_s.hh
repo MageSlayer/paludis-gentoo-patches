@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_QPN_S_HH 1
 
 #include <paludis/resolver/qpn_s-fwd.hh>
+#include <paludis/resolver/serialise-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
@@ -58,6 +59,11 @@ namespace paludis
 
                 bool operator< (const QPN_S & other) const PALUDIS_ATTRIBUTE((warn_unused_result));
                 bool operator== (const QPN_S & other) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                void serialise(Serialiser &) const;
+
+                static QPN_S deserialise(
+                        Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 
