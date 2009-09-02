@@ -157,8 +157,6 @@ paludis::match_package(
             return false;
         if (! dest->destination_interface()->is_suitable_destination_for(entry))
             return false;
-
-        return true;
     }
 
     if (spec.installable_to_path_ptr())
@@ -181,8 +179,6 @@ paludis::match_package(
                 continue;
             if (! (*d)->destination_interface()->is_suitable_destination_for(entry))
                 continue;
-
-            return true;
         }
 
         return false;
