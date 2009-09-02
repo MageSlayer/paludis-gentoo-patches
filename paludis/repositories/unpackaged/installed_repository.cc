@@ -379,7 +379,8 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
 
     if (if_overwritten_id)
     {
-        std::tr1::static_pointer_cast<const InstalledUnpackagedID>(if_overwritten_id)->uninstall(true, m.output_manager());
+        std::tr1::static_pointer_cast<const InstalledUnpackagedID>(if_overwritten_id)->uninstall(true,
+                if_overwritten_id, m.output_manager());
     }
 }
 

@@ -774,7 +774,7 @@ namespace
         void visit(UninstallAction & a)
         {
             std::tr1::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
-            id->uninstall(false, output_manager);
+            id->uninstall(false, a.options.if_for_install_id(), output_manager);
             output_manager->succeeded();
         }
     };
@@ -828,11 +828,13 @@ namespace
 }
 
 void
-InstalledUnpackagedID::uninstall(const bool replace, const std::tr1::shared_ptr<OutputManager> & output_manager) const
+InstalledUnpackagedID::uninstall(const bool replace,
+        const std::tr1::shared_ptr<const PackageID> & if_for_install_id,
+        const std::tr1::shared_ptr<OutputManager> & output_manager) const
 {
     Context context("When uninstalling '" + stringify(*this) + "':");
 
-    bool last(! replace);
+    bool last((! replace) && (! if_for_install_id));
     if (last)
     {
         std::tr1::shared_ptr<const PackageIDSequence> ids(repository()->package_ids(name()));
