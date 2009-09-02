@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -279,7 +279,6 @@ namespace test_cases
         }
     } test_captured_fail;
 
-
     struct CapturedPipeCommandTest : TestCase
     {
         CapturedPipeCommandTest() : TestCase("captured pipe command") { }
@@ -297,5 +296,59 @@ namespace test_cases
             TEST_CHECK(! std::getline(s, line));
         }
     } test_captured_pipe_command;
+
+    struct StdinCommandTest : TestCase
+    {
+        StdinCommandTest() : TestCase("stdin") { }
+
+        void run()
+        {
+            std::stringstream is, os;
+            for (int n(0) ; n < 300 ; ++n)
+                is << "I chased a bug around a tree\n";
+
+            TEST_CHECK_EQUAL(run_command(Command("cat")
+                        .with_input_stream(&is, 0, "")
+                        .with_captured_stdout_stream(&os)
+                        ),
+                    0);
+
+            std::string line;
+            for (int n(0) ; n < 300 ; ++n)
+            {
+                std::getline(os, line);
+                TEST_CHECK_EQUAL(line, "I chased a bug around a tree");
+            }
+
+            TEST_CHECK(! std::getline(os, line));
+        }
+    } test_stdin;
+
+    struct InputCommandTest : TestCase
+    {
+        InputCommandTest() : TestCase("input") { }
+
+        void run()
+        {
+            std::stringstream is, os;
+            for (int n(0) ; n < 300 ; ++n)
+                is << "The cat crept into the crypt\n";
+
+            TEST_CHECK_EQUAL(run_command(Command("cat <&$THE_FD")
+                        .with_input_stream(&is, -1, "THE_FD")
+                        .with_captured_stdout_stream(&os)
+                        ),
+                    0);
+
+            std::string line;
+            for (int n(0) ; n < 300 ; ++n)
+            {
+                std::getline(os, line);
+                TEST_CHECK_EQUAL(line, "The cat crept into the crypt");
+            }
+
+            TEST_CHECK(! std::getline(os, line));
+        }
+    } test_input;
 }
 
