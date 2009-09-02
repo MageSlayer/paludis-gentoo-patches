@@ -33,7 +33,6 @@ namespace paludis
 
     //        args::ArgsGroup g_execution_options;
     //        args::SwitchArg a_execute;
-    //        args::SwitchArg a_preserve_world;
 
             args::ArgsGroup g_convenience_options;
             args::SwitchArg a_lazy;
@@ -49,22 +48,6 @@ namespace paludis
     //        args::ArgsGroup g_cleanup_options;
     //        args::SwitchArg a_purge_unused_slots;
     //        args::SwitchArg a_purge_unused_packages;
-
-    //        args::ArgsGroup g_failure_options;
-    //        args::EnumArg a_continue_on_failure;
-
-    //        args::ArgsGroup g_display_options;
-    //        args::EnumArg a_show_option_descriptions;
-    //        args::EnumArg a_show_descriptions;
-
-            args::ArgsGroup g_explanations;
-            args::StringSetArg a_explain;
-
-    //        args::ArgsGroup g_phase_options;
-    //        args::StringSetArg a_skip_phase;
-    //        args::StringSetArg a_abort_at_phase;
-    //        args::StringSetArg a_skip_until_phase;
-    //        args::EnumArg a_change_phases_for;
 
             args::ArgsGroup g_keep_options;
             args::EnumArg a_keep_targets;
@@ -111,11 +94,55 @@ namespace paludis
     //        args::SwitchArg a_interactive_slots;
     //        args::SwitchArg a_interactive_decisions;
     //        args::SwitchArg a_interactive_ordering;
+        };
+
+        struct ResolveCommandLineExecutionOptions :
+            args::ArgsSection
+        {
+            ResolveCommandLineExecutionOptions(args::ArgsHandler * const);
+
+    //        args::ArgsGroup g_world_options;
+    //        args::SwitchArg a_preserve_world;
+
+    //        args::ArgsGroup g_failure_options;
+    //        args::EnumArg a_continue_on_failure;
+
+    //        args::ArgsGroup g_phase_options;
+    //        args::StringSetArg a_skip_phase;
+    //        args::StringSetArg a_abort_at_phase;
+    //        args::StringSetArg a_skip_until_phase;
+    //        args::EnumArg a_change_phases_for;
+
+
+        };
+
+        struct ResolveCommandLineDisplayOptions :
+            args::ArgsSection
+        {
+            ResolveCommandLineDisplayOptions(args::ArgsHandler * const);
+
+    //        args::ArgsGroup g_display_options;
+    //        args::EnumArg a_show_option_descriptions;
+    //        args::EnumArg a_show_descriptions;
+
+            args::ArgsGroup g_explanations;
+            args::StringSetArg a_explain;
 
             args::ArgsGroup g_dump_options;
             args::SwitchArg a_dump;
             args::SwitchArg a_dump_dependencies;
+        };
 
+        struct ResolveCommandLineProgramOptions :
+            args::ArgsSection
+        {
+            ResolveCommandLineProgramOptions(args::ArgsHandler * const);
+
+            args::ArgsGroup g_program_options;
+            args::StringArg a_display_resolution_program;
+            args::StringArg a_execute_resolution_program;
+            args::StringArg a_perform_program;
+            args::StringArg a_update_world_program;
         };
 
         struct ResolveCommandLine :
@@ -128,6 +155,9 @@ namespace paludis
             ResolveCommandLine();
 
             ResolveCommandLineResolutionOptions resolution_options;
+            ResolveCommandLineExecutionOptions execution_options;
+            ResolveCommandLineDisplayOptions display_options;
+            ResolveCommandLineProgramOptions program_options;
         };
     }
 }

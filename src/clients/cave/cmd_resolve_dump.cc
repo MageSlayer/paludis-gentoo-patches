@@ -36,7 +36,7 @@ paludis::cave::dump_if_requested(
 {
     Context context("When dumping the resolver:");
 
-    if (! cmdline.resolution_options.a_dump.specified())
+    if (! cmdline.display_options.a_dump.specified())
         return;
 
     std::cout << "Dumping resolutions by QPN:S:" << std::endl << std::endl;
@@ -47,7 +47,7 @@ paludis::cave::dump_if_requested(
     {
         std::cout << c->first << std::endl;
         std::cout << "  = " << *c->second << std::endl;
-        if (cmdline.resolution_options.a_dump_dependencies.specified() && c->second->sanitised_dependencies())
+        if (cmdline.display_options.a_dump_dependencies.specified() && c->second->sanitised_dependencies())
             for (SanitisedDependencies::ConstIterator d(c->second->sanitised_dependencies()->begin()),
                     d_end(c->second->sanitised_dependencies()->end()) ;
                     d != d_end ; ++d)

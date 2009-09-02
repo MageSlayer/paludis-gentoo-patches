@@ -78,12 +78,6 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
 //                    "new"
 //                    ),
 
-    g_explanations(this, "Explanations", "Options requesting the resolver explain a particular decision "
-            "that it made"),
-    a_explain(&g_explanations, "explain", '\0', "Explain why the resolver made a particular decision. The "
-            "argument is a package dependency specification, so --explain dev-libs/boost or --explain qt:3"
-            " or even --explain '*/*' (although --dump is a better way of getting highly noisy debug output)."),
-
 //            g_phase_options(this, "Phase Options", "Options controlling which phases to execute. No sanity checking "
 //                    "is done, allowing you to shoot as many feet off as you desire. Phase names do not have the "
 //                    "src_, pkg_ or builtin_ prefix, so 'init', 'preinst', 'unpack', 'merge', 'strip' etc."),
@@ -170,7 +164,7 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             "Follow build dependencies for installed packages (default if --complete or --everything)", true),
     a_ignore_installed_dependencies(&g_dependency_options, "ignore-installed-dependencies", 'd',
             "Ignore dependencies (except compiled-against dependencies, which are already taken) "
-            "for installed packages. (default if --lazy)", true),
+            "for installed packages. (default if --lazy)", true)
 //
 //            g_suggestion_options(this, "Suggestion Options", "Control whether suggestions are taken. Suggestions that are "
 //                    "already installed are instead treated as hard dependencies."),
@@ -217,6 +211,16 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
 //            a_create_binaries(&g_destination_options, "create-binaries", '\0', "Create binary packages", true),
 //            a_install_to_chroot(&g_destination_options, "install-to-chroot", '\0', "Install packages to the environment-configured chroot", true),
 //            a_install_to_root(&g_destination_options, "install-to-root", '\0', "Install packages to /", true),
+{
+}
+
+ResolveCommandLineDisplayOptions::ResolveCommandLineDisplayOptions(args::ArgsHandler * const h) :
+    ArgsSection(h, "Display Options"),
+    g_explanations(this, "Explanations", "Options requesting the resolver explain a particular decision "
+            "that it made"),
+    a_explain(&g_explanations, "explain", '\0', "Explain why the resolver made a particular decision. The "
+            "argument is a package dependency specification, so --explain dev-libs/boost or --explain qt:3"
+            " or even --explain '*/*' (although --dump is a better way of getting highly noisy debug output)."),
 
     g_dump_options(this, "Dump Options", "Dump the resolver's state to stdout after completion, or when an "
             "error occurs. For debugging purposes; produces rather a lot of noise."),
@@ -226,8 +230,32 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
 {
 }
 
+ResolveCommandLineExecutionOptions::ResolveCommandLineExecutionOptions(args::ArgsHandler * const h) :
+    ArgsSection(h, "Execution Options")
+{
+}
+
+ResolveCommandLineProgramOptions::ResolveCommandLineProgramOptions(args::ArgsHandler * const h) :
+    ArgsSection(h, "Program Options"),
+    g_program_options(this, "Program Options", "Options controlling which programs are used to carry out "
+            "various tasks. Any replacement to the standard program must provide exactly the same interface. "
+            "In all cases, $CAVE can be used to get the path of the main 'cave' executable."),
+    a_display_resolution_program(&g_program_options, "display-resolution-program", '\0', "The program used to display "
+            "the resolution. Defaults to '$CAVE display-resolution'."),
+    a_execute_resolution_program(&g_program_options, "execute-resolution-program", '\0', "The program used to execute "
+            "the resolution. Defaults to '$CAVE execute-resolution'."),
+    a_perform_program(&g_program_options, "perform-program", '\0', "The program used to perform "
+            "actions. Defaults to '$CAVE perform'."),
+    a_update_world_program(&g_program_options, "update-world-program", '\0', "The program used to perform "
+            "world updates. Defaults to '$CAVE update-world'.")
+{
+}
+
 ResolveCommandLine::ResolveCommandLine() :
-    resolution_options(this)
+    resolution_options(this),
+    execution_options(this),
+    display_options(this),
+    program_options(this)
 {
     add_usage_line("[ -x|--execute ] [ -z|--lazy or -c|--complete or -e|--everything ] spec ...");
     add_usage_line("[ -x|--execute ] [ -z|--lazy or -c|--complete or -e|--everything ] set");

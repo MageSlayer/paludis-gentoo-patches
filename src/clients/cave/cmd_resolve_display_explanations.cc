@@ -70,13 +70,13 @@ cave::display_explanations(
 {
     Context context("When displaying explanations:");
 
-    if (cmdline.resolution_options.a_explain.begin_args() == cmdline.resolution_options.a_explain.end_args())
+    if (cmdline.display_options.a_explain.begin_args() == cmdline.display_options.a_explain.end_args())
         return;
 
     std::cout << "Explaining requested decisions:" << std::endl << std::endl;
 
-    for (args::StringSetArg::ConstIterator i(cmdline.resolution_options.a_explain.begin_args()),
-            i_end(cmdline.resolution_options.a_explain.end_args()) ;
+    for (args::StringSetArg::ConstIterator i(cmdline.display_options.a_explain.begin_args()),
+            i_end(cmdline.display_options.a_explain.end_args()) ;
             i != i_end ; ++i)
     {
         bool any(false);
