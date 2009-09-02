@@ -20,8 +20,6 @@
 #include "cmd_resolve.hh"
 #include "cmd_resolve_cmdline.hh"
 #include "cmd_resolve_display_callback.hh"
-#include "cmd_resolve_display_explanations.hh"
-#include "cmd_resolve_display_resolution.hh"
 #include "cmd_resolve_dump.hh"
 #include "exceptions.hh"
 #include "command_command_line.hh"
@@ -30,6 +28,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/system.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/resolution.hh>
@@ -511,6 +510,37 @@ namespace
 
         return true;
     }
+
+    int display_resolution(
+            const std::tr1::shared_ptr<Environment> &,
+            const ResolutionLists & resolution_lists,
+            const ResolveCommandLine & cmdline)
+    {
+        Context context("When displaying chosen resolution:");
+
+        std::stringstream ser_stream;
+        Serialiser ser(ser_stream);
+        resolution_lists.serialise(ser);
+
+        std::string command(cmdline.program_options.a_display_resolution_program.argument());
+        if (command.empty())
+            command = "$CAVE display-resolution";
+
+        for (args::ArgsSection::GroupsConstIterator g(cmdline.display_options.begin()), g_end(cmdline.display_options.end()) ;
+                g != g_end ; ++g)
+        {
+            for (args::ArgsGroup::ConstIterator o(g->begin()), o_end(g->end()) ;
+                    o != o_end ; ++o)
+                if ((*o)->specified())
+                    command = command + " " + (*o)->forwardable_string();
+        }
+
+        paludis::Command cmd(command);
+        cmd
+            .with_input_stream(&ser_stream, -1, "PALUDIS_SERIALISED_RESOLUTION_FD");
+
+        return run_command(cmd);
+    }
 }
 
 
@@ -620,15 +650,7 @@ ResolveCommand::run(
             }
         }
 
-        std::stringstream ser;
-        Serialiser s(ser);
-        resolver->resolutions()->serialise(s);
-
-        std::tr1::shared_ptr<Resolutions> copied_resolutions(deserialise<Resolutions>(
-                    env.get(), ser.str(), "Resolutions"));
-
-        display_resolution(env, copied_resolutions, cmdline);
-        display_explanations(env, resolver, cmdline);
+        retcode |= display_resolution(env, *resolver->resolution_lists(), cmdline);
     }
     catch (...)
     {

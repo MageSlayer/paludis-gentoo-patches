@@ -155,7 +155,7 @@ namespace paludis
 
                 void resolve();
 
-                const std::tr1::shared_ptr<const Resolutions> resolutions() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::tr1::shared_ptr<const ResolutionLists> resolution_lists() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 struct ResolutionsByQPN_SConstIteratorTag;
                 typedef WrappedForwardIterator<ResolutionsByQPN_SConstIteratorTag,

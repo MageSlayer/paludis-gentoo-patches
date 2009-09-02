@@ -164,7 +164,8 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             "Follow build dependencies for installed packages (default if --complete or --everything)", true),
     a_ignore_installed_dependencies(&g_dependency_options, "ignore-installed-dependencies", 'd',
             "Ignore dependencies (except compiled-against dependencies, which are already taken) "
-            "for installed packages. (default if --lazy)", true)
+            "for installed packages. (default if --lazy)", true),
+
 //
 //            g_suggestion_options(this, "Suggestion Options", "Control whether suggestions are taken. Suggestions that are "
 //                    "already installed are instead treated as hard dependencies."),
@@ -211,6 +212,12 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
 //            a_create_binaries(&g_destination_options, "create-binaries", '\0', "Create binary packages", true),
 //            a_install_to_chroot(&g_destination_options, "install-to-chroot", '\0', "Install packages to the environment-configured chroot", true),
 //            a_install_to_root(&g_destination_options, "install-to-root", '\0', "Install packages to /", true),
+
+    g_dump_options(this, "Dump Options", "Dump the resolver's state to stdout after completion, or when an "
+            "error occurs. For debugging purposes; produces rather a lot of noise."),
+    a_dump(&g_dump_options, "dump", '\0', "Dump debug output", true),
+    a_dump_dependencies(&g_dump_options, "dump-dependencies", '\0', "If dumping, also dump the "
+            "sanitised dependencies selected for every package" , true)
 {
 }
 
@@ -220,13 +227,7 @@ ResolveCommandLineDisplayOptions::ResolveCommandLineDisplayOptions(args::ArgsHan
             "that it made"),
     a_explain(&g_explanations, "explain", '\0', "Explain why the resolver made a particular decision. The "
             "argument is a package dependency specification, so --explain dev-libs/boost or --explain qt:3"
-            " or even --explain '*/*' (although --dump is a better way of getting highly noisy debug output)."),
-
-    g_dump_options(this, "Dump Options", "Dump the resolver's state to stdout after completion, or when an "
-            "error occurs. For debugging purposes; produces rather a lot of noise."),
-    a_dump(&g_dump_options, "dump", '\0', "Dump debug output", true),
-    a_dump_dependencies(&g_dump_options, "dump-dependencies", '\0', "If dumping, also dump the "
-            "sanitised dependencies selected for every package" , true)
+            " or even --explain '*/*' (although --dump is a better way of getting highly noisy debug output).")
 {
 }
 

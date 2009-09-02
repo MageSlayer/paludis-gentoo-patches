@@ -58,6 +58,7 @@ Resolution::serialise(Serialiser & s) const
         .member(SerialiserFlags<>(), "constraints", *constraints())
         .member(SerialiserFlags<serialise::might_be_null>(), "decision", decision())
         .member(SerialiserFlags<serialise::might_be_null>(), "destinations", destinations())
+        .member(SerialiserFlags<>(), "qpn_s", qpn_s())
         ;
 }
 
@@ -77,6 +78,7 @@ Resolution::deserialise(Deserialisation & d)
                     value_for<n::constraints>(v.member<std::tr1::shared_ptr<Constraints> >("constraints")),
                     value_for<n::decision>(v.member<std::tr1::shared_ptr<Decision> >("decision")),
                     value_for<n::destinations>(v.member<std::tr1::shared_ptr<Destinations> >("destinations")),
+                    value_for<n::qpn_s>(v.member<QPN_S>("qpn_s")),
                     value_for<n::sanitised_dependencies>(make_null_shared_ptr())
                     )));
 }

@@ -26,6 +26,7 @@
 #include <tr1/functional>
 #include <map>
 
+#include "cmd_display_resolution.hh"
 #include "cmd_help.hh"
 #include "cmd_perform.hh"
 #include "cmd_print_categories.hh"
@@ -72,6 +73,7 @@ namespace
 CommandFactory::CommandFactory() :
     PrivateImplementationPattern<CommandFactory>(new Implementation<CommandFactory>)
 {
+    _imp->handlers.insert(std::make_pair("display-resolution", make_command<DisplayResolutionCommand>));
     _imp->handlers.insert(std::make_pair("help", make_command<HelpCommand>));
     _imp->handlers.insert(std::make_pair("perform", make_command<PerformCommand>));
     _imp->handlers.insert(std::make_pair("print-categories", make_command<PrintCategoriesCommand>));

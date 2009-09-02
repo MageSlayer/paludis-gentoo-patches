@@ -26,6 +26,7 @@
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/resolver/destinations-fwd.hh>
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
+#include <paludis/resolver/qpn_s.hh>
 #include <paludis/util/named_value.hh>
 #include <tr1/memory>
 
@@ -38,6 +39,7 @@ namespace paludis
         struct constraints;
         struct decision;
         struct destinations;
+        struct qpn_s;
         struct sanitised_dependencies;
     }
 
@@ -50,6 +52,7 @@ namespace paludis
             NamedValue<n::constraints, std::tr1::shared_ptr<Constraints> > constraints;
             NamedValue<n::decision, std::tr1::shared_ptr<Decision> > decision;
             NamedValue<n::destinations, std::tr1::shared_ptr<Destinations> > destinations;
+            NamedValue<n::qpn_s, QPN_S> qpn_s;
             NamedValue<n::sanitised_dependencies, std::tr1::shared_ptr<SanitisedDependencies> > sanitised_dependencies;
 
             void serialise(Serialiser &) const;

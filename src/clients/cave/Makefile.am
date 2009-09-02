@@ -16,6 +16,7 @@ bin_PROGRAMS = cave
 noinst_PROGRAMS = man-cave
 
 command_MANS = \
+	cave-display-resolution.1 \
 	cave-help.1 \
 	cave-perform.1 \
 	cave-print-categories.1 \
@@ -77,6 +78,7 @@ libcave_a_SOURCES = \
 	command_line.cc command_line.hh \
 	command_command_line.cc command_command_line.hh \
 	command_factory.cc command_factory.hh \
+	cmd_display_resolution.cc cmd_display_resolution.hh \
 	cmd_help.cc cmd_help.hh \
 	cmd_perform.cc cmd_perform.hh \
 	cmd_print_categories.cc cmd_print_categories.hh \
@@ -95,8 +97,6 @@ libcave_a_SOURCES = \
 	cmd_resolve.cc cmd_resolve.hh \
 	cmd_resolve_cmdline.cc cmd_resolve_cmdline.hh \
 	cmd_resolve_display_callback.cc cmd_resolve_display_callback.hh \
-	cmd_resolve_display_explanations.cc cmd_resolve_display_explanations.hh \
-	cmd_resolve_display_resolution.cc cmd_resolve_display_resolution.hh \
 	cmd_resolve_dump.cc cmd_resolve_dump.hh \
 	cmd_show.cc cmd_show.hh \
 	cmd_sync.cc cmd_sync.hh \

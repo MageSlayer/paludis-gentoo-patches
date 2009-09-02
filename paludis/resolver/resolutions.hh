@@ -25,12 +25,29 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/named_value.hh>
 #include <tr1/memory>
 
 namespace paludis
 {
+    namespace n
+    {
+        struct all;
+        struct ordered;
+    }
+
     namespace resolver
     {
+        struct ResolutionLists
+        {
+            NamedValue<n::all, std::tr1::shared_ptr<Resolutions> > all;
+            NamedValue<n::ordered, std::tr1::shared_ptr<Resolutions> > ordered;
+
+            void serialise(Serialiser &) const;
+            static ResolutionLists deserialise(
+                    Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+
         class PALUDIS_VISIBLE Resolutions :
             private PrivateImplementationPattern<Resolutions>
         {

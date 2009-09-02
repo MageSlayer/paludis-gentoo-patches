@@ -94,6 +94,10 @@ namespace paludis
     //        args::SwitchArg a_interactive_slots;
     //        args::SwitchArg a_interactive_decisions;
     //        args::SwitchArg a_interactive_ordering;
+
+            args::ArgsGroup g_dump_options;
+            args::SwitchArg a_dump;
+            args::SwitchArg a_dump_dependencies;
         };
 
         struct ResolveCommandLineExecutionOptions :
@@ -127,10 +131,6 @@ namespace paludis
 
             args::ArgsGroup g_explanations;
             args::StringSetArg a_explain;
-
-            args::ArgsGroup g_dump_options;
-            args::SwitchArg a_dump;
-            args::SwitchArg a_dump_dependencies;
         };
 
         struct ResolveCommandLineProgramOptions :

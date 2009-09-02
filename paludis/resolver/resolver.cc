@@ -71,12 +71,16 @@ namespace paludis
         const ResolverFunctions fns;
 
         ResolutionsByQPN_SMap resolutions_by_qpn_s;
-        std::tr1::shared_ptr<Resolutions> resolutions;
+
+        std::tr1::shared_ptr<ResolutionLists> resolution_lists;
 
         Implementation(const Environment * const e, const ResolverFunctions & f) :
             env(e),
             fns(f),
-            resolutions(new Resolutions)
+            resolution_lists(new ResolutionLists(make_named_values<ResolutionLists>(
+                            value_for<n::all>(new Resolutions),
+                            value_for<n::ordered>(new Resolutions)
+                            )))
         {
         }
     };
@@ -316,6 +320,7 @@ Resolver::_create_resolution_for_qpn_s(const QPN_S & qpn_s) const
                     value_for<n::constraints>(_initial_constraints_for(qpn_s)),
                     value_for<n::decision>(make_null_shared_ptr()),
                     value_for<n::destinations>(make_null_shared_ptr()),
+                    value_for<n::qpn_s>(qpn_s),
                     value_for<n::sanitised_dependencies>(make_null_shared_ptr())
                     )));
 }
@@ -327,7 +332,11 @@ Resolver::_resolution_for_qpn_s(const QPN_S & qpn_s, const bool create)
     if (_imp->resolutions_by_qpn_s.end() == i)
     {
         if (create)
-            i = _imp->resolutions_by_qpn_s.insert(std::make_pair(qpn_s, _create_resolution_for_qpn_s(qpn_s))).first;
+        {
+            std::tr1::shared_ptr<Resolution> resolution(_create_resolution_for_qpn_s(qpn_s));
+            i = _imp->resolutions_by_qpn_s.insert(std::make_pair(qpn_s, resolution)).first;
+            _imp->resolution_lists->all()->append(resolution);
+        }
         else
             throw InternalError(PALUDIS_HERE, "doesn't exist");
     }
@@ -806,7 +815,7 @@ Resolver::_can_order_now(const QPN_S &, const std::tr1::shared_ptr<const Resolut
 void
 Resolver::_do_order(const QPN_S &, const std::tr1::shared_ptr<Resolution> & resolution)
 {
-    _imp->resolutions->append(resolution);
+    _imp->resolution_lists->ordered()->append(resolution);
     resolution->already_ordered() = true;
 }
 
@@ -1310,10 +1319,10 @@ Resolver::_find_id_for_from(
     return std::make_pair(make_null_shared_ptr(), false);
 }
 
-const std::tr1::shared_ptr<const Resolutions>
-Resolver::resolutions() const
+const std::tr1::shared_ptr<const ResolutionLists>
+Resolver::resolution_lists() const
 {
-    return _imp->resolutions;
+    return _imp->resolution_lists;
 }
 
 template class WrappedForwardIterator<Resolver::ResolutionsByQPN_SConstIteratorTag,

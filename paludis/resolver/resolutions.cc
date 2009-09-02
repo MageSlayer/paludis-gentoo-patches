@@ -24,6 +24,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/make_named_values.hh>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -81,6 +82,25 @@ Resolutions::deserialise(Deserialisation & d)
     for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
         result->append(vv.member<std::tr1::shared_ptr<Resolution> >(stringify(n)));
     return result;
+}
+
+void
+ResolutionLists::serialise(Serialiser & s) const
+{
+    s.object("ResolutionLists")
+        .member(SerialiserFlags<serialise::might_be_null>(), "all", all())
+        .member(SerialiserFlags<serialise::might_be_null>(), "ordered", ordered())
+        ;
+}
+
+ResolutionLists
+ResolutionLists::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "ResolutionLists");
+    return make_named_values<ResolutionLists>(
+            value_for<n::all>(v.member<std::tr1::shared_ptr<Resolutions> >("all")),
+            value_for<n::ordered>(v.member<std::tr1::shared_ptr<Resolutions> >("ordered"))
+            );
 }
 
 template class PrivateImplementationPattern<Resolutions>;

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -47,6 +47,13 @@ int main(int argc, char * argv[])
 
         if (cmdline.begin_parameters() == cmdline.end_parameters())
             throw args::DoHelp();
+
+        std::string cave_var(argv[0]);
+        if (cmdline.a_environment.specified())
+            cave_var = cave_var + " --" + cmdline.a_environment.long_name() + " " + cmdline.a_environment.argument();
+        if (cmdline.a_log_level.specified())
+            cave_var = cave_var + " --" + cmdline.a_log_level.long_name() + " " + cmdline.a_log_level.argument();
+        setenv("CAVE", cave_var.c_str(), 1);
 
         Log::get_instance()->set_program_name(argv[0]);
         Log::get_instance()->set_log_level(cmdline.a_log_level.option());

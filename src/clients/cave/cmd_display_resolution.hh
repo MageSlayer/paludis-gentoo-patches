@@ -17,21 +17,28 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_RESOLVE_DISPLAY_EXPLANATIONS_HH
-#define PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_RESOLVE_DISPLAY_EXPLANATIONS_HH 1
+#ifndef PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_DISPLAY_RESOLUTION_HH
+#define PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_DISPLAY_RESOLUTION_HH 1
 
-#include <paludis/environment-fwd.hh>
-#include <paludis/resolver/resolver-fwd.hh>
-#include "cmd_resolve_cmdline.hh"
+#include "command.hh"
 
 namespace paludis
 {
     namespace cave
     {
-        void display_explanations(
-                const std::tr1::shared_ptr<Environment> & env,
-                const std::tr1::shared_ptr<resolver::Resolver> & resolver,
-                const ResolveCommandLine & cmdline);
+        class PALUDIS_VISIBLE DisplayResolutionCommand :
+            public Command
+        {
+            public:
+                bool important() const;
+
+                int run(
+                        const std::tr1::shared_ptr<Environment> &,
+                        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+                        );
+
+                std::tr1::shared_ptr<args::ArgsHandler> make_doc_cmdline();
+        };
     }
 }
 
