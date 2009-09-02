@@ -278,7 +278,7 @@ PerformCommand::run(
     }
 
     if (2 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
-        throw args::DoHelp("print-categories takes exactly two parameters");
+        throw args::DoHelp("perform takes exactly two parameters");
 
     std::string action(*cmdline.begin_parameters());
 
