@@ -22,6 +22,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/join.hh>
 #include <set>
 #include <vector>
 #include <algorithm>
@@ -94,11 +95,25 @@ SwitchArg::~SwitchArg()
 {
 }
 
+const std::string
+SwitchArg::forwardable_string() const
+{
+    if (specified())
+        return "--" + long_name();
+    else
+        return "";
+}
+
 AliasArg::AliasArg(ArgsOption * const o, const std::string & our_long_name, bool is_hidden) :
     ArgsOption(o->group(), our_long_name, '\0', "Alias for --" + o->long_name()),
     _other(o), _hidden(is_hidden)
 {
     o->group()->section()->handler()->add_option(o, our_long_name);
+}
+
+const std::string
+AliasArg::forwardable_string() const
+{
 }
 
 StringArg::StringArg(ArgsGroup * const g, const std::string & our_long_name,
@@ -114,6 +129,15 @@ StringArg::StringArg(ArgsGroup * const g, const std::string & our_long_name,
     ArgsOption(g, our_long_name, our_short_name, our_description),
     _validator(v)
 {
+}
+
+const std::string
+StringArg::forwardable_string() const
+{
+    if (specified())
+        return "--" + long_name() + " " + argument();
+    else
+        return "";
 }
 
 namespace paludis
@@ -182,6 +206,15 @@ StringSetArg::add_argument(const std::string & arg)
     _imp->args.insert(arg);
 }
 
+const std::string
+StringSetArg::forwardable_string() const
+{
+    if (specified())
+        return "--" + long_name() + " " + join(begin_args(), end_args(), " ");
+    else
+        return "";
+}
+
 namespace paludis
 {
     template<>
@@ -221,10 +254,28 @@ StringSequenceArg::add_argument(const std::string & arg)
     _imp->args.push_back(arg);
 }
 
+const std::string
+StringSequenceArg::forwardable_string() const
+{
+    if (specified())
+        return "--" + long_name() + " " + join(begin_args(), end_args(), " ");
+    else
+        return "";
+}
+
 IntegerArg::IntegerArg(ArgsGroup * const our_group, const std::string & our_long_name,
                 char our_short_name, const std::string & our_description) :
     ArgsOption(our_group, our_long_name, our_short_name, our_description)
 {
+}
+
+const std::string
+IntegerArg::forwardable_string() const
+{
+    if (specified())
+        return "--" + long_name() + " " + stringify(argument());
+    else
+        return "";
 }
 
 namespace paludis
@@ -373,6 +424,15 @@ EnumArg::AllowedArgConstIterator
 EnumArg::end_allowed_args() const
 {
     return AllowedArgConstIterator(_imp->allowed_args.end());
+}
+
+const std::string
+EnumArg::forwardable_string() const
+{
+    if (specified())
+        return "--" + long_name() + " " + argument();
+    else
+        return "";
 }
 
 StringSetArg::~StringSetArg()

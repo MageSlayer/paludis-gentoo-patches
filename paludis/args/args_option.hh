@@ -146,6 +146,16 @@ namespace paludis
                  * Needs to match up with ArgsVisitor logic.
                  */
                 virtual bool can_be_negated() const = 0;
+
+                /**
+                 * Ourself as a forwardable string.
+                 *
+                 * For example, '--foo bar' or '--foo bar --foo baz' or '--foo', or
+                 * if not specified, the empty string.
+                 *
+                 * \since 0.40
+                 */
+                virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
         };
 
         /**
@@ -173,6 +183,8 @@ namespace paludis
                 ~SwitchArg();
 
                 virtual bool can_be_negated() const;
+
+                virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         /**
@@ -213,6 +225,8 @@ namespace paludis
                 void set_argument(const std::string & arg);
 
                 virtual bool can_be_negated() const;
+
+                virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         /**
@@ -315,6 +329,8 @@ namespace paludis
                 ///\}
 
                 virtual bool can_be_negated() const;
+
+                virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         /**
@@ -358,6 +374,8 @@ namespace paludis
                 void add_argument(const std::string & arg);
 
                 virtual bool can_be_negated() const;
+
+                virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
 
@@ -409,6 +427,8 @@ namespace paludis
                 }
 
                 virtual bool can_be_negated() const;
+
+                virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         /**
@@ -440,6 +460,8 @@ namespace paludis
                 void set_argument(const int arg) { _argument = arg; }
 
                 virtual bool can_be_negated() const;
+
+                virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         /**
@@ -567,6 +589,8 @@ namespace paludis
                 ///\}
 
                 virtual bool can_be_negated() const;
+
+                virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }
