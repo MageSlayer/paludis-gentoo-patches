@@ -159,12 +159,12 @@ module Paludis
             keys = { "DESCRIPTION" => 1, "INHERITED" => 1, "KEYWORDS" => 1, "EAPI" => 1, "repository_mask" => 1,
                 "profile_mask" => 1, "DEPEND" => 1, "RDEPEND" => 1, "PDEPEND" => 1, "LICENSE" => 1, "PROVIDE" => 1,
                 "RESTRICT" => 1, "SRC_URI" => 1, "HOMEPAGE" => 1, "EBUILD" => 1, "PROPERTIES" => 1, "IUSE" => 1,
-                "PALUDIS_CHOICES" => 1, "DEFINED_PHASES" => 1, "SLOT" => 1, "STDERR" => 1, }
+                "PALUDIS_CHOICES" => 1, "DEFINED_PHASES" => 1, "SLOT" => 1 }
             pid_testrepo.each_metadata do | key |
-                assert keys.has_key?(key.raw_name), "no key #{key.raw_name}"
+                assert keys.has_key?(key.raw_name), "no key #{key.raw_name} -> #{key.value}"
                 keys.delete key.raw_name
             end
-            assert keys.empty?, "keys is #{keys}"
+            assert keys.empty?, "keys are #{keys.map { | k, v | k + ' -> ' + pid_testrepo[k].value }.join ', '}"
         end
 
         def test_masked?
