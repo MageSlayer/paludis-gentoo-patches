@@ -182,7 +182,8 @@ namespace paludis
                 std::ostream * ds = 0,
                 std::istream * is = 0,
                 int isf = -1,
-                const std::string & isfe = "") :
+                const std::string & isfe = "",
+                const bool ps = false) :
             command(c),
             clearenv(cl),
             setenv_values(s),
@@ -200,7 +201,7 @@ namespace paludis
             input_stream(is),
             input_fd(isf),
             input_fd_env_var(isfe),
-            ptys(false)
+            ptys(ps)
         {
         }
     };
@@ -223,7 +224,7 @@ Command::Command(const Command & other) :
                 other._imp->prefix_discard_blank_output,
                 other._imp->prefix_blank_lines, other._imp->pipe_command_handler, other._imp->captured_stdout_stream,
                 other._imp->captured_stderr_stream, other._imp->input_stream, other._imp->input_fd,
-                other._imp->input_fd_env_var))
+                other._imp->input_fd_env_var, other._imp->ptys))
 {
 }
 
@@ -244,7 +245,8 @@ Command::operator= (const Command & other)
                     other._imp->captured_stderr_stream,
                     other._imp->input_stream,
                     other._imp->input_fd,
-                    other._imp->input_fd_env_var));
+                    other._imp->input_fd_env_var,
+                    other._imp->ptys));
         if (other.uid() && other.gid())
             with_uid_gid(*other.uid(), *other.gid());
     }
