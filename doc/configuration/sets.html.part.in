@@ -26,6 +26,9 @@
     <dd>The set of insecure packages (mostly for internal use).</dd>
 </dl>
 
+<p>Some sets, such as <code>system</code>, are made by combining sets from multiple repositories. For these sets, the
+parts of the set defined by each individual repository can be accessed using <code>setname::reponame</code>.</p>
+
 <h2>User Defined Sets</h2>
 
 ###PALUDISENVIRONMENTONLY###
