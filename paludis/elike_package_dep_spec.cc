@@ -28,6 +28,7 @@
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/version_requirements.hh>
+#include <paludis/user_dep_spec.hh>
 #include <strings.h>
 
 using namespace paludis;
@@ -182,6 +183,22 @@ paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, Partial
                 }
             }
             break;
+
+        case '.':
+            {
+                if (! options[epdso_allow_key_requirements])
+                {
+                    if (options[epdso_strict_parsing])
+                        throw PackageDepSpecError("Key requirements not safe for use here");
+                    else
+                        Log::get_instance()->message("e.package_dep_spec.key_not_allowed", ll_warning, lc_context)
+                            << "Key requirements not safe for use here";
+                }
+                std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req(new UserKeyRequirement(flag.substr(1)));
+                result.additional_requirement(req);
+            }
+            break;
+
 
         default:
             if (! options[epdso_allow_use_deps] && ! options[epdso_allow_use_deps_portage])

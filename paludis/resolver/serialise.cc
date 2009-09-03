@@ -351,7 +351,7 @@ DeserialisatorHandler<std::tr1::shared_ptr<const PackageID> >::handle(Deserialis
                         ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps + epdso_nice_equal_star +
                         epdso_allow_ranged_deps + epdso_allow_use_deps + epdso_allow_use_deps_portage +
                         epdso_allow_use_dep_defaults + epdso_allow_repository_deps + epdso_allow_slot_star_deps +
-                        epdso_allow_slot_equal_deps + epdso_allow_slot_deps,
+                        epdso_allow_slot_equal_deps + epdso_allow_slot_deps + epdso_allow_key_requirements,
                         VersionSpecOptions() + vso_flexible_dashes + vso_flexible_dots + vso_ignore_case +
                         vso_letters_anywhere + vso_dotted_suffixes,
                         make_null_shared_ptr()), MatchPackageOptions()))]->begin();
