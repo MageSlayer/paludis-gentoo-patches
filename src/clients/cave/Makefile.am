@@ -79,6 +79,7 @@ libcave_a_SOURCES = \
 	command_command_line.cc command_command_line.hh \
 	command_factory.cc command_factory.hh \
 	cmd_display_resolution.cc cmd_display_resolution.hh \
+	cmd_execute_resolution.cc cmd_execute_resolution.hh \
 	cmd_help.cc cmd_help.hh \
 	cmd_perform.cc cmd_perform.hh \
 	cmd_print_categories.cc cmd_print_categories.hh \
