@@ -4,6 +4,18 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.40.0:
+    * Notifier callbacks allow clients to tell the user what's going on when
+      generating metadata, performing resolutions etc.
+
+    * Sets now work slightly differently. For sets defined by multiple
+      repositories (e.g. 'system'), 'setname::repo' can be used to access the
+      part of the set defined by a given repository.
+
+    * Bugfix: Upgrading an unpackaged package no longer errors out.
+
+    * Bugfix: Combining :slot and ::/path restrictions now works correctly.
+
 0.38.2:
     * Failures installing qt-core on Gentoo have been fixed.
 
