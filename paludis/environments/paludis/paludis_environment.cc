@@ -518,7 +518,7 @@ namespace
                     value_for<n::file_name>(f),
                     value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec,
                             std::tr1::placeholders::_1, env, UserPackageDepSpecOptions() + updso_allow_wildcards,
-                            filter::All(), make_null_shared_ptr())),
+                            filter::All())),
                     value_for<n::set_operator_mode>(mode),
                     value_for<n::tag>(tag),
                     value_for<n::type>(type)

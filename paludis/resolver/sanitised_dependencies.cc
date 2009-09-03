@@ -31,7 +31,7 @@
 #include <paludis/slot_requirement.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
-#include <paludis/user_dep_spec.hh>
+#include <paludis/elike_package_dep_spec.hh>
 #include <set>
 #include <list>
 
@@ -431,20 +431,32 @@ PackageOrBlockDepSpec::serialise(Serialiser & s) const
 PackageOrBlockDepSpec
 PackageOrBlockDepSpec::deserialise(Deserialisation & d, const std::tr1::shared_ptr<const PackageID> & for_id)
 {
+    Context context("When deserialising '" + d.raw_string() + "':");
+
     Deserialisator v(d, "PackageOrBlockDepSpec");
 
     std::string if_block(v.member<std::string>("if_block"));
     std::string if_package(v.member<std::string>("if_package"));
 
     if (if_block == "null")
-        return PackageOrBlockDepSpec(parse_user_package_dep_spec(if_package,
-                    d.deserialiser().environment(), UserPackageDepSpecOptions() + updso_serialised,
-                    filter::All(), for_id));
+        return PackageOrBlockDepSpec(parse_elike_package_dep_spec(if_package,
+                    ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps + epdso_nice_equal_star +
+                    epdso_allow_ranged_deps + epdso_allow_use_deps + epdso_allow_use_deps_portage +
+                    epdso_allow_use_dep_defaults + epdso_allow_repository_deps + epdso_allow_slot_star_deps +
+                    epdso_allow_slot_equal_deps + epdso_allow_slot_deps,
+                    VersionSpecOptions() + vso_flexible_dashes + vso_flexible_dots + vso_ignore_case +
+                    vso_letters_anywhere + vso_dotted_suffixes,
+                    for_id));
     else
         return PackageOrBlockDepSpec(BlockDepSpec(make_shared_ptr(new PackageDepSpec(
-                            parse_user_package_dep_spec(if_block.substr(if_block.find_first_not_of("!")),
-                                d.deserialiser().environment(), UserPackageDepSpecOptions() + updso_serialised,
-                                filter::All(), for_id))), if_block));
+                            parse_elike_package_dep_spec(if_block.substr(if_block.find_first_not_of("!")),
+                                ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps + epdso_nice_equal_star +
+                                epdso_allow_ranged_deps + epdso_allow_use_deps + epdso_allow_use_deps_portage +
+                                epdso_allow_use_dep_defaults + epdso_allow_repository_deps + epdso_allow_slot_star_deps +
+                                epdso_allow_slot_equal_deps + epdso_allow_slot_deps,
+                                VersionSpecOptions() + vso_flexible_dashes + vso_flexible_dots + vso_ignore_case +
+                                vso_letters_anywhere + vso_dotted_suffixes,
+                                for_id)))));
 }
 
 void
@@ -458,6 +470,8 @@ SanitisedDependency::serialise(Serialiser & s) const
 SanitisedDependency
 SanitisedDependency::deserialise(Deserialisation & d, const std::tr1::shared_ptr<const PackageID> & from_id)
 {
+    Context context("When deserialising '" + d.raw_string() + "':");
+
     Deserialisator v(d, "SanitisedDependency");
 
     return make_named_values<SanitisedDependency>(

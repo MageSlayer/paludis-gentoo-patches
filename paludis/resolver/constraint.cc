@@ -180,6 +180,8 @@ namespace
 const std::tr1::shared_ptr<Constraint>
 Constraint::deserialise(Deserialisation & d)
 {
+    Context context("When deserialising '" + d.raw_string() + "':");
+
     Deserialisator v(d, "Constraint");
 
     const std::tr1::shared_ptr<Reason> reason(v.member<std::tr1::shared_ptr<Reason> >("reason"));

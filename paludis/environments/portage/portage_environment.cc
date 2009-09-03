@@ -920,8 +920,7 @@ PortageEnvironment::_add_string_to_world(const std::string & s) const
     SetFile world(make_named_values<SetFileParams>(
                 value_for<n::environment>(this),
                 value_for<n::file_name>(_imp->world_file),
-                value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, this,
-                        UserPackageDepSpecOptions() + updso_no_disambiguation, filter::All(), make_null_shared_ptr())),
+                value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, this, UserPackageDepSpecOptions() + updso_no_disambiguation, filter::All())),
                 value_for<n::set_operator_mode>(sfsmo_natural),
                 value_for<n::tag>(std::tr1::shared_ptr<DepTag>()),
                 value_for<n::type>(sft_simple)
@@ -945,7 +944,7 @@ PortageEnvironment::_remove_string_from_world(const std::string & s) const
                 value_for<n::environment>(this),
                 value_for<n::file_name>(_imp->world_file),
                 value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, this,
-                        UserPackageDepSpecOptions() + updso_no_disambiguation, filter::All(), make_null_shared_ptr())),
+                        UserPackageDepSpecOptions() + updso_no_disambiguation, filter::All())),
                 value_for<n::set_operator_mode>(sfsmo_natural),
                 value_for<n::tag>(std::tr1::shared_ptr<DepTag>()),
                 value_for<n::type>(sft_simple)
@@ -999,8 +998,7 @@ namespace
                     value_for<n::environment>(env),
                     value_for<n::file_name>(f),
                     value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, std::tr1::placeholders::_1,
-                            env, UserPackageDepSpecOptions() + updso_no_disambiguation, filter::All(),
-                            make_null_shared_ptr())),
+                            env, UserPackageDepSpecOptions() + updso_no_disambiguation, filter::All())),
                     value_for<n::set_operator_mode>(sfsmo_natural),
                     value_for<n::tag>(tag),
                     value_for<n::type>(sft_simple)

@@ -28,7 +28,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
-#include <paludis/user_dep_spec.hh>
+#include <paludis/elike_package_dep_spec.hh>
 #include <paludis/selection.hh>
 #include <paludis/filter.hh>
 #include <paludis/generator.hh>
@@ -144,6 +144,7 @@ namespace paludis
 
         std::string class_name;
         std::string string_value;
+        std::string raw_string;
         bool null;
         std::list<std::tr1::shared_ptr<Deserialisation> > children;
 
@@ -192,6 +193,8 @@ Deserialiser::environment() const
 Deserialisation::Deserialisation(const std::string & i, Deserialiser & d) :
     PrivateImplementationPattern<Deserialisation>(new Implementation<Deserialisation>(d, i))
 {
+    std::string::size_type before_p(d.parser().offset());
+
     if (d.parser().consume(simple_parser::exact("null;")))
         _imp->null = true;
     else if (d.parser().consume(simple_parser::exact("\"")))
@@ -244,6 +247,9 @@ Deserialisation::Deserialisation(const std::string & i, Deserialiser & d) :
     else
         throw InternalError(PALUDIS_HERE, "can't parse keys, remaining text is '"
                 + d.parser().text().substr(d.parser().offset()));
+
+    std::string::size_type after_p(d.parser().offset());
+    _imp->raw_string = d.parser().text().substr(before_p, after_p - before_p);
 }
 
 Deserialisation::~Deserialisation()
@@ -260,6 +266,12 @@ const std::string
 Deserialisation::class_name() const
 {
     return _imp->class_name;
+}
+
+const std::string
+Deserialisation::raw_string() const
+{
+    return _imp->raw_string;
 }
 
 bool
@@ -328,10 +340,21 @@ Deserialisator::find_remove_member(const std::string & s)
 std::tr1::shared_ptr<const PackageID>
 DeserialisatorHandler<std::tr1::shared_ptr<const PackageID> >::handle(Deserialisation & v)
 {
+    Context context("When deserialising '" + v.raw_string() + "':");
+
+    if (v.null())
+        return make_null_shared_ptr();
+
     return *(*v.deserialiser().environment())[
         selection::RequireExactlyOne(generator::Matches(
-                    parse_user_package_dep_spec(v.string_value(), v.deserialiser().environment(),
-                        UserPackageDepSpecOptions() + updso_serialised), MatchPackageOptions()))]->begin();
+                    parse_elike_package_dep_spec(v.string_value(),
+                        ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps + epdso_nice_equal_star +
+                        epdso_allow_ranged_deps + epdso_allow_use_deps + epdso_allow_use_deps_portage +
+                        epdso_allow_use_dep_defaults + epdso_allow_repository_deps + epdso_allow_slot_star_deps +
+                        epdso_allow_slot_equal_deps + epdso_allow_slot_deps,
+                        VersionSpecOptions() + vso_flexible_dashes + vso_flexible_dots + vso_ignore_case +
+                        vso_letters_anywhere + vso_dotted_suffixes,
+                        make_null_shared_ptr()), MatchPackageOptions()))]->begin();
 }
 
 template class PrivateImplementationPattern<Deserialiser>;

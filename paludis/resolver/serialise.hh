@@ -102,7 +102,9 @@ namespace paludis
             private PrivateImplementationPattern<Deserialisation>
         {
             public:
-                Deserialisation(const std::string &, Deserialiser &);
+                Deserialisation(
+                        const std::string & class_name,
+                        Deserialiser &);
                 ~Deserialisation();
 
                 const Deserialiser & deserialiser() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -110,6 +112,8 @@ namespace paludis
                 const std::string item_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::string class_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const std::string raw_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::string string_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

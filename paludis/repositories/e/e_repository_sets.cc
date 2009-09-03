@@ -121,8 +121,7 @@ ERepositorySets::package_set(const SetName & ss) const
         SetFile f(make_named_values<SetFileParams>(
                     value_for<n::environment>(_imp->environment),
                     value_for<n::file_name>(ff),
-                    value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->environment,
-                            UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All(), make_null_shared_ptr())),
+                    value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->environment, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All())),
                     value_for<n::set_operator_mode>(s.second),
                     value_for<n::tag>(tag),
                     value_for<n::type>(sft_paludis_conf)
