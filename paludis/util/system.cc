@@ -367,7 +367,7 @@ Command::with_sydbox()
             Log::get_instance()->message("util.system.sandbox_in_sandbox", ll_warning, lc_no_context)
                 << "Already inside sydbox, not spawning another sydbox instance";
         else
-            _imp->command = "sydbox -- " + _imp->command;
+            _imp->command = "sydbox --profile paludis -- " + _imp->command;
     }
 
     return *this;
