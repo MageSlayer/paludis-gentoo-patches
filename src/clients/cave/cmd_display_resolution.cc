@@ -32,6 +32,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/set.hh>
 #include <paludis/resolver/resolutions.hh>
 #include <paludis/resolver/serialise.hh>
 #include <paludis/resolver/reason.hh>
@@ -48,6 +49,7 @@
 #include <paludis/choice.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/match_package.hh>
+#include <paludis/repository.hh>
 
 #include <set>
 #include <iterator>
@@ -181,10 +183,48 @@ namespace
                 if (! (*c)->destinations()->slash()->replacing()->empty())
                 {
                     cout << " replacing";
+                    bool first(true);
                     for (PackageIDSequence::ConstIterator x((*c)->destinations()->slash()->replacing()->begin()),
                             x_end((*c)->destinations()->slash()->replacing()->end()) ;
                             x != x_end ; ++x)
-                        cout << " " << (*x)->canonical_form(idcf_version);
+                    {
+                        bool different(false);
+                        std::string old_from;
+                        if ((*x)->from_repositories_key())
+                        {
+                            for (Set<std::string>::ConstIterator k((*x)->from_repositories_key()->value()->begin()),
+                                    k_end((*x)->from_repositories_key()->value()->end()) ;
+                                    k != k_end ; ++k)
+                            {
+                                if (stringify(id->repository()->name()) != *k)
+                                {
+                                    if (id->from_repositories_key() && (id->from_repositories_key()->value()->end() !=
+                                                id->from_repositories_key()->value()->find(*k)))
+                                    {
+                                    }
+                                    else
+                                        different = true;
+                                }
+
+                                if (old_from.empty())
+                                    old_from = " from ::";
+                                else
+                                    old_from.append(", ::");
+
+                                old_from.append(*k);
+                            }
+                        }
+
+                        if (! first)
+                            cout << ", ";
+                        else
+                            cout << " ";
+                        first = false;
+
+                        cout << (*x)->canonical_form(idcf_version);
+                        if (different)
+                            cout << old_from;
+                    }
                 }
             }
 
