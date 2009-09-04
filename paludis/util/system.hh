@@ -350,6 +350,18 @@ namespace paludis
         PALUDIS_ATTRIBUTE((warn_unused_result));
 
     /**
+     * Become another command.
+     *
+     * Actions that change the initial state (uid / gid, env) work, as do input
+     * streams, but output redirection does not. Pipe commands don't work, but
+     * could be made to.
+     *
+     * \ingroup g_system
+     * \since 0.40.1
+     */
+    void become_command(const Command & cmd) PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((noreturn));
+
+    /**
      * Set the stderr and close for stdout fds used by run_command and
      * run_command_in_directory.
      *

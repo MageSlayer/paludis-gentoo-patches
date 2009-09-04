@@ -90,8 +90,12 @@ TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	bash $(top_srcdir)/test/run_test.sh
 
-check_PROGRAMS = $(TESTS)
+check_PROGRAMS = $(TESTS) system_TEST_become_child
 check_SCRIPTS = testscriptlist
+
+system_TEST_become_child_SOURCES = system_TEST_become_child.cc
+system_TEST_become_child_LDADD = \
+	libpaludisutil_@PALUDIS_PC_SLOT@.la
 
 lib_LTLIBRARIES = libpaludisutil_@PALUDIS_PC_SLOT@.la
 

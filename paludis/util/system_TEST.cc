@@ -350,5 +350,22 @@ namespace test_cases
             TEST_CHECK(! std::getline(os, line));
         }
     } test_input;
+
+    struct BecomeChildCommandTest : TestCase
+    {
+        BecomeChildCommandTest() : TestCase("become child") { }
+
+        void run()
+        {
+            std::stringstream os;
+            Command cmd("./system_TEST_become_child");
+            cmd
+                .with_captured_stdout_stream(&os)
+                ;
+
+            TEST_CHECK_EQUAL(123, run_command(cmd));
+            TEST_CHECK_EQUAL(os.str(), "giant space monkey");
+        }
+    } test_become_child;
 }
 

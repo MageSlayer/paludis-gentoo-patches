@@ -41,6 +41,7 @@
 #include <grp.h>
 #include <pwd.h>
 #include <signal.h>
+#include <fcntl.h>
 #include <map>
 #include <iostream>
 #include <cstring>
@@ -391,6 +392,86 @@ namespace
     {
         std::cerr << "Caught signal " << sig << " in run_command child process" << std::endl;
     }
+
+    std::string build_extras(const Command & cmd)
+    {
+        std::string extras;
+
+        if (! cmd.chdir().empty())
+            extras.append(" [chdir " + cmd.chdir() + "]");
+
+        if (cmd.clearenv())
+            extras.append(" [clearenv]");
+
+        for (Command::ConstIterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
+            extras.append(" [setenv " + s->first + "=" + s->second + "]");
+
+        if (cmd.gid() && *cmd.gid() != getgid())
+            extras.append(" [setgid " + stringify(*cmd.gid()) + "]");
+
+        if (cmd.uid() && *cmd.uid() != getuid())
+            extras.append(" [setuid " + stringify(*cmd.uid()) + "]");
+
+        return extras;
+    }
+
+    void do_chdir(const Command & cmd)
+    {
+        if (! cmd.chdir().empty())
+            if (-1 == chdir(stringify(cmd.chdir()).c_str()))
+                throw RunCommandError("chdir failed: " + stringify(strerror(errno)));
+    }
+
+    void do_env(const Command & cmd)
+    {
+        if (cmd.clearenv())
+        {
+            std::map<std::string, std::string> setenvs;
+            for (const char * const * it(environ); 0 != *it; ++it)
+            {
+                std::string var(*it);
+                if (std::string::npos != var.find('=') &&
+                    ("PALUDIS_" == var.substr(0, 8) ||
+                     "PATH=" == var.substr(0, 5) ||
+                     "HOME=" == var.substr(0, 5) ||
+                     "LD_LIBRARY_PATH=" == var.substr(0, 16)))
+                    setenvs.insert(std::make_pair(var.substr(0, var.find('=')), var.substr(var.find('=') + 1)));
+            }
+            clearenv();
+            for (std::map<std::string, std::string>::const_iterator it(setenvs.begin()),
+                     it_end(setenvs.end()); it_end != it; ++it)
+                setenv(it->first.c_str(), it->second.c_str(), 1);
+        }
+
+        for (Command::ConstIterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
+            setenv(s->first.c_str(), s->second.c_str(), 1);
+
+        /* This is what happens when people are allowed to play with
+         * things they don't understand. Yay Gentoo! */
+        setenv("PACKAGE_MANAGER", "paludis", 1);
+        setenv("ESELECT_PACKAGE_MANAGER", "paludis", 1);
+    }
+
+    void do_uid_gid(const Command & cmd)
+    {
+        std::string command(cmd.command());
+
+        if (cmd.gid() && *cmd.gid() != getgid())
+        {
+            gid_t g(*cmd.gid());
+
+            if (0 != ::setgid(*cmd.gid()))
+                std::cerr << "setgid(" << *cmd.uid() << ") failed for exec of '" << command << "': "
+                    << strerror(errno) << std::endl;
+            else if (0 != ::setgroups(1, &g))
+                std::cerr << "setgroups failed for exec of '" << command << "': " << strerror(errno) << std::endl;
+        }
+
+        if (cmd.uid() && *cmd.uid() != getuid())
+            if (0 != ::setuid(*cmd.uid()))
+                std::cerr << "setuid(" << *cmd.uid() << ") failed for exec of '" << command << "': "
+                    << strerror(errno) << std::endl;
+    }
 }
 
 int
@@ -398,23 +479,7 @@ paludis::run_command(const Command & cmd)
 {
     Context context("When running command '" + stringify(cmd.command()) + "':");
 
-    std::string extras;
-
-    if (! cmd.chdir().empty())
-        extras.append(" [chdir " + cmd.chdir() + "]");
-
-    if (cmd.clearenv())
-        extras.append(" [clearenv]");
-
-    for (Command::ConstIterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
-        extras.append(" [setenv " + s->first + "=" + s->second + "]");
-
-    if (cmd.gid() && *cmd.gid() != getgid())
-        extras.append(" [setgid " + stringify(*cmd.gid()) + "]");
-
-    if (cmd.uid() && *cmd.uid() != getuid())
-        extras.append(" [setuid " + stringify(*cmd.uid()) + "]");
-
+    std::string extras(build_extras(cmd));
     std::string command(cmd.command());
 
     if ((! cmd.stdout_prefix().empty()) || (! cmd.stderr_prefix().empty()))
@@ -441,7 +506,16 @@ paludis::run_command(const Command & cmd)
     if (cmd.captured_stderr_stream())
         captured_stderr.reset(cmd.ptys() ? static_cast<Channel *>(new Pty) : new Pipe);
     if (cmd.input_stream())
+    {
         input_stream.reset(new Pipe);
+        int arg(fcntl(input_stream->write_fd(), F_GETFL, NULL));
+        if (-1 == arg)
+            throw RunCommandError("fcntl F_GETFL failed: " + stringify(strerror(errno)));
+        arg |= O_NONBLOCK;
+        if (-1 == fcntl(input_stream->write_fd(), F_SETFL, arg))
+            throw RunCommandError("fcntl F_SETFL failed: " + stringify(strerror(errno)));
+    }
+
 
     /* Why do we fork twice, rather than install a SIGCHLD handler that writes to a pipe that
      * our pselect watches? Simple: Unix is retarded. APUE 12.8 says "Each thread has its own signal
@@ -507,42 +581,14 @@ paludis::run_command(const Command & cmd)
                 close(internal_command_reader->write_fd());
                 internal_command_reader->clear_write_fd();
 
-                if (! cmd.chdir().empty())
-                    if (-1 == chdir(stringify(cmd.chdir()).c_str()))
-                        throw RunCommandError("chdir failed: " + stringify(strerror(errno)));
-
-                if (cmd.clearenv())
-                {
-                    std::map<std::string, std::string> setenvs;
-                    for (const char * const * it(environ); 0 != *it; ++it)
-                    {
-                        std::string var(*it);
-                        if (std::string::npos != var.find('=') &&
-                            ("PALUDIS_" == var.substr(0, 8) ||
-                             "PATH=" == var.substr(0, 5) ||
-                             "HOME=" == var.substr(0, 5) ||
-                             "LD_LIBRARY_PATH=" == var.substr(0, 16)))
-                            setenvs.insert(std::make_pair(var.substr(0, var.find('=')), var.substr(var.find('=') + 1)));
-                    }
-                    clearenv();
-                    for (std::map<std::string, std::string>::const_iterator it(setenvs.begin()),
-                             it_end(setenvs.end()); it_end != it; ++it)
-                        setenv(it->first.c_str(), it->second.c_str(), 1);
-                }
-
-                for (Command::ConstIterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
-                    setenv(s->first.c_str(), s->second.c_str(), 1);
+                do_chdir(cmd);
+                do_env(cmd);
 
                 if (cmd.pipe_command_handler())
                 {
                     setenv("PALUDIS_PIPE_COMMAND_WRITE_FD", stringify(pipe_command_reader->write_fd()).c_str(), 1);
                     setenv("PALUDIS_PIPE_COMMAND_READ_FD", stringify(pipe_command_response->read_fd()).c_str(), 1);
                 }
-
-                /* This is what happens when people are allowed to play with
-                 * things they don't understand. Yay Gentoo! */
-                setenv("PACKAGE_MANAGER", "paludis", 1);
-                setenv("ESELECT_PACKAGE_MANAGER", "paludis", 1);
 
                 if (cmd.captured_stdout_stream())
                 {
@@ -588,21 +634,7 @@ paludis::run_command(const Command & cmd)
                         setenv(cmd.input_fd_env_var().c_str(), stringify(cmd_input_fd).c_str(), 1);
                 }
 
-                if (cmd.gid() && *cmd.gid() != getgid())
-                {
-                    gid_t g(*cmd.gid());
-
-                    if (0 != ::setgid(*cmd.gid()))
-                        std::cerr << "setgid(" << *cmd.uid() << ") failed for exec of '" << command << "': "
-                            << strerror(errno) << std::endl;
-                    else if (0 != ::setgroups(1, &g))
-                        std::cerr << "setgroups failed for exec of '" << command << "': " << strerror(errno) << std::endl;
-                }
-
-                if (cmd.uid() && *cmd.uid() != getuid())
-                    if (0 != ::setuid(*cmd.uid()))
-                        std::cerr << "setuid(" << *cmd.uid() << ") failed for exec of '" << command << "': "
-                            << strerror(errno) << std::endl;
+                do_uid_gid(cmd);
 
                 execl("/bin/sh", "sh", "-c", command.c_str(), static_cast<char *>(0));
                 throw RunCommandError("execl /bin/sh -c '" + command + "' failed:"
@@ -861,13 +893,13 @@ paludis::run_command(const Command & cmd)
                         if (cmd.input_stream()->get(c).good())
                         {
                             int w(write(input_stream->write_fd(), &c, 1));
-                            if (-1 == w)
-                                throw RunCommandError("write failed: " + stringify(strerror(errno)));
-                            else if (0 == w)
+                            if (0 == w || (-1 == w && (errno == EAGAIN || errno == EWOULDBLOCK)))
                             {
                                 cmd.input_stream()->unget();
                                 break;
                             }
+                            else if (-1 == w)
+                                throw RunCommandError("write failed: " + stringify(strerror(errno)));
                         }
                         else
                             eof = true;
@@ -945,6 +977,164 @@ paludis::run_command(const Command & cmd)
                 else
                     throw InternalError(PALUDIS_HERE, "unknown op '" + op + "' on internal_command_buffer");
             }
+        }
+    }
+
+    throw InternalError(PALUDIS_HERE, "should never be reached");
+}
+
+void
+paludis::become_command(const Command & cmd)
+{
+    Context context("When becoming command '" + stringify(cmd.command()) + "':");
+
+    std::string extras(build_extras(cmd));
+    std::string command(cmd.command());
+
+    cmd.echo_to_stderr();
+    Log::get_instance()->message("util.system.execl_parent", ll_debug, lc_no_context) << "execl /bin/sh -c " << command
+        << " " << extras;
+
+    /* The double fork with the ignoring CLD in the middle may or may not be
+     * necessary, and it probably isn't, but POSIX appears to suggest that
+     * doing this will guarantee that the feeding process won't be a zombie,
+     * whereas it doesn't if we don't. Unless it doesn't. */
+
+    /* Temporarily disable SIGINT and SIGTERM to this thread, so that we can set up signal
+     * handlers. */
+    sigset_t intandterm;
+    sigemptyset(&intandterm);
+    sigaddset(&intandterm, SIGINT);
+    sigaddset(&intandterm, SIGTERM);
+    if (0 != pthread_sigmask(SIG_BLOCK, &intandterm, 0))
+        throw InternalError(PALUDIS_HERE, "pthread_sigmask failed");
+
+    std::tr1::shared_ptr<Pipe> input_stream;
+    if (cmd.input_stream())
+    {
+        input_stream.reset(new Pipe);
+
+        int cmd_input_fd;
+
+        if (-1 == cmd.input_fd())
+            cmd_input_fd = dup(input_stream->read_fd());
+        else
+            cmd_input_fd = dup2(input_stream->read_fd(), cmd.input_fd());
+
+        if (-1 == cmd_input_fd)
+            throw RunCommandError("input dup2 failed: " + stringify(strerror(errno)));
+
+        if (! cmd.input_fd_env_var().empty())
+            setenv(cmd.input_fd_env_var().c_str(), stringify(cmd_input_fd).c_str(), 1);
+    }
+
+    pid_t child(fork());
+    if (0 == child)
+    {
+        if (cmd.input_stream())
+        {
+            close(input_stream->read_fd());
+            input_stream->clear_read_fd();
+        }
+
+        /* Ignore CLD. POSIX may or may not say that if we do this, our child will
+         * not become a zombie. */
+
+        pid_t child_child(fork());
+        if (0 == child_child)
+        {
+            /* Restore SIGINT and SIGTERM handling */
+            if (0 != pthread_sigmask(SIG_UNBLOCK, &intandterm, 0))
+                throw InternalError(PALUDIS_HERE, "pthread_sigmask failed");
+
+            /* Feed in any input things */
+            if (cmd.input_stream())
+            {
+                while (true)
+                {
+                    char c;
+                    if (cmd.input_stream()->get(c).good())
+                    {
+                        int w(write(input_stream->write_fd(), &c, 1));
+                        if (w != 1)
+                            throw RunCommandError("write failed: " + stringify(strerror(errno)));
+                    }
+                    else
+                        break;
+                }
+
+                if (0 != close(input_stream->write_fd()))
+                    throw RunCommandError("close failed: " + stringify(strerror(errno)));
+                input_stream->clear_write_fd();
+            }
+
+            /* we're done */
+            _exit(0);
+        }
+        else
+        {
+            _exit(0);
+        }
+    }
+    else if (-1 == child)
+        throw RunCommandError("fork failed: " + stringify(strerror(errno)));
+    else
+    {
+        /* Our original pid, which gets exec()ed */
+
+        if (cmd.input_stream())
+        {
+            close(input_stream->write_fd());
+            input_stream->clear_write_fd();
+        }
+
+        /* clear any SIGINT or SIGTERM handlers we inherit, and unblock signals */
+        struct sigaction act;
+        act.sa_handler = SIG_DFL;
+        act.sa_flags = 0;
+        sigaction(SIGINT,  &act, 0);
+        sigaction(SIGTERM, &act, 0);
+        if (0 != pthread_sigmask(SIG_UNBLOCK, &intandterm, 0))
+            std::cerr << "pthread_sigmask failed: " + stringify(strerror(errno)) + "'" << std::endl;
+
+        /* wait until the child is done */
+        while (true)
+        {
+            int status(-1);
+            if (-1 == waitpid(child, &status, 0))
+            {
+                if (errno == EINTR)
+                    std::cerr << "wait failed: '" + stringify(strerror(errno)) + "', trying once more" << std::endl;
+                else
+                {
+                    std::cerr << "wait failed: '" + stringify(strerror(errno)) + "'" << std::endl;
+                    break;
+                }
+            }
+            else
+                break;
+        }
+
+        try
+        {
+            do_chdir(cmd);
+            do_env(cmd);
+            do_uid_gid(cmd);
+
+            execl("/bin/sh", "sh", "-c", command.c_str(), static_cast<char *>(0));
+            throw RunCommandError("execl /bin/sh -c '" + command + "' failed:"
+                    + stringify(strerror(errno)));
+        }
+        catch (const Exception & e)
+        {
+            std::cerr << "exec of '" << command << "' failed due to exception '" << e.message()
+                << "' (" << e.what() << ")" << std::endl;
+            std::exit(123);
+        }
+        catch (...)
+        {
+            std::cerr << "exec of '" << command << "' failed due to unknown exception" << std::endl;
+            std::exit(124);
         }
     }
 
