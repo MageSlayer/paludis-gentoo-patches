@@ -17,6 +17,7 @@ noinst_PROGRAMS = man-cave
 
 command_MANS = \
 	cave-display-resolution.1 \
+	cave-execute-resolution.1 \
 	cave-help.1 \
 	cave-perform.1 \
 	cave-print-categories.1 \
