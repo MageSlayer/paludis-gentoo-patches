@@ -1039,6 +1039,10 @@ paludis::become_command(const Command & cmd)
 
         /* Ignore CLD. POSIX may or may not say that if we do this, our child will
          * not become a zombie. */
+        struct sigaction act;
+        act.sa_handler = SIG_IGN;
+        act.sa_flags = 0;
+        sigaction(SIGTERM, &act, 0);
 
         pid_t child_child(fork());
         if (0 == child_child)
