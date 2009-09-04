@@ -541,6 +541,53 @@ namespace
 
         return run_command(cmd);
     }
+
+    void perform_resolution(
+            const std::tr1::shared_ptr<Environment> &,
+            const ResolutionLists & resolution_lists,
+            const ResolveCommandLine & cmdline) PALUDIS_ATTRIBUTE((noreturn));
+
+    void perform_resolution(
+            const std::tr1::shared_ptr<Environment> &,
+            const ResolutionLists & resolution_lists,
+            const ResolveCommandLine & cmdline)
+    {
+        Context context("When performing chosen resolution:");
+
+        std::stringstream ser_stream;
+        Serialiser ser(ser_stream);
+        resolution_lists.serialise(ser);
+
+        std::string command(cmdline.program_options.a_execute_resolution_program.argument());
+        if (command.empty())
+            command = "$CAVE execute-resolution";
+
+        for (args::ArgsSection::GroupsConstIterator g(cmdline.execution_options.begin()),
+                g_end(cmdline.execution_options.end()) ;
+                g != g_end ; ++g)
+        {
+            for (args::ArgsGroup::ConstIterator o(g->begin()), o_end(g->end()) ;
+                    o != o_end ; ++o)
+                if ((*o)->specified())
+                    command = command + " " + (*o)->forwardable_string();
+        }
+
+        for (args::ArgsSection::GroupsConstIterator g(cmdline.program_options.begin()),
+                g_end(cmdline.program_options.end()) ;
+                g != g_end ; ++g)
+        {
+            for (args::ArgsGroup::ConstIterator o(g->begin()), o_end(g->end()) ;
+                    o != o_end ; ++o)
+                if ((*o)->specified())
+                    command = command + " " + (*o)->forwardable_string();
+        }
+
+        paludis::Command cmd(command);
+        cmd
+            .with_input_stream(&ser_stream, -1, "PALUDIS_SERIALISED_RESOLUTION_FD");
+
+        become_command(cmd);
+    }
 }
 
 
@@ -651,6 +698,8 @@ ResolveCommand::run(
         }
 
         retcode |= display_resolution(env, *resolver->resolution_lists(), cmdline);
+        if (0 == retcode && cmdline.resolution_options.a_execute.specified())
+            perform_resolution(env, *resolver->resolution_lists(), cmdline);
     }
     catch (...)
     {

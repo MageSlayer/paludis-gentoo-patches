@@ -31,8 +31,8 @@ namespace paludis
         {
             ResolveCommandLineResolutionOptions(args::ArgsHandler * const);
 
-    //        args::ArgsGroup g_execution_options;
-    //        args::SwitchArg a_execute;
+            args::ArgsGroup g_execution_options;
+            args::SwitchArg a_execute;
 
             args::ArgsGroup g_convenience_options;
             args::SwitchArg a_lazy;

@@ -24,10 +24,9 @@ using namespace cave;
 
 ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::ArgsHandler * const h) :
     ArgsSection(h, "Resolution Options"),
-//            g_execution_options(this, "Execution Options", "Control execution."),
-//            a_execute(&g_execution_options, "execute", 'x', "Execute the suggested actions", true),
-//            a_preserve_world(&g_execution_options, "preserve-world", '1', "Do not modify the 'world' set", true),
-//
+    g_execution_options(this, "Execution Options", "Control execution."),
+    a_execute(&g_execution_options, "execute", 'x', "Execute the suggested actions", true),
+
     g_convenience_options(this, "Convenience Options", "Broad behaviour options."),
     a_lazy(&g_convenience_options, "lazy", 'z', "Do as little work as possible.", true),
     a_complete(&g_convenience_options, "complete", 'c', "Do all optional work.", true),

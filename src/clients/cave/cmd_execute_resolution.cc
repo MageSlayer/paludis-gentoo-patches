@@ -66,11 +66,11 @@ namespace
     struct ExecuteResolutionCommandLine :
         CaveCommandCommandLine
     {
-        ResolveCommandLineExecutionOptions display_options;
+        ResolveCommandLineExecutionOptions execution_options;
         ResolveCommandLineProgramOptions program_options;
 
         ExecuteResolutionCommandLine() :
-            display_options(this),
+            execution_options(this),
             program_options(this)
         {
             add_environment_variable("PALUDIS_SERIALISED_RESOLUTION_FD",
