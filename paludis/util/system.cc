@@ -1042,7 +1042,7 @@ paludis::become_command(const Command & cmd)
         struct sigaction act;
         act.sa_handler = SIG_IGN;
         act.sa_flags = 0;
-        sigaction(SIGTERM, &act, 0);
+        sigaction(SIGCLD, &act, 0);
 
         pid_t child_child(fork());
         if (0 == child_child)
