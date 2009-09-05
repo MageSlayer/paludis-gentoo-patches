@@ -582,6 +582,9 @@ namespace
                     command = command + " " + (*o)->forwardable_string();
         }
 
+        if (! cmdline.resolution_options.a_execute.specified())
+            command = command + " --pretend";
+
         paludis::Command cmd(command);
         cmd
             .with_input_stream(&ser_stream, -1, "PALUDIS_SERIALISED_RESOLUTION_FD");
@@ -698,7 +701,7 @@ ResolveCommand::run(
         }
 
         retcode |= display_resolution(env, *resolver->resolution_lists(), cmdline);
-        if (0 == retcode && cmdline.resolution_options.a_execute.specified())
+        if (0 == retcode)
             perform_resolution(env, *resolver->resolution_lists(), cmdline);
     }
     catch (...)

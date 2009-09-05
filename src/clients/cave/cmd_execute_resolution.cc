@@ -66,10 +66,15 @@ namespace
     struct ExecuteResolutionCommandLine :
         CaveCommandCommandLine
     {
+        args::ArgsGroup g_general_options;
+        args::SwitchArg a_pretend;
+
         ResolveCommandLineExecutionOptions execution_options;
         ResolveCommandLineProgramOptions program_options;
 
         ExecuteResolutionCommandLine() :
+            g_general_options(main_options_section(), "General Options", "General options."),
+            a_pretend(&g_general_options, "pretend", '\0', "Only carry out the pretend action", false),
             execution_options(this),
             program_options(this)
         {
@@ -204,7 +209,7 @@ namespace
                 c != c_end ; ++c)
             retcode |= do_pretend(env, cmdline, (*c)->decision());
 
-        if (0 != retcode)
+        if (0 != retcode || cmdline.a_pretend.specified())
             return retcode;
 
         for (Resolutions::ConstIterator c(lists.ordered()->begin()), c_end(lists.ordered()->end()) ;
