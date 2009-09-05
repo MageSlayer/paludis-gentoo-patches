@@ -105,19 +105,17 @@ namespace paludis
         {
             ResolveCommandLineExecutionOptions(args::ArgsHandler * const);
 
-    //        args::ArgsGroup g_world_options;
-    //        args::SwitchArg a_preserve_world;
+            args::ArgsGroup g_world_options;
+            args::SwitchArg a_preserve_world;
 
-    //        args::ArgsGroup g_failure_options;
-    //        args::EnumArg a_continue_on_failure;
+            args::ArgsGroup g_failure_options;
+            args::EnumArg a_continue_on_failure;
 
-    //        args::ArgsGroup g_phase_options;
-    //        args::StringSetArg a_skip_phase;
-    //        args::StringSetArg a_abort_at_phase;
-    //        args::StringSetArg a_skip_until_phase;
-    //        args::EnumArg a_change_phases_for;
-
-
+            args::ArgsGroup g_phase_options;
+            args::StringSetArg a_skip_phase;
+            args::StringSetArg a_abort_at_phase;
+            args::StringSetArg a_skip_until_phase;
+            args::EnumArg a_change_phases_for;
         };
 
         struct ResolveCommandLineDisplayOptions :

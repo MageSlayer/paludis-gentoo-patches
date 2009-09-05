@@ -94,12 +94,137 @@ namespace
         }
     };
 
-    void execute_resolution(
+    int do_pretend(
             const std::tr1::shared_ptr<Environment> &,
-            const ResolutionLists &,
-            const ExecuteResolutionCommandLine &)
+            const ExecuteResolutionCommandLine & cmdline,
+            const std::tr1::shared_ptr<const Decision> & c)
+    {
+        const std::tr1::shared_ptr<const PackageID> id(c->if_package_id());
+        Context context("When pretending for '" + stringify(*id) + "':");
+
+        std::string command(cmdline.program_options.a_perform_program.argument());
+        if (command.empty())
+            command = "$CAVE perform";
+
+        command.append(" pretend --hooks ");
+        command.append(stringify(id->uniquely_identifying_spec()));
+
+        paludis::Command cmd(command);
+        return run_command(cmd);
+    }
+
+    void starting_action(
+            const std::string & action,
+            const std::tr1::shared_ptr<const Decision> & c)
+    {
+        cout << endl;
+        cout << c::bold_blue() << "Starting " << action << " for "
+            << *c->if_package_id() << "..." << c::normal() << endl;
+        cout << endl;
+    }
+
+    void done_action(
+            const std::string & action,
+            const std::tr1::shared_ptr<const Decision> & c,
+            const bool success)
+    {
+        cout << endl;
+        if (success)
+            cout << c::bold_green() << "Done " << action << " for "
+                << *c->if_package_id() << c::normal() << endl;
+        else
+            cout << c::bold_red() << "Failed " << action << " for "
+                << *c->if_package_id() << c::normal() << endl;
+        cout << endl;
+    }
+
+    int do_fetch(
+            const std::tr1::shared_ptr<Environment> &,
+            const ExecuteResolutionCommandLine & cmdline,
+            const std::tr1::shared_ptr<const Decision> & c)
+    {
+        const std::tr1::shared_ptr<const PackageID> id(c->if_package_id());
+        Context context("When fetching for '" + stringify(*id) + "':");
+
+        starting_action("fetch", c);
+
+        std::string command(cmdline.program_options.a_perform_program.argument());
+        if (command.empty())
+            command = "$CAVE perform";
+
+        command.append(" fetch --hooks ");
+        command.append(stringify(id->uniquely_identifying_spec()));
+
+        paludis::Command cmd(command);
+        int retcode(run_command(cmd));
+
+        done_action("fetch", c, 0 == retcode);
+        return retcode;
+    }
+
+    int do_install_slash(
+            const std::tr1::shared_ptr<Environment> &,
+            const ExecuteResolutionCommandLine & cmdline,
+            const std::tr1::shared_ptr<const Resolution> & r)
+    {
+        const std::tr1::shared_ptr<const PackageID> id(r->decision()->if_package_id());
+        Context context("When installing to / for '" + stringify(*id) + "':");
+
+        starting_action("install to /", r->decision());
+
+        std::string command(cmdline.program_options.a_perform_program.argument());
+        if (command.empty())
+            command = "$CAVE perform";
+
+        command.append(" install --hooks ");
+        command.append(stringify(id->uniquely_identifying_spec()));
+        command.append(" --destination " + stringify(r->destinations()->slash()->repository()));
+        for (PackageIDSequence::ConstIterator i(r->destinations()->slash()->replacing()->begin()),
+                i_end(r->destinations()->slash()->replacing()->end()) ;
+                i != i_end ; ++i)
+            command.append(" --replacing " + stringify((*i)->uniquely_identifying_spec()));
+
+        paludis::Command cmd(command);
+        int retcode(run_command(cmd));
+
+        done_action("install to /", r->decision(), 0 == retcode);
+        return retcode;
+    }
+
+    int execute_resolution(
+            const std::tr1::shared_ptr<Environment> & env,
+            const ResolutionLists & lists,
+            const ExecuteResolutionCommandLine & cmdline)
     {
         Context context("When executing chosen resolution:");
+
+        int retcode(0);
+
+        for (Resolutions::ConstIterator c(lists.ordered()->begin()), c_end(lists.ordered()->end()) ;
+                c != c_end ; ++c)
+            retcode |= do_pretend(env, cmdline, (*c)->decision());
+
+        if (0 != retcode)
+            return retcode;
+
+        for (Resolutions::ConstIterator c(lists.ordered()->begin()), c_end(lists.ordered()->end()) ;
+                c != c_end ; ++c)
+        {
+            retcode = do_fetch(env, cmdline, (*c)->decision());
+            if (0 != retcode)
+                return retcode;
+
+            if ((*c)->destinations()->slash())
+            {
+                retcode = do_install_slash(env, cmdline, *c);
+                if (0 != retcode)
+                    return retcode;
+            }
+            else
+                throw InternalError(PALUDIS_HERE, "destination != / not done yet");
+        }
+
+        return retcode;
     }
 }
 
@@ -134,9 +259,7 @@ ExecuteResolutionCommand::run(
     Deserialisation deserialisation("ResolutionLists", deserialiser);
     ResolutionLists lists(ResolutionLists::deserialise(deserialisation));
 
-    execute_resolution(env, lists, cmdline);
-
-    return 0;
+    return execute_resolution(env, lists, cmdline);
 }
 
 std::tr1::shared_ptr<args::ArgsHandler>
