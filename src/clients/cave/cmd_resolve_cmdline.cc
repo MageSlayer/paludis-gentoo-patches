@@ -24,10 +24,9 @@ using namespace cave;
 
 ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::ArgsHandler * const h) :
     ArgsSection(h, "Resolution Options"),
-//            g_execution_options(this, "Execution Options", "Control execution."),
-//            a_execute(&g_execution_options, "execute", 'x', "Execute the suggested actions", true),
-//            a_preserve_world(&g_execution_options, "preserve-world", '1', "Do not modify the 'world' set", true),
-//
+    g_execution_options(this, "Execution Options", "Control execution."),
+    a_execute(&g_execution_options, "execute", 'x', "Execute the suggested actions", true),
+
     g_convenience_options(this, "Convenience Options", "Broad behaviour options."),
     a_lazy(&g_convenience_options, "lazy", 'z', "Do as little work as possible.", true),
     a_complete(&g_convenience_options, "complete", 'c', "Do all optional work.", true),
@@ -48,17 +47,6 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
 //            a_purge_unused_packages(&g_cleanup_options, "purge-unused-packages", '\0',
 //                    "Purge packages that are no longer used after an uninstall or clean", true),
 //
-//            g_failure_options(this, "Failure Options", "Failure handling options."),
-//            a_continue_on_failure(&g_failure_options, "continue-on-failure", '\0',
-//                    "Whether to continue after an error occurs",
-//                    args::EnumArg::EnumArgOptions
-//                    ("if-fetching",                "Only if we are just fetching packages")
-//                    ("never",                      "Never")
-//                    ("if-satisfied",               "If remaining packages' dependencies are satisfied")
-//                    ("if-independent",             "If remaining packages do not depend upon any failing package")
-//                    ("always",                     "Always (dangerous)"),
-//                    "if-fetching"),
-//
 //            g_display_options(this, "Display Options", "Options relating to the resolution display."),
 //            a_show_option_descriptions(&g_display_options, "show-option-descriptions", '\0',
 //                    "Whether to display descriptions for package options",
@@ -78,20 +66,6 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
 //                    "new"
 //                    ),
 
-//            g_phase_options(this, "Phase Options", "Options controlling which phases to execute. No sanity checking "
-//                    "is done, allowing you to shoot as many feet off as you desire. Phase names do not have the "
-//                    "src_, pkg_ or builtin_ prefix, so 'init', 'preinst', 'unpack', 'merge', 'strip' etc."),
-//            a_skip_phase(&g_phase_options, "skip-phase", '\0', "Skip the named phases"),
-//            a_abort_at_phase(&g_phase_options, "abort-at-phase", '\0', "Abort when a named phase is encounted"),
-//            a_skip_until_phase(&g_phase_options, "skip-until-phase", '\0', "Skip every phase until a named phase is encounted"),
-//            a_change_phases_for(&g_phase_options, "change-phases-for", '\0',
-//                    "Control to which package or packages these phase options apply",
-//                    args::EnumArg::EnumArgOptions
-//                    ("all",                        "All packages")
-//                    ("first",                      "Only the first package on the list")
-//                    ("last",                       "Only the last package on the list"),
-//                    "all"),
-//
     g_keep_options(this, "Reinstall Options", "Control whether installed packages are kept."),
     a_keep_targets(&g_keep_options, "keep-targets", 'K',
             "Select whether to keep target packages",
@@ -232,7 +206,35 @@ ResolveCommandLineDisplayOptions::ResolveCommandLineDisplayOptions(args::ArgsHan
 }
 
 ResolveCommandLineExecutionOptions::ResolveCommandLineExecutionOptions(args::ArgsHandler * const h) :
-    ArgsSection(h, "Execution Options")
+    ArgsSection(h, "Execution Options"),
+
+    g_world_options(this, "World Options", "Options controlling how the 'world' set is modified"),
+    a_preserve_world(&g_world_options, "preserve-world", '1', "Do not modify the 'world' set", true),
+
+    g_failure_options(this, "Failure Options", "Failure handling options."),
+    a_continue_on_failure(&g_failure_options, "continue-on-failure", '\0',
+            "Whether to continue after an error occurs",
+            args::EnumArg::EnumArgOptions
+            ("if-fetching",                "Only if we are just fetching packages")
+            ("never",                      "Never")
+            ("if-satisfied",               "If remaining packages' dependencies are satisfied")
+            ("if-independent",             "If remaining packages do not depend upon any failing package")
+            ("always",                     "Always (dangerous)"),
+            "if-fetching"),
+
+    g_phase_options(this, "Phase Options", "Options controlling which phases to execute. No sanity checking "
+            "is done, allowing you to shoot as many feet off as you desire. Phase names do not have the "
+            "src_, pkg_ or builtin_ prefix, so 'init', 'preinst', 'unpack', 'merge', 'strip' etc."),
+    a_skip_phase(&g_phase_options, "skip-phase", '\0', "Skip the named phases"),
+    a_abort_at_phase(&g_phase_options, "abort-at-phase", '\0', "Abort when a named phase is encounted"),
+    a_skip_until_phase(&g_phase_options, "skip-until-phase", '\0', "Skip every phase until a named phase is encounted"),
+    a_change_phases_for(&g_phase_options, "change-phases-for", '\0',
+            "Control to which package or packages these phase options apply",
+            args::EnumArg::EnumArgOptions
+            ("all",                        "All packages")
+            ("first",                      "Only the first package on the list")
+            ("last",                       "Only the last package on the list"),
+            "all")
 {
 }
 
