@@ -262,7 +262,7 @@ Resolver::add_target_with_reason(const PackageDepSpec & spec, const std::tr1::sh
 
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-    const std::tr1::shared_ptr<const QPN_S_Sequence> qpn_s_s(_imp->fns.get_qpn_s_s_for_fn()(spec, reason));
+    const std::tr1::shared_ptr<const QPN_S_Sequence> qpn_s_s(_get_qpn_s_s_for(spec, reason));
     if (qpn_s_s->empty())
         throw InternalError(PALUDIS_HERE, "not implemented: no slot for " + stringify(spec));
 
@@ -566,7 +566,7 @@ Resolver::_add_dependencies(const QPN_S & our_qpn_s, const std::tr1::shared_ptr<
         std::tr1::shared_ptr<const QPN_S_Sequence> qpn_s_s;
 
         if (s->spec().if_package())
-            qpn_s_s = _imp->fns.get_qpn_s_s_for_fn()(*s->spec().if_package(), reason);
+            qpn_s_s = _get_qpn_s_s_for(*s->spec().if_package(), reason);
         else
             qpn_s_s = _get_qpn_s_s_for_blocker(*s->spec().if_block());
 
@@ -972,7 +972,7 @@ Resolver::find_any_score(const QPN_S & our_qpn_s, const SanitisedDependency & de
 
     const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(
                 _resolution_for_qpn_s(our_qpn_s)->decision()->if_package_id(), dep));
-    const std::tr1::shared_ptr<const QPN_S_Sequence> qpn_s_s(_imp->fns.get_qpn_s_s_for_fn()(spec, reason));
+    const std::tr1::shared_ptr<const QPN_S_Sequence> qpn_s_s(_get_qpn_s_s_for(spec, reason));
 
     /* next: will already be installing */
     {
@@ -1103,6 +1103,31 @@ Resolver::_get_qpn_s_s_for_blocker(const BlockDepSpec & spec) const
     }
 
     return result;
+}
+
+const std::tr1::shared_ptr<QPN_S_Sequence>
+Resolver::_get_qpn_s_s_for(
+        const PackageDepSpec & spec,
+        const std::tr1::shared_ptr<const Reason> & reason) const
+{
+    Context context("When finding slots for '" + stringify(spec) + "':");
+
+    std::tr1::shared_ptr<SlotName> exact_slot;
+
+    if (spec.slot_requirement_ptr())
+    {
+        SlotNameFinder f;
+        exact_slot = spec.slot_requirement_ptr()->accept_returning<std::tr1::shared_ptr<SlotName> >(f);
+    }
+
+    if (exact_slot)
+    {
+        std::tr1::shared_ptr<QPN_S_Sequence> result(new QPN_S_Sequence);
+        result->push_back(QPN_S(spec, exact_slot));
+        return result;
+    }
+    else
+        return _imp->fns.get_qpn_s_s_for_fn()(spec, reason);
 }
 
 const std::tr1::shared_ptr<Decision>

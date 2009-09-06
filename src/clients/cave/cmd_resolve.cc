@@ -305,24 +305,6 @@ namespace
         return reason->accept_returning<bool>(v);
     }
 
-    struct SlotNameFinder
-    {
-        std::tr1::shared_ptr<SlotName> visit(const SlotExactRequirement & s)
-        {
-            return make_shared_ptr(new SlotName(s.slot()));
-        }
-
-        std::tr1::shared_ptr<SlotName> visit(const SlotAnyUnlockedRequirement &)
-        {
-            return make_null_shared_ptr();
-        }
-
-        std::tr1::shared_ptr<SlotName> visit(const SlotAnyLockedRequirement &)
-        {
-            return make_null_shared_ptr();
-        }
-    };
-
     const std::tr1::shared_ptr<QPN_S_Sequence>
     get_qpn_s_s_for_fn(const Environment * const env,
             const ResolveCommandLine & cmdline,
@@ -330,68 +312,54 @@ namespace
             const std::tr1::shared_ptr<const Reason> & reason)
     {
         std::tr1::shared_ptr<QPN_S_Sequence> result(new QPN_S_Sequence);
+        std::tr1::shared_ptr<QPN_S> best;
+        std::list<QPN_S> installed;
 
-        std::tr1::shared_ptr<SlotName> exact_slot;
+        const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
+                    generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements) |
+                    filter::SupportsAction<InstallAction>() |
+                    filter::NotMasked())]);
 
-        if (spec.slot_requirement_ptr())
+        if (! ids->empty())
+            best = make_shared_ptr(new QPN_S(*ids->begin()));
+
+        const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*env)[selection::BestVersionInEachSlot(
+                    generator::Matches(spec, MatchPackageOptions()) |
+                    filter::SupportsAction<InstalledAction>())]);
+
+        for (PackageIDSequence::ConstIterator i(installed_ids->begin()), i_end(installed_ids->end()) ;
+                i != i_end ; ++i)
+            installed.push_back(QPN_S(*i));
+
+        const args::EnumArg & arg(is_target(reason) ? cmdline.resolution_options.a_target_slots : cmdline.resolution_options.a_slots);
+
+        if (! best)
+            std::copy(installed.begin(), installed.end(), result->back_inserter());
+        else if (arg.argument() == "best-or-installed")
         {
-            SlotNameFinder f;
-            exact_slot = spec.slot_requirement_ptr()->accept_returning<std::tr1::shared_ptr<SlotName> >(f);
-        }
-
-        if (exact_slot)
-            result->push_back(QPN_S(spec, exact_slot));
-        else
-        {
-            std::tr1::shared_ptr<QPN_S> best;
-            std::list<QPN_S> installed;
-
-            const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
-                        generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements) |
-                        filter::SupportsAction<InstallAction>() |
-                        filter::NotMasked())]);
-
-            if (! ids->empty())
-                best = make_shared_ptr(new QPN_S(*ids->begin()));
-
-            const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*env)[selection::BestVersionInEachSlot(
-                        generator::Matches(spec, MatchPackageOptions()) |
-                        filter::SupportsAction<InstalledAction>())]);
-
-            for (PackageIDSequence::ConstIterator i(installed_ids->begin()), i_end(installed_ids->end()) ;
-                    i != i_end ; ++i)
-                installed.push_back(QPN_S(*i));
-
-            const args::EnumArg & arg(is_target(reason) ? cmdline.resolution_options.a_target_slots : cmdline.resolution_options.a_slots);
-
-            if (! best)
-                std::copy(installed.begin(), installed.end(), result->back_inserter());
-            else if (arg.argument() == "best-or-installed")
-            {
-                if (installed.end() == std::find(installed.begin(), installed.end(), *best))
-                    result->push_back(*best);
-                else
-                    std::copy(installed.begin(), installed.end(), result->back_inserter());
-            }
-            else if (arg.argument() == "installed-or-best")
-            {
-                if (installed.empty())
-                    result->push_back(*best);
-                else
-                    std::copy(installed.begin(), installed.end(), result->back_inserter());
-            }
-            else if (arg.argument() == "all")
-            {
-                if (installed.end() == std::find(installed.begin(), installed.end(), *best))
-                    result->push_back(*best);
-                std::copy(installed.begin(), installed.end(), result->back_inserter());
-            }
-            else if (arg.argument() == "best")
+            if (installed.end() == std::find(installed.begin(), installed.end(), *best))
                 result->push_back(*best);
             else
-                throw args::DoHelp("Don't understand argument '" + arg.argument() + "' to '--"
-                        + arg.long_name() + "'");
+                std::copy(installed.begin(), installed.end(), result->back_inserter());
         }
+        else if (arg.argument() == "installed-or-best")
+        {
+            if (installed.empty())
+                result->push_back(*best);
+            else
+                std::copy(installed.begin(), installed.end(), result->back_inserter());
+        }
+        else if (arg.argument() == "all")
+        {
+            if (installed.end() == std::find(installed.begin(), installed.end(), *best))
+                result->push_back(*best);
+            std::copy(installed.begin(), installed.end(), result->back_inserter());
+        }
+        else if (arg.argument() == "best")
+            result->push_back(*best);
+        else
+            throw args::DoHelp("Don't understand argument '" + arg.argument() + "' to '--"
+                    + arg.long_name() + "'");
 
         return result;
     }
