@@ -25,6 +25,11 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <cstring>
+#include "config.h"
+
+#ifdef HAVE_PTSNAME_R
+#  include <vector>
+#endif
 
 using namespace paludis;
 
@@ -54,10 +59,10 @@ Pty::Pty()
 #ifdef HAVE_PTSNAME_R
     std::vector<char> name;
     name.resize(16);
-    while (-1 == ptsname_r(_fds[0], &name[0], name.length()))
+    while (-1 == ptsname_r(_fds[0], &name[0], name.size()))
     {
         if (ERANGE == errno)
-            name.resize(name.length() * 2);
+            name.resize(name.size() * 2);
         else
         {
             close(_fds[0]);
