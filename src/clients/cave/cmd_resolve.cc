@@ -699,6 +699,8 @@ ResolveCommand::run(
             }
         }
 
+        dump_if_requested(env, resolver, cmdline);
+
         retcode |= display_resolution(env, *resolver->resolution_lists(), cmdline);
         if (0 == retcode)
             perform_resolution(env, *resolver->resolution_lists(), cmdline);
@@ -708,8 +710,6 @@ ResolveCommand::run(
         dump_if_requested(env, resolver, cmdline);
         throw;
     }
-
-    dump_if_requested(env, resolver, cmdline);
 
     return retcode;
 }
