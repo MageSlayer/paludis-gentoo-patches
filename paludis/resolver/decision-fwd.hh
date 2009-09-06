@@ -21,15 +21,12 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_DECISION_FWD_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <iosfwd>
 
 namespace paludis
 {
     namespace resolver
     {
         struct Decision;
-
-        std::ostream & operator<< (std::ostream & s, const Decision & d) PALUDIS_VISIBLE;
     }
 }
 

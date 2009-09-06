@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_DESTINATIONS_FWD_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <iosfwd>
 
 namespace paludis
 {
@@ -29,9 +28,6 @@ namespace paludis
     {
         struct Destination;
         struct Destinations;
-
-        std::ostream & operator<< (std::ostream &, const Destination &) PALUDIS_VISIBLE;
-        std::ostream & operator<< (std::ostream &, const Destinations &) PALUDIS_VISIBLE;
     }
 }
 

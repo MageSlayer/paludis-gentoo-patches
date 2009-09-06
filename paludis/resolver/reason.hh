@@ -41,7 +41,6 @@ namespace paludis
         {
             public:
                 virtual ~Reason() = 0;
-                virtual std::string as_string() const = 0;
 
                 virtual void serialise(Serialiser &) const = 0;
 
@@ -54,8 +53,6 @@ namespace paludis
             public ImplementAcceptMethods<Reason, TargetReason>
         {
             public:
-                virtual std::string as_string() const;
-
                 virtual void serialise(Serialiser &) const;
         };
 
@@ -74,8 +71,6 @@ namespace paludis
                 const std::tr1::shared_ptr<const PackageID> from_id() const;
                 const SanitisedDependency & sanitised_dependency() const;
 
-                virtual std::string as_string() const;
-
                 virtual void serialise(Serialiser &) const;
         };
 
@@ -84,8 +79,6 @@ namespace paludis
             public ImplementAcceptMethods<Reason, PresetReason>
         {
             public:
-                virtual std::string as_string() const;
-
                 virtual void serialise(Serialiser &) const;
         };
 
@@ -100,8 +93,6 @@ namespace paludis
 
                 const SetName set_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 const std::tr1::shared_ptr<const Reason> reason_for_set() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::string as_string() const;
 
                 virtual void serialise(Serialiser &) const;
         };

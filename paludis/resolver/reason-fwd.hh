@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_REASON_FWD_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <iosfwd>
 
 namespace paludis
 {
@@ -32,8 +31,6 @@ namespace paludis
         struct TargetReason;
         struct PresetReason;
         struct SetReason;
-
-        std::ostream & operator<< (std::ostream & s, const Reason &) PALUDIS_VISIBLE;
     }
 }
 

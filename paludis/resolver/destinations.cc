@@ -31,33 +31,6 @@
 using namespace paludis;
 using namespace paludis::resolver;
 
-std::ostream &
-paludis::resolver::operator<< (std::ostream & s, const Destination & d)
-{
-    std::stringstream ss;
-    ss << "Destination(" << d.repository();
-    if (! d.replacing()->empty())
-        ss << " replacing " << join(indirect_iterator(d.replacing()->begin()),
-                indirect_iterator(d.replacing()->end()), ", ");
-    ss << ")";
-
-    s << ss.str();
-    return s;
-}
-
-std::ostream &
-paludis::resolver::operator<< (std::ostream & s, const Destinations & d)
-{
-    std::stringstream ss;
-    ss << "Destinations(";
-    if (d.slash())
-        ss << "slash: " << *d.slash();
-    ss << ")";
-
-    s << ss.str();
-    return s;
-}
-
 void
 Destinations::serialise(Serialiser & s) const
 {

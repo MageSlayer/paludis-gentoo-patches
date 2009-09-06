@@ -62,6 +62,14 @@ DisplayCallback::operator() (const NotifierCallbackEvent & event) const
 }
 
 void
+DisplayCallback::operator() (const ResolverRestart &) const
+{
+    Lock lock(_imp->mutex);
+    ++_imp->steps.insert(std::make_pair("restarts", 0)).first->second;
+    update();
+}
+
+void
 DisplayCallback::visit(const NotifierCallbackGeneratingMetadataEvent & e) const
 {
     Lock lock(_imp->mutex);

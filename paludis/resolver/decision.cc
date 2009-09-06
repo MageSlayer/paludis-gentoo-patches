@@ -25,35 +25,6 @@
 using namespace paludis;
 using namespace paludis::resolver;
 
-std::ostream &
-paludis::resolver::operator<< (std::ostream & s, const Decision & d)
-{
-    std::stringstream ss;
-
-    ss << "Decision(";
-
-    if (d.if_package_id())
-        ss << *d.if_package_id();
-    else
-        ss << "(nothing)";
-
-    if (d.is_best())
-        ss << ", is best";
-    if (d.is_installed())
-        ss << ", is installed";
-    if (d.is_nothing())
-        ss << ", is nothing";
-    if (d.is_same())
-        ss << ", is same";
-    if (d.is_same_version())
-        ss << ", is same version";
-
-    ss << ")";
-
-    s << ss.str();
-    return s;
-}
-
 void
 Decision::serialise(Serialiser & s) const
 {

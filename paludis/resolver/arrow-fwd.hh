@@ -23,7 +23,6 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <tr1/memory>
-#include <iosfwd>
 
 namespace paludis
 {
@@ -32,8 +31,6 @@ namespace paludis
         struct Arrow;
 
         typedef Sequence<std::tr1::shared_ptr<Arrow> > ArrowSequence;
-
-        std::ostream & operator<< (std::ostream & s, const Arrow &) PALUDIS_VISIBLE;
     }
 }
 

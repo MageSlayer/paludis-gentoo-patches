@@ -28,7 +28,11 @@ namespace paludis
 {
     namespace cave
     {
-        struct DisplayCallback :
+        struct ResolverRestart
+        {
+        };
+
+        class DisplayCallback :
             private PrivateImplementationPattern<DisplayCallback>
         {
             private:
@@ -39,6 +43,8 @@ namespace paludis
                 ~DisplayCallback();
 
                 void operator() (const NotifierCallbackEvent & event) const;
+
+                void operator() (const ResolverRestart &) const;
 
                 void visit(const NotifierCallbackGeneratingMetadataEvent &) const;
 

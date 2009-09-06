@@ -196,7 +196,8 @@ Resolver::_make_slash_destination_for(const QPN_S & qpn_s,
     }
 
     if (! repo)
-        throw InternalError(PALUDIS_HERE, "no valid destination for " + stringify(*resolution));
+        throw InternalError(PALUDIS_HERE, "no valid destination for " +
+                stringify(*resolution->decision()->if_package_id()));
 
     return make_shared_ptr(new Destination(make_named_values<Destination>(
                     value_for<n::replacing>(_find_replacing(resolution->decision()->if_package_id(), repo)),
@@ -257,7 +258,8 @@ Resolver::_same_slot(const std::tr1::shared_ptr<const PackageID> & a,
 void
 Resolver::add_target_with_reason(const PackageDepSpec & spec, const std::tr1::shared_ptr<const Reason> & reason)
 {
-    Context context("When adding target '" + stringify(spec) + "' with reason '" + stringify(*reason) + "':");
+    Context context("When adding target '" + stringify(spec) + "':");
+
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
     const std::tr1::shared_ptr<const QPN_S_Sequence> qpn_s_s(_imp->fns.get_qpn_s_s_for_fn()(spec, reason));
@@ -479,11 +481,17 @@ Resolver::_made_wrong_decision(const QPN_S & qpn_s,
             /* we've not already locked this to something. yes! */
             _suggest_restart_with(qpn_s, resolution, constraint, decision);
         }
-        else
+        else if (decision->if_package_id())
         {
             /* we can restart if we've selected the same or a newer version
              * than before. but we don't support that yet. */
-            throw InternalError(PALUDIS_HERE, "should have selected " + stringify(*decision));
+            throw InternalError(PALUDIS_HERE, "should have selected " + stringify(*decision->if_package_id()));
+        }
+        else
+        {
+            /* probably possible if we can fix a block either by upgrading or
+             * removing, and we're later forced to remove */
+            throw InternalError(PALUDIS_HERE, "should have selected nothing");
         }
     }
     else
@@ -522,8 +530,7 @@ Resolver::_make_constraint_for_preloading(
 void
 Resolver::_decide(const QPN_S & qpn_s, const std::tr1::shared_ptr<Resolution> & resolution)
 {
-    Context context("When deciding upon an origin ID to use for '" + stringify(qpn_s) + "' with '"
-            + stringify(*resolution) + "':");
+    Context context("When deciding upon an origin ID to use for '" + stringify(qpn_s) + "':");
 
     std::tr1::shared_ptr<Decision> decision(_try_to_find_decision_for(qpn_s, resolution));
     if (decision)
@@ -535,11 +542,11 @@ Resolver::_decide(const QPN_S & qpn_s, const std::tr1::shared_ptr<Resolution> & 
 void
 Resolver::_add_dependencies(const QPN_S & our_qpn_s, const std::tr1::shared_ptr<Resolution> & our_resolution)
 {
-    Context context("When adding dependencies for '" + stringify(our_qpn_s) + "' with '"
-            + stringify(*our_resolution) + "':");
-
     if (! our_resolution->decision()->if_package_id())
         throw InternalError(PALUDIS_HERE, "not decided. shouldn't happen.");
+
+    Context context("When adding dependencies for '" + stringify(our_qpn_s) + "' with '"
+            + stringify(*our_resolution->decision()->if_package_id()) + "':");
 
     const std::tr1::shared_ptr<SanitisedDependencies> deps(new SanitisedDependencies);
     deps->populate(*this, our_resolution->decision()->if_package_id());
@@ -548,7 +555,7 @@ Resolver::_add_dependencies(const QPN_S & our_qpn_s, const std::tr1::shared_ptr<
     for (SanitisedDependencies::ConstIterator s(deps->begin()), s_end(deps->end()) ;
             s != s_end ; ++s)
     {
-        Context context_2("When handling dependency '" + stringify(*s) + "':");
+        Context context_2("When handling dependency '" + stringify(s->spec()) + "':");
 
         if (! _care_about_dependency_spec(our_qpn_s, our_resolution, *s))
             continue;
@@ -567,7 +574,8 @@ Resolver::_add_dependencies(const QPN_S & our_qpn_s, const std::tr1::shared_ptr<
         {
             if (our_resolution->decision()->is_installed())
                 Log::get_instance()->message("resolver.cannot_find_installed_dep", ll_warning, lc_context)
-                    << "Installed package '" << *our_resolution->decision() << "' dependency '" << *s << " cannot be met";
+                    << "Installed package '" << *our_resolution->decision()->if_package_id()
+                    << "' dependency '" << s->spec() << "' cannot be met";
             else
                 throw InternalError(PALUDIS_HERE, "not implemented: no slot for " + stringify(s->spec()));
         }
@@ -592,7 +600,7 @@ Resolver::_care_about_dependency_spec(const QPN_S & qpn_s,
         if (dep.spec().if_block()->blocked_spec()->package_ptr()->category() == CategoryNamePart("virtual"))
         {
             Log::get_instance()->message("resolver.virtual_haxx", ll_warning, lc_context)
-                << "Ignoring " << dep << " from " << qpn_s << " for now";
+                << "Ignoring " << dep.spec() << " from " << qpn_s << " for now";
             return false;
         }
 
@@ -839,7 +847,8 @@ Resolver::_unable_to_order_more() const
         if (i->second->already_ordered())
             continue;
 
-        std::cout << "  * " << *i->second->decision() << " because of cycle " << _find_cycle(i->first, true)
+        std::cout << "  * " << *i->second->decision()->if_package_id() << " because of cycle "
+            << _find_cycle(i->first, true)
             << std::endl;
     }
 
@@ -873,7 +882,7 @@ Resolver::end_resolutions_by_qpn_s() const
 int
 Resolver::find_any_score(const QPN_S & our_qpn_s, const SanitisedDependency & dep) const
 {
-    Context context("When working out whether we'd like '" + stringify(dep) + "' because of '"
+    Context context("When working out whether we'd like '" + stringify(dep.spec()) + "' because of '"
             + stringify(our_qpn_s) + "':");
 
     if (dep.spec().if_block())
@@ -1041,13 +1050,7 @@ Resolver::_find_cycle(const QPN_S & start_qpn_s, const int ignorable_pass) const
         }
 
         if (! ok)
-            throw InternalError(PALUDIS_HERE, "why did that happen? start is " + stringify(start_qpn_s)
-                    + ", current is " + stringify(current) + ", seen is { "
-                    + join(seen.begin(), seen.end(), ", ") + " }, result is "
-                    + result.str() + ", resolution->arrows is { "
-                    + join(indirect_iterator(resolution->arrows()->begin()),
-                        indirect_iterator(resolution->arrows()->end()), ", ") + "}"
-                    );
+            throw InternalError(PALUDIS_HERE, "why did that happen?");
     }
 
     return result.str();

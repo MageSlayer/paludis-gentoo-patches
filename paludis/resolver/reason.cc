@@ -27,21 +27,8 @@
 using namespace paludis;
 using namespace paludis::resolver;
 
-std::ostream &
-paludis::resolver::operator<< (std::ostream & s, const Reason & r)
-{
-    s << r.as_string();
-    return s;
-}
-
 Reason::~Reason()
 {
-}
-
-std::string
-TargetReason::as_string() const
-{
-    return "Target()";
 }
 
 void
@@ -89,12 +76,6 @@ DependencyReason::sanitised_dependency() const
     return _imp->dep;
 }
 
-std::string
-DependencyReason::as_string() const
-{
-    return "Dependency(package: " + stringify(*_imp->from_id) + " dep: " + stringify(_imp->dep) + ")";
-}
-
 void
 DependencyReason::serialise(Serialiser & s) const
 {
@@ -102,12 +83,6 @@ DependencyReason::serialise(Serialiser & s) const
         .member(SerialiserFlags<serialise::might_be_null>(), "from_id", from_id())
         .member(SerialiserFlags<>(), "sanitised_dependency", sanitised_dependency())
         ;
-}
-
-std::string
-PresetReason::as_string() const
-{
-    return "Preset()";
 }
 
 void
@@ -152,12 +127,6 @@ const std::tr1::shared_ptr<const Reason>
 SetReason::reason_for_set() const
 {
     return _imp->reason_for_set;
-}
-
-std::string
-SetReason::as_string() const
-{
-    return "Set(set: " + stringify(_imp->set_name) + " because: " + stringify(*_imp->reason_for_set) + ")";
 }
 
 void

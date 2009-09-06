@@ -31,22 +31,6 @@
 using namespace paludis;
 using namespace paludis::resolver;
 
-std::ostream &
-paludis::resolver::operator<< (std::ostream & s, const Constraint & c)
-{
-    std::stringstream ss;
-    ss << "Constraint(spec: " << c.spec();
-    if (c.nothing_is_fine_too())
-        ss << "; nothing is fine too";
-    ss
-        << "; use_installed: " << stringify(c.use_installed())
-        << "; reason: " << (c.reason() ? stringify(*c.reason()) : "none")
-        << ")";
-    s << ss.str();
-
-    return s;
-}
-
 namespace paludis
 {
     template <>

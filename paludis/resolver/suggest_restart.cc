@@ -19,6 +19,7 @@
 
 #include <paludis/resolver/suggest_restart.hh>
 #include <paludis/resolver/qpn_s.hh>
+#include <paludis/resolver/constraint.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 
@@ -59,7 +60,7 @@ SuggestRestart::SuggestRestart(const QPN_S & q,
         const std::tr1::shared_ptr<const Constraint> & nc
         ) throw () :
     PrivateImplementationPattern<SuggestRestart>(new Implementation<SuggestRestart>(q, pd, pc, nd, nc)),
-    Exception("Suggesting restart with " + stringify(*nc) + " for " + stringify(q))
+    Exception("Suggesting restart with " + stringify(nc->spec()) + " for " + stringify(q))
 {
 }
 

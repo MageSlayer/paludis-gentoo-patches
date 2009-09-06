@@ -26,16 +26,6 @@
 using namespace paludis;
 using namespace paludis::resolver;
 
-std::ostream &
-paludis::resolver::operator<< (std::ostream & s, const Arrow & a)
-{
-    s << "Arrow(-> " << a.to_qpn_s();
-    if (0 != a.ignorable_pass())
-        s << ", ignorable pass " << a.ignorable_pass();
-    s << ")";
-    return s;
-}
-
 void
 Arrow::serialise(Serialiser & s) const
 {

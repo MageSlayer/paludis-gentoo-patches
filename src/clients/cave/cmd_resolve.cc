@@ -679,20 +679,19 @@ ResolveCommand::run(
     {
         while (true)
         {
+            DisplayCallback display_callback;
+            ScopedNotifierCallback display_callback_holder(env.get(),
+                    NotifierCallbackFunction(std::tr1::cref(display_callback)));
+
             try
             {
-                DisplayCallback display_callback;
-                ScopedNotifierCallback display_callback_holder(env.get(),
-                        NotifierCallbackFunction(std::tr1::cref(display_callback)));
                 add_resolver_targets(env, resolver, cmdline);
                 resolver->resolve();
                 break;
             }
             catch (const SuggestRestart & e)
             {
-                std::cout << "Restarting: for '" << e.qpn_s() << "' we had chosen '" << *e.previous_decision()
-                    << "' but new constraint '" << *e.problematic_constraint() << "' means we now want '"
-                    << *e.new_decision() << "' instead" << std::endl;
+                display_callback(ResolverRestart());
                 initial_constraints.insert(std::make_pair(e.qpn_s(), make_initial_constraints_for(
                                 env.get(), cmdline, e.qpn_s()))).first->second->add(
                         e.suggested_preset());

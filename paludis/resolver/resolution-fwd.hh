@@ -22,15 +22,12 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/resolver/serialise-fwd.hh>
-#include <iosfwd>
 
 namespace paludis
 {
     namespace resolver
     {
         struct Resolution;
-
-        std::ostream & operator<< (std::ostream & s, const Resolution & r) PALUDIS_VISIBLE;
     }
 }
 

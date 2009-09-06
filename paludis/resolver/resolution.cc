@@ -34,21 +34,6 @@
 using namespace paludis;
 using namespace paludis::resolver;
 
-std::ostream &
-paludis::resolver::operator<< (std::ostream & s, const Resolution & r)
-{
-    std::stringstream ss;
-    ss <<  "Resolution("
-        << "constraints: " << join(indirect_iterator(r.constraints()->begin()), indirect_iterator(r.constraints()->end()), ", ")
-        << "; decision: " << (r.decision() ? stringify(*r.decision()) : "none")
-        << "; arrows: " << join(indirect_iterator(r.arrows()->begin()), indirect_iterator(r.arrows()->end()), ", ")
-        << "; already_ordered: " << stringify(r.already_ordered()) << ")"
-        << "; destinations: " << (r.destinations() ? stringify(*r.destinations()) : "unknown")
-        << ")";
-    s << ss.str();
-    return s;
-}
-
 void
 Resolution::serialise(Serialiser & s) const
 {

@@ -23,7 +23,6 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <tr1/memory>
-#include <iosfwd>
 
 namespace paludis
 {
@@ -31,8 +30,6 @@ namespace paludis
     {
         struct Constraint;
         struct Constraints;
-
-        std::ostream & operator<< (std::ostream & s, const Constraint & c) PALUDIS_VISIBLE;
     }
 }
 
