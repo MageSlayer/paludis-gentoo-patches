@@ -33,6 +33,7 @@ namespace paludis
     namespace n
     {
         struct all;
+        struct errors;
         struct ordered;
     }
 
@@ -41,6 +42,7 @@ namespace paludis
         struct ResolutionLists
         {
             NamedValue<n::all, std::tr1::shared_ptr<Resolutions> > all;
+            NamedValue<n::errors, std::tr1::shared_ptr<Resolutions> > errors;
             NamedValue<n::ordered, std::tr1::shared_ptr<Resolutions> > ordered;
 
             void serialise(Serialiser &) const;
@@ -62,6 +64,8 @@ namespace paludis
                         const std::tr1::shared_ptr<const Resolution> > ConstIterator;
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                bool empty() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void serialise(Serialiser &) const;
 

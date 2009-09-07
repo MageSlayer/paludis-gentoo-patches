@@ -114,6 +114,9 @@ namespace paludis
                 const std::tr1::shared_ptr<Decision> _try_to_find_decision_for(
                         const QPN_S &, const std::tr1::shared_ptr<const Resolution> & resolution) const;
 
+                const std::tr1::shared_ptr<Decision> _cannot_decide_for(
+                        const QPN_S &, const std::tr1::shared_ptr<const Resolution> & resolution) const;
+
                 void _add_dependencies(const QPN_S & our_qpn_s, const std::tr1::shared_ptr<Resolution> & our_resolution);
 
                 bool _care_about_dependency_spec(const QPN_S &, const std::tr1::shared_ptr<const Resolution> &,
@@ -125,9 +128,6 @@ namespace paludis
                         const int ignorable_pass) const;
 
                 void _do_order(const QPN_S &, const std::tr1::shared_ptr<Resolution> & resolution);
-
-                void _unable_to_decide(const QPN_S &,
-                        const std::tr1::shared_ptr<const Resolution> &) const PALUDIS_ATTRIBUTE((noreturn));
 
                 void _unable_to_order_more() const PALUDIS_ATTRIBUTE((noreturn));
 

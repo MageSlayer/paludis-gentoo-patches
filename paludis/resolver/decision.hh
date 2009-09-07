@@ -31,11 +31,10 @@ namespace paludis
     {
         struct if_package_id;
         struct is_best;
-        struct is_installed;
-        struct is_nothing;
         struct is_same;
         struct is_same_version;
         struct is_transient;
+        struct kind;
     }
 
     namespace resolver
@@ -44,11 +43,10 @@ namespace paludis
         {
             NamedValue<n::if_package_id, std::tr1::shared_ptr<const PackageID> > if_package_id;
             NamedValue<n::is_best, bool> is_best;
-            NamedValue<n::is_installed, bool> is_installed;
-            NamedValue<n::is_nothing, bool> is_nothing;
             NamedValue<n::is_same, bool> is_same;
             NamedValue<n::is_same_version, bool> is_same_version;
             NamedValue<n::is_transient, bool> is_transient;
+            NamedValue<n::kind, DecisionKind> kind;
 
             void serialise(Serialiser &) const;
 

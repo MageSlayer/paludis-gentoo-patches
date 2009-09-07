@@ -47,6 +47,8 @@ namespace
 
         ss << "Decision(";
 
+        ss << d.kind() << " ";
+
         if (d.if_package_id())
             ss << *d.if_package_id();
         else
@@ -54,10 +56,6 @@ namespace
 
         if (d.is_best())
             ss << ", is best";
-        if (d.is_installed())
-            ss << ", is installed";
-        if (d.is_nothing())
-            ss << ", is nothing";
         if (d.is_same())
             ss << ", is same";
         if (d.is_same_version())

@@ -96,13 +96,26 @@ namespace
 
     struct ReasonNameGetter
     {
+        const bool verbose;
+
+        ReasonNameGetter(const bool v) :
+            verbose(v)
+        {
+        }
+
         std::pair<std::string, bool> visit(const DependencyReason & r) const
         {
             if (r.sanitised_dependency().spec().if_block())
                 return std::make_pair(stringify(r.from_id()->name()) + " blocker " +
                             stringify(*r.sanitised_dependency().spec().if_block()), true);
             else
-                return std::make_pair(stringify(r.from_id()->name()), false);
+            {
+                if (verbose)
+                    return std::make_pair(stringify(*r.from_id()) + " dependency "
+                            + stringify(*r.sanitised_dependency().spec().if_package()), false);
+                else
+                    return std::make_pair(stringify(r.from_id()->name()), false);
+            }
         }
 
         std::pair<std::string, bool> visit(const TargetReason &) const
@@ -122,12 +135,81 @@ namespace
         }
     };
 
+    void display_reasons(
+            const std::tr1::shared_ptr<const Resolution> & resolution,
+            const bool verbose)
+    {
+        std::set<std::string> reason_names, special_reason_names;
+        for (Constraints::ConstIterator r(resolution->constraints()->begin()),
+                r_end(resolution->constraints()->end()) ;
+                r != r_end ; ++r)
+        {
+            ReasonNameGetter g(verbose);
+            std::pair<std::string, bool> s((*r)->reason()->accept_returning<std::pair<std::string, bool> >(g));
+            if (! s.first.empty())
+            {
+                if (s.second)
+                    special_reason_names.insert(s.first);
+                else
+                    reason_names.insert(s.first);
+            }
+        }
+
+        if ((! special_reason_names.empty()) || (! reason_names.empty()))
+        {
+            if (verbose)
+            {
+                cout << "    Because of" << endl;
+                if (! special_reason_names.empty())
+                    cout << "        * " << c::bold_yellow() << join(special_reason_names.begin(),
+                            special_reason_names.end(), c::normal() + "\n        " + c::bold_yellow())
+                        << c::normal() << endl;
+
+                if (! reason_names.empty())
+                    cout << "        * " << join(reason_names.begin(), reason_names.end(), "\n        ")
+                        << endl;
+            }
+            else
+            {
+                cout << "    Because of ";
+
+                if (! special_reason_names.empty())
+                    cout << c::bold_yellow() << join(special_reason_names.begin(), special_reason_names.end(), ", ")
+                        << c::normal();
+
+                if (! reason_names.empty())
+                {
+                    if (! special_reason_names.empty())
+                        cout << ", ";
+
+                    if (reason_names.size() > 4)
+                        cout << join(reason_names.begin(), next(reason_names.begin(), 3), ", ")
+                            << ", " << (reason_names.size() - 3) << " more";
+                    else
+                        cout << join(reason_names.begin(), reason_names.end(), ", ");
+                }
+
+                cout << endl;
+            }
+
+            if ((! resolution->decision()->is_best()) && resolution->decision()->kind() == dk_installable)
+                cout << c::bold_red() << "    Which prevented selection of the best candidate" << c::normal() << endl;
+        }
+    }
+
     void display_resolution(
             const std::tr1::shared_ptr<Environment> &,
             const ResolutionLists & lists,
             const DisplayResolutionCommandLine &)
     {
         Context context("When displaying chosen resolution:");
+
+        if (lists.ordered()->empty())
+        {
+            if (lists.errors()->empty())
+                cout << "There are no actions to carry out" << endl << endl;
+            return;
+        }
 
         cout << "These are the actions I will take, in order:" << endl << endl;
 
@@ -323,48 +405,37 @@ namespace
             if (id->short_description_key())
                 cout << "    \"" << id->short_description_key()->value() << "\"" << endl;
 
-            std::set<std::string> reason_names, special_reason_names;
-            for (Constraints::ConstIterator r((*c)->constraints()->begin()),
-                    r_end((*c)->constraints()->end()) ;
-                    r != r_end ; ++r)
-            {
-                ReasonNameGetter g;
-                std::pair<std::string, bool> s((*r)->reason()->accept_returning<std::pair<std::string, bool> >(g));
-                if (! s.first.empty())
-                {
-                    if (s.second)
-                        special_reason_names.insert(s.first);
-                    else
-                        reason_names.insert(s.first);
-                }
-            }
+            display_reasons(*c, false);
+        }
 
-            if ((! special_reason_names.empty()) || (! reason_names.empty()))
-            {
-                cout << "    Because of ";
+        cout << endl;
+    }
 
-                if (! special_reason_names.empty())
-                    cout << c::bold_yellow() << join(special_reason_names.begin(), special_reason_names.end(), ", ")
-                        << c::normal();
+    void display_errors(
+            const std::tr1::shared_ptr<Environment> &,
+            const ResolutionLists & lists,
+            const DisplayResolutionCommandLine &)
+    {
+        Context context("When displaying errors for chosen resolution:");
 
-                if (! reason_names.empty())
-                {
-                    if (! special_reason_names.empty())
-                        cout << ", ";
+        if (lists.errors()->empty())
+            return;
 
-                    if (reason_names.size() > 4)
-                        cout << join(reason_names.begin(), next(reason_names.begin(), 3), ", ")
-                            << ", " << (reason_names.size() - 3) << " more";
-                    else
-                        cout << join(reason_names.begin(), reason_names.end(), ", ");
-                }
+        cout << "I encountered the following errors:" << endl << endl;
 
-                if ((! (*c)->decision()->is_best()) && (! (*c)->decision()->is_nothing())
-                        && (! (*c)->decision()->is_installed()))
-                    cout << c::bold_red() << " which prevented selection of the best candidate" << c::normal();
+        for (Resolutions::ConstIterator c(lists.errors()->begin()), c_end(lists.errors()->end()) ;
+                c != c_end ; ++c)
+        {
+            if ((*c)->decision()->kind() != dk_unable_to_decide)
+                continue;
 
-                cout << endl;
-            }
+            if ((*c)->qpn_s().slot_name_or_null())
+                cout << "[?] " << c::bold_red() << (*c)->qpn_s() << c::normal();
+            else
+                cout << "[?] " << c::bold_red() << (*c)->qpn_s().package() << c::normal();
+            cout << " (no decision could be reached)" << endl;
+
+            display_reasons(*c, true);
         }
 
         cout << endl;
@@ -519,6 +590,7 @@ DisplayResolutionCommand::run(
     ResolutionLists lists(ResolutionLists::deserialise(deserialisation));
 
     display_resolution(env, lists, cmdline);
+    display_errors(env, lists, cmdline);
     display_explanations(env, lists, cmdline);
 
     return 0;

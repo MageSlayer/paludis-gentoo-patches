@@ -65,6 +65,12 @@ Resolutions::end() const
     return ConstIterator(_imp->resolutions.end());
 }
 
+bool
+Resolutions::empty() const
+{
+    return begin() == end();
+}
+
 void
 Resolutions::serialise(Serialiser & s) const
 {
@@ -89,6 +95,7 @@ ResolutionLists::serialise(Serialiser & s) const
 {
     s.object("ResolutionLists")
         .member(SerialiserFlags<serialise::might_be_null>(), "all", all())
+        .member(SerialiserFlags<serialise::might_be_null>(), "errors", errors())
         .member(SerialiserFlags<serialise::might_be_null>(), "ordered", ordered())
         ;
 }
@@ -99,6 +106,7 @@ ResolutionLists::deserialise(Deserialisation & d)
     Deserialisator v(d, "ResolutionLists");
     return make_named_values<ResolutionLists>(
             value_for<n::all>(v.member<std::tr1::shared_ptr<Resolutions> >("all")),
+            value_for<n::errors>(v.member<std::tr1::shared_ptr<Resolutions> >("errors")),
             value_for<n::ordered>(v.member<std::tr1::shared_ptr<Resolutions> >("ordered"))
             );
 }

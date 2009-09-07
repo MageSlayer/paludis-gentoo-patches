@@ -21,11 +21,15 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_DECISION_FWD_HH 1
 
 #include <paludis/util/attributes.hh>
+#include <iosfwd>
 
 namespace paludis
 {
     namespace resolver
     {
+
+#include <paludis/resolver/decision-se.hh>
+
         struct Decision;
     }
 }

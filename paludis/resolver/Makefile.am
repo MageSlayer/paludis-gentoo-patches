@@ -1,11 +1,14 @@
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 MAINTAINERCLEANFILES = Makefile.in
 DISTCLEANFILES = \
+	decision-se.hh decision-se.cc \
 	use_installed-se.hh use_installed-se.cc
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 EXTRA_DIST = \
+	decision-se.hh decision-se.cc decision.se \
 	use_installed-se.hh use_installed-se.cc use_installed.se
 BUILT_SOURCES = \
+	decision-se.hh decision-se.cc \
 	use_installed-se.hh use_installed-se.cc
 
 TESTS =
@@ -13,7 +16,7 @@ TESTS =
 noinst_HEADERS = \
 	arrow.hh arrow-fwd.hh \
 	constraint.hh constraint-fwd.hh \
-	decision.hh decision-fwd.hh \
+	decision.hh decision-fwd.hh decision-se.hh \
 	destinations.hh destinations-fwd.hh \
 	qpn_s.hh qpn_s-fwd.hh \
 	reason.hh reason-fwd.hh \
@@ -71,4 +74,10 @@ use_installed-se.hh : use_installed.se $(top_srcdir)/misc/make_se.bash
 
 use_installed-se.cc : use_installed.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/use_installed.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+decision-se.hh : decision.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/decision.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+decision-se.cc : decision.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/decision.se > $@ ; then rm -f $@ ; exit 1 ; fi
 

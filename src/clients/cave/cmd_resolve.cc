@@ -466,7 +466,7 @@ namespace
         if (is_suggestion(dep))
             return false;
 
-        if (resolution->decision()->is_installed())
+        if (dk_installed == resolution->decision()->kind())
         {
             if (! cmdline.resolution_options.a_follow_installed_build_dependencies.specified())
                 if (is_just_build_dep(dep))
@@ -670,6 +670,10 @@ ResolveCommand::run(
         dump_if_requested(env, resolver, cmdline);
 
         retcode |= display_resolution(env, *resolver->resolution_lists(), cmdline);
+
+        if (! resolver->resolution_lists()->errors()->empty())
+            retcode |= 1;
+
         if (0 == retcode)
             perform_resolution(env, *resolver->resolution_lists(), cmdline);
     }

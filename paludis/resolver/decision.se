@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_DecisionKind()
+{
+    prefix dk
+    namespace paludis::resolver
+
+    key dk_installed             "Installed package"
+    key dk_unable_to_decide      "We couldn't decide. No if_package_id."
+    key dk_installable           "Installable package"
+    key dk_nothing               "We decided nothing"
+
+    want_destringify
+}
+
