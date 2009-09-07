@@ -111,7 +111,7 @@ namespace
         if (command.empty())
             command = "$CAVE perform";
 
-        command.append(" pretend --hooks ");
+        command.append(" pretend --hooks --if-supported ");
         command.append(stringify(id->uniquely_identifying_spec()));
 
         paludis::Command cmd(command);
@@ -157,7 +157,7 @@ namespace
         if (command.empty())
             command = "$CAVE perform";
 
-        command.append(" fetch --hooks ");
+        command.append(" fetch --hooks --if-supported ");
         command.append(stringify(id->uniquely_identifying_spec()));
 
         paludis::Command cmd(command);
