@@ -262,9 +262,9 @@ Resolver::add_target_with_reason(const PackageDepSpec & spec, const std::tr1::sh
 
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-    const std::tr1::shared_ptr<const QPN_S_Sequence> qpn_s_s(_get_qpn_s_s_for(spec, reason));
+    std::tr1::shared_ptr<const QPN_S_Sequence> qpn_s_s(_get_qpn_s_s_for(spec, reason));
     if (qpn_s_s->empty())
-        throw InternalError(PALUDIS_HERE, "not implemented: no slot for " + stringify(spec));
+        qpn_s_s = _get_error_qpn_s_s_for(spec, reason);
 
     for (QPN_S_Sequence::ConstIterator qpn_s(qpn_s_s->begin()), qpn_s_end(qpn_s_s->end()) ;
             qpn_s != qpn_s_end ; ++qpn_s)
@@ -570,14 +570,15 @@ Resolver::_add_dependencies(const QPN_S & our_qpn_s, const std::tr1::shared_ptr<
         else
             qpn_s_s = _get_qpn_s_s_for_blocker(*s->spec().if_block());
 
-        if (qpn_s_s->empty() && s->spec().if_package())
+        if (qpn_s_s->empty())
         {
-            if (our_resolution->decision()->is_installed())
-                Log::get_instance()->message("resolver.cannot_find_installed_dep", ll_warning, lc_context)
-                    << "Installed package '" << *our_resolution->decision()->if_package_id()
-                    << "' dependency '" << s->spec() << "' cannot be met";
+            if (s->spec().if_package())
+                qpn_s_s = _get_error_qpn_s_s_for(*s->spec().if_package(), reason);
             else
-                throw InternalError(PALUDIS_HERE, "not implemented: no slot for " + stringify(s->spec()));
+            {
+                /* blocking on something that doesn't exist is fine */
+                qpn_s_s.reset(new QPN_S_Sequence);
+            }
         }
 
         for (QPN_S_Sequence::ConstIterator qpn_s(qpn_s_s->begin()), qpn_s_end(qpn_s_s->end()) ;
@@ -1128,6 +1129,18 @@ Resolver::_get_qpn_s_s_for(
     }
     else
         return _imp->fns.get_qpn_s_s_for_fn()(spec, reason);
+}
+
+const std::tr1::shared_ptr<QPN_S_Sequence>
+Resolver::_get_error_qpn_s_s_for(
+        const PackageDepSpec & spec,
+        const std::tr1::shared_ptr<const Reason> &) const
+{
+    Context context("When finding slots for '" + stringify(spec) + "', which can't be found the normal way:");
+
+    std::tr1::shared_ptr<QPN_S_Sequence> result(new QPN_S_Sequence);
+    result->push_back(QPN_S(spec, make_null_shared_ptr()));
+    return result;
 }
 
 const std::tr1::shared_ptr<Decision>

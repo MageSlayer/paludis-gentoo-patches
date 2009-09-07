@@ -60,6 +60,10 @@ namespace paludis
                             const PackageDepSpec & spec,
                             const std::tr1::shared_ptr<const Reason> & reason) const;
 
+                const std::tr1::shared_ptr<QPN_S_Sequence> _get_error_qpn_s_s_for(
+                            const PackageDepSpec & spec,
+                            const std::tr1::shared_ptr<const Reason> & reason) const;
+
                 const std::tr1::shared_ptr<Constraint> _make_constraint_from_target(
                         const QPN_S &,
                         const PackageDepSpec &,
