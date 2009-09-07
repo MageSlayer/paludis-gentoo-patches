@@ -101,9 +101,6 @@ econf()
         die "econf called in phase ${!PALUDIS_EBUILD_PHASE_VAR}"
     fi
 
-    local LOCAL_EXTRA_ECONF="${EXTRA_ECONF}"
-    local LOCAL_ECONF_WRAPPER="${ECONF_WRAPPER}"
-
     [[ -z "${ECONF_SOURCE}" ]] && ECONF_SOURCE=.
 
     if [[ -x "${ECONF_SOURCE}/configure" ]] ; then
@@ -115,46 +112,44 @@ econf()
             done
         fi
 
-        [[ -z "${CBUILD}" ]] || LOCAL_EXTRA_ECONF="--build=${CBUILD} ${LOCAL_EXTRA_ECONF}"
-        [[ -z "${CTARGET}" ]] || LOCAL_EXTRA_ECONF="--target=${CTARGET} ${LOCAL_EXTRA_ECONF}"
-
         # If the ebuild passed in --prefix, use that to set --libdir. KDE at least needs this.
 
         ECONF_PREFIX=/usr
+        local i hates= econf_args=()
         for i in "$@"; do
-            if [[ ${i} == --prefix=* ]]; then
-                ECONF_PREFIX=${i#--prefix=}
-            elif [[ ${i} == --exec-prefix=* ]]; then
-                ECONF_PREFIX=${i#--exec-prefix=}
-            fi
+            case "${i}" in
+                --prefix=*|--exec-prefix=*)
+                    ECONF_PREFIX=${i#--*prefix=} ;;
+                --hates=*)
+                    hates+=" ${i#--hates=} "; continue ;;
+            esac
+            econf_args+=( "${i}" )
         done
 
-        echo ${LOCAL_ECONF_WRAPPER} "${ECONF_SOURCE}"/configure \
+        local j default_args=()
+        for i in \
             --prefix=/usr \
             --host=${CHOST} \
+            ${CBUILD:+--build=${CBUILD}} \
+            ${CTARGET:+--build=${CTARGET}} \
             --mandir=/usr/share/man \
             --infodir=/usr/share/info \
             --datadir=/usr/share \
+            --docdir=/usr/share/doc/${PNVR} \
             --sysconfdir=/etc \
             --localstatedir=/var/lib \
             --disable-dependency-tracking \
             --enable-fast-install \
-            --libdir=${ECONF_PREFIX}/${LIBDIR:-lib} \
-            "$@" ${LOCAL_EXTRA_ECONF} 1>&2
+            --libdir=${ECONF_PREFIX}/${LIBDIR:-lib}; do
+            j=${i%%=*}
+            has ${j#--} ${hates} || default_args+=( "${i}" )
+        done
 
-        ${LOCAL_ECONF_WRAPPER} "${ECONF_SOURCE}"/configure \
-            --prefix=/usr \
-            --host=${CHOST} \
-            --mandir=/usr/share/man \
-            --infodir=/usr/share/info \
-            --datadir=/usr/share \
-            --sysconfdir=/etc \
-            --localstatedir=/var/lib \
-            --disable-dependency-tracking \
-            --enable-fast-install \
-            --libdir=${ECONF_PREFIX}/${LIBDIR:-lib} \
-            "$@" ${LOCAL_EXTRA_ECONF} || paludis_die_unless_nonfatal "econf failed" || return 247
+        echo ${ECONF_WRAPPER} "${ECONF_SOURCE}"/configure \
+            "${default_args[@]}" "${econf_args[@]}" ${EXTRA_ECONF} 1>&2
 
+        ${ECONF_WRAPPER} "${ECONF_SOURCE}"/configure \
+            "${default_args[@]}" "${econf_args[@]}" ${EXTRA_ECONF} || paludis_die_unless_nonfatal "econf failed" || return 247
     else
         paludis_die_unless_nonfatal "No configure script for econf" || return 247
     fi
