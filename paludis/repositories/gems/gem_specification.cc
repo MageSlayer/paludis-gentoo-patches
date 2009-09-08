@@ -352,6 +352,12 @@ GemSpecification::provide_key() const
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+GemSpecification::dependencies_key() const
+{
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+}
+
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 GemSpecification::build_dependencies_key() const
 {
     return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
