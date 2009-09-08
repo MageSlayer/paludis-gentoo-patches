@@ -232,6 +232,12 @@ UnwrittenID::provide_key() const
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+UnwrittenID::dependencies_key() const
+{
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+}
+
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnwrittenID::build_dependencies_key() const
 {
     return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();

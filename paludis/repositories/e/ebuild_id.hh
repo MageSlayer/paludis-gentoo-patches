@@ -71,6 +71,7 @@ namespace paludis
                 virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key() const;
+                virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > fetches_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > short_description_key() const;
@@ -98,7 +99,6 @@ namespace paludis
 
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<bool> > transient_key() const;
 
-                const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > raw_dependencies_key() const;
                 const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > remote_ids_key() const;
                 const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > bugs_to_key() const;
                 const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > upstream_changelog_key() const;

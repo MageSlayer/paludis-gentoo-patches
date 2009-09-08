@@ -241,6 +241,12 @@ UnavailableID::provide_key() const
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+UnavailableID::dependencies_key() const
+{
+    return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+}
+
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnavailableID::build_dependencies_key() const
 {
     return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();

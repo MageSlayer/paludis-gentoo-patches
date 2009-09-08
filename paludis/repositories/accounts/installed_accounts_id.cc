@@ -257,6 +257,13 @@ InstalledAccountsID::post_dependencies_key() const
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+InstalledAccountsID::dependencies_key() const
+{
+    need_keys_added();
+    return _imp->dependencies_key;
+}
+
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 InstalledAccountsID::suggested_dependencies_key() const
 {
     return make_null_shared_ptr();

@@ -723,8 +723,8 @@ EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
         {
             std::string s;
 
-            if (id->raw_dependencies_key())
-                s.append(flatten(id->raw_dependencies_key()->value()));
+            if (id->dependencies_key())
+                s.append(flatten(id->dependencies_key()->value()));
             else
             {
                 if (id->build_dependencies_key())

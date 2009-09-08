@@ -356,12 +356,19 @@ SanitisedDependencies::populate(
 {
     Context context("When finding dependencies for '" + stringify(*id) + "':");
 
-    if (id->build_dependencies_key())
-        _populate_one(resolver, id, &PackageID::build_dependencies_key);
-    if (id->run_dependencies_key())
-        _populate_one(resolver, id, &PackageID::run_dependencies_key);
-    if (id->post_dependencies_key())
-        _populate_one(resolver, id, &PackageID::post_dependencies_key);
+    if (id->dependencies_key())
+        _populate_one(resolver, id, &PackageID::dependencies_key);
+    else
+    {
+        if (id->build_dependencies_key())
+            _populate_one(resolver, id, &PackageID::build_dependencies_key);
+        if (id->run_dependencies_key())
+            _populate_one(resolver, id, &PackageID::run_dependencies_key);
+        if (id->post_dependencies_key())
+            _populate_one(resolver, id, &PackageID::post_dependencies_key);
+        if (id->suggested_dependencies_key())
+            _populate_one(resolver, id, &PackageID::suggested_dependencies_key);
+    }
 }
 
 void

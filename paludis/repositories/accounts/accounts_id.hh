@@ -82,6 +82,7 @@ namespace paludis
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > fs_location_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<bool> > transient_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > > choices_key() const;
+                virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies_key() const;
 
                 ///\}
 

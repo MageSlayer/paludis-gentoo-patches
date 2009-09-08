@@ -824,6 +824,12 @@ FakePackageID::suggested_dependencies_key()
     return _imp->suggested_dependencies;
 }
 
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+FakePackageID::dependencies_key() const
+{
+    return make_null_shared_ptr();
+}
+
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 FakePackageID::fetches_key() const
 {

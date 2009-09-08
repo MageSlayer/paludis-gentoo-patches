@@ -338,6 +338,13 @@ AccountsID::suggested_dependencies_key() const
     return make_null_shared_ptr();
 }
 
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+AccountsID::dependencies_key() const
+{
+    _need_file_keys();
+    return _imp->dependencies_key;
+}
+
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 AccountsID::fetches_key() const
 {

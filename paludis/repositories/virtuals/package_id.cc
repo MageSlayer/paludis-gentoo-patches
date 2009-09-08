@@ -284,6 +284,12 @@ VirtualsPackageID::provide_key() const
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+VirtualsPackageID::dependencies_key() const
+{
+    return make_null_shared_ptr();
+}
+
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 VirtualsPackageID::build_dependencies_key() const
 {
     return _imp->bdep;

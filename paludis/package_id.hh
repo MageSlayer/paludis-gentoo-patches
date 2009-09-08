@@ -401,6 +401,21 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
+
+            /**
+             * The dependencies_key, if non-zero, provides all of a package's
+             * dependencies.
+             *
+             * If dependencies_key is used, the client should ignore
+             * build_dependencies_key, run_dependencies_key,
+             * post_dependencies_key and suggested_dependencies_key.
+             *
+             * Repositories that support this key must also provide the old
+             * split out keys.
+             *
+             * \since 0.40.1
+             */
+            virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies_key() const = 0;
     };
 
     /**

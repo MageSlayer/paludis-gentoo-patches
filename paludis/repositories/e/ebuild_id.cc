@@ -704,7 +704,7 @@ EbuildID::provide_key() const
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-EbuildID::raw_dependencies_key() const
+EbuildID::dependencies_key() const
 {
     need_keys_added();
     return _imp->raw_dependencies;

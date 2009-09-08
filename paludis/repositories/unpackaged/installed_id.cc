@@ -571,6 +571,12 @@ InstalledUnpackagedID::contained_in_key() const
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+InstalledUnpackagedID::dependencies_key() const
+{
+    return make_null_shared_ptr();
+}
+
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 InstalledUnpackagedID::build_dependencies_key() const
 {
     return _imp->build_dependencies_key;

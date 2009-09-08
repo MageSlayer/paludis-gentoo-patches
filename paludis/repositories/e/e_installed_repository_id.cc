@@ -729,6 +729,13 @@ EInstalledRepositoryID::provide_key() const
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+EInstalledRepositoryID::dependencies_key() const
+{
+    need_keys_added();
+    return _imp->raw_dependencies;
+}
+
+const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EInstalledRepositoryID::build_dependencies_key() const
 {
     need_keys_added();
