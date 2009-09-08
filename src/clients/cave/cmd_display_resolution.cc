@@ -33,6 +33,7 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/resolver/resolutions.hh>
 #include <paludis/resolver/serialise.hh>
 #include <paludis/resolver/reason.hh>
@@ -50,6 +51,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/match_package.hh>
 #include <paludis/repository.hh>
+#include <paludis/package_dep_spec_properties.hh>
 
 #include <set>
 #include <iterator>
@@ -112,9 +114,20 @@ namespace
             else
             {
                 if (verbose)
+                {
+                    std::string as;
+                    if (r.sanitised_dependency().any_of_alternatives())
+                        as = " (chosen from || ( " + join(r.sanitised_dependency().any_of_alternatives()->begin(),
+                                        r.sanitised_dependency().any_of_alternatives()->end(), " ") + " ) )";
+
                     return std::make_pair(stringify(*r.sanitised_dependency().spec().if_package())
-                            + " from " + stringify(*r.from_id()) + " key "
-                            + r.sanitised_dependency().metadata_key_human_name(), false);
+                            + " from " + stringify(*r.from_id()) + ", key '"
+                            + r.sanitised_dependency().metadata_key_human_name() + "'"
+                            + (r.sanitised_dependency().active_dependency_labels_as_string().empty() ? "" :
+                                ", labelled '" + r.sanitised_dependency().active_dependency_labels_as_string() + "'")
+                            + as,
+                            false);
+                }
                 else
                     return std::make_pair(stringify(r.from_id()->name()), false);
             }
@@ -443,31 +456,6 @@ namespace
         cout << endl;
     }
 
-    struct ReasonDisplayer
-    {
-        void visit(const TargetReason &)
-        {
-            std::cout << "it is a target";
-        }
-
-        void visit(const DependencyReason & reason)
-        {
-            std::cout << "of dependency " << reason.sanitised_dependency().spec()
-                << " from " << *reason.from_id();
-        }
-
-        void visit(const PresetReason &)
-        {
-            std::cout << "of a preset";
-        }
-
-        void visit(const SetReason & reason)
-        {
-            std::cout << "of set " << reason.set_name() << ", which is because ";
-            reason.reason_for_set()->accept(*this);
-        }
-    };
-
     void display_explanations(
             const std::tr1::shared_ptr<Environment> & env,
             const ResolutionLists & lists,
@@ -491,13 +479,37 @@ namespace
             {
                 if (! (*r)->decision()->if_package_id())
                 {
-                    /* really we want this to work for simple cat/pkg and
-                     * cat/pkg:slot specs anyway, even if we chose nothing */
-                    continue;
-                }
+                    /* decided nothing, so we can only work for cat/pkg, where
+                     * either can be wildcards (we could work for :slot too,
+                     * but we're lazy) */
+                    if (! package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
+                                    value_for<n::has_additional_requirements>(false),
+                                    value_for<n::has_category_name_part>(indeterminate),
+                                    value_for<n::has_from_repository>(false),
+                                    value_for<n::has_in_repository>(false),
+                                    value_for<n::has_installable_to_path>(false),
+                                    value_for<n::has_installable_to_repository>(false),
+                                    value_for<n::has_installed_at_path>(false),
+                                    value_for<n::has_package>(indeterminate),
+                                    value_for<n::has_package_name_part>(indeterminate),
+                                    value_for<n::has_slot_requirement>(false),
+                                    value_for<n::has_tag>(false),
+                                    value_for<n::has_version_requirements>(false)
+                                    )))
+                        continue;
 
-                if (! match_package(*env, spec, *(*r)->decision()->if_package_id(), MatchPackageOptions()))
-                    continue;
+                    if (spec.package_ptr() && *spec.package_ptr() != (*r)->qpn_s().package())
+                        continue;
+                    if (spec.package_name_part_ptr() && *spec.package_name_part_ptr() != (*r)->qpn_s().package().package())
+                        continue;
+                    if (spec.category_name_part_ptr() && *spec.category_name_part_ptr() != (*r)->qpn_s().package().category())
+                        continue;
+                }
+                else
+                {
+                    if (! match_package(*env, spec, *(*r)->decision()->if_package_id(), MatchPackageOptions()))
+                        continue;
+                }
 
                 any = true;
 
@@ -535,23 +547,29 @@ namespace
                         std::cout << ", installing to /";
 
                     std::cout << std::endl;
-                    std::cout << "        because ";
-                    ReasonDisplayer v;
-                    (*c)->reason()->accept(v);
+                    std::cout << "        Because of ";
+                    ReasonNameGetter v(true);
+                    std::cout << (*c)->reason()->accept_returning<std::pair<std::string, bool> >(v).first;
                     std::cout << std::endl;
                 }
-                std::cout << "    The decision made was:" << std::endl;
-                std::cout << "        Use " << *(*r)->decision()->if_package_id() << std::endl;
-                if ((*r)->destinations()->slash())
+
+                if ((*r)->decision()->if_package_id())
                 {
-                    std::cout << "        Install to / using repository " << (*r)->destinations()->slash()->repository() << std::endl;
-                    if (! (*r)->destinations()->slash()->replacing()->empty())
-                        for (PackageIDSequence::ConstIterator x((*r)->destinations()->slash()->replacing()->begin()),
-                                x_end((*r)->destinations()->slash()->replacing()->end()) ;
-                                x != x_end ; ++x)
-                            std::cout << "            Replacing " << **x << std::endl;
+                    std::cout << "    The decision made was:" << std::endl;
+                    std::cout << "        Use " << *(*r)->decision()->if_package_id() << std::endl;
+                    if ((*r)->destinations()->slash())
+                    {
+                        std::cout << "        Install to / using repository " << (*r)->destinations()->slash()->repository() << std::endl;
+                        if (! (*r)->destinations()->slash()->replacing()->empty())
+                            for (PackageIDSequence::ConstIterator x((*r)->destinations()->slash()->replacing()->begin()),
+                                    x_end((*r)->destinations()->slash()->replacing()->end()) ;
+                                    x != x_end ; ++x)
+                                std::cout << "            Replacing " << **x << std::endl;
+                    }
+                    std::cout << std::endl;
                 }
-                std::cout << std::endl;
+                else
+                    std::cout << "    No decision could be made" << std::endl << std::endl;
             }
 
             if (! any)

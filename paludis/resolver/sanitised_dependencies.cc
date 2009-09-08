@@ -260,8 +260,31 @@ namespace
 
         SanitisedDependency make_sanitised(const PackageOrBlockDepSpec & spec)
         {
+            std::stringstream adl;
+            for (DependencySystemLabelSequence::ConstIterator i((*labels_stack.begin())->system_labels()->begin()),
+                    i_end((*labels_stack.begin())->system_labels()->end()) ;
+                    i != i_end ; ++i)
+                adl << (adl.str().empty() ? "" : ", ") << stringify(**i);
+
+            for (DependencyTypeLabelSequence::ConstIterator i((*labels_stack.begin())->type_labels()->begin()),
+                    i_end((*labels_stack.begin())->type_labels()->end()) ;
+                    i != i_end ; ++i)
+                adl << (adl.str().empty() ? "" : ", ") << stringify(**i);
+
+            for (DependencyABIsLabelSequence::ConstIterator i((*labels_stack.begin())->abi_labels()->begin()),
+                    i_end((*labels_stack.begin())->abi_labels()->end()) ;
+                    i != i_end ; ++i)
+                adl << (adl.str().empty() ? "" : ", ") << stringify(**i);
+
+            for (DependencySuggestLabelSequence::ConstIterator i((*labels_stack.begin())->suggest_labels()->begin()),
+                    i_end((*labels_stack.begin())->suggest_labels()->end()) ;
+                    i != i_end ; ++i)
+                adl << (adl.str().empty() ? "" : ", ") << stringify(**i);
+
             return make_named_values<SanitisedDependency>(
                     value_for<n::active_dependency_labels>(*labels_stack.begin()),
+                    value_for<n::active_dependency_labels_as_string>(adl.str()),
+                    value_for<n::any_of_alternatives>(make_null_shared_ptr()),
                     value_for<n::metadata_key_human_name>(human_name),
                     value_for<n::metadata_key_raw_name>(raw_name),
                     value_for<n::spec>(spec)
@@ -454,6 +477,8 @@ void
 SanitisedDependency::serialise(Serialiser & s) const
 {
     s.object("SanitisedDependency")
+        .member(SerialiserFlags<>(), "active_dependency_labels_as_string", active_dependency_labels_as_string())
+        .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "any_of_alternatives", any_of_alternatives())
         .member(SerialiserFlags<>(), "metadata_key_human_name", metadata_key_human_name())
         .member(SerialiserFlags<>(), "metadata_key_raw_name", metadata_key_raw_name())
         .member(SerialiserFlags<>(), "spec", spec())
@@ -467,8 +492,20 @@ SanitisedDependency::deserialise(Deserialisation & d, const std::tr1::shared_ptr
 
     Deserialisator v(d, "SanitisedDependency");
 
+    std::tr1::shared_ptr<Sequence<std::string> > any_of_alternatives;;
+    const std::tr1::shared_ptr<Deserialisation> vvd(v.find_remove_member("any_of_alternatives"));
+    if (! vvd->null())
+    {
+        any_of_alternatives.reset(new Sequence<std::string>);
+        Deserialisator vv(*vvd, "c");
+        for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
+            any_of_alternatives->push_back(vv.member<std::string>(stringify(n)));
+    }
+
     return make_named_values<SanitisedDependency>(
             value_for<n::active_dependency_labels>(make_null_shared_ptr()),
+            value_for<n::active_dependency_labels_as_string>(v.member<std::string>("active_dependency_labels_as_string")),
+            value_for<n::any_of_alternatives>(any_of_alternatives),
             value_for<n::metadata_key_human_name>(v.member<std::string>("metadata_key_human_name")),
             value_for<n::metadata_key_raw_name>(v.member<std::string>("metadata_key_raw_name")),
             value_for<n::spec>(PackageOrBlockDepSpec::deserialise(*v.find_remove_member("spec"),

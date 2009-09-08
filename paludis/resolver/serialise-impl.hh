@@ -86,6 +86,16 @@ namespace paludis
         };
 
         template <
+            typename T_>
+        struct SerialiserObjectWriterHandler<false, false, const T_>
+        {
+            static void write(Serialiser & s, const T_ & t)
+            {
+                SerialiserObjectWriterHandler<false, false, T_>::write(s, t);
+            }
+        };
+
+        template <
             bool is_container_,
             typename T_>
         struct SerialiserObjectWriterHandler<is_container_, true, T_>

@@ -34,6 +34,8 @@ namespace paludis
     namespace n
     {
         struct active_dependency_labels;
+        struct active_dependency_labels_as_string;
+        struct any_of_alternatives;
         struct if_package;
         struct if_block;
         struct metadata_key_human_name;
@@ -61,6 +63,8 @@ namespace paludis
         struct SanitisedDependency
         {
             NamedValue<n::active_dependency_labels, std::tr1::shared_ptr<const ActiveDependencyLabels> > active_dependency_labels;
+            NamedValue<n::active_dependency_labels_as_string, std::string> active_dependency_labels_as_string;
+            NamedValue<n::any_of_alternatives, std::tr1::shared_ptr<Sequence<std::string> > > any_of_alternatives;
             NamedValue<n::metadata_key_human_name, std::string> metadata_key_human_name;
             NamedValue<n::metadata_key_raw_name, std::string> metadata_key_raw_name;
             NamedValue<n::spec, PackageOrBlockDepSpec> spec;
