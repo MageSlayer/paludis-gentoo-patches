@@ -36,6 +36,8 @@ namespace paludis
         struct active_dependency_labels;
         struct if_package;
         struct if_block;
+        struct metadata_key_human_name;
+        struct metadata_key_raw_name;
         struct spec;
     }
 
@@ -59,6 +61,8 @@ namespace paludis
         struct SanitisedDependency
         {
             NamedValue<n::active_dependency_labels, std::tr1::shared_ptr<const ActiveDependencyLabels> > active_dependency_labels;
+            NamedValue<n::metadata_key_human_name, std::string> metadata_key_human_name;
+            NamedValue<n::metadata_key_raw_name, std::string> metadata_key_raw_name;
             NamedValue<n::spec, PackageOrBlockDepSpec> spec;
 
             void serialise(Serialiser &) const;

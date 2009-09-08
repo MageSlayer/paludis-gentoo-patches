@@ -98,7 +98,10 @@ namespace
     operator<< (std::ostream & s, const SanitisedDependency & d)
     {
         std::stringstream ss;
-        ss << "Dep(" << d.spec();
+        ss << "Dep(";
+        if (! d.metadata_key_raw_name().empty())
+            ss << d.metadata_key_raw_name() << " ";
+        ss << d.spec();
 
         if (! d.active_dependency_labels()->system_labels()->empty())
             ss << " system { " << join(indirect_iterator(d.active_dependency_labels()->system_labels()->begin()),

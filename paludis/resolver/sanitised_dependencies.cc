@@ -232,16 +232,22 @@ namespace
         const Resolver & resolver;
         const QPN_S our_qpn_s;
         SanitisedDependencies & sanitised_dependencies;
+        const std::string raw_name;
+        const std::string human_name;
         std::list<std::tr1::shared_ptr<ActiveDependencyLabels> > labels_stack;
 
         Finder(
                 const Resolver & r,
                 const QPN_S & q,
                 SanitisedDependencies & s,
-                const std::tr1::shared_ptr<const DependencyLabelSequence> & l) :
+                const std::tr1::shared_ptr<const DependencyLabelSequence> & l,
+                const std::string & rn,
+                const std::string & hn) :
             resolver(r),
             our_qpn_s(q),
-            sanitised_dependencies(s)
+            sanitised_dependencies(s),
+            raw_name(rn),
+            human_name(hn)
         {
             labels_stack.push_front(make_shared_ptr(new ActiveDependencyLabels(*l)));
         }
@@ -256,6 +262,8 @@ namespace
         {
             return make_named_values<SanitisedDependency>(
                     value_for<n::active_dependency_labels>(*labels_stack.begin()),
+                    value_for<n::metadata_key_human_name>(human_name),
+                    value_for<n::metadata_key_raw_name>(raw_name),
                     value_for<n::spec>(spec)
                     );
         }
@@ -336,7 +344,8 @@ SanitisedDependencies::_populate_one(
 {
     Context context("When finding dependencies for '" + stringify(*id) + "' from key '" + ((*id).*pmf)()->raw_name() + "':");
 
-    Finder f(resolver, QPN_S(id), *this, ((*id).*pmf)()->initial_labels());
+    Finder f(resolver, QPN_S(id), *this, ((*id).*pmf)()->initial_labels(), ((*id).*pmf)()->raw_name(),
+            ((*id).*pmf)()->human_name());
     ((*id).*pmf)()->value()->root()->accept(f);
 }
 
@@ -438,6 +447,8 @@ void
 SanitisedDependency::serialise(Serialiser & s) const
 {
     s.object("SanitisedDependency")
+        .member(SerialiserFlags<>(), "metadata_key_human_name", metadata_key_human_name())
+        .member(SerialiserFlags<>(), "metadata_key_raw_name", metadata_key_raw_name())
         .member(SerialiserFlags<>(), "spec", spec())
         ;
 }
@@ -451,6 +462,8 @@ SanitisedDependency::deserialise(Deserialisation & d, const std::tr1::shared_ptr
 
     return make_named_values<SanitisedDependency>(
             value_for<n::active_dependency_labels>(make_null_shared_ptr()),
+            value_for<n::metadata_key_human_name>(v.member<std::string>("metadata_key_human_name")),
+            value_for<n::metadata_key_raw_name>(v.member<std::string>("metadata_key_raw_name")),
             value_for<n::spec>(PackageOrBlockDepSpec::deserialise(*v.find_remove_member("spec"),
                     from_id))
             );

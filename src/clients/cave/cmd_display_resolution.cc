@@ -106,13 +106,15 @@ namespace
         std::pair<std::string, bool> visit(const DependencyReason & r) const
         {
             if (r.sanitised_dependency().spec().if_block())
-                return std::make_pair(stringify(r.from_id()->name()) + " blocker " +
-                            stringify(*r.sanitised_dependency().spec().if_block()), true);
+                return std::make_pair(stringify(*r.sanitised_dependency().spec().if_block())
+                        + " from " + (verbose ? stringify(*r.from_id()) : stringify(r.from_id()->name())),
+                        true);
             else
             {
                 if (verbose)
-                    return std::make_pair(stringify(*r.from_id()) + " dependency "
-                            + stringify(*r.sanitised_dependency().spec().if_package()), false);
+                    return std::make_pair(stringify(*r.sanitised_dependency().spec().if_package())
+                            + " from " + stringify(*r.from_id()) + " key "
+                            + r.sanitised_dependency().metadata_key_human_name(), false);
                 else
                     return std::make_pair(stringify(r.from_id()->name()), false);
             }
@@ -162,11 +164,11 @@ namespace
                 cout << "    Because of" << endl;
                 if (! special_reason_names.empty())
                     cout << "        * " << c::bold_yellow() << join(special_reason_names.begin(),
-                            special_reason_names.end(), c::normal() + "\n        " + c::bold_yellow())
+                            special_reason_names.end(), c::normal() + "\n        * " + c::bold_yellow())
                         << c::normal() << endl;
 
                 if (! reason_names.empty())
-                    cout << "        * " << join(reason_names.begin(), reason_names.end(), "\n        ")
+                    cout << "        * " << join(reason_names.begin(), reason_names.end(), "\n        * ")
                         << endl;
             }
             else
