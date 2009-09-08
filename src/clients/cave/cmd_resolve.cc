@@ -30,6 +30,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/system.hh>
 #include <paludis/args/do_help.hh>
+#include <paludis/args/escape.hh>
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/decision.hh>
@@ -505,7 +506,7 @@ namespace
 
         for (ResolveCommandLine::ParametersConstIterator p(cmdline.begin_parameters()), p_end(cmdline.end_parameters()) ;
                 p != p_end ; ++p)
-            command = command + " " + *p;
+            command = command + " " + args::escape(*p);
 
         paludis::Command cmd(command);
         cmd
@@ -559,7 +560,7 @@ namespace
 
         for (ResolveCommandLine::ParametersConstIterator p(cmdline.begin_parameters()), p_end(cmdline.end_parameters()) ;
                 p != p_end ; ++p)
-            command = command + " " + *p;
+            command = command + " " + args::escape(*p);
 
         paludis::Command cmd(command);
         cmd

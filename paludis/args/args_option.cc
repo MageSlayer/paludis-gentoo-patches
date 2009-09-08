@@ -19,6 +19,7 @@
 
 #include "args.hh"
 #include "args_error.hh"
+#include "escape.hh"
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
@@ -135,7 +136,7 @@ const std::string
 StringArg::forwardable_string() const
 {
     if (specified())
-        return "--" + long_name() + " " + argument();
+        return "--" + long_name() + " " + escape(argument());
     else
         return "";
 }
@@ -210,7 +211,8 @@ const std::string
 StringSetArg::forwardable_string() const
 {
     if (specified())
-        return "--" + long_name() + " " + join(begin_args(), end_args(), " --" + long_name() + " ");
+        return "--" + long_name() + " " + join(begin_args(), end_args(), " --" + long_name() + " ",
+                &escape);
     else
         return "";
 }
@@ -258,7 +260,8 @@ const std::string
 StringSequenceArg::forwardable_string() const
 {
     if (specified())
-        return "--" + long_name() + " " + join(begin_args(), end_args(), " --" + long_name() + " ");
+        return "--" + long_name() + " " + join(begin_args(), end_args(), " --" + long_name() + " ",
+                &escape);
     else
         return "";
 }
@@ -430,7 +433,7 @@ const std::string
 EnumArg::forwardable_string() const
 {
     if (specified())
-        return "--" + long_name() + " " + argument();
+        return "--" + long_name() + " " + escape(argument());
     else
         return "";
 }

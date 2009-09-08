@@ -46,6 +46,63 @@ namespace
         l->push_back(t);
     }
 
+    struct AnyOfAlternativesVisitor
+    {
+        const std::tr1::shared_ptr<Sequence<std::string> > result;
+
+        AnyOfAlternativesVisitor() :
+            result(new Sequence<std::string>)
+        {
+        }
+
+        void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & s)
+        {
+            result->push_back(stringify(*s.spec()));
+        }
+
+        void visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type & s)
+        {
+            result->push_back(stringify(*s.spec()));
+        }
+
+        void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & s)
+        {
+            result->push_back(stringify(*s.spec()));
+        }
+
+        void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type & s)
+        {
+            result->push_back(stringify(*s.spec()));
+        }
+
+        void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
+        {
+            if (node.spec()->condition_met())
+            {
+                AnyOfAlternativesVisitor v;
+                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(v));
+                result->push_back(stringify(*node.spec()) + " ( " + join(v.result->begin(),
+                                v.result->end(), " ") + " )");
+            }
+        }
+
+        void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
+        {
+            AnyOfAlternativesVisitor v;
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(v));
+            result->push_back("|| ( " + join(v.result->begin(),
+                            v.result->end(), " ") + " )");
+        }
+
+        void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
+        {
+            AnyOfAlternativesVisitor v;
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(v));
+            result->push_back("( " + join(v.result->begin(),
+                            v.result->end(), " ") + " )");
+        }
+    };
+
     struct AnyDepSpecChildHandler
     {
         const Resolver & resolver;
@@ -234,6 +291,7 @@ namespace
         SanitisedDependencies & sanitised_dependencies;
         const std::string raw_name;
         const std::string human_name;
+        std::tr1::shared_ptr<Sequence<std::string> > any_of_alternatives;
         std::list<std::tr1::shared_ptr<ActiveDependencyLabels> > labels_stack;
 
         Finder(
@@ -242,12 +300,14 @@ namespace
                 SanitisedDependencies & s,
                 const std::tr1::shared_ptr<const DependencyLabelSequence> & l,
                 const std::string & rn,
-                const std::string & hn) :
+                const std::string & hn,
+                const std::tr1::shared_ptr<Sequence<std::string> > & a) :
             resolver(r),
             our_qpn_s(q),
             sanitised_dependencies(s),
             raw_name(rn),
-            human_name(hn)
+            human_name(hn),
+            any_of_alternatives(a)
         {
             labels_stack.push_front(make_shared_ptr(new ActiveDependencyLabels(*l)));
         }
@@ -284,7 +344,7 @@ namespace
             return make_named_values<SanitisedDependency>(
                     value_for<n::active_dependency_labels>(*labels_stack.begin()),
                     value_for<n::active_dependency_labels_as_string>(adl.str()),
-                    value_for<n::any_of_alternatives>(make_null_shared_ptr()),
+                    value_for<n::any_of_alternatives>(any_of_alternatives),
                     value_for<n::metadata_key_human_name>(human_name),
                     value_for<n::metadata_key_raw_name>(raw_name),
                     value_for<n::spec>(spec)
@@ -320,6 +380,14 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
         {
+            Save<std::tr1::shared_ptr<Sequence<std::string> > > save_any_of_alternatives(&any_of_alternatives);
+
+            {
+                AnyOfAlternativesVisitor v;
+                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(v));
+                any_of_alternatives = v.result;
+            }
+
             AnyDepSpecChildHandler h(resolver, our_qpn_s, std::tr1::bind(&Finder::make_sanitised, this, std::tr1::placeholders::_1));
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(h));
             h.commit(
@@ -368,7 +436,7 @@ SanitisedDependencies::_populate_one(
     Context context("When finding dependencies for '" + stringify(*id) + "' from key '" + ((*id).*pmf)()->raw_name() + "':");
 
     Finder f(resolver, QPN_S(id), *this, ((*id).*pmf)()->initial_labels(), ((*id).*pmf)()->raw_name(),
-            ((*id).*pmf)()->human_name());
+            ((*id).*pmf)()->human_name(), make_null_shared_ptr());
     ((*id).*pmf)()->value()->root()->accept(f);
 }
 
