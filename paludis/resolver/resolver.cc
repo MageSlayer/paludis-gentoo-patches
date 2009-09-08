@@ -323,15 +323,6 @@ Resolver::add_target(const SetName & set_name)
         add_target_with_reason(**s, reason);
 }
 
-QualifiedPackageName
-Resolver::_package_from_spec(const PackageDepSpec & spec) const
-{
-    if (! spec.package_ptr())
-        throw InternalError(PALUDIS_HERE, "unimplemented: wildcard or something");
-
-    return *spec.package_ptr();
-}
-
 const std::tr1::shared_ptr<Resolution>
 Resolver::_create_resolution_for_qpn_s(const QPN_S & qpn_s) const
 {

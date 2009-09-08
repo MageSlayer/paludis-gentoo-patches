@@ -48,8 +48,6 @@ namespace paludis
             private PrivateImplementationPattern<Resolver>
         {
             private:
-                QualifiedPackageName _package_from_spec(const PackageDepSpec &) const;
-
                 const std::tr1::shared_ptr<Resolution> _create_resolution_for_qpn_s(const QPN_S &) const;
                 const std::tr1::shared_ptr<Resolution> _resolution_for_qpn_s(const QPN_S &, const bool create);
                 const std::tr1::shared_ptr<Resolution> _resolution_for_qpn_s(const QPN_S &) const;
