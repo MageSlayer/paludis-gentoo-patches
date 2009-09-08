@@ -197,7 +197,7 @@ Resolver::_make_slash_destination_for(const QPN_S & qpn_s,
     Context context("When finding / destination for '" + stringify(qpn_s) + "':");
 
     if ((! resolution->decision()) || (! resolution->decision()->if_package_id()))
-        throw InternalError(PALUDIS_HERE, "not decided. shouldn't happen.");
+        throw InternalError(PALUDIS_HERE, "resolver bug: not decided yet");
 
     std::tr1::shared_ptr<const Repository> repo;
     for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
@@ -208,14 +208,14 @@ Resolver::_make_slash_destination_for(const QPN_S & qpn_s,
                     *resolution->decision()->if_package_id()))
         {
             if (repo)
-                throw InternalError(PALUDIS_HERE, "multiple valid destinations.");
+                throw InternalError(PALUDIS_HERE, "unimplemented: multiple destinations, don't know which to take");
             else
                 repo = *r;
         }
     }
 
     if (! repo)
-        throw InternalError(PALUDIS_HERE, "no valid destination for " +
+        throw InternalError(PALUDIS_HERE, "unimplemented: no destinations" +
                 stringify(*resolution->decision()->if_package_id()));
 
     return make_shared_ptr(new Destination(make_named_values<Destination>(
@@ -312,7 +312,7 @@ Resolver::add_target(const SetName & set_name)
 
     const std::tr1::shared_ptr<const SetSpecTree> set(_imp->env->set(set_name));
     if (! set)
-        throw InternalError(PALUDIS_HERE, "todo");
+        throw InternalError(PALUDIS_HERE, "unimplemented: no such set");
 
     DepSpecFlattener<SetSpecTree, PackageDepSpec> flattener(_imp->env);
     set->root()->accept(flattener);
@@ -327,7 +327,7 @@ QualifiedPackageName
 Resolver::_package_from_spec(const PackageDepSpec & spec) const
 {
     if (! spec.package_ptr())
-        throw InternalError(PALUDIS_HERE, "not implemented");
+        throw InternalError(PALUDIS_HERE, "unimplemented: wildcard or something");
 
     return *spec.package_ptr();
 }
@@ -359,7 +359,8 @@ Resolver::_resolution_for_qpn_s(const QPN_S & qpn_s, const bool create)
             _imp->resolution_lists->all()->append(resolution);
         }
         else
-            throw InternalError(PALUDIS_HERE, "doesn't exist");
+            throw InternalError(PALUDIS_HERE, "resolver bug: expected resolution for "
+                    + stringify(qpn_s) + " to exist, but it doesn't");
     }
 
     return i->second;
@@ -370,7 +371,8 @@ Resolver::_resolution_for_qpn_s(const QPN_S & qpn_s) const
 {
     ResolutionsByQPN_SMap::const_iterator i(_imp->resolutions_by_qpn_s.find(qpn_s));
     if (_imp->resolutions_by_qpn_s.end() == i)
-        throw InternalError(PALUDIS_HERE, "doesn't exist");
+        throw InternalError(PALUDIS_HERE, "resolver bug: expected resolution for "
+                + stringify(qpn_s) + " to exist, but it doesn't");
 
     return i->second;
 }
@@ -418,7 +420,7 @@ Resolver::_make_constraint_from_dependency(const QPN_S & qpn_s, const SanitisedD
                         )));
     }
     else
-        throw InternalError(PALUDIS_HERE, "huh?");
+        throw InternalError(PALUDIS_HERE, "resolver bug: huh? it's not a block and it's not a package");
 }
 
 void
@@ -504,17 +506,18 @@ Resolver::_made_wrong_decision(const QPN_S & qpn_s,
         {
             /* we can restart if we've selected the same or a newer version
              * than before. but we don't support that yet. */
-            throw InternalError(PALUDIS_HERE, "should have selected " + stringify(*decision->if_package_id()));
+            throw InternalError(PALUDIS_HERE, "unimplemented: should have selected "
+                    + stringify(*decision->if_package_id()));
         }
         else
         {
             /* probably possible if we can fix a block either by upgrading or
              * removing, and we're later forced to remove */
-            throw InternalError(PALUDIS_HERE, "should have selected nothing");
+            throw InternalError(PALUDIS_HERE, "unimplemented: should have selected nothing");
         }
     }
     else
-        throw InternalError(PALUDIS_HERE, "made decision, now can't make one");
+        throw InternalError(PALUDIS_HERE, "unimplemented: made decision, now can't make one");
 }
 
 void
@@ -534,7 +537,7 @@ Resolver::_make_constraint_for_preloading(
     const std::tr1::shared_ptr<PresetReason> reason(new PresetReason);
 
     if (! d->if_package_id())
-        throw InternalError(PALUDIS_HERE, "not decided. shouldn't happen.");
+        throw InternalError(PALUDIS_HERE, "resolver bug: not decided. shouldn't happen.");
 
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
                     value_for<n::nothing_is_fine_too>(false),
@@ -562,7 +565,7 @@ void
 Resolver::_add_dependencies(const QPN_S & our_qpn_s, const std::tr1::shared_ptr<Resolution> & our_resolution)
 {
     if (! our_resolution->decision()->if_package_id())
-        throw InternalError(PALUDIS_HERE, "not decided. shouldn't happen.");
+        throw InternalError(PALUDIS_HERE, "resolver bug: not decided. shouldn't happen.");
 
     Context context("When adding dependencies for '" + stringify(our_qpn_s) + "' with '"
             + stringify(*our_resolution->decision()->if_package_id()) + "':");
@@ -665,7 +668,7 @@ namespace
                     reason.sanitised_dependency().active_dependency_labels());
 
             if (labels->type_labels()->empty())
-                throw InternalError(PALUDIS_HERE, "why did that happen?");
+                throw InternalError(PALUDIS_HERE, "resolver bug: why did that happen?");
 
             std::for_each(indirect_iterator(labels->type_labels()->begin()),
                     indirect_iterator(labels->type_labels()->end()), accept_visitor(*this));
@@ -760,7 +763,7 @@ Resolver::_already_met(const SanitisedDependency & dep) const
         return false;
     }
     else
-        throw InternalError(PALUDIS_HERE, "huh?");
+        throw InternalError(PALUDIS_HERE, "resolver bug: huh? it's not a block and it's not a package");
 }
 
 void
@@ -880,7 +883,7 @@ Resolver::_unable_to_order_more() const
             << std::endl;
     }
 
-    throw InternalError(PALUDIS_HERE, "not implemented");
+    throw InternalError(PALUDIS_HERE, "unimplemented: unfixable dep cycle");
 }
 
 const std::tr1::shared_ptr<Constraints>
@@ -914,7 +917,7 @@ Resolver::find_any_score(const QPN_S & our_qpn_s, const SanitisedDependency & de
             + stringify(our_qpn_s) + "':");
 
     if (dep.spec().if_block())
-        throw InternalError(PALUDIS_HERE, "not yet");
+        throw InternalError(PALUDIS_HERE, "unimplemented: blockers inside || blocks are horrid");
 
     const PackageDepSpec & spec(*dep.spec().if_package());
 
@@ -1078,7 +1081,7 @@ Resolver::_find_cycle(const QPN_S & start_qpn_s, const int ignorable_pass) const
         }
 
         if (! ok)
-            throw InternalError(PALUDIS_HERE, "why did that happen?");
+            throw InternalError(PALUDIS_HERE, "resolver bug: there's a cycle, but we don't know what it is");
     }
 
     return result.str();
@@ -1318,7 +1321,7 @@ Resolver::_try_to_find_decision_for(
         }
     }
 
-    throw InternalError(PALUDIS_HERE, "why did that happen?");
+    throw InternalError(PALUDIS_HERE, "resolver bug: shouldn't be reached");
 }
 
 const std::tr1::shared_ptr<Decision>
