@@ -210,7 +210,7 @@ const std::string
 StringSetArg::forwardable_string() const
 {
     if (specified())
-        return "--" + long_name() + " " + join(begin_args(), end_args(), " ");
+        return "--" + long_name() + " " + join(begin_args(), end_args(), " --" + long_name() + " ");
     else
         return "";
 }
@@ -258,7 +258,7 @@ const std::string
 StringSequenceArg::forwardable_string() const
 {
     if (specified())
-        return "--" + long_name() + " " + join(begin_args(), end_args(), " ");
+        return "--" + long_name() + " " + join(begin_args(), end_args(), " --" + long_name() + " ");
     else
         return "";
 }
