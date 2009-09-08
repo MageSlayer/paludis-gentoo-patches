@@ -52,6 +52,11 @@
 #include <paludis/match_package.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_dep_spec_properties.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/selection.hh>
+#include <paludis/environment.hh>
 
 #include <set>
 #include <iterator>
@@ -213,7 +218,7 @@ namespace
     }
 
     void display_resolution(
-            const std::tr1::shared_ptr<Environment> &,
+            const std::tr1::shared_ptr<Environment> & env,
             const ResolutionLists & lists,
             const DisplayResolutionCommandLine &)
     {
@@ -235,13 +240,21 @@ namespace
             if (! id)
                 throw InternalError(PALUDIS_HERE, "why did that happen?");
 
-            bool is_new(false), is_upgrade(false), is_downgrade(false), is_reinstall(false);
+            bool is_new(false), is_upgrade(false), is_downgrade(false), is_reinstall(false),
+                 other_slots(false);
             std::tr1::shared_ptr<const PackageID> old_id;
 
             if ((*c)->destinations()->slash())
             {
                 if ((*c)->destinations()->slash()->replacing()->empty())
+                {
                     is_new = true;
+                    const std::tr1::shared_ptr<const PackageIDSequence> others((*env)[selection::SomeArbitraryVersion(
+                            generator::Package(id->name()) &
+                            generator::InRepository((*c)->destinations()->slash()->repository())
+                            )]);
+                    other_slots = ! others->empty();
+                }
                 else
                     for (PackageIDSequence::ConstIterator x((*c)->destinations()->slash()->replacing()->begin()),
                             x_end((*c)->destinations()->slash()->replacing()->end()) ;
@@ -262,7 +275,12 @@ namespace
             }
 
             if (is_new)
-                cout << "[n] " << c::bold_blue() << id->canonical_form(idcf_no_version);
+            {
+                if (other_slots)
+                    cout << "[s] " << c::bold_blue() << id->canonical_form(idcf_no_version);
+                else
+                    cout << "[n] " << c::bold_blue() << id->canonical_form(idcf_no_version);
+            }
             else if (is_upgrade)
                 cout << "[u] " << c::blue() << id->canonical_form(idcf_no_version);
             else if (is_reinstall)
