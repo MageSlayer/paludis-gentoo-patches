@@ -48,11 +48,15 @@
 #include <paludis/choice.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/match_package.hh>
+#include <paludis/hook.hh>
+#include <paludis/environment.hh>
+#include <paludis/action.hh>
 
 #include <set>
 #include <iterator>
 #include <iostream>
 #include <cstdlib>
+#include <algorithm>
 
 using namespace paludis;
 using namespace cave;
@@ -102,7 +106,8 @@ namespace
     int do_pretend(
             const std::tr1::shared_ptr<Environment> &,
             const ExecuteResolutionCommandLine & cmdline,
-            const std::tr1::shared_ptr<const Decision> & c)
+            const std::tr1::shared_ptr<const Decision> & c,
+            const int x, const int y)
     {
         const std::tr1::shared_ptr<const PackageID> id(c->if_package_id());
         Context context("When pretending for '" + stringify(*id) + "':");
@@ -113,6 +118,7 @@ namespace
 
         command.append(" pretend --hooks --if-supported ");
         command.append(stringify(id->uniquely_identifying_spec()));
+        command.append(" --x-of-y '" + stringify(x) + " of " + stringify(y) + "'");
 
         paludis::Command cmd(command);
         return run_command(cmd);
@@ -146,7 +152,8 @@ namespace
     int do_fetch(
             const std::tr1::shared_ptr<Environment> &,
             const ExecuteResolutionCommandLine & cmdline,
-            const std::tr1::shared_ptr<const Decision> & c)
+            const std::tr1::shared_ptr<const Decision> & c,
+            const int x, const int y)
     {
         const std::tr1::shared_ptr<const PackageID> id(c->if_package_id());
         Context context("When fetching for '" + stringify(*id) + "':");
@@ -159,6 +166,7 @@ namespace
 
         command.append(" fetch --hooks --if-supported ");
         command.append(stringify(id->uniquely_identifying_spec()));
+        command.append(" --x-of-y '" + stringify(x) + " of " + stringify(y) + "'");
 
         paludis::Command cmd(command);
         int retcode(run_command(cmd));
@@ -170,7 +178,8 @@ namespace
     int do_install_slash(
             const std::tr1::shared_ptr<Environment> &,
             const ExecuteResolutionCommandLine & cmdline,
-            const std::tr1::shared_ptr<const Resolution> & r)
+            const std::tr1::shared_ptr<const Resolution> & r,
+            const int x, const int y)
     {
         const std::tr1::shared_ptr<const PackageID> id(r->decision()->if_package_id());
         Context context("When installing to / for '" + stringify(*id) + "':");
@@ -189,6 +198,8 @@ namespace
                 i != i_end ; ++i)
             command.append(" --replacing " + stringify((*i)->uniquely_identifying_spec()));
 
+        command.append(" --x-of-y '" + stringify(x) + " of " + stringify(y) + "'");
+
         paludis::Command cmd(command);
         int retcode(run_command(cmd));
 
@@ -203,31 +214,55 @@ namespace
     {
         Context context("When executing chosen resolution:");
 
-        int retcode(0);
+        int retcode(0), x(0), y(std::distance(lists.ordered()->begin(), lists.ordered()->end()));
+
+        if (0 != env->perform_hook(Hook("pretend_all_pre")
+                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
+                    ).max_exit_status())
+            throw ActionError("Aborted by hook");
 
         for (Resolutions::ConstIterator c(lists.ordered()->begin()), c_end(lists.ordered()->end()) ;
                 c != c_end ; ++c)
-            retcode |= do_pretend(env, cmdline, (*c)->decision());
+            retcode |= do_pretend(env, cmdline, (*c)->decision(), ++x, y);
+
+        if (0 != env->perform_hook(Hook("pretend_all_post")
+                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
+                    ).max_exit_status())
+            throw ActionError("Aborted by hook");
 
         if (0 != retcode || cmdline.a_pretend.specified())
             return retcode;
 
+        x = 0;
+
+        if (0 != env->perform_hook(Hook("install_all_pre")
+                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
+                ).max_exit_status())
+            throw ActionError("Aborted by hook");
+
         for (Resolutions::ConstIterator c(lists.ordered()->begin()), c_end(lists.ordered()->end()) ;
                 c != c_end ; ++c)
         {
-            retcode = do_fetch(env, cmdline, (*c)->decision());
+            ++x;
+
+            retcode = do_fetch(env, cmdline, (*c)->decision(), x, y);
             if (0 != retcode)
                 return retcode;
 
             if ((*c)->destinations()->slash())
             {
-                retcode = do_install_slash(env, cmdline, *c);
+                retcode = do_install_slash(env, cmdline, *c, x, y);
                 if (0 != retcode)
                     return retcode;
             }
             else
                 throw InternalError(PALUDIS_HERE, "destination != / not done yet");
         }
+
+        if (0 != env->perform_hook(Hook("install_all_post")
+                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
+                ).max_exit_status())
+            throw ActionError("Aborted by hook");
 
         return retcode;
     }

@@ -503,6 +503,10 @@ namespace
                     command = command + " " + (*o)->forwardable_string();
         }
 
+        for (ResolveCommandLine::ParametersConstIterator p(cmdline.begin_parameters()), p_end(cmdline.end_parameters()) ;
+                p != p_end ; ++p)
+            command = command + " " + *p;
+
         paludis::Command cmd(command);
         cmd
             .with_input_stream(&ser_stream, -1, "PALUDIS_SERIALISED_RESOLUTION_FD");
@@ -552,6 +556,10 @@ namespace
 
         if (! cmdline.resolution_options.a_execute.specified())
             command = command + " --pretend";
+
+        for (ResolveCommandLine::ParametersConstIterator p(cmdline.begin_parameters()), p_end(cmdline.end_parameters()) ;
+                p != p_end ; ++p)
+            command = command + " " + *p;
 
         paludis::Command cmd(command);
         cmd

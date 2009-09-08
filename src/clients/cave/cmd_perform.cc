@@ -76,6 +76,7 @@ namespace
         args::ArgsGroup g_general_options;
         args::SwitchArg a_if_supported;
         args::SwitchArg a_hooks;
+        args::StringArg a_x_of_y;
 
         args::ArgsGroup g_fetch_action_options;
         args::SwitchArg a_exclude_unmirrorable;
@@ -99,6 +100,8 @@ namespace
                     "If the action is not supported, exit silently with success rather than erroring.", true),
             a_hooks(&g_general_options, "hooks", '\0',
                     "Also execute the appropriate hooks for the action.", true),
+            a_x_of_y(&g_general_options, "x-of-y", '\0',
+                    "Specify the value of the X_OF_Y variable that is passed to hooks."),
 
             g_fetch_action_options(main_options_section(), "Fetch Action Options",
                     "Options for if the action is 'fetch' or 'pretend-fetch'"),
@@ -151,7 +154,7 @@ namespace
         if (cmdline.a_hooks.specified())
             if (0 != env->perform_hook(Hook(action_name + "_pre")
                         ("TARGET", stringify(*id))
-                        ("X_OF_Y", "1 of 1")
+                        ("X_OF_Y", cmdline.a_x_of_y.argument())
                         ).max_exit_status())
                 throw ActionError("Aborted by hook");
 
@@ -160,7 +163,7 @@ namespace
         if (cmdline.a_hooks.specified())
             if (0 != env->perform_hook(Hook(action_name + "_post")
                         ("TARGET", stringify(*id))
-                        ("X_OF_Y", "1 of 1")
+                        ("X_OF_Y", cmdline.a_x_of_y.argument())
                         ).max_exit_status())
                 throw ActionError("Aborted by hook");
     }
