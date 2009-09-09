@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -119,5 +119,11 @@ OptionsStore::any() const
 {
     return _imp->pool.end() != std::find_if(_imp->pool.begin(), _imp->pool.end(),
             std::bind2nd(std::not_equal_to<uint8_t>(), 0));
+}
+
+unsigned
+OptionsStore::highest_bit() const
+{
+    return _imp->pool.size() * 8;
 }
 

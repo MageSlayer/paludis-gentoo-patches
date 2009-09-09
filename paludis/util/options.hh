@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -95,6 +95,13 @@ namespace paludis
              * Is any bit set?
              */
             bool any() const;
+
+            /**
+             * The highest bit that might be set.
+             *
+             * \since 0.40.1
+             */
+            unsigned highest_bit() const;
 
             ///\}
     };
@@ -200,6 +207,16 @@ namespace paludis
             bool none() const
             {
                 return ! _store.any();
+            }
+
+            /**
+             * Return the value of the highest bit that might be enabled.
+             *
+             * \since 0.40.1
+             */
+            E_ highest_bit() const
+            {
+                return static_cast<E_>(_store.highest_bit());
             }
     };
 }

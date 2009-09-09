@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -91,6 +91,8 @@ namespace test_cases
             TEST_CHECK(options.any());
             options -= mo_seven;
             TEST_CHECK(! options.any());
+            TEST_CHECK(options.highest_bit() >= static_cast<int>(last_mo));
+            TEST_CHECK(options.highest_bit() <= 8 + static_cast<int>(last_mo));
         }
     } test_options;
 }
