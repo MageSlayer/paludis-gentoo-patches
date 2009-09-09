@@ -20,6 +20,7 @@
 #include "cmd_print_commands.hh"
 #include "command_factory.hh"
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <cstdlib>
@@ -55,9 +56,14 @@ namespace
                 "parsing by scripts.";
         }
 
-        PrintCommandsCommandLine()
+        args::ArgsGroup g_general;
+        args::SwitchArg a_all;
+
+        PrintCommandsCommandLine() :
+            g_general(main_options_section(), "General Options", "General Options"),
+            a_all(&g_general, "all", 'a', "Print all available commands.", false)
         {
-            add_usage_line("");
+            add_usage_line("[-a|--all]");
         }
     };
 }
@@ -80,8 +86,16 @@ PrintCommandsCommand::run(
     if (cmdline.begin_parameters() != cmdline.end_parameters())
         throw args::DoHelp("print-commands takes no parameters");
 
-    std::copy(CommandFactory::get_instance()->begin(), CommandFactory::get_instance()->end(),
-            std::ostream_iterator<std::string>(cout, "\n"));
+    for (CommandFactory::ConstIterator cmd(CommandFactory::get_instance()->begin()), cmd_end(CommandFactory::get_instance()->end()) ;
+            cmd != cmd_end ; ++cmd)
+    {
+        std::tr1::shared_ptr<Command> instance(CommandFactory::get_instance()->create(*cmd));
+
+        if (! cmdline.a_all.specified() && ! instance->important())
+            continue;
+
+        cout << stringify(*cmd) << endl;
+    }
 
     return EXIT_SUCCESS;
 }
