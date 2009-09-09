@@ -1,0 +1,40 @@
+# Bash completion function for cave
+# Written by Mike Kelly
+# vim: set et sw=4 sts=4 ts=4 ft=sh :
+
+# Based in part upon 'git' bash completion from git-1.6.4.2
+
+_cave_find_cmd() {
+    local w c=1 cmd
+
+    while [[ $c -lt $COMP_CWORD ]] ; do
+        w="${COMP_WORDS[c]}"
+        case "${w}" in
+            --*) ;;
+            --help) cmd="help"; break ;;
+            *) cmd="${w}"; break ;;
+        esac
+    done
+
+    echo "${cmd}"
+}
+
+_cave() {
+    local cmd="$(_cave_find_cmd)" cur="${COMP_WORDS[COMP_CWORD]}"
+
+    if [[ -z "${cmd}" ]] ; then
+        case "${cur}" in
+            --*)
+                COMPREPLY=( $(compgen -W "--environment --log-level" -- "${cur}") )
+                ;;
+            *)
+                COMPREPLY=( $(compgen -W "$(cave print-commands)" -- "${cur}") )
+                ;;
+        esac
+        return
+    fi
+
+    COMPREPLY=()
+}
+complete -o bashdefault -o default -F _cave cave
+
