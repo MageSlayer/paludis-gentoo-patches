@@ -223,6 +223,11 @@ ebuild_scrub_environment()
         ebuild_safe_source "${1}" PATH PALUDIS_SOURCE_MERGED_VARIABLES \
             PALUDIS_BRACKET_MERGED_VARIABLES LD_LIBRARY_PATH paludis_declared_functions || exit 1
 
+        unset -v $(
+            for v in ${!LD_*}; do
+                [[ ${v} != LD_LIBRARY_PATH ]] && echo ${v}
+            done )
+
         unset -f ${paludis_declared_functions}
         unset -v paludis_declared_functions
 
@@ -243,10 +248,6 @@ ebuild_scrub_environment()
             echo "\${!${PALUDIS_CLIENT_UPPER}_CMDLINE_*} ${PALUDIS_CLIENT_UPPER}_OPTIONS" )
 
         unset -v CATEGORY PN PV P PNV PVR PF PNVR
-        unset -v $(
-            for v in ${!LD_*}; do
-                [[ ${v} != LD_LIBRARY_PATH ]] && echo ${v}
-            done )
         unset -v ebuild EBUILD
         unset -v $(
             for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ${PALUDIS_BRACKET_MERGED_VARIABLES} ; do
