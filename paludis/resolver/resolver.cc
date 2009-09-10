@@ -204,6 +204,9 @@ Resolver::_make_slash_destination_for(const QPN_S & qpn_s,
             r_end(_imp->env->package_database()->end_repositories()) ;
             r != r_end ; ++r)
     {
+        if ((! (*r)->installed_root_key()) || ((*r)->installed_root_key()->value() != FSEntry("/")))
+            continue;
+
         if ((*r)->destination_interface() && (*r)->destination_interface()->is_suitable_destination_for(
                     *resolution->decision()->if_package_id()))
         {
