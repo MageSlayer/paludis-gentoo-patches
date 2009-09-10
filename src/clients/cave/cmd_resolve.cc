@@ -604,8 +604,6 @@ ResolveCommand::run(
             cmdline.resolution_options.a_target_slots.set_argument("best");
         if (! cmdline.resolution_options.a_slots.specified())
             cmdline.resolution_options.a_slots.set_argument("best");
-        if (! cmdline.resolution_options.a_reinstall_scm.specified())
-            cmdline.resolution_options.a_reinstall_scm.set_argument("never");
         if (! cmdline.resolution_options.a_ignore_installed_dependencies.specified())
             cmdline.resolution_options.a_ignore_installed_dependencies.set_specified(true);
     }
@@ -620,6 +618,8 @@ ResolveCommand::run(
             cmdline.resolution_options.a_slots.set_argument("all");
         if (! cmdline.resolution_options.a_follow_installed_build_dependencies.specified())
             cmdline.resolution_options.a_follow_installed_build_dependencies.set_specified(true);
+        if (! cmdline.resolution_options.a_reinstall_scm.specified())
+            cmdline.resolution_options.a_reinstall_scm.set_argument("weekly");
     }
 
     if (cmdline.resolution_options.a_everything.specified())

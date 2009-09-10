@@ -98,9 +98,9 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             args::EnumArg::EnumArgOptions
             ("always",                'a', "Always")
             ("daily",                 'd', "If they were installed more than a day ago")
-            ("weekly",                'w', "If they were installed more than a week ago")
-            ("never",                 'n', "Never (default if --lazy)"),
-            "weekly"
+            ("weekly",                'w', "If they were installed more than a week ago (default if --complete)")
+            ("never",                 'n', "Never"),
+            "never"
             ),
 //            a_reinstall_for_removals(&g_reinstall_options, "reinstall-for-removals", '\0',
 //                    "Select whether to rebuild packages if rebuilding would avoid an unsafe removal", true),
