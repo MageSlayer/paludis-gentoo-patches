@@ -446,7 +446,10 @@ ebuild_load_em_up_dan()
     done
 
     if [[ -z ${PALUDIS_DO_NOTHING_SANDBOXY} ]] ; then
-        [[ -n ${CCACHE_DIR} ]] && export SANDBOX_WRITE=${SANDBOX_WRITE}:${CCACHE_DIR}
+        if [[ -n ${CCACHE_DIR} ]]; then
+            export SANDBOX_WRITE=${SANDBOX_WRITE}:${CCACHE_DIR}
+            sydboxcheck 2>/dev/null && addwrite "${CCACHE_DIR}"
+        fi
     fi
 
     [[ -z ${CBUILD} ]] && export CBUILD=${CHOST}
