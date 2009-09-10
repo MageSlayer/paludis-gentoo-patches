@@ -112,6 +112,10 @@ namespace
         const std::tr1::shared_ptr<const PackageID> id(c->if_package_id());
         Context context("When pretending for '" + stringify(*id) + "':");
 
+        if (x > 1)
+            std::cout << std::string(stringify(x - 1).length() + stringify(y).length() + 4, '\010');
+        std::cout << x << " of " << y << std::flush;
+
         std::string command(cmdline.program_options.a_perform_program.argument());
         if (command.empty())
             command = "$CAVE perform";
@@ -221,9 +225,13 @@ namespace
                     ).max_exit_status())
             throw ActionError("Aborted by hook");
 
+        std::cout << "Executing pretend actions: " << std::flush;
+
         for (Resolutions::ConstIterator c(lists.ordered()->begin()), c_end(lists.ordered()->end()) ;
                 c != c_end ; ++c)
             retcode |= do_pretend(env, cmdline, (*c)->decision(), ++x, y);
+
+        std::cout << std::endl;
 
         if (0 != env->perform_hook(Hook("pretend_all_post")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
