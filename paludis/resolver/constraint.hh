@@ -25,7 +25,9 @@
 #include <paludis/resolver/use_installed-fwd.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/serialise-fwd.hh>
+#include <paludis/resolver/destination_types.hh>
 #include <paludis/util/named_value.hh>
+#include <paludis/util/options.hh>
 #include <paludis/dep_spec.hh>
 #include <tr1/memory>
 
@@ -36,7 +38,7 @@ namespace paludis
         struct nothing_is_fine_too;
         struct reason;
         struct spec;
-        struct to_destination_slash;
+        struct to_destinations;
         struct use_installed;
     }
 
@@ -47,7 +49,7 @@ namespace paludis
             NamedValue<n::nothing_is_fine_too, bool> nothing_is_fine_too;
             NamedValue<n::reason, std::tr1::shared_ptr<const Reason> > reason;
             NamedValue<n::spec, PackageOrBlockDepSpec> spec;
-            NamedValue<n::to_destination_slash, bool> to_destination_slash;
+            NamedValue<n::to_destinations, DestinationTypes> to_destinations;
             NamedValue<n::use_installed, UseInstalled> use_installed;
 
             void serialise(Serialiser &) const;
@@ -65,7 +67,7 @@ namespace paludis
 
                 UseInstalled strictest_use_installed() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 bool nothing_is_fine_too() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                bool to_destination_slash() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const DestinationTypes to_destinations() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void add(const std::tr1::shared_ptr<const Constraint> &);
 

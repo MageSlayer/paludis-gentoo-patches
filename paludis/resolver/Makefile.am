@@ -2,13 +2,16 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 MAINTAINERCLEANFILES = Makefile.in
 DISTCLEANFILES = \
 	decision-se.hh decision-se.cc \
+	destination_types-se.hh destination_types-se.cc \
 	use_installed-se.hh use_installed-se.cc
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 EXTRA_DIST = \
 	decision-se.hh decision-se.cc decision.se \
+	destination_types-se.hh destination_types-se.cc destination_types.se \
 	use_installed-se.hh use_installed-se.cc use_installed.se
 BUILT_SOURCES = \
 	decision-se.hh decision-se.cc \
+	destination_types-se.hh destination_types-se.cc \
 	use_installed-se.hh use_installed-se.cc
 
 TESTS =
@@ -17,6 +20,7 @@ noinst_HEADERS = \
 	arrow.hh arrow-fwd.hh \
 	constraint.hh constraint-fwd.hh \
 	decision.hh decision-fwd.hh decision-se.hh \
+	destination_types.hh destination_types-fwd.hh destination_types-se.hh \
 	destinations.hh destinations-fwd.hh \
 	qpn_s.hh qpn_s-fwd.hh \
 	reason.hh reason-fwd.hh \
@@ -33,6 +37,7 @@ libpaludisresolver_a_SOURCES = \
 	arrow.cc \
 	constraint.cc \
 	decision.cc \
+	destination_types.cc \
 	destinations.cc \
 	qpn_s.cc \
 	reason.cc \
@@ -80,4 +85,10 @@ decision-se.hh : decision.se $(top_srcdir)/misc/make_se.bash
 
 decision-se.cc : decision.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/decision.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+destination_types-se.hh : destination_types.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/destination_types.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+destination_types-se.cc : destination_types.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/destination_types.se > $@ ; then rm -f $@ ; exit 1 ; fi
 

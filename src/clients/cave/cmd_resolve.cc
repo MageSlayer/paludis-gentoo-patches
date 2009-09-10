@@ -256,7 +256,7 @@ namespace
                                 value_for<n::nothing_is_fine_too>(false),
                                 value_for<n::reason>(make_shared_ptr(new PresetReason)),
                                 value_for<n::spec>(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(qpn_s.package())),
-                                value_for<n::to_destination_slash>(false),
+                                value_for<n::to_destinations>(DestinationTypes()),
                                 value_for<n::use_installed>(ui_only_if_transient)
                                 ))));
         }

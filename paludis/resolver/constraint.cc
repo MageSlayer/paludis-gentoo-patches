@@ -38,13 +38,12 @@ namespace paludis
     {
         UseInstalled strictest_use_installed;
         bool nothing_is_fine_too;
-        bool to_destination_slash;
+        DestinationTypes to_destinations;
         Sequence<std::tr1::shared_ptr<const Constraint> > constraints;
 
         Implementation() :
             strictest_use_installed(ui_if_possible),
-            nothing_is_fine_too(true),
-            to_destination_slash(false)
+            nothing_is_fine_too(true)
         {
         }
     };
@@ -77,7 +76,7 @@ Constraints::add(const std::tr1::shared_ptr<const Constraint> & c)
     _imp->constraints.push_back(c);
     _imp->strictest_use_installed = std::min(_imp->strictest_use_installed, c->use_installed());
     _imp->nothing_is_fine_too = _imp->nothing_is_fine_too && c->nothing_is_fine_too();
-    _imp->to_destination_slash = _imp->to_destination_slash || c->to_destination_slash();
+    _imp->to_destinations |= c->to_destinations();
 }
 
 bool
@@ -98,10 +97,10 @@ Constraints::nothing_is_fine_too() const
     return _imp->nothing_is_fine_too;
 }
 
-bool
-Constraints::to_destination_slash() const
+const DestinationTypes
+Constraints::to_destinations() const
 {
-    return _imp->to_destination_slash;
+    return _imp->to_destinations;
 }
 
 void
@@ -130,7 +129,7 @@ Constraint::serialise(Serialiser & s) const
         .member(SerialiserFlags<>(), "nothing_is_fine_too", nothing_is_fine_too())
         .member(SerialiserFlags<serialise::might_be_null>(), "reason", reason())
         .member(SerialiserFlags<>(), "spec", spec())
-        .member(SerialiserFlags<>(), "to_destination_slash", to_destination_slash())
+        .member(SerialiserFlags<>(), "to_destinations", to_destinations())
         .member(SerialiserFlags<>(), "use_installed", stringify(use_installed()))
         ;
 }
@@ -176,7 +175,7 @@ Constraint::deserialise(Deserialisation & d)
                     value_for<n::reason>(reason),
                     value_for<n::spec>(PackageOrBlockDepSpec::deserialise(*v.find_remove_member("spec"),
                             reason->accept_returning<std::tr1::shared_ptr<const PackageID> >(id_finder))),
-                    value_for<n::to_destination_slash>(v.member<bool>("to_destination_slash")),
+                    value_for<n::to_destinations>(v.member<DestinationTypes>("to_destinations")),
                     value_for<n::use_installed>(destringify<UseInstalled>(v.member<std::string>("use_installed")))
             )));
 }

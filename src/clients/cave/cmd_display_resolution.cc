@@ -561,8 +561,22 @@ namespace
                             break;
                     }
 
-                    if ((*c)->to_destination_slash())
-                        std::cout << ", installing to /";
+                    for (DestinationType t(static_cast<DestinationType>(0)), t_end(last_dt) ;
+                            t != t_end ; t = static_cast<DestinationType>(static_cast<int>(t) + 1))
+                    {
+                        if (! (*c)->to_destinations()[t])
+                            continue;
+
+                        switch (t)
+                        {
+                            case dt_slash:
+                                std::cout << ", installing to /";
+                                break;
+
+                            case last_dt:
+                                break;
+                        }
+                    }
 
                     std::cout << std::endl;
                     std::cout << "        Because of ";

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_DestinationType()
+{
+    prefix dt
+    namespace paludis::resolver
+
+    key dt_slash                 "The / fs"
+
+    want_destringify
+}
+
+

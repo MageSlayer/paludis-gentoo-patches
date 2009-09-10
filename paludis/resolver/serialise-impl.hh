@@ -24,9 +24,12 @@
 #include <paludis/util/remove_shared_ptr.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/options.hh>
+#include <paludis/util/tokeniser.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <tr1/type_traits>
+#include <list>
 #include <ostream>
 #include <istream>
 
@@ -77,11 +80,24 @@ namespace paludis
 
         template <
             typename T_>
-        struct SerialiserObjectWriterHandler<false, false, T_>
+        struct SerialiserObjectWriterHandler<false, false, Options<T_> >
         {
-            static void write(Serialiser & s, const T_ & t)
+            static void write(Serialiser & s, const Options<T_> & t)
             {
-                t.serialise(s);
+                std::stringstream ss;
+                for (T_ i(static_cast<T_>(0)), i_end(t.highest_bit()) ;
+                        i != i_end ; i = static_cast<T_>(static_cast<int>(i) + 1))
+                {
+                    if (! t[i])
+                        continue;
+                    if (! ss.str().empty())
+                        ss << ",";
+                    ss << i;
+                }
+
+                s.raw_stream() << "\"";
+                s.escape_write(ss.str());
+                s.raw_stream() << "\";";
             }
         };
 
@@ -92,6 +108,16 @@ namespace paludis
             static void write(Serialiser & s, const T_ & t)
             {
                 SerialiserObjectWriterHandler<false, false, T_>::write(s, t);
+            }
+        };
+
+        template <
+            typename T_>
+        struct SerialiserObjectWriterHandler<false, false, T_>
+        {
+            static void write(Serialiser & s, const T_ & t)
+            {
+                t.serialise(s);
             }
         };
 
@@ -204,6 +230,24 @@ namespace paludis
                     return make_null_shared_ptr();
                 else
                     return T_::deserialise(v);
+            }
+        };
+
+        template <typename T_>
+        struct DeserialisatorHandler<Options<T_> >
+        {
+            static Options<T_> handle(Deserialisation & v)
+            {
+                Options<T_> result;
+                std::list<std::string> tokens;
+                tokenise<delim_kind::AnyOfTag, delim_mode::BoundaryTag>(v.string_value(),
+                        ",", "", std::back_inserter(tokens));
+
+                for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
+                        t != t_end ; ++t)
+                    result += destringify<T_>(*t);
+
+                return result;
             }
         };
 

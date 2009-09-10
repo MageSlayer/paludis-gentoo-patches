@@ -180,7 +180,7 @@ Resolver::_make_destinations_for(const QPN_S & qpn_s,
             break;
     }
 
-    bool requires_slash(resolution->constraints()->to_destination_slash());
+    bool requires_slash(resolution->constraints()->to_destinations()[dt_slash]);
 
     return make_shared_ptr(new Destinations(
                 make_named_values<Destinations>(
@@ -378,7 +378,7 @@ Resolver::_make_constraint_from_target(
                     value_for<n::nothing_is_fine_too>(false),
                     value_for<n::reason>(reason),
                     value_for<n::spec>(spec),
-                    value_for<n::to_destination_slash>(true),
+                    value_for<n::to_destinations>(DestinationTypes() + dt_slash),
                     value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(qpn_s, spec, reason))
                     )));
 }
@@ -392,7 +392,7 @@ Resolver::_make_constraint_from_dependency(const QPN_S & qpn_s, const SanitisedD
                         value_for<n::nothing_is_fine_too>(false),
                         value_for<n::reason>(reason),
                         value_for<n::spec>(*dep.spec().if_package()),
-                        value_for<n::to_destination_slash>(_dependency_to_destination_slash(qpn_s, dep)),
+                        value_for<n::to_destinations>(_destination_types_for_dependency(qpn_s, dep)),
                         value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(qpn_s, *dep.spec().if_package(), reason))
                         )));
     else if (dep.spec().if_block())
@@ -406,7 +406,7 @@ Resolver::_make_constraint_from_dependency(const QPN_S & qpn_s, const SanitisedD
                         value_for<n::nothing_is_fine_too>(ids->empty()),
                         value_for<n::reason>(reason),
                         value_for<n::spec>(dep.spec()),
-                        value_for<n::to_destination_slash>(true),
+                        value_for<n::to_destinations>(DestinationTypes() + dt_slash),
                         value_for<n::use_installed>(ui_if_possible)
                         )));
     }
@@ -534,7 +534,7 @@ Resolver::_make_constraint_for_preloading(
                     value_for<n::nothing_is_fine_too>(false),
                     value_for<n::reason>(reason),
                     value_for<n::spec>(d->if_package_id()->uniquely_identifying_spec()),
-                    value_for<n::to_destination_slash>(false),
+                    value_for<n::to_destinations>(DestinationTypes()),
                     value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(
                             qpn_s, d->if_package_id()->uniquely_identifying_spec(), reason))
                     )));
@@ -883,10 +883,10 @@ Resolver::_initial_constraints_for(const QPN_S & qpn_s) const
     return _imp->fns.get_initial_constraints_for_fn()(qpn_s);
 }
 
-bool
-Resolver::_dependency_to_destination_slash(const QPN_S &, const SanitisedDependency &) const
+DestinationTypes
+Resolver::_destination_types_for_dependency(const QPN_S &, const SanitisedDependency &) const
 {
-    return true;
+    return DestinationTypes() + dt_slash;
 }
 
 Resolver::ResolutionsByQPN_SConstIterator

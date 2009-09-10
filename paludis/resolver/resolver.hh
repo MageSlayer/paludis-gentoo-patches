@@ -31,6 +31,7 @@
 #include <paludis/resolver/destinations-fwd.hh>
 #include <paludis/resolver/resolutions-fwd.hh>
 #include <paludis/resolver/resolver_functions-fwd.hh>
+#include <paludis/resolver/destination_types-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -131,7 +132,7 @@ namespace paludis
 
                 const std::tr1::shared_ptr<Constraints> _initial_constraints_for(const QPN_S &) const;
 
-                bool _dependency_to_destination_slash(
+                DestinationTypes _destination_types_for_dependency(
                         const QPN_S &, const SanitisedDependency &) const;
 
                 bool _same_slot(const std::tr1::shared_ptr<const PackageID> & a,
