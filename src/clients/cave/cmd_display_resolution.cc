@@ -217,28 +217,40 @@ namespace
         }
     }
 
-    void display_resolution(
-            const std::tr1::shared_ptr<Environment> & env,
-            const ResolutionLists & lists,
-            const DisplayResolutionCommandLine &)
+    void display_one_error(
+            const std::tr1::shared_ptr<Environment> &,
+            const DisplayResolutionCommandLine &,
+            const std::tr1::shared_ptr<const Resolution> & resolution,
+            const bool verbose)
     {
-        Context context("When displaying chosen resolution:");
+        if (resolution->qpn_s().slot_name_or_null())
+            cout << "[?] " << c::bold_red() << resolution->qpn_s() << c::normal();
+        else
+            cout << "[?] " << c::bold_red() << resolution->qpn_s().package() << c::normal();
+        cout << " (no decision could be reached)" << endl;
 
-        if (lists.ordered()->empty())
-        {
-            if (lists.errors()->empty())
-                cout << "There are no actions to carry out" << endl << endl;
-            return;
-        }
+        display_reasons(resolution, verbose);
+    }
 
-        cout << "These are the actions I will take, in order:" << endl << endl;
-
-        for (Resolutions::ConstIterator c(lists.ordered()->begin()), c_end(lists.ordered()->end()) ;
+    void display_resolution_list(
+            const std::tr1::shared_ptr<Environment> & env,
+            const std::tr1::shared_ptr<const Resolutions> & list,
+            const DisplayResolutionCommandLine & cmdline)
+    {
+        for (Resolutions::ConstIterator c(list->begin()), c_end(list->end()) ;
                 c != c_end ; ++c)
         {
             const std::tr1::shared_ptr<const PackageID> id((*c)->decision()->if_package_id());
             if (! id)
-                throw InternalError(PALUDIS_HERE, "why did that happen?");
+            {
+                if ((*c)->decision()->kind() == dk_unable_to_decide)
+                {
+                    display_one_error(env, cmdline, *c, false);
+                    continue;
+                }
+                else
+                    throw InternalError(PALUDIS_HERE, "why did that happen?");
+            }
 
             bool is_new(false), is_upgrade(false), is_downgrade(false), is_reinstall(false),
                  other_slots(false);
@@ -274,7 +286,11 @@ namespace
                 is_reinstall = is_reinstall && (! is_downgrade);
             }
 
-            if (is_new)
+            if (! (*c)->decision()->taken())
+            {
+                cout << "[-] " << c::blue() << id->canonical_form(idcf_no_version);
+            }
+            else if (is_new)
             {
                 if (other_slots)
                     cout << "[s] " << c::bold_blue() << id->canonical_form(idcf_no_version);
@@ -444,10 +460,42 @@ namespace
         cout << endl;
     }
 
-    void display_errors(
-            const std::tr1::shared_ptr<Environment> &,
+    void display_resolution(
+            const std::tr1::shared_ptr<Environment> & env,
             const ResolutionLists & lists,
-            const DisplayResolutionCommandLine &)
+            const DisplayResolutionCommandLine & cmdline)
+    {
+        Context context("When displaying chosen resolution:");
+
+        if (lists.ordered()->empty())
+        {
+            if (lists.errors()->empty())
+                cout << "There are no actions to carry out" << endl << endl;
+            return;
+        }
+
+        cout << "These are the actions I will take, in order:" << endl << endl;
+        display_resolution_list(env, lists.ordered(), cmdline);
+    }
+
+    void display_untaken(
+            const std::tr1::shared_ptr<Environment> & env,
+            const ResolutionLists & lists,
+            const DisplayResolutionCommandLine & cmdline)
+    {
+        Context context("When displaying untaken resolutions:");
+
+        if (lists.untaken()->empty())
+            return;
+
+        cout << "I didn't take the following suggestions:" << endl << endl;
+        display_resolution_list(env, lists.untaken(), cmdline);
+    }
+
+    void display_errors(
+            const std::tr1::shared_ptr<Environment> & env,
+            const ResolutionLists & lists,
+            const DisplayResolutionCommandLine & cmdline)
     {
         Context context("When displaying errors for chosen resolution:");
 
@@ -462,13 +510,7 @@ namespace
             if ((*c)->decision()->kind() != dk_unable_to_decide)
                 continue;
 
-            if ((*c)->qpn_s().slot_name_or_null())
-                cout << "[?] " << c::bold_red() << (*c)->qpn_s() << c::normal();
-            else
-                cout << "[?] " << c::bold_red() << (*c)->qpn_s().package() << c::normal();
-            cout << " (no decision could be reached)" << endl;
-
-            display_reasons(*c, true);
+            display_one_error(env, cmdline, *c, true);
         }
 
         cout << endl;
@@ -642,6 +684,7 @@ DisplayResolutionCommand::run(
     ResolutionLists lists(ResolutionLists::deserialise(deserialisation));
 
     display_resolution(env, lists, cmdline);
+    display_untaken(env, lists, cmdline);
     display_errors(env, lists, cmdline);
     display_explanations(env, lists, cmdline);
 

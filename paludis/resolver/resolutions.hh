@@ -35,6 +35,7 @@ namespace paludis
         struct all;
         struct errors;
         struct ordered;
+        struct untaken;
     }
 
     namespace resolver
@@ -44,6 +45,7 @@ namespace paludis
             NamedValue<n::all, std::tr1::shared_ptr<Resolutions> > all;
             NamedValue<n::errors, std::tr1::shared_ptr<Resolutions> > errors;
             NamedValue<n::ordered, std::tr1::shared_ptr<Resolutions> > ordered;
+            NamedValue<n::untaken, std::tr1::shared_ptr<Resolutions> > untaken;
 
             void serialise(Serialiser &) const;
             static ResolutionLists deserialise(

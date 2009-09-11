@@ -36,6 +36,7 @@ namespace paludis
         struct get_initial_constraints_for_fn;
         struct get_qpn_s_s_for_fn;
         struct get_use_installed_fn;
+        struct take_dependency_fn;
     }
 
     namespace resolver
@@ -55,6 +56,12 @@ namespace paludis
                 const std::tr1::shared_ptr<const Reason> &
                 )> GetQPNSSForFunction;
 
+        typedef std::tr1::function<bool (
+                const QPN_S &,
+                const SanitisedDependency &,
+                const std::tr1::shared_ptr<const Reason> &
+                )> TakeDependencyFunction;
+
         typedef std::tr1::function<UseInstalled (
                 const QPN_S &,
                 const PackageDepSpec &,
@@ -67,6 +74,7 @@ namespace paludis
             NamedValue<n::get_initial_constraints_for_fn, GetInitialConstraintsFunction> get_initial_constraints_for_fn;
             NamedValue<n::get_qpn_s_s_for_fn, GetQPNSSForFunction> get_qpn_s_s_for_fn;
             NamedValue<n::get_use_installed_fn, GetUseInstalledFunction> get_use_installed_fn;
+            NamedValue<n::take_dependency_fn, TakeDependencyFunction> take_dependency_fn;
         };
     }
 }

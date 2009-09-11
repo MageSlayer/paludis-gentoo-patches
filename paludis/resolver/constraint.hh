@@ -39,6 +39,7 @@ namespace paludis
         struct reason;
         struct spec;
         struct to_destinations;
+        struct untaken;
         struct use_installed;
     }
 
@@ -50,6 +51,7 @@ namespace paludis
             NamedValue<n::reason, std::tr1::shared_ptr<const Reason> > reason;
             NamedValue<n::spec, PackageOrBlockDepSpec> spec;
             NamedValue<n::to_destinations, DestinationTypes> to_destinations;
+            NamedValue<n::untaken, bool> untaken;
             NamedValue<n::use_installed, UseInstalled> use_installed;
 
             void serialise(Serialiser &) const;
@@ -67,6 +69,7 @@ namespace paludis
 
                 UseInstalled strictest_use_installed() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 bool nothing_is_fine_too() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool all_untaken() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 const DestinationTypes to_destinations() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void add(const std::tr1::shared_ptr<const Constraint> &);

@@ -165,6 +165,7 @@ namespace
         if (c.nothing_is_fine_too())
             ss << "; nothing is fine too";
         ss
+            << "; untaken: " << stringify(c.untaken())
             << "; use_installed: " << stringify(c.use_installed())
             << "; reason: ";
 

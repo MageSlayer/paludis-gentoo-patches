@@ -257,6 +257,7 @@ namespace
                                 value_for<n::reason>(make_shared_ptr(new PresetReason)),
                                 value_for<n::spec>(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(qpn_s.package())),
                                 value_for<n::to_destinations>(DestinationTypes()),
+                                value_for<n::untaken>(false),
                                 value_for<n::use_installed>(ui_only_if_transient)
                                 ))));
         }
@@ -464,9 +465,6 @@ namespace
             const QPN_S &, const std::tr1::shared_ptr<const Resolution> & resolution,
             const SanitisedDependency & dep)
     {
-        if (is_suggestion(dep))
-            return false;
-
         if (dk_installed == resolution->decision()->kind())
         {
             if (! cmdline.resolution_options.a_follow_installed_build_dependencies.specified())
@@ -479,6 +477,20 @@ namespace
 
         return true;
     }
+
+    bool
+    take_dependency_fn(const Environment * const env,
+            const ResolveCommandLine & cmdline,
+            const QPN_S &,
+            const SanitisedDependency & dep,
+            const std::tr1::shared_ptr<const Reason> & reason)
+    {
+        if (is_suggestion(dep))
+            return false;
+
+        return true;
+    }
+
 
     int display_resolution(
             const std::tr1::shared_ptr<Environment> &,
@@ -649,7 +661,10 @@ ResolveCommand::run(
                 value_for<n::get_qpn_s_s_for_fn>(std::tr1::bind(&get_qpn_s_s_for_fn,
                         env.get(), std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2)),
                 value_for<n::get_use_installed_fn>(std::tr1::bind(&use_installed_fn,
+                        std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3)),
+                value_for<n::take_dependency_fn>(std::tr1::bind(&take_dependency_fn, env.get(),
                         std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3))
+
                 ));
     std::tr1::shared_ptr<Resolver> resolver(new Resolver(env.get(), resolver_functions));
     try

@@ -38,12 +38,14 @@ namespace paludis
     {
         UseInstalled strictest_use_installed;
         bool nothing_is_fine_too;
+        bool all_untaken;
         DestinationTypes to_destinations;
         Sequence<std::tr1::shared_ptr<const Constraint> > constraints;
 
         Implementation() :
             strictest_use_installed(ui_if_possible),
-            nothing_is_fine_too(true)
+            nothing_is_fine_too(true),
+            all_untaken(true)
         {
         }
     };
@@ -77,6 +79,7 @@ Constraints::add(const std::tr1::shared_ptr<const Constraint> & c)
     _imp->strictest_use_installed = std::min(_imp->strictest_use_installed, c->use_installed());
     _imp->nothing_is_fine_too = _imp->nothing_is_fine_too && c->nothing_is_fine_too();
     _imp->to_destinations |= c->to_destinations();
+    _imp->all_untaken = _imp->all_untaken && c->untaken();
 }
 
 bool
@@ -95,6 +98,12 @@ bool
 Constraints::nothing_is_fine_too() const
 {
     return _imp->nothing_is_fine_too;
+}
+
+bool
+Constraints::all_untaken() const
+{
+    return _imp->all_untaken;
 }
 
 const DestinationTypes
@@ -130,6 +139,7 @@ Constraint::serialise(Serialiser & s) const
         .member(SerialiserFlags<serialise::might_be_null>(), "reason", reason())
         .member(SerialiserFlags<>(), "spec", spec())
         .member(SerialiserFlags<>(), "to_destinations", to_destinations())
+        .member(SerialiserFlags<>(), "untaken", stringify(untaken()))
         .member(SerialiserFlags<>(), "use_installed", stringify(use_installed()))
         ;
 }
@@ -176,6 +186,7 @@ Constraint::deserialise(Deserialisation & d)
                     value_for<n::spec>(PackageOrBlockDepSpec::deserialise(*v.find_remove_member("spec"),
                             reason->accept_returning<std::tr1::shared_ptr<const PackageID> >(id_finder))),
                     value_for<n::to_destinations>(v.member<DestinationTypes>("to_destinations")),
+                    value_for<n::untaken>(v.member<bool>("untaken")),
                     value_for<n::use_installed>(destringify<UseInstalled>(v.member<std::string>("use_installed")))
             )));
 }

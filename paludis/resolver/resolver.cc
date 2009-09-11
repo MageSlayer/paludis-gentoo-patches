@@ -81,7 +81,8 @@ namespace paludis
             resolution_lists(new ResolutionLists(make_named_values<ResolutionLists>(
                             value_for<n::all>(new Resolutions),
                             value_for<n::errors>(new Resolutions),
-                            value_for<n::ordered>(new Resolutions)
+                            value_for<n::ordered>(new Resolutions),
+                            value_for<n::untaken>(new Resolutions)
                             )))
         {
         }
@@ -141,7 +142,8 @@ Resolver::_resolve_dependencies()
                     continue;
             }
 
-            _add_dependencies(i->first, i->second);
+            if (i->second->decision()->taken())
+                _add_dependencies(i->first, i->second);
         }
     }
 }
@@ -383,6 +385,7 @@ Resolver::_make_constraint_from_target(
                     value_for<n::reason>(reason),
                     value_for<n::spec>(spec),
                     value_for<n::to_destinations>(DestinationTypes() + dt_slash),
+                    value_for<n::untaken>(false),
                     value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(qpn_s, spec, reason))
                     )));
 }
@@ -397,7 +400,10 @@ Resolver::_make_constraint_from_dependency(const QPN_S & qpn_s, const SanitisedD
                         value_for<n::reason>(reason),
                         value_for<n::spec>(*dep.spec().if_package()),
                         value_for<n::to_destinations>(_destination_types_for_dependency(qpn_s, dep)),
-                        value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(qpn_s, *dep.spec().if_package(), reason))
+                        value_for<n::untaken>(! _imp->fns.take_dependency_fn()(qpn_s, dep,
+                                reason)),
+                        value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(qpn_s, *dep.spec().if_package(),
+                                reason))
                         )));
     else if (dep.spec().if_block())
     {
@@ -411,6 +417,7 @@ Resolver::_make_constraint_from_dependency(const QPN_S & qpn_s, const SanitisedD
                         value_for<n::reason>(reason),
                         value_for<n::spec>(dep.spec()),
                         value_for<n::to_destinations>(DestinationTypes() + dt_slash),
+                        value_for<n::untaken>(false),
                         value_for<n::use_installed>(ui_if_possible)
                         )));
     }
@@ -539,6 +546,7 @@ Resolver::_make_constraint_for_preloading(
                     value_for<n::reason>(reason),
                     value_for<n::spec>(d->if_package_id()->uniquely_identifying_spec()),
                     value_for<n::to_destinations>(DestinationTypes()),
+                    value_for<n::untaken>(false),
                     value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(
                             qpn_s, d->if_package_id()->uniquely_identifying_spec(), reason))
                     )));
@@ -780,11 +788,21 @@ Resolver::_resolve_order()
 
             case dk_unable_to_decide:
                 i->second->already_ordered() = true;
-                _imp->resolution_lists->errors()->append(i->second);
+                if (i->second->decision()->taken())
+                    _imp->resolution_lists->errors()->append(i->second);
+                else
+                    _imp->resolution_lists->untaken()->append(i->second);
+                break;
+
+            case dk_installable:
+                if (! i->second->decision()->taken())
+                {
+                    i->second->already_ordered() = true;
+                    _imp->resolution_lists->untaken()->append(i->second);
+                }
                 break;
 
             case last_dk:
-            case dk_installable:
                 break;
         }
     }
@@ -1187,7 +1205,8 @@ Resolver::_try_to_find_decision_for(
                         value_for<n::is_same>(false),
                         value_for<n::is_same_version>(false),
                         value_for<n::is_transient>(false),
-                        value_for<n::kind>(dk_nothing)
+                        value_for<n::kind>(dk_nothing),
+                        value_for<n::taken>(! resolution->constraints()->all_untaken())
                         )));
     }
     else if (installable_id && ! installed_id)
@@ -1199,7 +1218,8 @@ Resolver::_try_to_find_decision_for(
                         value_for<n::is_same>(false),
                         value_for<n::is_same_version>(false),
                         value_for<n::is_transient>(false),
-                        value_for<n::kind>(dk_installable)
+                        value_for<n::kind>(dk_installable),
+                        value_for<n::taken>(! resolution->constraints()->all_untaken())
                         )));
     }
     else if (installed_id && ! installable_id)
@@ -1232,7 +1252,9 @@ Resolver::_try_to_find_decision_for(
                         value_for<n::is_same>(true),
                         value_for<n::is_same_version>(true),
                         value_for<n::is_transient>(is_transient),
-                        value_for<n::kind>(dk_installed)
+                        value_for<n::kind>(dk_installed),
+                        value_for<n::taken>(! resolution->constraints()->all_untaken())
+
                         )));
     }
     else if ((! installed_id) && (! installable_id))
@@ -1307,7 +1329,8 @@ Resolver::_try_to_find_decision_for(
                                 value_for<n::is_same>(is_same),
                                 value_for<n::is_same_version>(is_same_version),
                                 value_for<n::is_transient>(false),
-                                value_for<n::kind>(dk_installable)
+                                value_for<n::kind>(dk_installable),
+                                value_for<n::taken>(! resolution->constraints()->all_untaken())
                                 )));
 
             case ui_if_same:
@@ -1318,7 +1341,8 @@ Resolver::_try_to_find_decision_for(
                                     value_for<n::is_same>(is_same),
                                     value_for<n::is_same_version>(is_same_version),
                                     value_for<n::is_transient>(false),
-                                    value_for<n::kind>(dk_installed)
+                                    value_for<n::kind>(dk_installed),
+                                    value_for<n::taken>(! resolution->constraints()->all_untaken())
                                     )));
                 else
                     return make_shared_ptr(new Decision(make_named_values<Decision>(
@@ -1327,7 +1351,8 @@ Resolver::_try_to_find_decision_for(
                                     value_for<n::is_same>(is_same),
                                     value_for<n::is_same_version>(is_same_version),
                                     value_for<n::is_transient>(is_transient),
-                                    value_for<n::kind>(dk_installable)
+                                    value_for<n::kind>(dk_installable),
+                                    value_for<n::taken>(! resolution->constraints()->all_untaken())
                                     )));
 
             case ui_if_same_version:
@@ -1338,7 +1363,8 @@ Resolver::_try_to_find_decision_for(
                                     value_for<n::is_same>(is_same),
                                     value_for<n::is_same_version>(is_same_version),
                                     value_for<n::is_transient>(false),
-                                    value_for<n::kind>(dk_installed)
+                                    value_for<n::kind>(dk_installed),
+                                    value_for<n::taken>(! resolution->constraints()->all_untaken())
                                     )));
                 else
                     return make_shared_ptr(new Decision(make_named_values<Decision>(
@@ -1347,7 +1373,8 @@ Resolver::_try_to_find_decision_for(
                                     value_for<n::is_same>(is_same),
                                     value_for<n::is_same_version>(is_same_version),
                                     value_for<n::is_transient>(is_transient),
-                                    value_for<n::kind>(dk_installable)
+                                    value_for<n::kind>(dk_installable),
+                                    value_for<n::taken>(! resolution->constraints()->all_untaken())
                                     )));
 
             case ui_if_possible:
@@ -1357,7 +1384,8 @@ Resolver::_try_to_find_decision_for(
                                 value_for<n::is_same>(is_same),
                                 value_for<n::is_same_version>(is_same_version),
                                 value_for<n::is_transient>(false),
-                                value_for<n::kind>(dk_installed)
+                                value_for<n::kind>(dk_installed),
+                                value_for<n::taken>(! resolution->constraints()->all_untaken())
                                 )));
 
             case last_ui:
@@ -1371,7 +1399,7 @@ Resolver::_try_to_find_decision_for(
 const std::tr1::shared_ptr<Decision>
 Resolver::_cannot_decide_for(
         const QPN_S &,
-        const std::tr1::shared_ptr<const Resolution> &) const
+        const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
     return make_shared_ptr(new Decision(make_named_values<Decision>(
                     value_for<n::if_package_id>(make_null_shared_ptr()),
@@ -1379,7 +1407,8 @@ Resolver::_cannot_decide_for(
                     value_for<n::is_same>(false),
                     value_for<n::is_same_version>(false),
                     value_for<n::is_transient>(false),
-                    value_for<n::kind>(dk_unable_to_decide)
+                    value_for<n::kind>(dk_unable_to_decide),
+                    value_for<n::taken>(! resolution->constraints()->all_untaken())
                     )));
 }
 

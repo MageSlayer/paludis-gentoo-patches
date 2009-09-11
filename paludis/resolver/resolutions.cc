@@ -97,6 +97,7 @@ ResolutionLists::serialise(Serialiser & s) const
         .member(SerialiserFlags<serialise::might_be_null>(), "all", all())
         .member(SerialiserFlags<serialise::might_be_null>(), "errors", errors())
         .member(SerialiserFlags<serialise::might_be_null>(), "ordered", ordered())
+        .member(SerialiserFlags<serialise::might_be_null>(), "untaken", untaken())
         ;
 }
 
@@ -107,7 +108,8 @@ ResolutionLists::deserialise(Deserialisation & d)
     return make_named_values<ResolutionLists>(
             value_for<n::all>(v.member<std::tr1::shared_ptr<Resolutions> >("all")),
             value_for<n::errors>(v.member<std::tr1::shared_ptr<Resolutions> >("errors")),
-            value_for<n::ordered>(v.member<std::tr1::shared_ptr<Resolutions> >("ordered"))
+            value_for<n::ordered>(v.member<std::tr1::shared_ptr<Resolutions> >("ordered")),
+            value_for<n::untaken>(v.member<std::tr1::shared_ptr<Resolutions> >("untaken"))
             );
 }
 

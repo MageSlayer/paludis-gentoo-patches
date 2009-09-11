@@ -38,6 +38,7 @@ Decision::serialise(Serialiser & s) const
         .member(SerialiserFlags<>(), "is_same_version", is_same_version())
         .member(SerialiserFlags<>(), "is_transient", is_transient())
         .member(SerialiserFlags<>(), "kind", stringify(kind()))
+        .member(SerialiserFlags<>(), "taken", stringify(taken()))
         ;
 }
 
@@ -51,7 +52,8 @@ Decision::deserialise(Deserialisation & d)
                     value_for<n::is_same>(v.member<bool>("is_same")),
                     value_for<n::is_same_version>(v.member<bool>("is_same_version")),
                     value_for<n::is_transient>(v.member<bool>("is_transient")),
-                    value_for<n::kind>(destringify<DecisionKind>(v.member<std::string>("kind")))
+                    value_for<n::kind>(destringify<DecisionKind>(v.member<std::string>("kind"))),
+                    value_for<n::taken>(v.member<bool>("taken"))
                     )));
 }
 

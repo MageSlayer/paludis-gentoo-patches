@@ -35,6 +35,7 @@ namespace paludis
         struct is_same_version;
         struct is_transient;
         struct kind;
+        struct taken;
     }
 
     namespace resolver
@@ -47,6 +48,7 @@ namespace paludis
             NamedValue<n::is_same_version, bool> is_same_version;
             NamedValue<n::is_transient, bool> is_transient;
             NamedValue<n::kind, DecisionKind> kind;
+            NamedValue<n::taken, bool> taken;
 
             void serialise(Serialiser &) const;
 
