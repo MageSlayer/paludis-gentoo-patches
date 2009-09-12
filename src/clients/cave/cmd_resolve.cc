@@ -479,11 +479,11 @@ namespace
     }
 
     bool
-    take_dependency_fn(const Environment * const env,
-            const ResolveCommandLine & cmdline,
+    take_dependency_fn(const Environment * const,
+            const ResolveCommandLine &,
             const QPN_S &,
             const SanitisedDependency & dep,
-            const std::tr1::shared_ptr<const Reason> & reason)
+            const std::tr1::shared_ptr<const Reason> &)
     {
         if (is_suggestion(dep))
             return false;
