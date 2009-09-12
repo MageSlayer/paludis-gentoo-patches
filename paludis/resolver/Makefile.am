@@ -14,8 +14,6 @@ BUILT_SOURCES = \
 	destination_types-se.hh destination_types-se.cc \
 	use_installed-se.hh use_installed-se.cc
 
-TESTS =
-
 noinst_HEADERS = \
 	arrow.hh arrow-fwd.hh \
 	constraint.hh constraint-fwd.hh \
@@ -49,17 +47,55 @@ libpaludisresolver_a_SOURCES = \
 	suggest_restart.cc \
 	use_installed.cc
 
-TESTS_ENVIRONMENT = env PALUDIS_OPTIONS="" \
+TESTS_ENVIRONMENT = env \
+	PALUDIS_OPTIONS="" \
+	TEST_OUTPUT_WRAPPER="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/outputwrapper`" \
+	PALUDIS_OUTPUTWRAPPER_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
+	PALUDIS_EBUILD_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/repositories/e/ebuild/`" \
+	PALUDIS_EBUILD_DIR_FALLBACK="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/ebuild/`" \
+	PALUDIS_EXTRA_EBUILD_MODULES_DIRS="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
+	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/repositories/e/eapis/" \
+	PALUDIS_SUFFIXES_FILE="$(top_srcdir)/paludis/repositories/e/ebuild_entries_suffixes.conf" \
+	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
+	PALUDIS_DISTRIBUTION="gentoo" \
+	PALUDIS_OPTIONS="" \
+	PALUDIS_FETCHERS_DIR="$(top_srcdir)/paludis/fetchers/" \
+	PALUDIS_SKIP_CONFIG="yes" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
-	PALUDIS_DISTRIBUTION="gentoo" \
+	PALUDIS_NO_CHOWN="yes" \
+	PALUDIS_TESTS_KEEP_STDERR="yes" \
+	PALUDIS_DEFAULT_OUTPUT_CONF="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/environments/paludis/tests_output.conf`" \
+	PALUDIS_OUTPUT_MANAGERS_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/environments/paludis/output_managers/`" \
+	LD_LIBRARY_PATH="`echo $$LD_LIBRARY_PATH: | sed -e 's,^:,,'`` \
+		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/`:` \
+		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/.libs/`" \
 	bash $(top_srcdir)/test/run_test.sh
 
 if ENABLE_NEW_RESOLVER
 noinst_LIBRARIES = libpaludisresolver.a
+
+TESTS = \
+	resolver_TEST_suggestions
 endif
 
+
 check_PROGRAMS = $(TESTS)
+check_SCRIPTS = \
+	resolver_TEST_suggestions_setup.sh resolver_TEST_suggestions_cleanup.sh
+
+resolver_TEST_suggestions_SOURCES = resolver_TEST_suggestions.cc
+
+resolver_TEST_suggestions_LDADD = \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	libpaludisresolver.a \
+	$(DYNAMIC_LD_LIBS)
+
+resolver_TEST_suggestions_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done

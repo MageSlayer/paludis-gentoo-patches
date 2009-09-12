@@ -103,7 +103,7 @@ namespace paludis
                         const std::tr1::shared_ptr<const PackageID> &,
                         const std::tr1::shared_ptr<const Repository> &) const;
 
-                void _resolve_dependencies();
+                void _resolve_decide_with_dependencies();
                 void _resolve_destinations();
                 void _resolve_arrows();
                 void _resolve_order();

@@ -103,31 +103,39 @@ Resolver::resolve()
 {
     Context context("When finding an appropriate resolution:");
 
-    _resolve_dependencies();
+    _resolve_decide_with_dependencies();
     _resolve_destinations();
     _resolve_arrows();
     _resolve_order();
 }
 
 void
-Resolver::_resolve_dependencies()
+Resolver::_resolve_decide_with_dependencies()
 {
-    Context context("When resolving dependencies recursively:");
+    Context context("When resolving and adding dependencies recursively:");
 
-    bool done(false);
-    while (! done)
+    enum State { deciding_non_suggestions, deciding_suggestions, finished } state = deciding_non_suggestions;
+    bool changed(true);
+    while (true)
     {
-        done = true;
+        if (! changed)
+            state = State(state + 1);
+        if (state == finished)
+            break;
 
+        changed = false;
         for (ResolutionsByQPN_SMap::iterator i(_imp->resolutions_by_qpn_s.begin()), i_end(_imp->resolutions_by_qpn_s.end()) ;
                 i != i_end ; ++i)
         {
             if (i->second->decision())
                 continue;
 
+            if (i->second->constraints()->all_untaken() && state == deciding_non_suggestions)
+                continue;
+
             _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-            done = false;
+            changed = true;
             _decide(i->first, i->second);
 
             switch (i->second->decision()->kind())
@@ -482,6 +490,9 @@ Resolver::_verify_new_constraint(const QPN_S & qpn_s,
         }
     }
 
+    if (ok && ! constraint->untaken())
+        ok = resolution->decision()->taken();
+
     if (! ok)
         _made_wrong_decision(qpn_s, resolution, constraint);
 }
@@ -546,7 +557,7 @@ Resolver::_make_constraint_for_preloading(
                     value_for<n::reason>(reason),
                     value_for<n::spec>(d->if_package_id()->uniquely_identifying_spec()),
                     value_for<n::to_destinations>(DestinationTypes()),
-                    value_for<n::untaken>(false),
+                    value_for<n::untaken>(! d->taken()),
                     value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(
                             qpn_s, d->if_package_id()->uniquely_identifying_spec(), reason))
                     )));
