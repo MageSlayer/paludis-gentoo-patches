@@ -14,8 +14,48 @@ cd repo
 echo "repo" > profiles/repo_name
 : > metadata/categories.conf
 
+# suggestion
+echo 'suggestion' >> metadata/categories.conf
+
+mkdir -p 'packages/suggestion/target'
+cat <<END > packages/suggestion/target/target-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="
+    ( post,suggested: suggestion/dep )
+    "
+END
+
+mkdir -p 'packages/suggestion/dep'
+cat <<END > packages/suggestion/dep/dep-1.exheres-0
+SUMMARY="dep"
+PLATFORMS="test"
+SLOT="0"
+END
+
+# unmeetable-suggestion
+echo 'unmeetable-suggestion' >> metadata/categories.conf
+
+mkdir -p 'packages/unmeetable-suggestion/target'
+cat <<END > packages/unmeetable-suggestion/target/target-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="
+    ( post,suggested: unmeetable-suggestion/unmeetable-dep )
+    "
+END
+
+mkdir -p 'packages/unmeetable-suggestion/unmeetable-dep'
+cat <<END > packages/unmeetable-suggestion/unmeetable-dep/unmeetable-dep-1.exheres-0
+SUMMARY="unmeetable dep"
+PLATFORMS="test"
+SLOT="0"
+END
+
 # suggestion-then-dependency
-echo 'suggestion-then-dependency' > metadata/categories.conf
+echo 'suggestion-then-dependency' >> metadata/categories.conf
 
 mkdir -p 'packages/suggestion-then-dependency/target'
 cat <<END > packages/suggestion-then-dependency/target/target-1.exheres-0

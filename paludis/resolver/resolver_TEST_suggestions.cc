@@ -288,6 +288,72 @@ namespace
 
 namespace test_cases
 {
+    struct TestSuggestion : ResolverSuggestionsTestCase
+    {
+        TestSuggestion() : ResolverSuggestionsTestCase("suggestion") { }
+
+        void run()
+        {
+            std::tr1::shared_ptr<const ResolutionLists> resolutions(get_resolutions("suggestion/target"));
+
+            {
+                TestMessageSuffix s("errors");
+                check_resolution_list(resolutions->errors(), ResolutionListChecks()
+                        .finished()
+                        );
+            }
+
+            {
+                TestMessageSuffix s("ordered");
+                check_resolution_list(resolutions->ordered(), ResolutionListChecks()
+                        .qpn(QualifiedPackageName("suggestion/target"))
+                        .finished()
+                        );
+            }
+
+            {
+                TestMessageSuffix s("untaken");
+                check_resolution_list(resolutions->untaken(), ResolutionListChecks()
+                        .qpn(QualifiedPackageName("suggestion/dep"))
+                        .finished()
+                        );
+            }
+        }
+    } test_suggestion;
+
+    struct TestUnmeetableSuggestion : ResolverSuggestionsTestCase
+    {
+        TestUnmeetableSuggestion() : ResolverSuggestionsTestCase("unmeetable suggestion") { }
+
+        void run()
+        {
+            std::tr1::shared_ptr<const ResolutionLists> resolutions(get_resolutions("unmeetable-suggestion/target"));
+
+            {
+                TestMessageSuffix s("errors");
+                check_resolution_list(resolutions->errors(), ResolutionListChecks()
+                        .finished()
+                        );
+            }
+
+            {
+                TestMessageSuffix s("ordered");
+                check_resolution_list(resolutions->ordered(), ResolutionListChecks()
+                        .qpn(QualifiedPackageName("unmeetable-suggestion/target"))
+                        .finished()
+                        );
+            }
+
+            {
+                TestMessageSuffix s("untaken");
+                check_resolution_list(resolutions->untaken(), ResolutionListChecks()
+                        .qpn(QualifiedPackageName("unmeetable-suggestion/unmeetable-dep"))
+                        .finished()
+                        );
+            }
+        }
+    } test_unmeetable_suggestion;
+
     struct TestSuggestionThenDependency : ResolverSuggestionsTestCase
     {
         TestSuggestionThenDependency() : ResolverSuggestionsTestCase("suggestion then dependency") { }
