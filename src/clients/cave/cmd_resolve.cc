@@ -369,24 +369,29 @@ namespace
     struct IsSuggestionVisitor
     {
         bool is_suggestion;
+        bool is_recommendation;
+        bool is_requirement;
 
         IsSuggestionVisitor() :
-            is_suggestion(true)
+            is_suggestion(false),
+            is_recommendation(false),
+            is_requirement(false)
         {
         }
 
         void visit(const DependencyRequiredLabel &)
         {
-            is_suggestion = false;
+            is_requirement = true;
         }
 
         void visit(const DependencyRecommendedLabel &)
         {
-            is_suggestion = false;
+            is_recommendation = true;
         }
 
         void visit(const DependencySuggestedLabel &)
         {
+            is_suggestion = true;
         }
     };
 
@@ -434,7 +439,19 @@ namespace
         std::for_each(indirect_iterator(dep.active_dependency_labels()->suggest_labels()->begin()),
                 indirect_iterator(dep.active_dependency_labels()->suggest_labels()->end()),
                 accept_visitor(v));
-        return v.is_suggestion;
+        return v.is_suggestion && (! v.is_recommendation) && (! v.is_requirement);
+    }
+
+    bool is_recommendation(const SanitisedDependency & dep)
+    {
+        if (dep.active_dependency_labels()->suggest_labels()->empty())
+            return false;
+
+        IsSuggestionVisitor v;
+        std::for_each(indirect_iterator(dep.active_dependency_labels()->suggest_labels()->begin()),
+                indirect_iterator(dep.active_dependency_labels()->suggest_labels()->end()),
+                accept_visitor(v));
+        return v.is_recommendation && (! v.is_requirement);
     }
 
     bool is_just_build_dep(const SanitisedDependency & dep)
@@ -473,6 +490,12 @@ namespace
             if (cmdline.resolution_options.a_ignore_installed_dependencies.specified())
                 if (! is_compiled_against_dep(dep))
                     return false;
+
+            if (is_suggestion(dep) || is_recommendation(dep))
+            {
+                /* should only return false if the dep's not already installedish */
+                return false;
+            }
         }
 
         return true;
