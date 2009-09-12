@@ -276,6 +276,16 @@ namespace test
     } while (false)
 
 /**
+ * Check that a is true, with a custom message.
+ */
+#define TEST_CHECK_MESSAGE(a, b) \
+    do { \
+        reached(__PRETTY_FUNCTION__, __FILE__, __LINE__); \
+        check(__PRETTY_FUNCTION__, __FILE__, __LINE__, a, \
+                b); \
+    } while (false)
+
+/**
  * Check that a throws an exception of type b.
  */
 #define TEST_CHECK_THROWS(a, b) \
