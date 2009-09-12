@@ -260,10 +260,7 @@ struct ConsoleInstallTask::CallbackDisplayer
                 ++n;
 
                 if (n == 4)
-                {
                     ss.append(", ...");
-                    break;
-                }
 
                 if (n < 4)
                 {
