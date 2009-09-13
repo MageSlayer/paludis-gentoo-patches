@@ -8,7 +8,8 @@ AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 EXTRA_DIST = \
 	decision-se.hh decision-se.cc decision.se \
 	destination_types-se.hh destination_types-se.cc destination_types.se \
-	use_installed-se.hh use_installed-se.cc use_installed.se
+	use_installed-se.hh use_installed-se.cc use_installed.se \
+	$(check_SCRIPTS)
 BUILT_SOURCES = \
 	decision-se.hh decision-se.cc \
 	destination_types-se.hh destination_types-se.cc \
