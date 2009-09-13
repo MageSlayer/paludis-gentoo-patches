@@ -164,7 +164,7 @@ namespace
         Eligible(const bool v, const std::string & k) :
             visible_only(v),
             installed(true),
-            installable(false)
+            installable(true)
         {
             if (k == "all")
             {
