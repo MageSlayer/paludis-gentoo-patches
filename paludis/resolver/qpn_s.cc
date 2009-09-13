@@ -177,5 +177,6 @@ QPN_S::deserialise(Deserialisation & d)
 }
 
 template class PrivateImplementationPattern<QPN_S>;
+template class Sequence<QPN_S>;
 template class WrappedForwardIterator<QPN_S_Sequence::ConstIteratorTag, const QPN_S>;
 
