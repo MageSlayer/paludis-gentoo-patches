@@ -508,14 +508,14 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
                 generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                     .package(d.package_id()->name()).in_repository(*repo), MatchPackageOptions()) :
                 generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
-                    .package(d.package_id()->name()), MatchPackageOptions()) | filter::SupportsAction<InstalledAction>()
+                    .package(d.package_id()->name()), MatchPackageOptions()) | filter::InstalledAtRoot(environment()->root())
                 )]);;
 
     std::tr1::shared_ptr<const PackageIDSequence> existing_slot_repo((*environment())[selection::AllVersionsSorted((repo ?
                     generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                         .package(d.package_id()->name()).in_repository(*repo), MatchPackageOptions()) :
                     generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
-                        .package(d.package_id()->name()), MatchPackageOptions()) | filter::SupportsAction<InstalledAction>())
+                        .package(d.package_id()->name()), MatchPackageOptions()) | filter::InstalledAtRoot(environment()->root()))
                 | filter::SameSlot(d.package_id()))]);
 
     display_merge_list_entry_start(d, m);
@@ -1438,7 +1438,7 @@ ConsoleInstallTask::display_merge_list_entry_package_tags(const DepListEntry & d
             std::tr1::static_pointer_cast<const DependencyDepTag>(tag->tag())->dependency());
         if (d.kind() != dlk_masked && d.kind() != dlk_block && (*environment())[selection::SomeArbitraryVersion(
                 generator::Matches(*spec, MatchPackageOptions()) |
-                filter::SupportsAction<InstalledAction>())]->empty())
+                filter::InstalledAtRoot(environment()->root()))]->empty())
             unsatisfied_dependents.insert(tag->tag()->short_text());
         else
             dependents.insert(tag->tag()->short_text());

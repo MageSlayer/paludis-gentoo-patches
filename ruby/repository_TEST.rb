@@ -383,9 +383,7 @@ module Paludis
 
         def test_some_ids_might_support
             assert repo.some_ids_might_support_action(SupportsActionTest.new(InstallAction))
-            assert ! repo.some_ids_might_support_action(SupportsActionTest.new(InstalledAction))
             assert ! installed_repo.some_ids_might_support_action(SupportsActionTest.new(InstallAction))
-            assert installed_repo.some_ids_might_support_action(SupportsActionTest.new(InstalledAction))
         end
     end
 

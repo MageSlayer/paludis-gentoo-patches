@@ -530,13 +530,6 @@ namespace
                 throw UnsupportedActionError(*id, a);
         }
 
-        void visit(const InstalledAction & a)
-        {
-            SupportsActionTest<InstalledAction> t;
-            if (! id->repository()->some_ids_might_support_action(t))
-                throw UnsupportedActionError(*id, a);
-        }
-
         void visit(const UninstallAction & a)
         {
             SupportsActionTest<UninstallAction> t;

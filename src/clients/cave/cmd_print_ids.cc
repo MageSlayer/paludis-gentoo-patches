@@ -83,7 +83,6 @@ namespace
                     "multiple times, all listed actions must be supported.",
                     args::StringSetArg::StringSetArgOptions
                     ("install",       "able to be installed")
-                    ("installed",     "installed")
                     ("uninstall",     "able to be uninstalled")
                     ("pretend",       "has pretend-install-time checks")
                     ("config",        "supports post-install configuration")
@@ -274,8 +273,6 @@ PrintIDsCommand::run(
         {
             if (*m == "install")
                 fg = fg | filter::SupportsAction<InstallAction>();
-            else if (*m == "installed")
-                fg = fg | filter::SupportsAction<InstalledAction>();
             else if (*m == "uninstall")
                 fg = fg | filter::SupportsAction<UninstallAction>();
             else if (*m == "pretend")

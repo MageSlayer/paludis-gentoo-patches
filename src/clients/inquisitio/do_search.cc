@@ -159,25 +159,30 @@ namespace
         typedef bool result;
 
         const bool visible_only;
-        std::tr1::shared_ptr<SupportsActionTestBase> action_test;
+        bool installed, installable;
 
         Eligible(const bool v, const std::string & k) :
-            visible_only(v)
+            visible_only(v),
+            installed(true),
+            installable(false)
         {
             if (k == "all")
             {
             }
             else if (k == "installable")
-                action_test.reset(new SupportsActionTest<InstallAction>());
+                installed = false;
             else if (k == "installed")
-                action_test.reset(new SupportsActionTest<InstalledAction>());
+                installable = false;
             else
                 throw InternalError(PALUDIS_HERE, "Bad --kind '" + k + "'");
         }
 
         bool operator() (const PackageID & id) const
         {
-            if (action_test && ! id.supports_action(*action_test))
+            if ((! installed) && id.repository()->installed_root_key())
+                return false;
+
+            if ((! installable) && id.supports_action(SupportsActionTest<InstallAction>()))
                 return false;
 
             if (visible_only)
@@ -351,7 +356,7 @@ do_search(Environment & env)
         }
         else if (CommandLine::get_instance()->a_kind.argument() == "installed")
         {
-            if (! (*r)->some_ids_might_support_action(SupportsActionTest<InstalledAction>()))
+            if (! (*r)->installed_root_key())
                 continue;
         }
         else if (CommandLine::get_instance()->a_kind.argument() == "all")

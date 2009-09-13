@@ -60,11 +60,6 @@ namespace
         {
             return "config";
         }
-
-        std::string visit(const InstalledAction &) const
-        {
-            return "installed";
-        }
     };
 }
 

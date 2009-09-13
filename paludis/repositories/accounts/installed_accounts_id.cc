@@ -354,9 +354,9 @@ InstalledAccountsID::extra_hash_value() const
 }
 
 bool
-InstalledAccountsID::supports_action(const SupportsActionTestBase & test) const
+InstalledAccountsID::supports_action(const SupportsActionTestBase &) const
 {
-    return simple_visitor_cast<const SupportsActionTest<InstalledAction> >(test);
+    return false;
 }
 
 void

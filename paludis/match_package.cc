@@ -139,8 +139,6 @@ paludis::match_package(
             return false;
         if (entry.repository()->installed_root_key()->value() != *spec.installed_at_path_ptr())
             return false;
-        if (! entry.supports_action(SupportsActionTest<InstalledAction>()))
-            return false;
     }
 
     if (spec.installable_to_repository_ptr())

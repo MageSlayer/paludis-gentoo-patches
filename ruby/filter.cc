@@ -131,8 +131,6 @@ namespace
         {
             if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, install_action_value_ptr()))
                 ptr = new filter::SupportsAction<InstallAction>();
-            else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, installed_action_value_ptr()))
-                ptr = new filter::SupportsAction<InstalledAction>();
             else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, uninstall_action_value_ptr()))
                 ptr = new filter::SupportsAction<UninstallAction>();
             else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, pretend_action_value_ptr()))

@@ -311,20 +311,5 @@ namespace test_cases
                 "cat/c-3:0::repo2";
         }
     } some_ids_might_support_install_action_generator_test;
-
-    struct SomeIDsMightSupportInstalledActionGeneratorTestCase : GeneratorTestCaseBase
-    {
-        SomeIDsMightSupportInstalledActionGeneratorTestCase() :
-            GeneratorTestCaseBase("some IDs might support installed",
-                    generator::SomeIDsMightSupportAction<InstalledAction>())
-        {
-        }
-
-        virtual std::string get_expected() const
-        {
-            return
-                "cat/a-1:0::inst_repo1";
-        }
-    } some_ids_might_support_installed_action_generator_test;
 }
 

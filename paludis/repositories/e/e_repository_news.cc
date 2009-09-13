@@ -159,7 +159,7 @@ ERepositoryNews::update_news() const
                                             eapi.supported()->package_dep_spec_parse_options(),
                                             eapi.supported()->version_spec_options(),
                                             std::tr1::shared_ptr<const PackageID>())), MatchPackageOptions()) |
-                                filter::SupportsAction<InstalledAction>())]->empty())
+                                filter::InstalledAtRoot(_imp->environment->root()))]->empty())
                         local_show = true;
                 show &= local_show;
             }

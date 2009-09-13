@@ -188,7 +188,6 @@ namespace test_cases
             TEST_CHECK(! repo->some_ids_might_support_action(SupportsActionTest<PretendAction>()));
             TEST_CHECK(! repo->some_ids_might_support_action(SupportsActionTest<InfoAction>()));
             TEST_CHECK(! repo->some_ids_might_support_action(SupportsActionTest<UninstallAction>()));
-            TEST_CHECK(! repo->some_ids_might_support_action(SupportsActionTest<InstalledAction>()));
 
             const std::tr1::shared_ptr<const PackageID> id(
                     *env[selection::RequireExactlyOne(generator::All())]->begin());
@@ -198,7 +197,6 @@ namespace test_cases
             TEST_CHECK(! id->supports_action(SupportsActionTest<PretendAction>()));
             TEST_CHECK(! id->supports_action(SupportsActionTest<InfoAction>()));
             TEST_CHECK(! id->supports_action(SupportsActionTest<UninstallAction>()));
-            TEST_CHECK(! id->supports_action(SupportsActionTest<InstalledAction>()));
         }
     } test_actions;
 

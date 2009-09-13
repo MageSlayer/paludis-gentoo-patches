@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -164,7 +164,7 @@ ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Ty
 
     std::tr1::shared_ptr<const PackageIDSequence> installed_matches((*_imp->environment)[selection::AllVersionsSorted(
                 generator::Matches(*node.spec(), _imp->dep_list->options()->match_package_options())
-                | filter::SupportsAction<InstalledAction>())]);
+                | filter::InstalledAtRoot(_imp->environment->root()))]);
     if (! installed_matches->empty())
     {
         Log::get_instance()->message("dep_list.show_suggest_visitor.already_installed", ll_debug, lc_context)

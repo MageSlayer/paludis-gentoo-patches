@@ -92,8 +92,7 @@ do_one_owner(
     for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
             r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
-        SupportsActionTest<InstalledAction> action_test;
-        if (! (*r)->some_ids_might_support_action(action_test))
+        if (! (*r)->installed_root_key())
             continue;
 
         std::tr1::shared_ptr<const CategoryNamePartSet> cats((*r)->category_names());

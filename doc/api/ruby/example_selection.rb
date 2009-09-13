@@ -40,7 +40,7 @@ show_selection(env, Selection::AllVersionsSorted.new(
 # the code internally to avoid doing excess work.
 show_selection(env, Selection::AllVersionsSorted.new(
         Generator::Matches.new(parse_user_package_dep_spec("sys-apps/paludis", env, []), []) |
-        Filter::SupportsAction.new(InstalledAction)))
+        Filter::InstalledAtRoot.new("/")))
 
 # Filters can be combined. Usually Filter::NotMasked should be combined
 # with Filter::SupportsAction.new(InstallAction), since installed packages

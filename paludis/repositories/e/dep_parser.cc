@@ -251,8 +251,8 @@ namespace
             const Environment * const env,
             const std::tr1::shared_ptr<const PackageID> & id)
     {
-        std::tr1::shared_ptr<ConditionalDepSpec> spec(new ConditionalDepSpec(parse_elike_conditional_dep_spec(u, env, id,
-                        id->supports_action(SupportsActionTest<InstalledAction>()))));
+        std::tr1::shared_ptr<ConditionalDepSpec> spec(new ConditionalDepSpec(parse_elike_conditional_dep_spec(
+                        u, env, id, id->repository()->installed_root_key())));
         stack.push_front(make_named_values<typename ParseStackTypes<T_>::Item>(
                 value_for<n::item>(stack.begin()->item()->append(spec)),
                 value_for<n::spec>(spec)

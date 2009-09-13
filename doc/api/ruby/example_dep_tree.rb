@@ -116,7 +116,7 @@ env = EnvironmentFactory.instance.create(ExampleCommandLine.instance.environment
 
 # Fetch package IDs for all installed packages.
 ids = env[Selection::AllVersionsSorted.new(
-    Generator::All.new | Filter::SupportsAction.new(InstalledAction))]
+    Generator::All.new | Filter::InstalledAtRoot.new("/"))]
 
 # Our results table, mapping the ID to { :has_dep => ?, :has_ext => ? }
 results = { }

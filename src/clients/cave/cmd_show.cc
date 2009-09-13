@@ -682,7 +682,7 @@ namespace
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
         {
-            if ((*i)->supports_action(SupportsActionTest<InstalledAction>()))
+            if ((*i)->repository()->installed_root_key())
                 all_installed->push_back(*i);
             else if ((*i)->supports_action(SupportsActionTest<InstallAction>()))
             {
@@ -721,7 +721,7 @@ namespace
                     cout << " ";
                 need_space = true;
 
-                if ((*i)->supports_action(SupportsActionTest<InstalledAction>()))
+                if ((*i)->repository()->installed_root_key())
                     cout << format_general_s(f::show_package_version_installed(), stringify((*i)->canonical_form(idcf_version)));
                 else if (! (*i)->masked())
                     cout << format_general_s(f::show_package_version_installable(), stringify((*i)->canonical_form(idcf_version)));

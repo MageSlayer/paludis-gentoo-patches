@@ -126,20 +126,6 @@ namespace test_cases
         }
     } supports_install_action_filter_test;
 
-    struct SupportsInstalledActionFilterTestCase : FilterTestCaseBase
-    {
-        SupportsInstalledActionFilterTestCase() :
-            FilterTestCaseBase("supports installed action", filter::SupportsAction<InstalledAction>())
-        {
-        }
-
-        virtual std::string get_expected() const
-        {
-            return
-                "cat/a-1:0::inst_repo1";
-        }
-    } supports_installed_action_filter_test;
-
     struct SupportsInstalledAtRootFilterTestCase : FilterTestCaseBase
     {
         SupportsInstalledAtRootFilterTestCase() :

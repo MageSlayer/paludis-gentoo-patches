@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
 # Copyright (c) 2007 Richard Brown
 #
 # This file is part of the Paludis package manager. Paludis is free software;
@@ -67,7 +67,7 @@ module Paludis
                 db.fetch_unique_qualified_package_name('foobarbaz')
             end
             assert_raise NoSuchPackageError do
-                db.fetch_unique_qualified_package_name('bar', Filter::SupportsAction.new(InstalledAction))
+                db.fetch_unique_qualified_package_name('bar', Filter::SupportsAction.new(ConfigAction))
             end
         end
 

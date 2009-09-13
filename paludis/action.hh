@@ -218,7 +218,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE Action :
         public virtual DeclareAbstractAcceptMethods<Action, MakeTypeList<
-            InstallAction, InstalledAction, UninstallAction, PretendAction, ConfigAction, FetchAction,
+            InstallAction, UninstallAction, PretendAction, ConfigAction, FetchAction,
             InfoAction, PretendFetchAction>::Type>
     {
         public:
@@ -305,22 +305,6 @@ namespace paludis
 
             /// Options for the action.
             const UninstallActionOptions & options;
-    };
-
-    /**
-     * InstalledAction is a dummy action used by SupportsActionTest and
-     * query::SupportsAction to determine whether a PackageID is installed.
-     *
-     * Performing an InstalledAction does not make sense and will do nothing.
-     *
-     * \since 0.26
-     * \ingroup g_actions
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE InstalledAction :
-        public Action,
-        public ImplementAcceptMethods<Action, InstalledAction>
-    {
     };
 
     /**
@@ -525,7 +509,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE SupportsActionTestBase :
         public virtual DeclareAbstractAcceptMethods<SupportsActionTestBase, MakeTypeList<
-            SupportsActionTest<InstallAction>, SupportsActionTest<InstalledAction>, SupportsActionTest<UninstallAction>,
+            SupportsActionTest<InstallAction>, SupportsActionTest<UninstallAction>,
             SupportsActionTest<PretendAction>, SupportsActionTest<ConfigAction>, SupportsActionTest<FetchAction>,
             SupportsActionTest<InfoAction>, SupportsActionTest<PretendFetchAction> >::Type>
     {

@@ -228,7 +228,7 @@ namespace
         const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
                     generator::Package(q.package()) |
                     q.make_slot_filter() |
-                    filter::SupportsAction<InstalledAction>())]);
+                    filter::InstalledAtRoot(FSEntry("/")))]);
 
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
@@ -327,7 +327,7 @@ namespace
 
         const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*env)[selection::BestVersionInEachSlot(
                     generator::Matches(spec, MatchPackageOptions()) |
-                    filter::SupportsAction<InstalledAction>())]);
+                    filter::InstalledAtRoot(FSEntry("/")))]);
 
         for (PackageIDSequence::ConstIterator i(installed_ids->begin()), i_end(installed_ids->end()) ;
                 i != i_end ; ++i)

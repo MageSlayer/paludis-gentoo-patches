@@ -139,7 +139,7 @@ namespace
             const std::tr1::shared_ptr<const PackageIDSequence> rlist(env[selection::AllVersionsSorted(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec(replacing, &env, UserPackageDepSpecOptions())),
                             MatchPackageOptions()) |
-                        filter::SupportsAction<InstalledAction>())]);
+                        filter::InstalledAtRoot(env.root()))]);
 
             InstallAction action(make_named_values<InstallActionOptions>(
                         value_for<n::destination>(installed_repo),

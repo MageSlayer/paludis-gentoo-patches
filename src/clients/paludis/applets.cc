@@ -419,8 +419,7 @@ int do_regenerate_cache(const std::tr1::shared_ptr<Environment> & env, bool inst
         {
             if (installed)
             {
-                SupportsActionTest<InstalledAction> action_test;
-                if (! (*r)->some_ids_might_support_action(action_test))
+                if (! (*r)->installed_root_key())
                     continue;
             }
             else

@@ -117,7 +117,7 @@ module Paludis
         def test_disambiguate
             assert_equal Paludis::parse_user_package_dep_spec("foo", env, []).to_s, "bar/foo"
             assert_raise NoSuchPackageError do
-                Paludis::parse_user_package_dep_spec("foo", env, [], Filter::SupportsAction.new(InstalledAction))
+                Paludis::parse_user_package_dep_spec("foo", env, [], Filter::SupportsAction.new(ConfigAction))
             end
             assert_raise AmbiguousPackageNameError do
                 Paludis::parse_user_package_dep_spec("bar", env, [])

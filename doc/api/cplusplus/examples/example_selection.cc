@@ -70,7 +70,7 @@ int main(int argc, char * argv[])
         show_selection(env, selection::AllVersionsSorted(
                     generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(
                             QualifiedPackageName("sys-apps/paludis")), MatchPackageOptions()) |
-                    filter::SupportsAction<InstalledAction>()));
+                    filter::InstalledAtRoot(FSEntry("/"))));
 
         /* Filters can be combined. Usually filter::NotMasked should be combined
          * with filter::SupportsAction<InstallAction>, since installed packages

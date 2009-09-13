@@ -58,7 +58,6 @@ ids.each do | id |
     # doing.
     actions = []
     actions << "install" if id.supports_action(SupportsActionTest.new(InstallAction))
-    actions << "installed" if id.supports_action(SupportsActionTest.new(InstalledAction))
     actions << "uninstall" if id.supports_action(SupportsActionTest.new(UninstallAction))
     actions << "pretend" if id.supports_action(SupportsActionTest.new(PretendAction))
     actions << "config" if id.supports_action(SupportsActionTest.new(ConfigAction))

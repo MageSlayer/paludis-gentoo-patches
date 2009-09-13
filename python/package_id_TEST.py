@@ -93,7 +93,6 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assert_(self.pid.supports_action(SupportsInstallActionTest()))
         self.assert_(self.pid.supports_action(SupportsFetchActionTest()))
         self.assert_(not self.pid.supports_action(SupportsUninstallActionTest()))
-        self.assert_(not self.pid.supports_action(SupportsInstalledActionTest()))
         self.assert_(self.pid.supports_action(SupportsPretendActionTest()))
         self.assert_(not self.pid.supports_action(SupportsConfigActionTest()))
 
@@ -101,7 +100,6 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assert_(not self.ipid.supports_action(SupportsInstallActionTest()))
         self.assert_(not self.ipid.supports_action(SupportsFetchActionTest()))
         self.assert_(self.ipid.supports_action(SupportsUninstallActionTest()))
-        self.assert_(self.ipid.supports_action(SupportsInstalledActionTest()))
         self.assert_(not self.ipid.supports_action(SupportsPretendActionTest()))
         self.assert_(self.ipid.supports_action(SupportsConfigActionTest()))
 

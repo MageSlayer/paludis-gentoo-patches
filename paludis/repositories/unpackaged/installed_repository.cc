@@ -179,11 +179,6 @@ namespace
             return true;
         }
 
-        bool visit(const SupportsActionTest<InstalledAction> &) const
-        {
-            return true;
-        }
-
         bool visit(const SupportsActionTest<ConfigAction> &) const
         {
            return false;

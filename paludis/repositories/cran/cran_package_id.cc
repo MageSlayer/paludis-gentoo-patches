@@ -476,11 +476,6 @@ namespace
         {
         }
 
-        bool visit(const SupportsActionTest<InstalledAction> &) const
-        {
-            return false;
-        }
-
         bool visit(const SupportsActionTest<FetchAction> &) const
         {
             return cran_repository;

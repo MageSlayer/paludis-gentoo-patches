@@ -133,7 +133,6 @@ namespace paludis
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<Filter>;
     extern template class filter::SupportsAction<InstallAction>;
-    extern template class filter::SupportsAction<InstalledAction>;
     extern template class filter::SupportsAction<UninstallAction>;
     extern template class filter::SupportsAction<PretendAction>;
     extern template class filter::SupportsAction<ConfigAction>;

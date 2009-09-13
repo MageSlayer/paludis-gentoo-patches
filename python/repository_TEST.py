@@ -86,8 +86,6 @@ class TestCase_01_Repository(unittest.TestCase):
         self.assert_(not irepo.some_ids_might_support_action(SupportsInstallActionTest()))
         self.assert_(not repo.some_ids_might_support_action(SupportsUninstallActionTest()))
         self.assert_(irepo.some_ids_might_support_action(SupportsUninstallActionTest()))
-        self.assert_(not repo.some_ids_might_support_action(SupportsInstalledActionTest()))
-        self.assert_(irepo.some_ids_might_support_action(SupportsInstalledActionTest()))
         self.assert_(repo.some_ids_might_support_action(SupportsPretendActionTest()))
         self.assert_(not irepo.some_ids_might_support_action(SupportsPretendActionTest()))
         self.assert_(not repo.some_ids_might_support_action(SupportsConfigActionTest()))

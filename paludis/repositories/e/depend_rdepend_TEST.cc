@@ -106,6 +106,8 @@ namespace
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
 
+            FSEntry root(FSEntry::cwd() / "depend_rdepend_TEST_dir" / "root");
+
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
@@ -117,7 +119,7 @@ namespace
             keys->insert("profile_eapi", "0");
             keys->insert("distdir", stringify(FSEntry::cwd() / "depend_rdepend_TEST_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "depend_rdepend_TEST_dir" / "build"));
-            keys->insert("root", stringify(FSEntry::cwd() / "depend_rdepend_TEST_dir" / "root"));
+            keys->insert("root", stringify(root));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -127,7 +129,7 @@ namespace
             v_keys->insert("names_cache", "/var/empty");
             v_keys->insert("provides_cache", "/var/empty");
             v_keys->insert("location", stringify(FSEntry::cwd() / "depend_rdepend_TEST_dir" / "vdb"));
-            v_keys->insert("root", stringify(FSEntry::cwd() / "depend_rdepend_TEST_dir" / "root"));
+            v_keys->insert("root", stringify(root));
             std::tr1::shared_ptr<Repository> v_repo(VDBRepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, v_repo);
@@ -170,7 +172,7 @@ namespace
 
                 std::tr1::shared_ptr<const PackageID> v_id(*env[selection::RequireExactlyOne(generator::Package(
                                 QualifiedPackageName("cat/eapi" + eapi + "donly")) |
-                            filter::SupportsAction<InstalledAction>())]->begin());
+                            filter::InstalledAtRoot(root))]->begin());
 
                 TEST_CHECK_EQUAL(v_id->build_dependencies_key()->pretty_print_flat(f), "the/depend");
                 if (special)
@@ -192,7 +194,7 @@ namespace
 
                 std::tr1::shared_ptr<const PackageID> v_id(*env[selection::RequireExactlyOne(generator::Package(
                                 QualifiedPackageName("cat/eapi" + eapi + "ronly")) |
-                            filter::SupportsAction<InstalledAction>())]->begin());
+                            filter::InstalledAtRoot(root))]->begin());
 
                 TEST_CHECK_EQUAL(v_id->build_dependencies_key()->pretty_print_flat(f), "");
                 TEST_CHECK_EQUAL(v_id->run_dependencies_key()->pretty_print_flat(f), "the/rdepend");
@@ -211,7 +213,7 @@ namespace
 
                 std::tr1::shared_ptr<const PackageID> v_id(*env[selection::RequireExactlyOne(generator::Package(
                                 QualifiedPackageName("cat/eapi" + eapi + "both")) |
-                            filter::SupportsAction<InstalledAction>())]->begin());
+                            filter::InstalledAtRoot(root))]->begin());
 
                 TEST_CHECK_EQUAL(v_id->build_dependencies_key()->pretty_print_flat(f), "the/depend");
                 TEST_CHECK_EQUAL(v_id->run_dependencies_key()->pretty_print_flat(f), "the/rdepend");

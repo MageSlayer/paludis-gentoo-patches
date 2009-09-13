@@ -324,7 +324,7 @@ UninstallTask::execute()
             bool remove(true);
             std::tr1::shared_ptr<const PackageIDSequence> installed((*_imp->env)[selection::AllVersionsUnsorted(
                         generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(i->first), MatchPackageOptions()) |
-                        filter::SupportsAction<InstalledAction>()
+                        filter::InstalledAtRoot(_imp->env->root())
                         )]);
             for (PackageIDSequence::ConstIterator r(installed->begin()), r_end(installed->end()) ;
                     r != r_end && remove ; ++r)

@@ -189,7 +189,7 @@ namespace test_cases
                     NoSuchPackageError);
 
             TEST_CHECK_THROWS(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-one"),
-                        filter::SupportsAction<InstalledAction>()),
+                        filter::SupportsAction<ConfigAction>()),
                     NoSuchPackageError);
             TEST_CHECK_STRINGIFY_EQUAL(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-foo")),
                     "inst-cat/pkg-foo");

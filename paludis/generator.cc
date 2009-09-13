@@ -653,7 +653,6 @@ paludis::operator<< (std::ostream & s, const Generator & g)
 
 template class PrivateImplementationPattern<Generator>;
 template class generator::SomeIDsMightSupportAction<InstallAction>;
-template class generator::SomeIDsMightSupportAction<InstalledAction>;
 template class generator::SomeIDsMightSupportAction<UninstallAction>;
 template class generator::SomeIDsMightSupportAction<PretendAction>;
 template class generator::SomeIDsMightSupportAction<ConfigAction>;

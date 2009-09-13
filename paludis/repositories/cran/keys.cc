@@ -32,6 +32,7 @@
 #include <paludis/stringify_formatter-impl.hh>
 #include <paludis/formatter.hh>
 #include <paludis/action.hh>
+#include <paludis/repository.hh>
 #include <tr1/functional>
 
 using namespace paludis;
@@ -123,7 +124,7 @@ PackageIDKey::type() const
 std::string
 PackageIDKey::pretty_print(const Formatter<PackageID> & f) const
 {
-    if (_v->supports_action(SupportsActionTest<InstalledAction>()))
+    if (_v->repository()->installed_root_key())
         return f.format(*_v, format::Installed());
     else if (_v->supports_action(SupportsActionTest<InstallAction>()))
     {

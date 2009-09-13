@@ -698,11 +698,6 @@ namespace
             return true;
         }
 
-        bool visit(const SupportsActionTest<InstalledAction> &) const
-        {
-            return true;
-        }
-
         bool visit(const SupportsActionTest<ConfigAction> &) const
         {
            return false;
@@ -771,10 +766,6 @@ namespace
         void visit(InfoAction & a) PALUDIS_ATTRIBUTE((noreturn))
         {
             throw UnsupportedActionError(*id, a);
-        }
-
-        void visit(InstalledAction &)
-        {
         }
 
         void visit(UninstallAction & a)

@@ -26,6 +26,7 @@
 #include <paludis/formatter.hh>
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>
+#include <paludis/repository.hh>
 #include <paludis/name.hh>
 #include <tr1/functional>
 
@@ -308,7 +309,7 @@ std::string
 ExtraLiteralMetadataValueKeyMethods<std::tr1::shared_ptr<const PackageID> >::pretty_print(const Formatter<PackageID> & f) const
 {
     std::tr1::shared_ptr<const PackageID> v(static_cast<const LiteralMetadataValueKey<std::tr1::shared_ptr<const PackageID> > *>(this)->value());
-    if (v->supports_action(SupportsActionTest<InstalledAction>()))
+    if (v->repository()->installed_root_key())
         return f.format(*v, format::Installed());
     else if (v->supports_action(SupportsActionTest<InstallAction>()))
     {

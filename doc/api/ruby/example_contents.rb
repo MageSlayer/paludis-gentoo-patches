@@ -19,7 +19,7 @@ env = EnvironmentFactory.instance.create(ExampleCommandLine.instance.environment
 # Fetch package IDs for installed 'sys-apps/paludis'
 ids = env[Selection::AllVersionsSorted.new(
     Generator::Matches.new(Paludis::parse_user_package_dep_spec("sys-apps/paludis", env, []), []) |
-    Filter::SupportsAction.new(InstalledAction))]
+    Filter::InstalledAtRoot.new("/"))]
 
 # For each ID:
 ids.each do | id |
@@ -33,23 +33,17 @@ ids.each do | id |
         id.contents_key.value.each do | c |
 
             # Some ContentsEntry subclasses contain more information than others
-            if c.kind_of? ContentsDevEntry
-                puts "device    #{c.name}"
-
-            elsif c.kind_of? ContentsMiscEntry
-                puts "misc      #{c.name}"
+            if c.kind_of? ContentsOtherEntry
+                puts "other     #{c.location_key.value}"
 
             elsif c.kind_of? ContentsFileEntry
-                puts "file      #{c.name}"
+                puts "file      #{c.location_key.value}"
 
             elsif c.kind_of? ContentsDirEntry
-                puts "dir       #{c.name}"
-
-            elsif c.kind_of? ContentsFifoEntry
-                puts "fifo      #{c.name}"
+                puts "dir       #{c.location_key.value}"
 
             elsif c.kind_of? ContentsSymEntry
-                puts "sym       #{c.name} -> #{c.target}"
+                puts "sym       #{c.location_key.value} -> #{c.target_key.value}"
 
             else
                 puts "unknown   #{c}"

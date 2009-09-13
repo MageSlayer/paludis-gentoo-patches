@@ -78,10 +78,6 @@ class TestCase_06_UninstallAction(unittest.TestCase):
     def test_01_create(self):
         UninstallAction(UninstallActionOptions("monkey"))
 
-class TestCase_07_InstalledAction(unittest.TestCase):
-    def test_01_create(self):
-        InstalledAction()
-
 class TestCase_08_PretendAction(unittest.TestCase):
     def test_01_create(self):
         PretendAction(PretendActionOptions())
@@ -99,7 +95,6 @@ class TestCase_10_SupportsActionTests(unittest.TestCase):
         SupportsInstallActionTest()
         SupportsFetchActionTest()
         SupportsUninstallActionTest()
-        SupportsInstalledActionTest()
         SupportsPretendActionTest()
         SupportsConfigActionTest()
         SupportsInfoActionTest()

@@ -34,7 +34,6 @@ namespace paludis
 {
     class Action;
     class InstallAction;
-    class InstalledAction;
     class UninstallAction;
     class PretendAction;
     class ConfigAction;

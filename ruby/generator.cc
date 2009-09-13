@@ -240,10 +240,6 @@ namespace
         {
             if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, install_action_value_ptr()))
                 ptr = new generator::SomeIDsMightSupportAction<InstallAction>();
-            else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, installed_action_value_ptr()))
-                ptr = new generator::SomeIDsMightSupportAction<InstalledAction>();
-            else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, uninstall_action_value_ptr()))
-                ptr = new generator::SomeIDsMightSupportAction<UninstallAction>();
             else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, pretend_action_value_ptr()))
                 ptr = new generator::SomeIDsMightSupportAction<PretendAction>();
             else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, config_action_value_ptr()))

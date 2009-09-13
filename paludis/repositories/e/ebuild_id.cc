@@ -1069,11 +1069,6 @@ namespace
 {
     struct SupportsActionQuery
     {
-        bool visit(const SupportsActionTest<InstalledAction> &) const
-        {
-            return false;
-        }
-
         bool visit(const SupportsActionTest<FetchAction> &) const
         {
             return true;
@@ -1170,15 +1165,9 @@ namespace
                     std::tr1::static_pointer_cast<const ERepository>(id->repository())->profile());
         }
 
-        void visit(InstalledAction & a) PALUDIS_ATTRIBUTE((noreturn));
         void visit(UninstallAction & a) PALUDIS_ATTRIBUTE((noreturn));
         void visit(ConfigAction & a) PALUDIS_ATTRIBUTE((noreturn));
     };
-
-    void PerformAction::visit(InstalledAction & a)
-    {
-        throw UnsupportedActionError(*id, a);
-    }
 
     void PerformAction::visit(UninstallAction & a)
     {

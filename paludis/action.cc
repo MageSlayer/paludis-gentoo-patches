@@ -248,11 +248,6 @@ namespace
             return "pretend";
         }
 
-        std::string visit(const InstalledAction &)
-        {
-            return "installed";
-        }
-
         std::string visit(const ConfigAction &)
         {
             return "config";

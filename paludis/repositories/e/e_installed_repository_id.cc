@@ -864,11 +864,6 @@ namespace
 {
     struct SupportsActionQuery
     {
-        bool visit(const SupportsActionTest<InstalledAction> &) const
-        {
-            return true;
-        }
-
         bool visit(const SupportsActionTest<InstallAction> &) const
         {
             return false;
@@ -927,10 +922,6 @@ namespace
         void visit(const UninstallAction & a)
         {
             std::tr1::static_pointer_cast<const EInstalledRepository>(id->repository())->perform_uninstall(id, a);
-        }
-
-        void visit(const InstalledAction &)
-        {
         }
 
         void visit(const ConfigAction & a)

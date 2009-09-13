@@ -418,7 +418,7 @@ Resolver::_make_constraint_from_dependency(const QPN_S & qpn_s, const SanitisedD
         /* nothing is fine too if there's nothing installed matching the block. */
         const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::SomeArbitraryVersion(
                     generator::Matches(*dep.spec().if_block()->blocked_spec(), MatchPackageOptions()) |
-                    filter::SupportsAction<InstalledAction>())]);
+                    filter::InstalledAtRoot(FSEntry("/")))]);
 
         return make_shared_ptr(new Constraint(make_named_values<Constraint>(
                         value_for<n::nothing_is_fine_too>(ids->empty()),
@@ -768,7 +768,7 @@ Resolver::_already_met(const SanitisedDependency & dep) const
     {
         std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::SomeArbitraryVersion(
                     generator::Matches(*dep.spec().if_package(), MatchPackageOptions()) |
-                    filter::SupportsAction<InstalledAction>())]);
+                    filter::InstalledAtRoot(FSEntry("/")))]);
         return ! ids->empty();
     }
     else if (dep.spec().if_block())
@@ -1010,7 +1010,7 @@ Resolver::find_any_score(const QPN_S & our_qpn_s, const SanitisedDependency & de
     {
         const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
                     generator::Matches(spec, MatchPackageOptions()) |
-                    filter::SupportsAction<InstalledAction>())]);
+                    filter::InstalledAtRoot(FSEntry("/")))]);
         if (! installed_ids->empty())
             return 50 + operator_bias;
     }
@@ -1020,7 +1020,7 @@ Resolver::find_any_score(const QPN_S & our_qpn_s, const SanitisedDependency & de
     {
         const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
                     generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements) |
-                    filter::SupportsAction<InstalledAction>())]);
+                    filter::InstalledAtRoot(FSEntry("/")))]);
         if (! installed_ids->empty())
             return 40 + operator_bias;
     }
@@ -1429,7 +1429,7 @@ Resolver::_find_installed_id_for(const QPN_S & qpn_s, const std::tr1::shared_ptr
     const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::AllVersionsSorted(
                 generator::Package(qpn_s.package()) |
                 qpn_s.make_slot_filter() |
-                filter::SupportsAction<InstalledAction>()
+                filter::InstalledAtRoot(FSEntry("/"))
                 )]);
 
     return _find_id_for_from(qpn_s, resolution, ids).first;

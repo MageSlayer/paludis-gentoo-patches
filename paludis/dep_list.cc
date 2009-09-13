@@ -292,7 +292,7 @@ namespace
         {
             return ! env[selection::SomeArbitraryVersion(
                     generator::Package(*u->spec()->package_ptr()) |
-                    filter::SupportsAction<InstalledAction>())]->empty();
+                    filter::InstalledAtRoot(env.root()))]->empty();
         }
         else
             return false;
@@ -392,7 +392,8 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::T
     /* find already installed things */
     // TODO: check destinations
     std::tr1::shared_ptr<const PackageIDSequence> already_installed((*d->_imp->env)[selection::AllVersionsSorted(
-                generator::Matches(*node.spec(), d->_imp->opts->match_package_options()) | filter::SupportsAction<InstalledAction>())]);
+                generator::Matches(*node.spec(), d->_imp->opts->match_package_options()) |
+                filter::InstalledAtRoot(d->_imp->env->root()))]);
 
     /* are we already on the merge list? */
     std::pair<MergeListIndex::iterator, MergeListIndex::iterator> q;
@@ -626,7 +627,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::T
                 std::tr1::shared_ptr<const PackageIDSequence> are_we_downgrading(
                         (*d->_imp->env)[selection::AllVersionsSorted(
                             generator::Package(best_visible_candidate->name()) |
-                            filter::SupportsAction<InstalledAction>() |
+                            filter::InstalledAtRoot(d->_imp->env->root()) |
                             filter::SameSlot(best_visible_candidate))]);
 
                 if (are_we_downgrading->empty())
@@ -833,7 +834,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
                     *node.spec()->blocked_spec()->package_ptr()));
         already_installed = (*d->_imp->env)[selection::AllVersionsUnsorted(
                 generator::Matches(just_package, d->_imp->opts->match_package_options()) |
-                filter::SupportsAction<InstalledAction>())];
+                filter::InstalledAtRoot(d->_imp->env->root()))];
 
         MatchDepListEntryAgainstPackageDepSpec m(d->_imp->env, just_package, d->_imp->opts->match_package_options());
         for (std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p(
@@ -858,7 +859,8 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
         check_whole_list = true;
         /* TODO: InstalledAtRoot? */
         already_installed = (*d->_imp->env)[selection::AllVersionsUnsorted(
-                generator::All() | filter::SupportsAction<InstalledAction>())];
+                generator::All() |
+                filter::InstalledAtRoot(d->_imp->env->root()))];
     }
 
     if (already_installed->empty() && will_be_installed.empty() && ! check_whole_list)

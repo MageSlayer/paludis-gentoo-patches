@@ -1174,11 +1174,6 @@ namespace
 {
     struct SupportsActionQuery
     {
-        bool visit(const SupportsActionTest<InstalledAction> &) const
-        {
-            return false;
-        }
-
         bool visit(const SupportsActionTest<InstallAction> &) const
         {
             return true;

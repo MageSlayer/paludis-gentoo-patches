@@ -346,11 +346,6 @@ namespace
         {
         }
 
-        bool visit(const SupportsActionTest<InstalledAction> &) const
-        {
-            return installed;
-        }
-
         bool visit(const SupportsActionTest<InstallAction> &) const
         {
             return ! installed;

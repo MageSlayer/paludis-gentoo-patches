@@ -208,8 +208,7 @@ namespace
                     r != r_end ; ++r)
             {
                 const std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(*r));
-                if (repo->installed_root_key() && root == repo->installed_root_key()->value() &&
-                        repo->some_ids_might_support_action(SupportsActionTest<InstalledAction>()))
+                if (repo->installed_root_key() && root == repo->installed_root_key()->value())
                     result->insert(*r);
             }
 
@@ -223,8 +222,7 @@ namespace
 
             for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
                     i != i_end ; ++i)
-                if ((*i)->supports_action(SupportsActionTest<InstalledAction>()))
-                    result->insert(*i);
+                result->insert(*i);
 
             return result;
         }
@@ -425,7 +423,6 @@ paludis::operator<< (std::ostream & s, const Filter & f)
 
 template class PrivateImplementationPattern<Filter>;
 template class filter::SupportsAction<InstallAction>;
-template class filter::SupportsAction<InstalledAction>;
 template class filter::SupportsAction<UninstallAction>;
 template class filter::SupportsAction<PretendAction>;
 template class filter::SupportsAction<ConfigAction>;

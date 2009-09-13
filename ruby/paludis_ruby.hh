@@ -142,7 +142,6 @@ namespace paludis
         VALUE * config_action_value_ptr();
         VALUE * uninstall_action_value_ptr();
         VALUE * pretend_action_value_ptr();
-        VALUE * installed_action_value_ptr();
         VALUE * pretend_fetch_action_value_ptr();
         VALUE * dependency_labels_dep_spec_value_ptr();
 

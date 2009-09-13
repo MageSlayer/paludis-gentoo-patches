@@ -46,8 +46,6 @@ namespace
     static VALUE c_uninstall_action_options;
     static VALUE c_uninstall_action;
 
-    static VALUE c_installed_action;
-
     static VALUE c_pretend_action;
 
     static VALUE c_pretend_fetch_action;
@@ -180,8 +178,6 @@ namespace
         {
             if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, install_action_value_ptr()))
                 ptr = new std::tr1::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<InstallAction>()));
-            else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, installed_action_value_ptr()))
-                ptr = new std::tr1::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<InstalledAction>()));
             else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, uninstall_action_value_ptr()))
                 ptr = new std::tr1::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<UninstallAction>()));
             else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, pretend_action_value_ptr()))
@@ -472,27 +468,6 @@ namespace
                         ));
 
             std::tr1::shared_ptr<Action> * a(new std::tr1::shared_ptr<Action>(new A_(options)));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<Action> >::free, a));
-            rb_obj_call_init(tdata, 1, &self);
-            return tdata;
-        }
-    };
-
-    /*
-     * Document-method InstalledAction.new
-     *
-     * call-seq:
-     *     InstalledAction.new -> InstalledAction
-     *
-     * Create new InstalledAction
-     */
-    template <typename A_>
-    struct ReallyEasyActionNew
-    {
-        static VALUE
-        easy_action_new(VALUE self)
-        {
-            std::tr1::shared_ptr<Action> * a(new std::tr1::shared_ptr<Action>(new A_()));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<Action> >::free, a));
             rb_obj_call_init(tdata, 1, &self);
             return tdata;
@@ -858,17 +833,6 @@ namespace
         rb_define_method(c_uninstall_action, "options", RUBY_FUNC_CAST(&uninstall_action_options), 0);
 
         /*
-         * Document-class: Paludis::InstalledAction
-         *
-         * An InstalledAction can be used to test whether a PackageID is
-         * installed.
-         */
-        c_installed_action = rb_define_class_under(paludis_module(), "InstalledAction", c_action);
-        rb_define_singleton_method(c_installed_action, "new",
-                RUBY_FUNC_CAST((&ReallyEasyActionNew<InstalledAction>::easy_action_new)), 0);
-        rb_define_method(c_installed_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
-
-        /*
          * Document-class: Paludis::PretendAction
          *
          * A PretendAction is used by InstallTask to handle install-pretend-phase checks on a PackageID.
@@ -935,12 +899,6 @@ VALUE *
 paludis::ruby::install_action_value_ptr()
 {
     return &c_install_action;
-}
-
-VALUE *
-paludis::ruby::installed_action_value_ptr()
-{
-    return &c_installed_action;
 }
 
 VALUE *

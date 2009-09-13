@@ -142,7 +142,8 @@ PrintOwnersCommand::run(
             handler = handle_basename;
     }
 
-    std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(generator::All() | filter::SupportsAction<InstalledAction>())]);
+    std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(generator::All() |
+                filter::InstalledAtRoot(env->root()))]);
 
     for (PackageIDSequence::ConstIterator p(ids->begin()), p_end(ids->end()); p != p_end; ++p)
     {

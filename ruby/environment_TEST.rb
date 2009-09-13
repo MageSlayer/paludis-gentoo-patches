@@ -387,7 +387,7 @@ module Paludis
                 '>=foo/bar-27', env, []), []))]
             assert a.empty?
 
-            a = env[Selection::AllVersionsUnsorted.new(Generator::Matches.new(pda2, []) | Filter::SupportsAction.new(InstalledAction))]
+            a = env[Selection::AllVersionsUnsorted.new(Generator::Matches.new(pda2, []) | Filter::SupportsAction.new(ConfigAction))]
             assert a.empty?
         end
     end

@@ -328,17 +328,6 @@ void expose_action()
         );
 
     /**
-     * InsatlledAction
-     */
-    bp::class_<InstalledAction, bp::bases<Action>, boost::noncopyable>
-        (
-         "InstalledAction",
-         "InstalledAction is a dummy action used by SupportsActionTest and\n"
-         "query::SupportsAction to determine whether a PackageID is installed.",
-         bp::init<>("__init__()")
-        );
-
-    /**
      * PretendAction
      */
     bp::class_<PretendAction, bp::bases<Action>, boost::noncopyable>
@@ -394,7 +383,6 @@ void expose_action()
     class_supports_action_test<InstallAction>("Install");
     class_supports_action_test<FetchAction>("Fetch");
     class_supports_action_test<UninstallAction>("Uninstall");
-    class_supports_action_test<InstalledAction>("Installed");
     class_supports_action_test<PretendAction>("Pretend");
     class_supports_action_test<ConfigAction>("Config");
     class_supports_action_test<InfoAction>("Info");

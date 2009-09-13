@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,7 +22,6 @@
 using namespace paludis;
 
 const char * const ActionNames<InstallAction>::value = "install";
-const char * const ActionNames<InstalledAction>::value = "installed";
 const char * const ActionNames<UninstallAction>::value = "uninstall";
 const char * const ActionNames<ConfigAction>::value = "config";
 const char * const ActionNames<PretendAction>::value = "pretend";

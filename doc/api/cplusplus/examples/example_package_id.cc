@@ -93,10 +93,6 @@ int main(int argc, char * argv[])
                 if ((*i)->supports_action(install_action))
                     actions.insert("install");
 
-                SupportsActionTest<InstalledAction> installed_action;
-                if ((*i)->supports_action(installed_action))
-                    actions.insert("installed");
-
                 SupportsActionTest<UninstallAction> uninstall_action;
                 if ((*i)->supports_action(uninstall_action))
                     actions.insert("uninstall");
