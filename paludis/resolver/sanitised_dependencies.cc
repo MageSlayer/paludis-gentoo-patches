@@ -48,31 +48,26 @@ namespace
 
     struct AnyOfAlternativesVisitor
     {
-        const std::tr1::shared_ptr<Sequence<std::string> > result;
-
-        AnyOfAlternativesVisitor() :
-            result(new Sequence<std::string>)
-        {
-        }
+        std::string result;
 
         void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & s)
         {
-            result->push_back(stringify(*s.spec()));
+            result.append(" " + stringify(*s.spec()));
         }
 
         void visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type & s)
         {
-            result->push_back(stringify(*s.spec()));
+            result.append(" " + stringify(*s.spec()));
         }
 
         void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & s)
         {
-            result->push_back(stringify(*s.spec()));
+            result.append(" " + stringify(*s.spec()));
         }
 
         void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type & s)
         {
-            result->push_back(stringify(*s.spec()));
+            result.append(" " + stringify(*s.spec()));
         }
 
         void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
@@ -81,8 +76,7 @@ namespace
             {
                 AnyOfAlternativesVisitor v;
                 std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(v));
-                result->push_back(stringify(*node.spec()) + " ( " + join(v.result->begin(),
-                                v.result->end(), " ") + " )");
+                result.append(" " + stringify(*node.spec()) + " ( " + v.result + ")");
             }
         }
 
@@ -90,16 +84,14 @@ namespace
         {
             AnyOfAlternativesVisitor v;
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(v));
-            result->push_back("|| ( " + join(v.result->begin(),
-                            v.result->end(), " ") + " )");
+            result.append(" || ( " + v.result + ")");
         }
 
         void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
         {
             AnyOfAlternativesVisitor v;
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(v));
-            result->push_back("( " + join(v.result->begin(),
-                            v.result->end(), " ") + " )");
+            result.append(" ( " + v.result + ")");
         }
     };
 
@@ -291,7 +283,7 @@ namespace
         SanitisedDependencies & sanitised_dependencies;
         const std::string raw_name;
         const std::string human_name;
-        std::tr1::shared_ptr<Sequence<std::string> > any_of_alternatives;
+        std::string original_specs_as_string;
         std::list<std::tr1::shared_ptr<ActiveDependencyLabels> > labels_stack;
 
         Finder(
@@ -301,13 +293,13 @@ namespace
                 const std::tr1::shared_ptr<const DependencyLabelSequence> & l,
                 const std::string & rn,
                 const std::string & hn,
-                const std::tr1::shared_ptr<Sequence<std::string> > & a) :
+                const std::string & a) :
             resolver(r),
             our_qpn_s(q),
             sanitised_dependencies(s),
             raw_name(rn),
             human_name(hn),
-            any_of_alternatives(a)
+            original_specs_as_string(a)
         {
             labels_stack.push_front(make_shared_ptr(new ActiveDependencyLabels(*l)));
         }
@@ -344,9 +336,9 @@ namespace
             return make_named_values<SanitisedDependency>(
                     value_for<n::active_dependency_labels>(*labels_stack.begin()),
                     value_for<n::active_dependency_labels_as_string>(adl.str()),
-                    value_for<n::any_of_alternatives>(any_of_alternatives),
                     value_for<n::metadata_key_human_name>(human_name),
                     value_for<n::metadata_key_raw_name>(raw_name),
+                    value_for<n::original_specs_as_string>(original_specs_as_string),
                     value_for<n::spec>(spec)
                     );
         }
@@ -380,12 +372,12 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
         {
-            Save<std::tr1::shared_ptr<Sequence<std::string> > > save_any_of_alternatives(&any_of_alternatives);
+            Save<std::string> save_original_specs_as_string(&original_specs_as_string);
 
             {
                 AnyOfAlternativesVisitor v;
                 std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(v));
-                any_of_alternatives = v.result;
+                original_specs_as_string = "|| (" + v.result + " )";
             }
 
             AnyDepSpecChildHandler h(resolver, our_qpn_s, std::tr1::bind(&Finder::make_sanitised, this, std::tr1::placeholders::_1));
@@ -436,7 +428,7 @@ SanitisedDependencies::_populate_one(
     Context context("When finding dependencies for '" + stringify(*id) + "' from key '" + ((*id).*pmf)()->raw_name() + "':");
 
     Finder f(resolver, QPN_S(id), *this, ((*id).*pmf)()->initial_labels(), ((*id).*pmf)()->raw_name(),
-            ((*id).*pmf)()->human_name(), make_null_shared_ptr());
+            ((*id).*pmf)()->human_name(), "");
     ((*id).*pmf)()->value()->root()->accept(f);
 }
 
@@ -546,9 +538,9 @@ SanitisedDependency::serialise(Serialiser & s) const
 {
     s.object("SanitisedDependency")
         .member(SerialiserFlags<>(), "active_dependency_labels_as_string", active_dependency_labels_as_string())
-        .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "any_of_alternatives", any_of_alternatives())
         .member(SerialiserFlags<>(), "metadata_key_human_name", metadata_key_human_name())
         .member(SerialiserFlags<>(), "metadata_key_raw_name", metadata_key_raw_name())
+        .member(SerialiserFlags<>(), "original_specs_as_string", original_specs_as_string())
         .member(SerialiserFlags<>(), "spec", spec())
         ;
 }
@@ -560,22 +552,12 @@ SanitisedDependency::deserialise(Deserialisation & d, const std::tr1::shared_ptr
 
     Deserialisator v(d, "SanitisedDependency");
 
-    std::tr1::shared_ptr<Sequence<std::string> > any_of_alternatives;;
-    const std::tr1::shared_ptr<Deserialisation> vvd(v.find_remove_member("any_of_alternatives"));
-    if (! vvd->null())
-    {
-        any_of_alternatives.reset(new Sequence<std::string>);
-        Deserialisator vv(*vvd, "c");
-        for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
-            any_of_alternatives->push_back(vv.member<std::string>(stringify(n)));
-    }
-
     return make_named_values<SanitisedDependency>(
             value_for<n::active_dependency_labels>(make_null_shared_ptr()),
             value_for<n::active_dependency_labels_as_string>(v.member<std::string>("active_dependency_labels_as_string")),
-            value_for<n::any_of_alternatives>(any_of_alternatives),
             value_for<n::metadata_key_human_name>(v.member<std::string>("metadata_key_human_name")),
             value_for<n::metadata_key_raw_name>(v.member<std::string>("metadata_key_raw_name")),
+            value_for<n::original_specs_as_string>(v.member<std::string>("original_specs_as_string")),
             value_for<n::spec>(PackageOrBlockDepSpec::deserialise(*v.find_remove_member("spec"),
                     from_id))
             );

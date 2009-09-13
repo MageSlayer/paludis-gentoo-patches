@@ -121,9 +121,8 @@ namespace
                 if (verbose)
                 {
                     std::string as;
-                    if (r.sanitised_dependency().any_of_alternatives())
-                        as = " (chosen from || ( " + join(r.sanitised_dependency().any_of_alternatives()->begin(),
-                                        r.sanitised_dependency().any_of_alternatives()->end(), " ") + " ) )";
+                    if (! r.sanitised_dependency().original_specs_as_string().empty())
+                        as = " (originally " + r.sanitised_dependency().original_specs_as_string() + ")";
 
                     return std::make_pair(stringify(*r.sanitised_dependency().spec().if_package())
                             + " from " + stringify(*r.from_id()) + ", key '"
