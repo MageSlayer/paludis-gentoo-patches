@@ -99,19 +99,23 @@ namespace
     {
         if ((! s.empty()) && ('!' == s.at(0)))
         {
+            bool strong(false);
             std::string::size_type specstart(1);
             if (2 <= s.length() && '!' == s.at(1))
             {
                 if (! eapi.supported()->dependency_spec_tree_parse_options()[dstpo_hard_soft_blocks])
                     throw EDepParseError(s, "Double-! blocks not allowed in this EAPI");
                 specstart = 2;
+                strong = true;
             }
 
             std::tr1::shared_ptr<BlockDepSpec> spec(new BlockDepSpec(
-                        make_shared_ptr(new PackageDepSpec(parse_elike_package_dep_spec(s.substr(specstart),
-                                    eapi.supported()->package_dep_spec_parse_options(),
-                                    eapi.supported()->version_spec_options(),
-                                    id))), s));
+                        s,
+                        parse_elike_package_dep_spec(s.substr(specstart),
+                            eapi.supported()->package_dep_spec_parse_options(),
+                            eapi.supported()->version_spec_options(),
+                            id),
+                        strong));
             h.begin()->item()->append(spec);
             annotations_go_here(spec);
         }

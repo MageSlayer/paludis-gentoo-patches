@@ -875,7 +875,8 @@ namespace paludis
         public StringDepSpec
     {
         private:
-            std::tr1::shared_ptr<const PackageDepSpec> _spec;
+            PackageDepSpec _spec;
+            bool _strong;
 
         protected:
             virtual void need_keys_added() const;
@@ -884,16 +885,28 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            BlockDepSpec(const std::tr1::shared_ptr<const PackageDepSpec> & spec);
-            BlockDepSpec(const std::tr1::shared_ptr<const PackageDepSpec> & spec, const std::string & text);
+            /**
+             * \since 0.41
+             */
+            BlockDepSpec(const std::string & text, const PackageDepSpec & spec, const bool strong);
+
             BlockDepSpec(const BlockDepSpec &);
 
             ///\}
 
             /**
              * Fetch the spec we're blocking.
+             *
+             * \since 0.41
              */
-            std::tr1::shared_ptr<const PackageDepSpec> blocked_spec() const;
+            const PackageDepSpec blocking() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Fetch whether we're a strong blocker.
+             *
+             * \since 0.41
+             */
+            bool strong() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };

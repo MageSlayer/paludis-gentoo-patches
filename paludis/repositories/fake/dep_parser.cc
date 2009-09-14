@@ -67,14 +67,14 @@ namespace
     {
         if ((! s.empty()) && ('!' == s.at(0)))
         {
-            (*h.begin())->append(make_shared_ptr(new BlockDepSpec(
-                        make_shared_ptr(new PackageDepSpec(parse_elike_package_dep_spec(s.substr(1),
-                                    ELikePackageDepSpecOptions() + epdso_allow_slot_deps
-                                    + epdso_allow_slot_star_deps + epdso_allow_slot_equal_deps + epdso_allow_repository_deps
-                                    + epdso_allow_use_deps + epdso_allow_ranged_deps + epdso_allow_tilde_greater_deps
-                                    + epdso_strict_parsing,
-                                    user_version_spec_options(),
-                                    id))))));
+            (*h.begin())->append(make_shared_ptr(new BlockDepSpec(s,
+                            parse_elike_package_dep_spec(s.substr(1),
+                                ELikePackageDepSpecOptions() + epdso_allow_slot_deps
+                                + epdso_allow_slot_star_deps + epdso_allow_slot_equal_deps + epdso_allow_repository_deps
+                                + epdso_allow_use_deps + epdso_allow_ranged_deps + epdso_allow_tilde_greater_deps
+                                + epdso_strict_parsing,
+                                user_version_spec_options(),
+                                id), false)));
         }
         else
             package_dep_spec_string_handler<T_>(h, s, id);

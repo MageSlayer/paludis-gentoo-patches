@@ -83,9 +83,9 @@ namespace test_cases
             std::tr1::shared_ptr<PackageDepSpec> c(std::tr1::static_pointer_cast<PackageDepSpec>(a.clone()));
             TEST_CHECK_STRINGIFY_EQUAL(a, *c);
 
-            BlockDepSpec d(c);
+            BlockDepSpec d("!" + stringify(*c), *c, false);
             std::tr1::shared_ptr<BlockDepSpec> e(std::tr1::static_pointer_cast<BlockDepSpec>(d.clone()));
-            TEST_CHECK_STRINGIFY_EQUAL(*(d.blocked_spec()), *(e->blocked_spec()));
+            TEST_CHECK_STRINGIFY_EQUAL(d.blocking(), e->blocking());
         }
     } test_dep_spec_clone;
 }

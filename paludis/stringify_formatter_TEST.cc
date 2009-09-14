@@ -116,14 +116,14 @@ namespace test_cases
 
             PartialFormatter f;
             StringifyFormatter ff(f);
-            BlockDepSpec b(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/pkg", &env,
-                                UserPackageDepSpecOptions()))));
+            BlockDepSpec b("!!!!!cat/pkg", parse_user_package_dep_spec("cat/pkg",
+                        &env, UserPackageDepSpecOptions()), false);
             NamedSetDepSpec u(SetName("foo"));
             std::string s(format_three(
                         parse_user_package_dep_spec("cat/pkg", &env, UserPackageDepSpecOptions()),
                         b, u,
                         ff));
-            TEST_CHECK_EQUAL(s, "<cat/pkg> !cat/pkg foo");
+            TEST_CHECK_EQUAL(s, "<cat/pkg> !!!!!cat/pkg foo");
         }
     } test_stringify_formatter_partial;
 }

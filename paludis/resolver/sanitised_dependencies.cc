@@ -144,7 +144,7 @@ namespace
 
         void visit_block_spec(const BlockDepSpec & spec)
         {
-            if (spec.blocked_spec()->package_ptr())
+            if (spec.blocking().package_ptr())
                 visit_package_or_block_spec(PackageOrBlockDepSpec(spec));
             else
                 super_complicated = true;
@@ -496,10 +496,22 @@ PackageOrBlockDepSpec::PackageOrBlockDepSpec(const PackageDepSpec & s) :
 void
 PackageOrBlockDepSpec::serialise(Serialiser & s) const
 {
-    s.object("PackageOrBlockDepSpec")
-        .member(SerialiserFlags<>(), "if_block", if_block() ? stringify(*if_block()) : "null")
-        .member(SerialiserFlags<>(), "if_package", if_package() ? stringify(*if_package()) : "null")
-        ;
+    if (if_block())
+    {
+        s.object("PackageOrBlockDepSpec")
+            .member(SerialiserFlags<>(), "block", true)
+            .member(SerialiserFlags<>(), "spec", stringify(if_block()->blocking()))
+            .member(SerialiserFlags<>(), "strong", if_block()->strong())
+            .member(SerialiserFlags<>(), "text", if_block()->text())
+            ;
+    }
+    else
+    {
+        s.object("PackageOrBlockDepSpec")
+            .member(SerialiserFlags<>(), "block", false)
+            .member(SerialiserFlags<>(), "spec", stringify(*if_package()))
+            ;
+    }
 }
 
 PackageOrBlockDepSpec
@@ -509,28 +521,24 @@ PackageOrBlockDepSpec::deserialise(Deserialisation & d, const std::tr1::shared_p
 
     Deserialisator v(d, "PackageOrBlockDepSpec");
 
-    std::string if_block(v.member<std::string>("if_block"));
-    std::string if_package(v.member<std::string>("if_package"));
+    bool block(v.member<bool>("block"));
+    PackageDepSpec spec(parse_elike_package_dep_spec(v.member<std::string>("spec"),
+                ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps + epdso_nice_equal_star +
+                epdso_allow_ranged_deps + epdso_allow_use_deps + epdso_allow_use_deps_portage +
+                epdso_allow_use_dep_defaults + epdso_allow_repository_deps + epdso_allow_slot_star_deps +
+                epdso_allow_slot_equal_deps + epdso_allow_slot_deps + epdso_allow_key_requirements,
+                VersionSpecOptions() + vso_flexible_dashes + vso_flexible_dots + vso_ignore_case +
+                vso_letters_anywhere + vso_dotted_suffixes,
+                for_id));
 
-    if (if_block == "null")
-        return PackageOrBlockDepSpec(parse_elike_package_dep_spec(if_package,
-                    ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps + epdso_nice_equal_star +
-                    epdso_allow_ranged_deps + epdso_allow_use_deps + epdso_allow_use_deps_portage +
-                    epdso_allow_use_dep_defaults + epdso_allow_repository_deps + epdso_allow_slot_star_deps +
-                    epdso_allow_slot_equal_deps + epdso_allow_slot_deps + epdso_allow_key_requirements,
-                    VersionSpecOptions() + vso_flexible_dashes + vso_flexible_dots + vso_ignore_case +
-                    vso_letters_anywhere + vso_dotted_suffixes,
-                    for_id));
+    if (block)
+    {
+        bool strong(v.member<bool>("strong"));
+        std::string text(v.member<std::string>("text"));
+        return PackageOrBlockDepSpec(BlockDepSpec(text, spec, strong));
+    }
     else
-        return PackageOrBlockDepSpec(BlockDepSpec(make_shared_ptr(new PackageDepSpec(
-                            parse_elike_package_dep_spec(if_block.substr(if_block.find_first_not_of("!")),
-                                ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps + epdso_nice_equal_star +
-                                epdso_allow_ranged_deps + epdso_allow_use_deps + epdso_allow_use_deps_portage +
-                                epdso_allow_use_dep_defaults + epdso_allow_repository_deps + epdso_allow_slot_star_deps +
-                                epdso_allow_slot_equal_deps + epdso_allow_slot_deps + epdso_allow_key_requirements,
-                                VersionSpecOptions() + vso_flexible_dashes + vso_flexible_dots + vso_ignore_case +
-                                vso_letters_anywhere + vso_dotted_suffixes,
-                                for_id)))));
+        return PackageOrBlockDepSpec(spec);
 }
 
 void

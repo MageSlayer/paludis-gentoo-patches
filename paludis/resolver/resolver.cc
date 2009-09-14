@@ -417,7 +417,7 @@ Resolver::_make_constraint_from_dependency(const QPN_S & qpn_s, const SanitisedD
     {
         /* nothing is fine too if there's nothing installed matching the block. */
         const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::SomeArbitraryVersion(
-                    generator::Matches(*dep.spec().if_block()->blocked_spec(), MatchPackageOptions()) |
+                    generator::Matches(dep.spec().if_block()->blocking(), MatchPackageOptions()) |
                     filter::InstalledAtRoot(FSEntry("/")))]);
 
         return make_shared_ptr(new Constraint(make_named_values<Constraint>(
@@ -458,7 +458,7 @@ Resolver::_verify_new_constraint(const QPN_S & qpn_s,
             ok = match_package(*_imp->env, *constraint->spec().if_package(),
                     *resolution->decision()->if_package_id(), MatchPackageOptions());
         else
-            ok = ! match_package(*_imp->env, *constraint->spec().if_block()->blocked_spec(),
+            ok = ! match_package(*_imp->env, constraint->spec().if_block()->blocking(),
                     *resolution->decision()->if_package_id(), MatchPackageOptions());
     }
     else
@@ -634,7 +634,7 @@ Resolver::_care_about_dependency_spec(const QPN_S & qpn_s,
 {
     /* dirty dirty hack */
     if (dep.spec().if_block())
-        if (dep.spec().if_block()->blocked_spec()->package_ptr()->category() == CategoryNamePart("virtual"))
+        if (dep.spec().if_block()->blocking().package_ptr()->category() == CategoryNamePart("virtual"))
         {
             Log::get_instance()->message("resolver.virtual_haxx", ll_warning, lc_context)
                 << "Ignoring " << dep.spec() << " from " << qpn_s << " for now";
@@ -1138,19 +1138,19 @@ Resolver::_get_qpn_s_s_for_blocker(const BlockDepSpec & spec) const
     Context context("When finding slots for '" + stringify(spec) + "':");
 
     std::tr1::shared_ptr<SlotName> exact_slot;
-    if (spec.blocked_spec()->slot_requirement_ptr())
+    if (spec.blocking().slot_requirement_ptr())
     {
         SlotNameFinder f;
-        exact_slot = spec.blocked_spec()->slot_requirement_ptr()->accept_returning<std::tr1::shared_ptr<SlotName> >(f);
+        exact_slot = spec.blocking().slot_requirement_ptr()->accept_returning<std::tr1::shared_ptr<SlotName> >(f);
     }
 
     std::tr1::shared_ptr<QPN_S_Sequence> result(new QPN_S_Sequence);
     if (exact_slot)
-        result->push_back(QPN_S(*spec.blocked_spec(), exact_slot));
+        result->push_back(QPN_S(spec.blocking(), exact_slot));
     else
     {
         const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::BestVersionInEachSlot(
-                    generator::Package(*spec.blocked_spec()->package_ptr())
+                    generator::Package(*spec.blocking().package_ptr())
                     )]);
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
@@ -1465,7 +1465,7 @@ Resolver::_find_id_for_from(
             if ((*c)->spec().if_package())
                 ok = ok && match_package(*_imp->env, *(*c)->spec().if_package(), **i, MatchPackageOptions());
             else
-                ok = ok && ! match_package(*_imp->env, *(*c)->spec().if_block()->blocked_spec(), **i, MatchPackageOptions());
+                ok = ok && ! match_package(*_imp->env, (*c)->spec().if_block()->blocking(), **i, MatchPackageOptions());
 
             if (! ok)
                 break;

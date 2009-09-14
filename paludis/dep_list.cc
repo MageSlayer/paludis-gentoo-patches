@@ -828,17 +828,17 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
     std::list<MergeList::const_iterator> will_be_installed;
     std::tr1::shared_ptr<const PackageIDSequence> already_installed;
 
-    if (node.spec()->blocked_spec()->package_ptr())
+    if (node.spec()->blocking().package_ptr())
     {
         PackageDepSpec just_package(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(
-                    *node.spec()->blocked_spec()->package_ptr()));
+                    *node.spec()->blocking().package_ptr()));
         already_installed = (*d->_imp->env)[selection::AllVersionsUnsorted(
                 generator::Matches(just_package, d->_imp->opts->match_package_options()) |
                 filter::InstalledAtRoot(d->_imp->env->root()))];
 
         MatchDepListEntryAgainstPackageDepSpec m(d->_imp->env, just_package, d->_imp->opts->match_package_options());
         for (std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p(
-                    d->_imp->merge_list_index.equal_range(*node.spec()->blocked_spec()->package_ptr())) ;
+                    d->_imp->merge_list_index.equal_range(*node.spec()->blocking().package_ptr())) ;
                 p.first != p.second ; ++p.first)
         {
             if (d->_imp->current_merge_list_entry != d->_imp->merge_list.end())
@@ -869,7 +869,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
     for (PackageIDSequence::ConstIterator aa(already_installed->begin()),
             aa_end(already_installed->end()) ; aa != aa_end ; ++aa)
     {
-        if (! match_package(*d->_imp->env, *node.spec()->blocked_spec(), **aa, d->_imp->opts->match_package_options()))
+        if (! match_package(*d->_imp->env, node.spec()->blocking(), **aa, d->_imp->opts->match_package_options()))
             continue;
 
         bool replaced(false);
@@ -892,7 +892,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
 
         /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
          * ourself */
-        if (package_dep_spec_has_properties(*node.spec()->blocked_spec(), make_named_values<PackageDepSpecProperties>(
+        if (package_dep_spec_has_properties(node.spec()->blocking(), make_named_values<PackageDepSpecProperties>(
                         value_for<n::has_additional_requirements>(false),
                         value_for<n::has_category_name_part>(indeterminate),
                         value_for<n::has_from_repository>(false),
@@ -918,7 +918,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
         switch (d->_imp->throw_on_blocker ? dl_blocks_error : d->_imp->opts->blocks())
         {
             case dl_blocks_error:
-                throw BlockError(stringify(*node.spec()->blocked_spec()));
+                throw BlockError(stringify(node.spec()->blocking()));
 
             case dl_blocks_discard:
                 Log::get_instance()->message("dep_list.discarding_block", ll_warning, lc_context) << "Discarding block '" << *node.spec() << "'";
@@ -928,7 +928,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
                 break;
 
             case dl_blocks_accumulate:
-                d->add_error_package(*aa, dlk_block, *node.spec()->blocked_spec());
+                d->add_error_package(*aa, dlk_block, node.spec()->blocking());
                 break;
 
             case last_dl_blocks:
@@ -939,12 +939,12 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
     for (std::list<MergeList::const_iterator>::const_iterator r(will_be_installed.begin()),
             r_end(will_be_installed.end()) ; r != r_end ; ++r)
     {
-        if (! match_package(*d->_imp->env, *node.spec()->blocked_spec(), *(*r)->package_id(), d->_imp->opts->match_package_options()))
+        if (! match_package(*d->_imp->env, node.spec()->blocking(), *(*r)->package_id(), d->_imp->opts->match_package_options()))
             continue;
 
         /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
          * ourself */
-        if (package_dep_spec_has_properties(*node.spec()->blocked_spec(), make_named_values<PackageDepSpecProperties>(
+        if (package_dep_spec_has_properties(node.spec()->blocking(), make_named_values<PackageDepSpecProperties>(
                         value_for<n::has_additional_requirements>(false),
                         value_for<n::has_category_name_part>(indeterminate),
                         value_for<n::has_from_repository>(false),
@@ -968,7 +968,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
                 continue;
         }
 
-        throw BlockError(stringify(*node.spec()->blocked_spec()));
+        throw BlockError(stringify(node.spec()->blocking()));
     }
 
     if (check_whole_list)
@@ -976,12 +976,12 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
         for (MergeList::const_iterator r(d->_imp->merge_list.begin()),
                 r_end(d->_imp->merge_list.end()) ; r != r_end ; ++r)
         {
-            if (! match_package(*d->_imp->env, *node.spec()->blocked_spec(), *r->package_id(), d->_imp->opts->match_package_options()))
+            if (! match_package(*d->_imp->env, node.spec()->blocking(), *r->package_id(), d->_imp->opts->match_package_options()))
                 continue;
 
             /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
              * ourself */
-            if (package_dep_spec_has_properties(*node.spec()->blocked_spec(), make_named_values<PackageDepSpecProperties>(
+            if (package_dep_spec_has_properties(node.spec()->blocking(), make_named_values<PackageDepSpecProperties>(
                             value_for<n::has_additional_requirements>(false),
                             value_for<n::has_category_name_part>(indeterminate),
                             value_for<n::has_from_repository>(false),
@@ -1005,7 +1005,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
                     continue;
             }
 
-            throw BlockError(stringify(*node.spec()->blocked_spec()));
+            throw BlockError(stringify(node.spec()->blocking()));
         }
     }
 }

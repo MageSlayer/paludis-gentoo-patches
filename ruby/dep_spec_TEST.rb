@@ -281,22 +281,22 @@ module Paludis
         end
 
         def test_create
-            v = BlockDepSpec.new(Paludis::parse_user_package_dep_spec(">=foo/bar-1", env, []))
+            v = BlockDepSpec.new("!>=foo/bar-1", Paludis::parse_user_package_dep_spec(">=foo/bar-1", env, []), false)
         end
 
         def test_create_error
             assert_raise TypeError do
-                v = BlockDepSpec.new(0)
+                v = BlockDepSpec.new("!>=foo/bar-1", 0, false)
             end
 
             assert_raise TypeError do
-                v = BlockDepSpec.new(PlainTextDepSpec.new('foo-bar/baz'))
+                v = BlockDepSpec.new("!>=foo/bar-1", PlainTextDepSpec.new('foo-bar/baz'), false)
             end
         end
 
         def test_blocked_spec
-            assert_equal "foo/baz", BlockDepSpec.new(Paludis::parse_user_package_dep_spec(
-                "foo/baz", env, [])).blocked_spec.to_s
+            assert_equal "foo/baz", BlockDepSpec.new("!foo/baz", Paludis::parse_user_package_dep_spec(
+                "foo/baz", env, []), false).blocking.to_s
         end
     end
 

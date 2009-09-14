@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -187,7 +187,7 @@ void
 QueryVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type & node)
 {
     DependencySpecTree tree(make_shared_ptr(new AllDepSpec));
-    tree.root()->append(node.spec()->blocked_spec());
+    tree.root()->append(std::tr1::static_pointer_cast<const PackageDepSpec>(node.spec()->blocking().clone()));
     tree.root()->accept(*this);
     _imp->result = !_imp->result;
 }

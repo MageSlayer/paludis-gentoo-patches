@@ -461,22 +461,30 @@ PythonSimpleURIDepSpec::PythonSimpleURIDepSpec(const SimpleURIDepSpec & d) :
 {
 }
 
-PythonBlockDepSpec::PythonBlockDepSpec(std::tr1::shared_ptr<const PythonPackageDepSpec> & a) :
-    PythonStringDepSpec("!" + a->text()),
-    _spec(a)
+PythonBlockDepSpec::PythonBlockDepSpec(const std::string & t, const std::tr1::shared_ptr<const PythonPackageDepSpec> & a, const bool s) :
+    PythonStringDepSpec(t),
+    _spec(a),
+    _strong(s)
 {
 }
 
 PythonBlockDepSpec::PythonBlockDepSpec(const BlockDepSpec & d) :
     PythonStringDepSpec(d.text()),
-    _spec(make_shared_ptr(new PythonPackageDepSpec(*d.blocked_spec())))
+    _spec(make_shared_ptr(new PythonPackageDepSpec(d.blocking()))),
+    _strong(d.strong())
 {
 }
 
 std::tr1::shared_ptr<const PythonPackageDepSpec>
-PythonBlockDepSpec::blocked_spec() const
+PythonBlockDepSpec::blocking() const
 {
     return _spec;
+}
+
+bool
+PythonBlockDepSpec::strong() const
+{
+    return _strong;
 }
 
 PythonFetchableURIDepSpec::PythonFetchableURIDepSpec(const std::string & s) :
@@ -939,7 +947,7 @@ template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonBlockDepSpec & d)
 {
-    _add_to->append(make_shared_ptr(new BlockDepSpec(make_shared_ptr(new PackageDepSpec(*d.blocked_spec())))));
+    _add_to->append(make_shared_ptr(new BlockDepSpec(d.text(), *d.blocking(), d.strong())));
 }
 
 template <typename H_>
@@ -1363,11 +1371,16 @@ void expose_dep_spec()
          "BlockDepSpec",
          "A BlockDepSpec represents a block on a package name (for example, 'app-editors/vim'), \n"
          "possibly with associated version and SLOT restrictions.",
-         bp::init<std::tr1::shared_ptr<const PackageDepSpec> >("__init__(PackageDepSpec)")
+         bp::init<std::string, std::tr1::shared_ptr<const PythonPackageDepSpec>, bool>("__init__(string, PackageDepSpec, bool)")
         )
-        .add_property("blocked_spec", &PythonBlockDepSpec::blocked_spec,
+        .add_property("blocking", &PythonBlockDepSpec::blocking,
                 "[ro] PackageDepSpec\n"
                 "The spec we're blocking."
+                )
+
+        .add_property("strong", &PythonBlockDepSpec::strong,
+                "[ro] bool\n"
+                "Are we a strong block?"
                 )
 
         //Work around epydoc bug

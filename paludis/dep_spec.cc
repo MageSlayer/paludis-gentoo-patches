@@ -275,21 +275,17 @@ PackageDepSpec::as_package_dep_spec() const
     return this;
 }
 
-BlockDepSpec::BlockDepSpec(const std::tr1::shared_ptr<const PackageDepSpec> & a) :
-    StringDepSpec("!" + a->text()),
-    _spec(a)
-{
-}
-
-BlockDepSpec::BlockDepSpec(const std::tr1::shared_ptr<const PackageDepSpec> & a, const std::string & t) :
-    StringDepSpec(t),
-    _spec(a)
+BlockDepSpec::BlockDepSpec(const std::string & s, const PackageDepSpec & p, const bool t) :
+    StringDepSpec(s),
+    _spec(p),
+    _strong(t)
 {
 }
 
 BlockDepSpec::BlockDepSpec(const BlockDepSpec & other) :
     StringDepSpec(other.text()),
-    _spec(other.blocked_spec())
+    _spec(other._spec),
+    _strong(other._strong)
 {
 }
 
@@ -471,17 +467,22 @@ SimpleURIDepSpec::need_keys_added() const
 {
 }
 
-std::tr1::shared_ptr<const PackageDepSpec>
-BlockDepSpec::blocked_spec() const
+const PackageDepSpec
+BlockDepSpec::blocking() const
 {
     return _spec;
+}
+
+bool
+BlockDepSpec::strong() const
+{
+    return _strong;
 }
 
 std::tr1::shared_ptr<DepSpec>
 BlockDepSpec::clone() const
 {
-    std::tr1::shared_ptr<BlockDepSpec> result(new BlockDepSpec(std::tr1::static_pointer_cast<PackageDepSpec>(
-                    _spec->clone())));
+    std::tr1::shared_ptr<BlockDepSpec> result(new BlockDepSpec(*this));
     result->set_annotations_key(annotations_key());
     return result;
 }

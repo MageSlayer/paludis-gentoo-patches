@@ -462,15 +462,16 @@ namespace
     }
 
     VALUE
-    block_dep_spec_new(VALUE self, VALUE spec)
+    block_dep_spec_new(VALUE self, VALUE str, VALUE spec, VALUE strong)
     {
         std::tr1::shared_ptr<const WrappedSpecBase> * ptr(0);
         try
         {
             std::tr1::shared_ptr<const PackageDepSpec> pkg(value_to_package_dep_spec(spec));
-            ptr = new std::tr1::shared_ptr<const WrappedSpecBase>(new WrappedSpec<BlockDepSpec>(make_shared_ptr(new BlockDepSpec(pkg))));
+            ptr = new std::tr1::shared_ptr<const WrappedSpecBase>(new WrappedSpec<BlockDepSpec>(make_shared_ptr(
+                            new BlockDepSpec(StringValuePtr(str), *pkg, value_to_bool(strong)))));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<const WrappedSpecBase> >::free, ptr));
-            rb_obj_call_init(tdata, 1, &spec);
+            rb_obj_call_init(tdata, 3, &str);
             return tdata;
         }
         catch (const std::exception & e)
@@ -482,16 +483,17 @@ namespace
 
     /*
      * call-seq:
-     *     blocked_spec -> DepSpec
+     *     blocking -> DepSpec
      *
      * Fetch the DepSpec we're blocking.
      */
     VALUE
-    block_dep_spec_blocked_spec(VALUE self)
+    block_dep_spec_blocking(VALUE self)
     {
         std::tr1::shared_ptr<WrappedSpecBase> * p;
         Data_Get_Struct(self, std::tr1::shared_ptr<WrappedSpecBase>, p);
-        return package_dep_spec_to_value(std::tr1::static_pointer_cast<const WrappedSpec<BlockDepSpec> >(*p)->spec()->blocked_spec());
+        return package_dep_spec_to_value(make_shared_ptr(new PackageDepSpec(
+                        std::tr1::static_pointer_cast<const WrappedSpec<BlockDepSpec> >(*p)->spec()->blocking())));
     }
 
     template <typename A_>
@@ -1291,9 +1293,9 @@ namespace
          * associated version and SLOT restrictions.
          */
         c_block_dep_spec = rb_define_class_under(paludis_module(), "BlockDepSpec", c_string_dep_spec);
-        rb_define_singleton_method(c_block_dep_spec, "new", RUBY_FUNC_CAST(&block_dep_spec_new), 1);
-        rb_define_method(c_block_dep_spec, "initialize", RUBY_FUNC_CAST(&dep_spec_init_1), 1);
-        rb_define_method(c_block_dep_spec, "blocked_spec", RUBY_FUNC_CAST(&block_dep_spec_blocked_spec), 0);
+        rb_define_singleton_method(c_block_dep_spec, "new", RUBY_FUNC_CAST(&block_dep_spec_new), 3);
+        rb_define_method(c_block_dep_spec, "initialize", RUBY_FUNC_CAST(&dep_spec_init_1), 3);
+        rb_define_method(c_block_dep_spec, "blocking", RUBY_FUNC_CAST(&block_dep_spec_blocking), 0);
         VALUE (* block_dep_spec_to_s) (VALUE) = &dep_spec_to_s<BlockDepSpec>;
         rb_define_method(c_block_dep_spec, "to_s", RUBY_FUNC_CAST(block_dep_spec_to_s), 0);
 
