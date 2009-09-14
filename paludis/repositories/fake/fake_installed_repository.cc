@@ -42,19 +42,22 @@ namespace paludis
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
         std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key;
         const bool supports_uninstall;
+        const bool is_suitable_destination;
 
-        Implementation(const bool s) :
+        Implementation(const bool s, const bool b) :
             format_key(new LiteralMetadataValueKey<std::string> (
                         "format", "format", mkt_significant, "installed_fake")),
             installed_root_key(new LiteralMetadataValueKey<FSEntry> (
                         "installed_root", "installed_root", mkt_normal, FSEntry("/"))),
-            supports_uninstall(s)
+            supports_uninstall(s),
+            is_suitable_destination(b)
         {
         }
     };
 }
 
-FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, const RepositoryName & our_name, const bool supports_uninstall) :
+FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, const RepositoryName & our_name,
+        const bool supports_uninstall, const bool i) :
     FakeRepositoryBase(e, our_name, make_named_values<RepositoryCapabilities>(
                 value_for<n::destination_interface>(this),
                 value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
@@ -68,7 +71,7 @@ FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, co
                 value_for<n::syncable_interface>(static_cast<RepositorySyncableInterface *>(0)),
                 value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
                 )),
-    PrivateImplementationPattern<FakeInstalledRepository>(new Implementation<FakeInstalledRepository>(supports_uninstall)),
+    PrivateImplementationPattern<FakeInstalledRepository>(new Implementation<FakeInstalledRepository>(supports_uninstall, i)),
     _imp(PrivateImplementationPattern<FakeInstalledRepository>::_imp)
 {
     add_metadata_key(_imp->format_key);
@@ -82,7 +85,7 @@ FakeInstalledRepository::~FakeInstalledRepository()
 bool
 FakeInstalledRepository::is_suitable_destination_for(const PackageID &) const
 {
-    return true;
+    return _imp->is_suitable_destination;
 }
 
 std::tr1::shared_ptr<const FakeInstalledRepository::ProvidesSequence>

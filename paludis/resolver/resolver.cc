@@ -729,33 +729,41 @@ Resolver::_resolve_arrows()
                 c_end(i->second->constraints()->end()) ;
                 c != c_end ; ++c)
         {
-            if ((*c)->spec().if_block())
-            {
-                /* todo: strong blocks do impose arrows */
-                continue;
-            }
-
             GetDependencyReason gdr;
             const DependencyReason * if_dependency_reason((*c)->reason()->accept_returning<const DependencyReason *>(gdr));
             if (! if_dependency_reason)
-                continue;
+                    continue;
 
             const QPN_S from_qpns(if_dependency_reason->from_id());
             const std::tr1::shared_ptr<Resolution> resolution(_resolution_for_qpn_s(from_qpns, false));
 
-            ArrowInfo a(*if_dependency_reason);
-            if (a.causes_pre_arrow)
+            if ((*c)->spec().if_block())
             {
-                int ignorable_pass(0);
-                if (_already_met(if_dependency_reason->sanitised_dependency()))
-                    ignorable_pass = 1;
-                else if (a.ignorable)
-                    ignorable_pass = 2;
+                if ((*c)->spec().if_block()->strong())
+                {
+                    resolution->arrows()->push_back(make_shared_ptr(new Arrow(make_named_values<Arrow>(
+                                        value_for<n::ignorable_pass>(0),
+                                        value_for<n::to_qpn_s>(i->first)
+                                        ))));
+                }
+                continue;
+            }
+            else
+            {
+                ArrowInfo a(*if_dependency_reason);
+                if (a.causes_pre_arrow)
+                {
+                    int ignorable_pass(0);
+                    if (_already_met(if_dependency_reason->sanitised_dependency()))
+                        ignorable_pass = 1;
+                    else if (a.ignorable)
+                        ignorable_pass = 2;
 
-                resolution->arrows()->push_back(make_shared_ptr(new Arrow(make_named_values<Arrow>(
-                                    value_for<n::ignorable_pass>(ignorable_pass),
-                                    value_for<n::to_qpn_s>(i->first)
-                                    ))));
+                    resolution->arrows()->push_back(make_shared_ptr(new Arrow(make_named_values<Arrow>(
+                                        value_for<n::ignorable_pass>(ignorable_pass),
+                                        value_for<n::to_qpn_s>(i->first)
+                                        ))));
+                }
             }
         }
     }

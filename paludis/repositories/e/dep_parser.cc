@@ -103,10 +103,15 @@ namespace
             std::string::size_type specstart(1);
             if (2 <= s.length() && '!' == s.at(1))
             {
-                if (! eapi.supported()->dependency_spec_tree_parse_options()[dstpo_hard_soft_blocks])
+                if (! eapi.supported()->dependency_spec_tree_parse_options()[dstpo_double_bang_blocks])
                     throw EDepParseError(s, "Double-! blocks not allowed in this EAPI");
                 specstart = 2;
                 strong = true;
+            }
+            else
+            {
+                if (eapi.supported()->dependency_spec_tree_parse_options()[dstpo_single_bang_block_is_hard])
+                    strong = true;
             }
 
             std::tr1::shared_ptr<BlockDepSpec> spec(new BlockDepSpec(
