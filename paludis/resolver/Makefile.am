@@ -84,7 +84,7 @@ endif
 
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = \
-	resolver_TEST_blockers_setup.sh resolver_TEST_blockers_cleanup.sh
+	resolver_TEST_blockers_setup.sh resolver_TEST_blockers_cleanup.sh \
 	resolver_TEST_suggestions_setup.sh resolver_TEST_suggestions_cleanup.sh
 check_LIBRARIES = libpaludisresolvertest.a
 
