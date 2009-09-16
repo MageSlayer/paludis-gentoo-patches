@@ -565,6 +565,83 @@ namespace
         }
     };
 
+    struct UnionGeneratorHandler :
+        GeneratorHandler
+    {
+        const Generator g1;
+        const Generator g2;
+
+        UnionGeneratorHandler(const Generator & h1, const Generator & h2) :
+            g1(h1),
+            g2(h2)
+        {
+        }
+
+        virtual std::tr1::shared_ptr<const RepositoryNameSet> repositories(
+                const Environment * const env) const
+        {
+            std::tr1::shared_ptr<const RepositoryNameSet> r1(g1.repositories(env));
+            std::tr1::shared_ptr<const RepositoryNameSet> r2(g2.repositories(env));
+            std::tr1::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);
+            std::set_union(
+                    r1->begin(), r1->end(),
+                    r2->begin(), r2->end(),
+                    result->inserter(),
+                    RepositoryNameComparator());
+            return result;
+        }
+
+        virtual std::tr1::shared_ptr<const CategoryNamePartSet> categories(
+                const Environment * const env,
+                const std::tr1::shared_ptr<const RepositoryNameSet> & repos) const
+        {
+            std::tr1::shared_ptr<const CategoryNamePartSet> c1(g1.categories(env, repos));
+            std::tr1::shared_ptr<const CategoryNamePartSet> c2(g2.categories(env, repos));
+            std::tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+            std::set_union(
+                    c1->begin(), c1->end(),
+                    c2->begin(), c2->end(),
+                    result->inserter());
+            return result;
+        }
+
+        virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> packages(
+                const Environment * const env,
+                const std::tr1::shared_ptr<const RepositoryNameSet> & repos,
+                const std::tr1::shared_ptr<const CategoryNamePartSet> & cats) const
+        {
+            std::tr1::shared_ptr<const QualifiedPackageNameSet> q1(g1.packages(env, repos, cats));
+            std::tr1::shared_ptr<const QualifiedPackageNameSet> q2(g2.packages(env, repos, cats));
+            std::tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+            std::set_union(
+                    q1->begin(), q1->end(),
+                    q2->begin(), q2->end(),
+                    result->inserter());
+            return result;
+        }
+
+        virtual std::tr1::shared_ptr<const PackageIDSet> ids(
+                const Environment * const env,
+                const std::tr1::shared_ptr<const RepositoryNameSet> & repos,
+                const std::tr1::shared_ptr<const QualifiedPackageNameSet> & qpns) const
+        {
+            std::tr1::shared_ptr<const PackageIDSet> i1(g1.ids(env, repos, qpns));
+            std::tr1::shared_ptr<const PackageIDSet> i2(g2.ids(env, repos, qpns));
+            std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
+            std::set_union(
+                    i1->begin(), i1->end(),
+                    i2->begin(), i2->end(),
+                    result->inserter(),
+                    PackageIDSetComparator());
+            return result;
+        }
+
+        virtual std::string as_string() const
+        {
+            return stringify(g1) + " unioned with " + stringify(g2);
+        }
+    };
+
     struct AllGeneratorHandler :
         AllGeneratorHandlerBase
     {
@@ -632,6 +709,11 @@ generator::Intersection::Intersection(const Generator & g1, const Generator & g2
 {
 }
 
+generator::Union::Union(const Generator & g1, const Generator & g2) :
+    Generator(make_shared_ptr(new UnionGeneratorHandler(g1, g2)))
+{
+}
+
 template <typename A_>
 generator::SomeIDsMightSupportAction<A_>::SomeIDsMightSupportAction() :
     Generator(make_shared_ptr(new SomeIDsMightSupportActionGeneratorHandler<A_>))
@@ -642,6 +724,12 @@ Generator
 paludis::operator& (const Generator & g1, const Generator & g2)
 {
     return generator::Intersection(g1, g2);
+}
+
+Generator
+paludis::operator+ (const Generator & g1, const Generator & g2)
+{
+    return generator::Union(g1, g2);
 }
 
 std::ostream &
