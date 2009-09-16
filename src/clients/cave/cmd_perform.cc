@@ -77,6 +77,7 @@ namespace
         args::SwitchArg a_if_supported;
         args::SwitchArg a_hooks;
         args::StringArg a_x_of_y;
+        args::SwitchArg a_background;
 
         args::ArgsGroup g_fetch_action_options;
         args::SwitchArg a_exclude_unmirrorable;
@@ -102,6 +103,8 @@ namespace
                     "Also execute the appropriate hooks for the action.", true),
             a_x_of_y(&g_general_options, "x-of-y", '\0',
                     "Specify the value of the X_OF_Y variable that is passed to hooks."),
+            a_background(&g_general_options, "background", '\0',
+                    "Indicate that we are being run in the background", true),
 
             g_fetch_action_options(main_options_section(), "Fetch Action Options",
                     "Options for if the action is 'fetch' or 'pretend-fetch'"),
@@ -295,12 +298,16 @@ PerformCommand::run(
         throw BeMoreSpecific(spec, ids);
     const std::tr1::shared_ptr<const PackageID> id(*ids->begin());
 
+    OutputExclusivity exclusivity(oe_exclusive);
+    if (cmdline.a_background.specified())
+        exclusivity = oe_background;
+
     if (action == "config")
     {
         if (cmdline.a_if_supported.specified() && ! id->supports_action(SupportsActionTest<ConfigAction>()))
             return EXIT_SUCCESS;
 
-        OutputManagerFromEnvironment output_manager_holder(env.get(), id, oe_exclusive);
+        OutputManagerFromEnvironment output_manager_holder(env.get(), id, exclusivity);
         ConfigActionOptions options(make_named_values<ConfigActionOptions>(
                     value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
                     ));
@@ -312,7 +319,7 @@ PerformCommand::run(
         if (cmdline.a_if_supported.specified() && ! id->supports_action(SupportsActionTest<FetchAction>()))
             return EXIT_SUCCESS;
 
-        OutputManagerFromEnvironment output_manager_holder(env.get(), id, oe_exclusive);
+        OutputManagerFromEnvironment output_manager_holder(env.get(), id, exclusivity);
         FetchActionOptions options(make_named_values<FetchActionOptions>(
                     value_for<n::exclude_unmirrorable>(cmdline.a_exclude_unmirrorable.specified()),
                     value_for<n::fetch_unneeded>(cmdline.a_fetch_unneeded.specified()),
@@ -328,7 +335,7 @@ PerformCommand::run(
         if (cmdline.a_if_supported.specified() && ! id->supports_action(SupportsActionTest<PretendFetchAction>()))
             return EXIT_SUCCESS;
 
-        OutputManagerFromEnvironment output_manager_holder(env.get(), id, oe_exclusive);
+        OutputManagerFromEnvironment output_manager_holder(env.get(), id, exclusivity);
         FetchActionOptions options(make_named_values<FetchActionOptions>(
                     value_for<n::exclude_unmirrorable>(cmdline.a_exclude_unmirrorable.specified()),
                     value_for<n::fetch_unneeded>(cmdline.a_fetch_unneeded.specified()),
@@ -354,7 +361,7 @@ PerformCommand::run(
         if (cmdline.a_if_supported.specified() && ! id->supports_action(SupportsActionTest<InfoAction>()))
             return EXIT_SUCCESS;
 
-        OutputManagerFromEnvironment output_manager_holder(env.get(), id, oe_exclusive);
+        OutputManagerFromEnvironment output_manager_holder(env.get(), id, exclusivity);
         InfoActionOptions options(make_named_values<InfoActionOptions>(
                     value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
                     ));
@@ -388,7 +395,7 @@ PerformCommand::run(
                 replacing->push_back(*rids->begin());
         }
 
-        OutputManagerFromEnvironment output_manager_holder(env.get(), id, oe_exclusive);
+        OutputManagerFromEnvironment output_manager_holder(env.get(), id, exclusivity);
         WantInstallPhase want_phase(cmdline, output_manager_holder);
         InstallActionOptions options(make_named_values<InstallActionOptions>(
                     value_for<n::destination>(destination),
@@ -407,7 +414,7 @@ PerformCommand::run(
         if (cmdline.a_if_supported.specified() && ! id->supports_action(SupportsActionTest<PretendAction>()))
             return EXIT_SUCCESS;
 
-        OutputManagerFromEnvironment output_manager_holder(env.get(), id, oe_exclusive);
+        OutputManagerFromEnvironment output_manager_holder(env.get(), id, exclusivity);
         PretendActionOptions options(make_named_values<PretendActionOptions>(
                     value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
                     ));
@@ -419,7 +426,7 @@ PerformCommand::run(
         if (cmdline.a_if_supported.specified() && ! id->supports_action(SupportsActionTest<UninstallAction>()))
             return EXIT_SUCCESS;
 
-        OutputManagerFromEnvironment output_manager_holder(env.get(), id, oe_exclusive);
+        OutputManagerFromEnvironment output_manager_holder(env.get(), id, exclusivity);
         UninstallActionOptions options(make_named_values<UninstallActionOptions>(
                     value_for<n::config_protect>(cmdline.a_config_protect.argument()),
                     value_for<n::if_for_install_id>(make_null_shared_ptr()),
