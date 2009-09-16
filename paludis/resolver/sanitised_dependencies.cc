@@ -46,7 +46,7 @@ namespace
         l->push_back(t);
     }
 
-    struct AnyOfAlternativesVisitor
+    struct MakeAnyOfStringVisitor
     {
         std::string result;
 
@@ -74,7 +74,7 @@ namespace
         {
             if (node.spec()->condition_met())
             {
-                AnyOfAlternativesVisitor v;
+                MakeAnyOfStringVisitor v;
                 std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(v));
                 result.append(" " + stringify(*node.spec()) + " ( " + v.result + ")");
             }
@@ -82,14 +82,14 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
         {
-            AnyOfAlternativesVisitor v;
+            MakeAnyOfStringVisitor v;
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(v));
             result.append(" || ( " + v.result + ")");
         }
 
         void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
         {
-            AnyOfAlternativesVisitor v;
+            MakeAnyOfStringVisitor v;
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(v));
             result.append(" ( " + v.result + ")");
         }
@@ -124,13 +124,19 @@ namespace
         {
             seen_any = true;
 
-            if (active_sublist)
-                active_sublist->push_back(spec);
+            std::tr1::shared_ptr<DependencySpecTree> if_rewritten(resolver.rewrite_if_special(spec, our_qpn_s));
+            if (if_rewritten)
+                if_rewritten->root()->accept(*this);
             else
             {
-                std::list<PackageOrBlockDepSpec> l;
-                l.push_back(spec);
-                child_groups.push_back(l);
+                if (active_sublist)
+                    active_sublist->push_back(spec);
+                else
+                {
+                    std::list<PackageOrBlockDepSpec> l;
+                    l.push_back(spec);
+                    child_groups.push_back(l);
+                }
             }
         }
 
@@ -307,7 +313,11 @@ namespace
 
         void add(const SanitisedDependency & dep)
         {
-            sanitised_dependencies.add(dep);
+            std::tr1::shared_ptr<DependencySpecTree> if_rewritten(resolver.rewrite_if_special(dep.spec(), our_qpn_s));
+            if (if_rewritten)
+                if_rewritten->root()->accept(*this);
+            else
+                sanitised_dependencies.add(dep);
         }
 
         SanitisedDependency make_sanitised(const PackageOrBlockDepSpec & spec)
@@ -375,7 +385,7 @@ namespace
             Save<std::string> save_original_specs_as_string(&original_specs_as_string);
 
             {
-                AnyOfAlternativesVisitor v;
+                MakeAnyOfStringVisitor v;
                 std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(v));
                 original_specs_as_string = "|| (" + v.result + " )";
             }

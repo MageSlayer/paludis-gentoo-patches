@@ -75,7 +75,8 @@ namespace paludis
                 std::tr1::shared_ptr<Repository> repo, inst_repo;
                 std::tr1::shared_ptr<FakeInstalledRepository> fake_inst_repo;
 
-                ResolverTestCase(const std::string & group, const std::string & test_name);
+                ResolverTestCase(const std::string & group, const std::string & test_name, const std::string & eapi,
+                        const std::string & layout);
 
                 const std::tr1::shared_ptr<const ResolutionLists> get_resolutions(const PackageDepSpec & target);
 

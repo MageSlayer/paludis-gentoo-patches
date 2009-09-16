@@ -57,7 +57,7 @@ namespace
     struct ResolverSuggestionsTestCase : ResolverTestCase
     {
         ResolverSuggestionsTestCase(const std::string & s) :
-            ResolverTestCase("suggestions", s)
+            ResolverTestCase("suggestions", s, "exheres-0", "exheres")
         {
         }
     };

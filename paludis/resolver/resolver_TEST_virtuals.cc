@@ -54,10 +54,10 @@ using namespace test;
 
 namespace
 {
-    struct ResolverBlockersTestCase : ResolverTestCase
+    struct ResolverVirtualsTestCase : ResolverTestCase
     {
-        ResolverBlockersTestCase(const std::string & s) :
-            ResolverTestCase("blockers", s, "exheres-0", "exheres")
+        ResolverVirtualsTestCase(const std::string & s) :
+            ResolverTestCase("virtuals", s, "0", "traditional")
         {
         }
     };
@@ -65,16 +65,13 @@ namespace
 
 namespace test_cases
 {
-    struct TestHardBlocker : ResolverBlockersTestCase
+    struct TestVirtuals : ResolverVirtualsTestCase
     {
-        TestHardBlocker() : ResolverBlockersTestCase("hard") { }
+        TestVirtuals() : ResolverVirtualsTestCase("virtuals") { }
 
         void run()
         {
-            install("hard", "a-pkg", "1");
-            install("hard", "z-pkg", "1");
-
-            std::tr1::shared_ptr<const ResolutionLists> resolutions(get_resolutions("hard/target"));
+            std::tr1::shared_ptr<const ResolutionLists> resolutions(get_resolutions("virtuals/target"));
 
             {
                 TestMessageSuffix s("errors");
@@ -86,13 +83,19 @@ namespace test_cases
             {
                 TestMessageSuffix s("ordered");
                 check_resolution_list(resolutions->ordered(), ResolutionListChecks()
-                        .qpn(QualifiedPackageName("hard/a-pkg"))
-                        .qpn(QualifiedPackageName("hard/z-pkg"))
-                        .qpn(QualifiedPackageName("hard/target"))
+                        .qpn(QualifiedPackageName("cat/foo-a"))
+                        .qpn(QualifiedPackageName("virtuals/target"))
+                        .finished()
+                        );
+            }
+
+            {
+                TestMessageSuffix s("untaken");
+                check_resolution_list(resolutions->untaken(), ResolutionListChecks()
                         .finished()
                         );
             }
         }
-    } test_hard_blocker;
+    } test_virtuals;
 }
 

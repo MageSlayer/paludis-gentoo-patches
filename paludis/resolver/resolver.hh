@@ -39,6 +39,7 @@
 #include <paludis/name.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/repository-fwd.hh>
+#include <paludis/spec_tree-fwd.hh>
 #include <tr1/memory>
 
 namespace paludis
@@ -150,6 +151,8 @@ namespace paludis
                         const QPN_S &, const std::tr1::shared_ptr<const Resolution> &,
                         const std::tr1::shared_ptr<const PackageIDSequence> &) const;
 
+                void _need_rewrites() const;
+
             public:
                 Resolver(
                         const Environment * const,
@@ -172,6 +175,8 @@ namespace paludis
 
                 int find_any_score(const QPN_S &, const SanitisedDependency &) const;
 
+                const std::tr1::shared_ptr<DependencySpecTree> rewrite_if_special(const PackageOrBlockDepSpec &,
+                        const QPN_S & from_qpn_s) const;
         };
     }
 }

@@ -39,6 +39,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/user_dep_spec.hh>
 #include <algorithm>
+#include "config.h"
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -108,6 +109,28 @@ namespace
         {
         }
     };
+
+#ifdef ENABLE_VIRTUALS_REPOSITORY
+    std::string virtuals_repo_keys(const std::string & k)
+    {
+        if (k == "format")
+            return "virtuals";
+        else if (k == "root")
+            return "/";
+        else
+            return "";
+    }
+
+    std::string installed_virtuals_repo_keys(const std::string & k)
+    {
+        if (k == "format")
+            return "installed_virtuals";
+        else if (k == "root")
+            return "/";
+        else
+            return "";
+    }
+#endif
 }
 
 bool
@@ -141,7 +164,8 @@ paludis::resolver::resolver_test::get_use_installed_fn(
     return ui_never;
 }
 
-ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s) :
+ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s, const std::string & e,
+        const std::string & l) :
     TestCase(s)
 {
     std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
@@ -149,10 +173,10 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s)
     keys->insert("names_cache", "/var/empty");
     keys->insert("location", stringify(FSEntry::cwd() / ("resolver_TEST_" + t + "_dir") / "repo"));
     keys->insert("profiles", stringify(FSEntry::cwd() / ("resolver_TEST_" + t + "_dir") / "repo/profiles/profile"));
-    keys->insert("layout", "exheres");
-    keys->insert("eapi_when_unknown", "exheres-0");
-    keys->insert("eapi_when_unspecified", "exheres-0");
-    keys->insert("profile_eapi", "exheres-0");
+    keys->insert("layout", l);
+    keys->insert("eapi_when_unknown", e);
+    keys->insert("eapi_when_unspecified", e);
+    keys->insert("profile_eapi", e);
     keys->insert("distdir", stringify(FSEntry::cwd() / ("resolver_TEST_" + t + "_dir") / "distdir"));
     keys->insert("builddir", stringify(FSEntry::cwd() / ("resolver_TEST_" + t + "_dir") / "build"));
     repo = RepositoryFactory::get_instance()->create(&env,
@@ -160,7 +184,7 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s)
     env.package_database()->add_repository(1, repo);
 
     keys.reset(new Map<std::string, std::string>);
-    keys->insert("format", "exndbam");
+    keys->insert("format", "vdb");
     keys->insert("names_cache", "/var/empty");
     keys->insert("provides_cache", "/var/empty");
     keys->insert("location", stringify(FSEntry::cwd() / ("resolver_TEST_" + t + "_dir") / "installed"));
@@ -171,6 +195,11 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s)
 
     fake_inst_repo.reset(new FakeInstalledRepository(&env, RepositoryName("fake-inst"), true, false));
     env.package_database()->add_repository(1, fake_inst_repo);
+
+#ifdef ENABLE_VIRTUALS_REPOSITORY
+    env.package_database()->add_repository(0, RepositoryFactory::get_instance()->create(&env, virtuals_repo_keys));
+    env.package_database()->add_repository(0, RepositoryFactory::get_instance()->create(&env, installed_virtuals_repo_keys));
+#endif
 }
 
 const std::tr1::shared_ptr<const ResolutionLists>

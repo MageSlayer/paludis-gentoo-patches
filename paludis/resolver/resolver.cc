@@ -29,12 +29,14 @@
 #include <paludis/resolver/resolver_functions.hh>
 #include <paludis/resolver/suggest_restart.hh>
 #include <paludis/resolver/resolutions.hh>
+#include <paludis/resolver/serialise.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/mutex.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/dep_spec_flattener.hh>
@@ -52,16 +54,19 @@
 #include <paludis/package_database.hh>
 #include <paludis/repository.hh>
 #include <paludis/choice.hh>
+#include <paludis/spec_tree.hh>
 #include <iostream>
 #include <iomanip>
 #include <list>
 #include <map>
 #include <set>
+#include "config.h"
 
 using namespace paludis;
 using namespace paludis::resolver;
 
 typedef std::map<QPN_S, std::tr1::shared_ptr<Resolution> > ResolutionsByQPN_SMap;
+typedef std::map<QualifiedPackageName, std::set<QualifiedPackageName> > Rewrites;
 
 namespace paludis
 {
@@ -73,11 +78,16 @@ namespace paludis
 
         ResolutionsByQPN_SMap resolutions_by_qpn_s;
 
+        mutable Mutex rewrites_mutex;
+        mutable Rewrites rewrites;
+        mutable bool has_rewrites;
+
         std::tr1::shared_ptr<ResolutionLists> resolution_lists;
 
         Implementation(const Environment * const e, const ResolverFunctions & f) :
             env(e),
             fns(f),
+            has_rewrites(false),
             resolution_lists(new ResolutionLists(make_named_values<ResolutionLists>(
                             value_for<n::all>(new Resolutions),
                             value_for<n::errors>(new Resolutions),
@@ -530,7 +540,23 @@ Resolver::_made_wrong_decision(const QPN_S & qpn_s,
         }
     }
     else
-        throw InternalError(PALUDIS_HERE, "unimplemented: made decision, now can't make one");
+    {
+        std::string old_decision("none");
+        if (resolution->decision())
+        {
+            if (resolution->decision()->if_package_id())
+                old_decision = stringify(*resolution->decision()->if_package_id());
+            else
+                old_decision = stringify(resolution->decision()->kind());
+        }
+
+        std::stringstream str;
+        Serialiser ser(str);
+        constraint->serialise(ser);
+
+        throw InternalError(PALUDIS_HERE, "unimplemented: made decision " + old_decision +
+                ", now can't make one because of " + str.str());
+    }
 }
 
 void
@@ -632,15 +658,6 @@ bool
 Resolver::_care_about_dependency_spec(const QPN_S & qpn_s,
         const std::tr1::shared_ptr<const Resolution> & resolution, const SanitisedDependency & dep) const
 {
-    /* dirty dirty hack */
-    if (dep.spec().if_block())
-        if (dep.spec().if_block()->blocking().package_ptr()->category() == CategoryNamePart("virtual"))
-        {
-            Log::get_instance()->message("resolver.virtual_haxx", ll_warning, lc_context)
-                << "Ignoring " << dep.spec() << " from " << qpn_s << " for now";
-            return false;
-        }
-
     return _imp->fns.care_about_dep_fn()(qpn_s, resolution, dep);
 }
 
@@ -1492,6 +1509,82 @@ const std::tr1::shared_ptr<const ResolutionLists>
 Resolver::resolution_lists() const
 {
     return _imp->resolution_lists;
+}
+
+const std::tr1::shared_ptr<DependencySpecTree>
+Resolver::rewrite_if_special(const PackageOrBlockDepSpec & s, const QPN_S & our_qpn_s) const
+{
+    if (s.if_package() && s.if_package()->package_ptr())
+    {
+        if (s.if_package()->package_ptr()->category() != CategoryNamePart("virtual"))
+            return make_null_shared_ptr();
+        _need_rewrites();
+
+        Rewrites::const_iterator r(_imp->rewrites.find(*s.if_package()->package_ptr()));
+        if (r == _imp->rewrites.end())
+            return make_null_shared_ptr();
+
+        std::tr1::shared_ptr<DependencySpecTree> result(new DependencySpecTree(make_shared_ptr(new AllDepSpec)));
+        std::tr1::shared_ptr<DependencySpecTree::NodeType<AnyDepSpec>::Type> any(result->root()->append(make_shared_ptr(new AnyDepSpec)));
+        for (std::set<QualifiedPackageName>::const_iterator n(r->second.begin()), n_end(r->second.end()) ;
+                n != n_end ; ++n)
+            any->append(make_shared_ptr(new PackageDepSpec(PartiallyMadePackageDepSpec(*s.if_package()).package(*n))));
+
+        return result;
+    }
+    else if (s.if_block() && s.if_block()->blocking().package_ptr())
+    {
+        if (s.if_block()->blocking().package_ptr()->category() != CategoryNamePart("virtual"))
+            return make_null_shared_ptr();
+        _need_rewrites();
+
+        Rewrites::const_iterator r(_imp->rewrites.find(*s.if_block()->blocking().package_ptr()));
+        if (r == _imp->rewrites.end())
+            return make_null_shared_ptr();
+
+        std::tr1::shared_ptr<DependencySpecTree> result(new DependencySpecTree(make_shared_ptr(new AllDepSpec)));
+        for (std::set<QualifiedPackageName>::const_iterator n(r->second.begin()), n_end(r->second.end()) ;
+                n != n_end ; ++n)
+        {
+            if (*n == our_qpn_s.package())
+                continue;
+
+            PackageDepSpec spec(PartiallyMadePackageDepSpec(s.if_block()->blocking()).package(*n));
+            std::string prefix(s.if_block()->blocking().text());
+            std::string::size_type p(prefix.find_first_not_of('!'));
+            if (std::string::npos != p)
+                prefix.erase(p);
+            result->root()->append(make_shared_ptr(new BlockDepSpec(prefix + stringify(spec), spec, s.if_block()->strong())));
+        }
+
+        return result;
+    }
+    else
+        return make_null_shared_ptr();
+}
+
+void
+Resolver::_need_rewrites() const
+{
+#ifdef ENABLE_VIRTUALS_REPOSITORY
+    Lock lock(_imp->rewrites_mutex);
+    if (_imp->has_rewrites)
+        return;
+    _imp->has_rewrites = true;
+
+    const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::AllVersionsSorted(
+                generator::InRepository(RepositoryName("virtuals")) +
+                generator::InRepository(RepositoryName("installed-virtuals"))
+                )]);
+    for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+            i != i_end ; ++i)
+    {
+        if (! ((*i)->virtual_for_key()))
+            throw InternalError(PALUDIS_HERE, "huh? " + stringify(**i) + " has no virtual_for_key");
+        _imp->rewrites.insert(std::make_pair((*i)->name(), std::set<QualifiedPackageName>())).first->second.insert(
+                (*i)->virtual_for_key()->value()->name());
+    }
+#endif
 }
 
 template class WrappedForwardIterator<Resolver::ResolutionsByQPN_SConstIteratorTag,

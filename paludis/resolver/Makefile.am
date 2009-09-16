@@ -73,19 +73,25 @@ TESTS_ENVIRONMENT = env \
 		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/.libs/`" \
 	bash $(top_srcdir)/test/run_test.sh
 
+if ENABLE_VIRTUALS_REPOSITORY
+virtuals_tests = resolver_TEST_virtuals
+endif
+
 if ENABLE_NEW_RESOLVER
 noinst_LIBRARIES = libpaludisresolver.a
 
 TESTS = \
 	resolver_TEST_blockers \
-	resolver_TEST_suggestions
+	resolver_TEST_suggestions \
+	$(virtuals_tests)
 endif
 
 
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = \
 	resolver_TEST_blockers_setup.sh resolver_TEST_blockers_cleanup.sh \
-	resolver_TEST_suggestions_setup.sh resolver_TEST_suggestions_cleanup.sh
+	resolver_TEST_suggestions_setup.sh resolver_TEST_suggestions_cleanup.sh \
+	resolver_TEST_virtuals_setup.sh resolver_TEST_virtuals_cleanup.sh
 check_LIBRARIES = libpaludisresolvertest.a
 
 libpaludisresolvertest_a_SOURCES = \
@@ -106,6 +112,21 @@ resolver_TEST_blockers_LDADD = \
 	$(DYNAMIC_LD_LIBS)
 
 resolver_TEST_blockers_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
+resolver_TEST_virtuals_SOURCES = resolver_TEST_virtuals.cc
+
+resolver_TEST_virtuals_LDADD = \
+	libpaludisresolvertest.a \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	libpaludisresolver.a \
+	$(DYNAMIC_LD_LIBS)
+
+resolver_TEST_virtuals_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
 resolver_TEST_suggestions_SOURCES = resolver_TEST_suggestions.cc
 
