@@ -204,6 +204,33 @@ namespace
 
         command.append(" --x-of-y '" + stringify(x) + " of " + stringify(y) + "'");
 
+        if (cmdline.execution_options.a_skip_phase.specified() || cmdline.execution_options.a_abort_at_phase.specified()
+                || cmdline.execution_options.a_skip_until_phase.specified())
+        {
+            bool apply(false);
+
+            if (cmdline.execution_options.a_change_phases_for.argument() == "all")
+                apply = true;
+            else if (cmdline.execution_options.a_change_phases_for.argument() == "first")
+                apply = (x == 1);
+            else if (cmdline.execution_options.a_change_phases_for.argument() == "last")
+                apply = (x == y);
+            else
+                throw args::DoHelp("Don't understand argument '"
+                        + cmdline.execution_options.a_change_phases_for.argument() + "' to '--"
+                        + cmdline.execution_options.a_change_phases_for.long_name() + "'");
+
+            if (apply)
+            {
+                if (cmdline.execution_options.a_skip_phase.specified())
+                    command.append(" " + cmdline.execution_options.a_skip_phase.forwardable_string());
+                if (cmdline.execution_options.a_abort_at_phase.specified())
+                    command.append(" " + cmdline.execution_options.a_abort_at_phase.forwardable_string());
+                if (cmdline.execution_options.a_skip_until_phase.specified())
+                    command.append(" " + cmdline.execution_options.a_skip_until_phase.forwardable_string());
+            }
+        }
+
         paludis::Command cmd(command);
         int retcode(run_command(cmd));
 
