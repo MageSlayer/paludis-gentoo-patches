@@ -220,56 +220,81 @@ namespace
 
         int retcode(0), x(0), y(std::distance(lists.ordered()->begin(), lists.ordered()->end()));
 
-        if (0 != env->perform_hook(Hook("pretend_all_pre")
+        if (0 != env->perform_hook(Hook("install_task_execute_pre")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
                     ).max_exit_status())
             throw ActionError("Aborted by hook");
 
-        std::cout << "Executing pretend actions: " << std::flush;
-
-        for (Resolutions::ConstIterator c(lists.ordered()->begin()), c_end(lists.ordered()->end()) ;
-                c != c_end ; ++c)
-            retcode |= do_pretend(env, cmdline, (*c)->decision(), ++x, y);
-
-        std::cout << std::endl;
-
-        if (0 != env->perform_hook(Hook("pretend_all_post")
-                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
-                    ).max_exit_status())
-            throw ActionError("Aborted by hook");
-
-        if (0 != retcode || cmdline.a_pretend.specified())
-            return retcode;
-
-        x = 0;
-
-        if (0 != env->perform_hook(Hook("install_all_pre")
-                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
-                ).max_exit_status())
-            throw ActionError("Aborted by hook");
-
-        for (Resolutions::ConstIterator c(lists.ordered()->begin()), c_end(lists.ordered()->end()) ;
-                c != c_end ; ++c)
+        try
         {
-            ++x;
+            if (0 != env->perform_hook(Hook("pretend_all_pre")
+                        ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
+                        ).max_exit_status())
+                throw ActionError("Aborted by hook");
 
-            retcode = do_fetch(env, cmdline, (*c)->decision(), x, y);
-            if (0 != retcode)
+            std::cout << "Executing pretend actions: " << std::flush;
+
+            for (Resolutions::ConstIterator c(lists.ordered()->begin()), c_end(lists.ordered()->end()) ;
+                    c != c_end ; ++c)
+                retcode |= do_pretend(env, cmdline, (*c)->decision(), ++x, y);
+
+            std::cout << std::endl;
+
+            if (0 != env->perform_hook(Hook("pretend_all_post")
+                        ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
+                        ).max_exit_status())
+                throw ActionError("Aborted by hook");
+
+            if (0 != retcode || cmdline.a_pretend.specified())
                 return retcode;
 
-            if ((*c)->destinations()->slash())
+            x = 0;
+
+            if (0 != env->perform_hook(Hook("install_all_pre")
+                        ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
+                    ).max_exit_status())
+                throw ActionError("Aborted by hook");
+
+            for (Resolutions::ConstIterator c(lists.ordered()->begin()), c_end(lists.ordered()->end()) ;
+                    c != c_end ; ++c)
             {
-                retcode = do_install_slash(env, cmdline, *c, x, y);
+                ++x;
+
+                retcode = do_fetch(env, cmdline, (*c)->decision(), x, y);
                 if (0 != retcode)
                     return retcode;
+
+                if ((*c)->destinations()->slash())
+                {
+                    retcode = do_install_slash(env, cmdline, *c, x, y);
+                    if (0 != retcode)
+                        return retcode;
+                }
+                else
+                    throw InternalError(PALUDIS_HERE, "destination != / not done yet");
             }
-            else
-                throw InternalError(PALUDIS_HERE, "destination != / not done yet");
+
+            if (0 != env->perform_hook(Hook("install_all_post")
+                        ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
+                    ).max_exit_status())
+                throw ActionError("Aborted by hook");
+        }
+        catch (...)
+        {
+            if (0 != env->perform_hook(Hook("install_task_execute_post")
+                        ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
+                        ("PRETEND", stringify(cmdline.a_pretend.specified()))
+                        ("SUCCESS", stringify(false))
+                        ).max_exit_status())
+                throw ActionError("Aborted by hook");
+            throw;
         }
 
-        if (0 != env->perform_hook(Hook("install_all_post")
+        if (0 != env->perform_hook(Hook("install_task_execute_post")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
-                ).max_exit_status())
+                    ("PRETEND", stringify(cmdline.a_pretend.specified()))
+                    ("SUCCESS", stringify(true))
+                    ).max_exit_status())
             throw ActionError("Aborted by hook");
 
         return retcode;
