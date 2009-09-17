@@ -568,10 +568,10 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                     throw FetchActionError("Fetch of '" + stringify(*id) + "' failed", c.failures());
             }
         }
-
-        if (! c.failures()->empty())
-            throw FetchActionError("Fetch of '" + stringify(*id) + "' failed", c.failures());
     }
+
+    if (! c.failures()->empty())
+        throw FetchActionError("Fetch of '" + stringify(*id) + "' failed", c.failures());
 
     output_manager->succeeded();
 }
