@@ -123,9 +123,9 @@ namespace paludis
         {
             ResolveCommandLineDisplayOptions(args::ArgsHandler * const);
 
-    //        args::ArgsGroup g_display_options;
-    //        args::EnumArg a_show_option_descriptions;
-    //        args::EnumArg a_show_descriptions;
+            args::ArgsGroup g_display_options;
+//            args::EnumArg a_show_option_descriptions;
+            args::EnumArg a_show_descriptions;
 
             args::ArgsGroup g_explanations;
             args::StringSetArg a_explain;

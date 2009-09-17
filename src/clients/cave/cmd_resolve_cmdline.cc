@@ -47,24 +47,6 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
 //            a_purge_unused_packages(&g_cleanup_options, "purge-unused-packages", '\0',
 //                    "Purge packages that are no longer used after an uninstall or clean", true),
 //
-//            g_display_options(this, "Display Options", "Options relating to the resolution display."),
-//            a_show_option_descriptions(&g_display_options, "show-option-descriptions", '\0',
-//                    "Whether to display descriptions for package options",
-//                    args::EnumArg::EnumArgOptions
-//                    ("none",                       "Don't show any descriptions")
-//                    ("new",                        "Show for any new options")
-//                    ("changed",                    "Show for new or changed options")
-//                    ("all",                        "Show all options"),
-//                    "changed"
-//                    ),
-//            a_show_descriptions(&g_display_options, "show-descriptions", '\0',
-//                    "Whether to display package descriptions",
-//                    args::EnumArg::EnumArgOptions
-//                    ("none",                       "Don't show any descriptions")
-//                    ("new",                        "Show for new packages")
-//                    ("all",                        "Show for all packages"),
-//                    "new"
-//                    ),
 
     g_keep_options(this, "Reinstall Options", "Control whether installed packages are kept."),
     a_keep_targets(&g_keep_options, "keep-targets", 'K',
@@ -197,6 +179,24 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
 
 ResolveCommandLineDisplayOptions::ResolveCommandLineDisplayOptions(args::ArgsHandler * const h) :
     ArgsSection(h, "Display Options"),
+    g_display_options(this, "Display Options", "Options relating to the resolution display."),
+//    a_show_option_descriptions(&g_display_options, "show-option-descriptions", '\0',
+//            "Whether to display descriptions for package options",
+//            args::EnumArg::EnumArgOptions
+//            ("none",                       "Don't show any descriptions")
+//            ("new",                        "Show for any new options")
+//            ("changed",                    "Show for new or changed options")
+//            ("all",                        "Show all options"),
+//            "changed"
+//            ),
+    a_show_descriptions(&g_display_options, "show-descriptions", '\0',
+            "Whether to display package descriptions",
+            args::EnumArg::EnumArgOptions
+            ("none",                       "Don't show any descriptions")
+            ("new",                        "Show for new packages")
+            ("all",                        "Show for all packages"),
+            "new"
+            ),
     g_explanations(this, "Explanations", "Options requesting the resolver explain a particular decision "
             "that it made"),
     a_explain(&g_explanations, "explain", '\0', "Explain why the resolver made a particular decision. The "

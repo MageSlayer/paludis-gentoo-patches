@@ -451,7 +451,22 @@ namespace
             }
 
             if (id->short_description_key())
-                cout << "    \"" << id->short_description_key()->value() << "\"" << endl;
+            {
+                bool show(false);
+                if (cmdline.display_options.a_show_descriptions.argument() == "none")
+                    show = false;
+                else if (cmdline.display_options.a_show_descriptions.argument() == "new")
+                    show = is_new;
+                else if (cmdline.display_options.a_show_descriptions.argument() == "all")
+                    show = true;
+                else
+                    throw args::DoHelp("Don't understand argument '"
+                            + cmdline.display_options.a_show_descriptions.argument() + "' to '--"
+                            + cmdline.display_options.a_show_descriptions.long_name() + "'");
+
+                if (show)
+                    cout << "    \"" << id->short_description_key()->value() << "\"" << endl;
+            }
 
             display_reasons(*c, false);
         }
