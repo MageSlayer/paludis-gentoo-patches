@@ -25,7 +25,7 @@
 #include <paludis/resolver/resolution-fwd.hh>
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
 #include <paludis/resolver/reason-fwd.hh>
-#include <paludis/resolver/use_installed-fwd.hh>
+#include <paludis/resolver/use_existing-fwd.hh>
 #include <paludis/resolver/resolutions-fwd.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
@@ -64,7 +64,7 @@ namespace paludis
                     const SanitisedDependency & dep,
                     const std::tr1::shared_ptr<const Reason> &);
 
-            UseInstalled get_use_installed_fn(
+            UseExisting get_use_existing_fn(
                     const QPN_S &,
                     const PackageDepSpec &,
                     const std::tr1::shared_ptr<const Reason> &);

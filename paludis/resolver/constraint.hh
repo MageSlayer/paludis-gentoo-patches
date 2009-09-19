@@ -22,10 +22,10 @@
 
 #include <paludis/resolver/constraint-fwd.hh>
 #include <paludis/resolver/reason-fwd.hh>
-#include <paludis/resolver/use_installed-fwd.hh>
+#include <paludis/resolver/use_existing-fwd.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/serialise-fwd.hh>
-#include <paludis/resolver/destination_types.hh>
+#include <paludis/resolver/destination_types-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/options.hh>
 #include <paludis/dep_spec.hh>
@@ -35,24 +35,25 @@ namespace paludis
 {
     namespace n
     {
+        struct destination_type;
+        struct for_slash;
         struct nothing_is_fine_too;
         struct reason;
         struct spec;
-        struct to_destinations;
         struct untaken;
-        struct use_installed;
+        struct use_existing;
     }
 
     namespace resolver
     {
         struct Constraint
         {
+            NamedValue<n::destination_type, DestinationType> destination_type;
             NamedValue<n::nothing_is_fine_too, bool> nothing_is_fine_too;
             NamedValue<n::reason, std::tr1::shared_ptr<const Reason> > reason;
             NamedValue<n::spec, PackageOrBlockDepSpec> spec;
-            NamedValue<n::to_destinations, DestinationTypes> to_destinations;
             NamedValue<n::untaken, bool> untaken;
-            NamedValue<n::use_installed, UseInstalled> use_installed;
+            NamedValue<n::use_existing, UseExisting> use_existing;
 
             void serialise(Serialiser &) const;
 
@@ -67,10 +68,14 @@ namespace paludis
                 Constraints();
                 ~Constraints();
 
-                UseInstalled strictest_use_installed() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                bool nothing_is_fine_too() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                bool all_untaken() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                const DestinationTypes to_destinations() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool nothing_is_fine_too_for_all() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool nothing_is_fine_too_for(const DestinationType) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                bool all_untaken_for_all() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool all_untaken_for(const DestinationType) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                UseExisting strictest_use_existing_for_all() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                UseExisting strictest_use_existing_for(const DestinationType) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void add(const std::tr1::shared_ptr<const Constraint> &);
 

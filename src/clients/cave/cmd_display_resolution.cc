@@ -211,7 +211,7 @@ namespace
                 cout << endl;
             }
 
-            if ((! resolution->decision()->is_best()) && resolution->decision()->kind() == dk_installable)
+            if ((! resolution->decision()->is_best()) && resolution->decision()->kind() == dk_changes_to_make)
                 cout << c::bold_red() << "    Which prevented selection of the best candidate" << c::normal() << endl;
         }
     }
@@ -580,43 +580,36 @@ namespace
                 {
                     std::cout << "      * " << (*c)->spec();
 
-                    switch ((*c)->use_installed())
+                    switch ((*c)->use_existing())
                     {
-                        case ui_if_same:
-                            std::cout << ", use installed if same";
+                        case ue_if_same:
+                            std::cout << ", use existing if same";
                             break;
-                        case ui_never:
-                            std::cout << ", never using installed";
+                        case ue_never:
+                            std::cout << ", never using existing";
                             break;
-                        case ui_only_if_transient:
-                            std::cout << ", using installed only if transient";
+                        case ue_only_if_transient:
+                            std::cout << ", using existing only if transient";
                             break;
-                        case ui_if_same_version:
-                            std::cout << ", use installed if same version";
+                        case ue_if_same_version:
+                            std::cout << ", use existing if same version";
                             break;
-                        case ui_if_possible:
-                            std::cout << ", use installed if possible";
+                        case ue_if_possible:
+                            std::cout << ", use existing if possible";
                             break;
 
-                        case last_ui:
+                        case last_ue:
                             break;
                     }
 
-                    for (DestinationType t(static_cast<DestinationType>(0)), t_end(last_dt) ;
-                            t != t_end ; t = static_cast<DestinationType>(static_cast<int>(t) + 1))
+                    switch ((*c)->destination_type())
                     {
-                        if (! (*c)->to_destinations()[t])
-                            continue;
+                        case dt_slash:
+                            std::cout << ", installing to /";
+                            break;
 
-                        switch (t)
-                        {
-                            case dt_slash:
-                                std::cout << ", installing to /";
-                                break;
-
-                            case last_dt:
-                                break;
-                        }
+                        case last_dt:
+                            break;
                     }
 
                     std::cout << std::endl;

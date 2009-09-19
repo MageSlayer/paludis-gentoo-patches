@@ -155,13 +155,13 @@ paludis::resolver::resolver_test::take_dependency_fn(
     return ! is_suggestion(dep);
 }
 
-UseInstalled
-paludis::resolver::resolver_test::get_use_installed_fn(
+UseExisting
+paludis::resolver::resolver_test::get_use_existing_fn(
         const QPN_S &,
         const PackageDepSpec &,
         const std::tr1::shared_ptr<const Reason> &)
 {
-    return ui_never;
+    return ue_never;
 }
 
 ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s, const std::string & e,
@@ -217,7 +217,7 @@ ResolverTestCase::get_resolutions(const PackageDepSpec & target)
                             std::tr1::bind(&initial_constraints_for_fn, std::tr1::ref(initial_constraints),
                                 std::tr1::placeholders::_1)),
                         value_for<n::get_qpn_s_s_for_fn>(&get_qpn_s_s_for_fn),
-                        value_for<n::get_use_installed_fn>(&get_use_installed_fn),
+                        value_for<n::get_use_existing_fn>(&get_use_existing_fn),
                         value_for<n::take_dependency_fn>(&take_dependency_fn)
                         ));
             resolver.add_target(target);
@@ -226,8 +226,7 @@ ResolverTestCase::get_resolutions(const PackageDepSpec & target)
         }
         catch (const SuggestRestart & e)
         {
-            initial_constraints.insert(std::make_pair(e.qpn_s(), make_shared_ptr(new Constraints))).first->second->add(
-                    e.suggested_preset());
+            initial_constraints.insert(std::make_pair(e.qpn_s(), make_shared_ptr(new Constraints))).first->second->add(e.suggested_preset());
         }
     }
 }

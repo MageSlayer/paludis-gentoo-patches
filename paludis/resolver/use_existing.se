@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_UseExisting()
+{
+    prefix ue
+    namespace paludis::resolver
+
+    # must be kept in strictness order
+    key ue_never               "Never"
+    key ue_only_if_transient   "Only if it is transient"
+    key ue_if_same             "If it is the same"
+    key ue_if_same_version     "If it is the same version"
+    key ue_if_possible         "If possible"
+
+    want_destringify
+}
+

@@ -25,7 +25,9 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/make_named_values.hh>
+#include <algorithm>
 #include <sstream>
+#include <vector>
 #include <list>
 
 using namespace paludis;
@@ -36,16 +38,16 @@ namespace paludis
     template <>
     struct Implementation<Constraints>
     {
-        UseInstalled strictest_use_installed;
-        bool nothing_is_fine_too;
-        bool all_untaken;
-        DestinationTypes to_destinations;
+        UseExisting strictest_use_existing_for_all;
+        bool nothing_is_fine_too_for_all;
+        bool all_untaken_for_all;
+
         Sequence<std::tr1::shared_ptr<const Constraint> > constraints;
 
         Implementation() :
-            strictest_use_installed(ui_if_possible),
-            nothing_is_fine_too(true),
-            all_untaken(true)
+            strictest_use_existing_for_all(static_cast<UseExisting>(last_ue - 1)),
+            nothing_is_fine_too_for_all(true),
+            all_untaken_for_all(true)
         {
         }
     };
@@ -58,6 +60,24 @@ Constraints::Constraints() :
 
 Constraints::~Constraints()
 {
+}
+
+bool
+Constraints::all_untaken_for_all() const
+{
+    return _imp->all_untaken_for_all;
+}
+
+bool
+Constraints::nothing_is_fine_too_for_all() const
+{
+    return _imp->nothing_is_fine_too_for_all;
+}
+
+UseExisting
+Constraints::strictest_use_existing_for_all() const
+{
+    return _imp->strictest_use_existing_for_all;
 }
 
 Constraints::ConstIterator
@@ -76,40 +96,15 @@ void
 Constraints::add(const std::tr1::shared_ptr<const Constraint> & c)
 {
     _imp->constraints.push_back(c);
-    _imp->strictest_use_installed = std::min(_imp->strictest_use_installed, c->use_installed());
-    _imp->nothing_is_fine_too = _imp->nothing_is_fine_too && c->nothing_is_fine_too();
-    _imp->to_destinations |= c->to_destinations();
-    _imp->all_untaken = _imp->all_untaken && c->untaken();
+    _imp->strictest_use_existing_for_all = std::min(_imp->strictest_use_existing_for_all, c->use_existing());
+    _imp->nothing_is_fine_too_for_all = _imp->nothing_is_fine_too_for_all && c->nothing_is_fine_too();
+    _imp->all_untaken_for_all = _imp->all_untaken_for_all && c->untaken();
 }
 
 bool
 Constraints::empty() const
 {
     return _imp->constraints.empty();
-}
-
-UseInstalled
-Constraints::strictest_use_installed() const
-{
-    return _imp->strictest_use_installed;
-}
-
-bool
-Constraints::nothing_is_fine_too() const
-{
-    return _imp->nothing_is_fine_too;
-}
-
-bool
-Constraints::all_untaken() const
-{
-    return _imp->all_untaken;
-}
-
-const DestinationTypes
-Constraints::to_destinations() const
-{
-    return _imp->to_destinations;
 }
 
 void
@@ -135,12 +130,12 @@ void
 Constraint::serialise(Serialiser & s) const
 {
     s.object("Constraint")
+        .member(SerialiserFlags<>(), "destination_type", stringify(destination_type()))
         .member(SerialiserFlags<>(), "nothing_is_fine_too", nothing_is_fine_too())
         .member(SerialiserFlags<serialise::might_be_null>(), "reason", reason())
         .member(SerialiserFlags<>(), "spec", spec())
-        .member(SerialiserFlags<>(), "to_destinations", to_destinations())
         .member(SerialiserFlags<>(), "untaken", stringify(untaken()))
-        .member(SerialiserFlags<>(), "use_installed", stringify(use_installed()))
+        .member(SerialiserFlags<>(), "use_existing", stringify(use_existing()))
         ;
 }
 
@@ -181,13 +176,13 @@ Constraint::deserialise(Deserialisation & d)
     IDFinder id_finder;
 
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                    value_for<n::destination_type>(destringify<DestinationType>(v.member<std::string>("destination_type"))),
                     value_for<n::nothing_is_fine_too>(v.member<bool>("nothing_is_fine_too")),
                     value_for<n::reason>(reason),
                     value_for<n::spec>(PackageOrBlockDepSpec::deserialise(*v.find_remove_member("spec"),
                             reason->accept_returning<std::tr1::shared_ptr<const PackageID> >(id_finder))),
-                    value_for<n::to_destinations>(v.member<DestinationTypes>("to_destinations")),
                     value_for<n::untaken>(v.member<bool>("untaken")),
-                    value_for<n::use_installed>(destringify<UseInstalled>(v.member<std::string>("use_installed")))
+                    value_for<n::use_existing>(destringify<UseExisting>(v.member<std::string>("use_existing")))
             )));
 }
 

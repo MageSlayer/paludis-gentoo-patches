@@ -30,6 +30,8 @@ namespace paludis
     {
         struct Constraint;
         struct Constraints;
+
+        typedef Sequence<std::tr1::shared_ptr<const Constraint> > ConstraintSequence;
     }
 }
 

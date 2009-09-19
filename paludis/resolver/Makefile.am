@@ -3,17 +3,17 @@ MAINTAINERCLEANFILES = Makefile.in
 DISTCLEANFILES = \
 	decision-se.hh decision-se.cc \
 	destination_types-se.hh destination_types-se.cc \
-	use_installed-se.hh use_installed-se.cc
+	use_existing-se.hh use_existing-se.cc
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 EXTRA_DIST = \
 	decision-se.hh decision-se.cc decision.se \
 	destination_types-se.hh destination_types-se.cc destination_types.se \
-	use_installed-se.hh use_installed-se.cc use_installed.se \
+	use_existing-se.hh use_existing-se.cc use_existing.se \
 	$(check_SCRIPTS)
 BUILT_SOURCES = \
 	decision-se.hh decision-se.cc \
 	destination_types-se.hh destination_types-se.cc \
-	use_installed-se.hh use_installed-se.cc
+	use_existing-se.hh use_existing-se.cc
 
 noinst_HEADERS = \
 	arrow.hh arrow-fwd.hh \
@@ -30,7 +30,7 @@ noinst_HEADERS = \
 	sanitised_dependencies.hh sanitised_dependencies-fwd.hh \
 	serialise.hh serialise-fwd.hh serialise-impl.hh \
 	suggest_restart.hh suggest_restart-fwd.hh \
-	use_installed.hh use_installed-fwd.hh use_installed-se.hh
+	use_existing.hh use_existing-fwd.hh use_existing-se.hh
 
 libpaludisresolver_a_SOURCES = \
 	arrow.cc \
@@ -46,7 +46,7 @@ libpaludisresolver_a_SOURCES = \
 	sanitised_dependencies.cc \
 	serialise.cc \
 	suggest_restart.cc \
-	use_installed.cc
+	use_existing.cc
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_OPTIONS="" \
@@ -156,11 +156,11 @@ distcheck-deps-subdirs :
 	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
 
-use_installed-se.hh : use_installed.se $(top_srcdir)/misc/make_se.bash
-	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/use_installed.se > $@ ; then rm -f $@ ; exit 1 ; fi
+use_existing-se.hh : use_existing.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/use_existing.se > $@ ; then rm -f $@ ; exit 1 ; fi
 
-use_installed-se.cc : use_installed.se $(top_srcdir)/misc/make_se.bash
-	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/use_installed.se > $@ ; then rm -f $@ ; exit 1 ; fi
+use_existing-se.cc : use_existing.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/use_existing.se > $@ ; then rm -f $@ ; exit 1 ; fi
 
 decision-se.hh : decision.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/decision.se > $@ ; then rm -f $@ ; exit 1 ; fi

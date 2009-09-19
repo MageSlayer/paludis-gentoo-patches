@@ -166,7 +166,7 @@ namespace
             ss << "; nothing is fine too";
         ss
             << "; untaken: " << stringify(c.untaken())
-            << "; use_installed: " << stringify(c.use_installed())
+            << "; use_existing: " << stringify(c.use_existing())
             << "; reason: ";
 
         ReasonFinder r;

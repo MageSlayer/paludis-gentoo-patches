@@ -137,10 +137,14 @@ Resolver::_resolve_decide_with_dependencies()
         for (ResolutionsByQPN_SMap::iterator i(_imp->resolutions_by_qpn_s.begin()), i_end(_imp->resolutions_by_qpn_s.end()) ;
                 i != i_end ; ++i)
         {
+            /* we've already decided */
             if (i->second->decision())
                 continue;
 
-            if (i->second->constraints()->all_untaken() && state == deciding_non_suggestions)
+            /* we're only being suggested. don't do this on the first pass, so
+             * we don't have to do restarts for suggestions later becoming hard
+             * deps. */
+            if (state == deciding_non_suggestions && i->second->constraints()->all_untaken_for_all())
                 continue;
 
             _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
@@ -148,18 +152,20 @@ Resolver::_resolve_decide_with_dependencies()
             changed = true;
             _decide(i->first, i->second);
 
+            /* we don't have anything left to do unless we're a 'real' decision */
             switch (i->second->decision()->kind())
             {
-                case dk_installed:
-                case dk_installable:
+                case dk_existing_no_change:
+                case dk_changes_to_make:
                     break;
 
-                case dk_nothing:
+                case dk_nothing_no_change:
                 case dk_unable_to_decide:
                 case last_dk:
                     continue;
             }
 
+            /* we don't do dependencies for suggestions */
             if (i->second->decision()->taken())
                 _add_dependencies(i->first, i->second);
         }
@@ -182,34 +188,30 @@ Resolver::_resolve_destinations()
 }
 
 const std::tr1::shared_ptr<Destinations>
-Resolver::_make_destinations_for(const QPN_S & qpn_s,
+Resolver::_make_destinations_for(
+        const QPN_S & qpn_s,
         const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
-    Context context("When finding destinations for '" + stringify(qpn_s) + "':");
-
     switch (resolution->decision()->kind())
     {
-        case dk_installed:
-        case dk_nothing:
+        case dk_existing_no_change:
+        case dk_nothing_no_change:
         case dk_unable_to_decide:
             return make_shared_ptr(new Destinations(make_named_values<Destinations>(
                             value_for<n::slash>(make_null_shared_ptr())
                             )));
 
+        case dk_changes_to_make:
         case last_dk:
-        case dk_installable:
             break;
     }
 
-    bool requires_slash(resolution->constraints()->to_destinations()[dt_slash]);
-
-    return make_shared_ptr(new Destinations(
-                make_named_values<Destinations>(
-                    value_for<n::slash>(requires_slash ?
-                        _make_slash_destination_for(qpn_s, resolution) :
-                        make_null_shared_ptr())
+    bool requires_slash(true); // (resolution->constraints()->for_destination_type(dt_slash)->required());
+    return make_shared_ptr(new Destinations(make_named_values<Destinations>(
+                    value_for<n::slash>(requires_slash ? _make_slash_destination_for(qpn_s, resolution) : make_null_shared_ptr())
                     )));
 }
+
 
 const std::tr1::shared_ptr<Destination>
 Resolver::_make_slash_destination_for(const QPN_S & qpn_s,
@@ -316,9 +318,11 @@ Resolver::add_target_with_reason(const PackageDepSpec & spec, const std::tr1::sh
                 + stringify(*qpn_s) + "':");
 
         const std::tr1::shared_ptr<Resolution> dep_resolution(_resolution_for_qpn_s(*qpn_s, true));
-        const std::tr1::shared_ptr<Constraint> constraint(_make_constraint_from_target(*qpn_s, spec, reason));
+        const std::tr1::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_target(*qpn_s, spec, reason));
 
-        _apply_resolution_constraint(*qpn_s, dep_resolution, constraint);
+        for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
+                c != c_end ; ++c)
+            _apply_resolution_constraint(*qpn_s, dep_resolution, *c);
     }
 }
 
@@ -392,37 +396,42 @@ Resolver::_resolution_for_qpn_s(const QPN_S & qpn_s) const
     return i->second;
 }
 
-const std::tr1::shared_ptr<Constraint>
-Resolver::_make_constraint_from_target(
+const std::tr1::shared_ptr<ConstraintSequence>
+Resolver::_make_constraints_from_target(
         const QPN_S & qpn_s,
         const PackageDepSpec & spec,
         const std::tr1::shared_ptr<const Reason> & reason) const
 {
-    return make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                    value_for<n::nothing_is_fine_too>(false),
-                    value_for<n::reason>(reason),
-                    value_for<n::spec>(spec),
-                    value_for<n::to_destinations>(DestinationTypes() + dt_slash),
-                    value_for<n::untaken>(false),
-                    value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(qpn_s, spec, reason))
-                    )));
-}
-
-const std::tr1::shared_ptr<Constraint>
-Resolver::_make_constraint_from_dependency(const QPN_S & qpn_s, const SanitisedDependency & dep,
-        const std::tr1::shared_ptr<const Reason> & reason) const
-{
-    if (dep.spec().if_package())
-        return make_shared_ptr(new Constraint(make_named_values<Constraint>(
+    const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
+    result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                        value_for<n::destination_type>(dt_slash),
                         value_for<n::nothing_is_fine_too>(false),
                         value_for<n::reason>(reason),
-                        value_for<n::spec>(*dep.spec().if_package()),
-                        value_for<n::to_destinations>(_destination_types_for_dependency(qpn_s, dep)),
-                        value_for<n::untaken>(! _imp->fns.take_dependency_fn()(qpn_s, dep,
-                                reason)),
-                        value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(qpn_s, *dep.spec().if_package(),
-                                reason))
-                        )));
+                        value_for<n::spec>(spec),
+                        value_for<n::untaken>(false),
+                        value_for<n::use_existing>(_imp->fns.get_use_existing_fn()(qpn_s, spec, reason))
+                        ))));
+    return result;
+}
+
+const std::tr1::shared_ptr<ConstraintSequence>
+Resolver::_make_constraints_from_dependency(const QPN_S & qpn_s, const SanitisedDependency & dep,
+        const std::tr1::shared_ptr<const Reason> & reason) const
+{
+    const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
+    if (dep.spec().if_package())
+    {
+        result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                            value_for<n::destination_type>(dt_slash),
+                            value_for<n::nothing_is_fine_too>(false),
+                            value_for<n::reason>(reason),
+                            value_for<n::spec>(*dep.spec().if_package()),
+                            value_for<n::untaken>(! _imp->fns.take_dependency_fn()(qpn_s, dep,
+                                    reason)),
+                            value_for<n::use_existing>(_imp->fns.get_use_existing_fn()(qpn_s, *dep.spec().if_package(),
+                                    reason))
+                            ))));
+    }
     else if (dep.spec().if_block())
     {
         /* nothing is fine too if there's nothing installed matching the block. */
@@ -430,17 +439,19 @@ Resolver::_make_constraint_from_dependency(const QPN_S & qpn_s, const SanitisedD
                     generator::Matches(dep.spec().if_block()->blocking(), MatchPackageOptions()) |
                     filter::InstalledAtRoot(FSEntry("/")))]);
 
-        return make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                        value_for<n::nothing_is_fine_too>(ids->empty()),
-                        value_for<n::reason>(reason),
-                        value_for<n::spec>(dep.spec()),
-                        value_for<n::to_destinations>(DestinationTypes() + dt_slash),
-                        value_for<n::untaken>(false),
-                        value_for<n::use_installed>(ui_if_possible)
-                        )));
+        result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                            value_for<n::destination_type>(dt_slash),
+                            value_for<n::nothing_is_fine_too>(ids->empty()),
+                            value_for<n::reason>(reason),
+                            value_for<n::spec>(dep.spec()),
+                            value_for<n::untaken>(false),
+                            value_for<n::use_existing>(ue_if_possible)
+                            ))));
     }
     else
         throw InternalError(PALUDIS_HERE, "resolver bug: huh? it's not a block and it's not a package");
+
+    return result;
 }
 
 void
@@ -474,27 +485,27 @@ Resolver::_verify_new_constraint(const QPN_S & qpn_s,
     else
         ok = constraint->nothing_is_fine_too();
 
-    if (ok && dk_installed == resolution->decision()->kind())
+    if (ok && dk_existing_no_change == resolution->decision()->kind())
     {
-        switch (constraint->use_installed())
+        switch (constraint->use_existing())
         {
-            case ui_if_possible:
+            case ue_if_possible:
                 break;
 
-            case ui_only_if_transient:
+            case ue_only_if_transient:
                 ok = resolution->decision()->is_transient();
                 break;
 
-            case ui_if_same:
+            case ue_if_same:
                 ok = resolution->decision()->is_same();
                 break;
 
-            case ui_if_same_version:
+            case ue_if_same_version:
                 ok = resolution->decision()->is_same_version();
                 break;
 
-            case ui_never:
-            case last_ui:
+            case ue_never:
+            case last_ue:
                 ok = false;
                 break;
         }
@@ -518,27 +529,7 @@ Resolver::_made_wrong_decision(const QPN_S & qpn_s,
 
     const std::tr1::shared_ptr<Decision> decision(_try_to_find_decision_for(qpn_s, adapted_resolution));
     if (decision)
-    {
-        /* can we preload and restart? */
-        if (_initial_constraints_for(qpn_s)->empty())
-        {
-            /* we've not already locked this to something. yes! */
-            _suggest_restart_with(qpn_s, resolution, constraint, decision);
-        }
-        else if (decision->if_package_id())
-        {
-            /* we can restart if we've selected the same or a newer version
-             * than before. but we don't support that yet. */
-            throw InternalError(PALUDIS_HERE, "unimplemented: should have selected "
-                    + stringify(*decision->if_package_id()));
-        }
-        else
-        {
-            /* probably possible if we can fix a block either by upgrading or
-             * removing, and we're later forced to remove */
-            throw InternalError(PALUDIS_HERE, "unimplemented: should have selected nothing");
-        }
-    }
+        _suggest_restart_with(qpn_s, resolution, constraint, decision);
     else
     {
         std::string old_decision("none");
@@ -565,13 +556,15 @@ Resolver::_suggest_restart_with(const QPN_S & qpn_s,
         const std::tr1::shared_ptr<const Constraint> & constraint,
         const std::tr1::shared_ptr<const Decision> & decision) const
 {
-    throw SuggestRestart(qpn_s, resolution->decision(), constraint, decision, _make_constraint_for_preloading(qpn_s, decision));
+    throw SuggestRestart(qpn_s, resolution->decision(), constraint, decision,
+            _make_constraint_for_preloading(qpn_s, decision, constraint->destination_type()));
 }
 
 const std::tr1::shared_ptr<const Constraint>
 Resolver::_make_constraint_for_preloading(
         const QPN_S & qpn_s,
-        const std::tr1::shared_ptr<const Decision> & d) const
+        const std::tr1::shared_ptr<const Decision> & d,
+        const DestinationType t) const
 {
     const std::tr1::shared_ptr<PresetReason> reason(new PresetReason);
 
@@ -579,12 +572,12 @@ Resolver::_make_constraint_for_preloading(
         throw InternalError(PALUDIS_HERE, "resolver bug: not decided. shouldn't happen.");
 
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                    value_for<n::destination_type>(t),
                     value_for<n::nothing_is_fine_too>(false),
                     value_for<n::reason>(reason),
                     value_for<n::spec>(d->if_package_id()->uniquely_identifying_spec()),
-                    value_for<n::to_destinations>(DestinationTypes()),
                     value_for<n::untaken>(! d->taken()),
-                    value_for<n::use_installed>(_imp->fns.get_use_installed_fn()(
+                    value_for<n::use_existing>(_imp->fns.get_use_existing_fn()(
                             qpn_s, d->if_package_id()->uniquely_identifying_spec(), reason))
                     )));
 }
@@ -647,9 +640,11 @@ Resolver::_add_dependencies(const QPN_S & our_qpn_s, const std::tr1::shared_ptr<
                 qpn_s != qpn_s_end ; ++qpn_s)
         {
             const std::tr1::shared_ptr<Resolution> dep_resolution(_resolution_for_qpn_s(*qpn_s, true));
-            const std::tr1::shared_ptr<Constraint> constraint(_make_constraint_from_dependency(our_qpn_s, *s, reason));
+            const std::tr1::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_dependency(our_qpn_s, *s, reason));
 
-            _apply_resolution_constraint(*qpn_s, dep_resolution, constraint);
+            for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
+                    c != c_end ; ++c)
+                _apply_resolution_constraint(*qpn_s, dep_resolution, *c);
         }
     }
 }
@@ -741,47 +736,51 @@ Resolver::_resolve_arrows()
 
     for (ResolutionsByQPN_SMap::iterator i(_imp->resolutions_by_qpn_s.begin()), i_end(_imp->resolutions_by_qpn_s.end()) ;
             i != i_end ; ++i)
-    {
         for (Constraints::ConstIterator c(i->second->constraints()->begin()),
                 c_end(i->second->constraints()->end()) ;
                 c != c_end ; ++c)
+            _resolve_arrow(i->first, i->second, *c);
+}
+
+void
+Resolver::_resolve_arrow(
+        const QPN_S & qpn_s,
+        const std::tr1::shared_ptr<Resolution> &,
+        const std::tr1::shared_ptr<const Constraint> & constraint)
+{
+    GetDependencyReason gdr;
+    const DependencyReason * if_dependency_reason(constraint->reason()->accept_returning<const DependencyReason *>(gdr));
+    if (! if_dependency_reason)
+            return;
+
+    const QPN_S from_qpns(if_dependency_reason->from_id());
+    const std::tr1::shared_ptr<Resolution> resolution(_resolution_for_qpn_s(from_qpns, false));
+
+    if (constraint->spec().if_block())
+    {
+        if (constraint->spec().if_block()->strong())
         {
-            GetDependencyReason gdr;
-            const DependencyReason * if_dependency_reason((*c)->reason()->accept_returning<const DependencyReason *>(gdr));
-            if (! if_dependency_reason)
-                    continue;
+            resolution->arrows()->push_back(make_shared_ptr(new Arrow(make_named_values<Arrow>(
+                                value_for<n::ignorable_pass>(0),
+                                value_for<n::to_qpn_s>(qpn_s)
+                                ))));
+        }
+    }
+    else
+    {
+        ArrowInfo a(*if_dependency_reason);
+        if (a.causes_pre_arrow)
+        {
+            int ignorable_pass(0);
+            if (_already_met(if_dependency_reason->sanitised_dependency()))
+                ignorable_pass = 1;
+            else if (a.ignorable)
+                ignorable_pass = 2;
 
-            const QPN_S from_qpns(if_dependency_reason->from_id());
-            const std::tr1::shared_ptr<Resolution> resolution(_resolution_for_qpn_s(from_qpns, false));
-
-            if ((*c)->spec().if_block())
-            {
-                if ((*c)->spec().if_block()->strong())
-                {
-                    resolution->arrows()->push_back(make_shared_ptr(new Arrow(make_named_values<Arrow>(
-                                        value_for<n::ignorable_pass>(0),
-                                        value_for<n::to_qpn_s>(i->first)
-                                        ))));
-                }
-                continue;
-            }
-            else
-            {
-                ArrowInfo a(*if_dependency_reason);
-                if (a.causes_pre_arrow)
-                {
-                    int ignorable_pass(0);
-                    if (_already_met(if_dependency_reason->sanitised_dependency()))
-                        ignorable_pass = 1;
-                    else if (a.ignorable)
-                        ignorable_pass = 2;
-
-                    resolution->arrows()->push_back(make_shared_ptr(new Arrow(make_named_values<Arrow>(
-                                        value_for<n::ignorable_pass>(ignorable_pass),
-                                        value_for<n::to_qpn_s>(i->first)
-                                        ))));
-                }
-            }
+            resolution->arrows()->push_back(make_shared_ptr(new Arrow(make_named_values<Arrow>(
+                                value_for<n::ignorable_pass>(ignorable_pass),
+                                value_for<n::to_qpn_s>(qpn_s)
+                                ))));
         }
     }
 }
@@ -817,8 +816,8 @@ Resolver::_resolve_order()
     {
         switch (i->second->decision()->kind())
         {
-            case dk_installed:
-            case dk_nothing:
+            case dk_existing_no_change:
+            case dk_nothing_no_change:
                 i->second->already_ordered() = true;
                 break;
 
@@ -830,7 +829,7 @@ Resolver::_resolve_order()
                     _imp->resolution_lists->untaken()->append(i->second);
                 break;
 
-            case dk_installable:
+            case dk_changes_to_make:
                 if (! i->second->decision()->taken())
                 {
                     i->second->already_ordered() = true;
@@ -939,12 +938,6 @@ const std::tr1::shared_ptr<Constraints>
 Resolver::_initial_constraints_for(const QPN_S & qpn_s) const
 {
     return _imp->fns.get_initial_constraints_for_fn()(qpn_s);
-}
-
-DestinationTypes
-Resolver::_destination_types_for_dependency(const QPN_S &, const SanitisedDependency &) const
-{
-    return DestinationTypes() + dt_slash;
 }
 
 Resolver::ResolutionsByQPN_SConstIterator
@@ -1071,8 +1064,10 @@ Resolver::find_any_score(const QPN_S & our_qpn_s, const SanitisedDependency & de
                 qpn_s != qpn_s_end ; ++qpn_s)
         {
             const std::tr1::shared_ptr<Resolution> resolution(_create_resolution_for_qpn_s(*qpn_s));
-            const std::tr1::shared_ptr<Constraint> constraint(_make_constraint_from_dependency(our_qpn_s, dep, reason));
-            resolution->constraints()->add(constraint);
+            const std::tr1::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_dependency(our_qpn_s, dep, reason));
+            for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
+                    c != c_end ; ++c)
+                resolution->constraints()->add(*c);
             const std::tr1::shared_ptr<Decision> decision(_try_to_find_decision_for(*qpn_s, resolution));
             if (decision)
                 return 20 + operator_bias;
@@ -1227,79 +1222,79 @@ Resolver::_try_to_find_decision_for(
         const QPN_S & qpn_s,
         const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
-    const std::tr1::shared_ptr<const PackageID> installed_id(_find_installed_id_for(qpn_s, resolution));
+    const std::tr1::shared_ptr<const PackageID> existing_id(_find_existing_id_for(qpn_s, resolution));
     std::pair<const std::tr1::shared_ptr<const PackageID>, bool> installable_id_best(_find_installable_id_for(qpn_s, resolution));
     const std::tr1::shared_ptr<const PackageID> installable_id(installable_id_best.first);
     bool best(installable_id_best.second);
 
-    if (resolution->constraints()->nothing_is_fine_too() && ! installed_id)
+    if (resolution->constraints()->nothing_is_fine_too_for_all() && ! existing_id)
     {
-        /* nothing installed, but nothing's ok */
+        /* nothing existing, but nothing's ok */
         return make_shared_ptr(new Decision(make_named_values<Decision>(
                         value_for<n::if_package_id>(make_null_shared_ptr()),
                         value_for<n::is_best>(false),
                         value_for<n::is_same>(false),
                         value_for<n::is_same_version>(false),
                         value_for<n::is_transient>(false),
-                        value_for<n::kind>(dk_nothing),
-                        value_for<n::taken>(! resolution->constraints()->all_untaken())
+                        value_for<n::kind>(dk_nothing_no_change),
+                        value_for<n::taken>(! resolution->constraints()->all_untaken_for_all())
                         )));
     }
-    else if (installable_id && ! installed_id)
+    else if (installable_id && ! existing_id)
     {
-        /* there's nothing suitable installed. */
+        /* there's nothing suitable existing. */
         return make_shared_ptr(new Decision(make_named_values<Decision>(
                         value_for<n::if_package_id>(installable_id),
                         value_for<n::is_best>(best),
                         value_for<n::is_same>(false),
                         value_for<n::is_same_version>(false),
                         value_for<n::is_transient>(false),
-                        value_for<n::kind>(dk_installable),
-                        value_for<n::taken>(! resolution->constraints()->all_untaken())
+                        value_for<n::kind>(dk_changes_to_make),
+                        value_for<n::taken>(! resolution->constraints()->all_untaken_for_all())
                         )));
     }
-    else if (installed_id && ! installable_id)
+    else if (existing_id && ! installable_id)
     {
         /* there's nothing installable. this may or may not be ok. */
-        bool is_transient(installed_id->transient_key() && installed_id->transient_key()->value());
+        bool is_transient(existing_id->transient_key() && existing_id->transient_key()->value());
 
-        switch (resolution->constraints()->strictest_use_installed())
+        switch (resolution->constraints()->strictest_use_existing_for_all())
         {
-            case ui_if_possible:
+            case ue_if_possible:
                 break;
 
-            case ui_only_if_transient:
-            case ui_if_same:
-            case ui_if_same_version:
+            case ue_only_if_transient:
+            case ue_if_same:
+            case ue_if_same_version:
                 if (! is_transient)
                     return make_null_shared_ptr();
                 break;
 
-            case ui_never:
+            case ue_never:
                 return make_null_shared_ptr();
 
-            case last_ui:
+            case last_ue:
                 break;
         }
 
         return make_shared_ptr(new Decision(make_named_values<Decision>(
-                        value_for<n::if_package_id>(installed_id),
+                        value_for<n::if_package_id>(existing_id),
                         value_for<n::is_best>(false),
                         value_for<n::is_same>(true),
                         value_for<n::is_same_version>(true),
                         value_for<n::is_transient>(is_transient),
-                        value_for<n::kind>(dk_installed),
-                        value_for<n::taken>(! resolution->constraints()->all_untaken())
+                        value_for<n::kind>(dk_existing_no_change),
+                        value_for<n::taken>(! resolution->constraints()->all_untaken_for_all())
 
                         )));
     }
-    else if ((! installed_id) && (! installable_id))
+    else if ((! existing_id) && (! installable_id))
     {
         return make_null_shared_ptr();
     }
-    else if (installed_id && installable_id)
+    else if (existing_id && installable_id)
     {
-        bool is_same_version(installed_id->version() == installable_id->version());
+        bool is_same_version(existing_id->version() == installable_id->version());
         bool is_same(false);
 
         if (is_same_version)
@@ -1307,7 +1302,7 @@ Resolver::_try_to_find_decision_for(
             is_same = true;
 
             std::set<ChoiceNameWithPrefix> common;
-            if (installed_id->choices_key() && installable_id->choices_key())
+            if (existing_id->choices_key() && installable_id->choices_key())
             {
                 std::set<ChoiceNameWithPrefix> i_common, u_common;
                 for (Choices::ConstIterator k(installable_id->choices_key()->value()->begin()),
@@ -1323,8 +1318,8 @@ Resolver::_try_to_find_decision_for(
                             i_common.insert((*i)->name_with_prefix());
                 }
 
-                for (Choices::ConstIterator k(installed_id->choices_key()->value()->begin()),
-                        k_end(installed_id->choices_key()->value()->end()) ;
+                for (Choices::ConstIterator k(existing_id->choices_key()->value()->begin()),
+                        k_end(existing_id->choices_key()->value()->end()) ;
                         k != k_end ; ++k)
                 {
                     if (! (*k)->consider_added_or_changed())
@@ -1345,40 +1340,40 @@ Resolver::_try_to_find_decision_for(
             for (std::set<ChoiceNameWithPrefix>::const_iterator f(common.begin()), f_end(common.end()) ;
                     f != f_end ; ++f)
                 if (installable_id->choices_key()->value()->find_by_name_with_prefix(*f)->enabled() !=
-                        installed_id->choices_key()->value()->find_by_name_with_prefix(*f)->enabled())
+                        existing_id->choices_key()->value()->find_by_name_with_prefix(*f)->enabled())
                 {
                     is_same = false;
                     break;
                 }
         }
 
-        bool is_transient(installed_id->transient_key() && installed_id->transient_key()->value());
+        bool is_transient(existing_id->transient_key() && existing_id->transient_key()->value());
 
-        /* we've got installed and installable. do we have any reason not to pick the installed id? */
-        switch (resolution->constraints()->strictest_use_installed())
+        /* we've got existing and installable. do we have any reason not to pick the existing id? */
+        switch (resolution->constraints()->strictest_use_existing_for_all())
         {
-            case ui_only_if_transient:
-            case ui_never:
+            case ue_only_if_transient:
+            case ue_never:
                 return make_shared_ptr(new Decision(make_named_values<Decision>(
                                 value_for<n::if_package_id>(installable_id),
                                 value_for<n::is_best>(best),
                                 value_for<n::is_same>(is_same),
                                 value_for<n::is_same_version>(is_same_version),
                                 value_for<n::is_transient>(false),
-                                value_for<n::kind>(dk_installable),
-                                value_for<n::taken>(! resolution->constraints()->all_untaken())
+                                value_for<n::kind>(dk_changes_to_make),
+                                value_for<n::taken>(! resolution->constraints()->all_untaken_for_all())
                                 )));
 
-            case ui_if_same:
+            case ue_if_same:
                 if (is_same)
                     return make_shared_ptr(new Decision(make_named_values<Decision>(
-                                    value_for<n::if_package_id>(installed_id),
+                                    value_for<n::if_package_id>(existing_id),
                                     value_for<n::is_best>(false),
                                     value_for<n::is_same>(is_same),
                                     value_for<n::is_same_version>(is_same_version),
                                     value_for<n::is_transient>(false),
-                                    value_for<n::kind>(dk_installed),
-                                    value_for<n::taken>(! resolution->constraints()->all_untaken())
+                                    value_for<n::kind>(dk_existing_no_change),
+                                    value_for<n::taken>(! resolution->constraints()->all_untaken_for_all())
                                     )));
                 else
                     return make_shared_ptr(new Decision(make_named_values<Decision>(
@@ -1387,20 +1382,20 @@ Resolver::_try_to_find_decision_for(
                                     value_for<n::is_same>(is_same),
                                     value_for<n::is_same_version>(is_same_version),
                                     value_for<n::is_transient>(is_transient),
-                                    value_for<n::kind>(dk_installable),
-                                    value_for<n::taken>(! resolution->constraints()->all_untaken())
+                                    value_for<n::kind>(dk_changes_to_make),
+                                    value_for<n::taken>(! resolution->constraints()->all_untaken_for_all())
                                     )));
 
-            case ui_if_same_version:
+            case ue_if_same_version:
                 if (is_same_version)
                     return make_shared_ptr(new Decision(make_named_values<Decision>(
-                                    value_for<n::if_package_id>(installed_id),
+                                    value_for<n::if_package_id>(existing_id),
                                     value_for<n::is_best>(false),
                                     value_for<n::is_same>(is_same),
                                     value_for<n::is_same_version>(is_same_version),
                                     value_for<n::is_transient>(false),
-                                    value_for<n::kind>(dk_installed),
-                                    value_for<n::taken>(! resolution->constraints()->all_untaken())
+                                    value_for<n::kind>(dk_existing_no_change),
+                                    value_for<n::taken>(! resolution->constraints()->all_untaken_for_all())
                                     )));
                 else
                     return make_shared_ptr(new Decision(make_named_values<Decision>(
@@ -1409,22 +1404,22 @@ Resolver::_try_to_find_decision_for(
                                     value_for<n::is_same>(is_same),
                                     value_for<n::is_same_version>(is_same_version),
                                     value_for<n::is_transient>(is_transient),
-                                    value_for<n::kind>(dk_installable),
-                                    value_for<n::taken>(! resolution->constraints()->all_untaken())
+                                    value_for<n::kind>(dk_changes_to_make),
+                                    value_for<n::taken>(! resolution->constraints()->all_untaken_for_all())
                                     )));
 
-            case ui_if_possible:
+            case ue_if_possible:
                 return make_shared_ptr(new Decision(make_named_values<Decision>(
-                                value_for<n::if_package_id>(installed_id),
+                                value_for<n::if_package_id>(existing_id),
                                 value_for<n::is_best>(false),
                                 value_for<n::is_same>(is_same),
                                 value_for<n::is_same_version>(is_same_version),
                                 value_for<n::is_transient>(false),
-                                value_for<n::kind>(dk_installed),
-                                value_for<n::taken>(! resolution->constraints()->all_untaken())
+                                value_for<n::kind>(dk_existing_no_change),
+                                value_for<n::taken>(! resolution->constraints()->all_untaken_for_all())
                                 )));
 
-            case last_ui:
+            case last_ue:
                 break;
         }
     }
@@ -1444,12 +1439,12 @@ Resolver::_cannot_decide_for(
                     value_for<n::is_same_version>(false),
                     value_for<n::is_transient>(false),
                     value_for<n::kind>(dk_unable_to_decide),
-                    value_for<n::taken>(! resolution->constraints()->all_untaken())
+                    value_for<n::taken>(! resolution->constraints()->all_untaken_for_all())
                     )));
 }
 
 const std::tr1::shared_ptr<const PackageID>
-Resolver::_find_installed_id_for(const QPN_S & qpn_s, const std::tr1::shared_ptr<const Resolution> & resolution) const
+Resolver::_find_existing_id_for(const QPN_S & qpn_s, const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
     const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::AllVersionsSorted(
                 generator::Package(qpn_s.package()) |

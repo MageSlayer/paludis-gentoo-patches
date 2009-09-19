@@ -17,16 +17,17 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_USE_INSTALLED_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_USE_INSTALLED_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_USE_EXISTING_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_USE_EXISTING_FWD_HH 1
 
-#include <paludis/resolver/use_installed-fwd.hh>
+#include <paludis/util/attributes.hh>
+#include <iosfwd>
 
 namespace paludis
 {
     namespace resolver
     {
-
+#include <paludis/resolver/use_existing-se.hh>
     }
 }
 

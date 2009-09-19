@@ -17,13 +17,17 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/resolver/use_installed.hh>
-#include <paludis/util/exception.hh>
-#include <paludis/util/stringify.hh>
-#include <ostream>
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_USE_EXISTING_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_USE_EXISTING_HH 1
 
-using namespace paludis;
-using namespace paludis::resolver;
+#include <paludis/resolver/use_existing-fwd.hh>
 
-#include <paludis/resolver/use_installed-se.cc>
+namespace paludis
+{
+    namespace resolver
+    {
 
+    }
+}
+
+#endif

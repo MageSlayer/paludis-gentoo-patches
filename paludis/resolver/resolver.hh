@@ -27,7 +27,7 @@
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/resolver/reason-fwd.hh>
-#include <paludis/resolver/use_installed-fwd.hh>
+#include <paludis/resolver/use_existing-fwd.hh>
 #include <paludis/resolver/destinations-fwd.hh>
 #include <paludis/resolver/resolutions-fwd.hh>
 #include <paludis/resolver/resolver_functions-fwd.hh>
@@ -64,12 +64,12 @@ namespace paludis
                             const PackageDepSpec & spec,
                             const std::tr1::shared_ptr<const Reason> & reason) const;
 
-                const std::tr1::shared_ptr<Constraint> _make_constraint_from_target(
+                const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_from_target(
                         const QPN_S &,
                         const PackageDepSpec &,
                         const std::tr1::shared_ptr<const Reason> &) const;
 
-                const std::tr1::shared_ptr<Constraint> _make_constraint_from_dependency(
+                const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_from_dependency(
                         const QPN_S &, const SanitisedDependency &,
                         const std::tr1::shared_ptr<const Reason> &) const;
 
@@ -92,7 +92,8 @@ namespace paludis
 
                 const std::tr1::shared_ptr<const Constraint> _make_constraint_for_preloading(
                         const QPN_S & qpn_s,
-                        const std::tr1::shared_ptr<const Decision> & d) const;
+                        const std::tr1::shared_ptr<const Decision> & d,
+                        const DestinationType t) const;
 
                 const std::tr1::shared_ptr<Destinations> _make_destinations_for(const QPN_S &,
                         const std::tr1::shared_ptr<const Resolution> &) const;
@@ -103,6 +104,9 @@ namespace paludis
                 const std::tr1::shared_ptr<const PackageIDSequence> _find_replacing(
                         const std::tr1::shared_ptr<const PackageID> &,
                         const std::tr1::shared_ptr<const Repository> &) const;
+
+                void _resolve_arrow(const QPN_S &, const std::tr1::shared_ptr<Resolution> &,
+                        const std::tr1::shared_ptr<const Constraint> &);
 
                 void _resolve_decide_with_dependencies();
                 void _resolve_destinations();
@@ -133,9 +137,6 @@ namespace paludis
 
                 const std::tr1::shared_ptr<Constraints> _initial_constraints_for(const QPN_S &) const;
 
-                DestinationTypes _destination_types_for_dependency(
-                        const QPN_S &, const SanitisedDependency &) const;
-
                 bool _same_slot(const std::tr1::shared_ptr<const PackageID> & a,
                         const std::tr1::shared_ptr<const PackageID> & b) const;
 
@@ -143,7 +144,7 @@ namespace paludis
 
                 const std::string _find_cycle(const QPN_S &, const int ignorable_pass) const;
 
-                const std::tr1::shared_ptr<const PackageID> _find_installed_id_for(
+                const std::tr1::shared_ptr<const PackageID> _find_existing_id_for(
                         const QPN_S &, const std::tr1::shared_ptr<const Resolution> &) const;
                 const std::pair<const std::tr1::shared_ptr<const PackageID>, bool> _find_installable_id_for(
                         const QPN_S &, const std::tr1::shared_ptr<const Resolution> &) const;

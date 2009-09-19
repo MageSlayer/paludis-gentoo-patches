@@ -103,64 +103,64 @@ namespace
         }
     }
 
-    UseInstalled use_installed_from_cmdline(const args::EnumArg & a, const bool is_set)
+    UseExisting use_existing_from_cmdline(const args::EnumArg & a, const bool is_set)
     {
         if (a.argument() == "auto")
-            return is_set ? ui_if_same : ui_never;
+            return is_set ? ue_if_same : ue_never;
         else if (a.argument() == "never")
-            return ui_never;
+            return ue_never;
         else if (a.argument() == "if-transient")
-            return ui_only_if_transient;
+            return ue_only_if_transient;
         else if (a.argument() == "if-same")
-            return ui_if_same;
+            return ue_if_same;
         else if (a.argument() == "if-same-version")
-            return ui_if_same_version;
+            return ue_if_same_version;
         else if (a.argument() == "if-possible")
-            return ui_if_possible;
+            return ue_if_possible;
         else
             throw args::DoHelp("Don't understand argument '" + a.argument() + "' to '--" + a.long_name() + "'");
     }
 
-    struct UseInstalledVisitor
+    struct UseExistingVisitor
     {
         const ResolveCommandLine & cmdline;
         const bool from_set;
 
-        UseInstalledVisitor(const ResolveCommandLine & c, const bool f) :
+        UseExistingVisitor(const ResolveCommandLine & c, const bool f) :
             cmdline(c),
             from_set(f)
         {
         }
 
-        UseInstalled visit(const DependencyReason &) const
+        UseExisting visit(const DependencyReason &) const
         {
-            return use_installed_from_cmdline(cmdline.resolution_options.a_keep, false);
+            return use_existing_from_cmdline(cmdline.resolution_options.a_keep, false);
         }
 
-        UseInstalled visit(const TargetReason &) const
+        UseExisting visit(const TargetReason &) const
         {
-            return use_installed_from_cmdline(cmdline.resolution_options.a_keep_targets, from_set);
+            return use_existing_from_cmdline(cmdline.resolution_options.a_keep_targets, from_set);
         }
 
-        UseInstalled visit(const PresetReason &) const
+        UseExisting visit(const PresetReason &) const
         {
-            return ui_if_possible;
+            return ue_if_possible;
         }
 
-        UseInstalled visit(const SetReason & r) const
+        UseExisting visit(const SetReason & r) const
         {
-            UseInstalledVisitor v(cmdline, true);
-            return r.reason_for_set()->accept_returning<UseInstalled>(v);
+            UseExistingVisitor v(cmdline, true);
+            return r.reason_for_set()->accept_returning<UseExisting>(v);
         }
     };
 
-    UseInstalled use_installed_fn(const ResolveCommandLine & cmdline,
+    UseExisting use_existing_fn(const ResolveCommandLine & cmdline,
             const QPN_S &,
             const PackageDepSpec &,
             const std::tr1::shared_ptr<const Reason> & reason)
     {
-        UseInstalledVisitor v(cmdline, false);
-        return reason->accept_returning<UseInstalled>(v);
+        UseExistingVisitor v(cmdline, false);
+        return reason->accept_returning<UseExisting>(v);
     }
 
     int reinstall_scm_days(const ResolveCommandLine & cmdline)
@@ -253,12 +253,12 @@ namespace
         if ((-1 != n) && installed_is_scm_older_than(env, qpn_s, n))
         {
             result->add(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                                value_for<n::destination_type>(dt_slash),
                                 value_for<n::nothing_is_fine_too>(false),
                                 value_for<n::reason>(make_shared_ptr(new PresetReason)),
                                 value_for<n::spec>(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(qpn_s.package())),
-                                value_for<n::to_destinations>(DestinationTypes()),
                                 value_for<n::untaken>(false),
-                                value_for<n::use_installed>(ui_only_if_transient)
+                                value_for<n::use_existing>(ue_only_if_transient)
                                 ))));
         }
 
@@ -482,7 +482,7 @@ namespace
             const QPN_S &, const std::tr1::shared_ptr<const Resolution> & resolution,
             const SanitisedDependency & dep)
     {
-        if (dk_installed == resolution->decision()->kind())
+        if (dk_nothing_no_change == resolution->decision()->kind())
         {
             if (! cmdline.resolution_options.a_follow_installed_build_dependencies.specified())
                 if (is_just_build_dep(dep))
@@ -683,7 +683,7 @@ ResolveCommand::run(
                         env.get(), std::tr1::cref(cmdline), std::tr1::cref(initial_constraints), std::tr1::placeholders::_1)),
                 value_for<n::get_qpn_s_s_for_fn>(std::tr1::bind(&get_qpn_s_s_for_fn,
                         env.get(), std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2)),
-                value_for<n::get_use_installed_fn>(std::tr1::bind(&use_installed_fn,
+                value_for<n::get_use_existing_fn>(std::tr1::bind(&use_existing_fn,
                         std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3)),
                 value_for<n::take_dependency_fn>(std::tr1::bind(&take_dependency_fn, env.get(),
                         std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3))

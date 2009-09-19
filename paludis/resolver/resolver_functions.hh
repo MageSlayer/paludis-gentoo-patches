@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLVER_FUNCTIONS_HH 1
 
 #include <paludis/resolver/resolver_functions-fwd.hh>
-#include <paludis/resolver/use_installed-fwd.hh>
+#include <paludis/resolver/use_existing-fwd.hh>
 #include <paludis/resolver/resolution-fwd.hh>
 #include <paludis/resolver/qpn_s-fwd.hh>
 #include <paludis/resolver/reason-fwd.hh>
@@ -35,7 +35,7 @@ namespace paludis
         struct care_about_dep_fn;
         struct get_initial_constraints_for_fn;
         struct get_qpn_s_s_for_fn;
-        struct get_use_installed_fn;
+        struct get_use_existing_fn;
         struct take_dependency_fn;
     }
 
@@ -62,18 +62,18 @@ namespace paludis
                 const std::tr1::shared_ptr<const Reason> &
                 )> TakeDependencyFunction;
 
-        typedef std::tr1::function<UseInstalled (
+        typedef std::tr1::function<UseExisting (
                 const QPN_S &,
                 const PackageDepSpec &,
                 const std::tr1::shared_ptr<const Reason> &
-                )> GetUseInstalledFunction;
+                )> GetUseExistingFunction;
 
         struct ResolverFunctions
         {
             NamedValue<n::care_about_dep_fn, CareAboutDepFunction> care_about_dep_fn;
             NamedValue<n::get_initial_constraints_for_fn, GetInitialConstraintsFunction> get_initial_constraints_for_fn;
             NamedValue<n::get_qpn_s_s_for_fn, GetQPNSSForFunction> get_qpn_s_s_for_fn;
-            NamedValue<n::get_use_installed_fn, GetUseInstalledFunction> get_use_installed_fn;
+            NamedValue<n::get_use_existing_fn, GetUseExistingFunction> get_use_existing_fn;
             NamedValue<n::take_dependency_fn, TakeDependencyFunction> take_dependency_fn;
         };
     }
