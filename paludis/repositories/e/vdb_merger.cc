@@ -29,6 +29,7 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/enum_iterator.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/safe_ifstream.hh>
@@ -331,13 +332,13 @@ std::string
 VDBMerger::make_arrows(const MergeStatusFlags & flags) const
 {
     std::string result(">>>");
-    for (MergeStatusFlag m(static_cast<MergeStatusFlag>(0)), m_end(last_msi) ; m != m_end ;
-            m = static_cast<MergeStatusFlag>(static_cast<long>(m) + 1))
+    for (EnumIterator<MergeStatusFlag> m, m_end(last_msi) ;
+            m != m_end ; ++m)
     {
-        if (! flags[m])
+        if (! flags[*m])
             continue;
 
-        switch (m)
+        switch (*m)
         {
             case msi_unlinked_first:
                 result[0] = '<';
@@ -374,7 +375,7 @@ VDBMerger::make_arrows(const MergeStatusFlags & flags) const
             case last_msi:
                 break;
         }
-        throw InternalError(PALUDIS_HERE, "Unhandled MergeStatusFlag '" + stringify(static_cast<long>(m)) + "'");
+        throw InternalError(PALUDIS_HERE, "Unhandled MergeStatusFlag '" + stringify(static_cast<long>(*m)) + "'");
     }
 
     return result;
