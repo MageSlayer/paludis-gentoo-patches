@@ -24,19 +24,57 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/enum_iterator.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/package_id.hh>
 #include <ostream>
 #include <sstream>
+#include <vector>
 
 using namespace paludis;
 using namespace paludis::resolver;
 
+namespace paludis
+{
+    template <>
+    struct Implementation<Destinations>
+    {
+        std::vector<std::tr1::shared_ptr<const Destination> > destinations;
+
+        Implementation() :
+            destinations(static_cast<int>(last_dt), make_null_shared_ptr())
+        {
+        }
+    };
+}
+
+Destinations::Destinations() :
+    PrivateImplementationPattern<Destinations>(new Implementation<Destinations>)
+{
+}
+
+Destinations::~Destinations()
+{
+}
+
+const std::tr1::shared_ptr<const Destination>
+Destinations::by_type(const DestinationType t) const
+{
+    return _imp->destinations.at(static_cast<int>(t));
+}
+
+void
+Destinations::set_destination_type(const DestinationType t, const std::tr1::shared_ptr<const Destination> & d)
+{
+    _imp->destinations.at(t) = d;
+}
+
 void
 Destinations::serialise(Serialiser & s) const
 {
-    s.object("Destinations")
-        .member(SerialiserFlags<serialise::might_be_null>(), "slash", slash())
-        ;
+    SerialiserObjectWriter w(s.object("Destinations"));
+    for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
+        w.member(SerialiserFlags<serialise::might_be_null>(), stringify(*t), by_type(*t));
 }
 
 void
@@ -51,10 +89,13 @@ Destination::serialise(Serialiser & s) const
 const std::tr1::shared_ptr<Destinations>
 Destinations::deserialise(Deserialisation & d)
 {
+    const std::tr1::shared_ptr<Destinations> result(new Destinations);
     Deserialisator v(d, "Destinations");
-    return make_shared_ptr(new Destinations(make_named_values<Destinations>(
-                    value_for<n::slash>(v.member<std::tr1::shared_ptr<Destination> >("slash"))
-                    )));
+
+    for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
+        result->set_destination_type(*t, v.member<std::tr1::shared_ptr<Destination> >(stringify(*t)));
+
+    return result;
 }
 
 const std::tr1::shared_ptr<Destination>
@@ -72,4 +113,6 @@ Destination::deserialise(Deserialisation & d)
                     value_for<n::repository>(RepositoryName(v.member<std::string>("repository")))
                     )));
 }
+
+template class PrivateImplementationPattern<Destinations>;
 

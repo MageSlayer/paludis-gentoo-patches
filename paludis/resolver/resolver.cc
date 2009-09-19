@@ -192,24 +192,27 @@ Resolver::_make_destinations_for(
         const QPN_S & qpn_s,
         const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
+    std::tr1::shared_ptr<Destinations> result(new Destinations);
+
     switch (resolution->decision()->kind())
     {
         case dk_existing_no_change:
         case dk_nothing_no_change:
         case dk_unable_to_decide:
-            return make_shared_ptr(new Destinations(make_named_values<Destinations>(
-                            value_for<n::slash>(make_null_shared_ptr())
-                            )));
+        case last_dk:
+            break;
 
         case dk_changes_to_make:
-        case last_dk:
+            {
+                bool requires_slash(true); // (resolution->constraints()->for_destination_type(dt_slash)->required());
+                if (requires_slash)
+                    result->set_destination_type(dt_slash, _make_slash_destination_for(qpn_s, resolution));
+            }
             break;
     }
 
-    bool requires_slash(true); // (resolution->constraints()->for_destination_type(dt_slash)->required());
-    return make_shared_ptr(new Destinations(make_named_values<Destinations>(
-                    value_for<n::slash>(requires_slash ? _make_slash_destination_for(qpn_s, resolution) : make_null_shared_ptr())
-                    )));
+
+    return result;
 }
 
 

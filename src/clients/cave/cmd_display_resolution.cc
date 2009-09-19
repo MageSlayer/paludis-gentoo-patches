@@ -255,20 +255,20 @@ namespace
                  other_slots(false);
             std::tr1::shared_ptr<const PackageID> old_id;
 
-            if ((*c)->destinations()->slash())
+            if ((*c)->destinations()->by_type(dt_slash))
             {
-                if ((*c)->destinations()->slash()->replacing()->empty())
+                if ((*c)->destinations()->by_type(dt_slash)->replacing()->empty())
                 {
                     is_new = true;
                     const std::tr1::shared_ptr<const PackageIDSequence> others((*env)[selection::SomeArbitraryVersion(
                             generator::Package(id->name()) &
-                            generator::InRepository((*c)->destinations()->slash()->repository())
+                            generator::InRepository((*c)->destinations()->by_type(dt_slash)->repository())
                             )]);
                     other_slots = ! others->empty();
                 }
                 else
-                    for (PackageIDSequence::ConstIterator x((*c)->destinations()->slash()->replacing()->begin()),
-                            x_end((*c)->destinations()->slash()->replacing()->end()) ;
+                    for (PackageIDSequence::ConstIterator x((*c)->destinations()->by_type(dt_slash)->replacing()->begin()),
+                            x_end((*c)->destinations()->by_type(dt_slash)->replacing()->end()) ;
                             x != x_end ; ++x)
                     {
                         old_id = *x;
@@ -307,15 +307,15 @@ namespace
 
             cout << c::normal() << " " << id->canonical_form(idcf_version);
 
-            if ((*c)->destinations()->slash())
+            if ((*c)->destinations()->by_type(dt_slash))
             {
-                cout << " to ::" << (*c)->destinations()->slash()->repository();
-                if (! (*c)->destinations()->slash()->replacing()->empty())
+                cout << " to ::" << (*c)->destinations()->by_type(dt_slash)->repository();
+                if (! (*c)->destinations()->by_type(dt_slash)->replacing()->empty())
                 {
                     cout << " replacing";
                     bool first(true);
-                    for (PackageIDSequence::ConstIterator x((*c)->destinations()->slash()->replacing()->begin()),
-                            x_end((*c)->destinations()->slash()->replacing()->end()) ;
+                    for (PackageIDSequence::ConstIterator x((*c)->destinations()->by_type(dt_slash)->replacing()->begin()),
+                            x_end((*c)->destinations()->by_type(dt_slash)->replacing()->end()) ;
                             x != x_end ; ++x)
                     {
                         bool different(false);
@@ -623,12 +623,12 @@ namespace
                 {
                     std::cout << "    The decision made was:" << std::endl;
                     std::cout << "        Use " << *(*r)->decision()->if_package_id() << std::endl;
-                    if ((*r)->destinations()->slash())
+                    if ((*r)->destinations()->by_type(dt_slash))
                     {
-                        std::cout << "        Install to / using repository " << (*r)->destinations()->slash()->repository() << std::endl;
-                        if (! (*r)->destinations()->slash()->replacing()->empty())
-                            for (PackageIDSequence::ConstIterator x((*r)->destinations()->slash()->replacing()->begin()),
-                                    x_end((*r)->destinations()->slash()->replacing()->end()) ;
+                        std::cout << "        Install to / using repository " << (*r)->destinations()->by_type(dt_slash)->repository() << std::endl;
+                        if (! (*r)->destinations()->by_type(dt_slash)->replacing()->empty())
+                            for (PackageIDSequence::ConstIterator x((*r)->destinations()->by_type(dt_slash)->replacing()->begin()),
+                                    x_end((*r)->destinations()->by_type(dt_slash)->replacing()->end()) ;
                                     x != x_end ; ++x)
                                 std::cout << "            Replacing " << **x << std::endl;
                     }

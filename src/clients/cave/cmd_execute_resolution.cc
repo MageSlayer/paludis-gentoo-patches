@@ -196,9 +196,9 @@ namespace
 
         command.append(" install --hooks ");
         command.append(stringify(id->uniquely_identifying_spec()));
-        command.append(" --destination " + stringify(r->destinations()->slash()->repository()));
-        for (PackageIDSequence::ConstIterator i(r->destinations()->slash()->replacing()->begin()),
-                i_end(r->destinations()->slash()->replacing()->end()) ;
+        command.append(" --destination " + stringify(r->destinations()->by_type(dt_slash)->repository()));
+        for (PackageIDSequence::ConstIterator i(r->destinations()->by_type(dt_slash)->replacing()->begin()),
+                i_end(r->destinations()->by_type(dt_slash)->replacing()->end()) ;
                 i != i_end ; ++i)
             command.append(" --replacing " + stringify((*i)->uniquely_identifying_spec()));
 
@@ -291,7 +291,7 @@ namespace
                 if (0 != retcode)
                     return retcode;
 
-                if ((*c)->destinations()->slash())
+                if ((*c)->destinations()->by_type(dt_slash))
                 {
                     retcode = do_install_slash(env, cmdline, *c, x, y);
                     if (0 != retcode)

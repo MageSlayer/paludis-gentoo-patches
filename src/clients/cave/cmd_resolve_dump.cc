@@ -27,6 +27,7 @@
 #include <paludis/resolver/destinations.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/arrow.hh>
+#include <paludis/util/enum_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/stringify.hh>
@@ -86,8 +87,19 @@ namespace
     {
         std::stringstream ss;
         ss << "Destinations(";
-        if (d.slash())
-            ss << "slash: " << *d.slash();
+        for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
+            if (d.by_type(*t))
+            {
+                switch (*t)
+                {
+                    case dt_slash:
+                        ss << "slash: " << *d.by_type(*t);
+                        break;
+
+                    case last_dt:
+                        break;
+                }
+            }
         ss << ")";
 
         s << ss.str();
