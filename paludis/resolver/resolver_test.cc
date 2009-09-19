@@ -247,6 +247,29 @@ ResolverTestCase::ResolutionListChecks::check_qpn(const QualifiedPackageName & q
     return r->decision()->if_package_id()->name() == q;
 }
 
+bool
+ResolverTestCase::ResolutionListChecks::check_kind(const DecisionKind k,
+        const QualifiedPackageName & q, const std::tr1::shared_ptr<const Resolution> & r)
+{
+    if ((! r) || (! r->decision()))
+        return false;
+
+    return r->decision()->kind() == k && r->qpn_s().package() == q;
+}
+
+std::string
+ResolverTestCase::ResolutionListChecks::check_kind_msg(const DecisionKind k,
+        const QualifiedPackageName & q, const std::tr1::shared_ptr<const Resolution> & r)
+{
+    if (! r)
+        return "Expected " + stringify(k) + " " + stringify(q) + " but got finished";
+    else if (! r->decision())
+        return "Expected " + stringify(k) + " " + stringify(q) + " but got undecided for " + stringify(r->qpn_s());
+    else
+        return "Expected " + stringify(k) + " " + stringify(q) + " but got " + stringify(r->decision()->kind()) + " "
+            + stringify(r->qpn_s().package());
+}
+
 std::string
 ResolverTestCase::ResolutionListChecks::check_generic_msg(const std::string & q, const std::tr1::shared_ptr<const Resolution> & r)
 {
@@ -286,6 +309,16 @@ ResolverTestCase::ResolutionListChecks::qpn(const QualifiedPackageName & q)
     checks.push_back(std::make_pair(
                 std::tr1::bind(&check_qpn, q, std::tr1::placeholders::_1),
                 std::tr1::bind(&check_qpn_msg, q, std::tr1::placeholders::_1)
+                ));
+    return *this;
+}
+
+ResolverTestCase::ResolutionListChecks &
+ResolverTestCase::ResolutionListChecks::kind(const DecisionKind k, const QualifiedPackageName & q)
+{
+    checks.push_back(std::make_pair(
+                std::tr1::bind(&check_kind, k, q, std::tr1::placeholders::_1),
+                std::tr1::bind(&check_kind_msg, k, q, std::tr1::placeholders::_1)
                 ));
     return *this;
 }

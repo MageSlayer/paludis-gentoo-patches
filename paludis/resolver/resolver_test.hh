@@ -27,6 +27,7 @@
 #include <paludis/resolver/reason-fwd.hh>
 #include <paludis/resolver/use_existing-fwd.hh>
 #include <paludis/resolver/resolutions-fwd.hh>
+#include <paludis/resolver/decision-fwd.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/map-fwd.hh>
@@ -99,7 +100,14 @@ namespace paludis
 
                     static std::string check_finished_msg(const std::tr1::shared_ptr<const Resolution> & r);
 
+                    static bool check_kind(const DecisionKind, const QualifiedPackageName &, const std::tr1::shared_ptr<const Resolution> & r);
+
+                    static std::string check_kind_msg(const DecisionKind, const QualifiedPackageName &,
+                            const std::tr1::shared_ptr<const Resolution> & r);
+
                     ResolutionListChecks & qpn(const QualifiedPackageName & q);
+
+                    ResolutionListChecks & kind(const DecisionKind, const QualifiedPackageName & q);
 
                     ResolutionListChecks & finished();
                 };
