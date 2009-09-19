@@ -873,7 +873,7 @@ namespace test_cases
                         s != s_end ; ++s)
                     TestMessageSuffix x(stringify(s->virtual_name()) + " by " + stringify(*s->provided_by()), true);
 
-                TEST_CHECK_EQUAL(std::distance(seq->begin(), seq->end()), 5U);
+                TEST_CHECK_EQUAL(std::distance(seq->begin(), seq->end()), 5);
 
                 RepositoryProvidesInterface::ProvidesSequence::ConstIterator it(seq->begin());
                 TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/foo");
@@ -894,7 +894,7 @@ namespace test_cases
 
             {
                 std::tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> seq(vdb_repo->provides_interface()->provided_packages());
-                TEST_CHECK_EQUAL(std::distance(seq->begin(), seq->end()), 5U);
+                TEST_CHECK_EQUAL(std::distance(seq->begin(), seq->end()), 5);
 
                 RepositoryProvidesInterface::ProvidesSequence::ConstIterator it(seq->begin());
                 TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name(), "virtual/foo");
