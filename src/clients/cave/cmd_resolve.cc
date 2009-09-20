@@ -482,7 +482,7 @@ namespace
             const QPN_S &, const std::tr1::shared_ptr<const Resolution> & resolution,
             const SanitisedDependency & dep)
     {
-        if (dk_nothing_no_change == resolution->decision()->kind())
+        if (dk_existing_no_change == resolution->decision()->kind())
         {
             if (! cmdline.resolution_options.a_follow_installed_build_dependencies.specified())
                 if (is_just_build_dep(dep))
