@@ -18,7 +18,7 @@
  */
 
 #include <paludis/resolver/suggest_restart.hh>
-#include <paludis/resolver/qpn_s.hh>
+#include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/constraint.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
@@ -31,19 +31,19 @@ namespace paludis
     template <>
     struct Implementation<SuggestRestart>
     {
-        const QPN_S qpn_s;
+        const Resolvent resolvent;
         const std::tr1::shared_ptr<const Decision> previous_decision;
         const std::tr1::shared_ptr<const Constraint> problematic_constraint;
         const std::tr1::shared_ptr<const Decision> new_decision;
         const std::tr1::shared_ptr<const Constraint> suggested_preset;
 
-        Implementation(const QPN_S & q,
+        Implementation(const Resolvent & q,
                 const std::tr1::shared_ptr<const Decision> & pd,
                 const std::tr1::shared_ptr<const Constraint> & pc,
                 const std::tr1::shared_ptr<const Decision> & nd,
                 const std::tr1::shared_ptr<const Constraint> & nc
                 ) :
-            qpn_s(q),
+            resolvent(q),
             previous_decision(pd),
             problematic_constraint(pc),
             new_decision(nd),
@@ -53,7 +53,7 @@ namespace paludis
     };
 }
 
-SuggestRestart::SuggestRestart(const QPN_S & q,
+SuggestRestart::SuggestRestart(const Resolvent & q,
         const std::tr1::shared_ptr<const Decision> & pd,
         const std::tr1::shared_ptr<const Constraint> & pc,
         const std::tr1::shared_ptr<const Decision> & nd,
@@ -65,7 +65,8 @@ SuggestRestart::SuggestRestart(const QPN_S & q,
 }
 
 SuggestRestart::SuggestRestart(const SuggestRestart & o) :
-    PrivateImplementationPattern<SuggestRestart>(new Implementation<SuggestRestart>(o.qpn_s(), o.previous_decision(), o.problematic_constraint(),
+    PrivateImplementationPattern<SuggestRestart>(new Implementation<SuggestRestart>(
+                o.resolvent(), o.previous_decision(), o.problematic_constraint(),
                 o.new_decision(), o.suggested_preset())),
     Exception(o)
 {
@@ -75,10 +76,10 @@ SuggestRestart::~SuggestRestart() throw ()
 {
 }
 
-const QPN_S
-SuggestRestart::qpn_s() const
+const Resolvent
+SuggestRestart::resolvent() const
 {
-    return _imp->qpn_s;
+    return _imp->resolvent;
 }
 
 const std::tr1::shared_ptr<const Decision>

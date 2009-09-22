@@ -38,10 +38,10 @@
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/decision.hh>
-#include <paludis/resolver/destinations.hh>
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/resolver.hh>
-#include <paludis/resolver/qpn_s.hh>
+#include <paludis/resolver/resolvent.hh>
+#include <paludis/resolver/destination.hh>
 #include <paludis/package_id.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -196,9 +196,9 @@ namespace
 
         command.append(" install --hooks ");
         command.append(stringify(id->uniquely_identifying_spec()));
-        command.append(" --destination " + stringify(r->destinations()->by_type(dt_slash)->repository()));
-        for (PackageIDSequence::ConstIterator i(r->destinations()->by_type(dt_slash)->replacing()->begin()),
-                i_end(r->destinations()->by_type(dt_slash)->replacing()->end()) ;
+        command.append(" --destination " + stringify(r->decision()->destination()->repository()));
+        for (PackageIDSequence::ConstIterator i(r->decision()->destination()->replacing()->begin()),
+                i_end(r->decision()->destination()->replacing()->end()) ;
                 i != i_end ; ++i)
             command.append(" --replacing " + stringify((*i)->uniquely_identifying_spec()));
 
@@ -291,7 +291,7 @@ namespace
                 if (0 != retcode)
                     return retcode;
 
-                if ((*c)->destinations()->by_type(dt_slash))
+                if ((*c)->resolvent().destination_type() == dt_slash)
                 {
                     retcode = do_install_slash(env, cmdline, *c, x, y);
                     if (0 != retcode)

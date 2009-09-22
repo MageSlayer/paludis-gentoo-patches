@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_REASON_HH 1
 
 #include <paludis/resolver/reason-fwd.hh>
-#include <paludis/resolver/qpn_s-fwd.hh>
+#include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
 #include <paludis/resolver/serialise-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
@@ -64,11 +64,13 @@ namespace paludis
             public:
                 DependencyReason(
                         const std::tr1::shared_ptr<const PackageID> & id,
+                        const Resolvent &,
                         const SanitisedDependency & s);
 
                 ~DependencyReason();
 
                 const std::tr1::shared_ptr<const PackageID> from_id() const;
+                const Resolvent from_resolvent() const;
                 const SanitisedDependency & sanitised_dependency() const;
 
                 virtual void serialise(Serialiser &) const;

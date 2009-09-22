@@ -19,7 +19,7 @@
 
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/resolver.hh>
-#include <paludis/resolver/qpn_s.hh>
+#include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/serialise-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/save.hh>
@@ -98,7 +98,7 @@ namespace
     struct AnyDepSpecChildHandler
     {
         const Resolver & resolver;
-        const QPN_S our_qpn_s;
+        const Resolvent our_resolvent;
         const std::tr1::function<SanitisedDependency (const PackageOrBlockDepSpec &)> parent_make_sanitised;
 
         bool super_complicated, nested;
@@ -108,10 +108,10 @@ namespace
 
         bool seen_any;
 
-        AnyDepSpecChildHandler(const Resolver & r, const QPN_S & q,
+        AnyDepSpecChildHandler(const Resolver & r, const Resolvent & q,
                 const std::tr1::function<SanitisedDependency (const PackageOrBlockDepSpec &)> & f) :
             resolver(r),
-            our_qpn_s(q),
+            our_resolvent(q),
             parent_make_sanitised(f),
             super_complicated(false),
             nested(false),
@@ -124,7 +124,7 @@ namespace
         {
             seen_any = true;
 
-            std::tr1::shared_ptr<DependencySpecTree> if_rewritten(resolver.rewrite_if_special(spec, our_qpn_s));
+            std::tr1::shared_ptr<DependencySpecTree> if_rewritten(resolver.rewrite_if_special(spec, our_resolvent));
             if (if_rewritten)
                 if_rewritten->root()->accept(*this);
             else
@@ -199,7 +199,7 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
         {
-            AnyDepSpecChildHandler h(resolver, our_qpn_s, parent_make_sanitised);
+            AnyDepSpecChildHandler h(resolver, our_resolvent, parent_make_sanitised);
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(h));
             std::list<SanitisedDependency> l;
             h.commit(
@@ -261,7 +261,7 @@ namespace
                     for (std::list<PackageOrBlockDepSpec>::const_iterator h(g->begin()), h_end(g->end()) ;
                             h != h_end ; ++h)
                     {
-                        int score(resolver.find_any_score(our_qpn_s, make_sanitised(PackageOrBlockDepSpec(*h))));
+                        int score(resolver.find_any_score(our_resolvent, make_sanitised(PackageOrBlockDepSpec(*h))));
                         if ((-1 == worst_score) || (score < worst_score))
                             worst_score = score;
                     }
@@ -285,7 +285,7 @@ namespace
     struct Finder
     {
         const Resolver & resolver;
-        const QPN_S our_qpn_s;
+        const Resolvent our_resolvent;
         SanitisedDependencies & sanitised_dependencies;
         const std::string raw_name;
         const std::string human_name;
@@ -294,14 +294,14 @@ namespace
 
         Finder(
                 const Resolver & r,
-                const QPN_S & q,
+                const Resolvent & q,
                 SanitisedDependencies & s,
                 const std::tr1::shared_ptr<const DependencyLabelSequence> & l,
                 const std::string & rn,
                 const std::string & hn,
                 const std::string & a) :
             resolver(r),
-            our_qpn_s(q),
+            our_resolvent(q),
             sanitised_dependencies(s),
             raw_name(rn),
             human_name(hn),
@@ -313,7 +313,7 @@ namespace
 
         void add(const SanitisedDependency & dep)
         {
-            std::tr1::shared_ptr<DependencySpecTree> if_rewritten(resolver.rewrite_if_special(dep.spec(), our_qpn_s));
+            std::tr1::shared_ptr<DependencySpecTree> if_rewritten(resolver.rewrite_if_special(dep.spec(), our_resolvent));
             if (if_rewritten)
                 if_rewritten->root()->accept(*this);
             else
@@ -390,7 +390,7 @@ namespace
                 original_specs_as_string = "|| (" + v.result + " )";
             }
 
-            AnyDepSpecChildHandler h(resolver, our_qpn_s, std::tr1::bind(&Finder::make_sanitised, this, std::tr1::placeholders::_1));
+            AnyDepSpecChildHandler h(resolver, our_resolvent, std::tr1::bind(&Finder::make_sanitised, this, std::tr1::placeholders::_1));
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(h));
             h.commit(
                     std::tr1::bind(&Finder::make_sanitised, this, std::tr1::placeholders::_1),
@@ -431,13 +431,14 @@ SanitisedDependencies::~SanitisedDependencies()
 void
 SanitisedDependencies::_populate_one(
         const Resolver & resolver,
+        const Resolvent & resolvent,
         const std::tr1::shared_ptr<const PackageID> & id,
         const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > (PackageID::* const pmf) () const
         )
 {
     Context context("When finding dependencies for '" + stringify(*id) + "' from key '" + ((*id).*pmf)()->raw_name() + "':");
 
-    Finder f(resolver, QPN_S(id), *this, ((*id).*pmf)()->initial_labels(), ((*id).*pmf)()->raw_name(),
+    Finder f(resolver, resolvent, *this, ((*id).*pmf)()->initial_labels(), ((*id).*pmf)()->raw_name(),
             ((*id).*pmf)()->human_name(), "");
     ((*id).*pmf)()->value()->root()->accept(f);
 }
@@ -445,22 +446,23 @@ SanitisedDependencies::_populate_one(
 void
 SanitisedDependencies::populate(
         const Resolver & resolver,
+        const Resolvent & resolvent,
         const std::tr1::shared_ptr<const PackageID> & id)
 {
     Context context("When finding dependencies for '" + stringify(*id) + "':");
 
     if (id->dependencies_key())
-        _populate_one(resolver, id, &PackageID::dependencies_key);
+        _populate_one(resolver, resolvent, id, &PackageID::dependencies_key);
     else
     {
         if (id->build_dependencies_key())
-            _populate_one(resolver, id, &PackageID::build_dependencies_key);
+            _populate_one(resolver, resolvent, id, &PackageID::build_dependencies_key);
         if (id->run_dependencies_key())
-            _populate_one(resolver, id, &PackageID::run_dependencies_key);
+            _populate_one(resolver, resolvent, id, &PackageID::run_dependencies_key);
         if (id->post_dependencies_key())
-            _populate_one(resolver, id, &PackageID::post_dependencies_key);
+            _populate_one(resolver, resolvent, id, &PackageID::post_dependencies_key);
         if (id->suggested_dependencies_key())
-            _populate_one(resolver, id, &PackageID::suggested_dependencies_key);
+            _populate_one(resolver, resolvent, id, &PackageID::suggested_dependencies_key);
     }
 }
 

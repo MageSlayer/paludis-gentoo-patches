@@ -19,6 +19,7 @@
 
 #include <paludis/resolver/decision.hh>
 #include <paludis/resolver/serialise-impl.hh>
+#include <paludis/resolver/destination.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/stringify.hh>
 #include <sstream>
@@ -32,6 +33,7 @@ void
 Decision::serialise(Serialiser & s) const
 {
     s.object("Decision")
+        .member(SerialiserFlags<serialise::might_be_null>(), "destination", destination())
         .member(SerialiserFlags<serialise::might_be_null>(), "if_package_id", if_package_id())
         .member(SerialiserFlags<>(), "is_best", is_best())
         .member(SerialiserFlags<>(), "is_same", is_same())
@@ -47,6 +49,7 @@ Decision::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "Decision");
     return make_shared_ptr(new Decision(make_named_values<Decision>(
+                    value_for<n::destination>(v.member<std::tr1::shared_ptr<Destination> >("destination")),
                     value_for<n::if_package_id>(v.member<std::tr1::shared_ptr<const PackageID> >("if_package_id")),
                     value_for<n::is_best>(v.member<bool>("is_best")),
                     value_for<n::is_same>(v.member<bool>("is_same")),

@@ -21,15 +21,15 @@
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/reason.hh>
-#include <paludis/resolver/qpn_s.hh>
+#include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/arrow.hh>
 #include <paludis/resolver/decision.hh>
-#include <paludis/resolver/destinations.hh>
 #include <paludis/resolver/resolver_functions.hh>
 #include <paludis/resolver/suggest_restart.hh>
 #include <paludis/resolver/resolutions.hh>
 #include <paludis/resolver/serialise.hh>
+#include <paludis/resolver/destination.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/log.hh>
@@ -37,6 +37,7 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/mutex.hh>
+#include <paludis/util/enum_iterator.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/dep_spec_flattener.hh>
@@ -65,7 +66,7 @@
 using namespace paludis;
 using namespace paludis::resolver;
 
-typedef std::map<QPN_S, std::tr1::shared_ptr<Resolution> > ResolutionsByQPN_SMap;
+typedef std::map<Resolvent, std::tr1::shared_ptr<Resolution> > ResolutionsByResolventMap;
 typedef std::map<QualifiedPackageName, std::set<QualifiedPackageName> > Rewrites;
 
 namespace paludis
@@ -76,7 +77,7 @@ namespace paludis
         const Environment * const env;
         const ResolverFunctions fns;
 
-        ResolutionsByQPN_SMap resolutions_by_qpn_s;
+        ResolutionsByResolventMap resolutions_by_resolvent;
 
         mutable Mutex rewrites_mutex;
         mutable Rewrites rewrites;
@@ -134,7 +135,7 @@ Resolver::_resolve_decide_with_dependencies()
             break;
 
         changed = false;
-        for (ResolutionsByQPN_SMap::iterator i(_imp->resolutions_by_qpn_s.begin()), i_end(_imp->resolutions_by_qpn_s.end()) ;
+        for (ResolutionsByResolventMap::iterator i(_imp->resolutions_by_resolvent.begin()), i_end(_imp->resolutions_by_resolvent.end()) ;
                 i != i_end ; ++i)
         {
             /* we've already decided */
@@ -177,50 +178,53 @@ Resolver::_resolve_destinations()
 {
     Context context("When resolving destinations:");
 
-    for (ResolutionsByQPN_SMap::iterator i(_imp->resolutions_by_qpn_s.begin()), i_end(_imp->resolutions_by_qpn_s.end()) ;
+    for (ResolutionsByResolventMap::iterator i(_imp->resolutions_by_resolvent.begin()), i_end(_imp->resolutions_by_resolvent.end()) ;
             i != i_end ; ++i)
     {
-        if (i->second->destinations())
+        if (i->second->decision()->destination())
             continue;
 
-        i->second->destinations() = _make_destinations_for(i->first, i->second);
+        i->second->decision()->destination() = _make_destination_for(i->first, i->second);
     }
 }
 
-const std::tr1::shared_ptr<Destinations>
-Resolver::_make_destinations_for(
-        const QPN_S & qpn_s,
+const std::tr1::shared_ptr<Destination>
+Resolver::_make_destination_for(
+        const Resolvent & resolvent,
         const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
-    std::tr1::shared_ptr<Destinations> result(new Destinations);
-
     switch (resolution->decision()->kind())
     {
         case dk_existing_no_change:
         case dk_nothing_no_change:
         case dk_unable_to_decide:
-        case last_dk:
-            break;
+            return make_null_shared_ptr();
 
         case dk_changes_to_make:
+            switch (resolvent.destination_type())
             {
-                bool requires_slash(true); // (resolution->constraints()->for_destination_type(dt_slash)->required());
-                if (requires_slash)
-                    result->set_destination_type(dt_slash, _make_slash_destination_for(qpn_s, resolution));
+                case dt_slash:
+                    return _make_slash_destination_for(resolvent, resolution);
+                    break;
+
+                case last_dt:
+                    break;
             }
+            break;
+
+        case last_dk:
             break;
     }
 
-
-    return result;
+    throw InternalError(PALUDIS_HERE, "resolver bug: unhandled dt");
 }
 
-
 const std::tr1::shared_ptr<Destination>
-Resolver::_make_slash_destination_for(const QPN_S & qpn_s,
+Resolver::_make_slash_destination_for(
+        const Resolvent & resolvent,
         const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
-    Context context("When finding / destination for '" + stringify(qpn_s) + "':");
+    Context context("When finding / destination for '" + stringify(resolvent) + "':");
 
     if ((! resolution->decision()) || (! resolution->decision()->if_package_id()))
         throw InternalError(PALUDIS_HERE, "resolver bug: not decided yet");
@@ -310,22 +314,22 @@ Resolver::add_target_with_reason(const PackageDepSpec & spec, const std::tr1::sh
 
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-    std::tr1::shared_ptr<const QPN_S_Sequence> qpn_s_s(_get_qpn_s_s_for(spec, reason));
-    if (qpn_s_s->empty())
-        qpn_s_s = _get_error_qpn_s_s_for(spec, reason);
+    std::tr1::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(spec, reason));
+    if (resolvents->empty())
+        resolvents = _get_error_resolvents_for(spec, reason);
 
-    for (QPN_S_Sequence::ConstIterator qpn_s(qpn_s_s->begin()), qpn_s_end(qpn_s_s->end()) ;
-            qpn_s != qpn_s_end ; ++qpn_s)
+    for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
+            r != r_end ; ++r)
     {
-        Context context_2("When adding constraints from target '" + stringify(spec) + "' to qpn:s '"
-                + stringify(*qpn_s) + "':");
+        Context context_2("When adding constraints from target '" + stringify(spec) + "' to resolvent '"
+                + stringify(*r) + "':");
 
-        const std::tr1::shared_ptr<Resolution> dep_resolution(_resolution_for_qpn_s(*qpn_s, true));
-        const std::tr1::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_target(*qpn_s, spec, reason));
+        const std::tr1::shared_ptr<Resolution> dep_resolution(_resolution_for_resolvent(*r, true));
+        const std::tr1::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_target(*r, spec, reason));
 
         for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                 c != c_end ; ++c)
-            _apply_resolution_constraint(*qpn_s, dep_resolution, *c);
+            _apply_resolution_constraint(*r, dep_resolution, *c);
     }
 }
 
@@ -355,53 +359,52 @@ Resolver::add_target(const SetName & set_name)
 }
 
 const std::tr1::shared_ptr<Resolution>
-Resolver::_create_resolution_for_qpn_s(const QPN_S & qpn_s) const
+Resolver::_create_resolution_for_resolvent(const Resolvent & r) const
 {
     return make_shared_ptr(new Resolution(make_named_values<Resolution>(
                     value_for<n::already_ordered>(false),
                     value_for<n::arrows>(make_shared_ptr(new ArrowSequence)),
-                    value_for<n::constraints>(_initial_constraints_for(qpn_s)),
+                    value_for<n::constraints>(_initial_constraints_for(r)),
                     value_for<n::decision>(make_null_shared_ptr()),
-                    value_for<n::destinations>(make_null_shared_ptr()),
-                    value_for<n::qpn_s>(qpn_s),
+                    value_for<n::resolvent>(r),
                     value_for<n::sanitised_dependencies>(make_null_shared_ptr())
                     )));
 }
 
 const std::tr1::shared_ptr<Resolution>
-Resolver::_resolution_for_qpn_s(const QPN_S & qpn_s, const bool create)
+Resolver::_resolution_for_resolvent(const Resolvent & r, const bool create)
 {
-    ResolutionsByQPN_SMap::iterator i(_imp->resolutions_by_qpn_s.find(qpn_s));
-    if (_imp->resolutions_by_qpn_s.end() == i)
+    ResolutionsByResolventMap::iterator i(_imp->resolutions_by_resolvent.find(r));
+    if (_imp->resolutions_by_resolvent.end() == i)
     {
         if (create)
         {
-            std::tr1::shared_ptr<Resolution> resolution(_create_resolution_for_qpn_s(qpn_s));
-            i = _imp->resolutions_by_qpn_s.insert(std::make_pair(qpn_s, resolution)).first;
+            std::tr1::shared_ptr<Resolution> resolution(_create_resolution_for_resolvent(r));
+            i = _imp->resolutions_by_resolvent.insert(std::make_pair(r, resolution)).first;
             _imp->resolution_lists->all()->append(resolution);
         }
         else
             throw InternalError(PALUDIS_HERE, "resolver bug: expected resolution for "
-                    + stringify(qpn_s) + " to exist, but it doesn't");
+                    + stringify(r) + " to exist, but it doesn't");
     }
 
     return i->second;
 }
 
 const std::tr1::shared_ptr<Resolution>
-Resolver::_resolution_for_qpn_s(const QPN_S & qpn_s) const
+Resolver::_resolution_for_resolvent(const Resolvent & r) const
 {
-    ResolutionsByQPN_SMap::const_iterator i(_imp->resolutions_by_qpn_s.find(qpn_s));
-    if (_imp->resolutions_by_qpn_s.end() == i)
+    ResolutionsByResolventMap::const_iterator i(_imp->resolutions_by_resolvent.find(r));
+    if (_imp->resolutions_by_resolvent.end() == i)
         throw InternalError(PALUDIS_HERE, "resolver bug: expected resolution for "
-                + stringify(qpn_s) + " to exist, but it doesn't");
+                + stringify(r) + " to exist, but it doesn't");
 
     return i->second;
 }
 
 const std::tr1::shared_ptr<ConstraintSequence>
 Resolver::_make_constraints_from_target(
-        const QPN_S & qpn_s,
+        const Resolvent & resolvent,
         const PackageDepSpec & spec,
         const std::tr1::shared_ptr<const Reason> & reason) const
 {
@@ -412,13 +415,13 @@ Resolver::_make_constraints_from_target(
                         value_for<n::reason>(reason),
                         value_for<n::spec>(spec),
                         value_for<n::untaken>(false),
-                        value_for<n::use_existing>(_imp->fns.get_use_existing_fn()(qpn_s, spec, reason))
+                        value_for<n::use_existing>(_imp->fns.get_use_existing_fn()(resolvent, spec, reason))
                         ))));
     return result;
 }
 
 const std::tr1::shared_ptr<ConstraintSequence>
-Resolver::_make_constraints_from_dependency(const QPN_S & qpn_s, const SanitisedDependency & dep,
+Resolver::_make_constraints_from_dependency(const Resolvent & resolvent, const SanitisedDependency & dep,
         const std::tr1::shared_ptr<const Reason> & reason) const
 {
     const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
@@ -429,10 +432,10 @@ Resolver::_make_constraints_from_dependency(const QPN_S & qpn_s, const Sanitised
                             value_for<n::nothing_is_fine_too>(false),
                             value_for<n::reason>(reason),
                             value_for<n::spec>(*dep.spec().if_package()),
-                            value_for<n::untaken>(! _imp->fns.take_dependency_fn()(qpn_s, dep,
-                                    reason)),
-                            value_for<n::use_existing>(_imp->fns.get_use_existing_fn()(qpn_s, *dep.spec().if_package(),
-                                    reason))
+                            value_for<n::untaken>(! _imp->fns.take_dependency_fn()(
+                                    resolvent, dep, reason)),
+                            value_for<n::use_existing>(_imp->fns.get_use_existing_fn()(
+                                    resolvent, *dep.spec().if_package(), reason))
                             ))));
     }
     else if (dep.spec().if_block())
@@ -459,19 +462,19 @@ Resolver::_make_constraints_from_dependency(const QPN_S & qpn_s, const Sanitised
 
 void
 Resolver::_apply_resolution_constraint(
-        const QPN_S & qpn_s,
+        const Resolvent & resolvent,
         const std::tr1::shared_ptr<Resolution> & resolution,
         const std::tr1::shared_ptr<const Constraint> & constraint)
 {
     if (resolution->decision())
-        if (! _verify_new_constraint(qpn_s, resolution, constraint))
-            _made_wrong_decision(qpn_s, resolution, constraint);
+        if (! _verify_new_constraint(resolvent, resolution, constraint))
+            _made_wrong_decision(resolvent, resolution, constraint);
 
     resolution->constraints()->add(constraint);
 }
 
 bool
-Resolver::_verify_new_constraint(const QPN_S &,
+Resolver::_verify_new_constraint(const Resolvent &,
         const std::tr1::shared_ptr<const Resolution> & resolution,
         const std::tr1::shared_ptr<const Constraint> & constraint)
 {
@@ -522,7 +525,7 @@ Resolver::_verify_new_constraint(const QPN_S &,
 }
 
 void
-Resolver::_made_wrong_decision(const QPN_S & qpn_s,
+Resolver::_made_wrong_decision(const Resolvent & resolvent,
         const std::tr1::shared_ptr<Resolution> & resolution,
         const std::tr1::shared_ptr<const Constraint> & constraint)
 {
@@ -530,26 +533,26 @@ Resolver::_made_wrong_decision(const QPN_S & qpn_s,
     std::tr1::shared_ptr<Resolution> adapted_resolution(make_shared_ptr(new Resolution(*resolution)));
     adapted_resolution->constraints()->add(constraint);
 
-    const std::tr1::shared_ptr<Decision> decision(_try_to_find_decision_for(qpn_s, adapted_resolution));
+    const std::tr1::shared_ptr<Decision> decision(_try_to_find_decision_for(resolvent, adapted_resolution));
     if (decision)
-        _suggest_restart_with(qpn_s, resolution, constraint, decision);
+        _suggest_restart_with(resolvent, resolution, constraint, decision);
     else
-        resolution->decision() = _cannot_decide_for(qpn_s, adapted_resolution);
+        resolution->decision() = _cannot_decide_for(resolvent, adapted_resolution);
 }
 
 void
-Resolver::_suggest_restart_with(const QPN_S & qpn_s,
+Resolver::_suggest_restart_with(const Resolvent & resolvent,
         const std::tr1::shared_ptr<const Resolution> & resolution,
         const std::tr1::shared_ptr<const Constraint> & constraint,
         const std::tr1::shared_ptr<const Decision> & decision) const
 {
-    throw SuggestRestart(qpn_s, resolution->decision(), constraint, decision,
-            _make_constraint_for_preloading(qpn_s, decision, constraint->destination_type()));
+    throw SuggestRestart(resolvent, resolution->decision(), constraint, decision,
+            _make_constraint_for_preloading(resolvent, decision, constraint->destination_type()));
 }
 
 const std::tr1::shared_ptr<const Constraint>
 Resolver::_make_constraint_for_preloading(
-        const QPN_S & qpn_s,
+        const Resolvent & resolvent,
         const std::tr1::shared_ptr<const Decision> & d,
         const DestinationType t) const
 {
@@ -565,33 +568,33 @@ Resolver::_make_constraint_for_preloading(
                     value_for<n::spec>(d->if_package_id()->uniquely_identifying_spec()),
                     value_for<n::untaken>(! d->taken()),
                     value_for<n::use_existing>(_imp->fns.get_use_existing_fn()(
-                            qpn_s, d->if_package_id()->uniquely_identifying_spec(), reason))
+                            resolvent, d->if_package_id()->uniquely_identifying_spec(), reason))
                     )));
 }
 
 void
-Resolver::_decide(const QPN_S & qpn_s, const std::tr1::shared_ptr<Resolution> & resolution)
+Resolver::_decide(const Resolvent & resolvent, const std::tr1::shared_ptr<Resolution> & resolution)
 {
-    Context context("When deciding upon an origin ID to use for '" + stringify(qpn_s) + "':");
+    Context context("When deciding upon an origin ID to use for '" + stringify(resolvent) + "':");
 
-    std::tr1::shared_ptr<Decision> decision(_try_to_find_decision_for(qpn_s, resolution));
+    std::tr1::shared_ptr<Decision> decision(_try_to_find_decision_for(resolvent, resolution));
     if (decision)
         resolution->decision() = decision;
     else
-        resolution->decision() = _cannot_decide_for(qpn_s, resolution);
+        resolution->decision() = _cannot_decide_for(resolvent, resolution);
 }
 
 void
-Resolver::_add_dependencies(const QPN_S & our_qpn_s, const std::tr1::shared_ptr<Resolution> & our_resolution)
+Resolver::_add_dependencies(const Resolvent & our_resolvent, const std::tr1::shared_ptr<Resolution> & our_resolution)
 {
     if (! our_resolution->decision()->if_package_id())
         throw InternalError(PALUDIS_HERE, "resolver bug: not decided. shouldn't happen.");
 
-    Context context("When adding dependencies for '" + stringify(our_qpn_s) + "' with '"
+    Context context("When adding dependencies for '" + stringify(our_resolvent) + "' with '"
             + stringify(*our_resolution->decision()->if_package_id()) + "':");
 
     const std::tr1::shared_ptr<SanitisedDependencies> deps(new SanitisedDependencies);
-    deps->populate(*this, our_resolution->decision()->if_package_id());
+    deps->populate(*this, our_resolvent, our_resolution->decision()->if_package_id());
     our_resolution->sanitised_dependencies() = deps;
 
     for (SanitisedDependencies::ConstIterator s(deps->begin()), s_end(deps->end()) ;
@@ -599,48 +602,47 @@ Resolver::_add_dependencies(const QPN_S & our_qpn_s, const std::tr1::shared_ptr<
     {
         Context context_2("When handling dependency '" + stringify(s->spec()) + "':");
 
-        if (! _care_about_dependency_spec(our_qpn_s, our_resolution, *s))
+        if (! _care_about_dependency_spec(our_resolvent, our_resolution, *s))
             continue;
 
         const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(
-                    our_resolution->decision()->if_package_id(), *s));
+                    our_resolution->decision()->if_package_id(), our_resolvent, *s));
 
-        std::tr1::shared_ptr<const QPN_S_Sequence> qpn_s_s;
+        std::tr1::shared_ptr<const Resolvents> resolvents;
 
         if (s->spec().if_package())
-            qpn_s_s = _get_qpn_s_s_for(*s->spec().if_package(), reason);
+            resolvents = _get_resolvents_for(*s->spec().if_package(), reason);
         else
-            qpn_s_s = _get_qpn_s_s_for_blocker(*s->spec().if_block());
+            resolvents = _get_resolvents_for_blocker(*s->spec().if_block());
 
-        if (qpn_s_s->empty())
+        if (resolvents->empty())
         {
             if (s->spec().if_package())
-                qpn_s_s = _get_error_qpn_s_s_for(*s->spec().if_package(), reason);
+                resolvents = _get_error_resolvents_for(*s->spec().if_package(), reason);
             else
             {
                 /* blocking on something that doesn't exist is fine */
-                qpn_s_s.reset(new QPN_S_Sequence);
             }
         }
 
-        for (QPN_S_Sequence::ConstIterator qpn_s(qpn_s_s->begin()), qpn_s_end(qpn_s_s->end()) ;
-                qpn_s != qpn_s_end ; ++qpn_s)
+        for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
+                r != r_end ; ++r)
         {
-            const std::tr1::shared_ptr<Resolution> dep_resolution(_resolution_for_qpn_s(*qpn_s, true));
-            const std::tr1::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_dependency(our_qpn_s, *s, reason));
+            const std::tr1::shared_ptr<Resolution> dep_resolution(_resolution_for_resolvent(*r, true));
+            const std::tr1::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_dependency(our_resolvent, *s, reason));
 
             for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                     c != c_end ; ++c)
-                _apply_resolution_constraint(*qpn_s, dep_resolution, *c);
+                _apply_resolution_constraint(*r, dep_resolution, *c);
         }
     }
 }
 
 bool
-Resolver::_care_about_dependency_spec(const QPN_S & qpn_s,
+Resolver::_care_about_dependency_spec(const Resolvent & resolvent,
         const std::tr1::shared_ptr<const Resolution> & resolution, const SanitisedDependency & dep) const
 {
-    return _imp->fns.care_about_dep_fn()(qpn_s, resolution, dep);
+    return _imp->fns.care_about_dep_fn()(resolvent, resolution, dep);
 }
 
 namespace
@@ -721,7 +723,7 @@ Resolver::_resolve_arrows()
 {
     Context context("When creating arrows for order resolution:");
 
-    for (ResolutionsByQPN_SMap::iterator i(_imp->resolutions_by_qpn_s.begin()), i_end(_imp->resolutions_by_qpn_s.end()) ;
+    for (ResolutionsByResolventMap::iterator i(_imp->resolutions_by_resolvent.begin()), i_end(_imp->resolutions_by_resolvent.end()) ;
             i != i_end ; ++i)
         for (Constraints::ConstIterator c(i->second->constraints()->begin()),
                 c_end(i->second->constraints()->end()) ;
@@ -731,7 +733,7 @@ Resolver::_resolve_arrows()
 
 void
 Resolver::_resolve_arrow(
-        const QPN_S & qpn_s,
+        const Resolvent & resolvent,
         const std::tr1::shared_ptr<Resolution> &,
         const std::tr1::shared_ptr<const Constraint> & constraint)
 {
@@ -740,16 +742,16 @@ Resolver::_resolve_arrow(
     if (! if_dependency_reason)
             return;
 
-    const QPN_S from_qpns(if_dependency_reason->from_id());
-    const std::tr1::shared_ptr<Resolution> resolution(_resolution_for_qpn_s(from_qpns, false));
+    const Resolvent from_resolvent(if_dependency_reason->from_resolvent());
+    const std::tr1::shared_ptr<Resolution> resolution(_resolution_for_resolvent(from_resolvent, false));
 
     if (constraint->spec().if_block())
     {
         if (constraint->spec().if_block()->strong())
         {
             resolution->arrows()->push_back(make_shared_ptr(new Arrow(make_named_values<Arrow>(
-                                value_for<n::ignorable_pass>(0),
-                                value_for<n::to_qpn_s>(qpn_s)
+                                value_for<n::comes_after>(resolvent),
+                                value_for<n::ignorable_pass>(0)
                                 ))));
         }
     }
@@ -765,8 +767,8 @@ Resolver::_resolve_arrow(
                 ignorable_pass = 2;
 
             resolution->arrows()->push_back(make_shared_ptr(new Arrow(make_named_values<Arrow>(
-                                value_for<n::ignorable_pass>(ignorable_pass),
-                                value_for<n::to_qpn_s>(qpn_s)
+                                value_for<n::comes_after>(resolvent),
+                                value_for<n::ignorable_pass>(ignorable_pass)
                                 ))));
         }
     }
@@ -798,7 +800,7 @@ Resolver::_resolve_order()
 
     bool done(false);
 
-    for (ResolutionsByQPN_SMap::iterator i(_imp->resolutions_by_qpn_s.begin()), i_end(_imp->resolutions_by_qpn_s.end()) ;
+    for (ResolutionsByResolventMap::iterator i(_imp->resolutions_by_resolvent.begin()), i_end(_imp->resolutions_by_resolvent.end()) ;
             i != i_end ; ++i)
     {
         switch (i->second->decision()->kind())
@@ -837,7 +839,7 @@ Resolver::_resolve_order()
         int ignore_pass(0);
         while (true)
         {
-            for (ResolutionsByQPN_SMap::iterator i(_imp->resolutions_by_qpn_s.begin()), i_end(_imp->resolutions_by_qpn_s.end()) ;
+            for (ResolutionsByResolventMap::iterator i(_imp->resolutions_by_resolvent.begin()), i_end(_imp->resolutions_by_resolvent.end()) ;
                     i != i_end ; ++i)
             {
                 if (i->second->already_ordered())
@@ -876,7 +878,7 @@ Resolver::_resolve_order()
 }
 
 bool
-Resolver::_can_order_now(const QPN_S &, const std::tr1::shared_ptr<const Resolution> & resolution,
+Resolver::_can_order_now(const Resolvent &, const std::tr1::shared_ptr<const Resolution> & resolution,
         const int ignorable_pass) const
 {
     for (ArrowSequence::ConstIterator a(resolution->arrows()->begin()), a_end(resolution->arrows()->end()) ;
@@ -886,7 +888,7 @@ Resolver::_can_order_now(const QPN_S &, const std::tr1::shared_ptr<const Resolut
             if ((*a)->ignorable_pass() <= ignorable_pass)
                 continue;
 
-        const std::tr1::shared_ptr<const Resolution> dep_resolution(_resolution_for_qpn_s((*a)->to_qpn_s()));
+        const std::tr1::shared_ptr<const Resolution> dep_resolution(_resolution_for_resolvent((*a)->comes_after()));
         if (! dep_resolution->already_ordered())
             return false;
     }
@@ -895,7 +897,7 @@ Resolver::_can_order_now(const QPN_S &, const std::tr1::shared_ptr<const Resolut
 }
 
 void
-Resolver::_do_order(const QPN_S &, const std::tr1::shared_ptr<Resolution> & resolution)
+Resolver::_do_order(const Resolvent &, const std::tr1::shared_ptr<Resolution> & resolution)
 {
     _imp->resolution_lists->ordered()->append(resolution);
     resolution->already_ordered() = true;
@@ -906,8 +908,7 @@ Resolver::_unable_to_order_more() const
 {
     std::cout << "Unable to order any of the following:" << std::endl;
 
-    for (ResolutionsByQPN_SMap::const_iterator i(_imp->resolutions_by_qpn_s.begin()),
-            i_end(_imp->resolutions_by_qpn_s.end()) ;
+    for (ResolutionsByResolventMap::const_iterator i(_imp->resolutions_by_resolvent.begin()), i_end(_imp->resolutions_by_resolvent.end()) ;
             i != i_end ; ++i)
     {
         if (i->second->already_ordered())
@@ -922,28 +923,28 @@ Resolver::_unable_to_order_more() const
 }
 
 const std::tr1::shared_ptr<Constraints>
-Resolver::_initial_constraints_for(const QPN_S & qpn_s) const
+Resolver::_initial_constraints_for(const Resolvent & r) const
 {
-    return _imp->fns.get_initial_constraints_for_fn()(qpn_s);
+    return _imp->fns.get_initial_constraints_for_fn()(r);
 }
 
-Resolver::ResolutionsByQPN_SConstIterator
-Resolver::begin_resolutions_by_qpn_s() const
+Resolver::ResolutionsByResolventConstIterator
+Resolver::begin_resolutions_by_resolvent() const
 {
-    return ResolutionsByQPN_SConstIterator(_imp->resolutions_by_qpn_s.begin());
+    return ResolutionsByResolventConstIterator(_imp->resolutions_by_resolvent.begin());
 }
 
-Resolver::ResolutionsByQPN_SConstIterator
-Resolver::end_resolutions_by_qpn_s() const
+Resolver::ResolutionsByResolventConstIterator
+Resolver::end_resolutions_by_resolvent() const
 {
-    return ResolutionsByQPN_SConstIterator(_imp->resolutions_by_qpn_s.end());
+    return ResolutionsByResolventConstIterator(_imp->resolutions_by_resolvent.end());
 }
 
 int
-Resolver::find_any_score(const QPN_S & our_qpn_s, const SanitisedDependency & dep) const
+Resolver::find_any_score(const Resolvent & our_resolvent, const SanitisedDependency & dep) const
 {
     Context context("When working out whether we'd like '" + stringify(dep.spec()) + "' because of '"
-            + stringify(our_qpn_s) + "':");
+            + stringify(our_resolvent) + "':");
 
     if (dep.spec().if_block())
         throw InternalError(PALUDIS_HERE, "unimplemented: blockers inside || blocks are horrid");
@@ -1031,31 +1032,31 @@ Resolver::find_any_score(const QPN_S & our_qpn_s, const SanitisedDependency & de
     }
 
     const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(
-                _resolution_for_qpn_s(our_qpn_s)->decision()->if_package_id(), dep));
-    const std::tr1::shared_ptr<const QPN_S_Sequence> qpn_s_s(_get_qpn_s_s_for(spec, reason));
+                _resolution_for_resolvent(our_resolvent)->decision()->if_package_id(), our_resolvent, dep));
+    const std::tr1::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(spec, reason));
 
     /* next: will already be installing */
     {
-        for (QPN_S_Sequence::ConstIterator qpn_s(qpn_s_s->begin()), qpn_s_end(qpn_s_s->end()) ;
-                qpn_s != qpn_s_end ; ++qpn_s)
+        for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
+                r != r_end ; ++r)
         {
-            ResolutionsByQPN_SMap::const_iterator i(_imp->resolutions_by_qpn_s.find(*qpn_s));
-            if (i != _imp->resolutions_by_qpn_s.end())
+            ResolutionsByResolventMap::const_iterator i(_imp->resolutions_by_resolvent.find(*r));
+            if (i != _imp->resolutions_by_resolvent.end())
                 return 30 + operator_bias;
         }
     }
 
     /* next: could install */
     {
-        for (QPN_S_Sequence::ConstIterator qpn_s(qpn_s_s->begin()), qpn_s_end(qpn_s_s->end()) ;
-                qpn_s != qpn_s_end ; ++qpn_s)
+        for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
+                r != r_end ; ++r)
         {
-            const std::tr1::shared_ptr<Resolution> resolution(_create_resolution_for_qpn_s(*qpn_s));
-            const std::tr1::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_dependency(our_qpn_s, dep, reason));
+            const std::tr1::shared_ptr<Resolution> resolution(_create_resolution_for_resolvent(*r));
+            const std::tr1::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_dependency(our_resolvent, dep, reason));
             for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                     c != c_end ; ++c)
                 resolution->constraints()->add(*c);
-            const std::tr1::shared_ptr<Decision> decision(_try_to_find_decision_for(*qpn_s, resolution));
+            const std::tr1::shared_ptr<Decision> decision(_try_to_find_decision_for(*r, resolution));
             if (decision)
                 return 20 + operator_bias;
         }
@@ -1075,12 +1076,12 @@ Resolver::find_any_score(const QPN_S & our_qpn_s, const SanitisedDependency & de
 }
 
 const std::string
-Resolver::_find_cycle(const QPN_S & start_qpn_s, const int ignorable_pass) const
+Resolver::_find_cycle(const Resolvent & start_resolvent, const int ignorable_pass) const
 {
     std::stringstream result;
 
-    std::set<QPN_S> seen;
-    QPN_S current(start_qpn_s);
+    std::set<Resolvent> seen;
+    Resolvent current(start_resolvent);
 
     bool first(true);
     while (true)
@@ -1095,19 +1096,19 @@ Resolver::_find_cycle(const QPN_S & start_qpn_s, const int ignorable_pass) const
             break;
 
         bool ok(false);
-        const std::tr1::shared_ptr<const Resolution> resolution(_resolution_for_qpn_s(current));
+        const std::tr1::shared_ptr<const Resolution> resolution(_resolution_for_resolvent(current));
         for (ArrowSequence::ConstIterator a(resolution->arrows()->begin()), a_end(resolution->arrows()->end()) ;
                 a != a_end ; ++a)
         {
             if (_can_order_now(current, resolution, ignorable_pass))
                 continue;
 
-            const std::tr1::shared_ptr<const Resolution> to_resolution(_resolution_for_qpn_s((*a)->to_qpn_s()));
+            const std::tr1::shared_ptr<const Resolution> to_resolution(_resolution_for_resolvent((*a)->comes_after()));
             if (to_resolution->already_ordered())
                 continue;
 
             ok = true;
-            current = (*a)->to_qpn_s();
+            current = (*a)->comes_after();
             break;
         }
 
@@ -1139,8 +1140,8 @@ namespace
     };
 }
 
-const std::tr1::shared_ptr<const QPN_S_Sequence>
-Resolver::_get_qpn_s_s_for_blocker(const BlockDepSpec & spec) const
+const std::tr1::shared_ptr<const Resolvents>
+Resolver::_get_resolvents_for_blocker(const BlockDepSpec & spec) const
 {
     Context context("When finding slots for '" + stringify(spec) + "':");
 
@@ -1151,9 +1152,14 @@ Resolver::_get_qpn_s_s_for_blocker(const BlockDepSpec & spec) const
         exact_slot = spec.blocking().slot_requirement_ptr()->accept_returning<std::tr1::shared_ptr<SlotName> >(f);
     }
 
-    std::tr1::shared_ptr<QPN_S_Sequence> result(new QPN_S_Sequence);
+    DestinationTypes destination_types(_get_destination_types_for_blocker(spec));
+    std::tr1::shared_ptr<Resolvents> result(new Resolvents);
     if (exact_slot)
-        result->push_back(QPN_S(spec.blocking(), exact_slot));
+    {
+        for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
+            if (destination_types[*t])
+                result->push_back(Resolvent(spec.blocking(), exact_slot, *t));
+    }
     else
     {
         const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::BestVersionInEachSlot(
@@ -1161,14 +1167,22 @@ Resolver::_get_qpn_s_s_for_blocker(const BlockDepSpec & spec) const
                     )]);
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
-            result->push_back(QPN_S(*i));
+            for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
+                if (destination_types[*t])
+                    result->push_back(Resolvent(*i, *t));
     }
 
     return result;
 }
 
-const std::tr1::shared_ptr<QPN_S_Sequence>
-Resolver::_get_qpn_s_s_for(
+const DestinationTypes
+Resolver::_get_destination_types_for_blocker(const BlockDepSpec &) const
+{
+    return DestinationTypes() + dt_slash;
+}
+
+const std::tr1::shared_ptr<const Resolvents>
+Resolver::_get_resolvents_for(
         const PackageDepSpec & spec,
         const std::tr1::shared_ptr<const Reason> & reason) const
 {
@@ -1184,33 +1198,45 @@ Resolver::_get_qpn_s_s_for(
 
     if (exact_slot)
     {
-        std::tr1::shared_ptr<QPN_S_Sequence> result(new QPN_S_Sequence);
-        result->push_back(QPN_S(spec, exact_slot));
+        std::tr1::shared_ptr<Resolvents> result(new Resolvents);
+        DestinationTypes destination_types(_get_destination_types_for(spec, reason));
+        for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
+            if (destination_types[*t])
+                result->push_back(Resolvent(spec, exact_slot, *t));
         return result;
     }
     else
-        return _imp->fns.get_qpn_s_s_for_fn()(spec, reason);
+        return _imp->fns.get_resolvents_for_fn()(spec, reason);
 }
 
-const std::tr1::shared_ptr<QPN_S_Sequence>
-Resolver::_get_error_qpn_s_s_for(
+const DestinationTypes
+Resolver::_get_destination_types_for(const PackageDepSpec &, const std::tr1::shared_ptr<const Reason> &) const
+{
+    return DestinationTypes() + dt_slash;
+}
+
+const std::tr1::shared_ptr<const Resolvents>
+Resolver::_get_error_resolvents_for(
         const PackageDepSpec & spec,
-        const std::tr1::shared_ptr<const Reason> &) const
+        const std::tr1::shared_ptr<const Reason> & reason) const
 {
     Context context("When finding slots for '" + stringify(spec) + "', which can't be found the normal way:");
 
-    std::tr1::shared_ptr<QPN_S_Sequence> result(new QPN_S_Sequence);
-    result->push_back(QPN_S(spec, make_null_shared_ptr()));
+    std::tr1::shared_ptr<Resolvents> result(new Resolvents);
+    DestinationTypes destination_types(_get_destination_types_for(spec, reason));
+    for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
+        if (destination_types[*t])
+            result->push_back(Resolvent(spec, make_null_shared_ptr(), *t));
     return result;
 }
 
 const std::tr1::shared_ptr<Decision>
 Resolver::_try_to_find_decision_for(
-        const QPN_S & qpn_s,
+        const Resolvent & resolvent,
         const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
-    const std::tr1::shared_ptr<const PackageID> existing_id(_find_existing_id_for(qpn_s, resolution));
-    std::pair<const std::tr1::shared_ptr<const PackageID>, bool> installable_id_best(_find_installable_id_for(qpn_s, resolution));
+    const std::tr1::shared_ptr<const PackageID> existing_id(_find_existing_id_for(resolvent, resolution));
+    std::pair<const std::tr1::shared_ptr<const PackageID>, bool> installable_id_best(_find_installable_id_for(resolvent, resolution));
     const std::tr1::shared_ptr<const PackageID> installable_id(installable_id_best.first);
     bool best(installable_id_best.second);
 
@@ -1218,6 +1244,7 @@ Resolver::_try_to_find_decision_for(
     {
         /* nothing existing, but nothing's ok */
         return make_shared_ptr(new Decision(make_named_values<Decision>(
+                        value_for<n::destination>(make_null_shared_ptr()),
                         value_for<n::if_package_id>(make_null_shared_ptr()),
                         value_for<n::is_best>(false),
                         value_for<n::is_same>(false),
@@ -1231,6 +1258,7 @@ Resolver::_try_to_find_decision_for(
     {
         /* there's nothing suitable existing. */
         return make_shared_ptr(new Decision(make_named_values<Decision>(
+                        value_for<n::destination>(make_null_shared_ptr()),
                         value_for<n::if_package_id>(installable_id),
                         value_for<n::is_best>(best),
                         value_for<n::is_same>(false),
@@ -1265,6 +1293,7 @@ Resolver::_try_to_find_decision_for(
         }
 
         return make_shared_ptr(new Decision(make_named_values<Decision>(
+                        value_for<n::destination>(make_null_shared_ptr()),
                         value_for<n::if_package_id>(existing_id),
                         value_for<n::is_best>(false),
                         value_for<n::is_same>(true),
@@ -1342,6 +1371,7 @@ Resolver::_try_to_find_decision_for(
             case ue_only_if_transient:
             case ue_never:
                 return make_shared_ptr(new Decision(make_named_values<Decision>(
+                                value_for<n::destination>(make_null_shared_ptr()),
                                 value_for<n::if_package_id>(installable_id),
                                 value_for<n::is_best>(best),
                                 value_for<n::is_same>(is_same),
@@ -1354,6 +1384,7 @@ Resolver::_try_to_find_decision_for(
             case ue_if_same:
                 if (is_same)
                     return make_shared_ptr(new Decision(make_named_values<Decision>(
+                                    value_for<n::destination>(make_null_shared_ptr()),
                                     value_for<n::if_package_id>(existing_id),
                                     value_for<n::is_best>(false),
                                     value_for<n::is_same>(is_same),
@@ -1364,6 +1395,7 @@ Resolver::_try_to_find_decision_for(
                                     )));
                 else
                     return make_shared_ptr(new Decision(make_named_values<Decision>(
+                                    value_for<n::destination>(make_null_shared_ptr()),
                                     value_for<n::if_package_id>(installable_id),
                                     value_for<n::is_best>(best),
                                     value_for<n::is_same>(is_same),
@@ -1376,6 +1408,7 @@ Resolver::_try_to_find_decision_for(
             case ue_if_same_version:
                 if (is_same_version)
                     return make_shared_ptr(new Decision(make_named_values<Decision>(
+                                    value_for<n::destination>(make_null_shared_ptr()),
                                     value_for<n::if_package_id>(existing_id),
                                     value_for<n::is_best>(false),
                                     value_for<n::is_same>(is_same),
@@ -1386,6 +1419,7 @@ Resolver::_try_to_find_decision_for(
                                     )));
                 else
                     return make_shared_ptr(new Decision(make_named_values<Decision>(
+                                    value_for<n::destination>(make_null_shared_ptr()),
                                     value_for<n::if_package_id>(installable_id),
                                     value_for<n::is_best>(best),
                                     value_for<n::is_same>(is_same),
@@ -1397,6 +1431,7 @@ Resolver::_try_to_find_decision_for(
 
             case ue_if_possible:
                 return make_shared_ptr(new Decision(make_named_values<Decision>(
+                                value_for<n::destination>(make_null_shared_ptr()),
                                 value_for<n::if_package_id>(existing_id),
                                 value_for<n::is_best>(false),
                                 value_for<n::is_same>(is_same),
@@ -1416,10 +1451,11 @@ Resolver::_try_to_find_decision_for(
 
 const std::tr1::shared_ptr<Decision>
 Resolver::_cannot_decide_for(
-        const QPN_S &,
+        const Resolvent &,
         const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
     return make_shared_ptr(new Decision(make_named_values<Decision>(
+                    value_for<n::destination>(make_null_shared_ptr()),
                     value_for<n::if_package_id>(make_null_shared_ptr()),
                     value_for<n::is_best>(false),
                     value_for<n::is_same>(false),
@@ -1431,33 +1467,33 @@ Resolver::_cannot_decide_for(
 }
 
 const std::tr1::shared_ptr<const PackageID>
-Resolver::_find_existing_id_for(const QPN_S & qpn_s, const std::tr1::shared_ptr<const Resolution> & resolution) const
+Resolver::_find_existing_id_for(const Resolvent & resolvent, const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
     const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::AllVersionsSorted(
-                generator::Package(qpn_s.package()) |
-                qpn_s.make_slot_filter() |
+                generator::Package(resolvent.package()) |
+                make_slot_filter(resolvent) |
                 filter::InstalledAtRoot(FSEntry("/"))
                 )]);
 
-    return _find_id_for_from(qpn_s, resolution, ids).first;
+    return _find_id_for_from(resolvent, resolution, ids).first;
 }
 
 const std::pair<const std::tr1::shared_ptr<const PackageID>, bool>
-Resolver::_find_installable_id_for(const QPN_S & qpn_s, const std::tr1::shared_ptr<const Resolution> & resolution) const
+Resolver::_find_installable_id_for(const Resolvent & resolvent, const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
     const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::AllVersionsSorted(
-                generator::Package(qpn_s.package()) |
-                qpn_s.make_slot_filter() |
+                generator::Package(resolvent.package()) |
+                make_slot_filter(resolvent) |
                 filter::SupportsAction<InstallAction>() |
                 filter::NotMasked()
                 )]);
 
-    return _find_id_for_from(qpn_s, resolution, ids);
+    return _find_id_for_from(resolvent, resolution, ids);
 }
 
 const std::pair<const std::tr1::shared_ptr<const PackageID>, bool>
 Resolver::_find_id_for_from(
-        const QPN_S &, const std::tr1::shared_ptr<const Resolution> & resolution,
+        const Resolvent &, const std::tr1::shared_ptr<const Resolution> & resolution,
         const std::tr1::shared_ptr<const PackageIDSequence> & ids) const
 {
     bool best(true);
@@ -1494,7 +1530,7 @@ Resolver::resolution_lists() const
 }
 
 const std::tr1::shared_ptr<DependencySpecTree>
-Resolver::rewrite_if_special(const PackageOrBlockDepSpec & s, const QPN_S & our_qpn_s) const
+Resolver::rewrite_if_special(const PackageOrBlockDepSpec & s, const Resolvent & our_resolvent) const
 {
     if (s.if_package() && s.if_package()->package_ptr())
     {
@@ -1528,7 +1564,7 @@ Resolver::rewrite_if_special(const PackageOrBlockDepSpec & s, const QPN_S & our_
         for (std::set<QualifiedPackageName>::const_iterator n(r->second.begin()), n_end(r->second.end()) ;
                 n != n_end ; ++n)
         {
-            if (*n == our_qpn_s.package())
+            if (*n == our_resolvent.package())
                 continue;
 
             PackageDepSpec spec(PartiallyMadePackageDepSpec(s.if_block()->blocking()).package(*n));
@@ -1569,6 +1605,6 @@ Resolver::_need_rewrites() const
 #endif
 }
 
-template class WrappedForwardIterator<Resolver::ResolutionsByQPN_SConstIteratorTag,
-         const std::pair<const QPN_S, std::tr1::shared_ptr<Resolution> > >;
+template class WrappedForwardIterator<Resolver::ResolutionsByResolventConstIteratorTag,
+         const std::pair<const Resolvent, std::tr1::shared_ptr<Resolution> > >;
 

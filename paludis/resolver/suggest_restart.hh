@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_SUGGEST_RESTART_HH 1
 
 #include <paludis/resolver/suggest_restart-fwd.hh>
-#include <paludis/resolver/qpn_s-fwd.hh>
+#include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/resolver/constraint-fwd.hh>
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
@@ -38,7 +38,7 @@ namespace paludis
         {
             public:
                 SuggestRestart(
-                        const QPN_S &,
+                        const Resolvent &,
                         const std::tr1::shared_ptr<const Decision> & previous_decision,
                         const std::tr1::shared_ptr<const Constraint> & problematic_constraint,
                         const std::tr1::shared_ptr<const Decision> & new_decision,
@@ -46,7 +46,7 @@ namespace paludis
                 SuggestRestart(const SuggestRestart &);
                 ~SuggestRestart() throw ();
 
-                const QPN_S qpn_s() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const Resolvent resolvent() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 const std::tr1::shared_ptr<const Decision> previous_decision() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 const std::tr1::shared_ptr<const Constraint> problematic_constraint() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 const std::tr1::shared_ptr<const Decision> new_decision() const PALUDIS_ATTRIBUTE((warn_unused_result));

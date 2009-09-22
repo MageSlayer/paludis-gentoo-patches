@@ -18,7 +18,7 @@
  */
 
 #include <paludis/resolver/reason.hh>
-#include <paludis/resolver/qpn_s.hh>
+#include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/serialise-impl.hh>
 #include <paludis/util/stringify.hh>
@@ -44,10 +44,13 @@ namespace paludis
     struct Implementation<DependencyReason>
     {
         const std::tr1::shared_ptr<const PackageID> from_id;
+        const Resolvent from_resolvent;
         const SanitisedDependency dep;
 
-        Implementation(const std::tr1::shared_ptr<const PackageID> & i, const SanitisedDependency & d) :
+        Implementation(const std::tr1::shared_ptr<const PackageID> & i,
+                const Resolvent & r, const SanitisedDependency & d) :
             from_id(i),
+            from_resolvent(r),
             dep(d)
         {
         }
@@ -55,8 +58,9 @@ namespace paludis
 }
 
 DependencyReason::DependencyReason(const std::tr1::shared_ptr<const PackageID> & i,
+        const Resolvent & r,
         const SanitisedDependency & d) :
-    PrivateImplementationPattern<DependencyReason>(new Implementation<DependencyReason>(i, d))
+    PrivateImplementationPattern<DependencyReason>(new Implementation<DependencyReason>(i, r, d))
 {
 }
 
@@ -70,6 +74,12 @@ DependencyReason::from_id() const
     return _imp->from_id;
 }
 
+const Resolvent
+DependencyReason::from_resolvent() const
+{
+    return _imp->from_resolvent;
+}
+
 const SanitisedDependency &
 DependencyReason::sanitised_dependency() const
 {
@@ -81,6 +91,7 @@ DependencyReason::serialise(Serialiser & s) const
 {
     s.object("DependencyReason")
         .member(SerialiserFlags<serialise::might_be_null>(), "from_id", from_id())
+        .member(SerialiserFlags<>(), "from_resolvent", from_resolvent())
         .member(SerialiserFlags<>(), "sanitised_dependency", sanitised_dependency())
         ;
 }
@@ -165,6 +176,7 @@ Reason::deserialise(Deserialisation & d)
         const std::tr1::shared_ptr<const PackageID> from_id(v.member<std::tr1::shared_ptr<const PackageID> >("from_id"));
         return make_shared_ptr(new DependencyReason(
                     from_id,
+                    v.member<Resolvent>("from_resolvent"),
                     SanitisedDependency::deserialise(*v.find_remove_member("sanitised_dependency"), from_id))
                 );
     }

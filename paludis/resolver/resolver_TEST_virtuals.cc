@@ -23,7 +23,7 @@
 #include <paludis/resolver/decision.hh>
 #include <paludis/resolver/resolutions.hh>
 #include <paludis/resolver/constraint.hh>
-#include <paludis/resolver/qpn_s.hh>
+#include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/suggest_restart.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/make_named_values.hh>

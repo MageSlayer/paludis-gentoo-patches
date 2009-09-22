@@ -19,14 +19,14 @@
 
 #include "cmd_resolve_dump.hh"
 #include <paludis/resolver/resolver.hh>
-#include <paludis/resolver/qpn_s.hh>
+#include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/decision.hh>
-#include <paludis/resolver/destinations.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/arrow.hh>
+#include <paludis/resolver/destination.hh>
 #include <paludis/util/enum_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/join.hh>
@@ -41,6 +41,20 @@ using namespace paludis::resolver;
 
 namespace
 {
+    std::ostream &
+    operator<< (std::ostream & s, const Destination & d)
+    {
+        std::stringstream ss;
+        ss << "Destination(" << d.repository();
+        if (! d.replacing()->empty())
+            ss << " replacing " << join(indirect_iterator(d.replacing()->begin()),
+                    indirect_iterator(d.replacing()->end()), ", ");
+        ss << ")";
+
+        s << ss.str();
+        return s;
+    }
+
     std::ostream &
     operator<< (std::ostream & s, const Decision & d)
     {
@@ -62,44 +76,9 @@ namespace
         if (d.is_same_version())
             ss << ", is same version";
 
-        ss << ")";
+        if (d.destination())
+            ss << " -> " << *d.destination();
 
-        s << ss.str();
-        return s;
-    }
-
-    std::ostream &
-    operator<< (std::ostream & s, const Destination & d)
-    {
-        std::stringstream ss;
-        ss << "Destination(" << d.repository();
-        if (! d.replacing()->empty())
-            ss << " replacing " << join(indirect_iterator(d.replacing()->begin()),
-                    indirect_iterator(d.replacing()->end()), ", ");
-        ss << ")";
-
-        s << ss.str();
-        return s;
-    }
-
-    std::ostream &
-    operator<< (std::ostream & s, const Destinations & d)
-    {
-        std::stringstream ss;
-        ss << "Destinations(";
-        for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
-            if (d.by_type(*t))
-            {
-                switch (*t)
-                {
-                    case dt_slash:
-                        ss << "slash: " << *d.by_type(*t);
-                        break;
-
-                    case last_dt:
-                        break;
-                }
-            }
         ss << ")";
 
         s << ss.str();
@@ -194,7 +173,7 @@ namespace
     std::ostream &
     operator<< (std::ostream & s, const Arrow & a)
     {
-        s << "Arrow(-> " << a.to_qpn_s();
+        s << "Arrow(-> " << a.comes_after();
         if (0 != a.ignorable_pass())
             s << ", ignorable pass " << a.ignorable_pass();
         s << ")";
@@ -231,12 +210,6 @@ namespace
             << "; arrows: " << join(indirect_iterator(r.arrows()->begin()),
                     indirect_iterator(r.arrows()->end()), ", ", stringify_arrow)
             << "; already_ordered: " << stringify(r.already_ordered()) << ")"
-            << "; destinations: ";
-        if (r.destinations())
-            ss << *r.destinations();
-        else
-            ss << "unknown";
-        ss
             << ")";
         s << ss.str();
         return s;
@@ -249,8 +222,8 @@ namespace
     {
         std::cout << "Dumping resolutions by QPN:S:" << std::endl << std::endl;
 
-        for (Resolver::ResolutionsByQPN_SConstIterator c(resolver->begin_resolutions_by_qpn_s()),
-                c_end(resolver->end_resolutions_by_qpn_s()) ;
+        for (Resolver::ResolutionsByResolventConstIterator c(resolver->begin_resolutions_by_resolvent()),
+                c_end(resolver->end_resolutions_by_resolvent()) ;
                 c != c_end ; ++c)
         {
             std::cout << c->first << std::endl;

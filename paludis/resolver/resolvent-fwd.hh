@@ -17,17 +17,28 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_DESTINATIONS_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_DESTINATIONS_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLVENT_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLVENT_FWD_HH 1
 
+#include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/attributes.hh>
+#include <paludis/filter-fwd.hh>
+#include <iosfwd>
 
 namespace paludis
 {
     namespace resolver
     {
-        struct Destination;
-        struct Destinations;
+        struct Resolvent;
+
+        typedef Sequence<Resolvent> Resolvents;
+
+        std::ostream & operator<< (std::ostream &, const Resolvent &) PALUDIS_VISIBLE;
+
+        bool operator< (const Resolvent &, const Resolvent &) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
+        bool operator== (const Resolvent &, const Resolvent &) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
+
+        Filter make_slot_filter(const Resolvent &) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
     }
 }
 

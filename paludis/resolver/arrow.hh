@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_ARROW_HH 1
 
 #include <paludis/resolver/arrow-fwd.hh>
-#include <paludis/resolver/qpn_s.hh>
+#include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/serialise-fwd.hh>
 #include <paludis/util/named_value.hh>
 
@@ -29,16 +29,16 @@ namespace paludis
 {
     namespace n
     {
+        struct comes_after;
         struct ignorable_pass;
-        struct to_qpn_s;
     }
 
     namespace resolver
     {
         struct Arrow
         {
+            NamedValue<n::comes_after, Resolvent> comes_after;
             NamedValue<n::ignorable_pass, int> ignorable_pass;
-            NamedValue<n::to_qpn_s, QPN_S> to_qpn_s;
 
             void serialise(Serialiser &) const;
 

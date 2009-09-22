@@ -22,16 +22,16 @@
 
 #include <paludis/resolver/resolver-fwd.hh>
 #include <paludis/resolver/resolution-fwd.hh>
-#include <paludis/resolver/qpn_s-fwd.hh>
+#include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/resolver/constraint-fwd.hh>
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/resolver/reason-fwd.hh>
 #include <paludis/resolver/use_existing-fwd.hh>
-#include <paludis/resolver/destinations-fwd.hh>
 #include <paludis/resolver/resolutions-fwd.hh>
 #include <paludis/resolver/resolver_functions-fwd.hh>
 #include <paludis/resolver/destination_types-fwd.hh>
+#include <paludis/resolver/destination-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -50,62 +50,62 @@ namespace paludis
             private PrivateImplementationPattern<Resolver>
         {
             private:
-                const std::tr1::shared_ptr<Resolution> _create_resolution_for_qpn_s(const QPN_S &) const;
-                const std::tr1::shared_ptr<Resolution> _resolution_for_qpn_s(const QPN_S &, const bool create);
-                const std::tr1::shared_ptr<Resolution> _resolution_for_qpn_s(const QPN_S &) const;
+                const std::tr1::shared_ptr<Resolution> _create_resolution_for_resolvent(const Resolvent &) const;
+                const std::tr1::shared_ptr<Resolution> _resolution_for_resolvent(const Resolvent &, const bool create);
+                const std::tr1::shared_ptr<Resolution> _resolution_for_resolvent(const Resolvent &) const;
 
-                const std::tr1::shared_ptr<const QPN_S_Sequence> _get_qpn_s_s_for_blocker(const BlockDepSpec &) const;
+                const std::tr1::shared_ptr<const Resolvents> _get_resolvents_for_blocker(const BlockDepSpec &) const;
 
-                const std::tr1::shared_ptr<QPN_S_Sequence> _get_qpn_s_s_for(
-                            const PackageDepSpec & spec,
-                            const std::tr1::shared_ptr<const Reason> & reason) const;
+                const DestinationTypes _get_destination_types_for_blocker(const BlockDepSpec &) const;
 
-                const std::tr1::shared_ptr<QPN_S_Sequence> _get_error_qpn_s_s_for(
+                const std::tr1::shared_ptr<const Resolvents> _get_resolvents_for(
+                        const PackageDepSpec & spec,
+                        const std::tr1::shared_ptr<const Reason> & reason) const;
+
+                const DestinationTypes _get_destination_types_for(
+                        const PackageDepSpec & spec,
+                        const std::tr1::shared_ptr<const Reason> & reason) const;
+
+                const std::tr1::shared_ptr<const Resolvents> _get_error_resolvents_for(
                             const PackageDepSpec & spec,
                             const std::tr1::shared_ptr<const Reason> & reason) const;
 
                 const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_from_target(
-                        const QPN_S &,
+                        const Resolvent &,
                         const PackageDepSpec &,
                         const std::tr1::shared_ptr<const Reason> &) const;
 
                 const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_from_dependency(
-                        const QPN_S &, const SanitisedDependency &,
+                        const Resolvent &, const SanitisedDependency &,
                         const std::tr1::shared_ptr<const Reason> &) const;
 
-                void _apply_resolution_constraint(const QPN_S &,
+                void _apply_resolution_constraint(const Resolvent &,
                         const std::tr1::shared_ptr<Resolution> &,
                         const std::tr1::shared_ptr<const Constraint> &);
 
-                bool _verify_new_constraint(const QPN_S &,
+                bool _verify_new_constraint(const Resolvent &,
                         const std::tr1::shared_ptr<const Resolution> &,
                         const std::tr1::shared_ptr<const Constraint> &);
 
-                void _made_wrong_decision(const QPN_S & qpn_s,
+                void _made_wrong_decision(const Resolvent &,
                         const std::tr1::shared_ptr<Resolution> & resolution,
                         const std::tr1::shared_ptr<const Constraint> & constraint);
 
-                void _suggest_restart_with(const QPN_S & qpn_s,
+                void _suggest_restart_with(const Resolvent &,
                         const std::tr1::shared_ptr<const Resolution> & resolution,
                         const std::tr1::shared_ptr<const Constraint> & constraint,
                         const std::tr1::shared_ptr<const Decision> & decision) const PALUDIS_ATTRIBUTE((noreturn));
 
                 const std::tr1::shared_ptr<const Constraint> _make_constraint_for_preloading(
-                        const QPN_S & qpn_s,
+                        const Resolvent &,
                         const std::tr1::shared_ptr<const Decision> & d,
                         const DestinationType t) const;
-
-                const std::tr1::shared_ptr<Destinations> _make_destinations_for(const QPN_S &,
-                        const std::tr1::shared_ptr<const Resolution> &) const;
-
-                const std::tr1::shared_ptr<Destination> _make_slash_destination_for(const QPN_S &,
-                        const std::tr1::shared_ptr<const Resolution> &) const;
 
                 const std::tr1::shared_ptr<const PackageIDSequence> _find_replacing(
                         const std::tr1::shared_ptr<const PackageID> &,
                         const std::tr1::shared_ptr<const Repository> &) const;
 
-                void _resolve_arrow(const QPN_S &, const std::tr1::shared_ptr<Resolution> &,
+                void _resolve_arrow(const Resolvent &, const std::tr1::shared_ptr<Resolution> &,
                         const std::tr1::shared_ptr<const Constraint> &);
 
                 void _resolve_decide_with_dependencies();
@@ -113,43 +113,52 @@ namespace paludis
                 void _resolve_arrows();
                 void _resolve_order();
 
-                void _decide(const QPN_S &, const std::tr1::shared_ptr<Resolution> & resolution);
+                const std::tr1::shared_ptr<Destination> _make_destination_for(
+                        const Resolvent & resolvent,
+                        const std::tr1::shared_ptr<const Resolution> & resolution) const;
+
+                const std::tr1::shared_ptr<Destination> _make_slash_destination_for(
+                        const Resolvent & resolvent,
+                        const std::tr1::shared_ptr<const Resolution> & resolution) const;
+
+                void _decide(const Resolvent &, const std::tr1::shared_ptr<Resolution> & resolution);
 
                 const std::tr1::shared_ptr<Decision> _try_to_find_decision_for(
-                        const QPN_S &, const std::tr1::shared_ptr<const Resolution> & resolution) const;
+                        const Resolvent &, const std::tr1::shared_ptr<const Resolution> & resolution) const;
 
                 const std::tr1::shared_ptr<Decision> _cannot_decide_for(
-                        const QPN_S &, const std::tr1::shared_ptr<const Resolution> & resolution) const;
+                        const Resolvent &, const std::tr1::shared_ptr<const Resolution> & resolution) const;
 
-                void _add_dependencies(const QPN_S & our_qpn_s, const std::tr1::shared_ptr<Resolution> & our_resolution);
+                void _add_dependencies(const Resolvent & our_resolvent,
+                        const std::tr1::shared_ptr<Resolution> & our_resolution);
 
-                bool _care_about_dependency_spec(const QPN_S &, const std::tr1::shared_ptr<const Resolution> &,
+                bool _care_about_dependency_spec(const Resolvent &, const std::tr1::shared_ptr<const Resolution> &,
                         const SanitisedDependency &) const;
 
                 bool _causes_pre_arrow(const DependencyReason &) const;
 
-                bool _can_order_now(const QPN_S &, const std::tr1::shared_ptr<const Resolution> & resolution,
+                bool _can_order_now(const Resolvent &, const std::tr1::shared_ptr<const Resolution> & resolution,
                         const int ignorable_pass) const;
 
-                void _do_order(const QPN_S &, const std::tr1::shared_ptr<Resolution> & resolution);
+                void _do_order(const Resolvent &, const std::tr1::shared_ptr<Resolution> & resolution);
 
                 void _unable_to_order_more() const PALUDIS_ATTRIBUTE((noreturn));
 
-                const std::tr1::shared_ptr<Constraints> _initial_constraints_for(const QPN_S &) const;
+                const std::tr1::shared_ptr<Constraints> _initial_constraints_for(const Resolvent &) const;
 
                 bool _same_slot(const std::tr1::shared_ptr<const PackageID> & a,
                         const std::tr1::shared_ptr<const PackageID> & b) const;
 
                 bool _already_met(const SanitisedDependency & dep) const;
 
-                const std::string _find_cycle(const QPN_S &, const int ignorable_pass) const;
+                const std::string _find_cycle(const Resolvent &, const int ignorable_pass) const;
 
                 const std::tr1::shared_ptr<const PackageID> _find_existing_id_for(
-                        const QPN_S &, const std::tr1::shared_ptr<const Resolution> &) const;
+                        const Resolvent &, const std::tr1::shared_ptr<const Resolution> &) const;
                 const std::pair<const std::tr1::shared_ptr<const PackageID>, bool> _find_installable_id_for(
-                        const QPN_S &, const std::tr1::shared_ptr<const Resolution> &) const;
+                        const Resolvent &, const std::tr1::shared_ptr<const Resolution> &) const;
                 const std::pair<const std::tr1::shared_ptr<const PackageID>, bool> _find_id_for_from(
-                        const QPN_S &, const std::tr1::shared_ptr<const Resolution> &,
+                        const Resolvent &, const std::tr1::shared_ptr<const Resolution> &,
                         const std::tr1::shared_ptr<const PackageIDSequence> &) const;
 
                 void _need_rewrites() const;
@@ -168,16 +177,19 @@ namespace paludis
 
                 const std::tr1::shared_ptr<const ResolutionLists> resolution_lists() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                struct ResolutionsByQPN_SConstIteratorTag;
-                typedef WrappedForwardIterator<ResolutionsByQPN_SConstIteratorTag,
-                        const std::pair<const QPN_S, std::tr1::shared_ptr<Resolution> > > ResolutionsByQPN_SConstIterator;
-                ResolutionsByQPN_SConstIterator begin_resolutions_by_qpn_s() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                ResolutionsByQPN_SConstIterator end_resolutions_by_qpn_s() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                struct ResolutionsByResolventConstIteratorTag;
+                typedef WrappedForwardIterator<ResolutionsByResolventConstIteratorTag,
+                        const std::pair<const Resolvent, std::tr1::shared_ptr<Resolution> > >
+                            ResolutionsByResolventConstIterator;
+                ResolutionsByResolventConstIterator begin_resolutions_by_resolvent() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                ResolutionsByResolventConstIterator end_resolutions_by_resolvent() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                int find_any_score(const QPN_S &, const SanitisedDependency &) const;
+                int find_any_score(const Resolvent &, const SanitisedDependency &) const;
 
                 const std::tr1::shared_ptr<DependencySpecTree> rewrite_if_special(const PackageOrBlockDepSpec &,
-                        const QPN_S & from_qpn_s) const;
+                        const Resolvent & from) const;
         };
     }
 }

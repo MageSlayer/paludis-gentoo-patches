@@ -22,6 +22,7 @@
 
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/resolver/serialise-fwd.hh>
+#include <paludis/resolver/destination-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/package_id.hh>
 
@@ -29,6 +30,7 @@ namespace paludis
 {
     namespace n
     {
+        struct destination;
         struct if_package_id;
         struct is_best;
         struct is_same;
@@ -42,6 +44,7 @@ namespace paludis
     {
         struct Decision
         {
+            NamedValue<n::destination, std::tr1::shared_ptr<Destination> > destination;
             NamedValue<n::if_package_id, std::tr1::shared_ptr<const PackageID> > if_package_id;
             NamedValue<n::is_best, bool> is_best;
             NamedValue<n::is_same, bool> is_same;

@@ -37,10 +37,9 @@
 #include <paludis/resolver/resolver_functions.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/suggest_restart.hh>
-#include <paludis/resolver/qpn_s.hh>
+#include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
-#include <paludis/resolver/destinations.hh>
 #include <paludis/resolver/serialise-impl.hh>
 #include <paludis/resolver/resolutions.hh>
 #include <paludis/user_dep_spec.hh>
@@ -68,6 +67,20 @@ using std::endl;
 
 namespace
 {
+    Filter make_destination_filter(const DestinationType t)
+    {
+        switch (t)
+        {
+            case dt_slash:
+                return filter::InstalledAtRoot(FSEntry("/"));
+
+            case last_dt:
+                break;
+        }
+
+        throw InternalError(PALUDIS_HERE, stringify(t));
+    }
+
     void add_resolver_targets(
             const std::tr1::shared_ptr<Environment> & env,
             const std::tr1::shared_ptr<Resolver> & resolver,
@@ -155,7 +168,7 @@ namespace
     };
 
     UseExisting use_existing_fn(const ResolveCommandLine & cmdline,
-            const QPN_S &,
+            const Resolvent &,
             const PackageDepSpec &,
             const std::tr1::shared_ptr<const Reason> & reason)
     {
@@ -221,14 +234,15 @@ namespace
             return false;
     }
 
-    bool installed_is_scm_older_than(const Environment * const env, const QPN_S & q, const int n)
+    bool installed_is_scm_older_than(const Environment * const env, const Resolvent & q, const int n)
     {
         Context context("When working out whether '" + stringify(q) + "' has installed SCM packages:");
 
         const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
                     generator::Package(q.package()) |
-                    q.make_slot_filter() |
-                    filter::InstalledAtRoot(FSEntry("/")))]);
+                    make_slot_filter(q) |
+                    make_destination_filter(q.destination_type())
+                    )]);
 
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
@@ -240,23 +254,23 @@ namespace
         return false;
     }
 
-    typedef std::map<QPN_S, std::tr1::shared_ptr<Constraints> > InitialConstraints;
+    typedef std::map<Resolvent, std::tr1::shared_ptr<Constraints> > InitialConstraints;
 
     const std::tr1::shared_ptr<Constraints> make_initial_constraints_for(
             const Environment * const env,
             const ResolveCommandLine & cmdline,
-            const QPN_S & qpn_s)
+            const Resolvent & resolvent)
     {
         const std::tr1::shared_ptr<Constraints> result(new Constraints);
 
         int n(reinstall_scm_days(cmdline));
-        if ((-1 != n) && installed_is_scm_older_than(env, qpn_s, n))
+        if ((-1 != n) && installed_is_scm_older_than(env, resolvent, n))
         {
             result->add(make_shared_ptr(new Constraint(make_named_values<Constraint>(
                                 value_for<n::destination_type>(dt_slash),
                                 value_for<n::nothing_is_fine_too>(false),
                                 value_for<n::reason>(make_shared_ptr(new PresetReason)),
-                                value_for<n::spec>(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(qpn_s.package())),
+                                value_for<n::spec>(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(resolvent.package())),
                                 value_for<n::untaken>(false),
                                 value_for<n::use_existing>(ue_only_if_transient)
                                 ))));
@@ -269,11 +283,11 @@ namespace
             const Environment * const env,
             const ResolveCommandLine & cmdline,
             const InitialConstraints & initial_constraints,
-            const QPN_S & qpn_s)
+            const Resolvent & resolvent)
     {
-        InitialConstraints::const_iterator i(initial_constraints.find(qpn_s));
+        InitialConstraints::const_iterator i(initial_constraints.find(resolvent));
         if (i == initial_constraints.end())
-            return make_initial_constraints_for(env, cmdline, qpn_s);
+            return make_initial_constraints_for(env, cmdline, resolvent);
         else
             return i->second;
     }
@@ -307,15 +321,15 @@ namespace
         return reason->accept_returning<bool>(v);
     }
 
-    const std::tr1::shared_ptr<QPN_S_Sequence>
-    get_qpn_s_s_for_fn(const Environment * const env,
+    const std::tr1::shared_ptr<Resolvents>
+    get_resolvents_for_fn(const Environment * const env,
             const ResolveCommandLine & cmdline,
             const PackageDepSpec & spec,
             const std::tr1::shared_ptr<const Reason> & reason)
     {
-        std::tr1::shared_ptr<QPN_S_Sequence> result(new QPN_S_Sequence);
-        std::tr1::shared_ptr<QPN_S> best;
-        std::list<QPN_S> installed;
+        std::tr1::shared_ptr<Resolvents> result(new Resolvents);
+        std::tr1::shared_ptr<Resolvent> best;
+        std::list<Resolvent> installed;
 
         const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
                     generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements) |
@@ -323,7 +337,7 @@ namespace
                     filter::NotMasked())]);
 
         if (! ids->empty())
-            best = make_shared_ptr(new QPN_S(*ids->begin()));
+            best = make_shared_ptr(new Resolvent(*ids->begin(), dt_slash));
 
         const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*env)[selection::BestVersionInEachSlot(
                     generator::Matches(spec, MatchPackageOptions()) |
@@ -331,7 +345,7 @@ namespace
 
         for (PackageIDSequence::ConstIterator i(installed_ids->begin()), i_end(installed_ids->end()) ;
                 i != i_end ; ++i)
-            installed.push_back(QPN_S(*i));
+            installed.push_back(Resolvent(*i, dt_slash));
 
         const args::EnumArg & arg(is_target(reason) ? cmdline.resolution_options.a_target_slots : cmdline.resolution_options.a_slots);
 
@@ -479,7 +493,7 @@ namespace
     }
 
     bool care_about_dep_fn(const Environment * const, const ResolveCommandLine & cmdline,
-            const QPN_S &, const std::tr1::shared_ptr<const Resolution> & resolution,
+            const Resolvent &, const std::tr1::shared_ptr<const Resolution> & resolution,
             const SanitisedDependency & dep)
     {
         if (dk_existing_no_change == resolution->decision()->kind())
@@ -504,7 +518,7 @@ namespace
     bool
     take_dependency_fn(const Environment * const,
             const ResolveCommandLine &,
-            const QPN_S &,
+            const Resolvent &,
             const SanitisedDependency & dep,
             const std::tr1::shared_ptr<const Reason> &)
     {
@@ -681,7 +695,7 @@ ResolveCommand::run(
                         std::tr1::placeholders::_2, std::tr1::placeholders::_3)),
                 value_for<n::get_initial_constraints_for_fn>(std::tr1::bind(&initial_constraints_for_fn,
                         env.get(), std::tr1::cref(cmdline), std::tr1::cref(initial_constraints), std::tr1::placeholders::_1)),
-                value_for<n::get_qpn_s_s_for_fn>(std::tr1::bind(&get_qpn_s_s_for_fn,
+                value_for<n::get_resolvents_for_fn>(std::tr1::bind(&get_resolvents_for_fn,
                         env.get(), std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2)),
                 value_for<n::get_use_existing_fn>(std::tr1::bind(&use_existing_fn,
                         std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3)),
@@ -708,8 +722,8 @@ ResolveCommand::run(
                 catch (const SuggestRestart & e)
                 {
                     display_callback(ResolverRestart());
-                    initial_constraints.insert(std::make_pair(e.qpn_s(), make_initial_constraints_for(
-                                    env.get(), cmdline, e.qpn_s()))).first->second->add(
+                    initial_constraints.insert(std::make_pair(e.resolvent(), make_initial_constraints_for(
+                                    env.get(), cmdline, e.resolvent()))).first->second->add(
                             e.suggested_preset());
                     resolver = make_shared_ptr(new Resolver(env.get(), resolver_functions));
                 }

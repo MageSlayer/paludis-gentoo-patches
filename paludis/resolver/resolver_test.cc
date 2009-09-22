@@ -19,7 +19,7 @@
 
 #include <paludis/resolver/resolver_test.hh>
 #include <paludis/resolver/constraint.hh>
-#include <paludis/resolver/qpn_s.hh>
+#include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/resolutions.hh>
@@ -58,7 +58,7 @@ paludis::resolver::resolver_test::from_keys(const std::tr1::shared_ptr<const Map
 }
 
 bool
-paludis::resolver::resolver_test::care_about_dep_fn(const QPN_S &, const std::tr1::shared_ptr<const Resolution> &, const SanitisedDependency &)
+paludis::resolver::resolver_test::care_about_dep_fn(const Resolvent &, const std::tr1::shared_ptr<const Resolution> &, const SanitisedDependency &)
 {
     return true;
 }
@@ -66,21 +66,21 @@ paludis::resolver::resolver_test::care_about_dep_fn(const QPN_S &, const std::tr
 const std::tr1::shared_ptr<Constraints>
 paludis::resolver::resolver_test::initial_constraints_for_fn(
         const InitialConstraints & initial_constraints,
-        const QPN_S & qpn_s)
+        const Resolvent & resolvent)
 {
-    InitialConstraints::const_iterator i(initial_constraints.find(qpn_s));
+    InitialConstraints::const_iterator i(initial_constraints.find(resolvent));
     if (i == initial_constraints.end())
         return make_shared_ptr(new Constraints);
     else
         return i->second;
 }
 
-std::tr1::shared_ptr<QPN_S_Sequence>
-paludis::resolver::resolver_test::get_qpn_s_s_for_fn(const PackageDepSpec & spec,
+std::tr1::shared_ptr<Resolvents>
+paludis::resolver::resolver_test::get_resolvents_for_fn(const PackageDepSpec & spec,
         const std::tr1::shared_ptr<const Reason> &)
 {
-    std::tr1::shared_ptr<QPN_S_Sequence> result(new QPN_S_Sequence);
-    result->push_back(QPN_S(spec, make_shared_ptr(new SlotName("0"))));
+    std::tr1::shared_ptr<Resolvents> result(new Resolvents);
+    result->push_back(Resolvent(spec, make_shared_ptr(new SlotName("0")), dt_slash));
     return result;
 }
 
@@ -148,7 +148,7 @@ paludis::resolver::resolver_test::is_suggestion(const SanitisedDependency & dep)
 
 bool
 paludis::resolver::resolver_test::take_dependency_fn(
-        const QPN_S &,
+        const Resolvent &,
         const SanitisedDependency & dep,
         const std::tr1::shared_ptr<const Reason> &)
 {
@@ -157,7 +157,7 @@ paludis::resolver::resolver_test::take_dependency_fn(
 
 UseExisting
 paludis::resolver::resolver_test::get_use_existing_fn(
-        const QPN_S &,
+        const Resolvent &,
         const PackageDepSpec &,
         const std::tr1::shared_ptr<const Reason> &)
 {
@@ -216,7 +216,7 @@ ResolverTestCase::get_resolutions(const PackageDepSpec & target)
                         value_for<n::get_initial_constraints_for_fn>(
                             std::tr1::bind(&initial_constraints_for_fn, std::tr1::ref(initial_constraints),
                                 std::tr1::placeholders::_1)),
-                        value_for<n::get_qpn_s_s_for_fn>(&get_qpn_s_s_for_fn),
+                        value_for<n::get_resolvents_for_fn>(&get_resolvents_for_fn),
                         value_for<n::get_use_existing_fn>(&get_use_existing_fn),
                         value_for<n::take_dependency_fn>(&take_dependency_fn)
                         ));
@@ -226,7 +226,7 @@ ResolverTestCase::get_resolutions(const PackageDepSpec & target)
         }
         catch (const SuggestRestart & e)
         {
-            initial_constraints.insert(std::make_pair(e.qpn_s(), make_shared_ptr(new Constraints))).first->second->add(e.suggested_preset());
+            initial_constraints.insert(std::make_pair(e.resolvent(), make_shared_ptr(new Constraints))).first->second->add(e.suggested_preset());
         }
     }
 }
@@ -254,7 +254,7 @@ ResolverTestCase::ResolutionListChecks::check_kind(const DecisionKind k,
     if ((! r) || (! r->decision()))
         return false;
 
-    return r->decision()->kind() == k && r->qpn_s().package() == q;
+    return r->decision()->kind() == k && r->resolvent().package() == q;
 }
 
 std::string
@@ -264,10 +264,10 @@ ResolverTestCase::ResolutionListChecks::check_kind_msg(const DecisionKind k,
     if (! r)
         return "Expected " + stringify(k) + " " + stringify(q) + " but got finished";
     else if (! r->decision())
-        return "Expected " + stringify(k) + " " + stringify(q) + " but got undecided for " + stringify(r->qpn_s());
+        return "Expected " + stringify(k) + " " + stringify(q) + " but got undecided for " + stringify(r->resolvent());
     else
         return "Expected " + stringify(k) + " " + stringify(q) + " but got " + stringify(r->decision()->kind()) + " "
-            + stringify(r->qpn_s().package());
+            + stringify(r->resolvent().package());
 }
 
 std::string
@@ -276,13 +276,13 @@ ResolverTestCase::ResolutionListChecks::check_generic_msg(const std::string & q,
     if (! r)
         return "Expected " + stringify(q) + " but got finished";
     else if (! r->decision())
-        return "Expected " + stringify(q) + " but got undecided for " + stringify(r->qpn_s());
+        return "Expected " + stringify(q) + " but got undecided for " + stringify(r->resolvent());
     else if (! r->decision()->if_package_id())
         return "Expected " + stringify(q) + " but got decided nothing (kind " + stringify(r->decision()->kind()) + ") for "
-            + stringify(r->qpn_s());
+            + stringify(r->resolvent());
     else
         return "Expected " + stringify(q) + " but got " + stringify(r->decision()->if_package_id()->name()) + " for "
-            + stringify(r->qpn_s());
+            + stringify(r->resolvent());
 }
 
 std::string

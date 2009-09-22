@@ -19,12 +19,12 @@ noinst_HEADERS = \
 	arrow.hh arrow-fwd.hh \
 	constraint.hh constraint-fwd.hh \
 	decision.hh decision-fwd.hh decision-se.hh \
+	destination.hh destination-fwd.hh \
 	destination_types.hh destination_types-fwd.hh destination_types-se.hh \
-	destinations.hh destinations-fwd.hh \
-	qpn_s.hh qpn_s-fwd.hh \
 	reason.hh reason-fwd.hh \
 	resolution.hh resolution-fwd.hh \
 	resolutions.hh resolutions-fwd.hh \
+	resolvent.hh resolvent-fwd.hh \
 	resolver.hh resolver-fwd.hh \
 	resolver_functions.hh resolver_functions-fwd.hh \
 	sanitised_dependencies.hh sanitised_dependencies-fwd.hh \
@@ -36,12 +36,12 @@ libpaludisresolver_a_SOURCES = \
 	arrow.cc \
 	constraint.cc \
 	decision.cc \
+	destination.cc \
 	destination_types.cc \
-	destinations.cc \
-	qpn_s.cc \
 	reason.cc \
 	resolution.cc \
 	resolutions.cc \
+	resolvent.cc \
 	resolver.cc \
 	sanitised_dependencies.cc \
 	serialise.cc \

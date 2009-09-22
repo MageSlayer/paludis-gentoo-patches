@@ -40,10 +40,10 @@
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/decision.hh>
-#include <paludis/resolver/destinations.hh>
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/resolver.hh>
-#include <paludis/resolver/qpn_s.hh>
+#include <paludis/resolver/resolvent.hh>
+#include <paludis/resolver/destination.hh>
 #include <paludis/package_id.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -222,10 +222,10 @@ namespace
             const std::tr1::shared_ptr<const Resolution> & resolution,
             const bool verbose)
     {
-        if (resolution->qpn_s().slot_name_or_null())
-            cout << "[?] " << c::bold_red() << resolution->qpn_s() << c::normal();
+        if (resolution->resolvent().slot_name_or_null())
+            cout << "[?] " << c::bold_red() << resolution->resolvent() << c::normal();
         else
-            cout << "[?] " << c::bold_red() << resolution->qpn_s().package() << c::normal();
+            cout << "[?] " << c::bold_red() << resolution->resolvent().package() << c::normal();
         cout << " (no decision could be reached)" << endl;
 
         display_reasons(resolution, verbose);
@@ -255,35 +255,32 @@ namespace
                  other_slots(false);
             std::tr1::shared_ptr<const PackageID> old_id;
 
-            if ((*c)->destinations()->by_type(dt_slash))
+            if ((*c)->decision()->destination()->replacing()->empty())
             {
-                if ((*c)->destinations()->by_type(dt_slash)->replacing()->empty())
-                {
-                    is_new = true;
-                    const std::tr1::shared_ptr<const PackageIDSequence> others((*env)[selection::SomeArbitraryVersion(
-                            generator::Package(id->name()) &
-                            generator::InRepository((*c)->destinations()->by_type(dt_slash)->repository())
-                            )]);
-                    other_slots = ! others->empty();
-                }
-                else
-                    for (PackageIDSequence::ConstIterator x((*c)->destinations()->by_type(dt_slash)->replacing()->begin()),
-                            x_end((*c)->destinations()->by_type(dt_slash)->replacing()->end()) ;
-                            x != x_end ; ++x)
-                    {
-                        old_id = *x;
-                        if ((*x)->version() == id->version())
-                            is_reinstall = true;
-                        else if ((*x)->version() < id->version())
-                            is_upgrade = true;
-                        else if ((*x)->version() > id->version())
-                            is_downgrade = true;
-                    }
-
-                /* pick the worst of what it is */
-                is_upgrade = is_upgrade && (! is_reinstall) && (! is_downgrade);
-                is_reinstall = is_reinstall && (! is_downgrade);
+                is_new = true;
+                const std::tr1::shared_ptr<const PackageIDSequence> others((*env)[selection::SomeArbitraryVersion(
+                        generator::Package(id->name()) &
+                        generator::InRepository((*c)->decision()->destination()->repository())
+                        )]);
+                other_slots = ! others->empty();
             }
+            else
+                for (PackageIDSequence::ConstIterator x((*c)->decision()->destination()->replacing()->begin()),
+                        x_end((*c)->decision()->destination()->replacing()->end()) ;
+                        x != x_end ; ++x)
+                {
+                    old_id = *x;
+                    if ((*x)->version() == id->version())
+                        is_reinstall = true;
+                    else if ((*x)->version() < id->version())
+                        is_upgrade = true;
+                    else if ((*x)->version() > id->version())
+                        is_downgrade = true;
+                }
+
+            /* pick the worst of what it is */
+            is_upgrade = is_upgrade && (! is_reinstall) && (! is_downgrade);
+            is_reinstall = is_reinstall && (! is_downgrade);
 
             if (! (*c)->decision()->taken())
             {
@@ -307,54 +304,51 @@ namespace
 
             cout << c::normal() << " " << id->canonical_form(idcf_version);
 
-            if ((*c)->destinations()->by_type(dt_slash))
+            cout << " to ::" << (*c)->decision()->destination()->repository();
+            if (! (*c)->decision()->destination()->replacing()->empty())
             {
-                cout << " to ::" << (*c)->destinations()->by_type(dt_slash)->repository();
-                if (! (*c)->destinations()->by_type(dt_slash)->replacing()->empty())
+                cout << " replacing";
+                bool first(true);
+                for (PackageIDSequence::ConstIterator x((*c)->decision()->destination()->replacing()->begin()),
+                        x_end((*c)->decision()->destination()->replacing()->end()) ;
+                        x != x_end ; ++x)
                 {
-                    cout << " replacing";
-                    bool first(true);
-                    for (PackageIDSequence::ConstIterator x((*c)->destinations()->by_type(dt_slash)->replacing()->begin()),
-                            x_end((*c)->destinations()->by_type(dt_slash)->replacing()->end()) ;
-                            x != x_end ; ++x)
+                    bool different(false);
+                    std::string old_from;
+                    if ((*x)->from_repositories_key())
                     {
-                        bool different(false);
-                        std::string old_from;
-                        if ((*x)->from_repositories_key())
+                        for (Set<std::string>::ConstIterator k((*x)->from_repositories_key()->value()->begin()),
+                                k_end((*x)->from_repositories_key()->value()->end()) ;
+                                k != k_end ; ++k)
                         {
-                            for (Set<std::string>::ConstIterator k((*x)->from_repositories_key()->value()->begin()),
-                                    k_end((*x)->from_repositories_key()->value()->end()) ;
-                                    k != k_end ; ++k)
+                            if (stringify(id->repository()->name()) != *k)
                             {
-                                if (stringify(id->repository()->name()) != *k)
+                                if (id->from_repositories_key() && (id->from_repositories_key()->value()->end() !=
+                                            id->from_repositories_key()->value()->find(*k)))
                                 {
-                                    if (id->from_repositories_key() && (id->from_repositories_key()->value()->end() !=
-                                                id->from_repositories_key()->value()->find(*k)))
-                                    {
-                                    }
-                                    else
-                                        different = true;
                                 }
-
-                                if (old_from.empty())
-                                    old_from = " from ::";
                                 else
-                                    old_from.append(", ::");
-
-                                old_from.append(*k);
+                                    different = true;
                             }
+
+                            if (old_from.empty())
+                                old_from = " from ::";
+                            else
+                                old_from.append(", ::");
+
+                            old_from.append(*k);
                         }
-
-                        if (! first)
-                            cout << ", ";
-                        else
-                            cout << " ";
-                        first = false;
-
-                        cout << (*x)->canonical_form(idcf_version);
-                        if (different)
-                            cout << old_from;
                     }
+
+                    if (! first)
+                        cout << ", ";
+                    else
+                        cout << " ";
+                    first = false;
+
+                    cout << (*x)->canonical_form(idcf_version);
+                    if (different)
+                        cout << old_from;
                 }
             }
 
@@ -572,11 +566,11 @@ namespace
                                     )))
                         continue;
 
-                    if (spec.package_ptr() && *spec.package_ptr() != (*r)->qpn_s().package())
+                    if (spec.package_ptr() && *spec.package_ptr() != (*r)->resolvent().package())
                         continue;
-                    if (spec.package_name_part_ptr() && *spec.package_name_part_ptr() != (*r)->qpn_s().package().package())
+                    if (spec.package_name_part_ptr() && *spec.package_name_part_ptr() != (*r)->resolvent().package().package())
                         continue;
-                    if (spec.category_name_part_ptr() && *spec.category_name_part_ptr() != (*r)->qpn_s().package().category())
+                    if (spec.category_name_part_ptr() && *spec.category_name_part_ptr() != (*r)->resolvent().package().category())
                         continue;
                 }
                 else
@@ -587,7 +581,7 @@ namespace
 
                 any = true;
 
-                std::cout << "For " << (*r)->qpn_s() << ":" << std::endl;
+                std::cout << "For " << (*r)->resolvent() << ":" << std::endl;
                 std::cout << "    The following constraints were in action:" << std::endl;
                 for (Constraints::ConstIterator c((*r)->constraints()->begin()),
                         c_end((*r)->constraints()->end()) ;
@@ -638,15 +632,12 @@ namespace
                 {
                     std::cout << "    The decision made was:" << std::endl;
                     std::cout << "        Use " << *(*r)->decision()->if_package_id() << std::endl;
-                    if ((*r)->destinations()->by_type(dt_slash))
-                    {
-                        std::cout << "        Install to / using repository " << (*r)->destinations()->by_type(dt_slash)->repository() << std::endl;
-                        if (! (*r)->destinations()->by_type(dt_slash)->replacing()->empty())
-                            for (PackageIDSequence::ConstIterator x((*r)->destinations()->by_type(dt_slash)->replacing()->begin()),
-                                    x_end((*r)->destinations()->by_type(dt_slash)->replacing()->end()) ;
-                                    x != x_end ; ++x)
-                                std::cout << "            Replacing " << **x << std::endl;
-                    }
+                    std::cout << "        Install to repository " << (*r)->decision()->destination()->repository() << std::endl;
+                    if (! (*r)->decision()->destination()->replacing()->empty())
+                        for (PackageIDSequence::ConstIterator x((*r)->decision()->destination()->replacing()->begin()),
+                                x_end((*r)->decision()->destination()->replacing()->end()) ;
+                                x != x_end ; ++x)
+                            std::cout << "            Replacing " << **x << std::endl;
                     std::cout << std::endl;
                 }
                 else

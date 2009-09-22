@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_DESTINATION_TYPES_FWD_HH 1
 
 #include <paludis/util/attributes.hh>
+#include <paludis/util/options.hh>
 #include <iosfwd>
 
 namespace paludis
@@ -29,6 +30,8 @@ namespace paludis
     {
 
 #include <paludis/resolver/destination_types-se.hh>
+
+        typedef Options<DestinationType> DestinationTypes;
 
     }
 }

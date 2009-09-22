@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLVER_TEST_HH
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLVER_TEST_HH 1
 
-#include <paludis/resolver/qpn_s-fwd.hh>
+#include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/resolver/constraint-fwd.hh>
 #include <paludis/resolver/resolution-fwd.hh>
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
@@ -47,26 +47,26 @@ namespace paludis
             std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
                     const std::string & k);
 
-            typedef std::map<QPN_S, std::tr1::shared_ptr<Constraints> > InitialConstraints;
+            typedef std::map<Resolvent, std::tr1::shared_ptr<Constraints> > InitialConstraints;
 
-            bool care_about_dep_fn(const QPN_S &, const std::tr1::shared_ptr<const Resolution> &, const SanitisedDependency &);
+            bool care_about_dep_fn(const Resolvent &, const std::tr1::shared_ptr<const Resolution> &, const SanitisedDependency &);
 
             const std::tr1::shared_ptr<Constraints> initial_constraints_for_fn(
                     const InitialConstraints & initial_constraints,
-                    const QPN_S & qpn_s);
+                    const Resolvent & resolvent);
 
-            std::tr1::shared_ptr<QPN_S_Sequence> get_qpn_s_s_for_fn(const PackageDepSpec & spec,
+            std::tr1::shared_ptr<Resolvents> get_resolvents_for_fn(const PackageDepSpec & spec,
                     const std::tr1::shared_ptr<const Reason> &);
 
             bool is_suggestion(const SanitisedDependency & dep);
 
             bool take_dependency_fn(
-                    const QPN_S &,
+                    const Resolvent &,
                     const SanitisedDependency & dep,
                     const std::tr1::shared_ptr<const Reason> &);
 
             UseExisting get_use_existing_fn(
-                    const QPN_S &,
+                    const Resolvent &,
                     const PackageDepSpec &,
                     const std::tr1::shared_ptr<const Reason> &);
 

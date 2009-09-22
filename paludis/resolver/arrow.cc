@@ -30,8 +30,8 @@ void
 Arrow::serialise(Serialiser & s) const
 {
     s.object("Arrow")
+        .member(SerialiserFlags<>(), "comes_after", comes_after())
         .member(SerialiserFlags<>(), "ignorable_pass", ignorable_pass())
-        .member(SerialiserFlags<>(), "to_qpn_s", to_qpn_s())
         ;
 }
 
@@ -40,8 +40,8 @@ Arrow::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "Arrow");
     return make_shared_ptr(new Arrow(make_named_values<Arrow>(
-                    value_for<n::ignorable_pass>(v.member<bool>("ignorable_pass")),
-                    value_for<n::to_qpn_s>(v.member<QPN_S>("to_qpn_s"))
+                    value_for<n::comes_after>(v.member<Resolvent>("comes_after")),
+                    value_for<n::ignorable_pass>(v.member<bool>("ignorable_pass"))
                     )));
 }
 

@@ -17,14 +17,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_DESTINATIONS_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_DESTINATIONS_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_DESTINATION_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_DESTINATION_HH 1
 
-#include <paludis/resolver/destinations-fwd.hh>
+#include <paludis/resolver/destination-fwd.hh>
 #include <paludis/resolver/serialise-fwd.hh>
-#include <paludis/resolver/destination_types-fwd.hh>
-#include <paludis/util/named_value.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/attributes.hh>
 #include <paludis/name.hh>
 #include <paludis/package_id-fwd.hh>
 #include <tr1/memory>
@@ -45,34 +43,9 @@ namespace paludis
             NamedValue<n::repository, RepositoryName> repository;
 
             void serialise(Serialiser &) const;
-
-            static const std::tr1::shared_ptr<Destination> deserialise(
-                    Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
-        };
-
-        class PALUDIS_VISIBLE Destinations :
-            private PrivateImplementationPattern<Destinations>
-        {
-            public:
-                Destinations();
-                ~Destinations();
-
-                const std::tr1::shared_ptr<const Destination> by_type(const DestinationType)
-                    const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                void set_destination_type(const DestinationType, const std::tr1::shared_ptr<const Destination> &);
-
-                void serialise(Serialiser &) const;
-
-                static const std::tr1::shared_ptr<Destinations> deserialise(
-                        Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
+            static const std::tr1::shared_ptr<Destination> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
-
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
-    extern template class PrivateImplementationPattern<resolver::Destinations>;
-#endif
-
 }
 
 #endif

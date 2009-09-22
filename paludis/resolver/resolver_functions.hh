@@ -23,7 +23,7 @@
 #include <paludis/resolver/resolver_functions-fwd.hh>
 #include <paludis/resolver/use_existing-fwd.hh>
 #include <paludis/resolver/resolution-fwd.hh>
-#include <paludis/resolver/qpn_s-fwd.hh>
+#include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/resolver/reason-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <tr1/functional>
@@ -34,7 +34,7 @@ namespace paludis
     {
         struct care_about_dep_fn;
         struct get_initial_constraints_for_fn;
-        struct get_qpn_s_s_for_fn;
+        struct get_resolvents_for_fn;
         struct get_use_existing_fn;
         struct take_dependency_fn;
     }
@@ -42,28 +42,28 @@ namespace paludis
     namespace resolver
     {
         typedef std::tr1::function<bool (
-                const QPN_S &,
+                const Resolvent &,
                 const std::tr1::shared_ptr<const Resolution> &,
                 const SanitisedDependency &
                 )> CareAboutDepFunction;
 
         typedef std::tr1::function<std::tr1::shared_ptr<Constraints> (
-                const QPN_S &
+                const Resolvent &
                 )> GetInitialConstraintsFunction;
 
-        typedef std::tr1::function<std::tr1::shared_ptr<QPN_S_Sequence> (
+        typedef std::tr1::function<std::tr1::shared_ptr<Resolvents> (
                 const PackageDepSpec &,
                 const std::tr1::shared_ptr<const Reason> &
-                )> GetQPNSSForFunction;
+                )> GetResolventsForFunction;
 
         typedef std::tr1::function<bool (
-                const QPN_S &,
+                const Resolvent &,
                 const SanitisedDependency &,
                 const std::tr1::shared_ptr<const Reason> &
                 )> TakeDependencyFunction;
 
         typedef std::tr1::function<UseExisting (
-                const QPN_S &,
+                const Resolvent &,
                 const PackageDepSpec &,
                 const std::tr1::shared_ptr<const Reason> &
                 )> GetUseExistingFunction;
@@ -72,7 +72,7 @@ namespace paludis
         {
             NamedValue<n::care_about_dep_fn, CareAboutDepFunction> care_about_dep_fn;
             NamedValue<n::get_initial_constraints_for_fn, GetInitialConstraintsFunction> get_initial_constraints_for_fn;
-            NamedValue<n::get_qpn_s_s_for_fn, GetQPNSSForFunction> get_qpn_s_s_for_fn;
+            NamedValue<n::get_resolvents_for_fn, GetResolventsForFunction> get_resolvents_for_fn;
             NamedValue<n::get_use_existing_fn, GetUseExistingFunction> get_use_existing_fn;
             NamedValue<n::take_dependency_fn, TakeDependencyFunction> take_dependency_fn;
         };
