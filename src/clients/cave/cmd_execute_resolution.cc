@@ -130,10 +130,11 @@ namespace
 
     void starting_action(
             const std::string & action,
-            const std::tr1::shared_ptr<const Decision> & c)
+            const std::tr1::shared_ptr<const Decision> & c,
+            const int x, const int y)
     {
         cout << endl;
-        cout << c::bold_blue() << "Starting " << action << " for "
+        cout << c::bold_blue() << x << " of " << y << ": Starting " << action << " for "
             << *c->if_package_id() << "..." << c::normal() << endl;
         cout << endl;
     }
@@ -162,7 +163,7 @@ namespace
         const std::tr1::shared_ptr<const PackageID> id(c->if_package_id());
         Context context("When fetching for '" + stringify(*id) + "':");
 
-        starting_action("fetch", c);
+        starting_action("fetch", c, x, y);
 
         std::string command(cmdline.program_options.a_perform_program.argument());
         if (command.empty())
@@ -188,7 +189,7 @@ namespace
         const std::tr1::shared_ptr<const PackageID> id(r->decision()->if_package_id());
         Context context("When installing to / for '" + stringify(*id) + "':");
 
-        starting_action("install to /", r->decision());
+        starting_action("install to /", r->decision(), x, y);
 
         std::string command(cmdline.program_options.a_perform_program.argument());
         if (command.empty())
