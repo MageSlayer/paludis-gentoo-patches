@@ -464,13 +464,14 @@ Resolver::_apply_resolution_constraint(
         const std::tr1::shared_ptr<const Constraint> & constraint)
 {
     if (resolution->decision())
-        _verify_new_constraint(qpn_s, resolution, constraint);
+        if (! _verify_new_constraint(qpn_s, resolution, constraint))
+            _made_wrong_decision(qpn_s, resolution, constraint);
 
     resolution->constraints()->add(constraint);
 }
 
-void
-Resolver::_verify_new_constraint(const QPN_S & qpn_s,
+bool
+Resolver::_verify_new_constraint(const QPN_S &,
         const std::tr1::shared_ptr<const Resolution> & resolution,
         const std::tr1::shared_ptr<const Constraint> & constraint)
 {
@@ -517,13 +518,12 @@ Resolver::_verify_new_constraint(const QPN_S & qpn_s,
     if (ok && ! constraint->untaken())
         ok = resolution->decision()->taken();
 
-    if (! ok)
-        _made_wrong_decision(qpn_s, resolution, constraint);
+    return ok;
 }
 
 void
 Resolver::_made_wrong_decision(const QPN_S & qpn_s,
-        const std::tr1::shared_ptr<const Resolution> & resolution,
+        const std::tr1::shared_ptr<Resolution> & resolution,
         const std::tr1::shared_ptr<const Constraint> & constraint)
 {
     /* can we find a resolution that works for all our constraints? */
@@ -534,23 +534,7 @@ Resolver::_made_wrong_decision(const QPN_S & qpn_s,
     if (decision)
         _suggest_restart_with(qpn_s, resolution, constraint, decision);
     else
-    {
-        std::string old_decision("none");
-        if (resolution->decision())
-        {
-            if (resolution->decision()->if_package_id())
-                old_decision = stringify(*resolution->decision()->if_package_id());
-            else
-                old_decision = stringify(resolution->decision()->kind());
-        }
-
-        std::stringstream str;
-        Serialiser ser(str);
-        constraint->serialise(ser);
-
-        throw InternalError(PALUDIS_HERE, "unimplemented: made decision " + old_decision +
-                ", now can't make one because of " + str.str());
-    }
+        resolution->decision() = _cannot_decide_for(qpn_s, adapted_resolution);
 }
 
 void

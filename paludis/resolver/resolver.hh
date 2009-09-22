@@ -77,13 +77,13 @@ namespace paludis
                         const std::tr1::shared_ptr<Resolution> &,
                         const std::tr1::shared_ptr<const Constraint> &);
 
-                void _verify_new_constraint(const QPN_S &,
+                bool _verify_new_constraint(const QPN_S &,
                         const std::tr1::shared_ptr<const Resolution> &,
                         const std::tr1::shared_ptr<const Constraint> &);
 
                 void _made_wrong_decision(const QPN_S & qpn_s,
-                        const std::tr1::shared_ptr<const Resolution> & resolution,
-                        const std::tr1::shared_ptr<const Constraint> & constraint) PALUDIS_ATTRIBUTE((noreturn));
+                        const std::tr1::shared_ptr<Resolution> & resolution,
+                        const std::tr1::shared_ptr<const Constraint> & constraint);
 
                 void _suggest_restart_with(const QPN_S & qpn_s,
                         const std::tr1::shared_ptr<const Resolution> & resolution,
