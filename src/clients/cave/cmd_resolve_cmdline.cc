@@ -173,7 +173,8 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             "error occurs. For debugging purposes; produces rather a lot of noise."),
     a_dump(&g_dump_options, "dump", '\0', "Dump debug output", true),
     a_dump_dependencies(&g_dump_options, "dump-dependencies", '\0', "If dumping, also dump the "
-            "sanitised dependencies selected for every package" , true)
+            "sanitised dependencies selected for every package", true),
+    a_dump_restarts(&g_dump_options, "dump-restarts", '\0', "Dump restarts", true)
 {
 }
 

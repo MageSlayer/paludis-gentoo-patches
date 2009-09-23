@@ -671,6 +671,36 @@ namespace
 
         become_command(cmd);
     }
+
+    void display_restarts_if_requested(const std::list<SuggestRestart> & restarts,
+            const ResolveCommandLine & cmdline)
+    {
+        if (! cmdline.resolution_options.a_dump_restarts.specified())
+            return;
+
+        std::cout << "Dumping restarts:" << std::endl << std::endl;
+
+        for (std::list<SuggestRestart>::const_iterator r(restarts.begin()), r_end(restarts.end()) ;
+                r != r_end ; ++r)
+        {
+            std::cout << "* " << r->resolvent() << std::endl;
+
+            std::cout << "    Had decided upon ";
+            if (r->previous_decision()->if_package_id())
+                std::cout << *r->previous_decision()->if_package_id();
+            else
+                std::cout << r->previous_decision()->kind();
+            std::cout << std::endl;
+
+            std::cout << "    Which did not satisfy " << r->problematic_constraint()->spec()
+                << ", use existing " << r->problematic_constraint()->use_existing();
+            if (r->problematic_constraint()->nothing_is_fine_too())
+                std::cout << ", nothing is fine too";
+            std::cout << std::endl;
+        }
+
+        std::cout << std::endl;
+    }
 }
 
 
@@ -763,6 +793,8 @@ ResolveCommand::run(
     std::tr1::shared_ptr<Resolver> resolver(new Resolver(env.get(), resolver_functions));
     try
     {
+        std::list<SuggestRestart> restarts;
+
         {
             DisplayCallback display_callback;
             ScopedNotifierCallback display_callback_holder(env.get(),
@@ -778,6 +810,7 @@ ResolveCommand::run(
                 }
                 catch (const SuggestRestart & e)
                 {
+                    restarts.push_back(e);
                     display_callback(ResolverRestart());
                     initial_constraints.insert(std::make_pair(e.resolvent(), make_initial_constraints_for(
                                     env.get(), cmdline, e.resolvent()))).first->second->add(
@@ -786,6 +819,9 @@ ResolveCommand::run(
                 }
             }
         }
+
+        if (! restarts.empty())
+            display_restarts_if_requested(restarts, cmdline);
 
         dump_if_requested(env, resolver, cmdline);
 
