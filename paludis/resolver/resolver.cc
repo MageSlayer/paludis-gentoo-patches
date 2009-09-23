@@ -506,7 +506,24 @@ Resolver::_made_wrong_decision(const Resolvent & resolvent,
 
     const std::tr1::shared_ptr<Decision> decision(_try_to_find_decision_for(resolvent, adapted_resolution));
     if (decision)
-        _suggest_restart_with(resolvent, resolution, constraint, decision);
+    {
+        switch (resolution->decision()->kind())
+        {
+            case dk_nothing_no_change:
+                /* going from nothing to something is safe */
+                resolution->decision() = decision;
+                break;
+
+            case dk_unable_to_decide:
+            case dk_changes_to_make:
+            case dk_existing_no_change:
+                _suggest_restart_with(resolvent, resolution, constraint, decision);
+                break;
+
+            case last_dk:
+                break;
+        }
+    }
     else
         resolution->decision() = _cannot_decide_for(resolvent, adapted_resolution);
 }
