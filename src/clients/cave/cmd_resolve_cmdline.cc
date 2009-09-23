@@ -226,8 +226,8 @@ ResolveCommandLineExecutionOptions::ResolveCommandLineExecutionOptions(args::Arg
             "is done, allowing you to shoot as many feet off as you desire. Phase names do not have the "
             "src_, pkg_ or builtin_ prefix, so 'init', 'preinst', 'unpack', 'merge', 'strip' etc."),
     a_skip_phase(&g_phase_options, "skip-phase", '\0', "Skip the named phases"),
-    a_abort_at_phase(&g_phase_options, "abort-at-phase", '\0', "Abort when a named phase is encounted"),
-    a_skip_until_phase(&g_phase_options, "skip-until-phase", '\0', "Skip every phase until a named phase is encounted"),
+    a_abort_at_phase(&g_phase_options, "abort-at-phase", '\0', "Abort when a named phase is encountered"),
+    a_skip_until_phase(&g_phase_options, "skip-until-phase", '\0', "Skip every phase until a named phase is encountered"),
     a_change_phases_for(&g_phase_options, "change-phases-for", '\0',
             "Control to which package or packages these phase options apply",
             args::EnumArg::EnumArgOptions
