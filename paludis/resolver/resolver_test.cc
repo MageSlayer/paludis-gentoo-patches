@@ -38,6 +38,7 @@
 #include <paludis/repository_factory.hh>
 #include <paludis/package_database.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/filter.hh>
 #include <algorithm>
 #include "config.h"
 
@@ -82,6 +83,21 @@ paludis::resolver::resolver_test::get_resolvents_for_fn(const PackageDepSpec & s
     std::tr1::shared_ptr<Resolvents> result(new Resolvents);
     result->push_back(Resolvent(spec, make_shared_ptr(new SlotName("0")), dt_slash));
     return result;
+}
+
+Filter
+paludis::resolver::resolver_test::make_destination_filter_fn(const Resolvent & resolvent)
+{
+    switch (resolvent.destination_type())
+    {
+        case dt_slash:
+            return filter::InstalledAtRoot(FSEntry("/"));
+
+        case last_dt:
+            break;
+    }
+
+    throw InternalError(PALUDIS_HERE, "unhandled dt");
 }
 
 namespace
@@ -164,6 +180,15 @@ paludis::resolver::resolver_test::get_use_existing_fn(
     return ue_never;
 }
 
+const std::tr1::shared_ptr<const Repository>
+paludis::resolver::resolver_test::find_repository_for_fn(
+        const Environment * const env,
+        const Resolvent &,
+        const std::tr1::shared_ptr<const Resolution> &)
+{
+    return env->package_database()->fetch_repository(RepositoryName("installed"));
+}
+
 ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s, const std::string & e,
         const std::string & l) :
     TestCase(s)
@@ -213,11 +238,14 @@ ResolverTestCase::get_resolutions(const PackageDepSpec & target)
         {
             Resolver resolver(&env, make_named_values<ResolverFunctions>(
                         value_for<n::care_about_dep_fn>(&care_about_dep_fn),
+                        value_for<n::find_repository_for_fn>(std::tr1::bind(&find_repository_for_fn,
+                                &env, std::tr1::placeholders::_1, std::tr1::placeholders::_2)),
                         value_for<n::get_initial_constraints_for_fn>(
                             std::tr1::bind(&initial_constraints_for_fn, std::tr1::ref(initial_constraints),
                                 std::tr1::placeholders::_1)),
                         value_for<n::get_resolvents_for_fn>(&get_resolvents_for_fn),
                         value_for<n::get_use_existing_fn>(&get_use_existing_fn),
+                        value_for<n::make_destination_filter_fn>(&make_destination_filter_fn),
                         value_for<n::take_dependency_fn>(&take_dependency_fn)
                         ));
             resolver.add_target(target);

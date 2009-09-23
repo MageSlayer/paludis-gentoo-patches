@@ -26,6 +26,7 @@
 #include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/resolver/reason-fwd.hh>
 #include <paludis/util/named_value.hh>
+#include <paludis/filter-fwd.hh>
 #include <tr1/functional>
 
 namespace paludis
@@ -33,9 +34,11 @@ namespace paludis
     namespace n
     {
         struct care_about_dep_fn;
+        struct find_repository_for_fn;
         struct get_initial_constraints_for_fn;
         struct get_resolvents_for_fn;
         struct get_use_existing_fn;
+        struct make_destination_filter_fn;
         struct take_dependency_fn;
     }
 
@@ -47,6 +50,11 @@ namespace paludis
                 const SanitisedDependency &
                 )> CareAboutDepFunction;
 
+        typedef std::tr1::function<const std::tr1::shared_ptr<const Repository> (
+                const Resolvent &,
+                const std::tr1::shared_ptr<const Resolution> &
+                )> FindRepositoryForFunction;
+
         typedef std::tr1::function<std::tr1::shared_ptr<Constraints> (
                 const Resolvent &
                 )> GetInitialConstraintsFunction;
@@ -56,24 +64,30 @@ namespace paludis
                 const std::tr1::shared_ptr<const Reason> &
                 )> GetResolventsForFunction;
 
-        typedef std::tr1::function<bool (
-                const Resolvent &,
-                const SanitisedDependency &,
-                const std::tr1::shared_ptr<const Reason> &
-                )> TakeDependencyFunction;
-
         typedef std::tr1::function<UseExisting (
                 const Resolvent &,
                 const PackageDepSpec &,
                 const std::tr1::shared_ptr<const Reason> &
                 )> GetUseExistingFunction;
 
+        typedef std::tr1::function<Filter (
+                const Resolvent &
+                )> MakeDestinationFilterFunction;
+
+        typedef std::tr1::function<bool (
+                const Resolvent &,
+                const SanitisedDependency &,
+                const std::tr1::shared_ptr<const Reason> &
+                )> TakeDependencyFunction;
+
         struct ResolverFunctions
         {
             NamedValue<n::care_about_dep_fn, CareAboutDepFunction> care_about_dep_fn;
+            NamedValue<n::find_repository_for_fn, FindRepositoryForFunction> find_repository_for_fn;
             NamedValue<n::get_initial_constraints_for_fn, GetInitialConstraintsFunction> get_initial_constraints_for_fn;
             NamedValue<n::get_resolvents_for_fn, GetResolventsForFunction> get_resolvents_for_fn;
             NamedValue<n::get_use_existing_fn, GetUseExistingFunction> get_use_existing_fn;
+            NamedValue<n::make_destination_filter_fn, MakeDestinationFilterFunction> make_destination_filter_fn;
             NamedValue<n::take_dependency_fn, TakeDependencyFunction> take_dependency_fn;
         };
     }

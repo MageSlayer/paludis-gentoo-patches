@@ -105,6 +105,10 @@ namespace paludis
                         const std::tr1::shared_ptr<const PackageID> &,
                         const std::tr1::shared_ptr<const Repository> &) const;
 
+                const std::tr1::shared_ptr<const Repository> _find_repository_for(
+                        const Resolvent &,
+                        const std::tr1::shared_ptr<const Resolution> &) const;
+
                 void _resolve_arrow(const Resolvent &, const std::tr1::shared_ptr<Resolution> &,
                         const std::tr1::shared_ptr<const Constraint> &);
 
@@ -117,9 +121,7 @@ namespace paludis
                         const Resolvent & resolvent,
                         const std::tr1::shared_ptr<const Resolution> & resolution) const;
 
-                const std::tr1::shared_ptr<Destination> _make_slash_destination_for(
-                        const Resolvent & resolvent,
-                        const std::tr1::shared_ptr<const Resolution> & resolution) const;
+                Filter _make_destination_filter(const Resolvent & resolvent) const;
 
                 void _decide(const Resolvent &, const std::tr1::shared_ptr<Resolution> & resolution);
 

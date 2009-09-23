@@ -70,6 +70,13 @@ namespace paludis
                     const PackageDepSpec &,
                     const std::tr1::shared_ptr<const Reason> &);
 
+            const std::tr1::shared_ptr<const Repository> find_repository_for_fn(
+                    const Environment * const,
+                    const Resolvent &,
+                    const std::tr1::shared_ptr<const Resolution> &);
+
+            Filter make_destination_filter_fn(const Resolvent &);
+
             struct ResolverTestCase : test::TestCase
             {
                 TestEnvironment env;

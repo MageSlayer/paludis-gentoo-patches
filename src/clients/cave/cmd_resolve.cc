@@ -52,6 +52,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>
+#include <paludis/package_database.hh>
 
 #include <algorithm>
 #include <iostream>
@@ -528,6 +529,59 @@ namespace
         return true;
     }
 
+    const std::tr1::shared_ptr<const Repository>
+    find_repository_for_fn(const Environment * const env,
+            const ResolveCommandLine &,
+            const Resolvent & resolvent,
+            const std::tr1::shared_ptr<const Resolution> & resolution)
+    {
+        std::tr1::shared_ptr<const Repository> result;
+        for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
+                r_end(env->package_database()->end_repositories()) ;
+                r != r_end ; ++r)
+        {
+            switch (resolvent.destination_type())
+            {
+                case dt_slash:
+                    if ((! (*r)->installed_root_key()) || ((*r)->installed_root_key()->value() != FSEntry("/")))
+                        continue;
+
+                case last_dt:
+                    break;
+            }
+
+            if ((*r)->destination_interface() &&
+                    (*r)->destination_interface()->is_suitable_destination_for(*resolution->decision()->if_package_id()))
+            {
+                if (result)
+                    throw ConfigurationError("For '" + stringify(*resolution->decision()->if_package_id())
+                            + "' with destination type " + stringify(resolvent.destination_type())
+                            + ", don't know whether to install to ::" + stringify(result->name())
+                            + " or ::" + stringify((*r)->name()));
+                else
+                    result = *r;
+            }
+        }
+
+        if (! result)
+            throw ConfigurationError("No repository suitable for '" + stringify(*resolution->decision()->if_package_id())
+                    + "' with destination type " + stringify(resolvent.destination_type()) + " has been configured");
+        return result;
+    }
+
+    Filter make_destination_filter_fn(const Resolvent & resolvent)
+    {
+        switch (resolvent.destination_type())
+        {
+            case dt_slash:
+                return filter::InstalledAtRoot(FSEntry("/"));
+
+            case last_dt:
+                break;
+        }
+
+        throw InternalError(PALUDIS_HERE, "unhandled dt");
+    }
 
     int display_resolution(
             const std::tr1::shared_ptr<Environment> &,
@@ -693,12 +747,15 @@ ResolveCommand::run(
                 value_for<n::care_about_dep_fn>(std::tr1::bind(&care_about_dep_fn,
                         env.get(), std::tr1::cref(cmdline), std::tr1::placeholders::_1,
                         std::tr1::placeholders::_2, std::tr1::placeholders::_3)),
+                value_for<n::find_repository_for_fn>(std::tr1::bind(&find_repository_for_fn,
+                        env.get(), std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2)),
                 value_for<n::get_initial_constraints_for_fn>(std::tr1::bind(&initial_constraints_for_fn,
                         env.get(), std::tr1::cref(cmdline), std::tr1::cref(initial_constraints), std::tr1::placeholders::_1)),
                 value_for<n::get_resolvents_for_fn>(std::tr1::bind(&get_resolvents_for_fn,
                         env.get(), std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2)),
                 value_for<n::get_use_existing_fn>(std::tr1::bind(&use_existing_fn,
                         std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3)),
+                value_for<n::make_destination_filter_fn>(&make_destination_filter_fn),
                 value_for<n::take_dependency_fn>(std::tr1::bind(&take_dependency_fn, env.get(),
                         std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3))
 

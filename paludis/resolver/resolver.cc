@@ -201,16 +201,13 @@ Resolver::_make_destination_for(
             return make_null_shared_ptr();
 
         case dk_changes_to_make:
-            switch (resolvent.destination_type())
             {
-                case dt_slash:
-                    return _make_slash_destination_for(resolvent, resolution);
-                    break;
-
-                case last_dt:
-                    break;
+                const std::tr1::shared_ptr<const Repository> repo(_find_repository_for(resolvent, resolution));
+                return make_shared_ptr(new Destination(make_named_values<Destination>(
+                                value_for<n::replacing>(_find_replacing(resolution->decision()->if_package_id(), repo)),
+                                value_for<n::repository>(repo->name())
+                                )));
             }
-            break;
 
         case last_dk:
             break;
@@ -219,42 +216,16 @@ Resolver::_make_destination_for(
     throw InternalError(PALUDIS_HERE, "resolver bug: unhandled dt");
 }
 
-const std::tr1::shared_ptr<Destination>
-Resolver::_make_slash_destination_for(
-        const Resolvent & resolvent,
-        const std::tr1::shared_ptr<const Resolution> & resolution) const
+const std::tr1::shared_ptr<const Repository>
+Resolver::_find_repository_for(const Resolvent & resolvent, const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
-    Context context("When finding / destination for '" + stringify(resolvent) + "':");
+    return _imp->fns.find_repository_for_fn()(resolvent, resolution);
+}
 
-    if ((! resolution->decision()) || (! resolution->decision()->if_package_id()))
-        throw InternalError(PALUDIS_HERE, "resolver bug: not decided yet");
-
-    std::tr1::shared_ptr<const Repository> repo;
-    for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
-            r_end(_imp->env->package_database()->end_repositories()) ;
-            r != r_end ; ++r)
-    {
-        if ((! (*r)->installed_root_key()) || ((*r)->installed_root_key()->value() != FSEntry("/")))
-            continue;
-
-        if ((*r)->destination_interface() && (*r)->destination_interface()->is_suitable_destination_for(
-                    *resolution->decision()->if_package_id()))
-        {
-            if (repo)
-                throw InternalError(PALUDIS_HERE, "unimplemented: multiple destinations, don't know which to take");
-            else
-                repo = *r;
-        }
-    }
-
-    if (! repo)
-        throw InternalError(PALUDIS_HERE, "unimplemented: no destinations" +
-                stringify(*resolution->decision()->if_package_id()));
-
-    return make_shared_ptr(new Destination(make_named_values<Destination>(
-                    value_for<n::replacing>(_find_replacing(resolution->decision()->if_package_id(), repo)),
-                    value_for<n::repository>(repo->name())
-                    )));
+Filter
+Resolver::_make_destination_filter(const Resolvent & resolvent) const
+{
+    return _imp->fns.make_destination_filter_fn()(resolvent);
 }
 
 const std::tr1::shared_ptr<const PackageIDSequence>
@@ -1472,7 +1443,7 @@ Resolver::_find_existing_id_for(const Resolvent & resolvent, const std::tr1::sha
     const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::AllVersionsSorted(
                 generator::Package(resolvent.package()) |
                 make_slot_filter(resolvent) |
-                filter::InstalledAtRoot(FSEntry("/"))
+                _make_destination_filter(resolvent)
                 )]);
 
     return _find_id_for_from(resolvent, resolution, ids).first;
