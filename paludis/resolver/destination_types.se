@@ -6,7 +6,8 @@ make_enum_DestinationType()
     prefix dt
     namespace paludis::resolver
 
-    key dt_slash                 "The / fs"
+    key dt_install_to_slash      "Install to the / fs"
+    key dt_create_binary         "Create a binary"
 
     want_destringify
 }

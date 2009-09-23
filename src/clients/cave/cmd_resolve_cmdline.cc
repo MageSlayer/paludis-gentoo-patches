@@ -161,13 +161,14 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
 //                    "override it. For example, --fixed-preset cat/pkg::installed will force the resolver to use the installed "
 //                    "cat/pkg, generating an error if it cannot."),
 //
-//            g_destination_options(this, "Destination Options", "Control to which destinations packages are installed. "
-//                    "If no options from this group are selected, install only to /. Otherwise, install to all of the "
-//                    "specified destinations, and install to / as necessary to satisfy build dependencies."),
+    g_destination_options(this, "Destination Options", "Control to which destinations packages are installed. "
+            "If no options from this group are selected, install only to /. Otherwise, install to all of the "
+            "specified destinations, and install to / as necessary to satisfy build dependencies."),
 //            a_fetch(&g_destination_options, "fetch", 'f', "Only fetch packages, do not install anything", true),
-//            a_create_binaries(&g_destination_options, "create-binaries", '\0', "Create binary packages", true),
+    a_create_binaries(&g_destination_options, "create-binaries", 'b', "Create binary packages in the specified "
+            "repository. Specify multiple times if different binary destination types are required."),
 //            a_install_to_chroot(&g_destination_options, "install-to-chroot", '\0', "Install packages to the environment-configured chroot", true),
-//            a_install_to_root(&g_destination_options, "install-to-root", '\0', "Install packages to /", true),
+    a_install_to_root(&g_destination_options, "install-to-root", '/', "Install packages to /", true),
 
     g_dump_options(this, "Dump Options", "Dump the resolver's state to stdout after completion, or when an "
             "error occurs. For debugging purposes; produces rather a lot of noise."),

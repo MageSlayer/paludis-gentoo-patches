@@ -203,6 +203,11 @@ Resolver::_make_destination_for(
         case dk_changes_to_make:
             {
                 const std::tr1::shared_ptr<const Repository> repo(_find_repository_for(resolvent, resolution));
+                if ((! repo->destination_interface()) ||
+                        (! repo->destination_interface()->is_suitable_destination_for(*resolution->decision()->if_package_id())))
+                    throw InternalError(PALUDIS_HERE, stringify(repo->name()) + " is not a suitable destination for "
+                            + stringify(*resolution->decision()->if_package_id()));
+
                 return make_shared_ptr(new Destination(make_named_values<Destination>(
                                 value_for<n::replacing>(_find_replacing(resolution->decision()->if_package_id(), repo)),
                                 value_for<n::repository>(repo->name())
@@ -222,10 +227,10 @@ Resolver::_find_repository_for(const Resolvent & resolvent, const std::tr1::shar
     return _imp->fns.find_repository_for_fn()(resolvent, resolution);
 }
 
-Filter
-Resolver::_make_destination_filter(const Resolvent & resolvent) const
+FilteredGenerator
+Resolver::_make_destination_filtered_generator(const Generator & g, const Resolvent & resolvent) const
 {
-    return _imp->fns.make_destination_filter_fn()(resolvent);
+    return _imp->fns.make_destination_filtered_generator_fn()(g, resolvent);
 }
 
 const std::tr1::shared_ptr<const PackageIDSequence>
@@ -381,7 +386,7 @@ Resolver::_make_constraints_from_target(
 {
     const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
     result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                        value_for<n::destination_type>(dt_slash),
+                        value_for<n::destination_type>(resolvent.destination_type()),
                         value_for<n::nothing_is_fine_too>(false),
                         value_for<n::reason>(reason),
                         value_for<n::spec>(spec),
@@ -399,7 +404,7 @@ Resolver::_make_constraints_from_dependency(const Resolvent & resolvent, const S
     if (dep.spec().if_package())
     {
         result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                            value_for<n::destination_type>(dt_slash),
+                            value_for<n::destination_type>(resolvent.destination_type()),
                             value_for<n::nothing_is_fine_too>(false),
                             value_for<n::reason>(reason),
                             value_for<n::spec>(*dep.spec().if_package()),
@@ -416,14 +421,17 @@ Resolver::_make_constraints_from_dependency(const Resolvent & resolvent, const S
                     generator::Matches(dep.spec().if_block()->blocking(), MatchPackageOptions()) |
                     filter::InstalledAtRoot(FSEntry("/")))]);
 
-        result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                            value_for<n::destination_type>(dt_slash),
-                            value_for<n::nothing_is_fine_too>(ids->empty()),
-                            value_for<n::reason>(reason),
-                            value_for<n::spec>(dep.spec()),
-                            value_for<n::untaken>(false),
-                            value_for<n::use_existing>(ue_if_possible)
-                            ))));
+        DestinationTypes destination_types(_get_destination_types_for_blocker(*dep.spec().if_block()));
+        for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
+            if (destination_types[*t])
+                result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                                    value_for<n::destination_type>(*t),
+                                    value_for<n::nothing_is_fine_too>(ids->empty()),
+                                    value_for<n::reason>(reason),
+                                    value_for<n::spec>(dep.spec()),
+                                    value_for<n::untaken>(false),
+                                    value_for<n::use_existing>(ue_if_possible)
+                                    ))));
     }
     else
         throw InternalError(PALUDIS_HERE, "resolver bug: huh? it's not a block and it's not a package");
@@ -535,14 +543,13 @@ Resolver::_suggest_restart_with(const Resolvent & resolvent,
         const std::tr1::shared_ptr<const Decision> & decision) const
 {
     throw SuggestRestart(resolvent, resolution->decision(), constraint, decision,
-            _make_constraint_for_preloading(resolvent, decision, constraint->destination_type()));
+            _make_constraint_for_preloading(resolvent, decision));
 }
 
 const std::tr1::shared_ptr<const Constraint>
 Resolver::_make_constraint_for_preloading(
         const Resolvent & resolvent,
-        const std::tr1::shared_ptr<const Decision> & d,
-        const DestinationType t) const
+        const std::tr1::shared_ptr<const Decision> & d) const
 {
     const std::tr1::shared_ptr<PresetReason> reason(new PresetReason);
 
@@ -550,7 +557,7 @@ Resolver::_make_constraint_for_preloading(
         throw InternalError(PALUDIS_HERE, "resolver bug: not decided. shouldn't happen.");
 
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                    value_for<n::destination_type>(t),
+                    value_for<n::destination_type>(resolvent.destination_type()),
                     value_for<n::nothing_is_fine_too>(false),
                     value_for<n::reason>(reason),
                     value_for<n::spec>(d->if_package_id()->uniquely_identifying_spec()),
@@ -1166,7 +1173,7 @@ Resolver::_get_resolvents_for_blocker(const BlockDepSpec & spec) const
 const DestinationTypes
 Resolver::_get_destination_types_for_blocker(const BlockDepSpec &) const
 {
-    return DestinationTypes() + dt_slash;
+    return DestinationTypes() + dt_install_to_slash;
 }
 
 const std::tr1::shared_ptr<const Resolvents>
@@ -1198,9 +1205,10 @@ Resolver::_get_resolvents_for(
 }
 
 const DestinationTypes
-Resolver::_get_destination_types_for(const PackageDepSpec &, const std::tr1::shared_ptr<const Reason> &) const
+Resolver::_get_destination_types_for(const PackageDepSpec & spec,
+        const std::tr1::shared_ptr<const Reason> & reason) const
 {
-    return DestinationTypes() + dt_slash;
+    return _imp->fns.get_destination_types_for_fn()(spec, reason);
 }
 
 const std::tr1::shared_ptr<const Resolvents>
@@ -1458,9 +1466,8 @@ const std::tr1::shared_ptr<const PackageID>
 Resolver::_find_existing_id_for(const Resolvent & resolvent, const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
     const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::AllVersionsSorted(
-                generator::Package(resolvent.package()) |
-                make_slot_filter(resolvent) |
-                _make_destination_filter(resolvent)
+                _make_destination_filtered_generator(generator::Package(resolvent.package()), resolvent) |
+                make_slot_filter(resolvent)
                 )]);
 
     return _find_id_for_from(resolvent, resolution, ids).first;

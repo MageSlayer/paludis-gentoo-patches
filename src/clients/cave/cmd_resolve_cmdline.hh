@@ -83,11 +83,11 @@ namespace paludis
     //        args::StringSetArg a_soft_preset;
     //        args::StringSetArg a_fixed_preset;
 
-    //        args::ArgsGroup g_destination_options;
+            args::ArgsGroup g_destination_options;
     //        args::SwitchArg a_fetch;
-    //        args::SwitchArg a_create_binaries;
+            args::StringSetArg a_create_binaries;
     //        args::SwitchArg a_install_to_chroot;
-    //        args::SwitchArg a_install_to_root;
+            args::SwitchArg a_install_to_root;
 
     //        args::ArgsGroup g_interactivity_options;
     //        args::SwitchArg a_interactive;

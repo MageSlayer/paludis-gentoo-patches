@@ -223,9 +223,9 @@ namespace
             const bool verbose)
     {
         if (resolution->resolvent().slot_name_or_null())
-            cout << "[?] " << c::bold_red() << resolution->resolvent() << c::normal();
+            cout << "? ] " << c::bold_red() << resolution->resolvent() << c::normal();
         else
-            cout << "[?] " << c::bold_red() << resolution->resolvent().package() << c::normal();
+            cout << "? ] " << c::bold_red() << resolution->resolvent().package() << c::normal();
         cout << " (no decision could be reached)" << endl;
 
         display_reasons(resolution, verbose);
@@ -282,23 +282,38 @@ namespace
             is_upgrade = is_upgrade && (! is_reinstall) && (! is_downgrade);
             is_reinstall = is_reinstall && (! is_downgrade);
 
+            std::string destination_string(c::red() + "/" + c::normal());
+            switch ((*c)->resolvent().destination_type())
+            {
+                case dt_install_to_slash:
+                    destination_string = "/";
+                    break;
+
+                case dt_create_binary:
+                    destination_string = "b";
+                    break;
+
+                case last_dt:
+                    break;
+            }
+
             if (! (*c)->decision()->taken())
             {
-                cout << "[-] " << c::blue() << id->canonical_form(idcf_no_version);
+                cout << "-" << destination_string << "] " << c::blue() << id->canonical_form(idcf_no_version);
             }
             else if (is_new)
             {
                 if (other_slots)
-                    cout << "[s] " << c::bold_blue() << id->canonical_form(idcf_no_version);
+                    cout << "s" << destination_string << "] " << c::bold_blue() << id->canonical_form(idcf_no_version);
                 else
-                    cout << "[n] " << c::bold_blue() << id->canonical_form(idcf_no_version);
+                    cout << "n" << destination_string << "] " << c::bold_blue() << id->canonical_form(idcf_no_version);
             }
             else if (is_upgrade)
-                cout << "[u] " << c::blue() << id->canonical_form(idcf_no_version);
+                cout << "u" << destination_string << "] " << c::blue() << id->canonical_form(idcf_no_version);
             else if (is_reinstall)
-                cout << "[r] " << c::yellow() << id->canonical_form(idcf_no_version);
+                cout << "r" << destination_string << "] " << c::yellow() << id->canonical_form(idcf_no_version);
             else if (is_downgrade)
-                cout << "[d] " << c::bold_yellow() << id->canonical_form(idcf_no_version);
+                cout << "d" << destination_string << "] " << c::bold_yellow() << id->canonical_form(idcf_no_version);
             else
                 throw InternalError(PALUDIS_HERE, "why did that happen?");
 
@@ -613,8 +628,12 @@ namespace
 
                     switch ((*c)->destination_type())
                     {
-                        case dt_slash:
+                        case dt_install_to_slash:
                             std::cout << ", installing to /";
+                            break;
+
+                        case dt_create_binary:
+                            std::cout << ", creating a binary";
                             break;
 
                         case last_dt:

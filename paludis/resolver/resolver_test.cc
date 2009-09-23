@@ -39,6 +39,8 @@
 #include <paludis/package_database.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/generator.hh>
 #include <algorithm>
 #include "config.h"
 
@@ -81,23 +83,33 @@ paludis::resolver::resolver_test::get_resolvents_for_fn(const PackageDepSpec & s
         const std::tr1::shared_ptr<const Reason> &)
 {
     std::tr1::shared_ptr<Resolvents> result(new Resolvents);
-    result->push_back(Resolvent(spec, make_shared_ptr(new SlotName("0")), dt_slash));
+    result->push_back(Resolvent(spec, make_shared_ptr(new SlotName("0")), dt_install_to_slash));
     return result;
 }
 
-Filter
-paludis::resolver::resolver_test::make_destination_filter_fn(const Resolvent & resolvent)
+FilteredGenerator
+paludis::resolver::resolver_test::make_destination_filtered_generator_fn(const Generator & g, const Resolvent & resolvent)
 {
     switch (resolvent.destination_type())
     {
-        case dt_slash:
-            return filter::InstalledAtRoot(FSEntry("/"));
+        case dt_install_to_slash:
+            return g | filter::InstalledAtRoot(FSEntry("/"));
+
+        case dt_create_binary:
+            throw InternalError(PALUDIS_HERE, "no dt_create_binary yet");
 
         case last_dt:
             break;
     }
 
     throw InternalError(PALUDIS_HERE, "unhandled dt");
+}
+
+DestinationTypes
+paludis::resolver::resolver_test::get_destination_types_for_fn(const PackageDepSpec &,
+        const std::tr1::shared_ptr<const Reason> &)
+{
+    return DestinationTypes() + dt_install_to_slash;
 }
 
 namespace
@@ -240,12 +252,13 @@ ResolverTestCase::get_resolutions(const PackageDepSpec & target)
                         value_for<n::care_about_dep_fn>(&care_about_dep_fn),
                         value_for<n::find_repository_for_fn>(std::tr1::bind(&find_repository_for_fn,
                                 &env, std::tr1::placeholders::_1, std::tr1::placeholders::_2)),
+                        value_for<n::get_destination_types_for_fn>(&get_destination_types_for_fn),
                         value_for<n::get_initial_constraints_for_fn>(
                             std::tr1::bind(&initial_constraints_for_fn, std::tr1::ref(initial_constraints),
                                 std::tr1::placeholders::_1)),
                         value_for<n::get_resolvents_for_fn>(&get_resolvents_for_fn),
                         value_for<n::get_use_existing_fn>(&get_use_existing_fn),
-                        value_for<n::make_destination_filter_fn>(&make_destination_filter_fn),
+                        value_for<n::make_destination_filtered_generator_fn>(&make_destination_filtered_generator_fn),
                         value_for<n::take_dependency_fn>(&take_dependency_fn)
                         ));
             resolver.add_target(target);

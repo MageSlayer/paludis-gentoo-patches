@@ -292,7 +292,7 @@ namespace
                 if (0 != retcode)
                     return retcode;
 
-                if ((*c)->resolvent().destination_type() == dt_slash)
+                if ((*c)->resolvent().destination_type() == dt_install_to_slash)
                 {
                     retcode = do_install_slash(env, cmdline, *c, x, y);
                     if (0 != retcode)

@@ -28,10 +28,13 @@
 #include <paludis/resolver/use_existing-fwd.hh>
 #include <paludis/resolver/resolutions-fwd.hh>
 #include <paludis/resolver/decision-fwd.hh>
+#include <paludis/resolver/destination_types-fwd.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/map-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
+#include <paludis/filtered_generator-fwd.hh>
+#include <paludis/generator-fwd.hh>
 #include <test/test_framework.hh>
 #include <tr1/memory>
 #include <string>
@@ -75,7 +78,10 @@ namespace paludis
                     const Resolvent &,
                     const std::tr1::shared_ptr<const Resolution> &);
 
-            Filter make_destination_filter_fn(const Resolvent &);
+            FilteredGenerator make_destination_filtered_generator_fn(const Generator &, const Resolvent &);
+
+            DestinationTypes get_destination_types_for_fn(const PackageDepSpec &,
+                    const std::tr1::shared_ptr<const Reason> &);
 
             struct ResolverTestCase : test::TestCase
             {

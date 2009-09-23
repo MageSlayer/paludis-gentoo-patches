@@ -40,6 +40,8 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/spec_tree-fwd.hh>
+#include <paludis/filtered_generator-fwd.hh>
+#include <paludis/generator-fwd.hh>
 #include <tr1/memory>
 
 namespace paludis
@@ -98,8 +100,7 @@ namespace paludis
 
                 const std::tr1::shared_ptr<const Constraint> _make_constraint_for_preloading(
                         const Resolvent &,
-                        const std::tr1::shared_ptr<const Decision> & d,
-                        const DestinationType t) const;
+                        const std::tr1::shared_ptr<const Decision> & d) const;
 
                 const std::tr1::shared_ptr<const PackageIDSequence> _find_replacing(
                         const std::tr1::shared_ptr<const PackageID> &,
@@ -121,7 +122,7 @@ namespace paludis
                         const Resolvent & resolvent,
                         const std::tr1::shared_ptr<const Resolution> & resolution) const;
 
-                Filter _make_destination_filter(const Resolvent & resolvent) const;
+                FilteredGenerator _make_destination_filtered_generator(const Generator &, const Resolvent & resolvent) const;
 
                 void _decide(const Resolvent &, const std::tr1::shared_ptr<Resolution> & resolution);
 

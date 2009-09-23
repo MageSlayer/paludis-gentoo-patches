@@ -29,6 +29,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/enum_iterator.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/args/escape.hh>
 #include <paludis/resolver/resolver.hh>
@@ -68,18 +69,91 @@ using std::endl;
 
 namespace
 {
-    Filter make_destination_filter(const DestinationType t)
+    struct DestinationTypesFinder
     {
-        switch (t)
+        const ResolveCommandLine & cmdline;
+
+        DestinationTypesFinder(const ResolveCommandLine & c) :
+            cmdline(c)
         {
-            case dt_slash:
-                return filter::InstalledAtRoot(FSEntry("/"));
+        }
+
+        DestinationTypes visit(const TargetReason &) const
+        {
+            DestinationTypes result;
+
+            if (cmdline.resolution_options.a_create_binaries.specified())
+                result += dt_create_binary;
+            if (cmdline.resolution_options.a_install_to_root.specified())
+                result += dt_install_to_slash;
+
+            if (result.none())
+                result += dt_install_to_slash;
+
+            return result;
+        }
+
+        DestinationTypes visit(const DependencyReason &) const
+        {
+            return DestinationTypes() + dt_install_to_slash;
+        }
+
+        DestinationTypes visit(const PresetReason &) const PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "not sure what to do here yet");
+        }
+
+        DestinationTypes visit(const SetReason & r) const
+        {
+            return r.reason_for_set()->accept_returning<DestinationTypes>(*this);
+        }
+    };
+
+    DestinationTypes get_destination_types_for_fn(
+            const Environment * const,
+            const ResolveCommandLine & cmdline,
+            const PackageDepSpec &,
+            const std::tr1::shared_ptr<const Reason> & reason)
+    {
+        DestinationTypesFinder f(cmdline);
+        return reason->accept_returning<DestinationTypes>(f);
+    }
+
+    FilteredGenerator make_destination_filtered_generator(
+            const Environment * const,
+            const ResolveCommandLine & cmdline,
+            const Generator & g,
+            const Resolvent & r)
+    {
+        switch (r.destination_type())
+        {
+            case dt_install_to_slash:
+                return g | filter::InstalledAtRoot(FSEntry("/"));
+
+            case dt_create_binary:
+                {
+                    std::tr1::shared_ptr<Generator> generator;
+                    for (args::StringSetArg::ConstIterator a(cmdline.resolution_options.a_create_binaries.begin_args()),
+                            a_end(cmdline.resolution_options.a_create_binaries.end_args()) ;
+                            a != a_end ; ++a)
+                    {
+                        if (! generator)
+                            generator.reset(new generator::InRepository(RepositoryName(*a)));
+                        else
+                            generator.reset(new generator::Intersection(*generator, generator::InRepository(RepositoryName(*a))));
+                    }
+
+                    if (! generator)
+                        throw args::DoHelp("No binary destinations were specified");
+                    else
+                        return g & *generator;
+                }
 
             case last_dt:
                 break;
         }
 
-        throw InternalError(PALUDIS_HERE, stringify(t));
+        throw InternalError(PALUDIS_HERE, stringify(r.destination_type()));
     }
 
     void add_resolver_targets(
@@ -235,14 +309,14 @@ namespace
             return false;
     }
 
-    bool installed_is_scm_older_than(const Environment * const env, const Resolvent & q, const int n)
+    bool installed_is_scm_older_than(const Environment * const env, const ResolveCommandLine & cmdline,
+            const Resolvent & q, const int n)
     {
         Context context("When working out whether '" + stringify(q) + "' has installed SCM packages:");
 
         const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
-                    generator::Package(q.package()) |
-                    make_slot_filter(q) |
-                    make_destination_filter(q.destination_type())
+                    make_destination_filtered_generator(env, cmdline, generator::Package(q.package()), q) |
+                    make_slot_filter(q)
                     )]);
 
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
@@ -265,10 +339,10 @@ namespace
         const std::tr1::shared_ptr<Constraints> result(new Constraints);
 
         int n(reinstall_scm_days(cmdline));
-        if ((-1 != n) && installed_is_scm_older_than(env, resolvent, n))
+        if ((-1 != n) && installed_is_scm_older_than(env, cmdline, resolvent, n))
         {
             result->add(make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                                value_for<n::destination_type>(dt_slash),
+                                value_for<n::destination_type>(resolvent.destination_type()),
                                 value_for<n::nothing_is_fine_too>(false),
                                 value_for<n::reason>(make_shared_ptr(new PresetReason)),
                                 value_for<n::spec>(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(resolvent.package())),
@@ -328,9 +402,8 @@ namespace
             const PackageDepSpec & spec,
             const std::tr1::shared_ptr<const Reason> & reason)
     {
-        std::tr1::shared_ptr<Resolvents> result(new Resolvents);
-        std::tr1::shared_ptr<Resolvent> best;
-        std::list<Resolvent> installed;
+        std::tr1::shared_ptr<PackageIDSequence> result_ids(new PackageIDSequence);
+        std::tr1::shared_ptr<const PackageID> best;
 
         const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
                     generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements) |
@@ -338,45 +411,53 @@ namespace
                     filter::NotMasked())]);
 
         if (! ids->empty())
-            best = make_shared_ptr(new Resolvent(*ids->begin(), dt_slash));
+            best = *ids->begin();
 
         const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*env)[selection::BestVersionInEachSlot(
                     generator::Matches(spec, MatchPackageOptions()) |
                     filter::InstalledAtRoot(FSEntry("/")))]);
 
-        for (PackageIDSequence::ConstIterator i(installed_ids->begin()), i_end(installed_ids->end()) ;
-                i != i_end ; ++i)
-            installed.push_back(Resolvent(*i, dt_slash));
-
         const args::EnumArg & arg(is_target(reason) ? cmdline.resolution_options.a_target_slots : cmdline.resolution_options.a_slots);
 
         if (! best)
-            std::copy(installed.begin(), installed.end(), result->back_inserter());
+            std::copy(installed_ids->begin(), installed_ids->end(), result_ids->back_inserter());
         else if (arg.argument() == "best-or-installed")
         {
-            if (installed.end() == std::find(installed.begin(), installed.end(), *best))
-                result->push_back(*best);
+            if (indirect_iterator(installed_ids->end()) == std::find(indirect_iterator(installed_ids->begin()),
+                        indirect_iterator(installed_ids->end()), *best))
+                result_ids->push_back(best);
             else
-                std::copy(installed.begin(), installed.end(), result->back_inserter());
+                std::copy(installed_ids->begin(), installed_ids->end(), result_ids->back_inserter());
         }
         else if (arg.argument() == "installed-or-best")
         {
-            if (installed.empty())
-                result->push_back(*best);
+            if (installed_ids->empty())
+                result_ids->push_back(best);
             else
-                std::copy(installed.begin(), installed.end(), result->back_inserter());
+                std::copy(installed_ids->begin(), installed_ids->end(), result_ids->back_inserter());
         }
         else if (arg.argument() == "all")
         {
-            if (installed.end() == std::find(installed.begin(), installed.end(), *best))
-                result->push_back(*best);
-            std::copy(installed.begin(), installed.end(), result->back_inserter());
+            if (indirect_iterator(installed_ids->end()) == std::find(indirect_iterator(installed_ids->begin()),
+                        indirect_iterator(installed_ids->end()), *best))
+                result_ids->push_back(best);
+            std::copy(installed_ids->begin(), installed_ids->end(), result_ids->back_inserter());
         }
         else if (arg.argument() == "best")
-            result->push_back(*best);
+            result_ids->push_back(best);
         else
             throw args::DoHelp("Don't understand argument '" + arg.argument() + "' to '--"
                     + arg.long_name() + "'");
+
+        std::tr1::shared_ptr<Resolvents> result(new Resolvents);
+        for (PackageIDSequence::ConstIterator i(result_ids->begin()), i_end(result_ids->end()) ;
+                i != i_end ; ++i)
+        {
+            DestinationTypes destination_types(get_destination_types_for_fn(env, cmdline, spec, reason));
+            for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
+                if (destination_types[*t])
+                    result->push_back(Resolvent(*i, *t));
+        }
 
         return result;
     }
@@ -531,7 +612,7 @@ namespace
 
     const std::tr1::shared_ptr<const Repository>
     find_repository_for_fn(const Environment * const env,
-            const ResolveCommandLine &,
+            const ResolveCommandLine & cmdline,
             const Resolvent & resolvent,
             const std::tr1::shared_ptr<const Resolution> & resolution)
     {
@@ -542,9 +623,18 @@ namespace
         {
             switch (resolvent.destination_type())
             {
-                case dt_slash:
+                case dt_install_to_slash:
                     if ((! (*r)->installed_root_key()) || ((*r)->installed_root_key()->value() != FSEntry("/")))
                         continue;
+                    break;
+
+                case dt_create_binary:
+                    if (cmdline.resolution_options.a_create_binaries.end_args() == std::find(
+                                cmdline.resolution_options.a_create_binaries.begin_args(),
+                                cmdline.resolution_options.a_create_binaries.end_args(),
+                                stringify((*r)->name())))
+                        continue;
+                    break;
 
                 case last_dt:
                     break;
@@ -573,8 +663,11 @@ namespace
     {
         switch (resolvent.destination_type())
         {
-            case dt_slash:
+            case dt_install_to_slash:
                 return filter::InstalledAtRoot(FSEntry("/"));
+
+            case dt_create_binary:
+                throw InternalError(PALUDIS_HERE, "no dt_create_binary yet");
 
             case last_dt:
                 break;
@@ -703,7 +796,6 @@ namespace
     }
 }
 
-
 bool
 ResolveCommand::important() const
 {
@@ -769,6 +861,18 @@ ResolveCommand::run(
             cmdline.resolution_options.a_follow_installed_build_dependencies.set_specified(true);
     }
 
+    if (cmdline.resolution_options.a_create_binaries.specified())
+    {
+        for (args::StringSetArg::ConstIterator a(cmdline.resolution_options.a_create_binaries.begin_args()),
+                a_end(cmdline.resolution_options.a_create_binaries.end_args()) ;
+                a != a_end ; ++a)
+        {
+            std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(RepositoryName(*a)));
+            if (repo->installed_root_key() || ! repo->destination_interface())
+                throw args::DoHelp("Repository '" + *a + "' not suitable for --" + cmdline.resolution_options.a_create_binaries.long_name());
+        }
+    }
+
     int retcode(0);
 
     InitialConstraints initial_constraints;
@@ -779,13 +883,16 @@ ResolveCommand::run(
                         std::tr1::placeholders::_2, std::tr1::placeholders::_3)),
                 value_for<n::find_repository_for_fn>(std::tr1::bind(&find_repository_for_fn,
                         env.get(), std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2)),
+                value_for<n::get_destination_types_for_fn>(std::tr1::bind(&get_destination_types_for_fn,
+                        env.get(), std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2)),
                 value_for<n::get_initial_constraints_for_fn>(std::tr1::bind(&initial_constraints_for_fn,
                         env.get(), std::tr1::cref(cmdline), std::tr1::cref(initial_constraints), std::tr1::placeholders::_1)),
                 value_for<n::get_resolvents_for_fn>(std::tr1::bind(&get_resolvents_for_fn,
                         env.get(), std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2)),
                 value_for<n::get_use_existing_fn>(std::tr1::bind(&use_existing_fn,
                         std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3)),
-                value_for<n::make_destination_filter_fn>(&make_destination_filter_fn),
+                value_for<n::make_destination_filtered_generator_fn>(std::tr1::bind(&make_destination_filtered_generator,
+                        env.get(), std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2)),
                 value_for<n::take_dependency_fn>(std::tr1::bind(&take_dependency_fn, env.get(),
                         std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3))
 
