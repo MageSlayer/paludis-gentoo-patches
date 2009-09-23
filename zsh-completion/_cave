@@ -201,7 +201,14 @@ _cave_cmd_resolve()
     '(--follow-installed-build-dependencies --no-follow-installed-build-dependencies -D)'{--follow-installed-build-dependencies,--no-follow-installed-build-dependencies,-D}'[Follow build dependencies for installed packages]' \
     '(--ignore-installed-dependencies --no-ignore-installed-dependencies -d)'{--ignore-installed-dependencies,--no-ignore-installed-dependencies,-d}'[Ignore dependencies for installed packages]' \
     '(--dump --no-dump)'{--dump,--no-dump}'[Dump debug output]' \
-    '(--dump-dependencies --no-dump-dependencies)'{--dump-dependencies,--no-dump-dependencies}'[Dump the sanitised dependencies selected for every package]'
+    '(--dump-dependencies --no-dump-dependencies)'{--dump-dependencies,--no-dump-dependencies}'[Dump the sanitised dependencies selected for every package]' \
+    '(--preserve-world -1 --no-preserve-world)'{--preserve-world,-1,--no-preserve-world}'[Do not modify the world set]' \
+    '--continue-on-failure[Whether to continue after an error occurs]:When:((if-fetching never if-satisfied if-independent always))' \
+    '--skip-phase[Skip the named phases]:Phase: ' \
+    '--abort-at-phase[Abort when a named phase is encountered]:Phase: ' \
+    '--skip-until-phase[Skip every phase until a named phase is encountered]:Phase: ' \
+    '--change-phases-for[Control to which packages these phase options apply]:Which:((all first last))' \
+    '--show-descriptions[Whether to display package descriptions]:When:((none new all))'
 }
 
 (( ${+functions[_cave_cmd_show]} )) ||
