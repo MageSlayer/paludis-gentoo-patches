@@ -38,16 +38,16 @@ namespace paludis
     template <>
     struct Implementation<Constraints>
     {
-        UseExisting strictest_use_existing_for_all;
-        bool nothing_is_fine_too_for_all;
-        bool all_untaken_for_all;
+        UseExisting strictest_use_existing;
+        bool nothing_is_fine_too;
+        bool all_untaken;
 
         Sequence<std::tr1::shared_ptr<const Constraint> > constraints;
 
         Implementation() :
-            strictest_use_existing_for_all(static_cast<UseExisting>(last_ue - 1)),
-            nothing_is_fine_too_for_all(true),
-            all_untaken_for_all(true)
+            strictest_use_existing(static_cast<UseExisting>(last_ue - 1)),
+            nothing_is_fine_too(true),
+            all_untaken(true)
         {
         }
     };
@@ -63,21 +63,21 @@ Constraints::~Constraints()
 }
 
 bool
-Constraints::all_untaken_for_all() const
+Constraints::all_untaken() const
 {
-    return _imp->all_untaken_for_all;
+    return _imp->all_untaken;
 }
 
 bool
-Constraints::nothing_is_fine_too_for_all() const
+Constraints::nothing_is_fine_too() const
 {
-    return _imp->nothing_is_fine_too_for_all;
+    return _imp->nothing_is_fine_too;
 }
 
 UseExisting
-Constraints::strictest_use_existing_for_all() const
+Constraints::strictest_use_existing() const
 {
-    return _imp->strictest_use_existing_for_all;
+    return _imp->strictest_use_existing;
 }
 
 Constraints::ConstIterator
@@ -96,9 +96,9 @@ void
 Constraints::add(const std::tr1::shared_ptr<const Constraint> & c)
 {
     _imp->constraints.push_back(c);
-    _imp->strictest_use_existing_for_all = std::min(_imp->strictest_use_existing_for_all, c->use_existing());
-    _imp->nothing_is_fine_too_for_all = _imp->nothing_is_fine_too_for_all && c->nothing_is_fine_too();
-    _imp->all_untaken_for_all = _imp->all_untaken_for_all && c->untaken();
+    _imp->strictest_use_existing = std::min(_imp->strictest_use_existing, c->use_existing());
+    _imp->nothing_is_fine_too = _imp->nothing_is_fine_too && c->nothing_is_fine_too();
+    _imp->all_untaken = _imp->all_untaken && c->untaken();
 }
 
 bool

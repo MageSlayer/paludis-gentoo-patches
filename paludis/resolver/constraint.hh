@@ -36,7 +36,6 @@ namespace paludis
     namespace n
     {
         struct destination_type;
-        struct for_slash;
         struct nothing_is_fine_too;
         struct reason;
         struct spec;
@@ -68,14 +67,9 @@ namespace paludis
                 Constraints();
                 ~Constraints();
 
-                bool nothing_is_fine_too_for_all() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                bool nothing_is_fine_too_for(const DestinationType) const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                bool all_untaken_for_all() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                bool all_untaken_for(const DestinationType) const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                UseExisting strictest_use_existing_for_all() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                UseExisting strictest_use_existing_for(const DestinationType) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool nothing_is_fine_too() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool all_untaken() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                UseExisting strictest_use_existing() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void add(const std::tr1::shared_ptr<const Constraint> &);
 

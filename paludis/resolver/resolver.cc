@@ -145,7 +145,7 @@ Resolver::_resolve_decide_with_dependencies()
             /* we're only being suggested. don't do this on the first pass, so
              * we don't have to do restarts for suggestions later becoming hard
              * deps. */
-            if (state == deciding_non_suggestions && i->second->constraints()->all_untaken_for_all())
+            if (state == deciding_non_suggestions && i->second->constraints()->all_untaken())
                 continue;
 
             _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
@@ -1236,7 +1236,7 @@ Resolver::_try_to_find_decision_for(
     const std::tr1::shared_ptr<const PackageID> installable_id(installable_id_best.first);
     bool best(installable_id_best.second);
 
-    if (resolution->constraints()->nothing_is_fine_too_for_all() && ! existing_id)
+    if (resolution->constraints()->nothing_is_fine_too() && ! existing_id)
     {
         /* nothing existing, but nothing's ok */
         return make_shared_ptr(new Decision(make_named_values<Decision>(
@@ -1247,7 +1247,7 @@ Resolver::_try_to_find_decision_for(
                         value_for<n::is_same_version>(false),
                         value_for<n::is_transient>(false),
                         value_for<n::kind>(dk_nothing_no_change),
-                        value_for<n::taken>(! resolution->constraints()->all_untaken_for_all())
+                        value_for<n::taken>(! resolution->constraints()->all_untaken())
                         )));
     }
     else if (installable_id && ! existing_id)
@@ -1261,7 +1261,7 @@ Resolver::_try_to_find_decision_for(
                         value_for<n::is_same_version>(false),
                         value_for<n::is_transient>(false),
                         value_for<n::kind>(dk_changes_to_make),
-                        value_for<n::taken>(! resolution->constraints()->all_untaken_for_all())
+                        value_for<n::taken>(! resolution->constraints()->all_untaken())
                         )));
     }
     else if (existing_id && ! installable_id)
@@ -1269,7 +1269,7 @@ Resolver::_try_to_find_decision_for(
         /* there's nothing installable. this may or may not be ok. */
         bool is_transient(existing_id->transient_key() && existing_id->transient_key()->value());
 
-        switch (resolution->constraints()->strictest_use_existing_for_all())
+        switch (resolution->constraints()->strictest_use_existing())
         {
             case ue_if_possible:
                 break;
@@ -1296,7 +1296,7 @@ Resolver::_try_to_find_decision_for(
                         value_for<n::is_same_version>(true),
                         value_for<n::is_transient>(is_transient),
                         value_for<n::kind>(dk_existing_no_change),
-                        value_for<n::taken>(! resolution->constraints()->all_untaken_for_all())
+                        value_for<n::taken>(! resolution->constraints()->all_untaken())
 
                         )));
     }
@@ -1362,7 +1362,7 @@ Resolver::_try_to_find_decision_for(
         bool is_transient(existing_id->transient_key() && existing_id->transient_key()->value());
 
         /* we've got existing and installable. do we have any reason not to pick the existing id? */
-        switch (resolution->constraints()->strictest_use_existing_for_all())
+        switch (resolution->constraints()->strictest_use_existing())
         {
             case ue_only_if_transient:
             case ue_never:
@@ -1374,7 +1374,7 @@ Resolver::_try_to_find_decision_for(
                                 value_for<n::is_same_version>(is_same_version),
                                 value_for<n::is_transient>(false),
                                 value_for<n::kind>(dk_changes_to_make),
-                                value_for<n::taken>(! resolution->constraints()->all_untaken_for_all())
+                                value_for<n::taken>(! resolution->constraints()->all_untaken())
                                 )));
 
             case ue_if_same:
@@ -1387,7 +1387,7 @@ Resolver::_try_to_find_decision_for(
                                     value_for<n::is_same_version>(is_same_version),
                                     value_for<n::is_transient>(false),
                                     value_for<n::kind>(dk_existing_no_change),
-                                    value_for<n::taken>(! resolution->constraints()->all_untaken_for_all())
+                                    value_for<n::taken>(! resolution->constraints()->all_untaken())
                                     )));
                 else
                     return make_shared_ptr(new Decision(make_named_values<Decision>(
@@ -1398,7 +1398,7 @@ Resolver::_try_to_find_decision_for(
                                     value_for<n::is_same_version>(is_same_version),
                                     value_for<n::is_transient>(is_transient),
                                     value_for<n::kind>(dk_changes_to_make),
-                                    value_for<n::taken>(! resolution->constraints()->all_untaken_for_all())
+                                    value_for<n::taken>(! resolution->constraints()->all_untaken())
                                     )));
 
             case ue_if_same_version:
@@ -1411,7 +1411,7 @@ Resolver::_try_to_find_decision_for(
                                     value_for<n::is_same_version>(is_same_version),
                                     value_for<n::is_transient>(false),
                                     value_for<n::kind>(dk_existing_no_change),
-                                    value_for<n::taken>(! resolution->constraints()->all_untaken_for_all())
+                                    value_for<n::taken>(! resolution->constraints()->all_untaken())
                                     )));
                 else
                     return make_shared_ptr(new Decision(make_named_values<Decision>(
@@ -1422,7 +1422,7 @@ Resolver::_try_to_find_decision_for(
                                     value_for<n::is_same_version>(is_same_version),
                                     value_for<n::is_transient>(is_transient),
                                     value_for<n::kind>(dk_changes_to_make),
-                                    value_for<n::taken>(! resolution->constraints()->all_untaken_for_all())
+                                    value_for<n::taken>(! resolution->constraints()->all_untaken())
                                     )));
 
             case ue_if_possible:
@@ -1434,7 +1434,7 @@ Resolver::_try_to_find_decision_for(
                                 value_for<n::is_same_version>(is_same_version),
                                 value_for<n::is_transient>(false),
                                 value_for<n::kind>(dk_existing_no_change),
-                                value_for<n::taken>(! resolution->constraints()->all_untaken_for_all())
+                                value_for<n::taken>(! resolution->constraints()->all_untaken())
                                 )));
 
             case last_ue:
@@ -1458,7 +1458,7 @@ Resolver::_cannot_decide_for(
                     value_for<n::is_same_version>(false),
                     value_for<n::is_transient>(false),
                     value_for<n::kind>(dk_unable_to_decide),
-                    value_for<n::taken>(! resolution->constraints()->all_untaken_for_all())
+                    value_for<n::taken>(! resolution->constraints()->all_untaken())
                     )));
 }
 
