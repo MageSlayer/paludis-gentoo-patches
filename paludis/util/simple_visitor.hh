@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -149,9 +149,25 @@ namespace paludis
             }
 
             template <typename Result_, typename UnwrappedVisitor_>
+            Result_ accept_returning(const UnwrappedVisitor_ & v, const Result_ & r = Result_())
+            {
+                WrappedNonVoidResultVisitor<VisitableTypeList_, Result_, const UnwrappedVisitor_> vv(v, r);
+                _real_accept(vv);
+                return vv.result;
+            }
+
+            template <typename Result_, typename UnwrappedVisitor_>
             Result_ accept_returning(UnwrappedVisitor_ & v, const Result_ & r = Result_()) const
             {
                 WrappedNonVoidResultVisitor<typename MakeTypeListConst<VisitableTypeList_>::Type, Result_, UnwrappedVisitor_> vv(v, r);
+                _real_accept_const(vv);
+                return vv.result;
+            }
+
+            template <typename Result_, typename UnwrappedVisitor_>
+            Result_ accept_returning(const UnwrappedVisitor_ & v, const Result_ & r = Result_()) const
+            {
+                WrappedNonVoidResultVisitor<typename MakeTypeListConst<VisitableTypeList_>::Type, Result_, const UnwrappedVisitor_> vv(v, r);
                 _real_accept_const(vv);
                 return vv.result;
             }
