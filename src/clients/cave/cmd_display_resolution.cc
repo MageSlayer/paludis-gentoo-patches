@@ -223,9 +223,10 @@ namespace
             const bool verbose)
     {
         if (resolution->resolvent().slot_name_or_null())
-            cout << "? ] " << c::bold_red() << resolution->resolvent() << c::normal();
+            cout << "?   " << c::bold_red() << resolution->resolvent() << c::normal();
         else
-            cout << "? ] " << c::bold_red() << resolution->resolvent().package() << c::normal();
+            cout << "?   " << c::bold_red() << resolution->resolvent().package()
+                << " -> " << resolution->resolvent().destination_type() << c::normal();
         cout << " (no decision could be reached)" << endl;
 
         display_reasons(resolution, verbose);
@@ -299,21 +300,21 @@ namespace
 
             if (! (*c)->decision()->taken())
             {
-                cout << "-" << destination_string << "] " << c::blue() << id->canonical_form(idcf_no_version);
+                cout << "-" << destination_string << "  " << c::blue() << id->canonical_form(idcf_no_version);
             }
             else if (is_new)
             {
                 if (other_slots)
-                    cout << "s" << destination_string << "] " << c::bold_blue() << id->canonical_form(idcf_no_version);
+                    cout << "s" << destination_string << "  " << c::bold_blue() << id->canonical_form(idcf_no_version);
                 else
-                    cout << "n" << destination_string << "] " << c::bold_blue() << id->canonical_form(idcf_no_version);
+                    cout << "n" << destination_string << "  " << c::bold_blue() << id->canonical_form(idcf_no_version);
             }
             else if (is_upgrade)
-                cout << "u" << destination_string << "] " << c::blue() << id->canonical_form(idcf_no_version);
+                cout << "u" << destination_string << "  " << c::blue() << id->canonical_form(idcf_no_version);
             else if (is_reinstall)
-                cout << "r" << destination_string << "] " << c::yellow() << id->canonical_form(idcf_no_version);
+                cout << "r" << destination_string << "  " << c::yellow() << id->canonical_form(idcf_no_version);
             else if (is_downgrade)
-                cout << "d" << destination_string << "] " << c::bold_yellow() << id->canonical_form(idcf_no_version);
+                cout << "d" << destination_string << "  " << c::bold_yellow() << id->canonical_form(idcf_no_version);
             else
                 throw InternalError(PALUDIS_HERE, "why did that happen?");
 
