@@ -1364,6 +1364,8 @@ ERepository::repository_factory_create(
     std::string location(f("location"));
     if (location.empty())
         throw ERepositoryConfigurationError("Key 'location' not specified or empty");
+    if ('/' != location.at(0))
+        throw ERepositoryConfigurationError("Key 'location' must start with a / (relative paths are not allowed)");
 
     std::tr1::shared_ptr<KeyValueConfigFile> layout_conf((FSEntry(location) / "metadata/layout.conf").exists() ?
             new KeyValueConfigFile(FSEntry(location) / "metadata/layout.conf", KeyValueConfigFileOptions(),

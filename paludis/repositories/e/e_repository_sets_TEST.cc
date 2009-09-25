@@ -58,7 +58,7 @@ namespace test_cases
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "e_repository_sets_TEST_dir/repo1");
+            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_sets_TEST_dir/repo1"));
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
@@ -81,7 +81,7 @@ namespace test_cases
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "e_repository_sets_TEST_dir/repo1");
+            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_sets_TEST_dir/repo1"));
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
@@ -116,7 +116,7 @@ namespace test_cases
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "e_repository_sets_TEST_dir/repo1");
+            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_sets_TEST_dir/repo1"));
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
@@ -148,7 +148,7 @@ namespace test_cases
                     new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "e_repository_sets_TEST_dir/repo1");
+            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_sets_TEST_dir/repo1"));
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));

@@ -208,7 +208,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
                 std::copy(params.extra_params()->begin(), params.extra_params()->end(), keys->inserter());
 
             keys->insert("format", "ebuild");
-            keys->insert("location", stringify(r->first));
+            keys->insert("location", stringify(r->first.realpath()));
             keys->insert("profiles", "/var/empty");
             keys->insert("ignore_deprecated_profiles", "true");
             keys->insert("write_cache", stringify(params.write_cache()));
@@ -329,7 +329,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         keys->insert("format", "vdb");
         keys->insert("names_cache", "/var/empty");
         keys->insert("provides_cache", "/var/empty");
-        keys->insert("location", stringify(top_level_dir));
+        keys->insert("location", stringify(top_level_dir.realpath()));
 
         package_database->add_repository(1, RepositoryFactory::get_instance()->create(env,
                     std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
