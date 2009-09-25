@@ -140,6 +140,20 @@ namespace paludis
                 _real_accept_const(vv);
             }
 
+            template <typename UnwrappedVisitor_>
+            void accept(const UnwrappedVisitor_ & v)
+            {
+                WrappedVoidResultVisitor<VisitableTypeList_, const UnwrappedVisitor_> vv(v);
+                _real_accept(vv);
+            }
+
+            template <typename UnwrappedVisitor_>
+            void accept(const UnwrappedVisitor_ & v) const
+            {
+                WrappedVoidResultVisitor<typename MakeTypeListConst<VisitableTypeList_>::Type, const UnwrappedVisitor_> vv(v);
+                _real_accept_const(vv);
+            }
+
             template <typename Result_, typename UnwrappedVisitor_>
             Result_ accept_returning(UnwrappedVisitor_ & v, const Result_ & r = Result_())
             {
