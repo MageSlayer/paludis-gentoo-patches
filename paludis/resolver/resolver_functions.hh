@@ -53,7 +53,8 @@ namespace paludis
 
         typedef std::tr1::function<const std::tr1::shared_ptr<const Repository> (
                 const Resolvent &,
-                const std::tr1::shared_ptr<const Resolution> &
+                const std::tr1::shared_ptr<const Resolution> &,
+                const ChangesToMakeDecision &
                 )> FindRepositoryForFunction;
 
         typedef std::tr1::function<DestinationTypes (

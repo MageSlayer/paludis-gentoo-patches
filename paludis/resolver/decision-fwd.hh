@@ -27,10 +27,12 @@ namespace paludis
 {
     namespace resolver
     {
+        class Decision;
 
-#include <paludis/resolver/decision-se.hh>
-
-        struct Decision;
+        class NothingNoChangeDecision;
+        class ExistingNoChangeDecision;
+        class ChangesToMakeDecision;
+        class UnableToMakeDecision;
     }
 }
 

@@ -196,7 +196,8 @@ const std::tr1::shared_ptr<const Repository>
 paludis::resolver::resolver_test::find_repository_for_fn(
         const Environment * const env,
         const Resolvent &,
-        const std::tr1::shared_ptr<const Resolution> &)
+        const std::tr1::shared_ptr<const Resolution> &,
+        const ChangesToMakeDecision &)
 {
     return env->package_database()->fetch_repository(RepositoryName("installed"));
 }
@@ -251,7 +252,8 @@ ResolverTestCase::get_resolutions(const PackageDepSpec & target)
             Resolver resolver(&env, make_named_values<ResolverFunctions>(
                         value_for<n::care_about_dep_fn>(&care_about_dep_fn),
                         value_for<n::find_repository_for_fn>(std::tr1::bind(&find_repository_for_fn,
-                                &env, std::tr1::placeholders::_1, std::tr1::placeholders::_2)),
+                                &env, std::tr1::placeholders::_1, std::tr1::placeholders::_2,
+                                std::tr1::placeholders::_3)),
                         value_for<n::get_destination_types_for_fn>(&get_destination_types_for_fn),
                         value_for<n::get_initial_constraints_for_fn>(
                             std::tr1::bind(&initial_constraints_for_fn, std::tr1::ref(initial_constraints),
@@ -279,27 +281,78 @@ ResolverTestCase::get_resolutions(const std::string & target)
     return get_resolutions(target_spec);
 }
 
-bool
-ResolverTestCase::ResolutionListChecks::check_qpn(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Resolution> & r)
+namespace
 {
-    if ((! r) || (! r->decision()) || (! r->decision()->if_package_id()))
-        return false;
+    struct ChosenIDVisitor
+    {
+        const std::tr1::shared_ptr<const PackageID> visit(const ChangesToMakeDecision & decision) const
+        {
+            return decision.origin_id();
+        }
 
-    return r->decision()->if_package_id()->name() == q;
+        const std::tr1::shared_ptr<const PackageID> visit(const ExistingNoChangeDecision & decision) const
+        {
+            return decision.existing_id();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+    };
+
+    struct KindNameVisitor
+    {
+        const std::string visit(const UnableToMakeDecision &) const
+        {
+            return "unable_to_make_decision";
+        }
+
+        const std::string visit(const NothingNoChangeDecision &) const
+        {
+            return "nothing_no_change";
+        }
+
+        const std::string visit(const ExistingNoChangeDecision &) const
+        {
+            return "existing_no_change";
+        }
+
+        const std::string visit(const ChangesToMakeDecision &) const
+        {
+            return "changes_to_make";
+        }
+    };
 }
 
 bool
-ResolverTestCase::ResolutionListChecks::check_kind(const DecisionKind k,
+ResolverTestCase::ResolutionListChecks::check_qpn(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Resolution> & r)
+{
+    const std::tr1::shared_ptr<const PackageID> id(r->decision()->accept_returning<
+            std::tr1::shared_ptr<const PackageID> >(ChosenIDVisitor()));
+    if ((! r) || (! r->decision()) || ! id)
+        return false;
+
+    return id->name() == q;
+}
+
+bool
+ResolverTestCase::ResolutionListChecks::check_kind(const std::string & k,
         const QualifiedPackageName & q, const std::tr1::shared_ptr<const Resolution> & r)
 {
     if ((! r) || (! r->decision()))
         return false;
 
-    return r->decision()->kind() == k && r->resolvent().package() == q;
+    return r->decision()->accept_returning<std::string>(KindNameVisitor()) == k && r->resolvent().package() == q;
 }
 
 std::string
-ResolverTestCase::ResolutionListChecks::check_kind_msg(const DecisionKind k,
+ResolverTestCase::ResolutionListChecks::check_kind_msg(const std::string & k,
         const QualifiedPackageName & q, const std::tr1::shared_ptr<const Resolution> & r)
 {
     if (! r)
@@ -307,7 +360,8 @@ ResolverTestCase::ResolutionListChecks::check_kind_msg(const DecisionKind k,
     else if (! r->decision())
         return "Expected " + stringify(k) + " " + stringify(q) + " but got undecided for " + stringify(r->resolvent());
     else
-        return "Expected " + stringify(k) + " " + stringify(q) + " but got " + stringify(r->decision()->kind()) + " "
+        return "Expected " + stringify(k) + " " + stringify(q) + " but got "
+            + r->decision()->accept_returning<std::string>(KindNameVisitor()) + " "
             + stringify(r->resolvent().package());
 }
 
@@ -318,11 +372,14 @@ ResolverTestCase::ResolutionListChecks::check_generic_msg(const std::string & q,
         return "Expected " + stringify(q) + " but got finished";
     else if (! r->decision())
         return "Expected " + stringify(q) + " but got undecided for " + stringify(r->resolvent());
-    else if (! r->decision()->if_package_id())
-        return "Expected " + stringify(q) + " but got decided nothing (kind " + stringify(r->decision()->kind()) + ") for "
+    else if (! r->decision()->accept_returning<std::tr1::shared_ptr<const PackageID> >(ChosenIDVisitor()))
+        return "Expected " + stringify(q) + " but got decided nothing (kind "
+            + stringify(r->decision()->accept_returning<std::string>(KindNameVisitor())) + ") for "
             + stringify(r->resolvent());
     else
-        return "Expected " + stringify(q) + " but got " + stringify(r->decision()->if_package_id()->name()) + " for "
+        return "Expected " + stringify(q) + " but got " + stringify(
+                r->decision()->accept_returning<std::tr1::shared_ptr<const PackageID> >(
+                    ChosenIDVisitor())->name()) + " for "
             + stringify(r->resolvent());
 }
 
@@ -355,7 +412,7 @@ ResolverTestCase::ResolutionListChecks::qpn(const QualifiedPackageName & q)
 }
 
 ResolverTestCase::ResolutionListChecks &
-ResolverTestCase::ResolutionListChecks::kind(const DecisionKind k, const QualifiedPackageName & q)
+ResolverTestCase::ResolutionListChecks::kind(const std::string & k, const QualifiedPackageName & q)
 {
     checks.push_back(std::make_pair(
                 std::tr1::bind(&check_kind, k, q, std::tr1::placeholders::_1),

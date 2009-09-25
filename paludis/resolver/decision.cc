@@ -22,41 +22,308 @@
 #include <paludis/resolver/destination.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <sstream>
 
 using namespace paludis;
 using namespace paludis::resolver;
 
-#include <paludis/resolver/decision-se.cc>
-
-void
-Decision::serialise(Serialiser & s) const
+#ifdef PALUDIS_HAVE_DEFAULT_DELETED
+Decision::~Decision() = default;
+#else
+Decision::~Decision()
 {
-    s.object("Decision")
-        .member(SerialiserFlags<serialise::might_be_null>(), "destination", destination())
-        .member(SerialiserFlags<serialise::might_be_null>(), "if_package_id", if_package_id())
-        .member(SerialiserFlags<>(), "is_best", is_best())
-        .member(SerialiserFlags<>(), "is_same", is_same())
-        .member(SerialiserFlags<>(), "is_same_version", is_same_version())
-        .member(SerialiserFlags<>(), "is_transient", is_transient())
-        .member(SerialiserFlags<>(), "kind", stringify(kind()))
-        .member(SerialiserFlags<>(), "taken", stringify(taken()))
-        ;
 }
+#endif
 
 const std::tr1::shared_ptr<Decision>
 Decision::deserialise(Deserialisation & d)
 {
-    Deserialisator v(d, "Decision");
-    return make_shared_ptr(new Decision(make_named_values<Decision>(
-                    value_for<n::destination>(v.member<std::tr1::shared_ptr<Destination> >("destination")),
-                    value_for<n::if_package_id>(v.member<std::tr1::shared_ptr<const PackageID> >("if_package_id")),
-                    value_for<n::is_best>(v.member<bool>("is_best")),
-                    value_for<n::is_same>(v.member<bool>("is_same")),
-                    value_for<n::is_same_version>(v.member<bool>("is_same_version")),
-                    value_for<n::is_transient>(v.member<bool>("is_transient")),
-                    value_for<n::kind>(destringify<DecisionKind>(v.member<std::string>("kind"))),
-                    value_for<n::taken>(v.member<bool>("taken"))
-                    )));
+    if (d.class_name() == "NothingNoChangeDecision")
+    {
+        Deserialisator v(d, "NothingNoChangeDecision");
+        return make_shared_ptr(new NothingNoChangeDecision(
+                    v.member<bool>("taken")
+                    ));
+    }
+    else if (d.class_name() == "ExistingNoChangeDecision")
+    {
+        Deserialisator v(d, "ExistingNoChangeDecision");
+        return make_shared_ptr(new ExistingNoChangeDecision(
+                    v.member<std::tr1::shared_ptr<const PackageID> >("existing_id"),
+                    v.member<bool>("is_same"),
+                    v.member<bool>("is_same_version"),
+                    v.member<bool>("is_transient"),
+                    v.member<bool>("taken")
+                    ));
+    }
+    else if (d.class_name() == "ChangesToMakeDecision")
+    {
+        Deserialisator v(d, "ChangesToMakeDecision");
+        return make_shared_ptr(new ChangesToMakeDecision(
+                    v.member<std::tr1::shared_ptr<const PackageID> >("origin_id"),
+                    v.member<bool>("best"),
+                    v.member<bool>("taken"),
+                    v.member<std::tr1::shared_ptr<const Destination> >("destination")
+                    ));
+    }
+    else if (d.class_name() == "UnableToMakeDecision")
+    {
+        Deserialisator v(d, "UnableToMakeDecision");
+        return make_shared_ptr(new UnableToMakeDecision(
+                    v.member<bool>("taken")
+                    ));
+    }
+    else
+        throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 }
+
+namespace paludis
+{
+    template <>
+    struct Implementation<NothingNoChangeDecision>
+    {
+        const bool taken;
+
+        Implementation(const bool t) :
+            taken(t)
+        {
+        }
+    };
+}
+
+NothingNoChangeDecision::NothingNoChangeDecision(const bool t) :
+    PrivateImplementationPattern<NothingNoChangeDecision>(new Implementation<NothingNoChangeDecision>(t))
+{
+}
+
+#ifdef PALUDIS_HAVE_DEFAULT_DELETED
+NothingNoChangeDecision::~NothingNoChangeDecision() = default;
+#else
+NothingNoChangeDecision::~NothingNoChangeDecision()
+{
+}
+#endif
+
+bool
+NothingNoChangeDecision::taken() const
+{
+    return _imp->taken;
+}
+
+void
+NothingNoChangeDecision::serialise(Serialiser & s) const
+{
+    s.object("NothingNoChangeDecision")
+        .member(SerialiserFlags<>(), "taken", taken())
+        ;
+}
+
+namespace paludis
+{
+    template <>
+    struct Implementation<ExistingNoChangeDecision>
+    {
+        const std::tr1::shared_ptr<const PackageID> existing_id;
+        const bool is_same;
+        const bool is_same_version;
+        const bool is_transient;
+        const bool taken;
+
+        Implementation(const std::tr1::shared_ptr<const PackageID> & e,
+                const bool s, const bool v, const bool r, const bool t) :
+            existing_id(e),
+            is_same(s),
+            is_same_version(v),
+            is_transient(r),
+            taken(t)
+        {
+        }
+    };
+}
+
+ExistingNoChangeDecision::ExistingNoChangeDecision(const std::tr1::shared_ptr<const PackageID> & e,
+        const bool s, const bool v, const bool r, const bool t) :
+    PrivateImplementationPattern<ExistingNoChangeDecision>(new Implementation<ExistingNoChangeDecision>(
+                e, s, v, r, t))
+{
+}
+
+#ifdef PALUDIS_HAVE_DEFAULT_DELETED
+ExistingNoChangeDecision::~ExistingNoChangeDecision() = default;
+#else
+ExistingNoChangeDecision::~ExistingNoChangeDecision()
+{
+}
+#endif
+
+const std::tr1::shared_ptr<const PackageID>
+ExistingNoChangeDecision::existing_id() const
+{
+    return _imp->existing_id;
+}
+
+bool
+ExistingNoChangeDecision::is_same() const
+{
+    return _imp->is_same;
+}
+
+bool
+ExistingNoChangeDecision::is_same_version() const
+{
+    return _imp->is_same_version;
+}
+
+bool
+ExistingNoChangeDecision::is_transient() const
+{
+    return _imp->is_transient;
+}
+
+bool
+ExistingNoChangeDecision::taken() const
+{
+    return _imp->taken;
+}
+
+void
+ExistingNoChangeDecision::serialise(Serialiser & s) const
+{
+    s.object("ExistingNoChangeDecision")
+        .member(SerialiserFlags<serialise::might_be_null>(), "existing_id", existing_id())
+        .member(SerialiserFlags<>(), "is_same", is_same())
+        .member(SerialiserFlags<>(), "is_same_version", is_same_version())
+        .member(SerialiserFlags<>(), "is_transient", is_transient())
+        .member(SerialiserFlags<>(), "taken", taken())
+        ;
+}
+
+namespace paludis
+{
+    template <>
+    struct Implementation<ChangesToMakeDecision>
+    {
+        const std::tr1::shared_ptr<const PackageID> origin_id;
+        const bool best;
+        const bool taken;
+        std::tr1::shared_ptr<const Destination> destination;
+
+        Implementation(
+                const std::tr1::shared_ptr<const PackageID> & o,
+                const bool b,
+                const bool t,
+                const std::tr1::shared_ptr<const Destination> & d) :
+            origin_id(o),
+            best(b),
+            taken(t),
+            destination(d)
+        {
+        }
+    };
+}
+
+ChangesToMakeDecision::ChangesToMakeDecision(
+        const std::tr1::shared_ptr<const PackageID> & o,
+        const bool b,
+        const bool t,
+        const std::tr1::shared_ptr<const Destination> & d) :
+    PrivateImplementationPattern<ChangesToMakeDecision>(new Implementation<ChangesToMakeDecision>(o, b, t, d))
+{
+}
+
+#ifdef PALUDIS_HAVE_DEFAULT_DELETED
+ChangesToMakeDecision::~ChangesToMakeDecision() = default;
+#else
+ChangesToMakeDecision::~ChangesToMakeDecision()
+{
+}
+#endif
+
+const std::tr1::shared_ptr<const Destination>
+ChangesToMakeDecision::destination() const
+{
+    return _imp->destination;
+}
+
+void
+ChangesToMakeDecision::set_destination(const std::tr1::shared_ptr<const Destination> & d)
+{
+    _imp->destination = d;
+}
+
+const std::tr1::shared_ptr<const PackageID>
+ChangesToMakeDecision::origin_id() const
+{
+    return _imp->origin_id;
+}
+
+bool
+ChangesToMakeDecision::best() const
+{
+    return _imp->best;
+}
+
+bool
+ChangesToMakeDecision::taken() const
+{
+    return _imp->taken;
+}
+
+void
+ChangesToMakeDecision::serialise(Serialiser & s) const
+{
+    s.object("ChangesToMakeDecision")
+        .member(SerialiserFlags<serialise::might_be_null>(), "origin_id", origin_id())
+        .member(SerialiserFlags<>(), "best", best())
+        .member(SerialiserFlags<serialise::might_be_null>(), "destination", destination())
+        .member(SerialiserFlags<>(), "taken", taken())
+        ;
+}
+
+namespace paludis
+{
+    template <>
+    struct Implementation<UnableToMakeDecision>
+    {
+        const bool taken;
+
+        Implementation(const bool t) :
+            taken(t)
+        {
+        }
+    };
+}
+
+UnableToMakeDecision::UnableToMakeDecision(const bool t) :
+    PrivateImplementationPattern<UnableToMakeDecision>(new Implementation<UnableToMakeDecision>(t))
+{
+}
+
+#ifdef PALUDIS_HAVE_DEFAULT_DELETED
+UnableToMakeDecision::~UnableToMakeDecision() = default;
+#else
+UnableToMakeDecision::~UnableToMakeDecision()
+{
+}
+#endif
+
+bool
+UnableToMakeDecision::taken() const
+{
+    return _imp->taken;
+}
+
+void
+UnableToMakeDecision::serialise(Serialiser & s) const
+{
+    s.object("UnableToMakeDecision")
+        .member(SerialiserFlags<>(), "taken", taken())
+        ;
+}
+
+template class PrivateImplementationPattern<NothingNoChangeDecision>;
+template class PrivateImplementationPattern<ExistingNoChangeDecision>;
+template class PrivateImplementationPattern<ChangesToMakeDecision>;
+template class PrivateImplementationPattern<UnableToMakeDecision>;
 

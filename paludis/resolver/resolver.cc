@@ -153,22 +153,7 @@ Resolver::_resolve_decide_with_dependencies()
             changed = true;
             _decide(i->first, i->second);
 
-            /* we don't have anything left to do unless we're a 'real' decision */
-            switch (i->second->decision()->kind())
-            {
-                case dk_existing_no_change:
-                case dk_changes_to_make:
-                    break;
-
-                case dk_nothing_no_change:
-                case dk_unable_to_decide:
-                case last_dk:
-                    continue;
-            }
-
-            /* we don't do dependencies for suggestions */
-            if (i->second->decision()->taken())
-                _add_dependencies(i->first, i->second);
+            _add_dependencies_if_necessary(i->first, i->second);
         }
     }
 }
@@ -178,53 +163,80 @@ Resolver::_resolve_destinations()
 {
     Context context("When resolving destinations:");
 
-    for (ResolutionsByResolventMap::iterator i(_imp->resolutions_by_resolvent.begin()), i_end(_imp->resolutions_by_resolvent.end()) ;
+    for (ResolutionsByResolventMap::iterator i(_imp->resolutions_by_resolvent.begin()),
+            i_end(_imp->resolutions_by_resolvent.end()) ;
             i != i_end ; ++i)
-    {
-        if (i->second->decision()->destination())
-            continue;
+        _do_destination_if_necessary(i->first, i->second);
+}
 
-        i->second->decision()->destination() = _make_destination_for(i->first, i->second);
-    }
+namespace
+{
+    struct DoDestinationIfNecessaryVisitor
+    {
+        typedef std::tr1::function<const std::tr1::shared_ptr<const Destination> (
+                const ChangesToMakeDecision &)> MakeDestinationFunc;
+
+        MakeDestinationFunc make_destination_for;
+
+        DoDestinationIfNecessaryVisitor(const MakeDestinationFunc & f) :
+            make_destination_for(f)
+        {
+        }
+
+        void visit(ExistingNoChangeDecision &)
+        {
+        }
+
+        void visit(NothingNoChangeDecision &)
+        {
+        }
+
+        void visit(UnableToMakeDecision &)
+        {
+        }
+
+        void visit(ChangesToMakeDecision & decision)
+        {
+            if (! decision.destination())
+                decision.set_destination(make_destination_for(decision));
+        }
+    };
+}
+
+void
+Resolver::_do_destination_if_necessary(
+        const Resolvent & resolvent,
+        const std::tr1::shared_ptr<Resolution> & resolution)
+{
+    DoDestinationIfNecessaryVisitor v(std::tr1::bind(&Resolver::_make_destination_for,
+                this, resolvent, resolution, std::tr1::placeholders::_1));
+    resolution->decision()->accept(v);
 }
 
 const std::tr1::shared_ptr<Destination>
 Resolver::_make_destination_for(
         const Resolvent & resolvent,
-        const std::tr1::shared_ptr<const Resolution> & resolution) const
+        const std::tr1::shared_ptr<const Resolution> & resolution,
+        const ChangesToMakeDecision & decision) const
 {
-    switch (resolution->decision()->kind())
-    {
-        case dk_existing_no_change:
-        case dk_nothing_no_change:
-        case dk_unable_to_decide:
-            return make_null_shared_ptr();
+    const std::tr1::shared_ptr<const Repository> repo(_find_repository_for(resolvent, resolution, decision));
+    if ((! repo->destination_interface()) ||
+            (! repo->destination_interface()->is_suitable_destination_for(*decision.origin_id())))
+        throw InternalError(PALUDIS_HERE, stringify(repo->name()) + " is not a suitable destination for "
+                + stringify(*decision.origin_id()));
 
-        case dk_changes_to_make:
-            {
-                const std::tr1::shared_ptr<const Repository> repo(_find_repository_for(resolvent, resolution));
-                if ((! repo->destination_interface()) ||
-                        (! repo->destination_interface()->is_suitable_destination_for(*resolution->decision()->if_package_id())))
-                    throw InternalError(PALUDIS_HERE, stringify(repo->name()) + " is not a suitable destination for "
-                            + stringify(*resolution->decision()->if_package_id()));
-
-                return make_shared_ptr(new Destination(make_named_values<Destination>(
-                                value_for<n::replacing>(_find_replacing(resolution->decision()->if_package_id(), repo)),
-                                value_for<n::repository>(repo->name())
-                                )));
-            }
-
-        case last_dk:
-            break;
-    }
-
-    throw InternalError(PALUDIS_HERE, "resolver bug: unhandled dt");
+    return make_shared_ptr(new Destination(make_named_values<Destination>(
+                    value_for<n::replacing>(_find_replacing(decision.origin_id(), repo)),
+                    value_for<n::repository>(repo->name())
+                    )));
 }
 
 const std::tr1::shared_ptr<const Repository>
-Resolver::_find_repository_for(const Resolvent & resolvent, const std::tr1::shared_ptr<const Resolution> & resolution) const
+Resolver::_find_repository_for(const Resolvent & resolvent,
+        const std::tr1::shared_ptr<const Resolution> & resolution,
+        const ChangesToMakeDecision & decision) const
 {
-    return _imp->fns.find_repository_for_fn()(resolvent, resolution);
+    return _imp->fns.find_repository_for_fn()(resolvent, resolution, decision);
 }
 
 FilteredGenerator
@@ -452,55 +464,158 @@ Resolver::_apply_resolution_constraint(
     resolution->constraints()->add(constraint);
 }
 
+namespace
+{
+    struct ChosenIDVisitor
+    {
+        const std::tr1::shared_ptr<const PackageID> visit(const ChangesToMakeDecision & decision) const
+        {
+            return decision.origin_id();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const ExistingNoChangeDecision & decision) const
+        {
+            return decision.existing_id();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+    };
+
+    struct CheckUseExistingVisitor
+    {
+        const std::tr1::shared_ptr<const Constraint> constraint;
+
+        CheckUseExistingVisitor(const std::tr1::shared_ptr<const Constraint> & c) :
+            constraint(c)
+        {
+        }
+
+        bool visit(const ExistingNoChangeDecision & decision) const
+        {
+            switch (constraint->use_existing())
+            {
+                case ue_if_possible:
+                    break;
+
+                case ue_only_if_transient:
+                    if (! decision.is_transient())
+                        return false;
+                    break;
+
+                case ue_if_same:
+                    if (! decision.is_same())
+                        return false;
+                    break;
+
+                case ue_if_same_version:
+                    if (! decision.is_same_version())
+                        return false;
+                    break;
+
+                case ue_never:
+                case last_ue:
+                    return false;
+            }
+
+            return true;
+        }
+
+        bool visit(const NothingNoChangeDecision &) const
+        {
+            return true;
+        }
+
+        bool visit(const UnableToMakeDecision &) const
+        {
+            return true;
+        }
+
+        bool visit(const ChangesToMakeDecision &) const
+        {
+            return true;
+        }
+    };
+}
+
 bool
 Resolver::_verify_new_constraint(const Resolvent &,
         const std::tr1::shared_ptr<const Resolution> & resolution,
         const std::tr1::shared_ptr<const Constraint> & constraint)
 {
-    bool ok;
+    const std::tr1::shared_ptr<const PackageID> chosen_id(resolution->decision()->accept_returning<
+            std::tr1::shared_ptr<const PackageID> >(ChosenIDVisitor()));
 
-    if (resolution->decision()->if_package_id())
+    if (chosen_id)
     {
         if (constraint->spec().if_package())
-            ok = match_package(*_imp->env, *constraint->spec().if_package(),
-                    *resolution->decision()->if_package_id(), MatchPackageOptions());
-        else
-            ok = ! match_package(*_imp->env, constraint->spec().if_block()->blocking(),
-                    *resolution->decision()->if_package_id(), MatchPackageOptions());
-    }
-    else
-        ok = constraint->nothing_is_fine_too();
-
-    if (ok && dk_existing_no_change == resolution->decision()->kind())
-    {
-        switch (constraint->use_existing())
         {
-            case ue_if_possible:
-                break;
-
-            case ue_only_if_transient:
-                ok = resolution->decision()->is_transient();
-                break;
-
-            case ue_if_same:
-                ok = resolution->decision()->is_same();
-                break;
-
-            case ue_if_same_version:
-                ok = resolution->decision()->is_same_version();
-                break;
-
-            case ue_never:
-            case last_ue:
-                ok = false;
-                break;
+            if (! match_package(*_imp->env, *constraint->spec().if_package(), *chosen_id, MatchPackageOptions()))
+                return false;
+        }
+        else
+        {
+            if (match_package(*_imp->env, constraint->spec().if_block()->blocking(),
+                        *chosen_id, MatchPackageOptions()))
+                return false;
         }
     }
+    else
+    {
+        if (! constraint->nothing_is_fine_too())
+            return false;
+    }
 
-    if (ok && ! constraint->untaken())
-        ok = resolution->decision()->taken();
+    if (! resolution->decision()->accept_returning<bool>(CheckUseExistingVisitor(constraint)))
+        return false;
 
-    return ok;
+    if (! constraint->untaken())
+    {
+        if (! resolution->decision()->taken())
+            return false;
+    }
+
+    return true;
+}
+
+namespace
+{
+    struct WrongDecisionVisitor
+    {
+        std::tr1::function<void ()> restart;
+
+        WrongDecisionVisitor(const std::tr1::function<void ()> & r) :
+            restart(r)
+        {
+        }
+
+        void visit(const NothingNoChangeDecision &) const
+        {
+            /* going from nothing to something is fine */
+        }
+
+        void visit(const UnableToMakeDecision &) const
+        {
+            restart();
+        }
+
+        void visit(const ChangesToMakeDecision &) const
+        {
+            restart();
+        }
+
+        void visit(const ExistingNoChangeDecision &) const
+        {
+            restart();
+        }
+    };
 }
 
 void
@@ -515,22 +630,9 @@ Resolver::_made_wrong_decision(const Resolvent & resolvent,
     const std::tr1::shared_ptr<Decision> decision(_try_to_find_decision_for(resolvent, adapted_resolution));
     if (decision)
     {
-        switch (resolution->decision()->kind())
-        {
-            case dk_nothing_no_change:
-                /* going from nothing to something is safe */
-                resolution->decision() = decision;
-                break;
-
-            case dk_unable_to_decide:
-            case dk_changes_to_make:
-            case dk_existing_no_change:
-                _suggest_restart_with(resolvent, resolution, constraint, decision);
-                break;
-
-            case last_dk:
-                break;
-        }
+        resolution->decision()->accept(WrongDecisionVisitor(std::tr1::bind(
+                        &Resolver::_suggest_restart_with, this, resolvent, resolution, constraint, decision)));
+        resolution->decision() = decision;
     }
     else
         resolution->decision() = _cannot_decide_for(resolvent, adapted_resolution);
@@ -543,28 +645,19 @@ Resolver::_suggest_restart_with(const Resolvent & resolvent,
         const std::tr1::shared_ptr<const Decision> & decision) const
 {
     throw SuggestRestart(resolvent, resolution->decision(), constraint, decision,
-            _make_constraint_for_preloading(resolvent, decision));
+            _make_constraint_for_preloading(resolvent, decision, constraint));
 }
 
 const std::tr1::shared_ptr<const Constraint>
 Resolver::_make_constraint_for_preloading(
-        const Resolvent & resolvent,
-        const std::tr1::shared_ptr<const Decision> & d) const
+        const Resolvent &,
+        const std::tr1::shared_ptr<const Decision> &,
+        const std::tr1::shared_ptr<const Constraint> & c) const
 {
     const std::tr1::shared_ptr<PresetReason> reason(new PresetReason);
-
-    if (! d->if_package_id())
-        throw InternalError(PALUDIS_HERE, "resolver bug: not decided. shouldn't happen.");
-
-    return make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                    value_for<n::destination_type>(resolvent.destination_type()),
-                    value_for<n::nothing_is_fine_too>(false),
-                    value_for<n::reason>(reason),
-                    value_for<n::spec>(d->if_package_id()->uniquely_identifying_spec()),
-                    value_for<n::untaken>(! d->taken()),
-                    value_for<n::use_existing>(_imp->fns.get_use_existing_fn()(
-                            resolvent, d->if_package_id()->uniquely_identifying_spec(), reason))
-                    )));
+    const std::tr1::shared_ptr<Constraint> result(new Constraint(*c));
+    result->reason() = reason;
+    return result;
 }
 
 void
@@ -579,17 +672,54 @@ Resolver::_decide(const Resolvent & resolvent, const std::tr1::shared_ptr<Resolu
         resolution->decision() = _cannot_decide_for(resolvent, resolution);
 }
 
-void
-Resolver::_add_dependencies(const Resolvent & our_resolvent, const std::tr1::shared_ptr<Resolution> & our_resolution)
+namespace
 {
-    if (! our_resolution->decision()->if_package_id())
-        throw InternalError(PALUDIS_HERE, "resolver bug: not decided. shouldn't happen.");
+    struct DependenciesNecessityVisitor
+    {
+        const std::tr1::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const ExistingNoChangeDecision & decision) const
+        {
+            if (decision.taken())
+                return decision.existing_id();
+            else
+                return make_null_shared_ptr();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const ChangesToMakeDecision & decision) const
+        {
+            if (decision.taken())
+                return decision.origin_id();
+            else
+                return make_null_shared_ptr();
+        }
+    };
+}
+
+void
+Resolver::_add_dependencies_if_necessary(
+        const Resolvent & our_resolvent,
+        const std::tr1::shared_ptr<Resolution> & our_resolution)
+{
+    const std::tr1::shared_ptr<const PackageID> package_id(
+            our_resolution->decision()->accept_returning<std::tr1::shared_ptr<const PackageID> >(
+                DependenciesNecessityVisitor()));
+    if (! package_id)
+        return;
 
     Context context("When adding dependencies for '" + stringify(our_resolvent) + "' with '"
-            + stringify(*our_resolution->decision()->if_package_id()) + "':");
+            + stringify(*package_id) + "':");
 
     const std::tr1::shared_ptr<SanitisedDependencies> deps(new SanitisedDependencies);
-    deps->populate(*this, our_resolvent, our_resolution->decision()->if_package_id());
+    deps->populate(*this, our_resolvent, package_id);
     our_resolution->sanitised_dependencies() = deps;
 
     for (SanitisedDependencies::ConstIterator s(deps->begin()), s_end(deps->end()) ;
@@ -601,7 +731,7 @@ Resolver::_add_dependencies(const Resolvent & our_resolvent, const std::tr1::sha
             continue;
 
         const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(
-                    our_resolution->decision()->if_package_id(), our_resolvent, *s));
+                    package_id, our_resolvent, *s));
 
         std::tr1::shared_ptr<const Resolvents> resolvents;
 
@@ -788,44 +918,71 @@ Resolver::_already_met(const SanitisedDependency & dep) const
         throw InternalError(PALUDIS_HERE, "resolver bug: huh? it's not a block and it's not a package");
 }
 
+namespace
+{
+    struct ResolveOrderVisitor
+    {
+        const std::tr1::function<void ()> already_ordered;
+        const std::tr1::function<void ()> error;
+        const std::tr1::function<void ()> untaken;
+
+        ResolveOrderVisitor(const std::tr1::function<void ()> & a,
+                const std::tr1::function<void ()> & e,
+                const std::tr1::function<void ()> & u) :
+            already_ordered(a),
+            error(e),
+            untaken(u)
+        {
+        }
+
+        void visit(const ExistingNoChangeDecision &) const
+        {
+            already_ordered();
+        }
+
+        void visit(const NothingNoChangeDecision &) const
+        {
+            already_ordered();
+        }
+
+        void visit(const UnableToMakeDecision & d) const
+        {
+            already_ordered();
+            if (d.taken())
+                error();
+            else
+                untaken();
+        }
+
+        void visit(const ChangesToMakeDecision & d) const
+        {
+            if (! d.taken())
+            {
+                already_ordered();
+                untaken();
+            }
+        }
+    };
+}
+
 void
 Resolver::_resolve_order()
 {
     Context context("When finding an order for selected packages:");
 
-    bool done(false);
-
-    for (ResolutionsByResolventMap::iterator i(_imp->resolutions_by_resolvent.begin()), i_end(_imp->resolutions_by_resolvent.end()) ;
+    for (ResolutionsByResolventMap::iterator i(_imp->resolutions_by_resolvent.begin()),
+            i_end(_imp->resolutions_by_resolvent.end()) ;
             i != i_end ; ++i)
     {
-        switch (i->second->decision()->kind())
-        {
-            case dk_existing_no_change:
-            case dk_nothing_no_change:
-                i->second->already_ordered() = true;
-                break;
-
-            case dk_unable_to_decide:
-                i->second->already_ordered() = true;
-                if (i->second->decision()->taken())
-                    _imp->resolution_lists->errors()->append(i->second);
-                else
-                    _imp->resolution_lists->untaken()->append(i->second);
-                break;
-
-            case dk_changes_to_make:
-                if (! i->second->decision()->taken())
-                {
-                    i->second->already_ordered() = true;
-                    _imp->resolution_lists->untaken()->append(i->second);
-                }
-                break;
-
-            case last_dk:
-                break;
-        }
+        i->second->decision()->accept(ResolveOrderVisitor(
+                    std::tr1::bind(&NamedValue<n::already_ordered, bool>::operator=,
+                        &i->second->already_ordered, value_for<n::already_ordered>(true)),
+                    std::tr1::bind(&Resolutions::append, _imp->resolution_lists->errors(), i->second),
+                    std::tr1::bind(&Resolutions::append, _imp->resolution_lists->untaken(), i->second)
+                    ));
     }
 
+    bool done(false);
     while (! done)
     {
         bool any(false);
@@ -909,7 +1066,7 @@ Resolver::_unable_to_order_more() const
         if (i->second->already_ordered())
             continue;
 
-        std::cout << "  * " << *i->second->decision()->if_package_id() << " because of cycle "
+        std::cout << "  * " << i->first << " because of cycle "
             << _find_cycle(i->first, true)
             << std::endl;
     }
@@ -1026,8 +1183,13 @@ Resolver::find_any_score(const Resolvent & our_resolvent, const SanitisedDepende
             return 40 + operator_bias;
     }
 
-    const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(
-                _resolution_for_resolvent(our_resolvent)->decision()->if_package_id(), our_resolvent, dep));
+    const std::tr1::shared_ptr<const PackageID> id(_resolution_for_resolvent(
+                our_resolvent)->decision()->accept_returning<std::tr1::shared_ptr<const PackageID> >(
+                    ChosenIDVisitor()));
+    if (! id)
+        throw InternalError(PALUDIS_HERE, "resolver bug: why don't we have an id?");
+
+    const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(id, our_resolvent, dep));
     const std::tr1::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(spec, reason));
 
     /* next: will already be installing */
@@ -1239,30 +1401,19 @@ Resolver::_try_to_find_decision_for(
     if (resolution->constraints()->nothing_is_fine_too() && ! existing_id)
     {
         /* nothing existing, but nothing's ok */
-        return make_shared_ptr(new Decision(make_named_values<Decision>(
-                        value_for<n::destination>(make_null_shared_ptr()),
-                        value_for<n::if_package_id>(make_null_shared_ptr()),
-                        value_for<n::is_best>(false),
-                        value_for<n::is_same>(false),
-                        value_for<n::is_same_version>(false),
-                        value_for<n::is_transient>(false),
-                        value_for<n::kind>(dk_nothing_no_change),
-                        value_for<n::taken>(! resolution->constraints()->all_untaken())
-                        )));
+        return make_shared_ptr(new NothingNoChangeDecision(
+                    ! resolution->constraints()->all_untaken()
+                    ));
     }
     else if (installable_id && ! existing_id)
     {
         /* there's nothing suitable existing. */
-        return make_shared_ptr(new Decision(make_named_values<Decision>(
-                        value_for<n::destination>(make_null_shared_ptr()),
-                        value_for<n::if_package_id>(installable_id),
-                        value_for<n::is_best>(best),
-                        value_for<n::is_same>(false),
-                        value_for<n::is_same_version>(false),
-                        value_for<n::is_transient>(false),
-                        value_for<n::kind>(dk_changes_to_make),
-                        value_for<n::taken>(! resolution->constraints()->all_untaken())
-                        )));
+        return make_shared_ptr(new ChangesToMakeDecision(
+                    installable_id,
+                    best,
+                    ! resolution->constraints()->all_untaken(),
+                    make_null_shared_ptr()
+                    ));
     }
     else if (existing_id && ! installable_id)
     {
@@ -1288,17 +1439,13 @@ Resolver::_try_to_find_decision_for(
                 break;
         }
 
-        return make_shared_ptr(new Decision(make_named_values<Decision>(
-                        value_for<n::destination>(make_null_shared_ptr()),
-                        value_for<n::if_package_id>(existing_id),
-                        value_for<n::is_best>(false),
-                        value_for<n::is_same>(true),
-                        value_for<n::is_same_version>(true),
-                        value_for<n::is_transient>(is_transient),
-                        value_for<n::kind>(dk_existing_no_change),
-                        value_for<n::taken>(! resolution->constraints()->all_untaken())
-
-                        )));
+        return make_shared_ptr(new ExistingNoChangeDecision(
+                    existing_id,
+                    true,
+                    true,
+                    is_transient,
+                    ! resolution->constraints()->all_untaken()
+                    ));
     }
     else if ((! existing_id) && (! installable_id))
     {
@@ -1362,80 +1509,45 @@ Resolver::_try_to_find_decision_for(
         bool is_transient(existing_id->transient_key() && existing_id->transient_key()->value());
 
         /* we've got existing and installable. do we have any reason not to pick the existing id? */
+        const std::tr1::shared_ptr<Decision> existing(new ExistingNoChangeDecision(
+                    existing_id,
+                    is_same,
+                    is_same_version,
+                    is_transient,
+                    ! resolution->constraints()->all_untaken()
+                    ));
+        const std::tr1::shared_ptr<Decision> changes_to_make(new ChangesToMakeDecision(
+                    installable_id,
+                    best,
+                    ! resolution->constraints()->all_untaken(),
+                    make_null_shared_ptr()
+                    ));
+
         switch (resolution->constraints()->strictest_use_existing())
         {
             case ue_only_if_transient:
             case ue_never:
-                return make_shared_ptr(new Decision(make_named_values<Decision>(
-                                value_for<n::destination>(make_null_shared_ptr()),
-                                value_for<n::if_package_id>(installable_id),
-                                value_for<n::is_best>(best),
-                                value_for<n::is_same>(is_same),
-                                value_for<n::is_same_version>(is_same_version),
-                                value_for<n::is_transient>(false),
-                                value_for<n::kind>(dk_changes_to_make),
-                                value_for<n::taken>(! resolution->constraints()->all_untaken())
-                                )));
+                return make_shared_ptr(new ChangesToMakeDecision(
+                            installable_id,
+                            best,
+                            ! resolution->constraints()->all_untaken(),
+                            make_null_shared_ptr()
+                            ));
 
             case ue_if_same:
                 if (is_same)
-                    return make_shared_ptr(new Decision(make_named_values<Decision>(
-                                    value_for<n::destination>(make_null_shared_ptr()),
-                                    value_for<n::if_package_id>(existing_id),
-                                    value_for<n::is_best>(false),
-                                    value_for<n::is_same>(is_same),
-                                    value_for<n::is_same_version>(is_same_version),
-                                    value_for<n::is_transient>(false),
-                                    value_for<n::kind>(dk_existing_no_change),
-                                    value_for<n::taken>(! resolution->constraints()->all_untaken())
-                                    )));
+                    return existing;
                 else
-                    return make_shared_ptr(new Decision(make_named_values<Decision>(
-                                    value_for<n::destination>(make_null_shared_ptr()),
-                                    value_for<n::if_package_id>(installable_id),
-                                    value_for<n::is_best>(best),
-                                    value_for<n::is_same>(is_same),
-                                    value_for<n::is_same_version>(is_same_version),
-                                    value_for<n::is_transient>(is_transient),
-                                    value_for<n::kind>(dk_changes_to_make),
-                                    value_for<n::taken>(! resolution->constraints()->all_untaken())
-                                    )));
+                    return changes_to_make;
 
             case ue_if_same_version:
                 if (is_same_version)
-                    return make_shared_ptr(new Decision(make_named_values<Decision>(
-                                    value_for<n::destination>(make_null_shared_ptr()),
-                                    value_for<n::if_package_id>(existing_id),
-                                    value_for<n::is_best>(false),
-                                    value_for<n::is_same>(is_same),
-                                    value_for<n::is_same_version>(is_same_version),
-                                    value_for<n::is_transient>(false),
-                                    value_for<n::kind>(dk_existing_no_change),
-                                    value_for<n::taken>(! resolution->constraints()->all_untaken())
-                                    )));
+                    return existing;
                 else
-                    return make_shared_ptr(new Decision(make_named_values<Decision>(
-                                    value_for<n::destination>(make_null_shared_ptr()),
-                                    value_for<n::if_package_id>(installable_id),
-                                    value_for<n::is_best>(best),
-                                    value_for<n::is_same>(is_same),
-                                    value_for<n::is_same_version>(is_same_version),
-                                    value_for<n::is_transient>(is_transient),
-                                    value_for<n::kind>(dk_changes_to_make),
-                                    value_for<n::taken>(! resolution->constraints()->all_untaken())
-                                    )));
+                    return changes_to_make;
 
             case ue_if_possible:
-                return make_shared_ptr(new Decision(make_named_values<Decision>(
-                                value_for<n::destination>(make_null_shared_ptr()),
-                                value_for<n::if_package_id>(existing_id),
-                                value_for<n::is_best>(false),
-                                value_for<n::is_same>(is_same),
-                                value_for<n::is_same_version>(is_same_version),
-                                value_for<n::is_transient>(false),
-                                value_for<n::kind>(dk_existing_no_change),
-                                value_for<n::taken>(! resolution->constraints()->all_untaken())
-                                )));
+                return existing;
 
             case last_ue:
                 break;
@@ -1450,16 +1562,9 @@ Resolver::_cannot_decide_for(
         const Resolvent &,
         const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
-    return make_shared_ptr(new Decision(make_named_values<Decision>(
-                    value_for<n::destination>(make_null_shared_ptr()),
-                    value_for<n::if_package_id>(make_null_shared_ptr()),
-                    value_for<n::is_best>(false),
-                    value_for<n::is_same>(false),
-                    value_for<n::is_same_version>(false),
-                    value_for<n::is_transient>(false),
-                    value_for<n::kind>(dk_unable_to_decide),
-                    value_for<n::taken>(! resolution->constraints()->all_untaken())
-                    )));
+    return make_shared_ptr(new UnableToMakeDecision(
+                ! resolution->constraints()->all_untaken()
+                ));
 }
 
 const std::tr1::shared_ptr<const PackageID>

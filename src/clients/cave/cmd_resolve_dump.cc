@@ -55,33 +55,50 @@ namespace
         return s;
     }
 
+    std::string stringify_if_not_null(const std::tr1::shared_ptr<const Destination> & d)
+    {
+        if (d)
+        {
+            std::stringstream ss;
+            ss << *d;
+            return ss.str();
+        }
+        else
+            return "null";
+    }
+
+    struct DecisionStringifier
+    {
+        const std::string visit(const UnableToMakeDecision & d) const
+        {
+            return "UnableToMakeDecision(taken: " + stringify(d.taken()) + ")";
+        }
+
+        const std::string visit(const NothingNoChangeDecision & d) const
+        {
+            return "NothingNoChangeDecision(taken: " + stringify(d.taken()) + ")";
+        }
+
+        const std::string visit(const ExistingNoChangeDecision & d) const
+        {
+            return "ExistingNoChangeDecision(" + stringify(*d.existing_id()) + " is_same: "
+                + stringify(d.is_same()) + " is_same_version: " + stringify(d.is_same_version())
+                + " is_transient: " + stringify(d.is_transient()) + " taken: " + stringify(d.taken()) + ")";
+        }
+
+        const std::string visit(const ChangesToMakeDecision & d) const
+        {
+            return "ChangesToMakeDecision(" + stringify(*d.origin_id()) + " best: "
+                + stringify(d.best()) + " taken: " + stringify(d.taken())
+                + " destination: " + stringify_if_not_null(d.destination())
+                + ")";
+        }
+    };
+
     std::ostream &
     operator<< (std::ostream & s, const Decision & d)
     {
-        std::stringstream ss;
-
-        ss << "Decision(";
-
-        ss << d.kind() << " ";
-
-        if (d.if_package_id())
-            ss << *d.if_package_id();
-        else
-            ss << "(nothing)";
-
-        if (d.is_best())
-            ss << ", is best";
-        if (d.is_same())
-            ss << ", is same";
-        if (d.is_same_version())
-            ss << ", is same version";
-
-        if (d.destination())
-            ss << " -> " << *d.destination();
-
-        ss << ")";
-
-        s << ss.str();
+        s << d.accept_returning<std::string>(DecisionStringifier());
         return s;
     }
 

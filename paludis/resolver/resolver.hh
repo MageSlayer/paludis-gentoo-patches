@@ -100,7 +100,8 @@ namespace paludis
 
                 const std::tr1::shared_ptr<const Constraint> _make_constraint_for_preloading(
                         const Resolvent &,
-                        const std::tr1::shared_ptr<const Decision> & d) const;
+                        const std::tr1::shared_ptr<const Decision> & d,
+                        const std::tr1::shared_ptr<const Constraint> & c) const;
 
                 const std::tr1::shared_ptr<const PackageIDSequence> _find_replacing(
                         const std::tr1::shared_ptr<const PackageID> &,
@@ -108,7 +109,8 @@ namespace paludis
 
                 const std::tr1::shared_ptr<const Repository> _find_repository_for(
                         const Resolvent &,
-                        const std::tr1::shared_ptr<const Resolution> &) const;
+                        const std::tr1::shared_ptr<const Resolution> &,
+                        const ChangesToMakeDecision &) const;
 
                 void _resolve_arrow(const Resolvent &, const std::tr1::shared_ptr<Resolution> &,
                         const std::tr1::shared_ptr<const Constraint> &);
@@ -120,7 +122,8 @@ namespace paludis
 
                 const std::tr1::shared_ptr<Destination> _make_destination_for(
                         const Resolvent & resolvent,
-                        const std::tr1::shared_ptr<const Resolution> & resolution) const;
+                        const std::tr1::shared_ptr<const Resolution> & resolution,
+                        const ChangesToMakeDecision &) const;
 
                 FilteredGenerator _make_destination_filtered_generator(const Generator &, const Resolvent & resolvent) const;
 
@@ -132,7 +135,10 @@ namespace paludis
                 const std::tr1::shared_ptr<Decision> _cannot_decide_for(
                         const Resolvent &, const std::tr1::shared_ptr<const Resolution> & resolution) const;
 
-                void _add_dependencies(const Resolvent & our_resolvent,
+                void _do_destination_if_necessary(const Resolvent & our_resolvent,
+                        const std::tr1::shared_ptr<Resolution> & our_resolution);
+
+                void _add_dependencies_if_necessary(const Resolvent & our_resolvent,
                         const std::tr1::shared_ptr<Resolution> & our_resolution);
 
                 bool _care_about_dependency_spec(const Resolvent &, const std::tr1::shared_ptr<const Resolution> &,

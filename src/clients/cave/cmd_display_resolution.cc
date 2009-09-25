@@ -154,6 +154,29 @@ namespace
         }
     };
 
+    struct NotBestVisitor
+    {
+        bool visit(const ExistingNoChangeDecision &) const
+        {
+            return false;
+        }
+
+        bool visit(const NothingNoChangeDecision &) const
+        {
+            return false;
+        }
+
+        bool visit(const UnableToMakeDecision &) const
+        {
+            return false;
+        }
+
+        bool visit(const ChangesToMakeDecision & d) const
+        {
+            return ! d.best();
+        }
+    };
+
     void display_reasons(
             const std::tr1::shared_ptr<const Resolution> & resolution,
             const bool verbose)
@@ -211,7 +234,7 @@ namespace
                 cout << endl;
             }
 
-            if ((! resolution->decision()->is_best()) && resolution->decision()->kind() == dk_changes_to_make)
+            if (resolution->decision()->accept_returning<bool>(NotBestVisitor()))
                 cout << c::bold_red() << "    Which prevented selection of the best candidate" << c::normal() << endl;
         }
     }
@@ -232,6 +255,52 @@ namespace
         display_reasons(resolution, verbose);
     }
 
+    struct ChosenIDVisitor
+    {
+        const std::tr1::shared_ptr<const PackageID> visit(const ChangesToMakeDecision & decision) const
+        {
+            return decision.origin_id();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const ExistingNoChangeDecision & decision) const
+        {
+            return decision.existing_id();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+    };
+
+    struct DestinationVisitor
+    {
+        const std::tr1::shared_ptr<const Destination> visit(const ChangesToMakeDecision & decision) const
+        {
+            return decision.destination();
+        }
+
+        const std::tr1::shared_ptr<const Destination> visit(const ExistingNoChangeDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::tr1::shared_ptr<const Destination> visit(const NothingNoChangeDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::tr1::shared_ptr<const Destination> visit(const UnableToMakeDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+    };
+
     void display_resolution_list(
             const std::tr1::shared_ptr<Environment> & env,
             const std::tr1::shared_ptr<const Resolutions> & list,
@@ -240,34 +309,35 @@ namespace
         for (Resolutions::ConstIterator c(list->begin()), c_end(list->end()) ;
                 c != c_end ; ++c)
         {
-            const std::tr1::shared_ptr<const PackageID> id((*c)->decision()->if_package_id());
+            const std::tr1::shared_ptr<const PackageID> id((*c)->decision()->accept_returning<
+                    std::tr1::shared_ptr<const PackageID> >(ChosenIDVisitor()));
             if (! id)
             {
-                if ((*c)->decision()->kind() == dk_unable_to_decide)
-                {
-                    display_one_error(env, cmdline, *c, false);
-                    continue;
-                }
-                else
-                    throw InternalError(PALUDIS_HERE, "why did that happen?");
+                display_one_error(env, cmdline, *c, false);
+                continue;
             }
 
             bool is_new(false), is_upgrade(false), is_downgrade(false), is_reinstall(false),
                  other_slots(false);
             std::tr1::shared_ptr<const PackageID> old_id;
 
-            if ((*c)->decision()->destination()->replacing()->empty())
+            const std::tr1::shared_ptr<const Destination> destination((*c)->decision()->accept_returning<
+                    std::tr1::shared_ptr<const Destination> >(DestinationVisitor()));
+            if (! destination)
+                throw InternalError(PALUDIS_HERE, "huh? ! destination");
+
+            if (destination->replacing()->empty())
             {
                 is_new = true;
                 const std::tr1::shared_ptr<const PackageIDSequence> others((*env)[selection::SomeArbitraryVersion(
                         generator::Package(id->name()) &
-                        generator::InRepository((*c)->decision()->destination()->repository())
+                        generator::InRepository(destination->repository())
                         )]);
                 other_slots = ! others->empty();
             }
             else
-                for (PackageIDSequence::ConstIterator x((*c)->decision()->destination()->replacing()->begin()),
-                        x_end((*c)->decision()->destination()->replacing()->end()) ;
+                for (PackageIDSequence::ConstIterator x(destination->replacing()->begin()),
+                        x_end(destination->replacing()->end()) ;
                         x != x_end ; ++x)
                 {
                     old_id = *x;
@@ -320,13 +390,13 @@ namespace
 
             cout << c::normal() << " " << id->canonical_form(idcf_version);
 
-            cout << " to ::" << (*c)->decision()->destination()->repository();
-            if (! (*c)->decision()->destination()->replacing()->empty())
+            cout << " to ::" << destination->repository();
+            if (! destination->replacing()->empty())
             {
                 cout << " replacing";
                 bool first(true);
-                for (PackageIDSequence::ConstIterator x((*c)->decision()->destination()->replacing()->begin()),
-                        x_end((*c)->decision()->destination()->replacing()->end()) ;
+                for (PackageIDSequence::ConstIterator x(destination->replacing()->begin()),
+                        x_end(destination->replacing()->end()) ;
                         x != x_end ; ++x)
                 {
                     bool different(false);
@@ -530,12 +600,7 @@ namespace
 
         for (Resolutions::ConstIterator c(lists.errors()->begin()), c_end(lists.errors()->end()) ;
                 c != c_end ; ++c)
-        {
-            if ((*c)->decision()->kind() != dk_unable_to_decide)
-                continue;
-
             display_one_error(env, cmdline, *c, true);
-        }
 
         cout << endl;
     }
@@ -561,7 +626,12 @@ namespace
             for (Resolutions::ConstIterator r(lists.all()->begin()), r_end(lists.all()->end()) ;
                     r != r_end ; ++r)
             {
-                if (! (*r)->decision()->if_package_id())
+                const std::tr1::shared_ptr<const PackageID> id((*r)->decision()->accept_returning<
+                        std::tr1::shared_ptr<const PackageID> >(ChosenIDVisitor()));
+                const std::tr1::shared_ptr<const Destination> destination((*r)->decision()->accept_returning<
+                        std::tr1::shared_ptr<const Destination> >(DestinationVisitor()));
+
+                if (! id)
                 {
                     /* decided nothing, so we can only work for cat/pkg, where
                      * either can be wildcards (we could work for :slot too,
@@ -591,7 +661,7 @@ namespace
                 }
                 else
                 {
-                    if (! match_package(*env, spec, *(*r)->decision()->if_package_id(), MatchPackageOptions()))
+                    if (! match_package(*env, spec, *id, MatchPackageOptions()))
                         continue;
                 }
 
@@ -648,16 +718,19 @@ namespace
                     std::cout << std::endl;
                 }
 
-                if ((*r)->decision()->if_package_id())
+                if (id)
                 {
                     std::cout << "    The decision made was:" << std::endl;
-                    std::cout << "        Use " << *(*r)->decision()->if_package_id() << std::endl;
-                    std::cout << "        Install to repository " << (*r)->decision()->destination()->repository() << std::endl;
-                    if (! (*r)->decision()->destination()->replacing()->empty())
-                        for (PackageIDSequence::ConstIterator x((*r)->decision()->destination()->replacing()->begin()),
-                                x_end((*r)->decision()->destination()->replacing()->end()) ;
-                                x != x_end ; ++x)
-                            std::cout << "            Replacing " << **x << std::endl;
+                    std::cout << "        Use " << *id << std::endl;
+                    if (destination)
+                    {
+                        std::cout << "        Install to repository " << destination->repository() << std::endl;
+                        if (! destination->replacing()->empty())
+                            for (PackageIDSequence::ConstIterator x(destination->replacing()->begin()),
+                                    x_end(destination->replacing()->end()) ;
+                                    x != x_end ; ++x)
+                                std::cout << "            Replacing " << **x << std::endl;
+                    }
                     std::cout << std::endl;
                 }
                 else

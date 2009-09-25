@@ -32,6 +32,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/resolver/resolutions.hh>
 #include <paludis/resolver/serialise.hh>
 #include <paludis/resolver/reason.hh>
@@ -106,11 +107,10 @@ namespace
     int do_pretend(
             const std::tr1::shared_ptr<Environment> &,
             const ExecuteResolutionCommandLine & cmdline,
-            const std::tr1::shared_ptr<const Decision> & c,
+            const ChangesToMakeDecision & decision,
             const int x, const int y)
     {
-        const std::tr1::shared_ptr<const PackageID> id(c->if_package_id());
-        Context context("When pretending for '" + stringify(*id) + "':");
+        Context context("When pretending for '" + stringify(*decision.origin_id()) + "':");
 
         if (x > 1)
             std::cout << std::string(stringify(x - 1).length() + stringify(y).length() + 4, '\010');
@@ -121,7 +121,7 @@ namespace
             command = "$CAVE perform";
 
         command.append(" pretend --hooks --if-supported ");
-        command.append(stringify(id->uniquely_identifying_spec()));
+        command.append(stringify(decision.origin_id()->uniquely_identifying_spec()));
         command.append(" --x-of-y '" + stringify(x) + " of " + stringify(y) + "'");
 
         paludis::Command cmd(command);
@@ -130,40 +130,40 @@ namespace
 
     void starting_action(
             const std::string & action,
-            const std::tr1::shared_ptr<const Decision> & c,
+            const ChangesToMakeDecision & decision,
             const int x, const int y)
     {
         cout << endl;
         cout << c::bold_blue() << x << " of " << y << ": Starting " << action << " for "
-            << *c->if_package_id() << "..." << c::normal() << endl;
+            << *decision.origin_id() << "..." << c::normal() << endl;
         cout << endl;
     }
 
     void done_action(
             const std::string & action,
-            const std::tr1::shared_ptr<const Decision> & c,
+            const ChangesToMakeDecision & decision,
             const bool success)
     {
         cout << endl;
         if (success)
             cout << c::bold_green() << "Done " << action << " for "
-                << *c->if_package_id() << c::normal() << endl;
+                << *decision.origin_id() << c::normal() << endl;
         else
             cout << c::bold_red() << "Failed " << action << " for "
-                << *c->if_package_id() << c::normal() << endl;
+                << *decision.origin_id() << c::normal() << endl;
         cout << endl;
     }
 
     int do_fetch(
             const std::tr1::shared_ptr<Environment> &,
             const ExecuteResolutionCommandLine & cmdline,
-            const std::tr1::shared_ptr<const Decision> & c,
+            const ChangesToMakeDecision & decision,
             const int x, const int y)
     {
-        const std::tr1::shared_ptr<const PackageID> id(c->if_package_id());
+        const std::tr1::shared_ptr<const PackageID> id(decision.origin_id());
         Context context("When fetching for '" + stringify(*id) + "':");
 
-        starting_action("fetch", c, x, y);
+        starting_action("fetch", decision, x, y);
 
         std::string command(cmdline.program_options.a_perform_program.argument());
         if (command.empty())
@@ -176,20 +176,22 @@ namespace
         paludis::Command cmd(command);
         int retcode(run_command(cmd));
 
-        done_action("fetch", c, 0 == retcode);
+        done_action("fetch", decision, 0 == retcode);
         return retcode;
     }
 
     int do_install_slash(
             const std::tr1::shared_ptr<Environment> &,
             const ExecuteResolutionCommandLine & cmdline,
-            const std::tr1::shared_ptr<const Resolution> & r,
+            const std::tr1::shared_ptr<const Resolution> &,
+            const ChangesToMakeDecision & decision,
+            const std::tr1::shared_ptr<const Destination> & destination,
             const int x, const int y)
     {
-        const std::tr1::shared_ptr<const PackageID> id(r->decision()->if_package_id());
+        const std::tr1::shared_ptr<const PackageID> id(decision.origin_id());
         Context context("When installing to / for '" + stringify(*id) + "':");
 
-        starting_action("install to /", r->decision(), x, y);
+        starting_action("install to /", decision, x, y);
 
         std::string command(cmdline.program_options.a_perform_program.argument());
         if (command.empty())
@@ -197,9 +199,9 @@ namespace
 
         command.append(" install --hooks ");
         command.append(stringify(id->uniquely_identifying_spec()));
-        command.append(" --destination " + stringify(r->decision()->destination()->repository()));
-        for (PackageIDSequence::ConstIterator i(r->decision()->destination()->replacing()->begin()),
-                i_end(r->decision()->destination()->replacing()->end()) ;
+        command.append(" --destination " + stringify(destination->repository()));
+        for (PackageIDSequence::ConstIterator i(destination->replacing()->begin()),
+                i_end(destination->replacing()->end()) ;
                 i != i_end ; ++i)
             command.append(" --replacing " + stringify((*i)->uniquely_identifying_spec()));
 
@@ -235,7 +237,7 @@ namespace
         paludis::Command cmd(command);
         int retcode(run_command(cmd));
 
-        done_action("install to /", r->decision(), 0 == retcode);
+        done_action("install to /", decision, 0 == retcode);
         return retcode;
     }
 
@@ -264,7 +266,13 @@ namespace
 
             for (Resolutions::ConstIterator c(lists.ordered()->begin()), c_end(lists.ordered()->end()) ;
                     c != c_end ; ++c)
-                retcode |= do_pretend(env, cmdline, (*c)->decision(), ++x, y);
+            {
+                const ChangesToMakeDecision * const decision(simple_visitor_cast<const ChangesToMakeDecision>(
+                            *(*c)->decision()));
+                if (! decision)
+                    throw InternalError(PALUDIS_HERE, "huh? not ChangesToMakeDecision");
+                retcode |= do_pretend(env, cmdline, *decision, ++x, y);
+            }
 
             std::cout << std::endl;
 
@@ -288,13 +296,18 @@ namespace
             {
                 ++x;
 
-                retcode = do_fetch(env, cmdline, (*c)->decision(), x, y);
+                const ChangesToMakeDecision * const decision(simple_visitor_cast<const ChangesToMakeDecision>(
+                            *(*c)->decision()));
+                if (! decision)
+                    throw InternalError(PALUDIS_HERE, "huh? not ChangesToMakeDecision");
+
+                retcode = do_fetch(env, cmdline, *decision, x, y);
                 if (0 != retcode)
                     return retcode;
 
                 if ((*c)->resolvent().destination_type() == dt_install_to_slash)
                 {
-                    retcode = do_install_slash(env, cmdline, *c, x, y);
+                    retcode = do_install_slash(env, cmdline, *c, *decision, decision->destination(), x, y);
                     if (0 != retcode)
                         return retcode;
                 }
