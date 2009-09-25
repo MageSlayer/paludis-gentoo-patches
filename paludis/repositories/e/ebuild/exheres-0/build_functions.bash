@@ -129,14 +129,6 @@ econf()
             fi
         done
 
-        local libcmd=
-        if [[ -n "${ABI}" ]] ; then
-            local v="LIBDIR_${ABI}"
-            if [[ -n "${!v}" ]] ; then
-                libcmd="--libdir=${ECONF_PREFIX}/$(ebuild_get_libdir)"
-            fi
-        fi
-
         echo ${LOCAL_ECONF_WRAPPER} "${ECONF_SOURCE}"/configure \
             --prefix=/usr \
             --host=${CHOST} \
@@ -147,7 +139,8 @@ econf()
             --localstatedir=/var/lib \
             --disable-dependency-tracking \
             --enable-fast-install \
-            ${libcmd} "$@" ${LOCAL_EXTRA_ECONF} 1>&2
+            --libdir=${ECONF_PREFIX}/${LIBDIR:-lib} \
+            "$@" ${LOCAL_EXTRA_ECONF} 1>&2
 
         ${LOCAL_ECONF_WRAPPER} "${ECONF_SOURCE}"/configure \
             --prefix=/usr \
@@ -159,7 +152,8 @@ econf()
             --localstatedir=/var/lib \
             --disable-dependency-tracking \
             --enable-fast-install \
-            ${libcmd} "$@" ${LOCAL_EXTRA_ECONF} || paludis_die_unless_nonfatal "econf failed" || return 247
+            --libdir=${ECONF_PREFIX}/${LIBDIR:-lib} \
+            "$@" ${LOCAL_EXTRA_ECONF} || paludis_die_unless_nonfatal "econf failed" || return 247
 
     else
         paludis_die_unless_nonfatal "No configure script for econf" || return 247
@@ -181,7 +175,7 @@ einstall()
         cmd="${cmd} datadir=${IMAGE}/usr/share"
         cmd="${cmd} sysconfdir=${IMAGE}/etc"
         cmd="${cmd} localstatedir=${IMAGE}/var/lib"
-        cmd="${cmd} libdir=${IMAGE}/usr/$(ebuild_get_libdir)"
+        cmd="${cmd} libdir=${IMAGE}/usr/${LIBDIR:-lib}"
         cmd="${cmd} ${EXTRA_EINSTALL} ${@} install"
         echo "${cmd}" 1>&2
         ${cmd} || paludis_die_unless_nonfatal "einstall failed" || return 247

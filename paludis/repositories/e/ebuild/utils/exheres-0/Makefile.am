@@ -6,6 +6,7 @@ libexecprogdir = $(libexecdir)/paludis/utils/exheres-0
 libexecprog_SCRIPTS = \
 	dohard \
 	dohtml \
+	dolib \
 	dosed \
 	donewins \
 	herebin \
