@@ -131,7 +131,7 @@ DisplayCallback::update() const
 
         if (! s.empty())
             s.append(", ");
-        s.append(stringify(t) + " metadata (" + ss + ")");
+        s.append(stringify(t) + " metadata (" + ss + ") ");
     }
 
     std::cout << std::string(_imp->width, '\010') << s;
