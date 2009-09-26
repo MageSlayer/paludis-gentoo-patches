@@ -32,6 +32,7 @@
 #include <paludis/resolver/resolver_functions-fwd.hh>
 #include <paludis/resolver/destination_types-fwd.hh>
 #include <paludis/resolver/destination-fwd.hh>
+#include <paludis/resolver/unsuitable_candidates-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -84,6 +85,10 @@ namespace paludis
                 void _apply_resolution_constraint(const Resolvent &,
                         const std::tr1::shared_ptr<Resolution> &,
                         const std::tr1::shared_ptr<const Constraint> &);
+
+                bool _check_constraint(const Resolvent &,
+                        const std::tr1::shared_ptr<const Constraint> & constraint,
+                        const std::tr1::shared_ptr<const Decision> & decision) const;
 
                 bool _verify_new_constraint(const Resolvent &,
                         const std::tr1::shared_ptr<const Resolution> &,
@@ -164,11 +169,22 @@ namespace paludis
 
                 const std::tr1::shared_ptr<const PackageID> _find_existing_id_for(
                         const Resolvent &, const std::tr1::shared_ptr<const Resolution> &) const;
+                const std::tr1::shared_ptr<const PackageIDSequence> _find_installable_id_candidates_for(
+                        const Resolvent &, const std::tr1::shared_ptr<const Resolution> &,
+                        const bool include_errors) const;
                 const std::pair<const std::tr1::shared_ptr<const PackageID>, bool> _find_installable_id_for(
                         const Resolvent &, const std::tr1::shared_ptr<const Resolution> &) const;
                 const std::pair<const std::tr1::shared_ptr<const PackageID>, bool> _find_id_for_from(
                         const Resolvent &, const std::tr1::shared_ptr<const Resolution> &,
                         const std::tr1::shared_ptr<const PackageIDSequence> &) const;
+
+                const std::tr1::shared_ptr<const Constraints> _get_unmatching_constraints(
+                        const Resolvent &, const std::tr1::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                UnsuitableCandidate _make_unsuitable_candidate(
+                        const Resolvent &,
+                        const std::tr1::shared_ptr<const Resolution> &,
+                        const std::tr1::shared_ptr<const PackageID> &) const;
 
                 void _need_rewrites() const;
 

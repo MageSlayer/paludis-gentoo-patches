@@ -30,6 +30,7 @@
 #include <paludis/resolver/resolutions.hh>
 #include <paludis/resolver/serialise.hh>
 #include <paludis/resolver/destination.hh>
+#include <paludis/resolver/unsuitable_candidates.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/log.hh>
@@ -546,11 +547,11 @@ namespace
 }
 
 bool
-Resolver::_verify_new_constraint(const Resolvent &,
-        const std::tr1::shared_ptr<const Resolution> & resolution,
-        const std::tr1::shared_ptr<const Constraint> & constraint)
+Resolver::_check_constraint(const Resolvent &,
+        const std::tr1::shared_ptr<const Constraint> & constraint,
+        const std::tr1::shared_ptr<const Decision> & decision) const
 {
-    const std::tr1::shared_ptr<const PackageID> chosen_id(resolution->decision()->accept_returning<
+    const std::tr1::shared_ptr<const PackageID> chosen_id(decision->accept_returning<
             std::tr1::shared_ptr<const PackageID> >(ChosenIDVisitor()));
 
     if (chosen_id)
@@ -573,16 +574,24 @@ Resolver::_verify_new_constraint(const Resolvent &,
             return false;
     }
 
-    if (! resolution->decision()->accept_returning<bool>(CheckUseExistingVisitor(constraint)))
+    if (! decision->accept_returning<bool>(CheckUseExistingVisitor(constraint)))
         return false;
 
     if (! constraint->untaken())
     {
-        if (! resolution->decision()->taken())
+        if (! decision->taken())
             return false;
     }
 
     return true;
+}
+
+bool
+Resolver::_verify_new_constraint(const Resolvent & resolvent,
+        const std::tr1::shared_ptr<const Resolution> & resolution,
+        const std::tr1::shared_ptr<const Constraint> & constraint)
+{
+    return _check_constraint(resolvent, constraint, resolution->decision());
 }
 
 namespace
@@ -1559,12 +1568,36 @@ Resolver::_try_to_find_decision_for(
 
 const std::tr1::shared_ptr<Decision>
 Resolver::_cannot_decide_for(
-        const Resolvent &,
+        const Resolvent & resolvent,
         const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
+    const std::tr1::shared_ptr<UnsuitableCandidates> unsuitable_candidates(new UnsuitableCandidates);
+
+    const std::tr1::shared_ptr<const PackageID> existing_id(_find_existing_id_for(resolvent, resolution));
+    if (existing_id)
+        unsuitable_candidates->push_back(_make_unsuitable_candidate(resolvent, resolution, existing_id));
+
+    const std::tr1::shared_ptr<const PackageIDSequence> installable_ids(_find_installable_id_candidates_for(resolvent, resolution, true));
+    for (PackageIDSequence::ConstIterator i(installable_ids->begin()), i_end(installable_ids->end()) ;
+            i != i_end ; ++i)
+        unsuitable_candidates->push_back(_make_unsuitable_candidate(resolvent, resolution, *i));
+
     return make_shared_ptr(new UnableToMakeDecision(
+                unsuitable_candidates,
                 ! resolution->constraints()->all_untaken()
                 ));
+}
+
+UnsuitableCandidate
+Resolver::_make_unsuitable_candidate(
+        const Resolvent & resolvent,
+        const std::tr1::shared_ptr<const Resolution> &,
+        const std::tr1::shared_ptr<const PackageID> & id) const
+{
+    return make_named_values<UnsuitableCandidate>(
+            value_for<n::package_id>(id),
+            value_for<n::unmet_constraints>(_get_unmatching_constraints(resolvent, id))
+            );
 }
 
 const std::tr1::shared_ptr<const PackageID>
@@ -1578,17 +1611,23 @@ Resolver::_find_existing_id_for(const Resolvent & resolvent, const std::tr1::sha
     return _find_id_for_from(resolvent, resolution, ids).first;
 }
 
+const std::tr1::shared_ptr<const PackageIDSequence>
+Resolver::_find_installable_id_candidates_for(const Resolvent & resolvent,
+        const std::tr1::shared_ptr<const Resolution> &,
+        const bool include_errors) const
+{
+    return (*_imp->env)[selection::AllVersionsSorted(
+            generator::Package(resolvent.package()) |
+            make_slot_filter(resolvent) |
+            filter::SupportsAction<InstallAction>() |
+            ((! include_errors) ? Filter(filter::NotMasked()) : Filter(filter::All()))
+            )];
+}
+
 const std::pair<const std::tr1::shared_ptr<const PackageID>, bool>
 Resolver::_find_installable_id_for(const Resolvent & resolvent, const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
-    const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::AllVersionsSorted(
-                generator::Package(resolvent.package()) |
-                make_slot_filter(resolvent) |
-                filter::SupportsAction<InstallAction>() |
-                filter::NotMasked()
-                )]);
-
-    return _find_id_for_from(resolvent, resolution, ids);
+    return _find_id_for_from(resolvent, resolution, _find_installable_id_candidates_for(resolvent, resolution, false));
 }
 
 const std::pair<const std::tr1::shared_ptr<const PackageID>, bool>
@@ -1679,6 +1718,30 @@ Resolver::rewrite_if_special(const PackageOrBlockDepSpec & s, const Resolvent & 
     }
     else
         return make_null_shared_ptr();
+}
+
+const std::tr1::shared_ptr<const Constraints>
+Resolver::_get_unmatching_constraints(
+        const Resolvent & resolvent,
+        const std::tr1::shared_ptr<const PackageID> & id) const
+{
+    const std::tr1::shared_ptr<const Resolution> resolution(_resolution_for_resolvent(resolvent));
+    const std::tr1::shared_ptr<Constraints> result(new Constraints);
+
+    for (Constraints::ConstIterator c(resolution->constraints()->begin()),
+            c_end(resolution->constraints()->end()) ;
+            c != c_end ; ++c)
+    {
+        if (! _check_constraint(resolvent, *c, make_shared_ptr(new ChangesToMakeDecision(
+                            id,
+                            false,
+                            ! (*c)->untaken(),
+                            make_null_shared_ptr()
+                            ))))
+            result->add(*c);
+    }
+
+    return result;
 }
 
 void

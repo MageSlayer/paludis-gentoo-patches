@@ -20,9 +20,12 @@
 #include <paludis/resolver/decision.hh>
 #include <paludis/resolver/serialise-impl.hh>
 #include <paludis/resolver/destination.hh>
+#include <paludis/resolver/unsuitable_candidates.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <sstream>
 
 using namespace paludis;
@@ -70,7 +73,14 @@ Decision::deserialise(Deserialisation & d)
     else if (d.class_name() == "UnableToMakeDecision")
     {
         Deserialisator v(d, "UnableToMakeDecision");
+
+        std::tr1::shared_ptr<UnsuitableCandidates> unsuitable_candidates(new UnsuitableCandidates);
+        Deserialisator vv(*v.find_remove_member("unsuitable_candidates"), "c");
+        for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
+            unsuitable_candidates->push_back(vv.member<UnsuitableCandidate>(stringify(n)));
+
         return make_shared_ptr(new UnableToMakeDecision(
+                    unsuitable_candidates,
                     v.member<bool>("taken")
                     ));
     }
@@ -286,17 +296,21 @@ namespace paludis
     template <>
     struct Implementation<UnableToMakeDecision>
     {
+        const std::tr1::shared_ptr<const UnsuitableCandidates> unsuitable_candidates;
         const bool taken;
 
-        Implementation(const bool t) :
+        Implementation(const std::tr1::shared_ptr<const UnsuitableCandidates> & u, const bool t) :
+            unsuitable_candidates(u),
             taken(t)
         {
         }
     };
 }
 
-UnableToMakeDecision::UnableToMakeDecision(const bool t) :
-    PrivateImplementationPattern<UnableToMakeDecision>(new Implementation<UnableToMakeDecision>(t))
+UnableToMakeDecision::UnableToMakeDecision(
+        const std::tr1::shared_ptr<const UnsuitableCandidates> & u,
+        const bool t) :
+    PrivateImplementationPattern<UnableToMakeDecision>(new Implementation<UnableToMakeDecision>(u, t))
 {
 }
 
@@ -307,6 +321,12 @@ UnableToMakeDecision::~UnableToMakeDecision()
 {
 }
 #endif
+
+const std::tr1::shared_ptr<const UnsuitableCandidates>
+UnableToMakeDecision::unsuitable_candidates() const
+{
+    return _imp->unsuitable_candidates;
+}
 
 bool
 UnableToMakeDecision::taken() const
@@ -319,6 +339,7 @@ UnableToMakeDecision::serialise(Serialiser & s) const
 {
     s.object("UnableToMakeDecision")
         .member(SerialiserFlags<>(), "taken", taken())
+        .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "unsuitable_candidates", unsuitable_candidates())
         ;
 }
 

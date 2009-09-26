@@ -44,6 +44,7 @@
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/destination.hh>
+#include <paludis/resolver/unsuitable_candidates.hh>
 #include <paludis/package_id.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -57,6 +58,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/environment.hh>
+#include <paludis/mask.hh>
 
 #include <set>
 #include <iterator>
@@ -239,6 +241,58 @@ namespace
         }
     }
 
+    std::string mask_stringifier(const Mask & mask)
+    {
+        return stringify(mask.key());
+    }
+
+    struct DisplayOneErrorVisitor
+    {
+        void visit(const UnableToMakeDecision & d) const
+        {
+            if (d.unsuitable_candidates()->empty())
+                cout << "    No potential candidates were found" << endl;
+            else
+            {
+                cout << "    Potential candidates were:" << endl;
+                for (UnsuitableCandidates::ConstIterator u(d.unsuitable_candidates()->begin()), u_end(d.unsuitable_candidates()->end()) ;
+                        u != u_end ; ++u)
+                {
+                    cout << "        " << *u->package_id() << ": ";
+
+                    if (u->package_id()->masked())
+                        cout << c::bold_red() << "masked" << c::normal() << " (" << join(indirect_iterator(u->package_id()->begin_masks()),
+                                    indirect_iterator(u->package_id()->end_masks()), "", mask_stringifier) << ")";
+
+                    if (! u->unmet_constraints()->empty())
+                    {
+                        if (u->package_id()->masked())
+                            cout << ", ";
+                        cout << c::bold_red() << "unmatching" << c::normal() << " (" << (*u->unmet_constraints()->begin())->spec();
+                        int dx(std::distance(u->unmet_constraints()->begin(), u->unmet_constraints()->end()));
+                        if (dx > 1)
+                            cout << ", " << dx << " more";
+                        cout << ")";
+                    }
+
+                    cout << endl;
+                }
+            }
+        }
+
+        void visit(const ExistingNoChangeDecision &) const
+        {
+        }
+
+        void visit(const ChangesToMakeDecision &) const
+        {
+        }
+
+        void visit(const NothingNoChangeDecision &) const
+        {
+        }
+    };
+
     void display_one_error(
             const std::tr1::shared_ptr<Environment> &,
             const DisplayResolutionCommandLine &,
@@ -253,6 +307,8 @@ namespace
         cout << " (no decision could be reached)" << endl;
 
         display_reasons(resolution, verbose);
+
+        resolution->decision()->accept(DisplayOneErrorVisitor());
     }
 
     struct ChosenIDVisitor

@@ -23,6 +23,7 @@
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/resolver/serialise-fwd.hh>
 #include <paludis/resolver/destination-fwd.hh>
+#include <paludis/resolver/unsuitable_candidates-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
@@ -124,12 +125,16 @@ namespace paludis
             private PrivateImplementationPattern<UnableToMakeDecision>
         {
             public:
-                UnableToMakeDecision(const bool taken);
+                UnableToMakeDecision(
+                        const std::tr1::shared_ptr<const UnsuitableCandidates> &,
+                        const bool taken);
                 ~UnableToMakeDecision();
 
                 virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;
+
+                const std::tr1::shared_ptr<const UnsuitableCandidates> unsuitable_candidates() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 
