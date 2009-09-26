@@ -34,21 +34,37 @@ namespace paludis
     namespace n
     {
         struct destination_type;
+        struct name_or_null;
+        struct null_means_unknown;
         struct package;
-        struct slot_name_or_null;
+        struct slot;
     }
 
     namespace resolver
     {
+        struct SlotNameOrNull
+        {
+            NamedValue<n::name_or_null, std::tr1::shared_ptr<const SlotName> > name_or_null;
+            NamedValue<n::null_means_unknown, bool> null_means_unknown;
+
+            void serialise(Serialiser &) const;
+            static const SlotNameOrNull deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+
         struct Resolvent
         {
             NamedValue<n::destination_type, DestinationType> destination_type;
             NamedValue<n::package, QualifiedPackageName> package;
-            NamedValue<n::slot_name_or_null, std::tr1::shared_ptr<const SlotName> > slot_name_or_null;
+            NamedValue<n::slot, SlotNameOrNull> slot;
 
             Resolvent(const Resolvent &);
-            Resolvent(const QualifiedPackageName &, const std::tr1::shared_ptr<const SlotName> &, const DestinationType);
-            Resolvent(const PackageDepSpec &, const std::tr1::shared_ptr<const SlotName> &, const DestinationType);
+
+            Resolvent(const QualifiedPackageName &, const SlotName &, const DestinationType);
+            Resolvent(const QualifiedPackageName &, const SlotNameOrNull &, const DestinationType);
+
+            Resolvent(const PackageDepSpec &, const bool, const DestinationType);
+            Resolvent(const PackageDepSpec &, const SlotName &, const DestinationType);
+
             Resolvent(const std::tr1::shared_ptr<const PackageID> &, const DestinationType);
 
             void serialise(Serialiser &) const;

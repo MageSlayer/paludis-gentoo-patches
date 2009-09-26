@@ -299,7 +299,9 @@ namespace
             const std::tr1::shared_ptr<const Resolution> & resolution,
             const bool verbose)
     {
-        if (resolution->resolvent().slot_name_or_null())
+        if (resolution->resolvent().slot().name_or_null())
+            cout << "?   " << c::bold_red() << resolution->resolvent() << c::normal();
+        else if (! resolution->resolvent().slot().null_means_unknown())
             cout << "?   " << c::bold_red() << resolution->resolvent() << c::normal();
         else
             cout << "?   " << c::bold_red() << resolution->resolvent().package()

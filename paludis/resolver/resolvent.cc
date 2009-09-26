@@ -39,18 +39,22 @@ paludis::resolver::operator< (const Resolvent & a, const Resolvent & b)
     if (a.package() > b.package())
         return false;
 
-    /* no slot orders before slot */
-    if (a.slot_name_or_null() && b.slot_name_or_null())
+    /* unknown slot orders before no slot orders before slot */
+    if (a.slot().name_or_null() && b.slot().name_or_null())
     {
-        if (*a.slot_name_or_null() < *b.slot_name_or_null())
+        if (*a.slot().name_or_null() < *b.slot().name_or_null())
             return true;
-        if (*a.slot_name_or_null() > *b.slot_name_or_null())
+        if (*a.slot().name_or_null() > *b.slot().name_or_null())
             return false;
     }
-    else if (a.slot_name_or_null())
+    else if (a.slot().name_or_null())
         return false;
-    else if (b.slot_name_or_null())
+    else if (b.slot().name_or_null())
         return true;
+    else if (a.slot().null_means_unknown() && ! b.slot().null_means_unknown())
+        return true;
+    else if (! a.slot().null_means_unknown() && b.slot().null_means_unknown())
+        return false;
 
     return a.destination_type() < b.destination_type();
 }
@@ -61,13 +65,25 @@ paludis::resolver::operator== (const Resolvent & a, const Resolvent & b)
     if (a.package() != b.package())
         return false;
 
-    if (a.slot_name_or_null() != b.slot_name_or_null())
-        return false;
-
-    if (a.slot_name_or_null() && *a.slot_name_or_null() != *b.slot_name_or_null())
+    if (! (a.slot() == b.slot()))
         return false;
 
     if (a.destination_type() != b.destination_type())
+        return false;
+
+    return true;
+}
+
+bool
+paludis::resolver::operator== (const SlotNameOrNull & a, const SlotNameOrNull & b)
+{
+    if (a.name_or_null() != b.name_or_null())
+        return false;
+
+    if ((a.name_or_null()) && (*a.name_or_null() != *b.name_or_null()))
+        return false;
+
+    if ((! a.name_or_null()) && (a.null_means_unknown() != b.null_means_unknown()))
         return false;
 
     return true;
@@ -90,21 +106,50 @@ Resolvent::Resolvent(const Resolvent & other) :
 
 Resolvent::Resolvent(
         const PackageDepSpec & spec,
-        const std::tr1::shared_ptr<const SlotName> & s,
+        const SlotName & s,
         const DestinationType t) :
     destination_type(value_for<n::destination_type>(t)),
     package(value_for<n::package>(*spec.package_ptr())),
-    slot_name_or_null(s)
+    slot(make_named_values<SlotNameOrNull>(
+                value_for<n::name_or_null>(make_shared_ptr(new SlotName(s))),
+                value_for<n::null_means_unknown>(false)
+                ))
+{
+}
+
+Resolvent::Resolvent(
+        const PackageDepSpec & spec,
+        const bool b,
+        const DestinationType t) :
+    destination_type(value_for<n::destination_type>(t)),
+    package(value_for<n::package>(*spec.package_ptr())),
+    slot(make_named_values<SlotNameOrNull>(
+                value_for<n::name_or_null>(make_null_shared_ptr()),
+                value_for<n::null_means_unknown>(b)
+                ))
 {
 }
 
 Resolvent::Resolvent(
         const QualifiedPackageName & n,
-        const std::tr1::shared_ptr<const SlotName> & s,
+        const SlotName & s,
         const DestinationType t) :
     destination_type(value_for<n::destination_type>(t)),
     package(value_for<n::package>(n)),
-    slot_name_or_null(s)
+    slot(make_named_values<SlotNameOrNull>(
+                value_for<n::name_or_null>(make_shared_ptr(new SlotName(s))),
+                value_for<n::null_means_unknown>(false)
+                ))
+{
+}
+
+Resolvent::Resolvent(
+        const QualifiedPackageName & n,
+        const SlotNameOrNull & s,
+        const DestinationType t) :
+    destination_type(value_for<n::destination_type>(t)),
+    package(value_for<n::package>(n)),
+    slot(s)
 {
 }
 
@@ -113,7 +158,12 @@ Resolvent::Resolvent(
         const DestinationType t) :
     destination_type(value_for<n::destination_type>(t)),
     package(id->name()),
-    slot_name_or_null(id->slot_key() ? make_shared_ptr(new SlotName(id->slot_key()->value())) : make_null_shared_ptr())
+    slot(make_named_values<SlotNameOrNull>(
+                value_for<n::name_or_null>(id->slot_key() ?
+                    make_shared_ptr(new SlotName(id->slot_key()->value())) :
+                    make_null_shared_ptr()),
+                value_for<n::null_means_unknown>(false)
+                ))
 {
 }
 
@@ -123,7 +173,7 @@ Resolvent::serialise(Serialiser & s) const
     s.object("Resolvent")
         .member(SerialiserFlags<>(), "destination_type", stringify(destination_type()))
         .member(SerialiserFlags<>(), "package", stringify(package()))
-        .member(SerialiserFlags<>(), "slot", slot_name_or_null() ? stringify(*slot_name_or_null()) : "")
+        .member(SerialiserFlags<>(), "slot", slot())
         ;
 }
 
@@ -132,11 +182,9 @@ Resolvent::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "Resolvent");
 
-    std::string s(v.member<std::string>("slot"));
-
     return Resolvent(
             QualifiedPackageName(v.member<std::string>("package")),
-            s.empty() ? make_null_shared_ptr() : make_shared_ptr(new SlotName(s)),
+            v.member<SlotNameOrNull>("slot"),
             destringify<DestinationType>(v.member<std::string>("destination_type"))
             );
 }
@@ -144,23 +192,55 @@ Resolvent::deserialise(Deserialisation & d)
 Filter
 paludis::resolver::make_slot_filter(const Resolvent & r)
 {
-    if (r.slot_name_or_null())
-        return filter::Slot(*r.slot_name_or_null());
+    if (r.slot().name_or_null())
+        return filter::Slot(*r.slot().name_or_null());
+    else if (r.slot().null_means_unknown())
+        return filter::All();
     else
         return filter::NoSlot();
 }
 
 std::ostream &
-paludis::resolver::operator<< (std::ostream & s, const Resolvent & r)
+paludis::resolver::operator<< (std::ostream & s, const SlotNameOrNull & n)
 {
-    s << r.package();
-    if (r.slot_name_or_null())
-        s << ":" << *r.slot_name_or_null();
+    if (n.name_or_null())
+        s << ":" << *n.name_or_null();
+    else if (n.null_means_unknown())
+        s << ":(unknown)";
     else
         s << ":(no slot)";
-    s << " -> " << r.destination_type();
     return s;
 }
+
+std::ostream &
+paludis::resolver::operator<< (std::ostream & s, const Resolvent & r)
+{
+    s << r.package() << r.slot() << s << " -> " << r.destination_type();
+    return s;
+}
+
+void
+SlotNameOrNull::serialise(Serialiser & s) const
+{
+    s.object("SlotNameOrNull")
+        .member(SerialiserFlags<>(), "name_or_null", name_or_null() ? stringify(*name_or_null()) : "")
+        .member(SerialiserFlags<>(), "null_means_unknown", null_means_unknown())
+        ;
+}
+
+const SlotNameOrNull
+SlotNameOrNull::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "SlotNameOrNull");
+
+    std::string s(v.member<std::string>("name_or_null"));
+
+    return make_named_values<SlotNameOrNull>(
+            value_for<n::name_or_null>(s.empty() ? make_null_shared_ptr() : make_shared_ptr(new SlotName(s))),
+            value_for<n::null_means_unknown>(v.member<bool>("null_means_unknown"))
+            );
+}
+
 
 template class Sequence<Resolvent>;
 template class WrappedForwardIterator<Resolvents::ConstIteratorTag, Resolvent>;

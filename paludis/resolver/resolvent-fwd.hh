@@ -30,13 +30,17 @@ namespace paludis
     namespace resolver
     {
         struct Resolvent;
+        struct SlotNameOrNull;
 
         typedef Sequence<Resolvent> Resolvents;
 
         std::ostream & operator<< (std::ostream &, const Resolvent &) PALUDIS_VISIBLE;
+        std::ostream & operator<< (std::ostream &, const SlotNameOrNull &) PALUDIS_VISIBLE;
 
         bool operator< (const Resolvent &, const Resolvent &) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
         bool operator== (const Resolvent &, const Resolvent &) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
+
+        bool operator== (const SlotNameOrNull &, const SlotNameOrNull &) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
         Filter make_slot_filter(const Resolvent &) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
     }

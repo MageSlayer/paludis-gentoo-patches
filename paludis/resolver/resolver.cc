@@ -1324,7 +1324,7 @@ Resolver::_get_resolvents_for_blocker(const BlockDepSpec & spec) const
     {
         for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
             if (destination_types[*t])
-                result->push_back(Resolvent(spec.blocking(), exact_slot, *t));
+                result->push_back(Resolvent(spec.blocking(), *exact_slot, *t));
     }
     else
     {
@@ -1368,7 +1368,7 @@ Resolver::_get_resolvents_for(
         DestinationTypes destination_types(_get_destination_types_for(spec, reason));
         for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
             if (destination_types[*t])
-                result->push_back(Resolvent(spec, exact_slot, *t));
+                result->push_back(Resolvent(spec, *exact_slot, *t));
         return result;
     }
     else
@@ -1393,7 +1393,7 @@ Resolver::_get_error_resolvents_for(
     DestinationTypes destination_types(_get_destination_types_for(spec, reason));
     for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
         if (destination_types[*t])
-            result->push_back(Resolvent(spec, make_null_shared_ptr(), *t));
+            result->push_back(Resolvent(spec, true, *t));
     return result;
 }
 
