@@ -23,8 +23,6 @@
 
 source "${PALUDIS_EBUILD_DIR}"/die_functions.bash
 
-export PATH="${PALUDIS_EBUILD_DIR:+${PALUDIS_EBUILD_DIR}/utils:}${PATH}"
-
 if [[ ${#} -lt 1 ]]; then
     paludis_die_or_error "at least one argument needed"
 fi
