@@ -76,7 +76,8 @@ namespace paludis
             const std::tr1::shared_ptr<const Repository> find_repository_for_fn(
                     const Environment * const,
                     const Resolvent &,
-                    const std::tr1::shared_ptr<const Resolution> &);
+                    const std::tr1::shared_ptr<const Resolution> &,
+                    const ChangesToMakeDecision &);
 
             FilteredGenerator make_destination_filtered_generator_fn(const Generator &, const Resolvent &);
 
@@ -113,14 +114,15 @@ namespace paludis
 
                     static std::string check_finished_msg(const std::tr1::shared_ptr<const Resolution> & r);
 
-                    static bool check_kind(const DecisionKind, const QualifiedPackageName &, const std::tr1::shared_ptr<const Resolution> & r);
+                    static bool check_kind(const std::string & kind, const QualifiedPackageName &,
+                            const std::tr1::shared_ptr<const Resolution> & r);
 
-                    static std::string check_kind_msg(const DecisionKind, const QualifiedPackageName &,
+                    static std::string check_kind_msg(const std::string &, const QualifiedPackageName &,
                             const std::tr1::shared_ptr<const Resolution> & r);
 
                     ResolutionListChecks & qpn(const QualifiedPackageName & q);
 
-                    ResolutionListChecks & kind(const DecisionKind, const QualifiedPackageName & q);
+                    ResolutionListChecks & kind(const std::string & kind, const QualifiedPackageName & q);
 
                     ResolutionListChecks & finished();
                 };

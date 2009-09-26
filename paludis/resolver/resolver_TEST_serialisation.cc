@@ -87,7 +87,7 @@ namespace test_cases
             {
                 TestMessageSuffix s("errors");
                 check_resolution_list(resolutions->errors(), ResolutionListChecks()
-                        .kind(dk_unable_to_decide, QualifiedPackageName("serialisation/error"))
+                        .kind("unable_to_make_decision", QualifiedPackageName("serialisation/error"))
                         .finished()
                         );
             }

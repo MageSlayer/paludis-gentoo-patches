@@ -574,11 +574,18 @@ namespace
         return v.is_compiled_against_dep;
     }
 
-    bool care_about_dep_fn(const Environment * const, const ResolveCommandLine & cmdline,
-            const Resolvent &, const std::tr1::shared_ptr<const Resolution> & resolution,
-            const SanitisedDependency & dep)
+    struct CareAboutDepFnVisitor
     {
-        if (dk_existing_no_change == resolution->decision()->kind())
+        const ResolveCommandLine & cmdline;
+        const SanitisedDependency dep;
+
+        CareAboutDepFnVisitor(const ResolveCommandLine & c, const SanitisedDependency & d) :
+            cmdline(c),
+            dep(d)
+        {
+        }
+
+        bool visit(const ExistingNoChangeDecision &) const
         {
             if (! cmdline.resolution_options.a_follow_installed_build_dependencies.specified())
                 if (is_just_build_dep(dep))
@@ -592,9 +599,32 @@ namespace
                 /* should only return false if the dep's not already installedish */
                 return false;
             }
+
+            return true;
         }
 
-        return true;
+        bool visit(const NothingNoChangeDecision &) const
+        {
+            return true;
+        }
+
+        bool visit(const UnableToMakeDecision &) const
+        {
+            return true;
+        }
+
+        bool visit(const ChangesToMakeDecision &) const
+        {
+            return true;
+        }
+    };
+
+    bool care_about_dep_fn(const Environment * const, const ResolveCommandLine & cmdline,
+            const Resolvent &, const std::tr1::shared_ptr<const Resolution> & resolution,
+            const SanitisedDependency & dep)
+    {
+        CareAboutDepFnVisitor v(cmdline, dep);
+        return resolution->decision()->accept_returning<bool>(v);
     }
 
     bool
@@ -614,7 +644,8 @@ namespace
     find_repository_for_fn(const Environment * const env,
             const ResolveCommandLine & cmdline,
             const Resolvent & resolvent,
-            const std::tr1::shared_ptr<const Resolution> & resolution)
+            const std::tr1::shared_ptr<const Resolution> &,
+            const ChangesToMakeDecision & decision)
     {
         std::tr1::shared_ptr<const Repository> result;
         for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
@@ -641,10 +672,10 @@ namespace
             }
 
             if ((*r)->destination_interface() &&
-                    (*r)->destination_interface()->is_suitable_destination_for(*resolution->decision()->if_package_id()))
+                    (*r)->destination_interface()->is_suitable_destination_for(*decision.origin_id()))
             {
                 if (result)
-                    throw ConfigurationError("For '" + stringify(*resolution->decision()->if_package_id())
+                    throw ConfigurationError("For '" + stringify(*decision.origin_id())
                             + "' with destination type " + stringify(resolvent.destination_type())
                             + ", don't know whether to install to ::" + stringify(result->name())
                             + " or ::" + stringify((*r)->name()));
@@ -654,7 +685,7 @@ namespace
         }
 
         if (! result)
-            throw ConfigurationError("No repository suitable for '" + stringify(*resolution->decision()->if_package_id())
+            throw ConfigurationError("No repository suitable for '" + stringify(*decision.origin_id())
                     + "' with destination type " + stringify(resolvent.destination_type()) + " has been configured");
         return result;
     }
@@ -765,6 +796,52 @@ namespace
         become_command(cmd);
     }
 
+    struct ChosenIDVisitor
+    {
+        const std::tr1::shared_ptr<const PackageID> visit(const ChangesToMakeDecision & decision) const
+        {
+            return decision.origin_id();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const ExistingNoChangeDecision & decision) const
+        {
+            return decision.existing_id();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+    };
+
+    struct KindNameVisitor
+    {
+        const std::string visit(const UnableToMakeDecision &) const
+        {
+            return "unable_to_make_decision";
+        }
+
+        const std::string visit(const NothingNoChangeDecision &) const
+        {
+            return "nothing_no_change";
+        }
+
+        const std::string visit(const ExistingNoChangeDecision &) const
+        {
+            return "existing_no_change";
+        }
+
+        const std::string visit(const ChangesToMakeDecision &) const
+        {
+            return "changes_to_make";
+        }
+    };
+
     void display_restarts_if_requested(const std::list<SuggestRestart> & restarts,
             const ResolveCommandLine & cmdline)
     {
@@ -779,10 +856,12 @@ namespace
             std::cout << "* " << r->resolvent() << std::endl;
 
             std::cout << "    Had decided upon ";
-            if (r->previous_decision()->if_package_id())
-                std::cout << *r->previous_decision()->if_package_id();
+            const std::tr1::shared_ptr<const PackageID> id(r->previous_decision()->accept_returning<
+                    std::tr1::shared_ptr<const PackageID> >(ChosenIDVisitor()));
+            if (id)
+                std::cout << *id;
             else
-                std::cout << r->previous_decision()->kind();
+                std::cout << r->previous_decision()->accept_returning<std::string>(KindNameVisitor());
             std::cout << std::endl;
 
             std::cout << "    Which did not satisfy " << r->problematic_constraint()->spec()
@@ -882,7 +961,8 @@ ResolveCommand::run(
                         env.get(), std::tr1::cref(cmdline), std::tr1::placeholders::_1,
                         std::tr1::placeholders::_2, std::tr1::placeholders::_3)),
                 value_for<n::find_repository_for_fn>(std::tr1::bind(&find_repository_for_fn,
-                        env.get(), std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2)),
+                        env.get(), std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2,
+                        std::tr1::placeholders::_3)),
                 value_for<n::get_destination_types_for_fn>(std::tr1::bind(&get_destination_types_for_fn,
                         env.get(), std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2)),
                 value_for<n::get_initial_constraints_for_fn>(std::tr1::bind(&initial_constraints_for_fn,

@@ -17,22 +17,18 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_DECISION_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_DECISION_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_UNSUITABLE_CANDIDATES_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_UNSUITABLE_CANDIDATES_FWD_HH 1
 
-#include <paludis/util/attributes.hh>
-#include <iosfwd>
+#include <paludis/util/sequence-fwd.hh>
 
 namespace paludis
 {
     namespace resolver
     {
-        class Decision;
+        struct UnsuitableCandidate;
 
-        class NothingNoChangeDecision;
-        class ExistingNoChangeDecision;
-        class ChangesToMakeDecision;
-        class UnableToMakeDecision;
+        typedef Sequence<UnsuitableCandidate> UnsuitableCandidates;
     }
 }
 

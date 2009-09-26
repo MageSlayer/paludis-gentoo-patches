@@ -1,24 +1,21 @@
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 MAINTAINERCLEANFILES = Makefile.in
 DISTCLEANFILES = \
-	decision-se.hh decision-se.cc \
 	destination_types-se.hh destination_types-se.cc \
 	use_existing-se.hh use_existing-se.cc
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 EXTRA_DIST = \
-	decision-se.hh decision-se.cc decision.se \
 	destination_types-se.hh destination_types-se.cc destination_types.se \
 	use_existing-se.hh use_existing-se.cc use_existing.se \
 	$(check_SCRIPTS)
 BUILT_SOURCES = \
-	decision-se.hh decision-se.cc \
 	destination_types-se.hh destination_types-se.cc \
 	use_existing-se.hh use_existing-se.cc
 
 noinst_HEADERS = \
 	arrow.hh arrow-fwd.hh \
 	constraint.hh constraint-fwd.hh \
-	decision.hh decision-fwd.hh decision-se.hh \
+	decision.hh decision-fwd.hh \
 	destination.hh destination-fwd.hh \
 	destination_types.hh destination_types-fwd.hh destination_types-se.hh \
 	reason.hh reason-fwd.hh \
@@ -30,6 +27,7 @@ noinst_HEADERS = \
 	sanitised_dependencies.hh sanitised_dependencies-fwd.hh \
 	serialise.hh serialise-fwd.hh serialise-impl.hh \
 	suggest_restart.hh suggest_restart-fwd.hh \
+	unsuitable_candidates.hh unsuitable_candidates-fwd.hh \
 	use_existing.hh use_existing-fwd.hh use_existing-se.hh
 
 libpaludisresolver_a_SOURCES = \
@@ -46,6 +44,7 @@ libpaludisresolver_a_SOURCES = \
 	sanitised_dependencies.cc \
 	serialise.cc \
 	suggest_restart.cc \
+	unsuitable_candidates.cc \
 	use_existing.cc
 
 TESTS_ENVIRONMENT = env \
@@ -178,12 +177,6 @@ use_existing-se.hh : use_existing.se $(top_srcdir)/misc/make_se.bash
 
 use_existing-se.cc : use_existing.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/use_existing.se > $@ ; then rm -f $@ ; exit 1 ; fi
-
-decision-se.hh : decision.se $(top_srcdir)/misc/make_se.bash
-	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/decision.se > $@ ; then rm -f $@ ; exit 1 ; fi
-
-decision-se.cc : decision.se $(top_srcdir)/misc/make_se.bash
-	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/decision.se > $@ ; then rm -f $@ ; exit 1 ; fi
 
 destination_types-se.hh : destination_types.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/destination_types.se > $@ ; then rm -f $@ ; exit 1 ; fi

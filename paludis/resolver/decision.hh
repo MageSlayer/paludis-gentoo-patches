@@ -23,42 +23,128 @@
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/resolver/serialise-fwd.hh>
 #include <paludis/resolver/destination-fwd.hh>
-#include <paludis/util/named_value.hh>
+#include <paludis/resolver/unsuitable_candidates-fwd.hh>
+#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/simple_visitor.hh>
+#include <paludis/util/type_list.hh>
 #include <paludis/package_id.hh>
 
 namespace paludis
 {
-    namespace n
-    {
-        struct destination;
-        struct if_package_id;
-        struct is_best;
-        struct is_same;
-        struct is_same_version;
-        struct is_transient;
-        struct kind;
-        struct taken;
-    }
-
     namespace resolver
     {
-        struct Decision
+        class PALUDIS_VISIBLE Decision :
+            public virtual DeclareAbstractAcceptMethods<Decision, MakeTypeList<
+                NothingNoChangeDecision, ExistingNoChangeDecision, ChangesToMakeDecision, UnableToMakeDecision>::Type>
         {
-            NamedValue<n::destination, std::tr1::shared_ptr<Destination> > destination;
-            NamedValue<n::if_package_id, std::tr1::shared_ptr<const PackageID> > if_package_id;
-            NamedValue<n::is_best, bool> is_best;
-            NamedValue<n::is_same, bool> is_same;
-            NamedValue<n::is_same_version, bool> is_same_version;
-            NamedValue<n::is_transient, bool> is_transient;
-            NamedValue<n::kind, DecisionKind> kind;
-            NamedValue<n::taken, bool> taken;
+            public:
+                virtual ~Decision() = 0;
 
-            void serialise(Serialiser &) const;
+                virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            static const std::tr1::shared_ptr<Decision> deserialise(
-                    Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual void serialise(Serialiser &) const = 0;
+
+                static const std::tr1::shared_ptr<Decision> deserialise(
+                        Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+
+        class PALUDIS_VISIBLE NothingNoChangeDecision :
+            public Decision,
+            public ImplementAcceptMethods<Decision, NothingNoChangeDecision>,
+            private PrivateImplementationPattern<NothingNoChangeDecision>
+        {
+            public:
+                NothingNoChangeDecision(const bool);
+                ~NothingNoChangeDecision();
+
+                virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual void serialise(Serialiser &) const;
+        };
+
+        class PALUDIS_VISIBLE ExistingNoChangeDecision :
+            public Decision,
+            public ImplementAcceptMethods<Decision, ExistingNoChangeDecision>,
+            private PrivateImplementationPattern<ExistingNoChangeDecision>
+        {
+            public:
+                ExistingNoChangeDecision(
+                        const std::tr1::shared_ptr<const PackageID> &,
+                        const bool is_same,
+                        const bool is_same_version,
+                        const bool is_transient,
+                        const bool taken
+                        );
+                ~ExistingNoChangeDecision();
+
+                const std::tr1::shared_ptr<const PackageID> existing_id() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                bool is_same() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool is_same_version() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool is_transient() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual void serialise(Serialiser &) const;
+        };
+
+        class PALUDIS_VISIBLE ChangesToMakeDecision :
+            public Decision,
+            public ImplementAcceptMethods<Decision, ChangesToMakeDecision>,
+            private PrivateImplementationPattern<ChangesToMakeDecision>
+        {
+            public:
+                ChangesToMakeDecision(
+                        const std::tr1::shared_ptr<const PackageID> &,
+                        const bool best,
+                        const bool taken,
+                        const std::tr1::shared_ptr<const Destination> &
+                        );
+
+                ~ChangesToMakeDecision();
+
+                const std::tr1::shared_ptr<const Destination> destination() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                void set_destination(const std::tr1::shared_ptr<const Destination> &);
+
+                const std::tr1::shared_ptr<const PackageID> origin_id() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual bool best() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual void serialise(Serialiser &) const;
+        };
+
+        class PALUDIS_VISIBLE UnableToMakeDecision :
+            public Decision,
+            public ImplementAcceptMethods<Decision, UnableToMakeDecision>,
+            private PrivateImplementationPattern<UnableToMakeDecision>
+        {
+            public:
+                UnableToMakeDecision(
+                        const std::tr1::shared_ptr<const UnsuitableCandidates> &,
+                        const bool taken);
+                ~UnableToMakeDecision();
+
+                virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual void serialise(Serialiser &) const;
+
+                const std::tr1::shared_ptr<const UnsuitableCandidates> unsuitable_candidates() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class PrivateImplementationPattern<resolver::NothingNoChangeDecision>;
+    extern template class PrivateImplementationPattern<resolver::ExistingNoChangeDecision>;
+    extern template class PrivateImplementationPattern<resolver::ChangesToMakeDecision>;
+    extern template class PrivateImplementationPattern<resolver::UnableToMakeDecision>;
+#endif
+
 }
 
 #endif
