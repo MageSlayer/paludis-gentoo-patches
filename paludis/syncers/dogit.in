@@ -14,6 +14,10 @@ REMOTE=
 
 GIT_CLONE_OPTIONS=( )
 GIT_PULL_OPTIONS=( )
+GIT_FETCH_OPTIONS=( )
+
+GIT_BRANCH=
+GIT_USE_RESET=false
 
 while [[ $# -gt 0 ]]; do
     case "${1}" in
@@ -24,6 +28,18 @@ while [[ $# -gt 0 ]]; do
 
         --git-pull-option=*)
             GIT_PULL_OPTIONS[${#GIT_PULL_OPTIONS[@]}]="${1#*=}"
+            ;;
+
+        --git-fetch-option=*)
+            GIT_FETCH_OPTIONS[${#GIT_FETCH_OPTIONS[@]}]="${1#*=}"
+            ;;
+
+        --branch=*)
+            GIT_BRANCH="${1#*=}"
+            ;;
+
+        --reset)
+            GIT_USE_RESET=true
             ;;
 
         --help)
@@ -43,8 +59,11 @@ while [[ $# -gt 0 ]]; do
             fi
 
             echo "    Options:"
+            echo "        --branch=BRANCH                 Specify the branch to use"
             echo "        --git-clone-option=OPTION       Pass OPTION to git clone"
             echo "        --git-pull-option=OPTION        Pass OPTION to git pull"
+            echo "        --git-fetch-option=OPTION       Pass OPTION to git fetch (if --reset)"
+            echo "        --reset                         Use git fetch and git reset --hard instead of pull"
             exit 0
             ;;
 
@@ -99,8 +118,16 @@ if [[ -d "${LOCAL}" ]]; then
 fi
 
 if [[ -d "${LOCAL}/.git" ]]; then
-    cd "${LOCAL}" && ${GIT_WRAPPER} git pull "${GIT_PULL_OPTIONS[@]}" origin
+    if ${GIT_USE_RESET} ; then
+        cd "${LOCAL}"
+        ${GIT_WRAPPER} git fetch "${GIT_FETCH_OPTIONS[@]}" origin || exit $?
+        ${GIT_WRAPPER} git reset --hard origin/${GIT_BRANCH:-master} || exit $?
+    else
+        cd "${LOCAL}"
+        ${GIT_WRAPPER} git pull "${GIT_PULL_OPTIONS[@]}" origin ${GIT_BRANCH} || exit $?
+    fi
 else
-    ${GIT_WRAPPER} git clone "${GIT_CLONE_OPTIONS[@]}" "${REMOTE}" "${LOCAL}"
+    ${GIT_WRAPPER} git clone "${GIT_CLONE_OPTIONS[@]}" "${REMOTE}" "${LOCAL}" || exit $?
+    cd "${LOCAL}" && ${GIT_WRAPPER} git reset --hard origin${GIT_BRANCH:+/${GIT_BRANCH}} || exit $?
 fi
 
