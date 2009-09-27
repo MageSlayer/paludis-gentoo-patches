@@ -1257,6 +1257,13 @@ PartiallyMadePackageDepSpec::additional_requirement(const std::tr1::shared_ptr<c
 }
 
 PartiallyMadePackageDepSpec &
+PartiallyMadePackageDepSpec::clear_additional_requirements()
+{
+    _imp->data->additional_requirements.reset();
+    return *this;
+}
+
+PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::annotations(const std::tr1::shared_ptr<const MetadataSectionKey> & a)
 {
     _imp->data->annotations = a;

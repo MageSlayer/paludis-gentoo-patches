@@ -436,6 +436,13 @@ namespace paludis
                     const std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> &);
 
             /**
+             * Clear additional requirements, return ourself.
+             *
+             * \since 0.41
+             */
+            PartiallyMadePackageDepSpec & clear_additional_requirements();
+
+            /**
              * Add annotations
              */
             PartiallyMadePackageDepSpec & annotations(
