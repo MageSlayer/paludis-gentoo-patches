@@ -23,6 +23,7 @@
 #include <paludis/resolver/arrow-fwd.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/serialise-fwd.hh>
+#include <paludis/resolver/reason-fwd.hh>
 #include <paludis/util/named_value.hh>
 
 namespace paludis
@@ -31,6 +32,7 @@ namespace paludis
     {
         struct comes_after;
         struct ignorable_pass;
+        struct reason;
     }
 
     namespace resolver
@@ -39,6 +41,7 @@ namespace paludis
         {
             NamedValue<n::comes_after, Resolvent> comes_after;
             NamedValue<n::ignorable_pass, int> ignorable_pass;
+            NamedValue<n::reason, std::tr1::shared_ptr<const Reason> > reason;
 
             void serialise(Serialiser &) const;
 

@@ -925,7 +925,8 @@ Resolver::_resolve_arrow(
         {
             resolution->arrows()->push_back(make_shared_ptr(new Arrow(make_named_values<Arrow>(
                                 value_for<n::comes_after>(resolvent),
-                                value_for<n::ignorable_pass>(0)
+                                value_for<n::ignorable_pass>(0),
+                                value_for<n::reason>(constraint->reason())
                                 ))));
         }
     }
@@ -942,7 +943,8 @@ Resolver::_resolve_arrow(
 
             resolution->arrows()->push_back(make_shared_ptr(new Arrow(make_named_values<Arrow>(
                                 value_for<n::comes_after>(resolvent),
-                                value_for<n::ignorable_pass>(ignorable_pass)
+                                value_for<n::ignorable_pass>(ignorable_pass),
+                                value_for<n::reason>(constraint->reason())
                                 ))));
         }
     }
@@ -1281,6 +1283,33 @@ Resolver::find_any_score(const Resolvent & our_resolvent, const SanitisedDepende
     return 0;
 }
 
+namespace
+{
+    struct ReasonDescriber
+    {
+        const std::string visit(const DependencyReason & r) const
+        {
+            return " (" + r.sanitised_dependency().active_dependency_labels_as_string() + " " +
+                stringify(r.sanitised_dependency().spec()) + ")";
+        }
+
+        const std::string visit(const TargetReason &) const
+        {
+            return "";
+        }
+
+        const std::string visit(const PresetReason &) const
+        {
+            return "";
+        }
+
+        const std::string visit(const SetReason &) const
+        {
+            return "";
+        }
+    };
+}
+
 const std::string
 Resolver::_find_cycle(const Resolvent & start_resolvent, const int ignorable_pass) const
 {
@@ -1314,6 +1343,7 @@ Resolver::_find_cycle(const Resolvent & start_resolvent, const int ignorable_pas
                 continue;
 
             ok = true;
+            result << (*a)->reason()->accept_returning<std::string>(ReasonDescriber());
             current = (*a)->comes_after();
             break;
         }

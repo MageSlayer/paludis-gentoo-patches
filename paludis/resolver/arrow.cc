@@ -19,6 +19,7 @@
 
 #include <paludis/resolver/arrow.hh>
 #include <paludis/resolver/serialise-impl.hh>
+#include <paludis/resolver/reason.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
@@ -32,6 +33,7 @@ Arrow::serialise(Serialiser & s) const
     s.object("Arrow")
         .member(SerialiserFlags<>(), "comes_after", comes_after())
         .member(SerialiserFlags<>(), "ignorable_pass", ignorable_pass())
+        .member(SerialiserFlags<serialise::might_be_null>(), "reason", reason())
         ;
 }
 
@@ -41,7 +43,8 @@ Arrow::deserialise(Deserialisation & d)
     Deserialisator v(d, "Arrow");
     return make_shared_ptr(new Arrow(make_named_values<Arrow>(
                     value_for<n::comes_after>(v.member<Resolvent>("comes_after")),
-                    value_for<n::ignorable_pass>(v.member<bool>("ignorable_pass"))
+                    value_for<n::ignorable_pass>(v.member<bool>("ignorable_pass")),
+                    value_for<n::reason>(v.member<std::tr1::shared_ptr<const Reason> >("reason"))
                     )));
 }
 
