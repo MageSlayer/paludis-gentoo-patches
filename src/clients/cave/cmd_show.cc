@@ -450,6 +450,18 @@ namespace
                             continue;
                         if ((*c)->begin() == (*c)->end())
                             continue;
+
+                        bool any_explicit(false);
+                        for (Choice::ConstIterator v((*c)->begin()), v_end((*c)->end()) ;
+                                v != v_end ; ++v)
+                            if ((*v)->explicitly_listed())
+                            {
+                                any_explicit = true;
+                                break;
+                            }
+
+                        if (! any_explicit)
+                            continue;
                     }
 
                     if ((! empty_prefix) || (! (*c)->show_with_no_prefix()))
@@ -461,6 +473,10 @@ namespace
                     for (Choice::ConstIterator v((*c)->begin()), v_end((*c)->end()) ;
                             v != v_end ; ++v)
                     {
+                        if (! cmdline.a_internal_keys.specified())
+                            if (! (*v)->explicitly_listed())
+                                continue;
+
                         if ((*v)->enabled())
                         {
                             if ((*v)->locked())
@@ -493,6 +509,18 @@ namespace
                             continue;
                         if ((*c)->begin() == (*c)->end())
                             continue;
+
+                        bool any_explicit(false);
+                        for (Choice::ConstIterator v((*c)->begin()), v_end((*c)->end()) ;
+                                v != v_end ; ++v)
+                            if ((*v)->explicitly_listed())
+                            {
+                                any_explicit = true;
+                                break;
+                            }
+
+                        if (! any_explicit)
+                            continue;
                     }
 
                     cout << format_general_rhvib(f::show_metadata_key_value(), (*c)->raw_name(), (*c)->human_name(),
@@ -501,6 +529,10 @@ namespace
                     for (Choice::ConstIterator v((*c)->begin()), v_end((*c)->end()) ;
                             v != v_end ; ++v)
                     {
+                        if (! cmdline.a_internal_keys.specified())
+                            if (! (*v)->explicitly_listed())
+                                continue;
+
                         if ((*v)->enabled())
                         {
                             if ((*v)->locked())
