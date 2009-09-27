@@ -215,7 +215,7 @@ paludis::resolver::operator<< (std::ostream & s, const SlotNameOrNull & n)
 std::ostream &
 paludis::resolver::operator<< (std::ostream & s, const Resolvent & r)
 {
-    s << r.package() << r.slot() << " -> " << r.destination_type();
+    s << r.package() << r.slot() << "::(" << r.destination_type() << ")";
     return s;
 }
 
