@@ -836,10 +836,14 @@ namespace
     {
         bool causes_pre_arrow;
         bool ignorable;
+        const bool creating_binary;
+        const bool from_binary;
 
-        ArrowInfo(const DependencyReason & reason) :
+        ArrowInfo(const DependencyReason & reason, const bool f) :
             causes_pre_arrow(false),
-            ignorable(true)
+            ignorable(true),
+            creating_binary(reason.from_resolvent().destination_type() == dt_create_binary),
+            from_binary(f)
         {
             const std::tr1::shared_ptr<const ActiveDependencyLabels> labels(
                     reason.sanitised_dependency().active_dependency_labels());
@@ -859,7 +863,15 @@ namespace
 
         void visit(const DependencyRunLabel &)
         {
-            causes_pre_arrow = true;
+            if (creating_binary && from_binary)
+            {
+                /* a binary package's run dependencies don't have to be created before
+                 * we can create the binary. */
+            }
+            else
+            {
+                causes_pre_arrow = true;
+            }
         }
 
         void visit(const DependencyPostLabel &)
@@ -919,7 +931,7 @@ Resolver::_resolve_arrow(
     }
     else
     {
-        ArrowInfo a(*if_dependency_reason);
+        ArrowInfo a(*if_dependency_reason, resolvent.destination_type() == dt_create_binary);
         if (a.causes_pre_arrow)
         {
             int ignorable_pass(0);
