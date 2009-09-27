@@ -167,6 +167,9 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
 //            a_fetch(&g_destination_options, "fetch", 'f', "Only fetch packages, do not install anything", true),
     a_create_binaries(&g_destination_options, "create-binaries", 'b', "Create binary packages in the specified "
             "repository. Specify multiple times if different binary destination types are required."),
+    a_no_binaries_for(&g_destination_options, "no-binaries-for", 'B', "Do not create binary packages from any "
+            "origin ID matching this spec. May be specified multiple times. (e.g. --no-binaries-for '*/*::accounts' "
+            "--no-binaries-for '*/*::virtuals')"),
 //            a_install_to_chroot(&g_destination_options, "install-to-chroot", '\0', "Install packages to the environment-configured chroot", true),
     a_install_to_root(&g_destination_options, "install-to-root", '/', "Install packages to /", true),
 

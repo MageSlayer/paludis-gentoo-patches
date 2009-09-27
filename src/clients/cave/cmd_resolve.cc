@@ -212,10 +212,17 @@ namespace
 
     struct DestinationTypesFinder
     {
+        const Environment * const env;
         const ResolveCommandLine & cmdline;
+        const std::tr1::shared_ptr<const PackageID> package_id;
 
-        DestinationTypesFinder(const ResolveCommandLine & c) :
-            cmdline(c)
+        DestinationTypesFinder(
+                const Environment * const e,
+                const ResolveCommandLine & c,
+                const std::tr1::shared_ptr<const PackageID> & i) :
+            env(e),
+            cmdline(c),
+            package_id(i)
         {
         }
 
@@ -224,7 +231,27 @@ namespace
             DestinationTypes result;
 
             if (cmdline.resolution_options.a_create_binaries.specified())
-                result += dt_create_binary;
+            {
+                bool b(true);
+
+                if (cmdline.resolution_options.a_no_binaries_for.specified() && package_id)
+                {
+                    for (args::StringSetArg::ConstIterator a(cmdline.resolution_options.a_no_binaries_for.begin_args()),
+                            a_end(cmdline.resolution_options.a_no_binaries_for.end_args()) ;
+                            a != a_end ; ++a)
+                        if (match_package(*env,
+                                    parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards),
+                                    *package_id, MatchPackageOptions()))
+                        {
+                            b = false;
+                            break;
+                        }
+                }
+
+                if (b)
+                    result += dt_create_binary;
+            }
+
             if (cmdline.resolution_options.a_install_to_root.specified())
                 result += dt_install_to_slash;
 
@@ -237,13 +264,17 @@ namespace
         DestinationTypes visit(const DependencyReason & reason) const
         {
             DestinationTypes result;
-            if (is_buildish_dep(reason.sanitised_dependency()))
-                result += dt_install_to_slash;
-            if (is_runish_dep(reason.sanitised_dependency()))
-                result |= visit(TargetReason());
 
-            if (result.none())
-                throw InternalError(PALUDIS_HERE, "picked no dts");
+            bool is_buildish(is_buildish_dep(reason.sanitised_dependency())),
+                 is_runish(is_runish_dep(reason.sanitised_dependency()));
+
+            if ((! is_buildish) && (! is_runish))
+                throw InternalError(PALUDIS_HERE, "not buildish or runish. eek.");
+
+            if (is_buildish)
+                result += dt_install_to_slash;
+            if (is_runish)
+                result |= visit(TargetReason());
 
             return result;
         }
@@ -260,13 +291,13 @@ namespace
     };
 
     DestinationTypes get_destination_types_for_fn(
-            const Environment * const,
+            const Environment * const env,
             const ResolveCommandLine & cmdline,
             const PackageDepSpec &,
-            const std::tr1::shared_ptr<const PackageID> &,
+            const std::tr1::shared_ptr<const PackageID> & id,
             const std::tr1::shared_ptr<const Reason> & reason)
     {
-        DestinationTypesFinder f(cmdline);
+        DestinationTypesFinder f(env, cmdline, id);
         return reason->accept_returning<DestinationTypes>(f);
     }
 

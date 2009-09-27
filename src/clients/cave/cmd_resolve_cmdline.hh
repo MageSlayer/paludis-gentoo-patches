@@ -86,6 +86,7 @@ namespace paludis
             args::ArgsGroup g_destination_options;
     //        args::SwitchArg a_fetch;
             args::StringSetArg a_create_binaries;
+            args::StringSetArg a_no_binaries_for;
     //        args::SwitchArg a_install_to_chroot;
             args::SwitchArg a_install_to_root;
 
