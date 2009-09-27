@@ -80,10 +80,11 @@ paludis::resolver::resolver_test::initial_constraints_for_fn(
 
 std::tr1::shared_ptr<Resolvents>
 paludis::resolver::resolver_test::get_resolvents_for_fn(const PackageDepSpec & spec,
+        const std::tr1::shared_ptr<const SlotName> & slot,
         const std::tr1::shared_ptr<const Reason> &)
 {
     std::tr1::shared_ptr<Resolvents> result(new Resolvents);
-    result->push_back(Resolvent(spec, make_shared_ptr(new SlotName("0")), dt_install_to_slash));
+    result->push_back(Resolvent(spec, slot ? slot : make_shared_ptr(new const SlotName("0")), dt_install_to_slash));
     return result;
 }
 
@@ -107,6 +108,7 @@ paludis::resolver::resolver_test::make_destination_filtered_generator_fn(const G
 
 DestinationTypes
 paludis::resolver::resolver_test::get_destination_types_for_fn(const PackageDepSpec &,
+        const std::tr1::shared_ptr<const PackageID> &,
         const std::tr1::shared_ptr<const Reason> &)
 {
     return DestinationTypes() + dt_install_to_slash;

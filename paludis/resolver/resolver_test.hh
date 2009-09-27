@@ -59,6 +59,7 @@ namespace paludis
                     const Resolvent & resolvent);
 
             std::tr1::shared_ptr<Resolvents> get_resolvents_for_fn(const PackageDepSpec & spec,
+                    const std::tr1::shared_ptr<const SlotName> &,
                     const std::tr1::shared_ptr<const Reason> &);
 
             bool is_suggestion(const SanitisedDependency & dep);
@@ -82,6 +83,7 @@ namespace paludis
             FilteredGenerator make_destination_filtered_generator_fn(const Generator &, const Resolvent &);
 
             DestinationTypes get_destination_types_for_fn(const PackageDepSpec &,
+                    const std::tr1::shared_ptr<const PackageID> &,
                     const std::tr1::shared_ptr<const Reason> &);
 
             struct ResolverTestCase : test::TestCase

@@ -95,7 +95,7 @@ namespace
 
         DestinationTypes visit(const DependencyReason &) const
         {
-            return DestinationTypes() + dt_install_to_slash;
+            return visit(TargetReason()) + dt_install_to_slash;
         }
 
         DestinationTypes visit(const PresetReason &) const PALUDIS_ATTRIBUTE((noreturn))
@@ -113,6 +113,7 @@ namespace
             const Environment * const,
             const ResolveCommandLine & cmdline,
             const PackageDepSpec &,
+            const std::tr1::shared_ptr<const PackageID> &,
             const std::tr1::shared_ptr<const Reason> & reason)
     {
         DestinationTypesFinder f(cmdline);
@@ -400,6 +401,7 @@ namespace
     get_resolvents_for_fn(const Environment * const env,
             const ResolveCommandLine & cmdline,
             const PackageDepSpec & spec,
+            const std::tr1::shared_ptr<const SlotName> & maybe_slot,
             const std::tr1::shared_ptr<const Reason> & reason)
     {
         std::tr1::shared_ptr<PackageIDSequence> result_ids(new PackageIDSequence);
@@ -408,7 +410,8 @@ namespace
         const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
                     generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements) |
                     filter::SupportsAction<InstallAction>() |
-                    filter::NotMasked())]);
+                    filter::NotMasked() |
+                    (maybe_slot ? Filter(filter::Slot(*maybe_slot)) : Filter(filter::All())))]);
 
         if (! ids->empty())
             best = *ids->begin();
@@ -453,7 +456,7 @@ namespace
         for (PackageIDSequence::ConstIterator i(result_ids->begin()), i_end(result_ids->end()) ;
                 i != i_end ; ++i)
         {
-            DestinationTypes destination_types(get_destination_types_for_fn(env, cmdline, spec, reason));
+            DestinationTypes destination_types(get_destination_types_for_fn(env, cmdline, spec, *i, reason));
             for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
                 if (destination_types[*t])
                     result->push_back(Resolvent(*i, *t));
@@ -964,11 +967,13 @@ ResolveCommand::run(
                         env.get(), std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2,
                         std::tr1::placeholders::_3)),
                 value_for<n::get_destination_types_for_fn>(std::tr1::bind(&get_destination_types_for_fn,
-                        env.get(), std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2)),
+                        env.get(), std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2,
+                        std::tr1::placeholders::_3)),
                 value_for<n::get_initial_constraints_for_fn>(std::tr1::bind(&initial_constraints_for_fn,
                         env.get(), std::tr1::cref(cmdline), std::tr1::cref(initial_constraints), std::tr1::placeholders::_1)),
                 value_for<n::get_resolvents_for_fn>(std::tr1::bind(&get_resolvents_for_fn,
-                        env.get(), std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2)),
+                        env.get(), std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2,
+                        std::tr1::placeholders::_3)),
                 value_for<n::get_use_existing_fn>(std::tr1::bind(&use_existing_fn,
                         std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3)),
                 value_for<n::make_destination_filtered_generator_fn>(std::tr1::bind(&make_destination_filtered_generator,

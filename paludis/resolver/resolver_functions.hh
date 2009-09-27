@@ -59,6 +59,7 @@ namespace paludis
 
         typedef std::tr1::function<DestinationTypes (
                 const PackageDepSpec &,
+                const std::tr1::shared_ptr<const PackageID> &,
                 const std::tr1::shared_ptr<const Reason> &
                 )> GetDestinationTypesForFunction;
 
@@ -68,6 +69,7 @@ namespace paludis
 
         typedef std::tr1::function<std::tr1::shared_ptr<Resolvents> (
                 const PackageDepSpec &,
+                const std::tr1::shared_ptr<const SlotName> &,
                 const std::tr1::shared_ptr<const Reason> &
                 )> GetResolventsForFunction;
 

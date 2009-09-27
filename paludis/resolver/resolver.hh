@@ -67,7 +67,8 @@ namespace paludis
 
                 const DestinationTypes _get_destination_types_for(
                         const PackageDepSpec & spec,
-                        const std::tr1::shared_ptr<const Reason> & reason) const;
+                        const std::tr1::shared_ptr<const PackageID> &,
+                        const std::tr1::shared_ptr<const Reason> &) const;
 
                 const std::tr1::shared_ptr<const Resolvents> _get_error_resolvents_for(
                             const PackageDepSpec & spec,

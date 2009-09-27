@@ -1362,24 +1362,16 @@ Resolver::_get_resolvents_for(
         exact_slot = spec.slot_requirement_ptr()->accept_returning<std::tr1::shared_ptr<SlotName> >(f);
     }
 
-    if (exact_slot)
-    {
-        std::tr1::shared_ptr<Resolvents> result(new Resolvents);
-        DestinationTypes destination_types(_get_destination_types_for(spec, reason));
-        for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
-            if (destination_types[*t])
-                result->push_back(Resolvent(spec, *exact_slot, *t));
-        return result;
-    }
-    else
-        return _imp->fns.get_resolvents_for_fn()(spec, reason);
+    return _imp->fns.get_resolvents_for_fn()(spec, exact_slot, reason);
 }
 
 const DestinationTypes
-Resolver::_get_destination_types_for(const PackageDepSpec & spec,
+Resolver::_get_destination_types_for(
+        const PackageDepSpec & spec,
+        const std::tr1::shared_ptr<const PackageID> & id,
         const std::tr1::shared_ptr<const Reason> & reason) const
 {
-    return _imp->fns.get_destination_types_for_fn()(spec, reason);
+    return _imp->fns.get_destination_types_for_fn()(spec, id, reason);
 }
 
 const std::tr1::shared_ptr<const Resolvents>
@@ -1390,7 +1382,7 @@ Resolver::_get_error_resolvents_for(
     Context context("When finding slots for '" + stringify(spec) + "', which can't be found the normal way:");
 
     std::tr1::shared_ptr<Resolvents> result(new Resolvents);
-    DestinationTypes destination_types(_get_destination_types_for(spec, reason));
+    DestinationTypes destination_types(_get_destination_types_for(spec, make_null_shared_ptr(), reason));
     for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
         if (destination_types[*t])
             result->push_back(Resolvent(spec, true, *t));
