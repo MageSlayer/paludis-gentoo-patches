@@ -663,9 +663,37 @@ Resolver::_make_constraint_for_preloading(
         const std::tr1::shared_ptr<const Decision> &,
         const std::tr1::shared_ptr<const Constraint> & c) const
 {
-    const std::tr1::shared_ptr<PresetReason> reason(new PresetReason);
     const std::tr1::shared_ptr<Constraint> result(new Constraint(*c));
+
+    const std::tr1::shared_ptr<PresetReason> reason(new PresetReason);
     result->reason() = reason;
+
+    if (result->spec().if_package())
+    {
+        PackageDepSpec s(_make_spec_for_preloading(*result->spec().if_package()));
+        result->spec().if_package() = make_shared_ptr(new PackageDepSpec(s));
+    }
+    else
+    {
+        PackageDepSpec s(_make_spec_for_preloading(result->spec().if_block()->blocking()));
+        result->spec().if_block() = make_shared_ptr(new BlockDepSpec(
+                    "!" + stringify(s),
+                    s,
+                    result->spec().if_block()->strong()));
+    }
+
+    return result;
+}
+
+const PackageDepSpec
+Resolver::_make_spec_for_preloading(const PackageDepSpec & spec) const
+{
+    PartiallyMadePackageDepSpec result(spec);
+
+    /* we don't want to copy use deps from the constraint, since things like
+     * [foo?] start to get weird when there's no longer an associated ID. */
+    result.clear_additional_requirements();
+
     return result;
 }
 
