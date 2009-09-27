@@ -836,14 +836,10 @@ namespace
     {
         bool causes_pre_arrow;
         bool ignorable;
-        const bool creating_binary;
-        const bool from_binary;
 
-        ArrowInfo(const DependencyReason & reason, const bool f) :
+        ArrowInfo(const DependencyReason & reason) :
             causes_pre_arrow(false),
-            ignorable(true),
-            creating_binary(reason.from_resolvent().destination_type() == dt_create_binary),
-            from_binary(f)
+            ignorable(true)
         {
             const std::tr1::shared_ptr<const ActiveDependencyLabels> labels(
                     reason.sanitised_dependency().active_dependency_labels());
@@ -863,15 +859,7 @@ namespace
 
         void visit(const DependencyRunLabel &)
         {
-            if (creating_binary && from_binary)
-            {
-                /* a binary package's run dependencies don't have to be created before
-                 * we can create the binary. */
-            }
-            else
-            {
-                causes_pre_arrow = true;
-            }
+            causes_pre_arrow = true;
         }
 
         void visit(const DependencyPostLabel &)
@@ -914,10 +902,15 @@ Resolver::_resolve_arrow(
     GetDependencyReason gdr;
     const DependencyReason * if_dependency_reason(constraint->reason()->accept_returning<const DependencyReason *>(gdr));
     if (! if_dependency_reason)
-            return;
+        return;
 
     const Resolvent from_resolvent(if_dependency_reason->from_resolvent());
     const std::tr1::shared_ptr<Resolution> resolution(_resolution_for_resolvent(from_resolvent, false));
+
+    /* deps between binaries don't count */
+    if (resolvent.destination_type() == dt_create_binary &&
+            if_dependency_reason->from_resolvent().destination_type() == dt_create_binary)
+        return;
 
     if (constraint->spec().if_block())
     {
@@ -932,7 +925,7 @@ Resolver::_resolve_arrow(
     }
     else
     {
-        ArrowInfo a(*if_dependency_reason, resolvent.destination_type() == dt_create_binary);
+        ArrowInfo a(*if_dependency_reason);
         if (a.causes_pre_arrow)
         {
             int ignorable_pass(0);
