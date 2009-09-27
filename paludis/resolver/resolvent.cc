@@ -98,7 +98,7 @@ Resolvent::Resolvent(const Resolvent &) = default;
 Resolvent::Resolvent(const Resolvent & other) :
     destination_type(other.destination_type()),
     package(other.package()),
-    slot_name_or_null(other.slot_name_or_null())
+    slot(other.slot())
 {
 }
 
