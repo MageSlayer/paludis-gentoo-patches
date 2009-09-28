@@ -32,6 +32,8 @@ functionality. Pestering anyone about these is liable to get you hurt a lot.</p>
     <li><a href="howdoi.html#syncfromcvs">Sync from CVS</a></li>
     <li><a href="howdoi.html#syncfromsnapshot">Sync from a Gentoo tree snapshot</a></li>
     <li><a href="howdoi.html#deletedvdb">Recover VDB</a></li>
+    <li><a href="howdoi.html#removeportage">Remove Portage from my Gentoo installation</a></li>
+    <li><a href="howdoi.html#etcupdate">Update Configuration Files (<code>etc-update</code>)</a></li>
 </ul>
 
 <h2>Operation</h2>
@@ -61,6 +63,7 @@ functionality. Pestering anyone about these is liable to get you hurt a lot.</p>
     <li><a href="misfunctionality.html#nice">No Automatic Niceness Support</a></li>
     <li><a href="misfunctionality.html#ask">No Ask Support</a></li>
     <li><a href="misfunctionality.html#xtermtitles">Restoring XTerm Titles</a></li>
+    <li><a href="misfunctionality.html#ecompress">No Automatic Documentation Compression</a></li>
 </ul>
 
 <h2>Things Paludis Does Differently</h2>

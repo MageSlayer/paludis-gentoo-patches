@@ -12,6 +12,7 @@
     <li><a href="howdoi.html#syncfromsnapshot">Sync from a Gentoo tree snapshot</a></li>
     <li><a href="howdoi.html#deletedvdb">Recover VDB</a></li>
     <li><a href="howdoi.html#removeportage">Remove Portage from my Gentoo installation</a></li>
+    <li><a href="howdoi.html#etcupdate">Update Configuration Files (<code>etc-update</code>)</a></li>
 </ul>
 
 <h2 id="ccache">Use <code>ccache</code></h2>
@@ -211,4 +212,11 @@ careful next time.</p>
 
 <p>Several Gentoo packages wrongly depend on Portage, several depend on Portage because they use it
 and there really is no reason to try. Just leave Portage installed.</p>
+
+<h2 id="etcupdate">Update Configuration Files (<code>etc-update</code>)</h2>
+
+<p>Paludis doesn't provide its own version of <code>etc-update</code>. You can just keep using <code>etc-update</code>
+or <code>dispatch-conf</code>, since you <a href="howdoi.html#removeportage">can't remove Portage</a>. Or, you can use
+one of the workalikes that are available in the tree, such as <code>app-portage/conf-update</code>, or
+<code>app-portage/cfg-update</code>.</p>
 

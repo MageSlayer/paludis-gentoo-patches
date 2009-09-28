@@ -8,6 +8,7 @@
     <li><a href="misfunctionality.html#nice">No Automatic Niceness Support</a></li>
     <li><a href="misfunctionality.html#ask">No Ask Support</a></li>
     <li><a href="misfunctionality.html#xtermtitles">Restoring XTerm Titles</a></li>
+    <li><a href="misfunctionality.html#ecompress">No Automatic Manpage / Documentation Compression</a></li>
 </ul>
 
 <h2 id="wgetresume">wget Resume Support</h2>
@@ -78,4 +79,12 @@ the limited functionality that <code>emerge --ask</code> provides.</p>
 value based upon a default prompt for certain distributions, but they don't
 restore it. You should be using <code>PROMPT_COMMAND</code> to do that yourself
 -- see the <code>bash</code> documentation.</p>
+
+<h2 id="ecompress">No Automatic Documentation Compression</h2>
+
+<p>Non-Problem: Paludis doesn't compress documentation or man pages with gzip/bzip/whatever.</p>
+
+<p>Rationale: The space savings on an average system are very small, to non-existent for most filesystems. Most
+documentation and man pages are only about one block in size, so compression won't gain you anything except for wasted
+CPU cycles.</p>
 
