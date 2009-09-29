@@ -180,18 +180,38 @@ namespace
         return retcode;
     }
 
-    int do_install_slash(
+    int do_install(
             const std::tr1::shared_ptr<Environment> &,
             const ExecuteResolutionCommandLine & cmdline,
-            const std::tr1::shared_ptr<const Resolution> &,
+            const std::tr1::shared_ptr<const Resolution> & resolution,
             const ChangesToMakeDecision & decision,
             const std::tr1::shared_ptr<const Destination> & destination,
             const int x, const int y)
     {
-        const std::tr1::shared_ptr<const PackageID> id(decision.origin_id());
-        Context context("When installing to / for '" + stringify(*id) + "':");
+        std::string destination_string, action_string;
+        switch (resolution->resolvent().destination_type())
+        {
+            case dt_install_to_slash:
+                destination_string = "installing to /";
+                action_string = "install to /";
+                break;
 
-        starting_action("install to /", decision, x, y);
+            case dt_create_binary:
+                destination_string = "creating binary";
+                action_string = "create binary";
+                break;
+
+            case last_dt:
+                break;
+        }
+
+        if (destination_string.empty())
+            throw InternalError(PALUDIS_HERE, "unhandled dt");
+
+        const std::tr1::shared_ptr<const PackageID> id(decision.origin_id());
+        Context context("When " + destination_string + " for '" + stringify(*id) + "':");
+
+        starting_action(action_string, decision, x, y);
 
         std::string command(cmdline.program_options.a_perform_program.argument());
         if (command.empty())
@@ -237,7 +257,7 @@ namespace
         paludis::Command cmd(command);
         int retcode(run_command(cmd));
 
-        done_action("install to /", decision, 0 == retcode);
+        done_action(action_string, decision, 0 == retcode);
         return retcode;
     }
 
@@ -305,14 +325,9 @@ namespace
                 if (0 != retcode)
                     return retcode;
 
-                if ((*c)->resolvent().destination_type() == dt_install_to_slash)
-                {
-                    retcode = do_install_slash(env, cmdline, *c, *decision, decision->destination(), x, y);
-                    if (0 != retcode)
-                        return retcode;
-                }
-                else
-                    throw InternalError(PALUDIS_HERE, "destination != / not done yet");
+                retcode = do_install(env, cmdline, *c, *decision, decision->destination(), x, y);
+                if (0 != retcode)
+                    return retcode;
             }
 
             if (0 != env->perform_hook(Hook("install_all_post")
