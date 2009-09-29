@@ -135,7 +135,7 @@ if mirror_repository then
     }
 else
     env = Paludis::EnvironmentFactory.instance.create(env_spec || "")
-    relevant_packages = Paludis::Generator::All.new | Paludis::Filter::SupportsAction.new(Paludis::InstalledAction)
+    relevant_packages = Paludis::Generator::All.new | Paludis::Filter::InstalledAtRoot.new("/")
     $check_condition = lambda { | spec | spec.condition_met? }
     $banned_labels = { }
 end
