@@ -119,7 +119,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
         const std::tr1::shared_ptr<const PackageID> & package_id, const std::string & s,
         const std::tr1::shared_ptr<OutputManager> & maybe_output_manager)
 {
-    Context context("In ebuild pipe command handler for '" + s + "':");
+    Context context("In ebuild pipe command handler:");
 
     try
     {
