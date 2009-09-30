@@ -27,15 +27,21 @@ set +C
 
 ebuild_sanitise_envvars()
 {
+    local p
+
     # Force a few more things into PATH, since some users have crazy setups.
     # See ticket:374.
     export PATH="/bin:/sbin:/usr/bin:/usr/sbin${PATH:+:${PATH}}"
 
+    # Automake likes to scatter our utilities over two directories.
     if [[ -n "${PALUDIS_EBUILD_DIR_FALLBACK}" ]] ; then
         export PATH="${PALUDIS_EBUILD_DIR_FALLBACK}/utils:${PATH}"
+        for p in ${PALUDIS_UTILITY_PATH_SUFFIXES} ; do
+            export PATH="${PALUDIS_EBUILD_DIR_FALLBACK}/utils/${p}:${PATH}"
+        done
     fi
+
     export PATH="${PALUDIS_EBUILD_DIR}/utils:${PATH}"
-    local p
     for p in ${PALUDIS_UTILITY_PATH_SUFFIXES} ; do
         export PATH="${PALUDIS_EBUILD_DIR}/utils/${p}:${PATH}"
     done

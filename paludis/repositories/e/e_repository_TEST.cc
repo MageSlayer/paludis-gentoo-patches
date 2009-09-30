@@ -2513,6 +2513,24 @@ namespace test_cases
                 TEST_CHECK(id);
                 TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
             }
+
+            {
+                TestMessageSuffix suffix("install", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/install-0",
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                TEST_CHECK(id);
+                id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("install s", true);
+                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/install-s-0",
+                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                TEST_CHECK(id);
+                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+            }
         }
     } test_e_repository_install_exheres_0;
 

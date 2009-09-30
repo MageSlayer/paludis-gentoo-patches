@@ -2622,6 +2622,48 @@ src_compile() {
     default
 }
 END
+mkdir -p "packages/cat/install"
+cat <<'END' > packages/cat/install/install-0.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+WORK="${WORKBASE}"
+
+src_unpack() {
+    touch -- -s
+}
+
+src_install() {
+    install -v -- -s dest
+    [[ -x dest ]] || die "install didn't work"
+}
+END
+mkdir -p "packages/cat/install-s"
+cat <<'END' > packages/cat/install-s/install-s-0.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+WORK="${WORKBASE}"
+
+src_unpack() {
+    touch src
+}
+
+src_install() {
+    install -s src dest
+    [[ -x dest ]] && die "install didn't fail"
+}
+END
 mkdir -p "packages/cat/doman-nonfatal"
 cat <<'END' > packages/cat/doman-nonfatal/doman-nonfatal-0.ebuild || exit 1
 DESCRIPTION="The Long Description"
