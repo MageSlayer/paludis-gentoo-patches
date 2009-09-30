@@ -27,6 +27,7 @@ libexecprog_SCRIPTS = \
 	prepalldocs \
 	ecompress \
 	ecompressdir \
+	strip \
 	banned_in_eapi_exheres-0
 
 all-local :
