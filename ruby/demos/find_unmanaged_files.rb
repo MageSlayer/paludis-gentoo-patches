@@ -8,15 +8,15 @@ include Paludis
 Log.instance.log_level = LogLevel::Warning
 Log.instance.program_name = $0
 
-def get_contents(pids, files, root)
+def get_contents(pids, directories, root)
     in_contents= []
     pids.each do |pid|
         next if pid.contents_key.nil?
         contents = pid.contents_key.value
         contents.each do |entry|
             next if entry.kind_of? ContentsOtherEntry
-            files.each do |file|
-                if (root + entry.location_key.value)[0,file.length] == file
+            directories.each do |directory|
+                if (root + entry.location_key.value)[0,directory.length] == directory
                     in_contents << root + entry.location_key.value
                     break;
                 end
@@ -75,7 +75,7 @@ env = Paludis::EnvironmentFactory.instance.create env_spec
 db = env.package_database
 root = env.root[-1] == ?/ ? env.root.chop : env.root
 
-files = []
+directories = []
 
 if ARGV.empty?
     puts "No directory to check"
@@ -90,13 +90,13 @@ else
             puts "#{file} is not under ${ROOT} (#{root}/)"
             exit 1
         end
-        files << (file[-1] == ?/ ? file.chop : file)
+        directories << (file[-1] == ?/ ? file.chop : file)
     end
 end
 
 in_fs = []
-Find.find(*(files.collect {|f| f.empty? ? "/" : f})) {|file| in_fs << file}
+Find.find(*(directories.collect {|d| d.empty? ? "/" : d})) {|file| in_fs << file}
 
-in_fs-= get_contents(env[Selection::AllVersionsUnsorted.new(Generator::All.new | Filter::InstalledAtRoot.new(root))], files, root)
+in_fs-= get_contents(env[Selection::AllVersionsUnsorted.new(Generator::All.new | Filter::InstalledAtRoot.new(root))], directories, root)
 
 puts in_fs
