@@ -8,22 +8,17 @@ include Paludis
 Log.instance.log_level = LogLevel::Warning
 Log.instance.program_name = $0
 
-def get_contents(repo, files, root)
+def get_contents(pids, files, root)
     in_contents= []
-    repo.category_names do |cat|
-        repo.package_names(cat) do |pkg|
-            repo.package_ids(pkg) do |pid|
-                next unless pid.supports_action(SupportsActionTest.new(InstalledAction))
-                next if pid.contents_key.nil?
-                contents = pid.contents_key.value
-                contents.each do |entry|
-                    next if entry.kind_of? ContentsOtherEntry
-                    files.each do |file|
-                        if (root + entry.location_key.value)[0,file.length] == file
-                            in_contents << root + entry.location_key.value
-                            break;
-                        end
-                    end
+    pids.each do |pid|
+        next if pid.contents_key.nil?
+        contents = pid.contents_key.value
+        contents.each do |entry|
+            next if entry.kind_of? ContentsOtherEntry
+            files.each do |file|
+                if (root + entry.location_key.value)[0,file.length] == file
+                    in_contents << root + entry.location_key.value
+                    break;
                 end
             end
         end
@@ -102,9 +97,6 @@ end
 in_fs = []
 Find.find(*(files.collect {|f| f.empty? ? "/" : f})) {|file| in_fs << file}
 
-db.repositories do |repo|
-    next unless repo.some_ids_might_support_action(SupportsActionTest.new(InstalledAction))
-    in_fs-= get_contents(repo, files, root)
-end
+in_fs-= get_contents(env[Selection::AllVersionsUnsorted.new(Generator::All.new | Filter::InstalledAtRoot.new(root))], files, root)
 
 puts in_fs
