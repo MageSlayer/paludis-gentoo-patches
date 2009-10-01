@@ -341,7 +341,8 @@ namespace
     void add_resolver_targets(
             const std::tr1::shared_ptr<Environment> & env,
             const std::tr1::shared_ptr<Resolver> & resolver,
-            const ResolveCommandLine & cmdline)
+            const ResolveCommandLine & cmdline,
+            bool & is_set)
     {
         Context context("When adding targets from commandline:");
 
@@ -371,6 +372,9 @@ namespace
                 seen_sets = true;
             }
         }
+
+        if (seen_sets)
+            is_set = true;
     }
 
     UseExisting use_existing_from_cmdline(const args::EnumArg & a, const bool is_set)
@@ -817,12 +821,14 @@ namespace
     void perform_resolution(
             const std::tr1::shared_ptr<Environment> &,
             const ResolutionLists & resolution_lists,
-            const ResolveCommandLine & cmdline) PALUDIS_ATTRIBUTE((noreturn));
+            const ResolveCommandLine & cmdline,
+            const bool is_set) PALUDIS_ATTRIBUTE((noreturn));
 
     void perform_resolution(
             const std::tr1::shared_ptr<Environment> &,
             const ResolutionLists & resolution_lists,
-            const ResolveCommandLine & cmdline)
+            const ResolveCommandLine & cmdline,
+            const bool is_set)
     {
         Context context("When performing chosen resolution:");
 
@@ -843,6 +849,9 @@ namespace
                 if ((*o)->specified())
                     command = command + " " + (*o)->forwardable_string();
         }
+
+        if (is_set)
+            command.append(" --set");
 
         for (args::ArgsSection::GroupsConstIterator g(cmdline.program_options.begin()),
                 g_end(cmdline.program_options.end()) ;
@@ -1052,6 +1061,7 @@ ResolveCommand::run(
 
                 ));
     std::tr1::shared_ptr<Resolver> resolver(new Resolver(env.get(), resolver_functions));
+    bool is_set(false);
     try
     {
         std::list<SuggestRestart> restarts;
@@ -1065,7 +1075,7 @@ ResolveCommand::run(
             {
                 try
                 {
-                    add_resolver_targets(env, resolver, cmdline);
+                    add_resolver_targets(env, resolver, cmdline, is_set);
                     resolver->resolve();
                     break;
                 }
@@ -1092,7 +1102,7 @@ ResolveCommand::run(
             retcode |= 1;
 
         if (0 == retcode)
-            perform_resolution(env, *resolver->resolution_lists(), cmdline);
+            perform_resolution(env, *resolver->resolution_lists(), cmdline, is_set);
     }
     catch (...)
     {

@@ -33,6 +33,7 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/resolver/resolutions.hh>
 #include <paludis/resolver/serialise.hh>
 #include <paludis/resolver/reason.hh>
@@ -52,6 +53,7 @@
 #include <paludis/hook.hh>
 #include <paludis/environment.hh>
 #include <paludis/action.hh>
+#include <paludis/package_dep_spec_properties.hh>
 
 #include <set>
 #include <iterator>
@@ -73,6 +75,7 @@ namespace
     {
         args::ArgsGroup g_general_options;
         args::SwitchArg a_pretend;
+        args::SwitchArg a_set;
 
         ResolveCommandLineExecutionOptions execution_options;
         ResolveCommandLineProgramOptions program_options;
@@ -80,6 +83,7 @@ namespace
         ExecuteResolutionCommandLine() :
             g_general_options(main_options_section(), "General Options", "General options."),
             a_pretend(&g_general_options, "pretend", '\0', "Only carry out the pretend action", false),
+            a_set(&g_general_options, "set", '\0', "Our target is a set rather than package specs", false),
             execution_options(this),
             program_options(this)
         {
@@ -334,6 +338,74 @@ namespace
                         ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
                     ).max_exit_status())
                 throw ActionError("Aborted by hook");
+
+            if (! cmdline.execution_options.a_preserve_world.specified())
+            {
+                cout << endl << c::bold_green() << "Updating world" << c::normal() << endl << endl;
+
+                std::string command(cmdline.program_options.a_update_world_program.argument());
+                if (command.empty())
+                    command = "$CAVE update-world";
+
+                bool any(false);
+                if (cmdline.a_set.specified())
+                {
+                    command.append(" --set");
+                    for (args::ArgsHandler::ParametersConstIterator a(cmdline.begin_parameters()),
+                            a_end(cmdline.end_parameters()) ;
+                            a != a_end ; ++a)
+                    {
+                        if (*a == "world" || *a == "system" || *a == "security"
+                                || *a == "everything" || *a == "insecurity")
+                            cout << "* Special set '" << *a << "' does not belong in world" << endl;
+                        else
+                        {
+                            any = true;
+                            cout << "* Adding '" << *a << "'" << endl;
+                            command.append(" " + *a);
+                        }
+                    }
+                }
+                else
+                {
+                    for (args::ArgsHandler::ParametersConstIterator a(cmdline.begin_parameters()),
+                            a_end(cmdline.end_parameters()) ;
+                            a != a_end ; ++a)
+                    {
+                        PackageDepSpec spec(parse_user_package_dep_spec(*a, env.get(), UserPackageDepSpecOptions()));
+                        if (package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
+                                        value_for<n::has_additional_requirements>(false),
+                                        value_for<n::has_category_name_part>(false),
+                                        value_for<n::has_from_repository>(false),
+                                        value_for<n::has_in_repository>(false),
+                                        value_for<n::has_installable_to_path>(false),
+                                        value_for<n::has_installable_to_repository>(false),
+                                        value_for<n::has_installed_at_path>(false),
+                                        value_for<n::has_package>(true),
+                                        value_for<n::has_package_name_part>(false),
+                                        value_for<n::has_slot_requirement>(false),
+                                        value_for<n::has_tag>(indeterminate),
+                                        value_for<n::has_version_requirements>(false)
+                                        )))
+                        {
+                            any = true;
+                            cout << "* Adding '" << spec << "'" << endl;
+                            command.append(" " + stringify(spec));
+                        }
+                        else
+                        {
+                            cout << "* Not adding '" << spec << "'" << endl;
+                        }
+                    }
+                }
+
+                if (any)
+                {
+                    paludis::Command cmd(command);
+                    if (0 != run_command(cmd))
+                        throw ActionError("Updating world failed");
+                }
+            }
         }
         catch (...)
         {
