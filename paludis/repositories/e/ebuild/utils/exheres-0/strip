@@ -19,5 +19,18 @@
 
 source "${PALUDIS_EBUILD_DIR}"/die_functions.bash
 
-paludis_die_or_error "caught a naughty build system doing 'strip $@'"
+if [[ "${!PALUDIS_EBUILD_PHASE_VAR}" == "install" ]] ; then
+    # autoconf likes to call 'strip' even if it won't use it
+    paludis_die_or_error "caught a naughty build system doing 'strip $@'"
+fi
+
+new_path=
+IFS=':'
+for p in ${PATH} ; do
+    [[ "$(canonicalise $(dirname ${0} ) )" == "$(canonicalise ${p} )" ]] && continue
+    new_path="${new_path:+${new_path}:}${p}"
+done
+
+export PATH="${new_path}"
+exec install "$@"
 
