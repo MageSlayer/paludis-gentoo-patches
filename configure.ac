@@ -198,43 +198,6 @@ if test "x$have_dirent_dtype" = "xyes"; then
 fi
 dnl }}}
 
-dnl {{{ check whether we can do extern template
-CAN_USE_EXTERN_TEMPLATE=
-AC_MSG_CHECKING([for c++0x 'extern template' support])
-AC_COMPILE_IFELSE([
-template <typename T_> class S
-{
-	private:
-		S & operator= (const S &);
-};
-extern template struct S<int>;
-template struct S<int>;
-],
-	[AC_MSG_RESULT([yes])
-	 AC_MSG_CHECKING([whether c++0x 'extern template' works as we expect])
-	 AC_COMPILE_IFELSE([
-template <typename T_> struct B
-{
-	T_ f();
-};
-extern template class B<int>;
-void f()
-{
-	B<int> t;
-	t.f();
-}
-],
-		[AC_MSG_RESULT([yes])
-		 CAN_USE_EXTERN_TEMPLATE=yes
-		 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_EXTERN_TEMPLATE=1"
-		 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_EXTERN_TEMPLATE=1"
-		],
-		[AC_MSG_RESULT([no, your compiler is weird])
-		])
-	 ],
-	[AC_MSG_RESULT([no])])
-dnl }}}
-
 dnl {{{ check for cxxflags
 if test x = x"$LET_ME_RICE"
 then
@@ -454,8 +417,8 @@ AC_PREPROC_IFELSE([
 #  error not gcc 4
 #endif
 
-#if __GNUC_MINOR__ != 4
-#  error not gcc 4.4
+#if __GNUC_MINOR__ != 4 && __GNUC_MINOR__ != 5
+#  error not gcc 4.4 or 4.5
 #endif
 ],
 	[AC_MSG_RESULT([yes])
@@ -497,6 +460,43 @@ AC_SUBST([PALUDIS_CXXFLAGS_NO_WMISSING_NORETURN])
 
 save_CXXFLAGS="$CXXFLAGS"
 CXXFLAGS="$CXXFLAGS $PALUDIS_CXXFLAGS"
+
+dnl {{{ check whether we can do extern template
+CAN_USE_EXTERN_TEMPLATE=
+AC_MSG_CHECKING([for c++0x 'extern template' support])
+AC_COMPILE_IFELSE([
+template <typename T_> class S
+{
+	private:
+		S & operator= (const S &);
+};
+extern template struct S<int>;
+template struct S<int>;
+],
+	[AC_MSG_RESULT([yes])
+	 AC_MSG_CHECKING([whether c++0x 'extern template' works as we expect])
+	 AC_COMPILE_IFELSE([
+template <typename T_> struct B
+{
+	T_ f();
+};
+extern template class B<int>;
+void f()
+{
+	B<int> t;
+	t.f();
+}
+],
+		[AC_MSG_RESULT([yes])
+		 CAN_USE_EXTERN_TEMPLATE=yes
+		 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_EXTERN_TEMPLATE=1"
+		 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_EXTERN_TEMPLATE=1"
+		],
+		[AC_MSG_RESULT([no, your compiler is weird])
+		])
+	 ],
+	[AC_MSG_RESULT([no])])
+dnl }}}
 
 dnl {{{ check for partial specialisation of template classes
 AC_MSG_CHECKING([for compiler support for partial specialisation of template classes])
