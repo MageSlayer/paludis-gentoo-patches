@@ -195,6 +195,9 @@ namespace test_cases
     ExlibsTest test_array_required("array-required", throws_UnsupportedActionError);
     ExlibsTest test_illegal_in_global_scope("illegal-in-global-scope", throws_UnsupportedActionError);
     ExlibsTest test_illegal_in_global_scope_in_func("illegal-in-global-scope-in-func", success);
+    ExlibsTest test_called_cross_phase("called-cross-phase", throws_InstallActionError);
+    ExlibsTest test_called_cross_phase_default("called-cross-phase-default", throws_InstallActionError);
+    ExlibsTest test_called_cross_phase_user_overridden("called-cross-phase-user-overridden", throws_InstallActionError);
     ExlibsTest test_boolean("boolean", success);
     ExlibsTest test_boolean_badvalue("boolean-badvalue", throws_UnsupportedActionError);
     ExlibsTest test_boolean_blankvalue("boolean-blankvalue", throws_UnsupportedActionError);

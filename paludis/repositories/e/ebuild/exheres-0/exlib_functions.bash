@@ -271,3 +271,10 @@ illegal_in_global_scope()
         && die "Exheres bug: ${FUNCNAME[1]} must not be called in global scope"
 }
 
+verify_not_called_cross_phase() {
+    if [[ ${1:-${FUNCNAME[1]}} != $(paludis_phase_to_function_name "${!PALUDIS_EBUILD_PHASE_VAR}") ]] ; then
+        local correct_phase=${1:-${FUNCNAME[1]}#src_}; correct_phase=${correct_phase#pkg_}; correct_phase=${correct_phase#builtin_}
+        die "Exheres bug: ${FUNCNAME[1]} must only be called in the ${corect_phase} phase, was called in ${!PALUDIS_EBUILD_PHASE_VAR}"
+    fi
+}
+

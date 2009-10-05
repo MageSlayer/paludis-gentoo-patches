@@ -18,6 +18,7 @@
 
 default_pkg_bad_options()
 {
+    verify_not_called_cross_phase ${FUNCNAME[0]#default_}
     eerror "The following option requirements are unmet for ${CATEGORY}/${PNVR}:"
     local f
     echo "${EX_UNMET_REQUIREMENTS}" | while IFS=$'\n' read f ; do

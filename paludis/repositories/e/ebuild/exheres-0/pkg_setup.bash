@@ -22,6 +22,7 @@
 
 default_pkg_setup()
 {
+    verify_not_called_cross_phase ${FUNCNAME[0]#default_}
     :
 }
 

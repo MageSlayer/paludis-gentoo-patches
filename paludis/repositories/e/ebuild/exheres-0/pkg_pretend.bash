@@ -18,6 +18,7 @@
 
 default_pkg_pretend()
 {
+    verify_not_called_cross_phase ${FUNCNAME[0]#default_}
     :
 }
 

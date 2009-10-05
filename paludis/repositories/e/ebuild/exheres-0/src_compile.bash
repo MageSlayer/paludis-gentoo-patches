@@ -22,6 +22,7 @@
 
 default_src_compile()
 {
+    verify_not_called_cross_phase ${FUNCNAME[0]#default_}
     ebuild_verify_not_changed_from_global_scope DEFAULT_SRC_COMPILE_PARAMS
 
     if [[ -f Makefile ]] || [[ -f makefile ]] || [[ -f GNUmakefile ]] ; then

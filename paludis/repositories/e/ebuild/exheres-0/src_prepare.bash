@@ -22,6 +22,7 @@
 
 default_src_prepare()
 {
+    verify_not_called_cross_phase ${FUNCNAME[0]#default_}
     ebuild_verify_not_changed_from_global_scope DEFAULT_SRC_PREPARE_PATCHES
 
     if [[ -n "${DEFAULT_SRC_PREPARE_PATCHES[@]}" ]]; then

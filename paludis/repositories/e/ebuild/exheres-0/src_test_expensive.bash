@@ -22,6 +22,7 @@
 
 default_src_test_expensive()
 {
+    verify_not_called_cross_phase ${FUNCNAME[0]#default_}
     :
 }
 

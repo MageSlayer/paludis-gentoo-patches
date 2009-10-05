@@ -22,6 +22,7 @@
 
 default_src_configure()
 {
+    verify_not_called_cross_phase ${FUNCNAME[0]#default_}
     ebuild_verify_not_changed_from_global_scope \
         DEFAULT_SRC_CONFIGURE_PARAMS \
         DEFAULT_SRC_CONFIGURE_OPTION_ENABLES \

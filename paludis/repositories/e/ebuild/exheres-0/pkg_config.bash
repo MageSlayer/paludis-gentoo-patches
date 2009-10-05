@@ -22,6 +22,7 @@
 
 default_pkg_config()
 {
+    verify_not_called_cross_phase ${FUNCNAME[0]#default_}
     eerror "No configuration function is defined"
 }
 

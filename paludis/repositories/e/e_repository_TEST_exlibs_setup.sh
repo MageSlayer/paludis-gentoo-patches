@@ -536,6 +536,46 @@ pkg_setup() {
     f
 }
 END
+mkdir -p "packages/cat/called-cross-phase"
+cat <<'END' > packages/cat/called-cross-phase/called-cross-phase-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+SLOT="0"
+LICENCES="GPL-2"
+
+src_unpack() {
+    pkg_setup
+}
+END
+mkdir -p "packages/cat/called-cross-phase-default"
+cat <<'END' > packages/cat/called-cross-phase-default/called-cross-phase-default-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+SLOT="0"
+LICENCES="GPL-2"
+
+src_unpack() {
+    default_pkg_setup
+}
+END
+mkdir -p "packages/cat/called-cross-phase-user-overridden"
+cat <<'END' > packages/cat/called-cross-phase-user-overridden/called-cross-phase-user-overridden-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+SLOT="0"
+LICENCES="GPL-2"
+
+pkg_setup() {
+    :
+}
+
+src_unpack() {
+    pkg_setup
+}
+END
 cd ..
 
 cd ..

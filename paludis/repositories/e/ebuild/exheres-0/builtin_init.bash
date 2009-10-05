@@ -73,6 +73,12 @@ builtin_init()
 
     ebuild_load_em_up_dan
 
+    for a in ${PALUDIS_EBUILD_FUNCTIONS}; do
+        [[ $(type -t ${a}) == function ]] || continue
+        a="$(declare -f ${a})"
+        eval "${a/{/{ verify_not_called_cross_phase}"
+    done
+
     for a in PALUDIS_NON_EMPTY_VARIABLES ${PALUDIS_NON_EMPTY_VARIABLES} ; do
         a=${a#build:}
         [[ -z "${!a}" ]] && die "\$${a} unset or empty"

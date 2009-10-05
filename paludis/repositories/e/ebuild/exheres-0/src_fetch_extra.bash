@@ -18,6 +18,7 @@
 
 default_src_fetch_extra()
 {
+    verify_not_called_cross_phase ${FUNCNAME[0]#default_}
     :
 }
 

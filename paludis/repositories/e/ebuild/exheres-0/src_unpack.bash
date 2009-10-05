@@ -22,6 +22,7 @@
 
 default_src_unpack()
 {
+    verify_not_called_cross_phase ${FUNCNAME[0]#default_}
     [[ -n "${ARCHIVES}" ]] && unpack --if-compressed ${ARCHIVES}
 }
 

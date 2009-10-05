@@ -22,6 +22,7 @@
 
 default_pkg_nofetch()
 {
+    verify_not_called_cross_phase ${FUNCNAME[0]#default_}
     [[ -z "${ARCHIVES}" ]] && return
 
     local f g=
