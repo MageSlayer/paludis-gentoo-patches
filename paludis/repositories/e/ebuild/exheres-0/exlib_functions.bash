@@ -193,6 +193,14 @@ require()
         source "${location}" || die "Error sourcing exlib ${e}"
         hasq "${CURRENT_EXLIB}" ${INHERITED} || export INHERITED="${INHERITED} ${CURRENT_EXLIB}"
 
+        local f e_f
+        for f in ${PALUDIS_EBUILD_FUNCTIONS} ; do
+            [[ ${f} == builtin_* ]] && continue
+            [[ $(type -t ${CURRENT_EXLIB}_${f}) == function ]] || continue
+            e_f=$(declare -f ${CURRENT_EXLIB}_${f})
+            eval "${e_f/{/{ verify_not_called_cross_phase ${f}}"
+        done
+
         for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ; do
             local e_v="E_${v}"
             export -n ${e_v}="${!e_v} ${!v}"

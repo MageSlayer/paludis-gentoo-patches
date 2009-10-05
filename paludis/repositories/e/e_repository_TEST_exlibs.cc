@@ -198,6 +198,8 @@ namespace test_cases
     ExlibsTest test_called_cross_phase("called-cross-phase", throws_InstallActionError);
     ExlibsTest test_called_cross_phase_default("called-cross-phase-default", throws_InstallActionError);
     ExlibsTest test_called_cross_phase_user_overridden("called-cross-phase-user-overridden", throws_InstallActionError);
+    ExlibsTest test_called_cross_phase_exlib("called-cross-phase-exlib", throws_InstallActionError);
+    ExlibsTest test_called_cross_phase_exlib_exported("called-cross-phase-exlib-exported", throws_InstallActionError);
     ExlibsTest test_boolean("boolean", success);
     ExlibsTest test_boolean_badvalue("boolean-badvalue", throws_UnsupportedActionError);
     ExlibsTest test_boolean_blankvalue("boolean-blankvalue", throws_UnsupportedActionError);

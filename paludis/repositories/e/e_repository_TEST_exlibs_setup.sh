@@ -576,6 +576,46 @@ src_unpack() {
     pkg_setup
 }
 END
+mkdir -p "packages/cat/called-cross-phase-exlib"
+cat <<'END' > packages/cat/called-cross-phase-exlib/verify.exlib || exit 1
+verify_pkg_setup() {
+    :
+}
+END
+cat <<'END' > packages/cat/called-cross-phase-exlib/called-cross-phase-exlib-1.ebuild || exit 1
+require verify
+
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+SLOT="0"
+LICENCES="GPL-2"
+
+src_unpack() {
+    verify_pkg_setup
+}
+END
+mkdir -p "packages/cat/called-cross-phase-exlib-exported"
+cat <<'END' > packages/cat/called-cross-phase-exlib-exported/verify.exlib || exit 1
+export_exlib_phases pkg_setup
+
+verify_pkg_setup() {
+    :
+}
+END
+cat <<'END' > packages/cat/called-cross-phase-exlib-exported/called-cross-phase-exlib-exported-1.ebuild || exit 1
+require verify
+
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+SLOT="0"
+LICENCES="GPL-2"
+
+src_unpack() {
+    pkg_setup
+}
+END
 cd ..
 
 cd ..
