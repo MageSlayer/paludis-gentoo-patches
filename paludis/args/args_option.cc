@@ -115,6 +115,7 @@ AliasArg::AliasArg(ArgsOption * const o, const std::string & our_long_name, bool
 const std::string
 AliasArg::forwardable_string() const
 {
+    return "";
 }
 
 StringArg::StringArg(ArgsGroup * const g, const std::string & our_long_name,
