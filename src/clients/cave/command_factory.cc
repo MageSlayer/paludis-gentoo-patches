@@ -74,27 +74,27 @@ namespace
 CommandFactory::CommandFactory() :
     PrivateImplementationPattern<CommandFactory>(new Implementation<CommandFactory>)
 {
-    _imp->handlers.insert(std::make_pair("display-resolution", make_command<DisplayResolutionCommand>));
-    _imp->handlers.insert(std::make_pair("execute-resolution", make_command<ExecuteResolutionCommand>));
-    _imp->handlers.insert(std::make_pair("help", make_command<HelpCommand>));
-    _imp->handlers.insert(std::make_pair("perform", make_command<PerformCommand>));
-    _imp->handlers.insert(std::make_pair("print-categories", make_command<PrintCategoriesCommand>));
-    _imp->handlers.insert(std::make_pair("print-commands", make_command<PrintCommandsCommand>));
-    _imp->handlers.insert(std::make_pair("print-environment-metadata", make_command<PrintEnvironmentMetadataCommand>));
-    _imp->handlers.insert(std::make_pair("print-id-contents", make_command<PrintIDContentsCommand>));
-    _imp->handlers.insert(std::make_pair("print-id-executables", make_command<PrintIDExecutablesCommand>));
-    _imp->handlers.insert(std::make_pair("print-id-metadata", make_command<PrintIDMetadataCommand>));
-    _imp->handlers.insert(std::make_pair("print-ids", make_command<PrintIDsCommand>));
-    _imp->handlers.insert(std::make_pair("print-owners", make_command<PrintOwnersCommand>));
-    _imp->handlers.insert(std::make_pair("print-packages", make_command<PrintPackagesCommand>));
-    _imp->handlers.insert(std::make_pair("print-repositories", make_command<PrintRepositoriesCommand>));
-    _imp->handlers.insert(std::make_pair("print-repository-formats", make_command<PrintRepositoryFormatsCommand>));
-    _imp->handlers.insert(std::make_pair("print-sets", make_command<PrintSetsCommand>));
-    _imp->handlers.insert(std::make_pair("print-sync-protocols", make_command<PrintSyncProtocolsCommand>));
-    _imp->handlers.insert(std::make_pair("resolve", make_command<ResolveCommand>));
-    _imp->handlers.insert(std::make_pair("show", make_command<ShowCommand>));
-    _imp->handlers.insert(std::make_pair("sync", make_command<SyncCommand>));
-    _imp->handlers.insert(std::make_pair("update-world", make_command<UpdateWorldCommand>));
+    _imp->handlers.insert(std::make_pair("display-resolution", std::tr1::bind(&make_command<DisplayResolutionCommand>)));
+    _imp->handlers.insert(std::make_pair("execute-resolution", std::tr1::bind(&make_command<ExecuteResolutionCommand>)));
+    _imp->handlers.insert(std::make_pair("help", std::tr1::bind(&make_command<HelpCommand>)));
+    _imp->handlers.insert(std::make_pair("perform", std::tr1::bind(&make_command<PerformCommand>)));
+    _imp->handlers.insert(std::make_pair("print-categories", std::tr1::bind(&make_command<PrintCategoriesCommand>)));
+    _imp->handlers.insert(std::make_pair("print-commands", std::tr1::bind(&make_command<PrintCommandsCommand>)));
+    _imp->handlers.insert(std::make_pair("print-environment-metadata", std::tr1::bind(&make_command<PrintEnvironmentMetadataCommand>)));
+    _imp->handlers.insert(std::make_pair("print-id-contents", std::tr1::bind(&make_command<PrintIDContentsCommand>)));
+    _imp->handlers.insert(std::make_pair("print-id-executables", std::tr1::bind(&make_command<PrintIDExecutablesCommand>)));
+    _imp->handlers.insert(std::make_pair("print-id-metadata", std::tr1::bind(&make_command<PrintIDMetadataCommand>)));
+    _imp->handlers.insert(std::make_pair("print-ids", std::tr1::bind(&make_command<PrintIDsCommand>)));
+    _imp->handlers.insert(std::make_pair("print-owners", std::tr1::bind(&make_command<PrintOwnersCommand>)));
+    _imp->handlers.insert(std::make_pair("print-packages", std::tr1::bind(&make_command<PrintPackagesCommand>)));
+    _imp->handlers.insert(std::make_pair("print-repositories", std::tr1::bind(&make_command<PrintRepositoriesCommand>)));
+    _imp->handlers.insert(std::make_pair("print-repository-formats", std::tr1::bind(&make_command<PrintRepositoryFormatsCommand>)));
+    _imp->handlers.insert(std::make_pair("print-sets", std::tr1::bind(&make_command<PrintSetsCommand>)));
+    _imp->handlers.insert(std::make_pair("print-sync-protocols", std::tr1::bind(&make_command<PrintSyncProtocolsCommand>)));
+    _imp->handlers.insert(std::make_pair("resolve", std::tr1::bind(&make_command<ResolveCommand>)));
+    _imp->handlers.insert(std::make_pair("show", std::tr1::bind(&make_command<ShowCommand>)));
+    _imp->handlers.insert(std::make_pair("sync", std::tr1::bind(&make_command<SyncCommand>)));
+    _imp->handlers.insert(std::make_pair("update-world", std::tr1::bind(&make_command<UpdateWorldCommand>)));
 }
 
 CommandFactory::~CommandFactory()
