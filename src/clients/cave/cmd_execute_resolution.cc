@@ -35,7 +35,6 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/resolver/resolutions.hh>
-#include <paludis/resolver/serialise.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/resolution.hh>
@@ -54,6 +53,7 @@
 #include <paludis/environment.hh>
 #include <paludis/action.hh>
 #include <paludis/package_dep_spec_properties.hh>
+#include <paludis/serialise.hh>
 
 #include <set>
 #include <iterator>

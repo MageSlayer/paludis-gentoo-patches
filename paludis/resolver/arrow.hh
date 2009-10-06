@@ -22,8 +22,8 @@
 
 #include <paludis/resolver/arrow-fwd.hh>
 #include <paludis/resolver/resolvent.hh>
-#include <paludis/resolver/serialise-fwd.hh>
 #include <paludis/resolver/reason-fwd.hh>
+#include <paludis/serialise-fwd.hh>
 #include <paludis/util/named_value.hh>
 
 namespace paludis

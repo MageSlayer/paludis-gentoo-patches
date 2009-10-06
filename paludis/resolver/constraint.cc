@@ -19,12 +19,12 @@
 
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/reason.hh>
-#include <paludis/resolver/serialise-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/serialise-impl.hh>
 #include <algorithm>
 #include <sstream>
 #include <vector>

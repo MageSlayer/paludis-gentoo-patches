@@ -28,7 +28,6 @@
 #include <paludis/resolver/resolver_functions.hh>
 #include <paludis/resolver/suggest_restart.hh>
 #include <paludis/resolver/resolutions.hh>
-#include <paludis/resolver/serialise.hh>
 #include <paludis/resolver/destination.hh>
 #include <paludis/resolver/unsuitable_candidates.hh>
 #include <paludis/util/stringify.hh>
@@ -57,6 +56,7 @@
 #include <paludis/repository.hh>
 #include <paludis/choice.hh>
 #include <paludis/spec_tree.hh>
+#include <paludis/serialise.hh>
 #include <iostream>
 #include <iomanip>
 #include <list>

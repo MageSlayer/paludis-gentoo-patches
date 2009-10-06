@@ -21,10 +21,10 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_UNSUITABLE_CANDIDATES_HH 1
 
 #include <paludis/resolver/unsuitable_candidates-fwd.hh>
-#include <paludis/resolver/serialise-fwd.hh>
 #include <paludis/resolver/constraint-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/serialise-fwd.hh>
 
 namespace paludis
 {

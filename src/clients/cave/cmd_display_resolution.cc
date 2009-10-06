@@ -35,7 +35,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/resolver/resolutions.hh>
-#include <paludis/resolver/serialise.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/resolution.hh>
@@ -59,6 +58,7 @@
 #include <paludis/selection.hh>
 #include <paludis/environment.hh>
 #include <paludis/mask.hh>
+#include <paludis/serialise.hh>
 
 #include <set>
 #include <iterator>

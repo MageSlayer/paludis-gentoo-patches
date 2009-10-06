@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLUTION_FWD_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <paludis/resolver/serialise-fwd.hh>
 
 namespace paludis
 {

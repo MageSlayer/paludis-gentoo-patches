@@ -21,12 +21,12 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_DECISION_HH 1
 
 #include <paludis/resolver/decision-fwd.hh>
-#include <paludis/resolver/serialise-fwd.hh>
 #include <paludis/resolver/destination-fwd.hh>
 #include <paludis/resolver/unsuitable_candidates-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
+#include <paludis/serialise-fwd.hh>
 #include <paludis/package_id.hh>
 
 namespace paludis

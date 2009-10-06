@@ -41,7 +41,6 @@
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
-#include <paludis/resolver/serialise-impl.hh>
 #include <paludis/resolver/resolutions.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
@@ -54,6 +53,7 @@
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
+#include <paludis/serialise-impl.hh>
 
 #include <algorithm>
 #include <iostream>

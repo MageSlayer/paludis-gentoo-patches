@@ -25,7 +25,6 @@ noinst_HEADERS = \
 	resolver.hh resolver-fwd.hh \
 	resolver_functions.hh resolver_functions-fwd.hh \
 	sanitised_dependencies.hh sanitised_dependencies-fwd.hh \
-	serialise.hh serialise-fwd.hh serialise-impl.hh \
 	suggest_restart.hh suggest_restart-fwd.hh \
 	unsuitable_candidates.hh unsuitable_candidates-fwd.hh \
 	use_existing.hh use_existing-fwd.hh use_existing-se.hh
@@ -42,7 +41,6 @@ libpaludisresolver_a_SOURCES = \
 	resolvent.cc \
 	resolver.cc \
 	sanitised_dependencies.cc \
-	serialise.cc \
 	suggest_restart.cc \
 	unsuitable_candidates.cc \
 	use_existing.cc

@@ -22,13 +22,13 @@
 
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
 #include <paludis/resolver/resolver-fwd.hh>
-#include <paludis/resolver/serialise-fwd.hh>
 #include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/dep_label-fwd.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/spec_tree-fwd.hh>
 #include <paludis/metadata_key-fwd.hh>
+#include <paludis/serialise-fwd.hh>
 
 namespace paludis
 {

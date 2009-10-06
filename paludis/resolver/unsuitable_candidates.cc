@@ -18,11 +18,11 @@
  */
 
 #include <paludis/resolver/unsuitable_candidates.hh>
-#include <paludis/resolver/serialise-impl.hh>
 #include <paludis/resolver/constraint.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/serialise-impl.hh>
 
 using namespace paludis;
 using namespace paludis::resolver;

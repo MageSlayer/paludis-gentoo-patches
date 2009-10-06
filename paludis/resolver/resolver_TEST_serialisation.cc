@@ -25,7 +25,6 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/suggest_restart.hh>
-#include <paludis/resolver/serialise.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/options.hh>
@@ -38,6 +37,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/package_database.hh>
+#include <paludis/serialise.hh>
 
 #include <paludis/resolver/resolver_test.hh>
 #include <test/test_runner.hh>

@@ -24,11 +24,11 @@
 #include <paludis/resolver/reason-fwd.hh>
 #include <paludis/resolver/use_existing-fwd.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
-#include <paludis/resolver/serialise-fwd.hh>
 #include <paludis/resolver/destination_types-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/options.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/serialise-fwd.hh>
 #include <tr1/memory>
 
 namespace paludis

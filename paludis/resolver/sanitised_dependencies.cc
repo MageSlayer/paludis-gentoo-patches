@@ -20,7 +20,6 @@
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/resolvent.hh>
-#include <paludis/resolver/serialise-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
@@ -32,6 +31,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
 #include <paludis/elike_package_dep_spec.hh>
+#include <paludis/serialise-impl.hh>
 #include <set>
 #include <list>
 

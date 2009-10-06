@@ -21,13 +21,13 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/arrow.hh>
 #include <paludis/resolver/decision.hh>
-#include <paludis/resolver/serialise-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/serialise-impl.hh>
 #include <sstream>
 
 using namespace paludis;

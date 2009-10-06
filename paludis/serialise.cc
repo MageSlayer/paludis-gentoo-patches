@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/resolver/serialise-impl.hh>
+#include <paludis/serialise-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/simple_parser.hh>
@@ -27,17 +27,15 @@
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/package_id.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/environment.hh>
-#include <paludis/elike_package_dep_spec.hh>
 #include <paludis/selection.hh>
-#include <paludis/filter.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
+#include <paludis/environment.hh>
+#include <paludis/elike_package_dep_spec.hh>
 #include <list>
 #include <map>
 
 using namespace paludis;
-using namespace paludis::resolver;
 
 SerialiserObjectWriter::SerialiserObjectWriter(Serialiser & s) :
     _serialiser(s)

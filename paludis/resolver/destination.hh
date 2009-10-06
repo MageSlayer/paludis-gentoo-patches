@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_DESTINATION_HH 1
 
 #include <paludis/resolver/destination-fwd.hh>
-#include <paludis/resolver/serialise-fwd.hh>
+#include <paludis/serialise-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/name.hh>
 #include <paludis/package_id-fwd.hh>

@@ -18,7 +18,6 @@
  */
 
 #include <paludis/resolver/decision.hh>
-#include <paludis/resolver/serialise-impl.hh>
 #include <paludis/resolver/destination.hh>
 #include <paludis/resolver/unsuitable_candidates.hh>
 #include <paludis/util/make_named_values.hh>
@@ -26,6 +25,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/serialise-impl.hh>
 #include <sstream>
 
 using namespace paludis;

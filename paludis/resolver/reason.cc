@@ -20,9 +20,9 @@
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
-#include <paludis/resolver/serialise-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/serialise-impl.hh>
 
 using namespace paludis;
 using namespace paludis::resolver;

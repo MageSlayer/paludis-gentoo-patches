@@ -22,7 +22,7 @@
 
 #include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/resolver/destination_types-fwd.hh>
-#include <paludis/resolver/serialise-fwd.hh>
+#include <paludis/serialise-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec-fwd.hh>

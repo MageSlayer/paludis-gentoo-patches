@@ -23,12 +23,12 @@
 #include <paludis/resolver/reason-fwd.hh>
 #include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
-#include <paludis/resolver/serialise-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/serialise-fwd.hh>
 #include <tr1/memory>
 
 namespace paludis

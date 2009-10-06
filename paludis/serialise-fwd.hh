@@ -17,18 +17,15 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_SERIALISE_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_SERIALISE_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_SERIALISE_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_SERIALISE_FWD_HH 1
 
 namespace paludis
 {
-    namespace resolver
-    {
-        struct Serialiser;
+    struct Serialiser;
 
-        struct Deserialiser;
-        struct Deserialisation;
-    }
+    struct Deserialiser;
+    struct Deserialisation;
 }
 
 #endif
