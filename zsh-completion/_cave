@@ -122,14 +122,16 @@ _cave_cmd_print-id-contents()
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '--best[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
     '--nobest[If the spec matches multiple IDs, give an error]' \
-    '--format[Select the output format]:format: '
+    '--format[Select the output format]:format: ' \
+    '*:package depspec:_cave_packages' && return 0
 }
 
 (( ${+functions[_cave_cmd_print-id-executables]} )) ||
 _cave_cmd_print-id-executables()
 {
   _arguments -s : \
-    '(--help -h)'{--help,-h}'[Display help messsage]'
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '*:package depspec:_cave_packages' && return 0
 }
 
 
@@ -142,7 +144,8 @@ _cave_cmd_print-id-metadata()
     '--nobest[If the spec matches multiple IDs, give an error]' \
     '--raw-name[Show only keys with this raw name]:raw name: ' \
     '--human-name[Show only keys with this human name]:human name: ' \
-    '--format[Select the output format]:output format: '
+    '--format[Select the output format]:output format: ' \
+    '*:package depspec:_cave_packages' && return 0
 }
 
 (( ${+functions[_cave_cmd_print-ids]} )) ||
@@ -212,7 +215,8 @@ _cave_cmd_resolve()
     '--abort-at-phase[Abort when a named phase is encountered]:Phase: ' \
     '--skip-until-phase[Skip every phase until a named phase is encountered]:Phase: ' \
     '--change-phases-for[Control to which packages these phase options apply]:Which:((all first last))' \
-    '--show-descriptions[Whether to display package descriptions]:When:((none new all))'
+    '--show-descriptions[Whether to display package descriptions]:When:((none new all))' \
+    '*:package depspec:_cave_packages' && return 0
 }
 
 (( ${+functions[_cave_cmd_show]} )) ||
@@ -223,7 +227,8 @@ _cave_cmd_show()
     '--type[Specify the type of the specified objects]:object type:((auto repository set wildcard package))' \
     '(--complex-keys -c)'{--complex-keys,-c}'[Show complex keys]' \
     '(--internal-keys -i)'{--internal-keys,-i}'[Show keys regardless of importance, including internal-only values]' \
-    '(--flat -f)'{--flat,-f}'[Do not spread key values over multiple lines]'
+    '(--flat -f)'{--flat,-f}'[Do not spread key values over multiple lines]' \
+    '*:package depspec:_cave_packages' && return 0
 }
 
 (( ${+functions[_cave_cmd_sync]} )) ||
@@ -240,7 +245,13 @@ _cave_cmd_update-world()
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '(--remove --no-remove -r)'{--remove,--no-remove,-r}'[Remove the specified items]' \
-    '(--set --no-set -s)'{--set,--no-set,-s}'[Parameters are set names, not package names]'
+    '(--set --no-set -s)'{--set,--no-set,-s}'[Parameters are set names, not package names]' \
+    '*:package depspec:_cave_packages' && return 0
+}
+
+(( ${+functions[_cave_packages]} )) ||
+_cave_packages() {
+  :
 }
 
 _cave "${@}"
