@@ -95,7 +95,7 @@ _cave_cmd_print-categories()
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '--containing[Show only categories containing this package name]:package name: ' \
-    '--repository[Show only categories in this repository]:repository name: '
+    '--repository[Show only categories in this repository]:repository name:_cave_repositories'
 }
 
 (( ${+functions[_cave_cmd_print-commands]} )) ||
@@ -206,7 +206,7 @@ _cave_cmd_resolve()
     '(--dump --no-dump)'{--dump,--no-dump}'[Dump debug output]' \
     '(--dump-dependencies --no-dump-dependencies)'{--dump-dependencies,--no-dump-dependencies}'[Dump the sanitised dependencies selected for every package]' \
     '(--dump-restarts --no-dump-restarts)'{--dump-restarts,--no-dump-restarts}'[Dump restarts]' \
-    '(--create-binaries -b)'{--create-binaries,-b}'[Create binary packages in the specified repository]:Repository: ' \
+    '(--create-binaries -b)'{--create-binaries,-b}'[Create binary packages in the specified repository]:Repository:_cave_repositories' \
     '(--no-binaries-for -B)'{--no-binaries-for,-B}'[Do not create binary packages from any origin ID matching a spec]:Spec: ' \
     '(--install-to-root -/ --no-install-to-root)'{--install-to-root,-/,--no-install-to-root}'[Install packages to /]' \
     '(--preserve-world -1 --no-preserve-world)'{--preserve-world,-1,--no-preserve-world}'[Do not modify the world set]' \
@@ -236,7 +236,8 @@ _cave_cmd_sync()
 {
   # TODO: Complete repository names
   _arguments -s : \
-    '(--help -h)'{--help,-h}'[Display help messsage]'
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '*:repository:_cave_repositories' && return 0
 }
 
 (( ${+functions[_cave_cmd_update-world]} )) ||
@@ -252,6 +253,13 @@ _cave_cmd_update-world()
 (( ${+functions[_cave_packages]} )) ||
 _cave_packages() {
   :
+}
+
+(( ${+functions[_cave_repositories]} )) ||
+_cave_repositories() {
+  local -a _cave_repositories
+  _cave_repositories=( $(cave print-repositories) )
+  _describe -t repository 'repository' _cave_repositories
 }
 
 _cave "${@}"
