@@ -352,7 +352,14 @@ paludis::operator<< (std::ostream & s, const ConditionalDepSpec & a)
 std::ostream &
 paludis::operator<< (std::ostream & s, const URILabelsDepSpec & l)
 {
-    s << join(indirect_iterator(l.begin()), indirect_iterator(l.end()), "+") << ":";
+    s << join(indirect_iterator(l.begin()), indirect_iterator(l.end()), ",") << ":";
+    return s;
+}
+
+std::ostream &
+paludis::operator<< (std::ostream & s, const DependenciesLabelsDepSpec & l)
+{
+    s << join(indirect_iterator(l.begin()), indirect_iterator(l.end()), ",") << ":";
     return s;
 }
 
@@ -360,13 +367,6 @@ std::ostream &
 paludis::operator<< (std::ostream & s, const PlainTextLabelDepSpec & l)
 {
     s << l.label() << ":";
-    return s;
-}
-
-std::ostream &
-paludis::operator<< (std::ostream & s, const DependencyLabelsDepSpec & l)
-{
-    s << join(indirect_iterator(l.begin()), indirect_iterator(l.end()), ",") << ":";
     return s;
 }
 
@@ -1282,7 +1282,7 @@ PartiallyMadePackageDepSpec::to_package_dep_spec() const
 }
 
 template class LabelsDepSpec<URILabel>;
-template class LabelsDepSpec<DependencyLabel>;
+template class LabelsDepSpec<DependenciesLabel>;
 
 template class Sequence<std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> >;
 template class WrappedForwardIterator<AdditionalPackageDepSpecRequirements::ConstIteratorTag, const std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> >;
@@ -1293,6 +1293,6 @@ template class CloneUsingThis<DepSpec, ConditionalDepSpec>;
 template class PrivateImplementationPattern<PartiallyMadePackageDepSpec>;
 template class PrivateImplementationPattern<PackageDepSpec>;
 template class CloneUsingThis<DepSpec, PackageDepSpec>;
-template class PrivateImplementationPattern<DependencyLabelsDepSpec>;
 template class PrivateImplementationPattern<URILabelsDepSpec>;
+template class PrivateImplementationPattern<DependenciesLabelsDepSpec>;
 

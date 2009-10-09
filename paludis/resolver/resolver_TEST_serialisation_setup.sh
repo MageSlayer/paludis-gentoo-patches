@@ -24,7 +24,7 @@ PLATFORMS="test"
 SLOT="0"
 DEPENDENCIES="
     ( build: serialisation/dep serialisation/error )
-    ( post,suggested: serialisation/suggestion )
+    ( suggestion: serialisation/suggestion )
     "
 END
 

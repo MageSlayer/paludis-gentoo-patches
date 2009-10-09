@@ -72,8 +72,8 @@ namespace paludis
         std::tr1::shared_ptr<DepKey> depends_key;
         std::tr1::shared_ptr<DepKey> suggests_key;
 
-        std::tr1::shared_ptr<DependencyLabelSequence> suggests_labels;
-        std::tr1::shared_ptr<DependencyLabelSequence> depends_labels;
+        std::tr1::shared_ptr<DependenciesLabelSequence> suggests_labels;
+        std::tr1::shared_ptr<DependenciesLabelSequence> depends_labels;
 
         Implementation(const Environment * const e,
                 const std::tr1::shared_ptr<const CRANRepository> & r, const FSEntry & f) :
@@ -82,12 +82,11 @@ namespace paludis
             cran_repository(r),
             name("cran/" + cran_name_to_internal(strip_trailing_string(f.basename(), ".DESCRIPTION"))),
             version("0", VersionSpecOptions()),
-            suggests_labels(new DependencyLabelSequence),
-            depends_labels(new DependencyLabelSequence)
+            suggests_labels(new DependenciesLabelSequence),
+            depends_labels(new DependenciesLabelSequence)
         {
-            suggests_labels->push_back(make_shared_ptr(new DependencySuggestedLabel("Suggests")));
-            suggests_labels->push_back(make_shared_ptr(new DependencyPostLabel("Suggests")));
-            depends_labels->push_back(make_shared_ptr(new DependencyBuildLabel("Depends")));
+            suggests_labels->push_back(make_shared_ptr(new DependenciesSuggestionLabel("Suggests")));
+            depends_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("Depends")));
         }
 
         Implementation(const Environment * const e,
@@ -98,12 +97,11 @@ namespace paludis
             name("cran/" + cran_name_to_internal(t)),
             version(r->version()),
             contained_in_key(new PackageIDKey("Contained", "Contained in", r, mkt_normal)),
-            suggests_labels(new DependencyLabelSequence),
-            depends_labels(new DependencyLabelSequence)
+            suggests_labels(new DependenciesLabelSequence),
+            depends_labels(new DependenciesLabelSequence)
         {
-            suggests_labels->push_back(make_shared_ptr(new DependencySuggestedLabel("Suggests")));
-            suggests_labels->push_back(make_shared_ptr(new DependencyPostLabel("Suggests")));
-            depends_labels->push_back(make_shared_ptr(new DependencyBuildLabel("Depends")));
+            suggests_labels->push_back(make_shared_ptr(new DependenciesSuggestionLabel("Suggests")));
+            depends_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("Depends")));
         }
     };
 }

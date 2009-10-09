@@ -424,10 +424,10 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
-             * Return a DependencyLabelSequence that represents the initial labels to use when
+             * Return a DependenciesLabelSequence that represents the initial labels to use when
              * deciding the behaviour of individual items in the heirarchy.
              */
-            virtual const std::tr1::shared_ptr<const DependencyLabelSequence> initial_labels() const
+            virtual const std::tr1::shared_ptr<const DependenciesLabelSequence> initial_labels() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 }

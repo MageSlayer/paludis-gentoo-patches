@@ -135,7 +135,7 @@ namespace
             (*stack.begin())->append(node.spec());
         }
 
-        void visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type & node)
+        void visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type & node)
         {
             (*stack.begin())->append(node.spec());
         }

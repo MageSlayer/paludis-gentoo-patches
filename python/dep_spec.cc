@@ -535,11 +535,11 @@ PythonPlainTextLabelDepSpec::PythonPlainTextLabelDepSpec(const PlainTextLabelDep
 {
 }
 
-PythonDependencyLabelsDepSpec::PythonDependencyLabelsDepSpec(const std::string &)
+PythonDependenciesLabelsDepSpec::PythonDependenciesLabelsDepSpec(const std::string &)
 {
 }
 
-PythonDependencyLabelsDepSpec::PythonDependencyLabelsDepSpec(const DependencyLabelsDepSpec &)
+PythonDependenciesLabelsDepSpec::PythonDependenciesLabelsDepSpec(const DependenciesLabelsDepSpec &)
 {
 }
 
@@ -634,9 +634,9 @@ SpecTreeToPython::visit(const GenericSpecTree::NodeType<PlainTextLabelDepSpec>::
 }
 
 void
-SpecTreeToPython::visit(const GenericSpecTree::NodeType<DependencyLabelsDepSpec>::Type & node)
+SpecTreeToPython::visit(const GenericSpecTree::NodeType<DependenciesLabelsDepSpec>::Type & node)
 {
-    _current_parent->add_child(make_shared_ptr(new PythonDependencyLabelsDepSpec(*node.spec())));
+    _current_parent->add_child(make_shared_ptr(new PythonDependenciesLabelsDepSpec(*node.spec())));
 }
 
 const std::tr1::shared_ptr<const PythonDepSpec>
@@ -699,7 +699,7 @@ struct AllowedTypes<DependencySpecTree>
     AllowedTypes(const ConditionalDepSpec &) {};
     AllowedTypes(const PackageDepSpec &) {};
     AllowedTypes(const BlockDepSpec &) {};
-    AllowedTypes(const DependencyLabelsDepSpec &) {};
+    AllowedTypes(const DependenciesLabelsDepSpec &) {};
     AllowedTypes(const NamedSetDepSpec &) {};
 };
 
@@ -844,9 +844,9 @@ SpecTreeFromPython<H_>::visit(const PythonPlainTextLabelDepSpec & d)
 
 template <typename H_>
 void
-SpecTreeFromPython<H_>::visit(const PythonDependencyLabelsDepSpec & d)
+SpecTreeFromPython<H_>::visit(const PythonDependenciesLabelsDepSpec & d)
 {
-    dispatch<H_, DependencyLabelsDepSpec>(this, d);
+    dispatch<H_, DependenciesLabelsDepSpec>(this, d);
 }
 
 template <typename H_>
@@ -938,9 +938,9 @@ SpecTreeFromPython<H_>::real_visit(const PythonPlainTextLabelDepSpec & s)
 
 template <typename H_>
 void
-SpecTreeFromPython<H_>::real_visit(const PythonDependencyLabelsDepSpec &)
+SpecTreeFromPython<H_>::real_visit(const PythonDependenciesLabelsDepSpec &)
 {
-    _add_to->append(make_shared_ptr(new DependencyLabelsDepSpec));
+    _add_to->append(make_shared_ptr(new DependenciesLabelsDepSpec));
 }
 
 template <typename H_>
@@ -1351,13 +1351,13 @@ void expose_dep_spec()
         ;
 
     /**
-     * DependencyLabelsDepSpec
+     * DependenciesLabelsDepSpec
      */
-    RegisterDepSpecToPython<DependencyLabelsDepSpec, PythonDependencyLabelsDepSpec>();
-    bp::class_<PythonDependencyLabelsDepSpec, bp::bases<PythonDepSpec>, boost::noncopyable>
+    RegisterDepSpecToPython<DependenciesLabelsDepSpec, PythonDependenciesLabelsDepSpec>();
+    bp::class_<PythonDependenciesLabelsDepSpec, bp::bases<PythonDepSpec>, boost::noncopyable>
         (
-         "DependencyLabelsDepSpec",
-         "A DependencyLabelsDepSpec represents a dependency label.",
+         "DependenciesLabelsDepSpec",
+         "A DependenciesLabelsDepSpec represents a dependency label.",
          bp::init<const std::string &>("__init__(str)")
         )
         ;

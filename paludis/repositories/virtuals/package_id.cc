@@ -53,14 +53,14 @@ namespace paludis
     {
         const Environment * const env;
         const std::tr1::shared_ptr<DependencySpecTree> value;
-        const std::tr1::shared_ptr<const DependencyLabelSequence> labels;
+        const std::tr1::shared_ptr<const DependenciesLabelSequence> labels;
         const std::tr1::shared_ptr<const PackageDepSpec> spec;
 
         const std::string raw_name;
         const std::string human_name;
 
         Implementation(const Environment * const e, const std::tr1::shared_ptr<const PackageID> & v,
-                const std::tr1::shared_ptr<const DependencyLabelSequence> & l,
+                const std::tr1::shared_ptr<const DependenciesLabelSequence> & l,
                 bool exact, const std::string & h, const std::string & r) :
             env(e),
             value(new DependencySpecTree(make_shared_ptr(new AllDepSpec))),
@@ -91,7 +91,7 @@ namespace paludis
 
 VirtualsDepKey::VirtualsDepKey(const Environment * const e, const std::string & r, const std::string & h,
         const std::tr1::shared_ptr<const PackageID> & v,
-        const std::tr1::shared_ptr<const DependencyLabelSequence> & l,
+        const std::tr1::shared_ptr<const DependenciesLabelSequence> & l,
         const bool exact) :
     PrivateImplementationPattern<VirtualsDepKey>(new Implementation<VirtualsDepKey>(e, v, l, exact, r, h)),
     _imp(PrivateImplementationPattern<VirtualsDepKey>::_imp)
@@ -150,7 +150,7 @@ VirtualsDepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) c
     return pretty_print(f);
 }
 
-const std::tr1::shared_ptr<const DependencyLabelSequence>
+const std::tr1::shared_ptr<const DependenciesLabelSequence>
 VirtualsDepKey::initial_labels() const
 {
     return _imp->labels;
@@ -165,8 +165,8 @@ namespace paludis
         const std::tr1::shared_ptr<const Repository> repository;
         const QualifiedPackageName name;
         const VersionSpec version;
-        std::tr1::shared_ptr<DependencyLabelSequence> bdep_labels;
-        std::tr1::shared_ptr<DependencyLabelSequence> rdep_labels;
+        std::tr1::shared_ptr<DependenciesLabelSequence> bdep_labels;
+        std::tr1::shared_ptr<DependenciesLabelSequence> rdep_labels;
         const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > > virtual_for;
         const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > bdep;
         const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > rdep;
@@ -183,15 +183,15 @@ namespace paludis
             repository(o),
             name(n),
             version(p->version()),
-            bdep_labels(new DependencyLabelSequence),
-            rdep_labels(new DependencyLabelSequence),
+            bdep_labels(new DependenciesLabelSequence),
+            rdep_labels(new DependenciesLabelSequence),
             virtual_for(new LiteralMetadataValueKey<std::tr1::shared_ptr<const PackageID> > ("VIRTUAL_FOR", "Virtual for", mkt_normal, p)),
             bdep(new virtuals::VirtualsDepKey(e, "DEPEND", "Build dependencies", p, bdep_labels, b)),
             rdep(new virtuals::VirtualsDepKey(e, "RDEPEND", "Run dependencies", p, rdep_labels, b)),
             has_masks(false)
         {
-            bdep_labels->push_back(make_shared_ptr(new DependencyBuildLabel("DEPEND")));
-            rdep_labels->push_back(make_shared_ptr(new DependencyRunLabel("RDEPEND")));
+            bdep_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("DEPEND")));
+            rdep_labels->push_back(make_shared_ptr(new DependenciesRunLabel("RDEPEND")));
         }
     };
 }

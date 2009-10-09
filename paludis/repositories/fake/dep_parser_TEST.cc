@@ -48,7 +48,7 @@ namespace
             str << "b<" << stringify(*node.spec()) << ">";
         }
 
-        void visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type & node)
+        void visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type & node)
         {
             str << "l<" << stringify(*node.spec()) << ">";
         }

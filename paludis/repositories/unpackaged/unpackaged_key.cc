@@ -42,14 +42,14 @@ namespace paludis
     {
         const Environment * const env;
         const std::tr1::shared_ptr<const DependencySpecTree> value;
-        const std::tr1::shared_ptr<const DependencyLabelSequence> labels;
+        const std::tr1::shared_ptr<const DependenciesLabelSequence> labels;
 
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
 
         Implementation(const Environment * const e, const std::string & v,
-                const std::tr1::shared_ptr<const DependencyLabelSequence> & l,
+                const std::tr1::shared_ptr<const DependenciesLabelSequence> & l,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             env(e),
             value(DepParser::parse(env, v)),
@@ -64,7 +64,7 @@ namespace paludis
 
 UnpackagedDependencyKey::UnpackagedDependencyKey(const Environment * const env,
         const std::string & r, const std::string & h, const MetadataKeyType t,
-        const std::tr1::shared_ptr<const DependencyLabelSequence> & l,
+        const std::tr1::shared_ptr<const DependenciesLabelSequence> & l,
         const std::string & v) :
     PrivateImplementationPattern<UnpackagedDependencyKey>(new Implementation<UnpackagedDependencyKey>(env, v, l, r, h, t))
 {
@@ -114,7 +114,7 @@ UnpackagedDependencyKey::pretty_print_flat(const DependencySpecTree::ItemFormatt
     return p.result();
 }
 
-const std::tr1::shared_ptr<const DependencyLabelSequence>
+const std::tr1::shared_ptr<const DependenciesLabelSequence>
 UnpackagedDependencyKey::initial_labels() const
 {
     return _imp->labels;

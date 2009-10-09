@@ -162,7 +162,7 @@ namespace
         {
         }
 
-        void visit(const GenericSpecTree::NodeType<DependencyLabelsDepSpec>::Type &)
+        void visit(const GenericSpecTree::NodeType<DependenciesLabelsDepSpec>::Type &)
         {
         }
 

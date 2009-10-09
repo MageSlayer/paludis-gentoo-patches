@@ -1476,7 +1476,7 @@ namespace
         {
         }
 
-        void visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type &)
+        void visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type &)
         {
         }
 
@@ -1658,7 +1658,7 @@ namespace
         {
         }
 
-        void visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type &)
+        void visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type &)
         {
         }
 

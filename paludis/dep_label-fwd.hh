@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -63,207 +63,154 @@ namespace paludis
      */
     std::ostream & operator<< (std::ostream &, const URILabel &) PALUDIS_VISIBLE;
 
-    struct DependencyLabel;
-    struct DependencySystemLabel;
-    struct DependencyTypeLabel;
-    struct DependencySuggestLabel;
-    struct DependencyABIsLabel;
+    struct DependenciesLabel;
+
+    template <typename>
+    struct ConcreteDependenciesLabel;
+
+    /**
+     * Tag for DependenciesBuildLabel.
+     *
+     * \since 0.42
+     * \ingroup g_dep_spec
+     */
+    struct DependenciesBuildLabelTag;
+
+    /**
+     * Dependencies label.
+     *
+     * \since 0.42
+     * \ingroup g_dep_spec
+     */
+    typedef ConcreteDependenciesLabel<DependenciesBuildLabelTag> DependenciesBuildLabel;
+
+    /**
+     * Tag for DependenciesRunLabel.
+     *
+     * \since 0.42
+     * \ingroup g_dep_spec
+     */
+    struct DependenciesRunLabelTag;
+
+    /**
+     * Dependencies label.
+     *
+     * \since 0.42
+     * \ingroup g_dep_spec
+     */
+    typedef ConcreteDependenciesLabel<DependenciesRunLabelTag> DependenciesRunLabel;
+
+    /**
+     * Tag for DependenciesPostLabel.
+     *
+     * \since 0.42
+     * \ingroup g_dep_spec
+     */
+    struct DependenciesPostLabelTag;
+
+    /**
+     * Dependencies label.
+     *
+     * \since 0.42
+     * \ingroup g_dep_spec
+     */
+    typedef ConcreteDependenciesLabel<DependenciesPostLabelTag> DependenciesPostLabel;
+
+    /**
+     * Tag for DependenciesCompileAgainstLabel.
+     *
+     * \since 0.42
+     * \ingroup g_dep_spec
+     */
+    struct DependenciesCompileAgainstLabelTag;
+
+    /**
+     * Dependencies label.
+     *
+     * \since 0.42
+     * \ingroup g_dep_spec
+     */
+    typedef ConcreteDependenciesLabel<DependenciesCompileAgainstLabelTag> DependenciesCompileAgainstLabel;
+
+    /**
+     * Tag for DependenciesFetchLabel.
+     *
+     * \since 0.42
+     * \ingroup g_dep_spec
+     */
+    struct DependenciesFetchLabelTag;
+
+    /**
+     * Dependencies label.
+     *
+     * \since 0.42
+     * \ingroup g_dep_spec
+     */
+    typedef ConcreteDependenciesLabel<DependenciesFetchLabelTag> DependenciesFetchLabel;
+
+    /**
+     * Tag for DependenciesInstallLabel.
+     *
+     * \since 0.42
+     * \ingroup g_dep_spec
+     */
+    struct DependenciesInstallLabelTag;
+
+    /**
+     * Dependencies label.
+     *
+     * \since 0.42
+     * \ingroup g_dep_spec
+     */
+    typedef ConcreteDependenciesLabel<DependenciesInstallLabelTag> DependenciesInstallLabel;
+
+    /**
+     * Tag for DependenciesSuggestionLabel.
+     *
+     * \since 0.42
+     * \ingroup g_dep_spec
+     */
+    struct DependenciesSuggestionLabelTag;
+
+    /**
+     * Dependencies label.
+     *
+     * \since 0.42
+     * \ingroup g_dep_spec
+     */
+    typedef ConcreteDependenciesLabel<DependenciesSuggestionLabelTag> DependenciesSuggestionLabel;
+
+    /**
+     * Tag for DependenciesRecommendationLabel.
+     *
+     * \since 0.42
+     * \ingroup g_dep_spec
+     */
+    struct DependenciesRecommendationLabelTag;
+
+    /**
+     * Dependencies label.
+     *
+     * \since 0.42
+     * \ingroup g_dep_spec
+     */
+    typedef ConcreteDependenciesLabel<DependenciesRecommendationLabelTag> DependenciesRecommendationLabel;
 
     /**
      * A collection of DependencyLabel instances.
      *
      * \ingroup g_dep_spec
-     * \since 0.26
+     * \since 0.42
      */
-    typedef Sequence<std::tr1::shared_ptr<const DependencyLabel> > DependencyLabelSequence;
+    typedef Sequence<std::tr1::shared_ptr<const DependenciesLabel> > DependenciesLabelSequence;
 
     /**
-     * A collection of DependencySystemLabel instances.
+     * A DependenciesLabel can be written to a stream.
      *
      * \ingroup g_dep_spec
-     * \since 0.26
+     * \since 0.42
      */
-    typedef Sequence<std::tr1::shared_ptr<const DependencySystemLabel> > DependencySystemLabelSequence;
-
-    /**
-     * A collection of DependencyTypeLabel instances.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.26
-     */
-    typedef Sequence<std::tr1::shared_ptr<const DependencyTypeLabel> > DependencyTypeLabelSequence;
-
-    /**
-     * A collection of DependencySuggestLabel instances.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.26
-     */
-    typedef Sequence<std::tr1::shared_ptr<const DependencySuggestLabel> > DependencySuggestLabelSequence;
-
-    /**
-     * A collection of DependencyABIsLabel instances.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.26
-     */
-    typedef Sequence<std::tr1::shared_ptr<const DependencyABIsLabel> > DependencyABIsLabelSequence;
-
-    template <typename T_, typename Category_> struct ConcreteDependencyLabel;
-
-    struct DependencyHostLabelTag;
-
-    /**
-     * A DependencyHostLabel specifies host requirements for building a package.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.26
-     */
-    typedef ConcreteDependencyLabel<DependencyHostLabelTag, DependencySystemLabel> DependencyHostLabel;
-
-    struct DependencyTargetLabelTag;
-
-    /**
-     * A DependencyTargetLabel specifies target requirements for building a package.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.26
-     */
-    typedef ConcreteDependencyLabel<DependencyTargetLabelTag, DependencySystemLabel> DependencyTargetLabel;
-
-    struct DependencyBuildLabelTag;
-
-    /**
-     * A DependencyBuildLabel specifies build-time requirements for building a package.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.26
-     */
-    typedef ConcreteDependencyLabel<DependencyBuildLabelTag, DependencyTypeLabel> DependencyBuildLabel;
-
-    struct DependencyRunLabelTag;
-
-    /**
-     * A DependencyRunLabel specifies runtime requirements for building a package.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.26
-     */
-    typedef ConcreteDependencyLabel<DependencyRunLabelTag, DependencyTypeLabel> DependencyRunLabel;
-
-    struct DependencyPostLabelTag;
-
-    /**
-     * A DependencyPostLabel specifies build-time requirements for building a package.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.26
-     */
-    typedef ConcreteDependencyLabel<DependencyPostLabelTag, DependencyTypeLabel> DependencyPostLabel;
-
-    struct DependencyInstallLabelTag;
-
-    /**
-     * A DependencyInstallLabel specifies install-time requirements for building a package.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.26
-     */
-    typedef ConcreteDependencyLabel<DependencyInstallLabelTag, DependencyTypeLabel> DependencyInstallLabel;
-
-    struct DependencyCompileLabelTag;
-
-    /**
-     * A DependencyCompileLabel specifies compiled-against requirements for building a package.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.26
-     */
-    typedef ConcreteDependencyLabel<DependencyCompileLabelTag, DependencyTypeLabel> DependencyCompileLabel;
-
-    struct DependencySuggestedLabelTag;
-
-    /**
-     * A DependencySuggestLabel specifies that a dependency is suggested.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.26
-     */
-    typedef ConcreteDependencyLabel<DependencySuggestedLabelTag, DependencySuggestLabel> DependencySuggestedLabel;
-
-    struct DependencyRecommendedLabelTag;
-
-    /**
-     * A DependencyRecommendedLabel specifies that a dependency is recommended.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.26
-     */
-    typedef ConcreteDependencyLabel<DependencyRecommendedLabelTag, DependencySuggestLabel> DependencyRecommendedLabel;
-
-    struct DependencyRequiredLabelTag;
-
-    /**
-     * A DependencyRequiredLabel specifies that a dependency is required.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.26
-     */
-    typedef ConcreteDependencyLabel<DependencyRequiredLabelTag, DependencySuggestLabel> DependencyRequiredLabel;
-
-    struct DependencyAnyLabelTag;
-
-    /**
-     * A DependencyAnyLabel specifies that a dependency can be satisfied by
-     * any ABI.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.26
-     */
-    typedef ConcreteDependencyLabel<DependencyAnyLabelTag, DependencyABIsLabel> DependencyAnyLabel;
-
-    struct DependencyMineLabelTag;
-
-    /**
-     * A DependencyMineLabel specifies that a dependency is satisfied by
-     * ABIs equal to those being used to create the depending package.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.26
-     */
-    typedef ConcreteDependencyLabel<DependencyMineLabelTag, DependencyABIsLabel> DependencyMineLabel;
-
-    struct DependencyPrimaryLabelTag;
-
-    /**
-     * A DependencyPrimaryLabel specifies that a dependency can be satisfied by
-     * the primary ABI.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.26
-     */
-    typedef ConcreteDependencyLabel<DependencyPrimaryLabelTag, DependencyABIsLabel> DependencyPrimaryLabel;
-
-    struct DependencyABILabelTag;
-
-    /**
-     * A DependencyABILabel specifies that a dependency can be satisfied by
-     * a named ABI.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.26
-     */
-    typedef ConcreteDependencyLabel<DependencyABILabelTag, DependencyABIsLabel> DependencyABILabel;
-
-    /**
-     * A DependencyLabel can be written to a stream.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.26
-     */
-    std::ostream & operator<< (std::ostream &, const DependencyLabel &) PALUDIS_VISIBLE;
-
-    struct ActiveDependencyLabels;
+    std::ostream & operator<< (std::ostream &, const DependenciesLabel &) PALUDIS_VISIBLE;
 }
 
 #endif

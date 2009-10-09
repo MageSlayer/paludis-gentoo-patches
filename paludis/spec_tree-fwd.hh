@@ -76,7 +76,7 @@ namespace paludis
             SpecTreeLeafNodeType<PackageDepSpec>,
             SpecTreeLeafNodeType<BlockDepSpec>,
             SpecTreeLeafNodeType<URILabelsDepSpec>,
-            SpecTreeLeafNodeType<DependencyLabelsDepSpec>,
+            SpecTreeLeafNodeType<DependenciesLabelsDepSpec>,
             SpecTreeLeafNodeType<NamedSetDepSpec>,
             SpecTreeInnerNodeType<AllDepSpec>,
             SpecTreeInnerNodeType<AnyDepSpec>,
@@ -119,7 +119,7 @@ namespace paludis
     typedef SpecTree<MakeTypeList<
             SpecTreeLeafNodeType<PackageDepSpec>,
             SpecTreeLeafNodeType<BlockDepSpec>,
-            SpecTreeLeafNodeType<DependencyLabelsDepSpec>,
+            SpecTreeLeafNodeType<DependenciesLabelsDepSpec>,
             SpecTreeLeafNodeType<NamedSetDepSpec>,
             SpecTreeInnerNodeType<AllDepSpec>,
             SpecTreeInnerNodeType<AnyDepSpec>,

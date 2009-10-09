@@ -166,7 +166,7 @@ namespace
                     result |= _m(stringify(*node.spec()));
             }
 
-            void visit(const GenericSpecTree::NodeType<DependencyLabelsDepSpec>::Type & node)
+            void visit(const GenericSpecTree::NodeType<DependenciesLabelsDepSpec>::Type & node)
             {
                 if (! result)
                     result |= _m(stringify(*node.spec()));

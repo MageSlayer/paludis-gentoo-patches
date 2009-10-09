@@ -55,8 +55,8 @@ namespace paludis
         const VersionSpec version;
         const RepositoryName repository_name;
 
-        std::tr1::shared_ptr<DependencyLabelSequence> build_dependencies_labels;
-        std::tr1::shared_ptr<DependencyLabelSequence> run_dependencies_labels;
+        std::tr1::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
+        std::tr1::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
 
         const std::tr1::shared_ptr<LiteralMetadataValueKey<SlotName> > slot_key;
         const std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > fs_location_key;
@@ -79,8 +79,8 @@ namespace paludis
             name(q),
             version(v),
             repository_name(n),
-            build_dependencies_labels(new DependencyLabelSequence),
-            run_dependencies_labels(new DependencyLabelSequence),
+            build_dependencies_labels(new DependenciesLabelSequence),
+            run_dependencies_labels(new DependenciesLabelSequence),
             slot_key(new LiteralMetadataValueKey<SlotName> ("slot", "Slot", mkt_internal, s)),
             fs_location_key(new LiteralMetadataValueKey<FSEntry> ("location", "Location", mkt_normal, l)),
             build_dependencies_key(new UnpackagedDependencyKey(env, "build_dependencies", "Build dependencies", mkt_dependencies,
@@ -90,8 +90,8 @@ namespace paludis
             description_key(new LiteralMetadataValueKey<std::string> ("description", "Description", mkt_significant, d)),
             choices_key(new UnpackagedChoicesKey(env, "choices", "Choices", mkt_normal, id))
         {
-            build_dependencies_labels->push_back(make_shared_ptr(new DependencyBuildLabel("build_dependencies")));
-            run_dependencies_labels->push_back(make_shared_ptr(new DependencyRunLabel("run_dependencies")));
+            build_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("build_dependencies")));
+            run_dependencies_labels->push_back(make_shared_ptr(new DependenciesRunLabel("run_dependencies")));
         }
     };
 }

@@ -38,7 +38,7 @@ namespace paludis
             public CanFormat<FetchableURIDepSpec>,
             public CanFormat<URILabelsDepSpec>,
             public CanFormat<PackageDepSpec>,
-            public CanFormat<DependencyLabelsDepSpec>,
+            public CanFormat<DependenciesLabelsDepSpec>,
             public CanFormat<BlockDepSpec>,
             public CanFormat<NamedSetDepSpec>,
             public CanFormat<PlainTextLabelDepSpec>,
@@ -95,7 +95,7 @@ namespace paludis
                 std::string format(const PackageDepSpec &, const format::Installed &) const;
                 std::string format(const PackageDepSpec &, const format::Installable &) const;
 
-                std::string format(const DependencyLabelsDepSpec &, const format::Plain &) const;
+                std::string format(const DependenciesLabelsDepSpec &, const format::Plain &) const;
 
                 std::string format(const BlockDepSpec &, const format::Plain &) const;
 

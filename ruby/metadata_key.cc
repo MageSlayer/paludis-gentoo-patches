@@ -552,7 +552,7 @@ namespace
 
     /*
      * call-seq:
-     *     initial_labels -> Array of DependencyLabel
+     *     initial_labels -> Array of DependenciesLabel
      *
      * Return the initial labels to use when deciding the behaviour of
      * individual items in the heirarchy.
@@ -569,9 +569,9 @@ namespace
 
             VALUE result(rb_ary_new());
 
-            for (DependencyLabelSequence::ConstIterator it(real_self->initial_labels()->begin()),
+            for (DependenciesLabelSequence::ConstIterator it(real_self->initial_labels()->begin()),
                      it_end(real_self->initial_labels()->end()); it_end != it; ++it)
-                rb_ary_push(result, dependency_label_to_value(*it));
+                rb_ary_push(result, dependencies_label_to_value(*it));
 
             return result;
         }

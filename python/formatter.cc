@@ -293,7 +293,7 @@ class PythonFormatterWrapper :
     public PythonCanFormat<BlockDepSpec>,
     public PythonCanFormat<FetchableURIDepSpec>,
     public PythonCanFormat<SimpleURIDepSpec>,
-    public PythonCanFormat<DependencyLabelsDepSpec>,
+    public PythonCanFormat<DependenciesLabelsDepSpec>,
     public PythonCanFormat<URILabelsDepSpec>,
     public PythonCanFormat<PlainTextLabelDepSpec>,
     public PythonCanFormat<PlainTextDepSpec>,
@@ -389,16 +389,16 @@ void expose_formatter()
         ;
 
     /**
-     * CanFormatDependencyLabelsDepSpec
+     * CanFormatDependenciesLabelsDepSpec
      */
-    bp::class_<PythonCanFormatWrapper<DependencyLabelsDepSpec>, boost::noncopyable>
+    bp::class_<PythonCanFormatWrapper<DependenciesLabelsDepSpec>, boost::noncopyable>
         (
-         "CanFormatDependencyLabelsDepSpec",
-         "Descendents of this class implement the necessary methods to format a DependencyLabelsDepSpec.",
+         "CanFormatDependenciesLabelsDepSpec",
+         "Descendents of this class implement the necessary methods to format a DependenciesLabelsDepSpec.",
          bp::init<>("__init__()")
         )
-        .def("format_dependency_labels_dep_spec_plain",
-                &PythonCanFormatWrapper<DependencyLabelsDepSpec>::format_plain)
+        .def("format_dependencies_labels_dep_spec_plain",
+                &PythonCanFormatWrapper<DependenciesLabelsDepSpec>::format_plain)
         ;
 
     /**
@@ -557,7 +557,7 @@ void expose_formatter()
                 CanFormat<ConditionalDepSpec>,
                 CanFormat<PackageDepSpec>,
                 CanFormat<NamedSetDepSpec>,
-                CanFormat<DependencyLabelsDepSpec> >,
+                CanFormat<DependenciesLabelsDepSpec> >,
             boost::noncopyable>
         (
          "DependencySpecTreeFormatter",
@@ -632,7 +632,7 @@ void expose_formatter()
                 CanFormat<BlockDepSpec>,
                 CanFormat<FetchableURIDepSpec>,
                 CanFormat<SimpleURIDepSpec>,
-                CanFormat<DependencyLabelsDepSpec>,
+                CanFormat<DependenciesLabelsDepSpec>,
                 CanFormat<URILabelsDepSpec>,
                 CanFormat<PlainTextLabelDepSpec>,
                 CanFormat<PlainTextDepSpec>,
@@ -673,7 +673,7 @@ void expose_formatter()
                 CanFormat<BlockDepSpec>,
                 CanFormat<FetchableURIDepSpec>,
                 CanFormat<SimpleURIDepSpec>,
-                CanFormat<DependencyLabelsDepSpec>,
+                CanFormat<DependenciesLabelsDepSpec>,
                 CanFormat<URILabelsDepSpec>,
                 CanFormat<PlainTextLabelDepSpec>,
                 CanFormat<PlainTextDepSpec>,

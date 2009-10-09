@@ -102,7 +102,7 @@ namespace paludis
         template <typename T_> std::tr1::shared_ptr<const T_> value_to_dep_tree(VALUE);
         VALUE package_dep_spec_to_value(const std::tr1::shared_ptr<const PackageDepSpec> &);
         VALUE uri_label_to_value(const std::tr1::shared_ptr<const URILabel> &);
-        VALUE dependency_label_to_value(const std::tr1::shared_ptr<const DependencyLabel> &);
+        VALUE dependencies_label_to_value(const std::tr1::shared_ptr<const DependenciesLabel> &);
         VALUE mask_to_value(std::tr1::shared_ptr<const Mask>);
         VALUE choices_to_value(const std::tr1::shared_ptr<const Choices> & c);
         VALUE choice_to_value(const std::tr1::shared_ptr<const Choice> & c);
@@ -113,7 +113,7 @@ namespace paludis
         VersionSpec value_to_version_spec(VALUE v);
         std::tr1::shared_ptr<const PackageID> value_to_package_id(VALUE);
         std::tr1::shared_ptr<const PackageDepSpec> value_to_package_dep_spec(VALUE v);
-        std::tr1::shared_ptr<const DependencyLabelsDepSpec> value_to_dependency_labels_dep_spec(VALUE v);
+        std::tr1::shared_ptr<const DependenciesLabelsDepSpec> value_to_dependencies_labels_dep_spec(VALUE v);
         std::tr1::shared_ptr<const DepSpec> value_to_dep_spec(VALUE v);
         std::tr1::shared_ptr<const DepTag> value_to_dep_tag(VALUE v);
         QualifiedPackageName value_to_qualified_package_name(VALUE v);
@@ -126,10 +126,9 @@ namespace paludis
         std::tr1::shared_ptr<const Choices> value_to_choices(VALUE v);
         std::tr1::shared_ptr<const Choice> value_to_choice(VALUE v);
         std::tr1::shared_ptr<const ChoiceValue> value_to_choice_value(VALUE v);
-        std::tr1::shared_ptr<const DependencyLabel> value_to_dependency_label(VALUE v);
+        std::tr1::shared_ptr<const DependenciesLabel> value_to_dependencies_label(VALUE v);
         MatchPackageOptions value_to_match_package_options(VALUE v);
         bool value_to_bool(VALUE v);
-        std::tr1::shared_ptr<ActiveDependencyLabels> value_to_active_dependency_labels(VALUE v);
 
         Filter value_to_filter(VALUE v);
         Selection value_to_selection(VALUE v);
@@ -143,7 +142,7 @@ namespace paludis
         VALUE * uninstall_action_value_ptr();
         VALUE * pretend_action_value_ptr();
         VALUE * pretend_fetch_action_value_ptr();
-        VALUE * dependency_labels_dep_spec_value_ptr();
+        VALUE * dependencies_labels_dep_spec_value_ptr();
 
 #ifdef ENABLE_RUBY_QA
         QACheckProperties value_to_qa_check_properties(VALUE);

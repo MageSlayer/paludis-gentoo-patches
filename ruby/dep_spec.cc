@@ -43,7 +43,7 @@ namespace
     static VALUE c_string_dep_spec;
 
     static VALUE c_block_dep_spec;
-    static VALUE c_dependency_labels_dep_spec;
+    static VALUE c_dependencies_labels_dep_spec;
     static VALUE c_fetchable_uri_dep_spec;
     static VALUE c_license_dep_spec;
     static VALUE c_named_set_dep_spec;
@@ -122,7 +122,7 @@ namespace
             WrappedSpec<BlockDepSpec>,
             WrappedSpec<URILabelsDepSpec>,
             WrappedSpec<PlainTextLabelDepSpec>,
-            WrappedSpec<DependencyLabelsDepSpec>,
+            WrappedSpec<DependenciesLabelsDepSpec>,
             WrappedSpec<NamedSetDepSpec>,
             WrappedSpec<AllDepSpec>,
             WrappedSpec<AnyDepSpec>,
@@ -226,10 +226,10 @@ namespace
             klass = c_plain_text_label_dep_spec;
         }
 
-        void visit(const GenericSpecTree::NodeType<DependencyLabelsDepSpec>::Type & node)
+        void visit(const GenericSpecTree::NodeType<DependenciesLabelsDepSpec>::Type & node)
         {
-            wrapped.reset(new WrappedSpec<DependencyLabelsDepSpec>(std::tr1::static_pointer_cast<DependencyLabelsDepSpec>(node.spec()->clone())));
-            klass = c_dependency_labels_dep_spec;
+            wrapped.reset(new WrappedSpec<DependenciesLabelsDepSpec>(std::tr1::static_pointer_cast<DependenciesLabelsDepSpec>(node.spec()->clone())));
+            klass = c_dependencies_labels_dep_spec;
         }
 
         void visit(const GenericSpecTree::NodeType<NamedSetDepSpec>::Type & node)
@@ -435,17 +435,17 @@ namespace
     }
 
     VALUE
-    dependency_labels_dep_spec_labels(VALUE self)
+    dependencies_labels_dep_spec_labels(VALUE self)
     {
         std::tr1::shared_ptr<WrappedSpecBase> * ptr;
         Data_Get_Struct(self, std::tr1::shared_ptr<WrappedSpecBase>, ptr);
-        std::tr1::shared_ptr<const DependencyLabelsDepSpec> real_ptr(std::tr1::static_pointer_cast<const WrappedSpec<DependencyLabelsDepSpec> >(*ptr)->spec());
+        std::tr1::shared_ptr<const DependenciesLabelsDepSpec> real_ptr(std::tr1::static_pointer_cast<const WrappedSpec<DependenciesLabelsDepSpec> >(*ptr)->spec());
 
         if (rb_block_given_p())
         {
-            for (DependencyLabelsDepSpec::ConstIterator it(real_ptr->begin()),
+            for (DependenciesLabelsDepSpec::ConstIterator it(real_ptr->begin()),
                      it_end(real_ptr->end()); it_end != it; ++it)
-                rb_yield(dependency_label_to_value(*it));
+                rb_yield(dependencies_label_to_value(*it));
 
             return Qnil;
         }
@@ -453,9 +453,9 @@ namespace
         {
             VALUE result(rb_ary_new());
 
-            for (DependencyLabelsDepSpec::ConstIterator it(real_ptr->begin()),
+            for (DependenciesLabelsDepSpec::ConstIterator it(real_ptr->begin()),
                      it_end(real_ptr->end()); it_end != it; ++it)
-                rb_ary_push(result, dependency_label_to_value(*it));
+                rb_ary_push(result, dependencies_label_to_value(*it));
 
             return result;
         }
@@ -1098,7 +1098,7 @@ namespace
         /*
          * Document-class: Paludis::DepSpec
          *
-         * Base class for a dependency spec.
+         * Base class for a dependencies spec.
          */
         c_dep_spec = rb_define_class_under(paludis_module(), "DepSpec", rb_cObject);
         rb_funcall(c_dep_spec, rb_intern("private_class_method"), 1, rb_str_new2("new"));
@@ -1252,16 +1252,16 @@ namespace
         rb_define_method(c_plain_text_dep_spec, "to_s", RUBY_FUNC_CAST(plain_text_dep_spec_to_s), 0);
 
         /*
-         * Document-class: Paludis::DependencyLabelsDepSpec
+         * Document-class: Paludis::DependenciesLabelsDepSpec
          *
-         * A DependencyLabelsDepSpec holds dependency labels.
+         * A DependenciesLabelsDepSpec holds dependencies labels.
          */
-        c_dependency_labels_dep_spec = rb_define_class_under(paludis_module(), "DependencyLabelsDepSpec", c_string_dep_spec);
-        rb_define_singleton_method(c_dependency_labels_dep_spec, "new", RUBY_FUNC_CAST(&DepSpecThings<DependencyLabelsDepSpec>::dep_spec_new_0), 0);
-        rb_define_method(c_dependency_labels_dep_spec, "initialize", RUBY_FUNC_CAST(&dep_spec_init_0), 0);
-        VALUE (* dependency_labels_dep_spec_to_s) (VALUE) = &dep_spec_to_s<DependencyLabelsDepSpec>;
-        rb_define_method(c_dependency_labels_dep_spec, "to_s", RUBY_FUNC_CAST(dependency_labels_dep_spec_to_s), 0);
-        rb_define_method(c_dependency_labels_dep_spec, "labels", RUBY_FUNC_CAST(&dependency_labels_dep_spec_labels), 0);
+        c_dependencies_labels_dep_spec = rb_define_class_under(paludis_module(), "DependenciesLabelsDepSpec", c_string_dep_spec);
+        rb_define_singleton_method(c_dependencies_labels_dep_spec, "new", RUBY_FUNC_CAST(&DepSpecThings<DependenciesLabelsDepSpec>::dep_spec_new_0), 0);
+        rb_define_method(c_dependencies_labels_dep_spec, "initialize", RUBY_FUNC_CAST(&dep_spec_init_0), 0);
+        VALUE (* dependencies_labels_dep_spec_to_s) (VALUE) = &dep_spec_to_s<DependenciesLabelsDepSpec>;
+        rb_define_method(c_dependencies_labels_dep_spec, "to_s", RUBY_FUNC_CAST(dependencies_labels_dep_spec_to_s), 0);
+        rb_define_method(c_dependencies_labels_dep_spec, "labels", RUBY_FUNC_CAST(&dependencies_labels_dep_spec_labels), 0);
 
         /*
          * Document-class: Paludis::URILabelsDepSpec
@@ -1363,18 +1363,18 @@ paludis::ruby::value_to_package_dep_spec(VALUE v)
     }
 }
 
-std::tr1::shared_ptr<const DependencyLabelsDepSpec>
-paludis::ruby::value_to_dependency_labels_dep_spec(VALUE v)
+std::tr1::shared_ptr<const DependenciesLabelsDepSpec>
+paludis::ruby::value_to_dependencies_labels_dep_spec(VALUE v)
 {
-    if (rb_obj_is_kind_of(v, c_dependency_labels_dep_spec))
+    if (rb_obj_is_kind_of(v, c_dependencies_labels_dep_spec))
     {
         std::tr1::shared_ptr<WrappedSpecBase> * v_ptr;
         Data_Get_Struct(v, std::tr1::shared_ptr<WrappedSpecBase>, v_ptr);
-        return std::tr1::static_pointer_cast<const WrappedSpec<DependencyLabelsDepSpec> >(*v_ptr)->spec();
+        return std::tr1::static_pointer_cast<const WrappedSpec<DependenciesLabelsDepSpec> >(*v_ptr)->spec();
     }
     else
     {
-        rb_raise(rb_eTypeError, "Can't convert %s into DependencyLabelsDepSpec", rb_obj_classname(v));
+        rb_raise(rb_eTypeError, "Can't convert %s into DependenciesLabelsDepSpec", rb_obj_classname(v));
     }
 }
 
@@ -1439,9 +1439,9 @@ paludis::ruby::dep_tree_to_value(const std::tr1::shared_ptr<const T_> & m)
 }
 
 VALUE *
-paludis::ruby::dependency_labels_dep_spec_value_ptr()
+paludis::ruby::dependencies_labels_dep_spec_value_ptr()
 {
-    return &c_dependency_labels_dep_spec;
+    return &c_dependencies_labels_dep_spec;
 }
 
 template VALUE paludis::ruby::dep_tree_to_value<SetSpecTree> (const std::tr1::shared_ptr<const SetSpecTree> &);

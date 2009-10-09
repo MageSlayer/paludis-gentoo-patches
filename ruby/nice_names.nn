@@ -29,7 +29,7 @@ make_nn_NiceNames() {
     name "StringDepSpec"
     name "NamedSetDepSpec"
     name "URILabelsDepSpec"
-    name "DependencyLabelsDepSpec"
+    name "DependenciesLabelsDepSpec"
     name "PlainTextLabelDepSpec"
 
     # paludis/dep_tree-fwd.hh

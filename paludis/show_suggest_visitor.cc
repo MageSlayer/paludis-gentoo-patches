@@ -39,7 +39,7 @@
 
 using namespace paludis;
 
-typedef std::list<std::tr1::shared_ptr<ActiveDependencyLabels> > LabelsStack;
+typedef std::list<std::tr1::shared_ptr<DependenciesLabelSequence> > LabelsStack;
 
 namespace paludis
 {
@@ -64,7 +64,7 @@ namespace paludis
             dependency_tags(t),
             only_if_suggested_label(l)
         {
-            labels.push_front(make_shared_ptr(new ActiveDependencyLabels(*make_shared_ptr(new DependencyLabelSequence))));
+            labels.push_front(make_shared_ptr(new DependenciesLabelSequence));
         }
     };
 }
@@ -84,7 +84,7 @@ ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<ConditionalDepSpec>
 {
     if (node.spec()->condition_met())
     {
-        _imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**_imp->labels.begin())));
+        _imp->labels.push_front(*_imp->labels.begin());
         RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
 
         std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
@@ -94,7 +94,7 @@ ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<ConditionalDepSpec>
 void
 ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
 {
-    _imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**_imp->labels.begin())));
+    _imp->labels.push_front(*_imp->labels.begin());
     RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
 
     std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
@@ -103,7 +103,7 @@ ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type &
 void
 ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
 {
-    _imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**_imp->labels.begin())));
+    _imp->labels.push_front(*_imp->labels.begin());
     RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
 
     std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
@@ -118,26 +118,51 @@ namespace
 {
     struct SuggestActiveVisitor
     {
-        bool result;
-
-        SuggestActiveVisitor() :
-            result(false)
+        bool visit(const DependenciesBuildLabel &) const
         {
+            return false;
         }
 
-        void visit(const DependencyRecommendedLabel &)
+        bool visit(const DependenciesRunLabel &) const
         {
+            return false;
         }
 
-        void visit(const DependencySuggestedLabel &)
+        bool visit(const DependenciesPostLabel &) const
         {
-            result = true;
+            return false;
         }
 
-        void visit(const DependencyRequiredLabel &)
+        bool visit(const DependenciesCompileAgainstLabel &) const
         {
+            return false;
+        }
+
+        bool visit(const DependenciesFetchLabel &) const
+        {
+            return false;
+        }
+
+        bool visit(const DependenciesInstallLabel &) const
+        {
+            return false;
+        }
+
+        bool visit(const DependenciesRecommendationLabel &) const
+        {
+            return false;
+        }
+
+        bool visit(const DependenciesSuggestionLabel &) const
+        {
+            return true;
         }
     };
+
+    bool is_suggest_label(const std::tr1::shared_ptr<const DependenciesLabel> & l)
+    {
+        return l->accept_returning<bool>(SuggestActiveVisitor());
+    }
 }
 
 void
@@ -147,14 +172,9 @@ ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Ty
 
     if (_imp->only_if_suggested_label)
     {
-        SuggestActiveVisitor v;
-        for (DependencySuggestLabelSequence::ConstIterator
-                i((*_imp->labels.begin())->suggest_labels()->begin()),
-                i_end((*_imp->labels.begin())->suggest_labels()->end()) ;
-                i != i_end ; ++i)
-            (*i)->accept(v);
-
-        if (! v.result)
+        if ((*_imp->labels.begin())->end() == std::find_if(((*_imp->labels.begin())->begin()),
+                    ((*_imp->labels.begin())->end()),
+                    is_suggest_label))
         {
             Log::get_instance()->message("dep_list.show_suggest_visitor.skipping_suggested", ll_debug, lc_context)
                 << "Skipping dep '" << *node.spec() << "' because no suggested label is active";
@@ -199,9 +219,11 @@ ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Ty
 }
 
 void
-ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type & node)
+ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type & node)
 {
-    _imp->labels.begin()->reset(new ActiveDependencyLabels(**_imp->labels.begin(), *node.spec()));
+    std::tr1::shared_ptr<DependenciesLabelSequence> labels(new DependenciesLabelSequence);
+    std::copy(node.spec()->begin(), node.spec()->end(), labels->back_inserter());
+    *_imp->labels.begin() = labels;
 }
 
 void

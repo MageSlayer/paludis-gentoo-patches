@@ -69,7 +69,7 @@
 
 using namespace paludis;
 
-typedef std::list<std::tr1::shared_ptr<ActiveDependencyLabels> > LabelsStack;
+typedef std::list<std::tr1::shared_ptr<DependenciesLabelSequence> > LabelsStack;
 
 template class Sequence<std::tr1::function<bool (const PackageID &, const Mask &)> >;
 template class WrappedForwardIterator<DepListOverrideMasksFunctions::ConstIterator,
@@ -145,7 +145,7 @@ namespace paludis
             current_top_level_target(0),
             throw_on_blocker(o.blocks() == dl_blocks_error)
         {
-            labels.push_front(make_shared_ptr(new ActiveDependencyLabels(*make_shared_ptr(new DependencyLabelSequence))));
+            labels.push_front(make_shared_ptr(new DependenciesLabelSequence));
         }
     };
 }
@@ -318,7 +318,7 @@ struct DepList::AddVisitor
     void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node);
     void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node);
     void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type & node);
-    void visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type & node);
+    void visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type & node);
     void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node);
 };
 
@@ -326,27 +326,51 @@ namespace
 {
     struct SuggestActiveVisitor
     {
-        bool result;
-
-        SuggestActiveVisitor() :
-            result(false)
+        bool visit(const DependenciesBuildLabel &) const
         {
+            return false;
         }
 
-        void visit(const DependencyRecommendedLabel &)
+        bool visit(const DependenciesRunLabel &) const
         {
-            result = true;
+            return false;
         }
 
-        void visit(const DependencySuggestedLabel &)
+        bool visit(const DependenciesPostLabel &) const
         {
-            result = true;
+            return false;
         }
 
-        void visit(const DependencyRequiredLabel &)
+        bool visit(const DependenciesCompileAgainstLabel &) const
         {
+            return false;
+        }
+
+        bool visit(const DependenciesFetchLabel &) const
+        {
+            return false;
+        }
+
+        bool visit(const DependenciesInstallLabel &) const
+        {
+            return false;
+        }
+
+        bool visit(const DependenciesRecommendationLabel &) const
+        {
+            return false;
+        }
+
+        bool visit(const DependenciesSuggestionLabel &) const
+        {
+            return true;
         }
     };
+
+    bool is_suggest_label(const std::tr1::shared_ptr<const DependenciesLabel> & l)
+    {
+        return l->accept_returning<bool>(SuggestActiveVisitor());
+    }
 
     bool slot_is_same(
             const PackageID & a,
@@ -374,14 +398,9 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::T
 
     if (only_if_not_suggested_label)
     {
-        SuggestActiveVisitor v;
-        for (DependencySuggestLabelSequence::ConstIterator
-                i((*d->_imp->labels.begin())->suggest_labels()->begin()),
-                i_end((*d->_imp->labels.begin())->suggest_labels()->end()) ;
-                i != i_end ; ++i)
-            (*i)->accept(v);
-
-        if (v.result)
+        if ((*d->_imp->labels.begin())->end() != std::find_if(((*d->_imp->labels.begin())->begin()),
+                    ((*d->_imp->labels.begin())->end()),
+                    is_suggest_label))
         {
             Log::get_instance()->message("dep_list.skipping_suggested", ll_debug, lc_context) << "Skipping dep '"
                 << *node.spec() << "' because suggested label is active";
@@ -676,7 +695,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::
 void
 DepList::AddVisitor::visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
 {
-    d->_imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**d->_imp->labels.begin())));
+    d->_imp->labels.push_front(*d->_imp->labels.begin());
     RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &d->_imp->labels));
 
     std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()),
@@ -688,7 +707,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<ConditionalDepSpec
 {
     if (d->_imp->opts->use() == dl_use_deps_standard)
     {
-        d->_imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**d->_imp->labels.begin())));
+        d->_imp->labels.push_front(*d->_imp->labels.begin());
         RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &d->_imp->labels));
 
         if (node.spec()->condition_met())
@@ -708,7 +727,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type 
 {
     using namespace std::tr1::placeholders;
 
-    d->_imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**d->_imp->labels.begin())));
+    d->_imp->labels.push_front(*d->_imp->labels.begin());
     RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &d->_imp->labels));
 
     /* annoying requirement: || ( foo? ( ... ) ) resolves to empty if !foo. */
@@ -1011,9 +1030,11 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
 }
 
 void
-DepList::AddVisitor::visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type & node)
+DepList::AddVisitor::visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type & node)
 {
-    d->_imp->labels.begin()->reset(new ActiveDependencyLabels(**d->_imp->labels.begin(), *node.spec()));
+    std::tr1::shared_ptr<DependenciesLabelSequence> labels(new DependenciesLabelSequence);
+    std::copy(node.spec()->begin(), node.spec()->end(), labels->back_inserter());
+    *d->_imp->labels.begin() = labels;
 }
 
 DepList::DepList(const Environment * const e, const DepListOptions & o) :

@@ -111,10 +111,10 @@ namespace paludis
         mutable std::tr1::shared_ptr<const EChoicesKey> choices;
         mutable std::tr1::shared_ptr<const EStringSetKey> defined_phases;
 
-        std::tr1::shared_ptr<DependencyLabelSequence> raw_dependencies_labels;
-        std::tr1::shared_ptr<DependencyLabelSequence> build_dependencies_labels;
-        std::tr1::shared_ptr<DependencyLabelSequence> run_dependencies_labels;
-        std::tr1::shared_ptr<DependencyLabelSequence> post_dependencies_labels;
+        std::tr1::shared_ptr<DependenciesLabelSequence> raw_dependencies_labels;
+        std::tr1::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
+        std::tr1::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
+        std::tr1::shared_ptr<DependenciesLabelSequence> post_dependencies_labels;
 
         Implementation(const QualifiedPackageName & q, const VersionSpec & v,
                 const Environment * const e,
@@ -130,17 +130,17 @@ namespace paludis
             eclass_mtimes(m),
             has_keys(false),
             has_masks(false),
-            raw_dependencies_labels(new DependencyLabelSequence),
-            build_dependencies_labels(new DependencyLabelSequence),
-            run_dependencies_labels(new DependencyLabelSequence),
-            post_dependencies_labels(new DependencyLabelSequence)
+            raw_dependencies_labels(new DependenciesLabelSequence),
+            build_dependencies_labels(new DependenciesLabelSequence),
+            run_dependencies_labels(new DependenciesLabelSequence),
+            post_dependencies_labels(new DependenciesLabelSequence)
         {
-            raw_dependencies_labels->push_back(make_shared_ptr(new DependencyBuildLabel("build")));
-            raw_dependencies_labels->push_back(make_shared_ptr(new DependencyRunLabel("run")));
+            raw_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("build")));
+            raw_dependencies_labels->push_back(make_shared_ptr(new DependenciesRunLabel("run")));
 
-            build_dependencies_labels->push_back(make_shared_ptr(new DependencyBuildLabel("DEPEND")));
-            run_dependencies_labels->push_back(make_shared_ptr(new DependencyRunLabel("RDEPEND")));
-            post_dependencies_labels->push_back(make_shared_ptr(new DependencyPostLabel("PDEPEND")));
+            build_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("DEPEND")));
+            run_dependencies_labels->push_back(make_shared_ptr(new DependenciesRunLabel("RDEPEND")));
+            post_dependencies_labels->push_back(make_shared_ptr(new DependenciesPostLabel("PDEPEND")));
         }
     };
 }

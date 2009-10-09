@@ -69,143 +69,143 @@ using std::endl;
 
 namespace
 {
-    struct IsSuggestionVisitor
+    struct LabelTypesVisitor
     {
         bool is_suggestion;
         bool is_recommendation;
         bool is_requirement;
-
-        IsSuggestionVisitor() :
-            is_suggestion(false),
-            is_recommendation(false),
-            is_requirement(false)
-        {
-        }
-
-        void visit(const DependencyRequiredLabel &)
-        {
-            is_requirement = true;
-        }
-
-        void visit(const DependencyRecommendedLabel &)
-        {
-            is_recommendation = true;
-        }
-
-        void visit(const DependencySuggestedLabel &)
-        {
-            is_suggestion = true;
-        }
-    };
-
-    struct IsTypeDepVisitor
-    {
         bool seen_buildish_dep;
         bool seen_runish_dep;
         bool seen_compiled_against_dep;
 
-        IsTypeDepVisitor() :
+        LabelTypesVisitor() :
+            is_suggestion(false),
+            is_recommendation(false),
+            is_requirement(false),
             seen_buildish_dep(false),
             seen_runish_dep(false),
             seen_compiled_against_dep(false)
         {
         }
 
-        void visit(const DependencyBuildLabel &)
+        void visit(const DependenciesBuildLabel &)
         {
+            is_requirement = true;
             seen_buildish_dep = true;
         }
 
-        void visit(const DependencyRunLabel &)
+        void visit(const DependenciesFetchLabel &)
         {
+            is_requirement = true;
+            seen_buildish_dep = true;
+        }
+
+        void visit(const DependenciesRunLabel &)
+        {
+            is_requirement = true;
             seen_runish_dep = true;
         }
 
-        void visit(const DependencyPostLabel &)
+        void visit(const DependenciesPostLabel &)
         {
+            is_requirement = true;
             seen_runish_dep = true;
         }
 
-        void visit(const DependencyInstallLabel &)
+        void visit(const DependenciesInstallLabel &)
         {
+            is_requirement = true;
             seen_buildish_dep = true;
         }
 
-        void visit(const DependencyCompileLabel &)
+        void visit(const DependenciesCompileAgainstLabel &)
         {
-            seen_compiled_against_dep = true;
+            is_requirement = true;
+            seen_runish_dep = true;
             seen_buildish_dep = true;
+        }
+
+        void visit(const DependenciesRecommendationLabel &)
+        {
+            is_recommendation = true;
+            seen_runish_dep = true;
+        }
+
+        void visit(const DependenciesSuggestionLabel &)
+        {
+            is_suggestion = true;
+            seen_runish_dep = true;
         }
     };
 
     bool is_suggestion(const SanitisedDependency & dep)
     {
-        if (dep.active_dependency_labels()->suggest_labels()->empty())
+        if (dep.active_dependency_labels()->empty())
             return false;
 
-        IsSuggestionVisitor v;
-        std::for_each(indirect_iterator(dep.active_dependency_labels()->suggest_labels()->begin()),
-                indirect_iterator(dep.active_dependency_labels()->suggest_labels()->end()),
+        LabelTypesVisitor v;
+        std::for_each(indirect_iterator(dep.active_dependency_labels()->begin()),
+                indirect_iterator(dep.active_dependency_labels()->end()),
                 accept_visitor(v));
         return v.is_suggestion && (! v.is_recommendation) && (! v.is_requirement);
     }
 
     bool is_recommendation(const SanitisedDependency & dep)
     {
-        if (dep.active_dependency_labels()->suggest_labels()->empty())
+        if (dep.active_dependency_labels()->empty())
             return false;
 
-        IsSuggestionVisitor v;
-        std::for_each(indirect_iterator(dep.active_dependency_labels()->suggest_labels()->begin()),
-                indirect_iterator(dep.active_dependency_labels()->suggest_labels()->end()),
+        LabelTypesVisitor v;
+        std::for_each(indirect_iterator(dep.active_dependency_labels()->begin()),
+                indirect_iterator(dep.active_dependency_labels()->end()),
                 accept_visitor(v));
         return v.is_recommendation && (! v.is_requirement);
     }
 
     bool is_just_build_dep(const SanitisedDependency & dep)
     {
-        if (dep.active_dependency_labels()->type_labels()->empty())
+        if (dep.active_dependency_labels()->empty())
             throw InternalError(PALUDIS_HERE, "not implemented");
 
-        IsTypeDepVisitor v;
-        std::for_each(indirect_iterator(dep.active_dependency_labels()->type_labels()->begin()),
-                indirect_iterator(dep.active_dependency_labels()->type_labels()->end()),
+        LabelTypesVisitor v;
+        std::for_each(indirect_iterator(dep.active_dependency_labels()->begin()),
+                indirect_iterator(dep.active_dependency_labels()->end()),
                 accept_visitor(v));
         return v.seen_buildish_dep && ! v.seen_runish_dep;
     }
 
     bool is_compiled_against_dep(const SanitisedDependency & dep)
     {
-        if (dep.active_dependency_labels()->type_labels()->empty())
+        if (dep.active_dependency_labels()->empty())
             throw InternalError(PALUDIS_HERE, "not implemented");
 
-        IsTypeDepVisitor v;
-        std::for_each(indirect_iterator(dep.active_dependency_labels()->type_labels()->begin()),
-                indirect_iterator(dep.active_dependency_labels()->type_labels()->end()),
+        LabelTypesVisitor v;
+        std::for_each(indirect_iterator(dep.active_dependency_labels()->begin()),
+                indirect_iterator(dep.active_dependency_labels()->end()),
                 accept_visitor(v));
         return v.seen_compiled_against_dep;
     }
 
     bool is_buildish_dep(const SanitisedDependency & dep)
     {
-        if (dep.active_dependency_labels()->type_labels()->empty())
+        if (dep.active_dependency_labels()->empty())
             throw InternalError(PALUDIS_HERE, "not implemented");
 
-        IsTypeDepVisitor v;
-        std::for_each(indirect_iterator(dep.active_dependency_labels()->type_labels()->begin()),
-                indirect_iterator(dep.active_dependency_labels()->type_labels()->end()),
+        LabelTypesVisitor v;
+        std::for_each(indirect_iterator(dep.active_dependency_labels()->begin()),
+                indirect_iterator(dep.active_dependency_labels()->end()),
                 accept_visitor(v));
         return v.seen_buildish_dep;
     }
 
     bool is_runish_dep(const SanitisedDependency & dep)
     {
-        if (dep.active_dependency_labels()->type_labels()->empty())
+        if (dep.active_dependency_labels()->empty())
             throw InternalError(PALUDIS_HERE, "not implemented");
 
-        IsTypeDepVisitor v;
-        std::for_each(indirect_iterator(dep.active_dependency_labels()->type_labels()->begin()),
-                indirect_iterator(dep.active_dependency_labels()->type_labels()->end()),
+        LabelTypesVisitor v;
+        std::for_each(indirect_iterator(dep.active_dependency_labels()->begin()),
+                indirect_iterator(dep.active_dependency_labels()->end()),
                 accept_visitor(v));
         return v.seen_runish_dep;
     }

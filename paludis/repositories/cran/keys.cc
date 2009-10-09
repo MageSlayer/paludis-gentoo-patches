@@ -147,14 +147,14 @@ namespace paludis
 
         mutable Mutex mutex;
         mutable std::tr1::shared_ptr<const DependencySpecTree> c;
-        const std::tr1::shared_ptr<const DependencyLabelSequence> labels;
+        const std::tr1::shared_ptr<const DependenciesLabelSequence> labels;
 
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
 
         Implementation(const Environment * const e, const std::string & vv,
-                const std::tr1::shared_ptr<const DependencyLabelSequence> & s,
+                const std::tr1::shared_ptr<const DependenciesLabelSequence> & s,
                 const std::string & r, const std::string & h, const MetadataKeyType & t) :
             env(e),
             v(vv),
@@ -168,7 +168,7 @@ namespace paludis
 }
 
 DepKey::DepKey(const Environment * const e, const std::string & r, const std::string & h, const std::string & v,
-        const std::tr1::shared_ptr<const DependencyLabelSequence> & s, const MetadataKeyType t) :
+        const std::tr1::shared_ptr<const DependenciesLabelSequence> & s, const MetadataKeyType t) :
     PrivateImplementationPattern<DepKey>(new Implementation<DepKey>(e, v, s, r, h, t)),
     _imp(PrivateImplementationPattern<DepKey>::_imp)
 {
@@ -226,7 +226,7 @@ DepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
     return stringify(p);
 }
 
-const std::tr1::shared_ptr<const DependencyLabelSequence>
+const std::tr1::shared_ptr<const DependenciesLabelSequence>
 DepKey::initial_labels() const
 {
     return _imp->labels;

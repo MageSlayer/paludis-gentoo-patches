@@ -864,7 +864,7 @@ struct MetadataSpecTreeKeyWrapper<DependencySpecTree> :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print_flat");
     }
 
-    virtual const std::tr1::shared_ptr<const DependencyLabelSequence> initial_labels() const
+    virtual const std::tr1::shared_ptr<const DependenciesLabelSequence> initial_labels() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
@@ -1073,8 +1073,8 @@ struct class_spec_tree_key<DependencySpecTree> :
            );
 
         def("initial_labels", bp::pure_virtual(&MetadataSpecTreeKey<DependencySpecTree>::initial_labels),
-                "initial_label() -> DependencyLabelSequence\n"
-                "Return a DependencyLabelSequence that represents the initial labels to use when\n"
+                "initial_label() -> DependenciesLabelSequence\n"
+                "Return a DependenciesLabelSequence that represents the initial labels to use when\n"
                 "deciding the behaviour of individual items in the heirarchy."
            );
     }

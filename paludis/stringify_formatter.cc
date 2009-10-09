@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -166,7 +166,7 @@ StringifyFormatter::format(const LicenseDepSpec & s, const format::Unaccepted & 
 }
 
 std::string
-StringifyFormatter::format(const DependencyLabelsDepSpec & s, const format::Plain & k) const
+StringifyFormatter::format(const DependenciesLabelsDepSpec & s, const format::Plain & k) const
 {
     if (_imp->f_dep_label)
         return _imp->f_dep_label->format(s, k);

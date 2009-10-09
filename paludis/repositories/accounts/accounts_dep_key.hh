@@ -47,7 +47,7 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual std::string pretty_print_flat(const DependencySpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::tr1::shared_ptr<const DependencyLabelSequence> initial_labels() const
+                virtual const std::tr1::shared_ptr<const DependenciesLabelSequence> initial_labels() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }

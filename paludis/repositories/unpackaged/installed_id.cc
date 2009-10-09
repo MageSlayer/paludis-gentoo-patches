@@ -307,7 +307,7 @@ namespace
             mutable std::tr1::shared_ptr<const DependencySpecTree> _v;
             mutable Mutex _mutex;
             const FSEntry _f;
-            const std::tr1::shared_ptr<const DependencyLabelSequence> _labels;
+            const std::tr1::shared_ptr<const DependenciesLabelSequence> _labels;
 
             const std::string _raw_name;
             const std::string _human_name;
@@ -316,7 +316,7 @@ namespace
         public:
             InstalledUnpackagedDependencyKey(const Environment * const e,
                     const std::string & r, const std::string & h, const FSEntry & f,
-                    const std::tr1::shared_ptr<const DependencyLabelSequence> & l, const MetadataKeyType t) :
+                    const std::tr1::shared_ptr<const DependenciesLabelSequence> & l, const MetadataKeyType t) :
                 _env(e),
                 _f(f),
                 _labels(l),
@@ -356,7 +356,7 @@ namespace
                 return p.result();
             }
 
-            const std::tr1::shared_ptr<const DependencyLabelSequence> initial_labels() const
+            const std::tr1::shared_ptr<const DependenciesLabelSequence> initial_labels() const
             {
                 return _labels;
             }
@@ -390,8 +390,8 @@ namespace paludis
         const FSEntry root;
         const NDBAM * const ndbam;
 
-        std::tr1::shared_ptr<DependencyLabelSequence> build_dependencies_labels;
-        std::tr1::shared_ptr<DependencyLabelSequence> run_dependencies_labels;
+        std::tr1::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
+        std::tr1::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
 
         std::tr1::shared_ptr<LiteralMetadataValueKey<SlotName> > slot_key;
         std::tr1::shared_ptr<InstalledUnpackagedFSEntryKey> fs_location_key;
@@ -418,13 +418,13 @@ namespace paludis
             repository_name(r),
             root(ro),
             ndbam(d),
-            build_dependencies_labels(new DependencyLabelSequence),
-            run_dependencies_labels(new DependencyLabelSequence),
+            build_dependencies_labels(new DependenciesLabelSequence),
+            run_dependencies_labels(new DependenciesLabelSequence),
             slot_key(new LiteralMetadataValueKey<SlotName> ("slot", "Slot", mkt_internal, s)),
             fs_location_key(new InstalledUnpackagedFSEntryKey(l))
         {
-            build_dependencies_labels->push_back(make_shared_ptr(new DependencyBuildLabel("build_dependencies")));
-            run_dependencies_labels->push_back(make_shared_ptr(new DependencyRunLabel("run_dependencies")));
+            build_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("build_dependencies")));
+            run_dependencies_labels->push_back(make_shared_ptr(new DependenciesRunLabel("run_dependencies")));
 
             if ((l / "contents").exists())
             {

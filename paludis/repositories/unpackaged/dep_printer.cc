@@ -103,7 +103,7 @@ DepPrinter::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type &)
 }
 
 void
-DepPrinter::visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type &)
+DepPrinter::visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type &)
 {
 }
 

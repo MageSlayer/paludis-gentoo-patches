@@ -67,7 +67,7 @@ namespace paludis
                         const Environment * const,
                         const std::tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &,
-                        const std::tr1::shared_ptr<const DependencyLabelSequence> &,
+                        const std::tr1::shared_ptr<const DependenciesLabelSequence> &,
                         const MetadataKeyType);
                 ~EDependenciesKey();
 
@@ -80,7 +80,7 @@ namespace paludis
                 virtual std::string pretty_print_flat(const DependencySpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::tr1::shared_ptr<const DependencyLabelSequence> initial_labels() const
+                virtual const std::tr1::shared_ptr<const DependenciesLabelSequence> initial_labels() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));

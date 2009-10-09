@@ -23,7 +23,7 @@ SUMMARY="target"
 PLATFORMS="test"
 SLOT="0"
 DEPENDENCIES="
-    ( post,suggested: suggestion/dep )
+    ( suggestion: suggestion/dep )
     "
 END
 
@@ -43,7 +43,7 @@ SUMMARY="target"
 PLATFORMS="test"
 SLOT="0"
 DEPENDENCIES="
-    ( post,suggested: unmeetable-suggestion/unmeetable-dep )
+    ( suggestion: unmeetable-suggestion/unmeetable-dep )
     "
 END
 
@@ -63,8 +63,8 @@ SUMMARY="target"
 PLATFORMS="test"
 SLOT="0"
 DEPENDENCIES="
-    ( build,required: suggestion-then-dependency/hard-dep )
-    ( post,suggested: suggestion-then-dependency/a-suggested-dep )
+    ( build: suggestion-then-dependency/hard-dep )
+    ( suggestion: suggestion-then-dependency/a-suggested-dep )
     "
 END
 
@@ -74,7 +74,7 @@ SUMMARY="hard dep"
 PLATFORMS="test"
 SLOT="0"
 DEPENDENCIES="
-    build,required: suggestion-then-dependency/a-suggested-dep
+    build: suggestion-then-dependency/a-suggested-dep
     "
 END
 

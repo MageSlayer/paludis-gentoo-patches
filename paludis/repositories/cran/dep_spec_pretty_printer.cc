@@ -123,7 +123,7 @@ DepSpecPrettyPrinter::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Ty
 }
 
 void
-DepSpecPrettyPrinter::visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type &)
+DepSpecPrettyPrinter::visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type &)
 {
 }
 

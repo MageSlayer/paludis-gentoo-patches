@@ -62,7 +62,7 @@ namespace paludis
                     const std::tr1::shared_ptr<const SlotName> &,
                     const std::tr1::shared_ptr<const Reason> &);
 
-            bool is_suggestion(const SanitisedDependency & dep);
+            bool is_just_suggestion(const SanitisedDependency & dep);
 
             bool take_dependency_fn(
                     const Resolvent &,

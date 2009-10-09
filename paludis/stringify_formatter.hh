@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -66,7 +66,7 @@ namespace paludis
         public CanFormat<BlockDepSpec>,
         public CanFormat<FetchableURIDepSpec>,
         public CanFormat<SimpleURIDepSpec>,
-        public CanFormat<DependencyLabelsDepSpec>,
+        public CanFormat<DependenciesLabelsDepSpec>,
         public CanFormat<URILabelsDepSpec>,
         public CanFormat<PlainTextDepSpec>,
         public CanFormat<LicenseDepSpec>,
@@ -120,7 +120,7 @@ namespace paludis
 
             virtual std::string format(const SimpleURIDepSpec &, const format::Plain &) const;
 
-            virtual std::string format(const DependencyLabelsDepSpec &, const format::Plain &) const;
+            virtual std::string format(const DependenciesLabelsDepSpec &, const format::Plain &) const;
 
             virtual std::string format(const NamedSetDepSpec &, const format::Plain &) const;
 

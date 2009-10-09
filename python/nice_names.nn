@@ -33,7 +33,7 @@ make_nn_NiceNames() {
     name "NamedSetDepSpec"
     name "URILabelsDepSpec"
     name "PlainTextLabelDepSpec"
-    name "DependencyLabelsDepSpec"
+    name "DependenciesLabelsDepSpec"
 
     # paludis/dep_tree-fwd.hh
     name "GenericSpecTree"
@@ -72,7 +72,7 @@ make_nn_LowercaseNiceNames() {
     name "BlockDepSpec" "block_dep_spec"
     name "FetchableURIDepSpec" "fetchable_uri_dep_spec"
     name "SimpleURIDepSpec" "simple_uri_dep_spec"
-    name "DependencyLabelsDepSpec" "dependency_labels_dep_spec"
+    name "DependenciesLabelsDepSpec" "dependencies_labels_dep_spec"
     name "URILabelsDepSpec" "uri_labels_dep_spec"
     name "PlainTextLabelDepSpec" "plain_text_label_dep_spec"
     name "PlainTextDepSpec" "plain_text_dep_spec"

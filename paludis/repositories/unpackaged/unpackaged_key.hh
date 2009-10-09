@@ -36,7 +36,7 @@ namespace paludis
             public:
                 UnpackagedDependencyKey(const Environment * const env,
                         const std::string & r, const std::string & h, const MetadataKeyType t,
-                        const std::tr1::shared_ptr<const DependencyLabelSequence> &,
+                        const std::tr1::shared_ptr<const DependenciesLabelSequence> &,
                         const std::string & v);
                 ~UnpackagedDependencyKey();
 
@@ -46,7 +46,7 @@ namespace paludis
 
                 std::string pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const;
 
-                virtual const std::tr1::shared_ptr<const DependencyLabelSequence> initial_labels() const
+                virtual const std::tr1::shared_ptr<const DependenciesLabelSequence> initial_labels() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));

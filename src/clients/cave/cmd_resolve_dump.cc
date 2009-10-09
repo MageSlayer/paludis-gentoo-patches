@@ -111,18 +111,8 @@ namespace
             ss << d.metadata_key_raw_name() << " ";
         ss << d.spec();
 
-        if (! d.active_dependency_labels()->system_labels()->empty())
-            ss << " system { " << join(indirect_iterator(d.active_dependency_labels()->system_labels()->begin()),
-                    indirect_iterator(d.active_dependency_labels()->system_labels()->end()), ", ") << " }";
-        if (! d.active_dependency_labels()->type_labels()->empty())
-            ss << " type { " << join(indirect_iterator(d.active_dependency_labels()->type_labels()->begin()),
-                    indirect_iterator(d.active_dependency_labels()->type_labels()->end()), ", ") << " }";
-        if (! d.active_dependency_labels()->abi_labels()->empty())
-            ss << " abi { " << join(indirect_iterator(d.active_dependency_labels()->abi_labels()->begin()),
-                    indirect_iterator(d.active_dependency_labels()->abi_labels()->end()), ", ") << " }";
-        if (! d.active_dependency_labels()->suggest_labels()->empty())
-            ss << " suggest { " << join(indirect_iterator(d.active_dependency_labels()->suggest_labels()->begin()),
-                    indirect_iterator(d.active_dependency_labels()->suggest_labels()->end()), ", ") << " }";
+        ss << " { " << join(indirect_iterator(d.active_dependency_labels()->begin()),
+                indirect_iterator(d.active_dependency_labels()->end()), ", ") << " }";
 
         ss << ")";
 

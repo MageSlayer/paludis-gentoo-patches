@@ -110,7 +110,7 @@ namespace paludis
         const std::string string_value;
         mutable Mutex value_mutex;
         mutable std::tr1::shared_ptr<const DependencySpecTree> value;
-        const std::tr1::shared_ptr<const DependencyLabelSequence> labels;
+        const std::tr1::shared_ptr<const DependenciesLabelSequence> labels;
 
         const std::string raw_name;
         const std::string human_name;
@@ -119,7 +119,7 @@ namespace paludis
         Implementation(
                 const Environment * const e,
                 const std::tr1::shared_ptr<const ERepositoryID> & i, const std::string & v,
-                const std::tr1::shared_ptr<const DependencyLabelSequence> & s,
+                const std::tr1::shared_ptr<const DependenciesLabelSequence> & s,
                 const std::string & r, const std::string & h, const MetadataKeyType & t) :
             env(e),
             id(i),
@@ -137,7 +137,7 @@ EDependenciesKey::EDependenciesKey(
         const Environment * const e,
         const std::tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v,
-        const std::tr1::shared_ptr<const DependencyLabelSequence> & l, const MetadataKeyType t) :
+        const std::tr1::shared_ptr<const DependenciesLabelSequence> & l, const MetadataKeyType t) :
     PrivateImplementationPattern<EDependenciesKey>(new Implementation<EDependenciesKey>(e, id, v, l, r, h, t))
 {
 }
@@ -158,7 +158,7 @@ EDependenciesKey::value() const
     return _imp->value;
 }
 
-const std::tr1::shared_ptr<const DependencyLabelSequence>
+const std::tr1::shared_ptr<const DependenciesLabelSequence>
 EDependenciesKey::initial_labels() const
 {
     return _imp->labels;

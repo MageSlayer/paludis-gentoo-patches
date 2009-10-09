@@ -992,7 +992,7 @@ namespace paludis
     extern template class PrivateImplementationPattern<PartiallyMadePackageDepSpec>;
     extern template class PrivateImplementationPattern<PackageDepSpec>;
     extern template class CloneUsingThis<DepSpec, PackageDepSpec>;
-    extern template class PrivateImplementationPattern<DependencyLabelsDepSpec>;
+    extern template class PrivateImplementationPattern<DependenciesLabelsDepSpec>;
     extern template class PrivateImplementationPattern<URILabelsDepSpec>;
     extern template class PrivateImplementationPattern<PlainTextLabelDepSpec>;
 #endif

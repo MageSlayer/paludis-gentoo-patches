@@ -43,19 +43,19 @@ struct class_concrete_uri_label :
     }
 };
 
-template <typename L_, typename C_>
-struct class_concrete_dependency_label :
-    bp::class_<L_, std::tr1::shared_ptr<L_>, bp::bases<C_>, boost::noncopyable>
+template <typename L_>
+struct class_concrete_dependencies_label :
+    bp::class_<L_, std::tr1::shared_ptr<L_>, bp::bases<DependenciesLabel>, boost::noncopyable>
 {
-    class_concrete_dependency_label(const std::string & name, const std::string & doc) :
-        bp::class_<L_, std::tr1::shared_ptr<L_>, bp::bases<C_>, boost::noncopyable>
+    class_concrete_dependencies_label(const std::string & name) :
+        bp::class_<L_, std::tr1::shared_ptr<L_>, bp::bases<DependenciesLabel>, boost::noncopyable>
         (
          name.c_str(),
-         doc.c_str(),
+         "A concrete dependencies label class.",
          bp::init<const std::string &>("__init__(string)")
         )
     {
-        bp::implicitly_convertible<std::tr1::shared_ptr<L_>, std::tr1::shared_ptr<C_> >();
+        bp::implicitly_convertible<std::tr1::shared_ptr<L_>, std::tr1::shared_ptr<DependenciesLabel> >();
     }
 };
 
@@ -90,127 +90,32 @@ void expose_dep_label()
     class_concrete_uri_label<URIManualOnlyLabel>("URIManualOnlyLabel");
 
     /**
-     * DependencyLabel
+     * DependenciesLabel
      */
-    register_shared_ptrs_to_python<DependencyLabel>();
-    bp::class_<DependencyLabel, boost::noncopyable>
+    register_shared_ptrs_to_python<DependenciesLabel>();
+    bp::class_<DependenciesLabel, boost::noncopyable>
         (
-         "DependencyLabel",
-         "Dependency label base class.",
+         "DependenciesLabel",
+         "Dependencies label base class.",
          bp::no_init
         )
-        .add_property("text", &DependencyLabel::text,
+        .add_property("text", &DependenciesLabel::text,
                 "[ro] string\n"
                 "Our text."
                 )
 
-        .def("__str__", &DependencyLabel::text)
+        .def("__str__", &DependenciesLabel::text)
         ;
 
     /**
-     * DependencySystemLabel
+     * ConcreteDependenciesLabels
      */
-    bp::implicitly_convertible<std::tr1::shared_ptr<DependencySystemLabel>, std::tr1::shared_ptr<DependencyLabel> >();
-    register_shared_ptrs_to_python<DependencySystemLabel>();
-    bp::class_<DependencySystemLabel, bp::bases<DependencyLabel>, boost::noncopyable>
-        (
-         "DependencySystemLabel",
-         "System dependency label base class.",
-         bp::no_init
-        );
-
-    /**
-     * DependencyTypeLabel
-     */
-    bp::implicitly_convertible<std::tr1::shared_ptr<DependencyTypeLabel>, std::tr1::shared_ptr<DependencyLabel> >();
-    register_shared_ptrs_to_python<DependencyTypeLabel>();
-    bp::class_<DependencyTypeLabel, bp::bases<DependencyLabel>, boost::noncopyable>
-        (
-         "DependencyTypeLabel",
-         "Type dependency label base class.",
-         bp::no_init
-        );
-
-    /**
-     * DependencySuggestLabel
-     */
-    bp::implicitly_convertible<std::tr1::shared_ptr<DependencySuggestLabel>, std::tr1::shared_ptr<DependencyLabel> >();
-    register_shared_ptrs_to_python<DependencySuggestLabel>();
-    bp::class_<DependencySuggestLabel, bp::bases<DependencyLabel>, boost::noncopyable>
-        (
-         "DependencySuggestLabel",
-         "Suggest dependency label base class.",
-         bp::no_init
-        );
-
-    /**
-     * DependencyABIsLabel
-     */
-    bp::implicitly_convertible<std::tr1::shared_ptr<DependencyABIsLabel>, std::tr1::shared_ptr<DependencyLabel> >();
-    register_shared_ptrs_to_python<DependencyABIsLabel>();
-    bp::class_<DependencyABIsLabel, bp::bases<DependencyLabel>, boost::noncopyable>
-        (
-         "DependencyABIsLabel",
-         "ABI dependency label base class.",
-         bp::no_init
-        );
-
-    /**
-     * ConcreteDependencyLabels
-     */
-    class_concrete_dependency_label<DependencyHostLabel, DependencySystemLabel>
-        ("DependencyHostLabel",
-         "A DependencyHostLabel specifies host requirements for building a package.");
-
-    class_concrete_dependency_label<DependencyTargetLabel, DependencySystemLabel>
-        ("DependencyTargetLabel",
-         "A DependencyTargetLabel specifies target requirements for building a package.");
-
-    class_concrete_dependency_label<DependencyBuildLabel, DependencyTypeLabel>
-        ("DependencyBuildLabel",
-         "A DependencyBuildLabel specifies build-time requirements for building a package.");
-
-    class_concrete_dependency_label<DependencyRunLabel, DependencyTypeLabel>
-        ("DependencyRunLabel",
-         "A DependencyRunLabel specifies runtime requirements for building a package.");
-
-    class_concrete_dependency_label<DependencyInstallLabel, DependencyTypeLabel>
-        ("DependencyInstallLabel",
-         "A DependencyInstallLabel specifies install-time requirements for building a package.");
-
-    class_concrete_dependency_label<DependencyCompileLabel, DependencyTypeLabel>
-        ("DependencyCompileLabel",
-         "A DependencyCompileLabel specifies compiled-against requirements for building a package.");
-
-    class_concrete_dependency_label<DependencySuggestedLabel, DependencySuggestLabel>
-        ("DependencySuggestedLabel",
-         "A DependencySuggestLabel specifies that a dependency is suggested.");
-
-    class_concrete_dependency_label<DependencyRecommendedLabel, DependencySuggestLabel>
-        ("DependencyRecommendedLabel",
-         "A DependencyRecommendedLabel specifies that a dependency is recommended.");
-
-    class_concrete_dependency_label<DependencyRequiredLabel, DependencySuggestLabel>
-        ("DependencyRequiredLabel",
-         "* A DependencyRequiredLabel specifies that a dependency is required.");
-
-    class_concrete_dependency_label<DependencyAnyLabel, DependencyABIsLabel>
-        ("DependencyAnyLabel",
-         "A DependencyAnyLabel specifies that a dependency can be satisfied by\n"
-         "any ABI.");
-
-    class_concrete_dependency_label<DependencyMineLabel, DependencyABIsLabel>
-        ("DependencyMineLabel",
-         "A DependencyMineLabel specifies that a dependency is satisfied by\n"
-         "ABIs equal to those being used to create the depending package.");
-
-    class_concrete_dependency_label<DependencyPrimaryLabel, DependencyABIsLabel>
-        ("DependencyPrimaryLabel",
-         "A DependencyPrimaryLabel specifies that a dependency can be satisfied by\n"
-         "the primary ABI.");
-
-    class_concrete_dependency_label<DependencyABILabel, DependencyABIsLabel>
-        ("DependencyABILabel",
-         "A DependencyABILabel specifies that a dependency can be satisfied by\n"
-         "a named ABI.");
+    class_concrete_dependencies_label<DependenciesBuildLabel>("DependenciesBuildLabel");
+    class_concrete_dependencies_label<DependenciesRunLabel>("DependenciesRunLabel");
+    class_concrete_dependencies_label<DependenciesPostLabel>("DependenciesPostLabel");
+    class_concrete_dependencies_label<DependenciesCompileAgainstLabel>("DependenciesCompileAgainstLabel");
+    class_concrete_dependencies_label<DependenciesInstallLabel>("DependenciesInstallLabel");
+    class_concrete_dependencies_label<DependenciesFetchLabel>("DependenciesFetchLabel");
+    class_concrete_dependencies_label<DependenciesSuggestionLabel>("DependenciesSuggestionLabel");
+    class_concrete_dependencies_label<DependenciesRecommendationLabel>("DependenciesRecommendationLabel");
 }

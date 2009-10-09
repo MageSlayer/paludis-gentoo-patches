@@ -227,7 +227,7 @@ ColourFormatter::format(const PackageDepSpec & s, const format::Installable &) c
 }
 
 std::string
-ColourFormatter::format(const DependencyLabelsDepSpec & s, const format::Plain &) const
+ColourFormatter::format(const DependenciesLabelsDepSpec & s, const format::Plain &) const
 {
     return format_general_s(f::colour_formatter_dependency_labels_dep_spec_plain(), stringify(s));
 }

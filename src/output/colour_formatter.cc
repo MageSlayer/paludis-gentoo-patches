@@ -201,7 +201,7 @@ ColourFormatter::format(const NamedSetDepSpec & f, const format::Plain &) const
 }
 
 std::string
-ColourFormatter::format(const DependencyLabelsDepSpec & f, const format::Plain &) const
+ColourFormatter::format(const DependenciesLabelsDepSpec & f, const format::Plain &) const
 {
     return stringify(f);
 }

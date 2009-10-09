@@ -841,41 +841,49 @@ namespace
             causes_pre_arrow(false),
             ignorable(true)
         {
-            const std::tr1::shared_ptr<const ActiveDependencyLabels> labels(
-                    reason.sanitised_dependency().active_dependency_labels());
-
-            if (labels->type_labels()->empty())
-                throw InternalError(PALUDIS_HERE, "resolver bug: why did that happen?");
-
-            std::for_each(indirect_iterator(labels->type_labels()->begin()),
-                    indirect_iterator(labels->type_labels()->end()), accept_visitor(*this));
+            std::for_each(indirect_iterator(reason.sanitised_dependency().active_dependency_labels()->begin()),
+                    indirect_iterator(reason.sanitised_dependency().active_dependency_labels()->end()), accept_visitor(*this));
         }
 
-        void visit(const DependencyBuildLabel &)
+        void visit(const DependenciesBuildLabel &)
         {
             causes_pre_arrow = true;
             ignorable = false;
         }
 
-        void visit(const DependencyRunLabel &)
+        void visit(const DependenciesRunLabel &)
         {
             causes_pre_arrow = true;
         }
 
-        void visit(const DependencyPostLabel &)
+        void visit(const DependenciesPostLabel &)
         {
         }
 
-        void visit(const DependencyInstallLabel &)
+        void visit(const DependenciesInstallLabel &)
+        {
+            causes_pre_arrow = true;
+            ignorable = false;
+        }
+
+        void visit(const DependenciesCompileAgainstLabel &)
         {
             causes_pre_arrow = true;
             ignorable = false;
         }
 
-        void visit(const DependencyCompileLabel &)
+        void visit(const DependenciesFetchLabel &)
         {
             causes_pre_arrow = true;
             ignorable = false;
+        }
+
+        void visit(const DependenciesRecommendationLabel &)
+        {
+        }
+
+        void visit(const DependenciesSuggestionLabel &)
+        {
         }
     };
 }

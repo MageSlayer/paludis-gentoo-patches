@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -50,7 +50,7 @@ namespace paludis
         const CanFormat<FetchableURIDepSpec> * const f_f_uri;
         const CanFormat<SimpleURIDepSpec> * const f_s_uri;
         const CanFormat<LicenseDepSpec> * const f_license;
-        const CanFormat<DependencyLabelsDepSpec> * const f_dep_label;
+        const CanFormat<DependenciesLabelsDepSpec> * const f_dep_label;
         const CanFormat<URILabelsDepSpec> * const f_uri_label;
         const CanFormat<PlainTextDepSpec> * const f_plain;
         const CanFormat<ConditionalDepSpec> * const f_use_dep;
@@ -69,7 +69,7 @@ namespace paludis
                 const CanFormat<FetchableURIDepSpec> * const f_f_uri_v,
                 const CanFormat<SimpleURIDepSpec> * const f_s_uri_v,
                 const CanFormat<LicenseDepSpec> * const f_license_v,
-                const CanFormat<DependencyLabelsDepSpec> * const f_dep_label_v,
+                const CanFormat<DependenciesLabelsDepSpec> * const f_dep_label_v,
                 const CanFormat<URILabelsDepSpec> * const f_uri_label_v,
                 const CanFormat<PlainTextDepSpec> * const f_plain_v,
                 const CanFormat<ConditionalDepSpec> * const f_use_dep_v,
@@ -198,8 +198,8 @@ namespace paludis
                         std::tr1::is_convertible<T_ *, CanFormat<LicenseDepSpec> *>::value,
                         LicenseDepSpec>::get(&t),
                     StringifyFormatterGetForwarder<
-                        std::tr1::is_convertible<T_ *, CanFormat<DependencyLabelsDepSpec> *>::value,
-                        DependencyLabelsDepSpec>::get(&t),
+                        std::tr1::is_convertible<T_ *, CanFormat<DependenciesLabelsDepSpec> *>::value,
+                        DependenciesLabelsDepSpec>::get(&t),
                     StringifyFormatterGetForwarder<
                         std::tr1::is_convertible<T_ *, CanFormat<URILabelsDepSpec> *>::value,
                         URILabelsDepSpec>::get(&t),

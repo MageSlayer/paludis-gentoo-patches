@@ -42,7 +42,7 @@ namespace paludis
         class PythonBlockDepSpec;
         class PythonURILabelsDepSpec;
         class PythonPlainTextLabelDepSpec;
-        class PythonDependencyLabelsDepSpec;
+        class PythonDependenciesLabelsDepSpec;
         class PythonNamedSetDepSpec;
 
         class PALUDIS_VISIBLE PythonDepSpec :
@@ -59,7 +59,7 @@ namespace paludis
                     PythonSimpleURIDepSpec,
                     PythonURILabelsDepSpec,
                     PythonPlainTextLabelDepSpec,
-                    PythonDependencyLabelsDepSpec,
+                    PythonDependenciesLabelsDepSpec,
                     PythonNamedSetDepSpec
                 >::Type>
         {
@@ -270,13 +270,13 @@ namespace paludis
                 PythonPlainTextLabelDepSpec(const PlainTextLabelDepSpec &);
         };
 
-        class PALUDIS_VISIBLE PythonDependencyLabelsDepSpec :
+        class PALUDIS_VISIBLE PythonDependenciesLabelsDepSpec :
             public PythonDepSpec,
-            public ImplementAcceptMethods<PythonDepSpec, PythonDependencyLabelsDepSpec>
+            public ImplementAcceptMethods<PythonDepSpec, PythonDependenciesLabelsDepSpec>
         {
             public:
-                PythonDependencyLabelsDepSpec(const std::string &);
-                PythonDependencyLabelsDepSpec(const DependencyLabelsDepSpec &);
+                PythonDependenciesLabelsDepSpec(const std::string &);
+                PythonDependenciesLabelsDepSpec(const DependenciesLabelsDepSpec &);
         };
 
         /**
@@ -307,7 +307,7 @@ namespace paludis
                 void visit(const GenericSpecTree::NodeType<LicenseDepSpec>::Type &);
                 void visit(const GenericSpecTree::NodeType<PlainTextLabelDepSpec>::Type &);
                 void visit(const GenericSpecTree::NodeType<URILabelsDepSpec>::Type &);
-                void visit(const GenericSpecTree::NodeType<DependencyLabelsDepSpec>::Type &);
+                void visit(const GenericSpecTree::NodeType<DependenciesLabelsDepSpec>::Type &);
                 void visit(const GenericSpecTree::NodeType<NamedSetDepSpec>::Type &);
         };
 
@@ -340,7 +340,7 @@ namespace paludis
                 void visit(const PythonLicenseDepSpec &);
                 void visit(const PythonURILabelsDepSpec &);
                 void visit(const PythonPlainTextLabelDepSpec &);
-                void visit(const PythonDependencyLabelsDepSpec &);
+                void visit(const PythonDependenciesLabelsDepSpec &);
                 void visit(const PythonNamedSetDepSpec &);
 
                 void real_visit(const PythonAllDepSpec &);
@@ -353,7 +353,7 @@ namespace paludis
                 void real_visit(const PythonSimpleURIDepSpec &);
                 void real_visit(const PythonURILabelsDepSpec &);
                 void real_visit(const PythonPlainTextLabelDepSpec &);
-                void real_visit(const PythonDependencyLabelsDepSpec &);
+                void real_visit(const PythonDependenciesLabelsDepSpec &);
                 void real_visit(const PythonLicenseDepSpec &);
                 void real_visit(const PythonNamedSetDepSpec &);
         };

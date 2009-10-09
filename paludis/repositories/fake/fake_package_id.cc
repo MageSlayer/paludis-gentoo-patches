@@ -187,14 +187,14 @@ namespace paludis
         std::tr1::shared_ptr<const DependencySpecTree> value;
         std::string string_value;
         const std::tr1::function<const std::tr1::shared_ptr<const DependencySpecTree> (const std::string &)> func;
-        std::tr1::shared_ptr<const DependencyLabelSequence> labels;
+        std::tr1::shared_ptr<const DependenciesLabelSequence> labels;
 
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
 
         Implementation(const std::tr1::function<const std::tr1::shared_ptr<const DependencySpecTree> (const std::string &)> & f,
-                const std::tr1::shared_ptr<const DependencyLabelSequence> & s,
+                const std::tr1::shared_ptr<const DependenciesLabelSequence> & s,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             func(f),
             labels(s),
@@ -334,7 +334,7 @@ FakeMetadataSpecTreeKey<FetchableURISpecTree>::initial_label() const
 
 FakeMetadataSpecTreeKey<DependencySpecTree>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
         const std::tr1::function<const std::tr1::shared_ptr<const DependencySpecTree> (const std::string &)> & f,
-        const std::tr1::shared_ptr<const DependencyLabelSequence> & s, const MetadataKeyType t) :
+        const std::tr1::shared_ptr<const DependenciesLabelSequence> & s, const MetadataKeyType t) :
     PrivateImplementationPattern<FakeMetadataSpecTreeKey<DependencySpecTree> >(
             new Implementation<FakeMetadataSpecTreeKey<DependencySpecTree> >(f, s, r, h, t)),
     _imp(PrivateImplementationPattern<FakeMetadataSpecTreeKey<DependencySpecTree> >::_imp)
@@ -371,7 +371,7 @@ FakeMetadataSpecTreeKey<DependencySpecTree>::pretty_print_flat(const DependencyS
     return _imp->string_value;
 }
 
-const std::tr1::shared_ptr<const DependencyLabelSequence>
+const std::tr1::shared_ptr<const DependenciesLabelSequence>
 FakeMetadataSpecTreeKey<DependencySpecTree>::initial_labels() const
 {
     return _imp->labels;
@@ -620,10 +620,10 @@ namespace paludis
         const QualifiedPackageName name;
         const VersionSpec version;
 
-        mutable std::tr1::shared_ptr<DependencyLabelSequence> build_dependencies_labels;
-        mutable std::tr1::shared_ptr<DependencyLabelSequence> run_dependencies_labels;
-        mutable std::tr1::shared_ptr<DependencyLabelSequence> post_dependencies_labels;
-        mutable std::tr1::shared_ptr<DependencyLabelSequence> suggested_dependencies_labels;
+        mutable std::tr1::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
+        mutable std::tr1::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
+        mutable std::tr1::shared_ptr<DependenciesLabelSequence> post_dependencies_labels;
+        mutable std::tr1::shared_ptr<DependenciesLabelSequence> suggested_dependencies_labels;
 
         std::tr1::shared_ptr<LiteralMetadataValueKey<SlotName> > slot;
         std::tr1::shared_ptr<LiteralMetadataValueKey<std::tr1::shared_ptr<const PackageID> > > package_id;
@@ -649,19 +649,18 @@ namespace paludis
             repository(r),
             name(q),
             version(v),
-            build_dependencies_labels(new DependencyLabelSequence),
-            run_dependencies_labels(new DependencyLabelSequence),
-            post_dependencies_labels(new DependencyLabelSequence),
-            suggested_dependencies_labels(new DependencyLabelSequence),
+            build_dependencies_labels(new DependenciesLabelSequence),
+            run_dependencies_labels(new DependenciesLabelSequence),
+            post_dependencies_labels(new DependenciesLabelSequence),
+            suggested_dependencies_labels(new DependenciesLabelSequence),
             slot(new LiteralMetadataValueKey<SlotName>("SLOT", "Slot", mkt_internal, SlotName("0"))),
             keywords(new FakeMetadataKeywordSetKey("KEYWORDS", "Keywords", "test", mkt_normal, id, env)),
             has_masks(false)
         {
-            build_dependencies_labels->push_back(make_shared_ptr(new DependencyBuildLabel("DEPEND")));
-            run_dependencies_labels->push_back(make_shared_ptr(new DependencyRunLabel("RDEPEND")));
-            post_dependencies_labels->push_back(make_shared_ptr(new DependencyPostLabel("PDEPEND")));
-            suggested_dependencies_labels->push_back(make_shared_ptr(new DependencySuggestedLabel("SDEPEND")));
-            suggested_dependencies_labels->push_back(make_shared_ptr(new DependencyPostLabel("SDEPEND")));
+            build_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("DEPEND")));
+            run_dependencies_labels->push_back(make_shared_ptr(new DependenciesRunLabel("RDEPEND")));
+            post_dependencies_labels->push_back(make_shared_ptr(new DependenciesPostLabel("PDEPEND")));
+            suggested_dependencies_labels->push_back(make_shared_ptr(new DependenciesSuggestionLabel("SDEPEND")));
         }
     };
 }

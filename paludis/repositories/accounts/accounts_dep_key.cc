@@ -40,13 +40,13 @@ namespace paludis
         const Environment * const env;
         const std::tr1::shared_ptr<Sequence<std::tr1::shared_ptr<PackageDepSpec> > > specs;
         const std::tr1::shared_ptr<DependencySpecTree> tree;
-        const std::tr1::shared_ptr<DependencyLabelSequence> initial_labels;
+        const std::tr1::shared_ptr<DependenciesLabelSequence> initial_labels;
 
         Implementation(const Environment * const e, const std::tr1::shared_ptr<const Set<std::string> > & s) :
             env(e),
             specs(new Sequence<std::tr1::shared_ptr<PackageDepSpec> >),
             tree(new DependencySpecTree(make_shared_ptr(new AllDepSpec))),
-            initial_labels(new DependencyLabelSequence)
+            initial_labels(new DependenciesLabelSequence)
         {
             for (Set<std::string>::ConstIterator i(s->begin()), i_end(s->end()) ;
                     i != i_end ; ++i)
@@ -57,8 +57,8 @@ namespace paludis
                 tree->root()->append(spec);
             }
 
-            initial_labels->push_back(make_shared_ptr(new DependencyBuildLabel("build")));
-            initial_labels->push_back(make_shared_ptr(new DependencyRunLabel("run")));
+            initial_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("build")));
+            initial_labels->push_back(make_shared_ptr(new DependenciesRunLabel("run")));
         }
     };
 }
@@ -97,7 +97,7 @@ AccountsDepKey::value() const
     return _imp->tree;
 }
 
-const std::tr1::shared_ptr<const DependencyLabelSequence>
+const std::tr1::shared_ptr<const DependenciesLabelSequence>
 AccountsDepKey::initial_labels() const
 {
     return _imp->initial_labels;

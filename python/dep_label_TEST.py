@@ -46,33 +46,24 @@ class TestCase_01_URILabels(unittest.TestCase):
         for l in self.list:
             self.assert_(str(l), "foo")
 
-class TestCase_02_DependencyLabels(unittest.TestCase):
+class TestCase_02_DependenciesLabels(unittest.TestCase):
     def setUp(self):
         self.list = []
-        self.list.append((DependencyHostLabel("foo"), DependencySystemLabel))
-        self.list.append((DependencyTargetLabel("foo"), DependencySystemLabel))
-        self.list.append((DependencyBuildLabel("foo"), DependencyTypeLabel))
-        self.list.append((DependencyRunLabel("foo"), DependencyTypeLabel))
-        self.list.append((DependencyInstallLabel("foo"), DependencyTypeLabel))
-        self.list.append((DependencyCompileLabel("foo"), DependencyTypeLabel))
-        self.list.append((DependencySuggestedLabel("foo"), DependencySuggestLabel))
-        self.list.append((DependencyRecommendedLabel("foo"), DependencySuggestLabel))
-        self.list.append((DependencyRequiredLabel("foo"), DependencySuggestLabel))
-        self.list.append((DependencyAnyLabel("foo"), DependencyABIsLabel))
-        self.list.append((DependencyMineLabel("foo"), DependencyABIsLabel))
-        self.list.append((DependencyPrimaryLabel("foo"), DependencyABIsLabel))
-        self.list.append((DependencyABILabel("foo"), DependencyABIsLabel))
+        self.list.append((DependenciesBuildLabel("foo"), DependenciesLabel))
+        self.list.append((DependenciesRunLabel("foo"), DependenciesLabel))
+        self.list.append((DependenciesPostLabel("foo"), DependenciesLabel))
+        self.list.append((DependenciesCompileAgainstLabel("foo"), DependenciesLabel))
+        self.list.append((DependenciesInstallLabel("foo"), DependenciesLabel))
+        self.list.append((DependenciesFetchLabel("foo"), DependenciesLabel))
+        self.list.append((DependenciesSuggestionLabel("foo"), DependenciesLabel))
+        self.list.append((DependenciesRecommendationLabel("foo"), DependenciesLabel))
 
     def test_01_no_create(self):
-        self.assertRaises(Exception, DependencyLabel)
-        self.assertRaises(Exception, DependencySystemLabel)
-        self.assertRaises(Exception, DependencyTypeLabel)
-        self.assertRaises(Exception, DependencySuggestLabel)
-        self.assertRaises(Exception, DependencyABIsLabel)
+        self.assertRaises(Exception, DependenciesLabel)
 
     def test_02_inheritance(self):
         for t in self.list:
-            self.assert_(isinstance(t[0], DependencyLabel))
+            self.assert_(isinstance(t[0], DependenciesLabel))
             self.assert_(isinstance(t[0], t[1]))
 
     def test_03_text(self):

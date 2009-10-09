@@ -69,7 +69,7 @@ namespace
     class HTMLFormatter :
         public CanSpace,
         public CanFormat<PackageDepSpec>,
-        public CanFormat<DependencyLabelsDepSpec>,
+        public CanFormat<DependenciesLabelsDepSpec>,
         public CanFormat<ConditionalDepSpec>,
         public CanFormat<NamedSetDepSpec>,
         public CanFormat<BlockDepSpec>
@@ -92,7 +92,7 @@ namespace
                 return span_colour(escape_html(stringify(s)), "#66ff66");
             }
 
-            std::string format(const DependencyLabelsDepSpec & s, const format::Plain &) const
+            std::string format(const DependenciesLabelsDepSpec & s, const format::Plain &) const
             {
                 return span_colour(escape_html(stringify(s)), "#666666");
             }

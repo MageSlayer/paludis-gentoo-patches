@@ -296,7 +296,7 @@ RangeRewriter::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type &)
 }
 
 void
-RangeRewriter::visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type &)
+RangeRewriter::visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type &)
 {
     _imp->invalid = true;
 }

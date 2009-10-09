@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,7 +31,7 @@ class ColourFormatter :
     public paludis::CanFormat<paludis::ConditionalDepSpec>,
     public paludis::CanFormat<paludis::PackageDepSpec>,
     public paludis::CanFormat<paludis::BlockDepSpec>,
-    public paludis::CanFormat<paludis::DependencyLabelsDepSpec>,
+    public paludis::CanFormat<paludis::DependenciesLabelsDepSpec>,
     public paludis::CanFormat<paludis::URILabelsDepSpec>,
     public paludis::CanFormat<paludis::PlainTextDepSpec>,
     public paludis::CanFormat<paludis::SimpleURIDepSpec>,
@@ -81,7 +81,7 @@ class ColourFormatter :
 
         std::string format(const paludis::URILabelsDepSpec &, const paludis::format::Plain &) const;
 
-        std::string format(const paludis::DependencyLabelsDepSpec &, const paludis::format::Plain &) const;
+        std::string format(const paludis::DependenciesLabelsDepSpec &, const paludis::format::Plain &) const;
 
         std::string format(const paludis::FetchableURIDepSpec &, const paludis::format::Plain &) const;
 

@@ -118,25 +118,53 @@ namespace
 {
     struct IsSuggestionVisitor
     {
-        bool is_suggestion;
+        bool seen_not_suggestion;
+        bool seen_suggestion;
 
         IsSuggestionVisitor() :
-            is_suggestion(true)
+            seen_not_suggestion(false),
+            seen_suggestion(false)
         {
         }
 
-        void visit(const DependencyRequiredLabel &)
+        void visit(const DependenciesBuildLabel &)
         {
-            is_suggestion = false;
+            seen_not_suggestion = true;
         }
 
-        void visit(const DependencyRecommendedLabel &)
+        void visit(const DependenciesRunLabel &)
         {
-            is_suggestion = false;
+            seen_not_suggestion = true;
         }
 
-        void visit(const DependencySuggestedLabel &)
+        void visit(const DependenciesPostLabel &)
         {
+            seen_not_suggestion = true;
+        }
+
+        void visit(const DependenciesSuggestionLabel &)
+        {
+            seen_suggestion = true;
+        }
+
+        void visit(const DependenciesRecommendationLabel &)
+        {
+            seen_not_suggestion = true;
+        }
+
+        void visit(const DependenciesCompileAgainstLabel &)
+        {
+            seen_not_suggestion = true;
+        }
+
+        void visit(const DependenciesInstallLabel &)
+        {
+            seen_not_suggestion = true;
+        }
+
+        void visit(const DependenciesFetchLabel &)
+        {
+            seen_not_suggestion = true;
         }
     };
 
@@ -164,16 +192,13 @@ namespace
 }
 
 bool
-paludis::resolver::resolver_test::is_suggestion(const SanitisedDependency & dep)
+paludis::resolver::resolver_test::is_just_suggestion(const SanitisedDependency & dep)
 {
-    if (dep.active_dependency_labels()->suggest_labels()->empty())
-        return false;
-
     IsSuggestionVisitor v;
-    std::for_each(indirect_iterator(dep.active_dependency_labels()->suggest_labels()->begin()),
-            indirect_iterator(dep.active_dependency_labels()->suggest_labels()->end()),
+    std::for_each(indirect_iterator(dep.active_dependency_labels()->begin()),
+            indirect_iterator(dep.active_dependency_labels()->end()),
             accept_visitor(v));
-    return v.is_suggestion;
+    return v.seen_suggestion && ! v.seen_not_suggestion;
 }
 
 bool
@@ -182,7 +207,7 @@ paludis::resolver::resolver_test::take_dependency_fn(
         const SanitisedDependency & dep,
         const std::tr1::shared_ptr<const Reason> &)
 {
-    return ! is_suggestion(dep);
+    return ! is_just_suggestion(dep);
 }
 
 UseExisting

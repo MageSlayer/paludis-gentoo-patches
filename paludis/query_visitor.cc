@@ -205,7 +205,7 @@ QueryVisitor::visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
 }
 
 void
-QueryVisitor::visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type &)
+QueryVisitor::visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type &)
 {
     // XXX implement
 }

@@ -33,7 +33,7 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-typedef std::list<std::tr1::shared_ptr<ActiveDependencyLabels> > LabelsStack;
+typedef std::list<std::tr1::shared_ptr<DependenciesLabelSequence> > LabelsStack;
 
 namespace
 {
@@ -67,15 +67,15 @@ namespace paludis
         std::string rdepend;
         std::string pdepend;
 
-        std::tr1::shared_ptr<DependencyLabelSequence> default_labels;
+        std::tr1::shared_ptr<DependenciesLabelSequence> default_labels;
         LabelsStack labels;
 
         Implementation() :
-            default_labels(new DependencyLabelSequence)
+            default_labels(new DependenciesLabelSequence)
         {
-            default_labels->push_back(make_shared_ptr(new DependencyBuildLabel("build")));
-            default_labels->push_back(make_shared_ptr(new DependencyRunLabel("run")));
-            labels.push_front(make_shared_ptr(new ActiveDependencyLabels(*default_labels)));
+            default_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("build")));
+            default_labels->push_back(make_shared_ptr(new DependenciesRunLabel("run")));
+            labels.push_front(default_labels);
         }
     };
 }
@@ -126,19 +126,21 @@ DependenciesRewriter::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Ty
 }
 
 void
-DependenciesRewriter::visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type & node)
+DependenciesRewriter::visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type & node)
 {
     _imp->depend.append(" " + stringify(*node.spec()) + get_annotations(*node.spec()));
     _imp->rdepend.append(" " + stringify(*node.spec()) + get_annotations(*node.spec()));
     _imp->pdepend.append(" " + stringify(*node.spec()) + get_annotations(*node.spec()));
 
-    _imp->labels.begin()->reset(new ActiveDependencyLabels(**_imp->labels.begin(), *node.spec()));
+    std::tr1::shared_ptr<DependenciesLabelSequence> labels(new DependenciesLabelSequence);
+    std::copy(node.spec()->begin(), node.spec()->end(), labels->back_inserter());
+    *_imp->labels.begin() = labels;
 }
 
 void
 DependenciesRewriter::visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
 {
-    _imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**_imp->labels.begin())));
+    _imp->labels.push_front(*_imp->labels.begin());
     RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
 
     std::string d(_imp->depend), r(_imp->rdepend), p(_imp->pdepend);
@@ -156,7 +158,7 @@ DependenciesRewriter::visit(const DependencySpecTree::NodeType<AllDepSpec>::Type
 void
 DependenciesRewriter::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
 {
-    _imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**_imp->labels.begin())));
+    _imp->labels.push_front(*_imp->labels.begin());
     RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
 
     std::string d(_imp->depend), r(_imp->rdepend), p(_imp->pdepend);
@@ -174,7 +176,7 @@ DependenciesRewriter::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type
 void
 DependenciesRewriter::visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
 {
-    _imp->labels.push_front(make_shared_ptr(new ActiveDependencyLabels(**_imp->labels.begin())));
+    _imp->labels.push_front(*_imp->labels.begin());
     RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
 
     std::string d(_imp->depend), r(_imp->rdepend), p(_imp->pdepend);
@@ -207,27 +209,42 @@ namespace
         {
         }
 
-        void visit(const DependencyRunLabel &)
+        void visit(const DependenciesRunLabel &)
         {
             r.append(" " + s + get_annotations(a));
         }
 
-        void visit(const DependencyPostLabel &)
+        void visit(const DependenciesPostLabel &)
         {
             p.append(" " + s + get_annotations(a));
         }
 
-        void visit(const DependencyBuildLabel &)
+        void visit(const DependenciesSuggestionLabel &)
+        {
+            p.append(" " + s + get_annotations(a));
+        }
+
+        void visit(const DependenciesRecommendationLabel &)
+        {
+            p.append(" " + s + get_annotations(a));
+        }
+
+        void visit(const DependenciesBuildLabel &)
         {
             d.append(" " + s + get_annotations(a));
         }
 
-        void visit(const DependencyCompileLabel &)
+        void visit(const DependenciesFetchLabel &)
+        {
+            d.append(" " + s + get_annotations(a));
+        }
+
+        void visit(const DependenciesCompileAgainstLabel &)
         {
             r.append(" " + s + get_annotations(a));
         }
 
-        void visit(const DependencyInstallLabel &)
+        void visit(const DependenciesInstallLabel &)
         {
             d.append(" " + s + get_annotations(a));
         }
@@ -239,8 +256,8 @@ DependenciesRewriter::_add_where_necessary(const std::string & s, const DepSpec 
 {
     AddWhereNecessary v(_imp->depend, _imp->rdepend, _imp->pdepend, s, a);
     std::for_each(
-            indirect_iterator((*_imp->labels.begin())->type_labels()->begin()),
-            indirect_iterator((*_imp->labels.begin())->type_labels()->end()),
+            indirect_iterator((*_imp->labels.begin())->begin()),
+            indirect_iterator((*_imp->labels.begin())->end()),
             accept_visitor(v));
 }
 

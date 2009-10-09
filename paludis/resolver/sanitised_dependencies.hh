@@ -63,7 +63,7 @@ namespace paludis
 
         struct SanitisedDependency
         {
-            NamedValue<n::active_dependency_labels, std::tr1::shared_ptr<const ActiveDependencyLabels> > active_dependency_labels;
+            NamedValue<n::active_dependency_labels, std::tr1::shared_ptr<const DependenciesLabelSequence> > active_dependency_labels;
             NamedValue<n::active_dependency_labels_as_string, std::string> active_dependency_labels_as_string;
             NamedValue<n::metadata_key_human_name, std::string> metadata_key_human_name;
             NamedValue<n::metadata_key_raw_name, std::string> metadata_key_raw_name;

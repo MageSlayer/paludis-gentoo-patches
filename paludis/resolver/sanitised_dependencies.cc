@@ -55,7 +55,7 @@ namespace
             result.append(" " + stringify(*s.spec()));
         }
 
-        void visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type & s)
+        void visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type & s)
         {
             result.append(" " + stringify(*s.spec()));
         }
@@ -228,7 +228,7 @@ namespace
             super_complicated = true;
         }
 
-        void visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type &)
+        void visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type &)
         {
             super_complicated = true;
         }
@@ -290,13 +290,13 @@ namespace
         const std::string raw_name;
         const std::string human_name;
         std::string original_specs_as_string;
-        std::list<std::tr1::shared_ptr<ActiveDependencyLabels> > labels_stack;
+        std::list<std::tr1::shared_ptr<const DependenciesLabelSequence> > labels_stack;
 
         Finder(
                 const Resolver & r,
                 const Resolvent & q,
                 SanitisedDependencies & s,
-                const std::tr1::shared_ptr<const DependencyLabelSequence> & l,
+                const std::tr1::shared_ptr<const DependenciesLabelSequence> & l,
                 const std::string & rn,
                 const std::string & hn,
                 const std::string & a) :
@@ -307,7 +307,7 @@ namespace
             human_name(hn),
             original_specs_as_string(a)
         {
-            labels_stack.push_front(make_shared_ptr(new ActiveDependencyLabels(*l)));
+            labels_stack.push_front(l);
         }
 
 
@@ -323,23 +323,8 @@ namespace
         SanitisedDependency make_sanitised(const PackageOrBlockDepSpec & spec)
         {
             std::stringstream adl;
-            for (DependencySystemLabelSequence::ConstIterator i((*labels_stack.begin())->system_labels()->begin()),
-                    i_end((*labels_stack.begin())->system_labels()->end()) ;
-                    i != i_end ; ++i)
-                adl << (adl.str().empty() ? "" : ", ") << stringify(**i);
-
-            for (DependencyTypeLabelSequence::ConstIterator i((*labels_stack.begin())->type_labels()->begin()),
-                    i_end((*labels_stack.begin())->type_labels()->end()) ;
-                    i != i_end ; ++i)
-                adl << (adl.str().empty() ? "" : ", ") << stringify(**i);
-
-            for (DependencyABIsLabelSequence::ConstIterator i((*labels_stack.begin())->abi_labels()->begin()),
-                    i_end((*labels_stack.begin())->abi_labels()->end()) ;
-                    i != i_end ; ++i)
-                adl << (adl.str().empty() ? "" : ", ") << stringify(**i);
-
-            for (DependencySuggestLabelSequence::ConstIterator i((*labels_stack.begin())->suggest_labels()->begin()),
-                    i_end((*labels_stack.begin())->suggest_labels()->end()) ;
+            for (DependenciesLabelSequence::ConstIterator i((*labels_stack.begin())->begin()),
+                    i_end((*labels_stack.begin())->end()) ;
                     i != i_end ; ++i)
                 adl << (adl.str().empty() ? "" : ", ") << stringify(**i);
 
@@ -367,7 +352,7 @@ namespace
         {
             if (node.spec()->condition_met())
             {
-                labels_stack.push_front(make_shared_ptr(new ActiveDependencyLabels(**labels_stack.begin())));
+                labels_stack.push_front(*labels_stack.begin());
                 std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
                 labels_stack.pop_front();
             }
@@ -375,7 +360,7 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
         {
-            labels_stack.push_front(make_shared_ptr(new ActiveDependencyLabels(**labels_stack.begin())));
+            labels_stack.push_front(*labels_stack.begin());
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
             labels_stack.pop_front();
         }
@@ -403,9 +388,11 @@ namespace
             throw InternalError(PALUDIS_HERE, "not implemented");
         }
 
-        void visit(const DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type & node)
+        void visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type & node)
         {
-            labels_stack.begin()->reset(new ActiveDependencyLabels(**labels_stack.begin(), *node.spec()));
+            std::tr1::shared_ptr<DependenciesLabelSequence> labels(new DependenciesLabelSequence);
+            std::copy(node.spec()->begin(), node.spec()->end(), labels->back_inserter());
+            *labels_stack.begin() = labels;
         }
     };
 }

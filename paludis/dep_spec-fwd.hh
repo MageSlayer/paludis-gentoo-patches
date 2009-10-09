@@ -72,12 +72,12 @@ namespace paludis
     typedef LabelsDepSpec<URILabel> URILabelsDepSpec;
 
     /**
-     * A DependencyLabelsDepSpec represents labels in a DependencySpecTree.
+     * A DependenciesLabelsDepSpec represents labels in a DependenciesSpecTree.
      *
      * \ingroup g_dep_spec
-     * \since 0.26
+     * \since 0.42
      */
-    typedef LabelsDepSpec<DependencyLabel> DependencyLabelsDepSpec;
+    typedef LabelsDepSpec<DependenciesLabel> DependenciesLabelsDepSpec;
 
     class PackageDepSpecData;
     class PartiallyMadePackageDepSpec;
@@ -139,12 +139,12 @@ namespace paludis
     std::ostream & operator<< (std::ostream &, const URILabelsDepSpec &) PALUDIS_VISIBLE;
 
     /**
-     * A DependencyLabelsDepSpec can be written to an ostream.
+     * A DependenciesLabelsDepSpec can be written to an ostream.
      *
      * \ingroup g_dep_spec
-     * \since 0.26
+     * \since 0.42
      */
-    std::ostream & operator<< (std::ostream &, const DependencyLabelsDepSpec &) PALUDIS_VISIBLE;
+    std::ostream & operator<< (std::ostream &, const DependenciesLabelsDepSpec &) PALUDIS_VISIBLE;
 
     /**
      * A BlockDepSpec can be written to an ostream.

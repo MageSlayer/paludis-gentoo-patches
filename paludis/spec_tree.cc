@@ -174,7 +174,7 @@ template class SpecTree<MakeTypeList<
         SpecTreeLeafNodeType<PackageDepSpec>,
         SpecTreeLeafNodeType<BlockDepSpec>,
         SpecTreeLeafNodeType<URILabelsDepSpec>,
-        SpecTreeLeafNodeType<DependencyLabelsDepSpec>,
+        SpecTreeLeafNodeType<DependenciesLabelsDepSpec>,
         SpecTreeLeafNodeType<NamedSetDepSpec>,
         SpecTreeInnerNodeType<AllDepSpec>,
         SpecTreeInnerNodeType<AnyDepSpec>,
@@ -217,7 +217,7 @@ template class SpecTree<MakeTypeList<
 template class SpecTree<MakeTypeList<
         SpecTreeLeafNodeType<PackageDepSpec>,
         SpecTreeLeafNodeType<BlockDepSpec>,
-        SpecTreeLeafNodeType<DependencyLabelsDepSpec>,
+        SpecTreeLeafNodeType<DependenciesLabelsDepSpec>,
         SpecTreeLeafNodeType<NamedSetDepSpec>,
         SpecTreeInnerNodeType<AllDepSpec>,
         SpecTreeInnerNodeType<AnyDepSpec>,
@@ -248,7 +248,7 @@ template class WrappedForwardIterator<BasicInnerNode<GenericSpecTree>::ConstIter
 
 template class LeafNode<GenericSpecTree, PackageDepSpec>;
 template class LeafNode<GenericSpecTree, BlockDepSpec>;
-template class LeafNode<GenericSpecTree, DependencyLabelsDepSpec>;
+template class LeafNode<GenericSpecTree, DependenciesLabelsDepSpec>;
 template class LeafNode<GenericSpecTree, NamedSetDepSpec>;
 template class LeafNode<GenericSpecTree, PlainTextDepSpec>;
 template class LeafNode<GenericSpecTree, PlainTextLabelDepSpec>;
@@ -277,10 +277,10 @@ template const std::tr1::shared_ptr<DependencySpecTree::NodeType<BlockDepSpec>::
 template const std::tr1::shared_ptr<DependencySpecTree::NodeType<BlockDepSpec>::Type>
     BasicInnerNode<DependencySpecTree>::append<BlockDepSpec>(const std::tr1::shared_ptr<BlockDepSpec> &);
 
-template const std::tr1::shared_ptr<DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type>
-    BasicInnerNode<DependencySpecTree>::append<DependencyLabelsDepSpec>(const std::tr1::shared_ptr<const DependencyLabelsDepSpec> &);
-template const std::tr1::shared_ptr<DependencySpecTree::NodeType<DependencyLabelsDepSpec>::Type>
-    BasicInnerNode<DependencySpecTree>::append<DependencyLabelsDepSpec>(const std::tr1::shared_ptr<DependencyLabelsDepSpec> &);
+template const std::tr1::shared_ptr<DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type>
+    BasicInnerNode<DependencySpecTree>::append<DependenciesLabelsDepSpec>(const std::tr1::shared_ptr<const DependenciesLabelsDepSpec> &);
+template const std::tr1::shared_ptr<DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type>
+    BasicInnerNode<DependencySpecTree>::append<DependenciesLabelsDepSpec>(const std::tr1::shared_ptr<DependenciesLabelsDepSpec> &);
 
 template const std::tr1::shared_ptr<DependencySpecTree::NodeType<AnyDepSpec>::Type>
     BasicInnerNode<DependencySpecTree>::append<AnyDepSpec>(const std::tr1::shared_ptr<const AnyDepSpec> &);
@@ -304,7 +304,7 @@ template class WrappedForwardIterator<BasicInnerNode<DependencySpecTree>::ConstI
 
 template class LeafNode<DependencySpecTree, PackageDepSpec>;
 template class LeafNode<DependencySpecTree, BlockDepSpec>;
-template class LeafNode<DependencySpecTree, DependencyLabelsDepSpec>;
+template class LeafNode<DependencySpecTree, DependenciesLabelsDepSpec>;
 template class LeafNode<DependencySpecTree, NamedSetDepSpec>;
 template class InnerNode<DependencySpecTree, AllDepSpec>;
 template class InnerNode<DependencySpecTree, AnyDepSpec>;
@@ -493,7 +493,7 @@ template InnerNode<DependencySpecTree, AnyDepSpec>::operator InnerNode<GenericSp
 template InnerNode<DependencySpecTree, ConditionalDepSpec>::operator InnerNode<GenericSpecTree, ConditionalDepSpec> () const;
 template LeafNode<DependencySpecTree, PackageDepSpec>::operator LeafNode<GenericSpecTree, PackageDepSpec> () const;
 template LeafNode<DependencySpecTree, NamedSetDepSpec>::operator LeafNode<GenericSpecTree, NamedSetDepSpec> () const;
-template LeafNode<DependencySpecTree, DependencyLabelsDepSpec>::operator LeafNode<GenericSpecTree, DependencyLabelsDepSpec> () const;
+template LeafNode<DependencySpecTree, DependenciesLabelsDepSpec>::operator LeafNode<GenericSpecTree, DependenciesLabelsDepSpec> () const;
 template LeafNode<DependencySpecTree, BlockDepSpec>::operator LeafNode<GenericSpecTree, BlockDepSpec> () const;
 
 /* LicenseSpecTree -> GenericSpecTree */

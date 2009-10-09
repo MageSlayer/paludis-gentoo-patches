@@ -215,7 +215,7 @@ namespace
             const std::string & s,
             const EAPI & eapi)
     {
-        std::tr1::shared_ptr<DependencyLabelsDepSpec> spec(parse_dependency_label(s, eapi));
+        std::tr1::shared_ptr<DependenciesLabelsDepSpec> spec(parse_dependency_label(s, eapi));
         h.begin()->item()->append(spec);
         annotations_go_here(spec);
     }
@@ -667,7 +667,7 @@ paludis::erepository::parse_plain_text_label(const std::string & s)
     return make_shared_ptr(new PlainTextLabelDepSpec(s));
 }
 
-std::tr1::shared_ptr<DependencyLabelsDepSpec>
+std::tr1::shared_ptr<DependenciesLabelsDepSpec>
 paludis::erepository::parse_dependency_label(const std::string & s, const EAPI & e)
 {
     Context context("When parsing label string '" + s + "' using EAPI '" + e.name() + "':");
@@ -679,7 +679,7 @@ paludis::erepository::parse_dependency_label(const std::string & s, const EAPI &
     std::string label(s.substr(0, s.length() - 1));
     tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(label, ",+", "", std::inserter(labels, labels.end()));
 
-    std::tr1::shared_ptr<DependencyLabelsDepSpec> l(new DependencyLabelsDepSpec);
+    std::tr1::shared_ptr<DependenciesLabelsDepSpec> l(new DependenciesLabelsDepSpec);
 
     for (std::set<std::string>::iterator it = labels.begin(), it_e = labels.end(); it != it_e; ++it)
     {
@@ -687,34 +687,22 @@ paludis::erepository::parse_dependency_label(const std::string & s, const EAPI &
         if (c.empty())
             throw EDepParseError(s, "Unknown label '" + *it + "'");
 
-        if (c == "DependencyHostLabel")
-            l->add_label(make_shared_ptr(new DependencyHostLabel(*it)));
-        else if (c == "DependencyTargetLabel")
-            l->add_label(make_shared_ptr(new DependencyTargetLabel(*it)));
-        else if (c == "DependencyBuildLabel")
-            l->add_label(make_shared_ptr(new DependencyBuildLabel(*it)));
-        else if (c == "DependencyRunLabel")
-            l->add_label(make_shared_ptr(new DependencyRunLabel(*it)));
-        else if (c == "DependencyPostLabel")
-            l->add_label(make_shared_ptr(new DependencyPostLabel(*it)));
-        else if (c == "DependencyInstallLabel")
-            l->add_label(make_shared_ptr(new DependencyInstallLabel(*it)));
-        else if (c == "DependencyCompileLabel")
-            l->add_label(make_shared_ptr(new DependencyCompileLabel(*it)));
-        else if (c == "DependencySuggestedLabel")
-            l->add_label(make_shared_ptr(new DependencySuggestedLabel(*it)));
-        else if (c == "DependencyRecommendedLabel")
-            l->add_label(make_shared_ptr(new DependencyRecommendedLabel(*it)));
-        else if (c == "DependencyRequiredLabel")
-            l->add_label(make_shared_ptr(new DependencyRequiredLabel(*it)));
-        else if (c == "DependencyAnyLabel")
-            l->add_label(make_shared_ptr(new DependencyAnyLabel(*it)));
-        else if (c == "DependencyMineLabel")
-            l->add_label(make_shared_ptr(new DependencyMineLabel(*it)));
-        else if (c == "DependencyPrimaryLabel")
-            l->add_label(make_shared_ptr(new DependencyPrimaryLabel(*it)));
-        else if (c == "DependencyABILabel")
-            l->add_label(make_shared_ptr(new DependencyABILabel(*it)));
+        if (c == "DependenciesBuildLabel")
+            l->add_label(make_shared_ptr(new DependenciesBuildLabel(*it)));
+        else if (c == "DependenciesRunLabel")
+            l->add_label(make_shared_ptr(new DependenciesRunLabel(*it)));
+        else if (c == "DependenciesPostLabel")
+            l->add_label(make_shared_ptr(new DependenciesPostLabel(*it)));
+        else if (c == "DependenciesInstallLabel")
+            l->add_label(make_shared_ptr(new DependenciesInstallLabel(*it)));
+        else if (c == "DependenciesCompileAgainstLabel")
+            l->add_label(make_shared_ptr(new DependenciesCompileAgainstLabel(*it)));
+        else if (c == "DependenciesFetchLabel")
+            l->add_label(make_shared_ptr(new DependenciesFetchLabel(*it)));
+        else if (c == "DependenciesSuggestionLabel")
+            l->add_label(make_shared_ptr(new DependenciesSuggestionLabel(*it)));
+        else if (c == "DependenciesRecommendationLabel")
+            l->add_label(make_shared_ptr(new DependenciesRecommendationLabel(*it)));
         else
             throw EDepParseError(s, "Label '" + *it + "' maps to unknown class '" + c + "'");
     }

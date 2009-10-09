@@ -21,7 +21,6 @@ IF_RUBY_TESTS = \
 	action_TEST.rb \
 	choice_TEST.rb \
 	contents_TEST.rb \
-	dep_label_TEST.rb \
 	dep_list_TEST.rb \
 	dep_spec_TEST.rb \
 	dep_tag_TEST.rb \
