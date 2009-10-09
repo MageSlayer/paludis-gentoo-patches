@@ -139,6 +139,7 @@ econf()
             --sysconfdir=/etc \
             --localstatedir=/var/lib \
             --disable-dependency-tracking \
+            --disable-silent-rules \
             --enable-fast-install \
             --libdir=${ECONF_PREFIX}/${LIBDIR:-lib}; do
             j=${i%%=*}
