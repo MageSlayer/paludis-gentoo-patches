@@ -42,9 +42,11 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/elike_choices.hh>
 #include <iterator>
 
 using namespace paludis;
@@ -1014,8 +1016,25 @@ EInstalledRepositoryID::make_choice_value(const std::tr1::shared_ptr<const Choic
 }
 
 void
-EInstalledRepositoryID::add_build_options(const std::tr1::shared_ptr<Choices> &) const
+EInstalledRepositoryID::add_build_options(const std::tr1::shared_ptr<Choices> & choices) const
 {
+    if (eapi()->supported())
+    {
+        std::tr1::shared_ptr<Choice> build_options(new Choice(make_named_values<ChoiceParams>(
+                        value_for<n::consider_added_or_changed>(false),
+                        value_for<n::contains_every_value>(false),
+                        value_for<n::hidden>(false),
+                        value_for<n::human_name>(canonical_build_options_human_name()),
+                        value_for<n::prefix>(canonical_build_options_prefix()),
+                        value_for<n::raw_name>(canonical_build_options_raw_name()),
+                        value_for<n::show_with_no_prefix>(false)
+                        )));
+        choices->add(build_options);
+
+        /* trace */
+        build_options->add(make_shared_ptr(new ELikeTraceChoiceValue(
+                        shared_from_this(), _imp->environment, build_options)));
+    }
 }
 
 void
