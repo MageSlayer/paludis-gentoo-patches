@@ -234,6 +234,11 @@ namespace
             d.append(" " + s + get_annotations(a));
         }
 
+        void visit(const DependenciesTestLabel &)
+        {
+            d.append(" " + s + get_annotations(a));
+        }
+
         void visit(const DependenciesFetchLabel &)
         {
             d.append(" " + s + get_annotations(a));

@@ -46,6 +46,7 @@ namespace
 
     static VALUE c_dependencies_label;
     static VALUE c_dependencies_build_label;
+    static VALUE c_dependencies_test_label;
     static VALUE c_dependencies_compile_against_label;
     static VALUE c_dependencies_fetch_label;
     static VALUE c_dependencies_install_label;
@@ -138,6 +139,12 @@ namespace
         void visit(const DependenciesBuildLabel &)
         {
             value = Data_Wrap_Struct(c_dependencies_build_label, 0, &Common<std::tr1::shared_ptr<const DependenciesLabel> >::free,
+                    new std::tr1::shared_ptr<const DependenciesLabel>(mm));
+        }
+
+        void visit(const DependenciesTestLabel &)
+        {
+            value = Data_Wrap_Struct(c_dependencies_test_label, 0, &Common<std::tr1::shared_ptr<const DependenciesLabel> >::free,
                     new std::tr1::shared_ptr<const DependenciesLabel>(mm));
         }
 
@@ -244,6 +251,7 @@ namespace
         rb_define_method(c_dependencies_label, "to_s", RUBY_FUNC_CAST(&dependencies_label_text), 0);
 
         c_dependencies_build_label = rb_define_class_under(paludis_module(), "DependenciesBuildLabel", c_dependencies_label);
+        c_dependencies_test_label = rb_define_class_under(paludis_module(), "DependenciesTestLabel", c_dependencies_label);
         c_dependencies_run_label = rb_define_class_under(paludis_module(), "DependenciesRunLabel", c_dependencies_label);
         c_dependencies_post_label = rb_define_class_under(paludis_module(), "DependenciesPostLabel", c_dependencies_label);
         c_dependencies_install_label = rb_define_class_under(paludis_module(), "DependenciesInstallLabel", c_dependencies_label);

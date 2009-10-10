@@ -197,6 +197,22 @@ namespace paludis
     typedef ConcreteDependenciesLabel<DependenciesRecommendationLabelTag> DependenciesRecommendationLabel;
 
     /**
+     * Tag for DependenciesTestLabel.
+     *
+     * \since 0.42
+     * \ingroup g_dep_spec
+     */
+    struct DependenciesTestLabelTag;
+
+    /**
+     * Dependencies label.
+     *
+     * \since 0.42
+     * \ingroup g_dep_spec
+     */
+    typedef ConcreteDependenciesLabel<DependenciesTestLabelTag> DependenciesTestLabel;
+
+    /**
      * A collection of DependencyLabel instances.
      *
      * \ingroup g_dep_spec

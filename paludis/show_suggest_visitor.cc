@@ -123,6 +123,11 @@ namespace
             return false;
         }
 
+        bool visit(const DependenciesTestLabel &) const
+        {
+            return false;
+        }
+
         bool visit(const DependenciesRunLabel &) const
         {
             return false;

@@ -851,6 +851,12 @@ namespace
             ignorable = false;
         }
 
+        void visit(const DependenciesTestLabel &)
+        {
+            causes_pre_arrow = true;
+            ignorable = false;
+        }
+
         void visit(const DependenciesRunLabel &)
         {
             causes_pre_arrow = true;

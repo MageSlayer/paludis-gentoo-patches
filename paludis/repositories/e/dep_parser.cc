@@ -703,6 +703,8 @@ paludis::erepository::parse_dependency_label(const std::string & s, const EAPI &
             l->add_label(make_shared_ptr(new DependenciesSuggestionLabel(*it)));
         else if (c == "DependenciesRecommendationLabel")
             l->add_label(make_shared_ptr(new DependenciesRecommendationLabel(*it)));
+        else if (c == "DependenciesTestLabel")
+            l->add_label(make_shared_ptr(new DependenciesTestLabel(*it)));
         else
             throw EDepParseError(s, "Label '" + *it + "' maps to unknown class '" + c + "'");
     }

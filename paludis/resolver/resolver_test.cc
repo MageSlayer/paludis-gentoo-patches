@@ -132,6 +132,11 @@ namespace
             seen_not_suggestion = true;
         }
 
+        void visit(const DependenciesTestLabel &)
+        {
+            seen_not_suggestion = true;
+        }
+
         void visit(const DependenciesRunLabel &)
         {
             seen_not_suggestion = true;

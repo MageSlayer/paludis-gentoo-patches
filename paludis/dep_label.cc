@@ -105,4 +105,5 @@ template class ConcreteDependenciesLabel<DependenciesFetchLabelTag>;
 template class ConcreteDependenciesLabel<DependenciesInstallLabelTag>;
 template class ConcreteDependenciesLabel<DependenciesSuggestionLabelTag>;
 template class ConcreteDependenciesLabel<DependenciesRecommendationLabelTag>;
+template class ConcreteDependenciesLabel<DependenciesTestLabelTag>;
 

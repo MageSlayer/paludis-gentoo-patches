@@ -109,7 +109,7 @@ namespace paludis
         public virtual DeclareAbstractAcceptMethods<DependenciesLabel, MakeTypeList<
             DependenciesBuildLabel, DependenciesRunLabel, DependenciesPostLabel, DependenciesCompileAgainstLabel,
             DependenciesFetchLabel, DependenciesInstallLabel, DependenciesSuggestionLabel,
-            DependenciesRecommendationLabel>::Type>
+            DependenciesRecommendationLabel, DependenciesTestLabel>::Type>
     {
         public:
             ///\name Basic operations
@@ -171,6 +171,7 @@ namespace paludis
     extern template class ConcreteDependenciesLabel<DependenciesInstallLabelTag>;
     extern template class ConcreteDependenciesLabel<DependenciesSuggestionLabelTag>;
     extern template class ConcreteDependenciesLabel<DependenciesRecommendationLabelTag>;
+    extern template class ConcreteDependenciesLabel<DependenciesTestLabelTag>;
 #endif
 }
 

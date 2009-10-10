@@ -94,6 +94,12 @@ namespace
             seen_buildish_dep = true;
         }
 
+        void visit(const DependenciesTestLabel &)
+        {
+            is_requirement = true;
+            seen_buildish_dep = true;
+        }
+
         void visit(const DependenciesFetchLabel &)
         {
             is_requirement = true;
