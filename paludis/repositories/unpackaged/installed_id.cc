@@ -740,32 +740,32 @@ namespace
 
         void visit(InstallAction & a) PALUDIS_ATTRIBUTE((noreturn))
         {
-            throw UnsupportedActionError(*id, a);
+            throw ActionFailedError("Unsupported action: " + stringify(a));
         }
 
         void visit(FetchAction & a) PALUDIS_ATTRIBUTE((noreturn))
         {
-            throw UnsupportedActionError(*id, a);
+            throw ActionFailedError("Unsupported action: " + stringify(a));
         }
 
         void visit(ConfigAction & a) PALUDIS_ATTRIBUTE((noreturn))
         {
-            throw UnsupportedActionError(*id, a);
+            throw ActionFailedError("Unsupported action: " + stringify(a));
         }
 
         void visit(PretendAction & a) PALUDIS_ATTRIBUTE((noreturn))
         {
-            throw UnsupportedActionError(*id, a);
+            throw ActionFailedError("Unsupported action: " + stringify(a));
         }
 
         void visit(PretendFetchAction & a) PALUDIS_ATTRIBUTE((noreturn))
         {
-            throw UnsupportedActionError(*id, a);
+            throw ActionFailedError("Unsupported action: " + stringify(a));
         }
 
         void visit(InfoAction & a) PALUDIS_ATTRIBUTE((noreturn))
         {
-            throw UnsupportedActionError(*id, a);
+            throw ActionFailedError("Unsupported action: " + stringify(a));
         }
 
         void visit(UninstallAction & a)
@@ -845,7 +845,7 @@ InstalledUnpackagedID::uninstall(const bool replace,
     }
 
     if (! _imp->root.is_directory())
-        throw InstallActionError("Couldn't uninstall '" + stringify(*this) +
+        throw ActionFailedError("Couldn't uninstall '" + stringify(*this) +
                 "' because root ('" + stringify(_imp->root) + "') is not a directory");
 
     FSEntry ver_dir(fs_location_key()->value());

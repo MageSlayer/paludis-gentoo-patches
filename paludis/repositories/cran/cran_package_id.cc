@@ -523,7 +523,7 @@ CRANPackageID::supports_action(const SupportsActionTestBase & b) const
 void
 CRANPackageID::perform_action(Action & a) const
 {
-    throw UnsupportedActionError(*this, a);
+    throw ActionFailedError("Unsupported action '" + stringify(a) + "'");
 }
 
 const std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >

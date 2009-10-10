@@ -65,12 +65,8 @@ namespace
     static VALUE c_additional_requirements_not_met_error;
     static VALUE c_downgrade_not_allowed_error;
     static VALUE c_no_destination_error;
-    static VALUE c_fetch_action_error;
-    static VALUE c_info_action_error;
-    static VALUE c_config_action_error;
-    static VALUE c_install_action_error;
-    static VALUE c_uninstall_action_error;
-    static VALUE c_action_error;
+    static VALUE c_action_failed_error;
+    static VALUE c_action_aborted_error;
     static VALUE c_bad_version_operator_error;
     static VALUE c_got_a_set_not_a_package_dep_spec;
 
@@ -236,28 +232,10 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
         rb_raise(c_config_file_error, dynamic_cast<const paludis::ConfigFileError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::ConfigurationError *>(&ee))
         rb_raise(c_configuration_error, dynamic_cast<const paludis::ConfigurationError *>(&ee)->message().c_str());
-    else if (0 != dynamic_cast<const paludis::FetchActionError *>(&ee))
-    {
-        VALUE ex_args[2];
-        ex_args[0] = rb_str_new2(dynamic_cast<const paludis::FetchActionError *>(&ee)->message().c_str());
-        ex_args[1] = rb_ary_new();
-        const FetchActionError * e = dynamic_cast<const paludis::FetchActionError *>(&ee);
-        for (Sequence<FetchActionFailure>::ConstIterator f(e->failures()->begin()), f_end(e->failures()->end()) ;
-                f != f_end ; ++f)
-            rb_ary_unshift(ex_args[1], fetch_action_failure_to_value(*f));
-        rb_exc_raise(rb_class_new_instance(2, ex_args, c_fetch_action_error));
-
-    }
-    else if (0 != dynamic_cast<const paludis::InfoActionError *>(&ee))
-        rb_raise(c_info_action_error, dynamic_cast<const paludis::InfoActionError *>(&ee)->message().c_str());
-    else if (0 != dynamic_cast<const paludis::ConfigActionError *>(&ee))
-        rb_raise(c_config_action_error, dynamic_cast<const paludis::ConfigActionError *>(&ee)->message().c_str());
-    else if (0 != dynamic_cast<const paludis::InstallActionError *>(&ee))
-        rb_raise(c_install_action_error, dynamic_cast<const paludis::InstallActionError *>(&ee)->message().c_str());
-    else if (0 != dynamic_cast<const paludis::UninstallActionError *>(&ee))
-        rb_raise(c_uninstall_action_error, dynamic_cast<const paludis::UninstallActionError *>(&ee)->message().c_str());
-    else if (0 != dynamic_cast<const paludis::ActionError *>(&ee))
-        rb_raise(c_action_error, dynamic_cast<const paludis::ActionError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::ActionFailedError *>(&ee))
+        rb_raise(c_action_failed_error, dynamic_cast<const paludis::ActionFailedError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::ActionAbortedError *>(&ee))
+        rb_raise(c_action_aborted_error, dynamic_cast<const paludis::ActionAbortedError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::BadVersionOperatorError *>(&ee))
         rb_raise(c_bad_version_operator_error, dynamic_cast<const paludis::BadVersionOperatorError *>(&ee)->message().c_str());
 
@@ -319,17 +297,6 @@ VALUE
 has_query_property_error_query(VALUE self)
 {
     return rb_attr_get(self, rb_intern("query"));
-}
-
-static VALUE
-fetch_action_error_init(int argc, VALUE* argv, VALUE self)
-{
-    VALUE failures;
-
-    failures = (argc > 1) ? argv[--argc] : Qnil;
-    rb_call_super(argc, argv);
-    rb_iv_set(self, "failures", failures);
-    return self;
 }
 
 /*
@@ -422,20 +389,14 @@ void PALUDIS_VISIBLE paludis::ruby::init()
     c_no_destination_error = rb_define_class_under(c_paludis_module, "NoDestinationError", c_dep_list_error);
 
     /*
-     * Document-class: Paludis::ActionError
-     *
-     * Base class for Action related errors
+     * Document-class: Paludis::ActionFailedError
      */
-    c_action_error = rb_define_class_under(c_paludis_module, "ActionError", rb_eRuntimeError);
+    c_action_failed_error = rb_define_class_under(c_paludis_module, "ActionFailedError", rb_eRuntimeError);
 
     /*
-     * Document-class: Paludis::FetchActionError
-     *
-     * Thrown if a PackageID fails to perform a FetchAction.
+     * Document-class: Paludis::ActionAbortedError
      */
-    c_fetch_action_error = rb_define_class_under(c_paludis_module, "FetchActionError", c_action_error);
-    rb_define_method(c_fetch_action_error, "initialize", RUBY_FUNC_CAST(&fetch_action_error_init), -1);
-    rb_define_method(c_fetch_action_error, "failures", RUBY_FUNC_CAST(&fetch_action_error_failures), 0);
+    c_action_aborted_error = rb_define_class_under(c_paludis_module, "ActionAbortedError", rb_eRuntimeError);
 
     /*
      * Document-class: Paludis::AmbiguousPackageNameError
@@ -445,34 +406,6 @@ void PALUDIS_VISIBLE paludis::ruby::init()
     c_ambiguous_package_name_error = rb_define_class_under(c_paludis_module, "AmbiguousPackageNameError", c_package_database_lookup_error);
     rb_define_method(c_ambiguous_package_name_error, "initialize", RUBY_FUNC_CAST(&ambiguous_package_name_error_init), -1);
     rb_define_method(c_ambiguous_package_name_error, "options", RUBY_FUNC_CAST(&ambiguous_package_name_error_failures), 0);
-
-    /*
-     * Document-class: Paludis::InfoActionError
-     *
-     * Thrown if a PackageID fails to perform a InfoAction.
-     */
-    c_info_action_error = rb_define_class_under(c_paludis_module, "InfoActionError", c_action_error);
-
-    /*
-     * Document-class: Paludis::ConfigActionError
-     *
-     * Thrown if a PackageID fails to perform a ConfigAction.
-     */
-    c_config_action_error = rb_define_class_under(c_paludis_module, "ConfigActionError", c_action_error);
-
-    /*
-     * Document-class: Paludis::InstallActionError
-     *
-     * Thrown if a PackageID fails to perform a InstallAction.
-     */
-    c_install_action_error = rb_define_class_under(c_paludis_module, "InstallActionError", c_action_error);
-
-    /*
-     * Document-class: Paludis::UninstallActionError
-     *
-     * Thrown if a PackageID fails to perform a InstallAction.
-     */
-    c_uninstall_action_error = rb_define_class_under(c_paludis_module, "UninstallActionError", c_action_error);
 
     /*
      * Document-class: Paludis::GotASetNotAPackageDepSpec

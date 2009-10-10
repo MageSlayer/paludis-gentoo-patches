@@ -124,6 +124,7 @@ namespace
             )
     {
         return new FetchActionOptions(make_named_values<FetchActionOptions>(
+                    value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                     value_for<n::exclude_unmirrorable>(exclude_unmirrorable),
                     value_for<n::fetch_unneeded>(fetch_unneeded),
                     value_for<n::ignore_unfetched>(false),
@@ -139,24 +140,12 @@ void expose_action()
     /**
      * Exceptions
      */
-    ExceptionRegister::get_instance()->add_exception<ActionError>
-        ("ActionError", "BaseException",
-         "Parent class for action errors.");
-    ExceptionRegister::get_instance()->add_exception<UnsupportedActionError>
-        ("UnsupportedActionError", "ActionError",
-         "Thrown if a PackageID is asked to perform an Action that it does not support.");
-    ExceptionRegister::get_instance()->add_exception<InstallActionError>
-        ("InstallActionError", "ActionError",
-         "Thrown if an install fails.");
-    ExceptionRegister::get_instance()->add_exception<FetchActionError>
-        ("FetchActionError", "ActionError",
-         "Thrown if a fetch fails.");
-    ExceptionRegister::get_instance()->add_exception<UninstallActionError>
-        ("UninstallActionError", "ActionError",
-         "Thrown if an uninstall fails.");
-    ExceptionRegister::get_instance()->add_exception<ConfigActionError>
-        ("ConfigActionError", "ActionError",
-         "Thrown if a configure fails.");
+    ExceptionRegister::get_instance()->add_exception<ActionFailedError>
+        ("ActionFailedError", "BaseException",
+         "Thrown if an action fails.");
+    ExceptionRegister::get_instance()->add_exception<ActionAbortedError>
+        ("ActionAbortedError", "BaseException",
+         "Thrown if an action is aborted.");
 
     /**
      * InstallActionOptions

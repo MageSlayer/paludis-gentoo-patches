@@ -1583,7 +1583,8 @@ ConsoleInstallTask::on_ambiguous_package_name_error(const AmbiguousPackageNameEr
 }
 
 void
-ConsoleInstallTask::on_install_action_error(const std::tr1::shared_ptr<OutputManager> & output_manager, const ActionError & e)
+ConsoleInstallTask::on_non_fetch_action_error(
+        const std::tr1::shared_ptr<OutputManager> & output_manager, const ActionFailedError & e)
 {
     output_manager->stdout_stream() << endl;
     output_manager->stdout_stream() << "Install error:" << endl;
@@ -1594,7 +1595,9 @@ ConsoleInstallTask::on_install_action_error(const std::tr1::shared_ptr<OutputMan
 }
 
 void
-ConsoleInstallTask::on_fetch_action_error(const std::tr1::shared_ptr<OutputManager> & output_manager, const FetchActionError & e)
+ConsoleInstallTask::on_fetch_action_error(
+        const std::tr1::shared_ptr<OutputManager> & output_manager, const ActionFailedError & e,
+        const std::tr1::shared_ptr<const Sequence<FetchActionFailure> > & failures)
 {
     output_manager->stdout_stream() << endl;
     output_manager->stdout_stream() << "Fetch error:" << endl;
@@ -1602,9 +1605,9 @@ ConsoleInstallTask::on_fetch_action_error(const std::tr1::shared_ptr<OutputManag
     output_manager->stdout_stream() << e.message() << endl;
     output_manager->stdout_stream() << endl;
 
-    if (e.failures())
+    if (failures)
     {
-        for (Sequence<FetchActionFailure>::ConstIterator f(e.failures()->begin()), f_end(e.failures()->end()) ;
+        for (Sequence<FetchActionFailure>::ConstIterator f(failures->begin()), f_end(failures->end()) ;
                 f != f_end ; ++f)
         {
             output_manager->stdout_stream() << "  * File '" << (*f).target_file() << "': ";

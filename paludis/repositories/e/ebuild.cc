@@ -139,7 +139,7 @@ EbuildCommand::operator() ()
         {
             if (0 == params.environment()->reduced_uid() || 0 == params.environment()->reduced_gid())
                 if (getenv_with_default("PALUDIS_BYPASS_USERPRIV_CHECKS", "").empty())
-                    throw ActionError("Need to be able to use non-0 user and group for userpriv for '" +
+                    throw ActionFailedError("Need to be able to use non-0 user and group for userpriv for '" +
                             stringify(*params.package_id()) + "'");
         }
         cmd.with_uid_gid(params.environment()->reduced_uid(), params.environment()->reduced_gid());
@@ -725,7 +725,7 @@ EbuildNoFetchCommand::commands() const
 bool
 EbuildNoFetchCommand::failure()
 {
-    throw FetchActionError("Fetch failed for '" + stringify(*params.package_id()) + "'");
+    throw ActionFailedError("Fetch failed for '" + stringify(*params.package_id()) + "'");
 }
 
 Command
@@ -779,7 +779,7 @@ EbuildInstallCommand::commands() const
 bool
 EbuildInstallCommand::failure()
 {
-    throw InstallActionError("Install failed for '" + stringify(*params.package_id()) + "'");
+    throw ActionFailedError("Install failed for '" + stringify(*params.package_id()) + "'");
 }
 
 Command
@@ -864,7 +864,7 @@ EbuildUninstallCommand::ebuild_file() const
 bool
 EbuildUninstallCommand::failure()
 {
-    throw UninstallActionError("Uninstall failed for '" + stringify(*params.package_id()) + "'");
+    throw ActionFailedError("Uninstall failed for '" + stringify(*params.package_id()) + "'");
 }
 
 Command
@@ -915,7 +915,7 @@ EbuildConfigCommand::commands() const
 bool
 EbuildConfigCommand::failure()
 {
-    throw ConfigActionError("Configure failed for '" + stringify(*params.package_id()) + "'");
+    throw ActionFailedError("Configure failed for '" + stringify(*params.package_id()) + "'");
 }
 
 Command
@@ -1011,7 +1011,7 @@ WriteVDBEntryCommand::operator() ()
                         params.package_id()->defined_phases_key()->value()->end(), " "));
 
     if (0 != (run_command(cmd)))
-        throw InstallActionError("Write VDB Entry command failed");
+        throw ActionFailedError("Write VDB Entry command failed");
 }
 
 VDBPostMergeCommand::VDBPostMergeCommand(const VDBPostMergeCommandParams & p) :
@@ -1029,7 +1029,7 @@ VDBPostMergeCommand::operator() ()
             "/utils/wrapped_ldconfig '" + stringify(params.root()) + "'");
 
     if (0 != (run_command(cmd)))
-        throw InstallActionError("VDB Entry post merge commands failed");
+        throw ActionFailedError("VDB Entry post merge commands failed");
 }
 
 std::string
@@ -1104,7 +1104,7 @@ EbuildInfoCommand::commands() const
 bool
 EbuildInfoCommand::failure()
 {
-    throw InfoActionError("Info command failed");
+    throw ActionFailedError("Info command failed");
 }
 
 Command
@@ -1167,7 +1167,7 @@ WriteBinaryEbuildCommand::operator() ()
     using namespace std::tr1::placeholders;
 
     if (! EAPIData::get_instance()->eapi_from_string("pbin-1+" + params.package_id()->eapi()->exported_name())->supported())
-        throw InstallActionError("Don't know how to write binary ebuilds using EAPI 'pbin-1+" +
+        throw ActionFailedError("Don't know how to write binary ebuilds using EAPI 'pbin-1+" +
                 params.package_id()->eapi()->exported_name());
 
     std::string bindistfile(stringify(params.destination_repository()->name()) + "--" + stringify(params.package_id()->name().category())
@@ -1225,7 +1225,7 @@ WriteBinaryEbuildCommand::operator() ()
             );
 
     if (0 != (run_command(cmd)))
-        throw InstallActionError("Write binary command failed");
+        throw ActionFailedError("Write binary command failed");
 }
 
 std::string
@@ -1288,7 +1288,7 @@ EbuildFetchExtraCommand::commands() const
 bool
 EbuildFetchExtraCommand::failure()
 {
-    throw InstallActionError("Extra fetch failed for '" + stringify(*params.package_id()) + "'");
+    throw ActionFailedError("Extra fetch failed for '" + stringify(*params.package_id()) + "'");
 }
 
 Command

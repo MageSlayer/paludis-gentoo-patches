@@ -263,10 +263,10 @@ namespace
             cerr << endl;
             return 1;
         }
-        catch (const UninstallActionError & e)
+        catch (const ActionFailedError & e)
         {
             cout << endl;
-            cerr << "Uninstall error:" << endl;
+            cerr << "Action failed error:" << endl;
             cerr << "  * " << e.backtrace("\n  * ");
             cerr << e.message() << endl;
 

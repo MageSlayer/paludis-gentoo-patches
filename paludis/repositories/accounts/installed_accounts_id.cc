@@ -362,6 +362,6 @@ InstalledAccountsID::supports_action(const SupportsActionTestBase &) const
 void
 InstalledAccountsID::perform_action(Action & action) const
 {
-    throw UnsupportedActionError(*this, action);
+    throw ActionFailedError("Unsupported action: " + stringify(action));
 }
 

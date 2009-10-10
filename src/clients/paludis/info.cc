@@ -261,7 +261,7 @@ int do_one_info(
             if (output_manager_holder.output_manager_if_constructed())
                 output_manager_holder.output_manager_if_constructed()->succeeded();
         }
-        catch (const UnsupportedActionError &)
+        catch (const ActionFailedError &)
         {
             cout << "        No extra information available for '" << **p << "'" << endl;
             cout << endl;

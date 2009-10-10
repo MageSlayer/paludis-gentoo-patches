@@ -54,9 +54,12 @@ int main(int argc, char * argv[])
                     generator::Package(QualifiedPackageName("sys-apps/paludis")))]);
 
         /* For each ID: */
-        for (PackageIDSet::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
         {
+            /* Failures go here: */
+            const std::tr1::shared_ptr<Sequence<FetchActionFailure> > failures(new Sequence<FetchActionFailure>);
+
             /* Do we support a FetchAction? We find out by creating a
              * SupportsActionTest<FetchAction> object, and querying via the
              * PackageID::supports_action method. */
@@ -74,6 +77,7 @@ int main(int argc, char * argv[])
                  * and whether unneeded (e.g. due to disabled USE flags) and
                  * unmirrorable source files should still be fetched. */
                 FetchAction fetch_action(make_named_values<FetchActionOptions>(
+                            value_for<n::errors>(failures),
                             value_for<n::exclude_unmirrorable>(false),
                             value_for<n::fetch_unneeded>(false),
                             value_for<n::ignore_unfetched>(false),
@@ -84,7 +88,7 @@ int main(int argc, char * argv[])
                 {
                     (*i)->perform_action(fetch_action);
                 }
-                catch (const FetchActionError & e)
+                catch (const ActionFailedError & e)
                 {
                     exit_status |= 1;
 
@@ -92,7 +96,7 @@ int main(int argc, char * argv[])
 
                     /* We might get detailed information about individual fetch
                      * failures.  */
-                    for (Sequence<FetchActionFailure>::ConstIterator f(e.failures()->begin()), f_end(e.failures()->end()) ;
+                    for (Sequence<FetchActionFailure>::ConstIterator f(failures->begin()), f_end(failures->end()) ;
                             f != f_end ; ++f)
                     {
                         cout << "  * File '" << f->target_file() << "': ";

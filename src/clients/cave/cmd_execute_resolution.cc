@@ -277,14 +277,14 @@ namespace
         if (0 != env->perform_hook(Hook("install_task_execute_pre")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
                     ).max_exit_status())
-            throw ActionError("Aborted by hook");
+            throw ActionAbortedError("Aborted by hook");
 
         try
         {
             if (0 != env->perform_hook(Hook("pretend_all_pre")
                         ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
                         ).max_exit_status())
-                throw ActionError("Aborted by hook");
+                throw ActionAbortedError("Aborted by hook");
 
             std::cout << "Executing pretend actions: " << std::flush;
 
@@ -303,7 +303,7 @@ namespace
             if (0 != env->perform_hook(Hook("pretend_all_post")
                         ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
                         ).max_exit_status())
-                throw ActionError("Aborted by hook");
+                throw ActionAbortedError("Aborted by hook");
 
             if (0 != retcode || cmdline.a_pretend.specified())
                 return retcode;
@@ -313,7 +313,7 @@ namespace
             if (0 != env->perform_hook(Hook("install_all_pre")
                         ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
                     ).max_exit_status())
-                throw ActionError("Aborted by hook");
+                throw ActionAbortedError("Aborted by hook");
 
             for (Resolutions::ConstIterator c(lists.ordered()->begin()), c_end(lists.ordered()->end()) ;
                     c != c_end ; ++c)
@@ -337,7 +337,7 @@ namespace
             if (0 != env->perform_hook(Hook("install_all_post")
                         ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
                     ).max_exit_status())
-                throw ActionError("Aborted by hook");
+                throw ActionAbortedError("Aborted by hook");
 
             if (! cmdline.execution_options.a_preserve_world.specified())
             {
@@ -403,7 +403,7 @@ namespace
                 {
                     paludis::Command cmd(command);
                     if (0 != run_command(cmd))
-                        throw ActionError("Updating world failed");
+                        throw ActionAbortedError("Updating world failed");
                 }
             }
         }
@@ -414,7 +414,7 @@ namespace
                         ("PRETEND", stringify(cmdline.a_pretend.specified()))
                         ("SUCCESS", stringify(false))
                         ).max_exit_status())
-                throw ActionError("Aborted by hook");
+                throw ActionAbortedError("Aborted by hook");
             throw;
         }
 
@@ -423,7 +423,7 @@ namespace
                     ("PRETEND", stringify(cmdline.a_pretend.specified()))
                     ("SUCCESS", stringify(true))
                     ).max_exit_status())
-            throw ActionError("Aborted by hook");
+            throw ActionAbortedError("Aborted by hook");
 
         return retcode;
     }

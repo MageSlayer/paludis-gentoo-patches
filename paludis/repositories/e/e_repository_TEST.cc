@@ -946,6 +946,7 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             FetchAction action(make_named_values<FetchActionOptions>(
+                        value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                         value_for<n::exclude_unmirrorable>(false),
                         value_for<n::fetch_unneeded>(false),
                         value_for<n::ignore_unfetched>(false),
@@ -1003,7 +1004,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/unfetchable-files",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(unfetchable_files_id);
-                TEST_CHECK_THROWS(unfetchable_files_id->perform_action(action), FetchActionError);
+                TEST_CHECK_THROWS(unfetchable_files_id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -1027,7 +1028,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/fetchable-files-restricted",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(fetchable_files_restricted_id);
-                TEST_CHECK_THROWS(fetchable_files_restricted_id->perform_action(action), FetchActionError);
+                TEST_CHECK_THROWS(fetchable_files_restricted_id->perform_action(action), ActionFailedError);
             }
         }
     } test_e_repository_fetch;
@@ -1052,6 +1053,7 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             FetchAction action(make_named_values<FetchActionOptions>(
+                        value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                         value_for<n::exclude_unmirrorable>(false),
                         value_for<n::fetch_unneeded>(false),
                         value_for<n::ignore_unfetched>(false),
@@ -1148,7 +1150,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/in-ebuild-die",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -1157,7 +1159,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/in-subshell-die",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -1175,7 +1177,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/unpack-die",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -1184,7 +1186,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/econf-die",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -1202,7 +1204,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/emake-die",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -1211,7 +1213,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/einstall-die",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -1220,7 +1222,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/keepdir-die",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -1238,7 +1240,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/dobin-die",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -1256,7 +1258,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/fperms-die",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -1266,7 +1268,7 @@ namespace test_cases
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "0");
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -1523,7 +1525,7 @@ namespace test_cases
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -1533,7 +1535,7 @@ namespace test_cases
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -1695,7 +1697,7 @@ namespace test_cases
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "3");
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -1725,7 +1727,7 @@ namespace test_cases
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "3");
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -1811,7 +1813,7 @@ namespace test_cases
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -1840,7 +1842,7 @@ namespace test_cases
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -1933,7 +1935,7 @@ namespace test_cases
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "kdebuild-1");
-                TEST_CHECK_THROWS(id->perform_action(action), InfoActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
         }
     } test_e_repository_info_eapi_kdebuild_1;
@@ -2007,7 +2009,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/in-ebuild-die",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2016,7 +2018,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/in-subshell-die",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2052,7 +2054,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/expatch-die",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2079,7 +2081,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-expatch-die",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2088,7 +2090,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/unpack-die",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2106,7 +2108,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-unpack-die",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2115,7 +2117,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/econf-fail",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2133,7 +2135,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-econf-die",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2142,7 +2144,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/emake-fail",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2160,7 +2162,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-emake-die",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2169,7 +2171,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/einstall-fail",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2187,7 +2189,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-einstall-die",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2205,7 +2207,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/keepdir-fail",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2223,7 +2225,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-keepdir-die",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2241,7 +2243,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/dobin-fail",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2268,7 +2270,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-dobin-die",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2286,7 +2288,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/herebin-fail",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2304,7 +2306,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/hereconfd-fail",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2322,7 +2324,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/hereenvd-fail",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2340,7 +2342,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/hereinitd-fail",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2358,7 +2360,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/hereins-fail",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2376,7 +2378,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/heresbin-fail",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2394,7 +2396,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/fperms-fail",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2421,7 +2423,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-fperms-die",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2448,7 +2450,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/match-0",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2457,7 +2459,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/econf-phase-0",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2502,7 +2504,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/doman-failure-0",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2511,7 +2513,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/change-globals-0",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
             {
@@ -2529,7 +2531,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/install-s-0",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
         }
     } test_e_repository_install_exheres_0;

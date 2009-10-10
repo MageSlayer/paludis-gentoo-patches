@@ -60,16 +60,16 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
     {
         PackageID::MetadataConstIterator m(params.package_id()->find_metadata("username"));
         if (params.package_id()->end_metadata() == m)
-            throw InstallActionError("Key 'username' for '" + stringify(*params.package_id()) + "' does not exist");
+            throw ActionFailedError("Key 'username' for '" + stringify(*params.package_id()) + "' does not exist");
 
         const MetadataValueKey<std::string> * k(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
         if (! k)
-            throw InstallActionError("Key 'username' for '" + stringify(*params.package_id()) + "' is not a string key");
+            throw ActionFailedError("Key 'username' for '" + stringify(*params.package_id()) + "' is not a string key");
 
         username = k->value();
 
         if (0 != getpwnam(username.c_str()))
-            throw InstallActionError("User '" + username + "' already exists");
+            throw ActionFailedError("User '" + username + "' already exists");
     } while (false);
 
     std::string gecos;
@@ -81,12 +81,12 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
 
         const MetadataValueKey<std::string> * k(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
         if (! k)
-            throw InstallActionError("Key 'gecos' for '" + stringify(*params.package_id()) + "' is not a string key");
+            throw ActionFailedError("Key 'gecos' for '" + stringify(*params.package_id()) + "' is not a string key");
 
         gecos = k->value();
 
         if (std::string::npos != gecos.find('\''))
-            throw InstallActionError("Value for key 'gecos' for '" + stringify(*params.package_id()) + "' must not contain a quote");
+            throw ActionFailedError("Value for key 'gecos' for '" + stringify(*params.package_id()) + "' must not contain a quote");
 
         if (! gecos.empty())
             gecos = " -c '" + gecos + "'";
@@ -101,12 +101,12 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
 
         const MetadataValueKey<std::string> * k(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
         if (! k)
-            throw InstallActionError("Key 'preferred_uid' for '" + stringify(*params.package_id()) + "' is not a string key");
+            throw ActionFailedError("Key 'preferred_uid' for '" + stringify(*params.package_id()) + "' is not a string key");
 
         preferred_uid = k->value();
 
         if (std::string::npos != preferred_uid.find_first_not_of("0123456789"))
-            throw InstallActionError("Value for key 'preferred_uid' for '" + stringify(*params.package_id()) + "' must be a number");
+            throw ActionFailedError("Value for key 'preferred_uid' for '" + stringify(*params.package_id()) + "' must be a number");
 
         uid_t uid(destringify<uid_t>(preferred_uid));
         if (getpwuid(uid))
@@ -128,12 +128,12 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
 
         const MetadataValueKey<std::string> * k(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
         if (! k)
-            throw InstallActionError("Key 'primary_group' for '" + stringify(*params.package_id()) + "' is not a string key");
+            throw ActionFailedError("Key 'primary_group' for '" + stringify(*params.package_id()) + "' is not a string key");
 
         primary_group = k->value();
 
         if (std::string::npos != primary_group.find('\''))
-            throw InstallActionError("Value for key 'primary_group' for '" + stringify(*params.package_id()) + "' must not contain a quote");
+            throw ActionFailedError("Value for key 'primary_group' for '" + stringify(*params.package_id()) + "' must not contain a quote");
 
         if (! primary_group.empty())
             primary_group = " -g '" + primary_group + "'";
@@ -148,12 +148,12 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
 
         const MetadataCollectionKey<Set<std::string> > * k(simple_visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**m));
         if (! k)
-            throw InstallActionError("Key 'extra_groups' for '" + stringify(*params.package_id()) + "' is not a string set key");
+            throw ActionFailedError("Key 'extra_groups' for '" + stringify(*params.package_id()) + "' is not a string set key");
 
         extra_groups = join(k->value()->begin(), k->value()->end(), ",");
 
         if (std::string::npos != extra_groups.find('\''))
-            throw InstallActionError("Value for key 'extra_groups' for '" + stringify(*params.package_id()) + "' must not contain a quote");
+            throw ActionFailedError("Value for key 'extra_groups' for '" + stringify(*params.package_id()) + "' must not contain a quote");
 
         if (! extra_groups.empty())
             extra_groups = " -G '" + extra_groups + "'";
@@ -168,12 +168,12 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
 
         const MetadataValueKey<std::string> * k(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
         if (! k)
-            throw InstallActionError("Key 'shell' for '" + stringify(*params.package_id()) + "' is not a string key");
+            throw ActionFailedError("Key 'shell' for '" + stringify(*params.package_id()) + "' is not a string key");
 
         shell = k->value();
 
         if (std::string::npos != shell.find('\''))
-            throw InstallActionError("Value for key 'shell' for '" + stringify(*params.package_id()) + "' must not contain a quote");
+            throw ActionFailedError("Value for key 'shell' for '" + stringify(*params.package_id()) + "' must not contain a quote");
 
         if (! shell.empty())
             shell = " -s '" + shell + "'";
@@ -188,12 +188,12 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
 
         const MetadataValueKey<std::string> * k(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
         if (! k)
-            throw InstallActionError("Key 'home' for '" + stringify(*params.package_id()) + "' is not a string key");
+            throw ActionFailedError("Key 'home' for '" + stringify(*params.package_id()) + "' is not a string key");
 
         home = k->value();
 
         if (std::string::npos != home.find('\''))
-            throw InstallActionError("Value for key 'home' for '" + stringify(*params.package_id()) + "' must not contain a quote");
+            throw ActionFailedError("Value for key 'home' for '" + stringify(*params.package_id()) + "' must not contain a quote");
 
         if (! home.empty())
             home = " -d '" + home + "'";
@@ -204,7 +204,7 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
     int exit_status(run_command(cmd));
 
     if (0 != exit_status)
-        throw InstallActionError("Install of '" + stringify(*params.package_id()) + "' failed because useradd returned "
+        throw ActionFailedError("Install of '" + stringify(*params.package_id()) + "' failed because useradd returned "
                 + stringify(exit_status));
 }
 
@@ -216,16 +216,16 @@ PasswdAccountsHandler::merge_group(const MergeParams & params)
     {
         PackageID::MetadataConstIterator m(params.package_id()->find_metadata("groupname"));
         if (params.package_id()->end_metadata() == m)
-            throw InstallActionError("Key 'groupname' for '" + stringify(*params.package_id()) + "' does not exist");
+            throw ActionFailedError("Key 'groupname' for '" + stringify(*params.package_id()) + "' does not exist");
 
         const MetadataValueKey<std::string> * k(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
         if (! k)
-            throw InstallActionError("Key 'groupname' for '" + stringify(*params.package_id()) + "' is not a string key");
+            throw ActionFailedError("Key 'groupname' for '" + stringify(*params.package_id()) + "' is not a string key");
 
         groupname = k->value();
 
         if (0 != getgrnam(groupname.c_str()))
-            throw InstallActionError("Group '" + groupname + "' already exists");
+            throw ActionFailedError("Group '" + groupname + "' already exists");
     } while (false);
 
     std::string preferred_gid;
@@ -237,12 +237,12 @@ PasswdAccountsHandler::merge_group(const MergeParams & params)
 
         const MetadataValueKey<std::string> * k(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
         if (! k)
-            throw InstallActionError("Key 'preferred_gid' for '" + stringify(*params.package_id()) + "' is not a string key");
+            throw ActionFailedError("Key 'preferred_gid' for '" + stringify(*params.package_id()) + "' is not a string key");
 
         preferred_gid = k->value();
 
         if (std::string::npos != preferred_gid.find_first_not_of("0123456789"))
-            throw InstallActionError("Value for key 'preferred_gid' for '" + stringify(*params.package_id()) + "' must be a number");
+            throw ActionFailedError("Value for key 'preferred_gid' for '" + stringify(*params.package_id()) + "' must be a number");
 
         uid_t gid(destringify<uid_t>(preferred_gid));
         if (getgrgid(gid))
@@ -260,7 +260,7 @@ PasswdAccountsHandler::merge_group(const MergeParams & params)
     int exit_status(run_command(cmd));
 
     if (0 != exit_status)
-        throw InstallActionError("Install of '" + stringify(*params.package_id()) + "' failed because groupadd returned "
+        throw ActionFailedError("Install of '" + stringify(*params.package_id()) + "' failed because groupadd returned "
                 + stringify(exit_status));
 }
 

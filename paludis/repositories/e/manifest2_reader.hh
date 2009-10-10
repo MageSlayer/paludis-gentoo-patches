@@ -65,7 +65,7 @@ namespace paludis
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE Manifest2Error :
-            public ActionError
+            public Exception
         {
             public:
                 Manifest2Error(const std::string & msg) throw ();

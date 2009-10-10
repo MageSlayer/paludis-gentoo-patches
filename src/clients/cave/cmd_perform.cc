@@ -159,7 +159,7 @@ namespace
                         ("TARGET", stringify(*id))
                         ("X_OF_Y", cmdline.a_x_of_y.argument())
                         ).max_exit_status())
-                throw ActionError("Aborted by hook");
+                throw ActionAbortedError("Aborted by hook");
 
         id->perform_action(action);
 
@@ -168,7 +168,7 @@ namespace
                         ("TARGET", stringify(*id))
                         ("X_OF_Y", cmdline.a_x_of_y.argument())
                         ).max_exit_status())
-                throw ActionError("Aborted by hook");
+                throw ActionAbortedError("Aborted by hook");
     }
 
     bool ignore_nothing(const FSEntry &)
@@ -321,6 +321,7 @@ PerformCommand::run(
 
         OutputManagerFromEnvironment output_manager_holder(env.get(), id, exclusivity);
         FetchActionOptions options(make_named_values<FetchActionOptions>(
+                    value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                     value_for<n::exclude_unmirrorable>(cmdline.a_exclude_unmirrorable.specified()),
                     value_for<n::fetch_unneeded>(cmdline.a_fetch_unneeded.specified()),
                     value_for<n::ignore_unfetched>(cmdline.a_ignore_unfetched.specified()),
@@ -337,6 +338,7 @@ PerformCommand::run(
 
         OutputManagerFromEnvironment output_manager_holder(env.get(), id, exclusivity);
         FetchActionOptions options(make_named_values<FetchActionOptions>(
+                    value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                     value_for<n::exclude_unmirrorable>(cmdline.a_exclude_unmirrorable.specified()),
                     value_for<n::fetch_unneeded>(cmdline.a_fetch_unneeded.specified()),
                     value_for<n::ignore_unfetched>(cmdline.a_ignore_unfetched.specified()),

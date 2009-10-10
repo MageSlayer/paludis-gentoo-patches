@@ -398,7 +398,7 @@ VDBRepository::perform_uninstall(
     Context context("When uninstalling '" + stringify(*id) + (a.options.is_overwrite() ? "' for an overwrite:" : "':"));
 
     if (! _imp->params.root().is_directory())
-        throw InstallActionError("Couldn't uninstall '" + stringify(*id) +
+        throw ActionFailedError("Couldn't uninstall '" + stringify(*id) +
                 "' because root ('" + stringify(_imp->params.root()) + "') is not a directory");
 
     std::tr1::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
@@ -859,7 +859,7 @@ VDBRepository::merge(const MergeParams & m)
             + "' to VDB repository '" + stringify(name()) + "':");
 
     if (! is_suitable_destination_for(*m.package_id()))
-        throw InstallActionError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
+        throw ActionFailedError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
 
     std::tr1::shared_ptr<const ERepositoryID> is_replace(package_id_if_exists(m.package_id()->name(), m.package_id()->version()));
 
@@ -927,7 +927,7 @@ VDBRepository::merge(const MergeParams & m)
         for (DirIterator d(tmp_vdb_dir, DirIteratorOptions() + dio_include_dotfiles), d_end ; d != d_end ; ++d)
             FSEntry(*d).unlink();
         tmp_vdb_dir.rmdir();
-        throw InstallActionError("Not proceeding with install due to merge sanity check failing");
+        throw ActionFailedError("Not proceeding with install due to merge sanity check failing");
     }
 
     if (is_replace)
@@ -940,7 +940,7 @@ VDBRepository::merge(const MergeParams & m)
         old_vdb_dir /= (stringify(is_replace->name().package()) + "-" + stringify(is_replace->version()));
 
         if ((old_vdb_dir.dirname() / ("-reinstalling-" + old_vdb_dir.basename())).exists())
-            throw InstallActionError("Directory '" + stringify(old_vdb_dir.dirname() /
+            throw ActionFailedError("Directory '" + stringify(old_vdb_dir.dirname() /
                         ("-reinstalling-" + old_vdb_dir.basename())) + "' already exists, probably due to "
                     "a previous failed upgrade. If it is safe to do so, remove this directory and try "
                     "again.");

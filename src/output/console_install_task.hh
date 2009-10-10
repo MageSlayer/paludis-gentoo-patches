@@ -183,8 +183,11 @@ namespace paludis
             virtual void on_had_both_package_and_set_targets_error(const HadBothPackageAndSetTargets &);
             virtual void on_multiple_set_targets_specified(const MultipleSetTargetsSpecified &);
 
-            virtual void on_install_action_error(const std::tr1::shared_ptr<OutputManager> &, const ActionError &);
-            virtual void on_fetch_action_error(const std::tr1::shared_ptr<OutputManager> &, const FetchActionError &);
+            virtual void on_non_fetch_action_error(const std::tr1::shared_ptr<OutputManager> &,
+                    const ActionFailedError &);
+            virtual void on_fetch_action_error(const std::tr1::shared_ptr<OutputManager> &,
+                    const ActionFailedError &,
+                    const std::tr1::shared_ptr<const Sequence<FetchActionFailure> > &);
 
             virtual void on_display_failure_summary_pre();
             virtual void on_display_failure_summary_success(const DepListEntry &);

@@ -91,7 +91,7 @@ namespace
     enum ExpectedResult
     {
         success,
-        throws_UnsupportedActionError,
+        unsupported,
         throws_InstallActionError
     };
 
@@ -154,13 +154,15 @@ namespace
             switch (expected_result)
             {
                 case success:
+                    TEST_CHECK(id->supports_action(SupportsActionTest<InstallAction>()));
                     id->perform_action(action);
                     break;
                 case throws_InstallActionError:
-                    TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                    TEST_CHECK(id->supports_action(SupportsActionTest<InstallAction>()));
+                    TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
                     break;
-                case throws_UnsupportedActionError:
-                    TEST_CHECK_THROWS(id->perform_action(action), UnsupportedActionError);
+                case unsupported:
+                    TEST_CHECK(! id->supports_action(SupportsActionTest<InstallAction>()));
                     break;
             }
         }
@@ -170,18 +172,18 @@ namespace
 namespace test_cases
 {
     ExlibsTest test_require_success("require-success", success);
-    ExlibsTest test_require_fail("require-fail", throws_UnsupportedActionError);
+    ExlibsTest test_require_fail("require-fail", unsupported);
     ExlibsTest test_require_param("require-param", success);
     ExlibsTest test_require_param_empty("require-param-empty", success);
-    ExlibsTest test_require_param_missing("require-param-missing", throws_UnsupportedActionError);
-    ExlibsTest test_require_param_undeclared("require-param-undeclared", throws_UnsupportedActionError);
+    ExlibsTest test_require_param_missing("require-param-missing", unsupported);
+    ExlibsTest test_require_param_undeclared("require-param-undeclared", unsupported);
     ExlibsTest test_require_params("require-params", success);
-    ExlibsTest test_require_params_unaligned("require-params-unaligned", throws_UnsupportedActionError);
+    ExlibsTest test_require_params_unaligned("require-params-unaligned", unsupported);
     ExlibsTest test_require_multiple_params("require-multiple-params", success);
     ExlibsTest test_require_multiple_params_spaces("require-multiple-params-spaces", success);
     ExlibsTest test_require_param_default("require-param-default", success);
     ExlibsTest test_require_param_default_spaces("require-multiple-params-default-spaces", success);
-    ExlibsTest test_exparam_banned("exparam-banned", throws_UnsupportedActionError);
+    ExlibsTest test_exparam_banned("exparam-banned", unsupported);
     ExlibsTest test_exparam_undeclared("exparam-undeclared", throws_InstallActionError);
     ExlibsTest test_exparam_subshell("exparam-subshell", throws_InstallActionError); // cookies to he who finds a way to make this test succeed :(
     ExlibsTest test_exarray("exarray", success);
@@ -190,10 +192,10 @@ namespace test_cases
     ExlibsTest test_exarray_default_spaces("exarray-default-spaces", success);
     ExlibsTest test_exarray_empty("exarray-empty", success);
     ExlibsTest test_noarray("noarray", success);
-    ExlibsTest test_noarray_bad("noarray-bad", throws_UnsupportedActionError);
-    ExlibsTest test_scalar_required("scalar-required", throws_UnsupportedActionError);
-    ExlibsTest test_array_required("array-required", throws_UnsupportedActionError);
-    ExlibsTest test_illegal_in_global_scope("illegal-in-global-scope", throws_UnsupportedActionError);
+    ExlibsTest test_noarray_bad("noarray-bad", unsupported);
+    ExlibsTest test_scalar_required("scalar-required", unsupported);
+    ExlibsTest test_array_required("array-required", unsupported);
+    ExlibsTest test_illegal_in_global_scope("illegal-in-global-scope", unsupported);
     ExlibsTest test_illegal_in_global_scope_in_func("illegal-in-global-scope-in-func", success);
     ExlibsTest test_called_cross_phase("called-cross-phase", throws_InstallActionError);
     ExlibsTest test_called_cross_phase_default("called-cross-phase-default", throws_InstallActionError);
@@ -201,12 +203,12 @@ namespace test_cases
     ExlibsTest test_called_cross_phase_exlib("called-cross-phase-exlib", throws_InstallActionError);
     ExlibsTest test_called_cross_phase_exlib_exported("called-cross-phase-exlib-exported", throws_InstallActionError);
     ExlibsTest test_boolean("boolean", success);
-    ExlibsTest test_boolean_badvalue("boolean-badvalue", throws_UnsupportedActionError);
-    ExlibsTest test_boolean_blankvalue("boolean-blankvalue", throws_UnsupportedActionError);
-    ExlibsTest test_boolean_badvaluewithdefault("boolean-badvaluewithdefault", throws_UnsupportedActionError);
-    ExlibsTest test_boolean_baddefault("boolean-baddefault", throws_UnsupportedActionError);
-    ExlibsTest test_boolean_blankdefault("boolean-blankdefault", throws_UnsupportedActionError);
-    ExlibsTest test_boolean_nodefault("boolean-nodefault", throws_UnsupportedActionError);
-    ExlibsTest test_boolean_notreally("boolean-notreally", throws_UnsupportedActionError);
+    ExlibsTest test_boolean_badvalue("boolean-badvalue", unsupported);
+    ExlibsTest test_boolean_blankvalue("boolean-blankvalue", unsupported);
+    ExlibsTest test_boolean_badvaluewithdefault("boolean-badvaluewithdefault", unsupported);
+    ExlibsTest test_boolean_baddefault("boolean-baddefault", unsupported);
+    ExlibsTest test_boolean_blankdefault("boolean-blankdefault", unsupported);
+    ExlibsTest test_boolean_nodefault("boolean-nodefault", unsupported);
+    ExlibsTest test_boolean_notreally("boolean-notreally", unsupported);
 }
 

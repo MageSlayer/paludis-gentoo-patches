@@ -249,6 +249,7 @@ namespace
             }
 
             ptr = new FetchActionOptions(make_named_values<FetchActionOptions>(
+                        value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                         value_for<n::exclude_unmirrorable>(v_exclude_unmirrorable),
                         value_for<n::fetch_unneeded>(v_fetch_unneeded),
                         value_for<n::ignore_unfetched>(false),

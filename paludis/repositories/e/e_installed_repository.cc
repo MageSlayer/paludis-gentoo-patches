@@ -176,7 +176,7 @@ EInstalledRepository::get_environment_variable(
     FSEntry ver_dir(id->fs_location_key()->value());
 
     if (! ver_dir.is_directory_or_symlink_to_directory())
-        throw ActionError("Could not find Exndbam entry for '" + stringify(*id) + "'");
+        throw ActionFailedError("Could not find Exndbam entry for '" + stringify(*id) + "'");
 
     if ((ver_dir / var).is_regular_file_or_symlink_to_regular_file())
     {
@@ -194,11 +194,11 @@ EInstalledRepository::get_environment_variable(
                         (std::istreambuf_iterator<char>(p)),
                         std::istreambuf_iterator<char>()), "\n"));
         if (0 != exit_status)
-            throw ActionError("Could not load environment.bz2");
+            throw ActionFailedError("Could not load environment.bz2");
         return result;
     }
     else
-        throw ActionError("Could not get variable '" + var + "' for '" + stringify(*id) + "'");
+        throw ActionFailedError("Could not get variable '" + var + "' for '" + stringify(*id) + "'");
 }
 
 void
@@ -209,7 +209,7 @@ EInstalledRepository::perform_config(
     Context context("When configuring '" + stringify(*id) + "':");
 
     if (! _imp->params.root().is_directory())
-        throw InstallActionError("Couldn't configure '" + stringify(*id) +
+        throw ActionFailedError("Couldn't configure '" + stringify(*id) +
                 "' because root ('" + stringify(_imp->params.root()) + "') is not a directory");
 
     std::tr1::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
@@ -262,7 +262,7 @@ EInstalledRepository::perform_info(
     Context context("When infoing '" + stringify(*id) + "':");
 
     if (! _imp->params.root().is_directory())
-        throw InstallActionError("Couldn't info '" + stringify(*id) +
+        throw ActionFailedError("Couldn't info '" + stringify(*id) +
                 "' because root ('" + stringify(_imp->params.root()) + "') is not a directory");
 
     std::tr1::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));

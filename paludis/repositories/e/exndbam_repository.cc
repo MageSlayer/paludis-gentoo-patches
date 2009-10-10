@@ -327,7 +327,7 @@ ExndbamRepository::merge(const MergeParams & m)
             + "' to Exndbam repository '" + stringify(name()) + "':");
 
     if (! is_suitable_destination_for(*m.package_id()))
-        throw InstallActionError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
+        throw ActionFailedError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
 
     std::tr1::shared_ptr<const PackageID> if_overwritten_id, if_same_name_id;
     {
@@ -360,7 +360,7 @@ ExndbamRepository::merge(const MergeParams & m)
     target_ver_dir /= (stringify(m.package_id()->version()) + ":" + stringify(m.package_id()->slot_key()->value()) + ":" + cookie());
 
     if (target_ver_dir.exists())
-        throw InstallActionError("Temporary merge directory '" + stringify(target_ver_dir) + "' already exists, probably "
+        throw ActionFailedError("Temporary merge directory '" + stringify(target_ver_dir) + "' already exists, probably "
                 "due to a previous failed install. If it is safe to do so, please remove this directory and try again.");
     target_ver_dir.mkdir();
 
@@ -420,7 +420,7 @@ ExndbamRepository::merge(const MergeParams & m)
                 ; d != d_end ; ++d)
             FSEntry(*d).unlink();
         target_ver_dir.rmdir();
-        throw InstallActionError("Not proceeding with install due to merge sanity check failing");
+        throw ActionFailedError("Not proceeding with install due to merge sanity check failing");
     }
 
     merger.merge();
@@ -477,7 +477,7 @@ ExndbamRepository::perform_uninstall(
     Context context("When uninstalling '" + stringify(*id) + (a.options.is_overwrite() ? "' for an overwrite:" : "':"));
 
     if (! _imp->params.root().is_directory())
-        throw InstallActionError("Couldn't uninstall '" + stringify(*id) +
+        throw ActionFailedError("Couldn't uninstall '" + stringify(*id) +
                 "' because root ('" + stringify(_imp->params.root()) + "') is not a directory");
 
     std::tr1::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));

@@ -468,10 +468,10 @@ AccountsID::perform_action(Action & action) const
 {
     const InstallAction * const install_action(simple_visitor_cast<const InstallAction>(action));
     if (! install_action)
-        throw UnsupportedActionError(*this, action);
+        throw ActionFailedError("Unsupported action: " + stringify(action));
 
     if (! (*install_action->options.destination()).destination_interface())
-        throw InstallActionError("Can't install '" + stringify(*this)
+        throw ActionFailedError("Can't install '" + stringify(*this)
                 + "' to destination '" + stringify(install_action->options.destination()->name())
                 + "' because destination does not provide destination_interface");
 
@@ -503,7 +503,7 @@ AccountsID::perform_action(Action & action) const
             break;
 
         case wp_abort:
-            throw InstallActionError("Told to abort install");
+            throw ActionAbortedError("Told to abort install");
 
         case last_wp:
             throw InternalError(PALUDIS_HERE, "bad WantPhase");

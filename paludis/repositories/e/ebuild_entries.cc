@@ -519,8 +519,7 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                         ));
 
                 if (! fetch_extra_cmd())
-                    throw FetchActionError("Fetch of '" + stringify(*id) + "' failed", make_shared_ptr(
-                                new Sequence<FetchActionFailure>));
+                    throw ActionFailedError("Fetch of '" + stringify(*id) + "' failed");
             }
         }
 
@@ -565,13 +564,21 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                         ));
 
                 if (! nofetch_cmd())
-                    throw FetchActionError("Fetch of '" + stringify(*id) + "' failed", c.failures());
+                {
+                    std::copy(c.failures()->begin(), c.failures()->end(),
+                            fetch_action.options.errors()->back_inserter());
+                    throw ActionFailedError("Fetch of '" + stringify(*id) + "' failed");
+                }
             }
         }
     }
 
     if (! c.failures()->empty())
-        throw FetchActionError("Fetch of '" + stringify(*id) + "' failed", c.failures());
+    {
+        std::copy(c.failures()->begin(), c.failures()->end(),
+                fetch_action.options.errors()->back_inserter());
+        throw ActionFailedError("Fetch of '" + stringify(*id) + "' failed");
+    }
 
     output_manager->succeeded();
 }
@@ -746,7 +753,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                     continue;
 
                 case wp_abort:
-                    throw InstallActionError("Told to abort install");
+                    throw ActionAbortedError("Told to abort install");
 
                 case last_wp:
                     break;
@@ -767,7 +774,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
         if (phase->option("merge"))
         {
             if (! (*install_action.options.destination()).destination_interface())
-                throw InstallActionError("Can't install '" + stringify(*id)
+                throw ActionFailedError("Can't install '" + stringify(*id)
                         + "' to destination '" + stringify(install_action.options.destination()->name())
                         + "' because destination does not provide destination_interface");
 
@@ -1058,7 +1065,8 @@ EbuildEntries::get_environment_variable(
             var);
 
     if (! cmd())
-        throw ActionError("Couldn't get environment variable '" + stringify(var) + "' for package '" + stringify(*id) + "'");
+        throw ActionFailedError("Couldn't get environment variable '" + stringify(var) +
+                "' for package '" + stringify(*id) + "'");
 
     return cmd.result();
 }
@@ -1077,7 +1085,7 @@ EbuildEntries::merge(const MergeParams & m)
             + "' to E repository '" + stringify(_imp->e_repository->name()) + "':");
 
     if (! _imp->e_repository->is_suitable_destination_for(*m.package_id()))
-        throw InstallActionError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
+        throw ActionFailedError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
 
     FSEntry binary_ebuild_location(_imp->e_repository->layout()->binary_ebuild_location(
                 m.package_id()->name(), m.package_id()->version(),
@@ -1224,7 +1232,7 @@ EbuildEntries::pretend(
                             ));
 
                 if (! bad_options_cmd())
-                    throw ActionError("Bad options phase died");
+                    throw ActionFailedError("Bad options phase died");
             }
 
             result = false;

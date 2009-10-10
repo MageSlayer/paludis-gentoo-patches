@@ -44,13 +44,8 @@ namespace paludis
     class SupportsActionTestBase;
     template <typename A_> class SupportsActionTest;
 
-    class ActionError;
-    class UnsupportedActionError;
-    class InstallActionError;
-    class FetchActionError;
-    class UninstallActionError;
-    class ConfigActionError;
-    class InfoActionError;
+    class ActionFailedError;
+    class ActionAbortedError;
 
     struct FetchActionOptions;
     struct InstallActionOptions;

@@ -148,7 +148,7 @@ FetchVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::T
     Context context("When visiting URI dep spec '" + stringify(node.spec()->text()) + "':");
 
     if (! *_imp->labels.begin())
-        throw FetchActionError("No fetch action label available");
+        throw ActionFailedError("No fetch action label available");
 
     SourceURIFinder source_uri_finder(_imp->env, _imp->id->repository().get(),
             node.spec()->original_url(), node.spec()->filename(), _imp->mirrors_name);

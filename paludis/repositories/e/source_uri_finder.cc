@@ -182,7 +182,7 @@ SourceURIFinder::add_listed()
         std::string mirror(_imp->url.substr(9));
         std::string::size_type p(mirror.find("/"));
         if (std::string::npos == p)
-            throw FetchActionError("Broken URI component '" + _imp->url + "'");
+            throw ActionFailedError("Broken URI component '" + _imp->url + "'");
         std::string original_name(mirror.substr(p + 1));
         mirror.erase(p);
 

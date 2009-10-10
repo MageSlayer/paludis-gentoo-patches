@@ -944,22 +944,22 @@ namespace
 
     void PerformAction::visit(const InstallAction & a)
     {
-        throw UnsupportedActionError(*id, a);
+        throw ActionFailedError("Unsupported action: " + stringify(a));
     }
 
     void PerformAction::visit(const PretendAction & a)
     {
-        throw UnsupportedActionError(*id, a);
+        throw ActionFailedError("Unsupported action: " + stringify(a));
     }
 
     void PerformAction::visit(const FetchAction & a)
     {
-        throw UnsupportedActionError(*id, a);
+        throw ActionFailedError("Unsupported action: " + stringify(a));
     }
 
     void PerformAction::visit(const PretendFetchAction & a)
     {
-        throw UnsupportedActionError(*id, a);
+        throw ActionFailedError("Unsupported action: " + stringify(a));
     }
 }
 

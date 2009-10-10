@@ -97,51 +97,53 @@ namespace
             cout << "Processing " << colour(cl_package_name, stringify(**i)) << "..." << endl;
             ++total;
 
+            const std::tr1::shared_ptr<Sequence<FetchActionFailure> > failures(new Sequence<FetchActionFailure>);
             try
             {
                 if ((*i)->supports_action(SupportsActionTest<FetchAction>()))
                 {
                     FetchAction a(make_named_values<FetchActionOptions>(
-                            value_for<n::exclude_unmirrorable>(false),
-                            value_for<n::fetch_unneeded>(true),
-                            value_for<n::ignore_unfetched>(false),
-                            value_for<n::make_output_manager>(&make_standard_output_manager),
-                            value_for<n::safe_resume>(true)
-                            ));
+                                value_for<n::errors>(failures),
+                                value_for<n::exclude_unmirrorable>(false),
+                                value_for<n::fetch_unneeded>(true),
+                                value_for<n::ignore_unfetched>(false),
+                                value_for<n::make_output_manager>(&make_standard_output_manager),
+                                value_for<n::safe_resume>(true)
+                                ));
                     (*i)->perform_action(a);
                     ++success;
                 }
                 else
                     results.insert(std::make_pair(*i, "Does not support fetching"));
             }
-            catch (const FetchActionError & e)
+            catch (const ActionFailedError & e)
             {
-                if (e.failures())
+                for (Sequence<FetchActionFailure>::ConstIterator f(failures->begin()),
+                        f_end(failures->end()) ;
+                        f != f_end ; ++f)
                 {
-                    for (Sequence<FetchActionFailure>::ConstIterator f(e.failures()->begin()), f_end(e.failures()->end()) ; f != f_end ; ++f)
+                    std::string r;
+                    if (f->requires_manual_fetching())
+                        r = "manual";
+
+                    if (f->failed_automatic_fetching())
                     {
-                        std::string r;
-                        if (f->requires_manual_fetching())
-                            r = "manual";
-
-                        if (f->failed_automatic_fetching())
-                        {
-                            if (! r.empty())
-                                r.append(", ");
-                            r.append("could not fetch");
-                        }
-
-                        if (! f->failed_integrity_checks().empty())
-                        {
-                            if (! r.empty())
-                                r.append(", ");
-                            r.append(f->failed_integrity_checks());
-                        }
-
-                        results.insert(std::make_pair(*i, f->target_file() + ": " + r));
+                        if (! r.empty())
+                            r.append(", ");
+                        r.append("could not fetch");
                     }
+
+                    if (! f->failed_integrity_checks().empty())
+                    {
+                        if (! r.empty())
+                            r.append(", ");
+                        r.append(f->failed_integrity_checks());
+                    }
+
+                    results.insert(std::make_pair(*i, f->target_file() + ": " + r));
                 }
-                else
+
+                if (failures->empty())
                     results.insert(std::make_pair(*i, "Unknown fetch error"));
             }
             catch (const InternalError &)

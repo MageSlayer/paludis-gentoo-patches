@@ -1171,12 +1171,12 @@ namespace
 
     void PerformAction::visit(UninstallAction & a)
     {
-        throw UnsupportedActionError(*id, a);
+        throw ActionFailedError("Unsupported action: " + stringify(a));
     }
 
     void PerformAction::visit(ConfigAction & a)
     {
-        throw UnsupportedActionError(*id, a);
+        throw ActionFailedError("Unsupported action: " + stringify(a));
     }
 }
 
@@ -1184,7 +1184,7 @@ void
 EbuildID::perform_action(Action & a) const
 {
     if (! eapi()->supported())
-        throw UnsupportedActionError(*this, a);
+        throw ActionFailedError("Unsupported EAPI");
 
     PerformAction b(shared_from_this());
     a.accept(b);

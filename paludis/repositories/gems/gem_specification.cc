@@ -527,49 +527,49 @@ namespace
         {
             SupportsActionTest<InstallAction> t;
             if (! id->repository()->some_ids_might_support_action(t))
-                throw UnsupportedActionError(*id, a);
+                throw ActionFailedError("Unsupported action '" + stringify(a) + "'");
         }
 
         void visit(const UninstallAction & a)
         {
             SupportsActionTest<UninstallAction> t;
             if (! id->repository()->some_ids_might_support_action(t))
-                throw UnsupportedActionError(*id, a);
+                throw ActionFailedError("Unsupported action '" + stringify(a) + "'");
         }
 
         void visit(const ConfigAction & a)
         {
             SupportsActionTest<ConfigAction> t;
             if (! id->repository()->some_ids_might_support_action(t))
-                throw UnsupportedActionError(*id, a);
+                throw ActionFailedError("Unsupported action '" + stringify(a) + "'");
         }
 
         void visit(const FetchAction & a)
         {
             SupportsActionTest<FetchAction> t;
             if (! id->repository()->some_ids_might_support_action(t))
-                throw UnsupportedActionError(*id, a);
+                throw ActionFailedError("Unsupported action '" + stringify(a) + "'");
         }
 
         void visit(const InfoAction & a)
         {
             SupportsActionTest<InfoAction> t;
             if (! id->repository()->some_ids_might_support_action(t))
-                throw UnsupportedActionError(*id, a);
+                throw ActionFailedError("Unsupported action '" + stringify(a) + "'");
         }
 
         void visit(const PretendAction & a)
         {
             SupportsActionTest<PretendAction> t;
             if (! id->repository()->some_ids_might_support_action(t))
-                throw UnsupportedActionError(*id, a);
+                throw ActionFailedError("Unsupported action '" + stringify(a) + "'");
         }
 
         void visit(const PretendFetchAction & a)
         {
             SupportsActionTest<PretendFetchAction> t;
             if (! id->repository()->some_ids_might_support_action(t))
-                throw UnsupportedActionError(*id, a);
+                throw ActionFailedError("Unsupported action '" + stringify(a) + "'");
         }
     };
 }

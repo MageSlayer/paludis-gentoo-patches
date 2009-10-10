@@ -50,6 +50,7 @@ namespace paludis
     {
         struct config_protect;
         struct destination;
+        struct errors;
         struct exclude_unmirrorable;
         struct failed_automatic_fetching;
         struct failed_integrity_checks;
@@ -76,6 +77,12 @@ namespace paludis
      */
     struct FetchActionOptions
     {
+        /**
+         * Any errors that occur will be added to this list. Must not be null.
+         *
+         * \since 0.40
+         */
+        NamedValue<n::errors, std::tr1::shared_ptr<Sequence<FetchActionFailure> > > errors;
         /**
          * \since 0.32
          */
@@ -549,146 +556,39 @@ namespace paludis
     std::ostream & operator<< (std::ostream &, const Action &) PALUDIS_VISIBLE;
 
     /**
-     * Parent class for Action related errors.
+     * Thrown if an action fails.
      *
      * \ingroup g_actions
      * \ingroup g_exceptions
-     * \since 0.26
-     * \nosubgrouping
+     * \since 0.42
      */
-    class PALUDIS_VISIBLE ActionError :
+    class PALUDIS_VISIBLE ActionFailedError :
         public Exception
     {
         public:
             ///\name Basic operations
             ///\{
 
-            ActionError(const std::string & msg) throw ();
+            ActionFailedError(const std::string & msg) throw ();
 
             ///\}
     };
 
     /**
-     * Thrown if a PackageID is asked to perform an Action that it does
-     * not support.
+     * Thrown if an action is aborted.
      *
-     * \ingroup g_exceptions
      * \ingroup g_actions
-     * \since 0.26
-     * \nosubgrouping
+     * \ingroup g_exceptions
+     * \since 0.42
      */
-    class PALUDIS_VISIBLE UnsupportedActionError :
-        public ActionError
+    class PALUDIS_VISIBLE ActionAbortedError :
+        public Exception
     {
         public:
             ///\name Basic operations
             ///\{
 
-            UnsupportedActionError(const PackageID &, const Action &) throw ();
-
-            ///\}
-    };
-
-    /**
-     * Thrown if a PackageID fails to perform an InstallAction.
-     *
-     * \ingroup g_exceptions
-     * \ingroup g_actions
-     * \since 0.26
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE InstallActionError : public ActionError
-    {
-        public:
-            ///\name Basic operations
-            ///\{
-
-            InstallActionError(const std::string & msg) throw ();
-
-            ///\}
-    };
-
-    /**
-     * Thrown if a PackageID fails to perform a FetchAction.
-     *
-     * \ingroup g_exceptions
-     * \ingroup g_actions
-     * \since 0.26
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE FetchActionError :
-        public ActionError
-    {
-        private:
-            const std::tr1::shared_ptr<const Sequence<FetchActionFailure> > _failures;
-
-        public:
-            ///\name Basic operations
-            ///\{
-
-            FetchActionError(const std::string &) throw ();
-            FetchActionError(const std::string &, const std::tr1::shared_ptr<const Sequence<FetchActionFailure> > &) throw ();
-            ~FetchActionError() throw ();
-
-            ///\}
-
-            /// More information about failed fetches.
-            const std::tr1::shared_ptr<const Sequence<FetchActionFailure> > failures() const PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
-
-    /**
-     * Thrown if a PackageID fails to perform an UninstallAction.
-     *
-     * \ingroup g_exceptions
-     * \ingroup g_actions
-     * \since 0.26
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE UninstallActionError : public ActionError
-    {
-        public:
-            ///\name Basic operations
-            ///\{
-
-            UninstallActionError(const std::string & msg) throw ();
-
-            ///\}
-    };
-
-    /**
-     * Thrown if a PackageID fails to perform a ConfigAction.
-     *
-     * \ingroup g_exceptions
-     * \ingroup g_actions
-     * \since 0.26
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE ConfigActionError : public ActionError
-    {
-        public:
-            ///\name Basic operations
-            ///\{
-
-            ConfigActionError(const std::string & msg) throw ();
-
-            ///\}
-    };
-
-    /**
-     * Thrown if a PackageID fails to perform an InfoAction.
-     *
-     * \ingroup g_exceptions
-     * \ingroup g_actions
-     * \since 0.26
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE InfoActionError : public ActionError
-    {
-        public:
-            ///\name Basic operations
-            ///\{
-
-            InfoActionError(const std::string & msg) throw ();
+            ActionAbortedError(const std::string &) throw ();
 
             ///\}
     };

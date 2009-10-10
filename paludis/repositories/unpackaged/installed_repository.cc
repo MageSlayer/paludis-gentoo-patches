@@ -260,16 +260,16 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
             + "' to InstalledUnpackagedRepository repository '" + stringify(name()) + "':");
 
     if (! is_suitable_destination_for(*m.package_id()))
-        throw InstallActionError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
+        throw ActionFailedError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
 
     FSEntry install_under("/");
     {
         Repository::MetadataConstIterator k(m.package_id()->repository()->find_metadata("install_under"));
         if (k == m.package_id()->repository()->end_metadata())
-            throw InstallActionError("Could not fetch install_under key from owning repository");
+            throw ActionFailedError("Could not fetch install_under key from owning repository");
         const MetadataValueKey<FSEntry> * kk(simple_visitor_cast<const MetadataValueKey<FSEntry> >(**k));
         if (! kk)
-            throw InstallActionError("Fetched install_under key but did not get an FSEntry key from owning repository");
+            throw ActionFailedError("Fetched install_under key but did not get an FSEntry key from owning repository");
         install_under = kk->value();
     }
 
@@ -277,10 +277,10 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
     {
         Repository::MetadataConstIterator k(m.package_id()->repository()->find_metadata("rewrite_ids_over_to_root"));
         if (k == m.package_id()->repository()->end_metadata())
-            throw InstallActionError("Could not fetch rewrite_ids_over_to_root key from owning repository");
+            throw ActionFailedError("Could not fetch rewrite_ids_over_to_root key from owning repository");
         const MetadataValueKey<long> * kk(simple_visitor_cast<const MetadataValueKey<long> >(**k));
         if (! kk)
-            throw InstallActionError("Fetched rewrite_ids_over_to_root key but did not get a long key from owning repository");
+            throw ActionFailedError("Fetched rewrite_ids_over_to_root key but did not get a long key from owning repository");
         rewrite_ids_over_to_root = kk->value();
     }
 
@@ -315,7 +315,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
     target_ver_dir /= (stringify(m.package_id()->version()) + ":" + stringify(m.package_id()->slot_key()->value()) + ":" + cookie());
 
     if (target_ver_dir.exists())
-        throw InstallActionError("Temporary merge directory '" + stringify(target_ver_dir) + "' already exists, probably "
+        throw ActionFailedError("Temporary merge directory '" + stringify(target_ver_dir) + "' already exists, probably "
                 "due to a previous failed install. If it is safe to do so, please remove this directory and try again.");
     target_ver_dir.mkdir();
 
@@ -365,7 +365,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
         for (DirIterator d(target_ver_dir, DirIteratorOptions() + dio_include_dotfiles), d_end ; d != d_end ; ++d)
             FSEntry(*d).unlink();
         target_ver_dir.rmdir();
-        throw InstallActionError("Not proceeding with install due to merge sanity check failing");
+        throw ActionFailedError("Not proceeding with install due to merge sanity check failing");
     }
 
     merger.merge();

@@ -484,7 +484,7 @@ CRANInstalledRepository::merge(const MergeParams & m)
             + "' to repository '" + stringify(name()) + "':");
 
     if (! is_suitable_destination_for(*m.package_id()))
-        throw InstallActionError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
+        throw ActionFailedError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
 
 }
 

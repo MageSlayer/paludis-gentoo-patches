@@ -173,7 +173,7 @@ namespace
             if (expect_pass)
                 id->perform_action(action);
             else
-                TEST_CHECK_THROWS(id->perform_action(action), InstallActionError);
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
         }
     };
 }

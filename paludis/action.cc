@@ -219,11 +219,6 @@ SupportsActionTestBase::~SupportsActionTestBase()
 {
 }
 
-UnsupportedActionError::UnsupportedActionError(const PackageID & id, const Action & a) throw () :
-    ActionError("Unsupported action '" + stringify(a) + "' on '" + stringify(id) + "'")
-{
-}
-
 namespace
 {
     struct ActionStringifier
@@ -277,50 +272,13 @@ paludis::operator<< (std::ostream & s, const Action & a)
     return s << a.accept_returning<std::string>(t);
 }
 
-ActionError::ActionError(const std::string & msg) throw () :
+ActionFailedError::ActionFailedError(const std::string & msg) throw () :
     Exception(msg)
 {
 }
 
-InstallActionError::InstallActionError(const std::string & msg) throw () :
-    ActionError("Install error: " + msg)
-{
-}
-
-FetchActionError::FetchActionError(const std::string & msg,
-        const std::tr1::shared_ptr<const Sequence<FetchActionFailure> > & e) throw () :
-    ActionError("Fetch error: " + msg),
-    _failures(e)
-{
-}
-
-FetchActionError::FetchActionError(const std::string & msg) throw () :
-    ActionError("Fetch error: " + msg)
-{
-}
-
-FetchActionError::~FetchActionError() throw ()
-{
-}
-
-const std::tr1::shared_ptr<const Sequence<FetchActionFailure> >
-FetchActionError::failures() const
-{
-    return _failures;
-}
-
-UninstallActionError::UninstallActionError(const std::string & msg) throw () :
-    ActionError("Uninstall error: " + msg)
-{
-}
-
-ConfigActionError::ConfigActionError(const std::string & msg) throw () :
-    ActionError("Configuration error: " + msg)
-{
-}
-
-InfoActionError::InfoActionError(const std::string & msg) throw () :
-    ActionError("Info error: " + msg)
+ActionAbortedError::ActionAbortedError(const std::string & msg) throw () :
+    Exception(msg)
 {
 }
 

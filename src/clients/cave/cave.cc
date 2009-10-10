@@ -24,6 +24,7 @@
 #include <paludis/args/do_help.hh>
 #include <paludis/environment_factory.hh>
 #include <paludis/environment.hh>
+#include <paludis/action.hh>
 #include <iostream>
 #include <cstdlib>
 #include <string>
@@ -76,6 +77,14 @@ int main(int argc, char * argv[])
             cerr << "Usage error: " << h.message << endl;
 
         return EXIT_FAILURE;
+    }
+    catch (const ActionAbortedError & e)
+    {
+        cout << endl;
+        cerr << "Action aborted:" << endl
+            << "  * " << e.backtrace("\n  * ")
+            << e.message() << " (" << e.what() << ")" << endl;
+        return 42;
     }
     catch (const Exception & e)
     {

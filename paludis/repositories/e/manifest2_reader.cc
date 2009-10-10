@@ -54,7 +54,7 @@ namespace paludis
 }
 
 Manifest2Error::Manifest2Error(const std::string & msg) throw () :
-    ActionError("Manifest2 Error: " + msg)
+    Exception("Manifest2 Error: " + msg)
 {
 }
 

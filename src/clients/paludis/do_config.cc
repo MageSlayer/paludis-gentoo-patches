@@ -62,9 +62,9 @@ namespace
             if (output_manager_holder.output_manager_if_constructed())
                 output_manager_holder.output_manager_if_constructed()->succeeded();
         }
-        catch (const UnsupportedActionError &)
+        catch (const ActionFailedError &)
         {
-            std::cerr << "Package '" << *p << "' does not support post-install configuration" << std::endl;
+            std::cerr << "Package '" << *p << "' failed post-install configuration" << std::endl;
             return_code |= 1;
         }
 

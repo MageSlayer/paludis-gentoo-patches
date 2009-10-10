@@ -168,7 +168,7 @@ UnwrittenID::supports_action(const SupportsActionTestBase & a) const
 void
 UnwrittenID::perform_action(Action & a) const
 {
-    throw UnsupportedActionError(*this, a);
+    throw ActionFailedError("Unsupported action: " + stringify(a));
 }
 
 std::tr1::shared_ptr<const Set<std::string> >
