@@ -685,6 +685,14 @@ paludis::erepository::parse_dependency_label(const std::string & s, const EAPI &
 
     for (std::set<std::string>::iterator it = labels.begin(), it_e = labels.end(); it != it_e; ++it)
     {
+        if (std::string::npos != it->find(','))
+        {
+            Log::get_instance()->message("e.dep_parser.obsolete_label_syntax", ll_warning, lc_no_context)
+                << "Label '" << *it << "' uses commas, which are obsolete, so treating it as a build label instead";
+            l->add_label(make_shared_ptr(new DependenciesBuildLabel(*it, return_literal_function(true))));
+            continue;
+        }
+
         std::string c(e.supported()->dependency_labels()->class_for_label(*it));
         if (c.empty())
             throw EDepParseError(s, "Unknown label '" + *it + "'");
