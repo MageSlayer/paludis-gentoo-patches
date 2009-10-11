@@ -27,6 +27,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/return_literal_function.hh>
+#include <paludis/util/log.hh>
 #include <paludis/elike_dep_parser.hh>
 #include <paludis/elike_conditional_dep_spec.hh>
 #include <paludis/elike_package_dep_spec.hh>
@@ -678,7 +679,7 @@ paludis::erepository::parse_dependency_label(const std::string & s, const EAPI &
 
     std::set<std::string> labels;
     std::string label(s.substr(0, s.length() - 1));
-    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(label, ",+", "", std::inserter(labels, labels.end()));
+    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(label, "+", "", std::inserter(labels, labels.end()));
 
     std::tr1::shared_ptr<DependenciesLabelsDepSpec> l(new DependenciesLabelsDepSpec);
 
@@ -706,6 +707,12 @@ paludis::erepository::parse_dependency_label(const std::string & s, const EAPI &
             l->add_label(make_shared_ptr(new DependenciesRecommendationLabel(*it, return_literal_function(true))));
         else if (c == "DependenciesTestLabel")
             l->add_label(make_shared_ptr(new DependenciesTestLabel(*it, return_literal_function(true))));
+        else if (c == "WarnAndIgnore")
+        {
+            Log::get_instance()->message("e.dep_parser.obsolete_label", ll_warning, lc_no_context)
+                << "Label '" << *it << "' no longer exists, pretending it's a build label instead";
+            l->add_label(make_shared_ptr(new DependenciesBuildLabel(*it, return_literal_function(true))));
+        }
         else
             throw EDepParseError(s, "Label '" + *it + "' maps to unknown class '" + c + "'");
     }
