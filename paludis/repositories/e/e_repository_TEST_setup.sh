@@ -2767,7 +2767,7 @@ cat <<END > category/package/package-1.ebuild || exit 1
 EAPI="exheres-0"
 SLOT="0"
 PLATFORMS="test"
-DEPENDENCIES="cat/pkg1 build: cat/pkg2 build,run: cat/pkg3 suggestion: cat/pkg4 post: cat/pkg5"
+DEPENDENCIES="cat/pkg1 build: cat/pkg2 build+run: cat/pkg3 suggestion: cat/pkg4 post: cat/pkg5"
 END
 cd ..
 

@@ -80,7 +80,7 @@ echo -n "cat-one/oink" >> world-no-match-no-eol
 mkdir -p repo2/category/package-1 || exit 1
 echo "exheres-0" >repo2/category/package-1/EAPI
 echo "0" >repo2/category/package-1/SLOT
-echo "cat/pkg1 build: cat/pkg2 build,run: cat/pkg3 suggestion: cat/pkg4 post: cat/pkg5" >repo2/category/package-1/DEPENDENCIES
+echo "cat/pkg1 build: cat/pkg2 build+run: cat/pkg3 suggestion: cat/pkg4 post: cat/pkg5" >repo2/category/package-1/DEPENDENCIES
 
 mkdir -p repo3
 
