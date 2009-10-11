@@ -33,6 +33,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/return_literal_function.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -85,8 +86,8 @@ namespace paludis
             suggests_labels(new DependenciesLabelSequence),
             depends_labels(new DependenciesLabelSequence)
         {
-            suggests_labels->push_back(make_shared_ptr(new DependenciesSuggestionLabel("Suggests")));
-            depends_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("Depends")));
+            suggests_labels->push_back(make_shared_ptr(new DependenciesSuggestionLabel("Suggests", return_literal_function(true))));
+            depends_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("Depends", return_literal_function(true))));
         }
 
         Implementation(const Environment * const e,
@@ -100,8 +101,8 @@ namespace paludis
             suggests_labels(new DependenciesLabelSequence),
             depends_labels(new DependenciesLabelSequence)
         {
-            suggests_labels->push_back(make_shared_ptr(new DependenciesSuggestionLabel("Suggests")));
-            depends_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("Depends")));
+            suggests_labels->push_back(make_shared_ptr(new DependenciesSuggestionLabel("Suggests", return_literal_function(true))));
+            depends_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("Depends", return_literal_function(true))));
         }
     };
 }

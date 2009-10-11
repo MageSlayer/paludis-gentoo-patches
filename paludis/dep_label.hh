@@ -27,6 +27,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/type_list.hh>
+#include <tr1/functional>
 
 /** \file
  * Declarations for dependency label-related classes.
@@ -121,6 +122,9 @@ namespace paludis
 
             /// Our text.
             virtual const std::string text() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /// Are we enabled?
+            virtual bool enabled() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
     /**
@@ -136,17 +140,19 @@ namespace paludis
     {
         private:
             const std::string _text;
+            const std::tr1::function<bool ()> _enabled;
 
         public:
             ///\name Basic operations
             ///\{
 
-            ConcreteDependenciesLabel(const std::string &);
+            ConcreteDependenciesLabel(const std::string &, const std::tr1::function<bool ()> &);
             ~ConcreteDependenciesLabel();
 
             ///\}
 
             virtual const std::string text() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual bool enabled() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /// Convenience typedef alias to obtain our tag.
             typedef T_ Tag;

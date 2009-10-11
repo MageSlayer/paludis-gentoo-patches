@@ -40,6 +40,7 @@
 #include <paludis/util/tribool.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/return_literal_function.hh>
 #include <map>
 #include <list>
 #include <sstream>
@@ -657,10 +658,14 @@ namespace paludis
             keywords(new FakeMetadataKeywordSetKey("KEYWORDS", "Keywords", "test", mkt_normal, id, env)),
             has_masks(false)
         {
-            build_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("DEPEND")));
-            run_dependencies_labels->push_back(make_shared_ptr(new DependenciesRunLabel("RDEPEND")));
-            post_dependencies_labels->push_back(make_shared_ptr(new DependenciesPostLabel("PDEPEND")));
-            suggested_dependencies_labels->push_back(make_shared_ptr(new DependenciesSuggestionLabel("SDEPEND")));
+            build_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("DEPEND",
+                            return_literal_function(true))));
+            run_dependencies_labels->push_back(make_shared_ptr(new DependenciesRunLabel("RDEPEND",
+                            return_literal_function(true))));
+            post_dependencies_labels->push_back(make_shared_ptr(new DependenciesPostLabel("PDEPEND",
+                            return_literal_function(true))));
+            suggested_dependencies_labels->push_back(make_shared_ptr(new DependenciesSuggestionLabel("SDEPEND",
+                            return_literal_function(true))));
         }
     };
 }

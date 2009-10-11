@@ -26,6 +26,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/return_literal_function.hh>
 #include <paludis/elike_dep_parser.hh>
 #include <paludis/elike_conditional_dep_spec.hh>
 #include <paludis/elike_package_dep_spec.hh>
@@ -688,23 +689,23 @@ paludis::erepository::parse_dependency_label(const std::string & s, const EAPI &
             throw EDepParseError(s, "Unknown label '" + *it + "'");
 
         if (c == "DependenciesBuildLabel")
-            l->add_label(make_shared_ptr(new DependenciesBuildLabel(*it)));
+            l->add_label(make_shared_ptr(new DependenciesBuildLabel(*it, return_literal_function(true))));
         else if (c == "DependenciesRunLabel")
-            l->add_label(make_shared_ptr(new DependenciesRunLabel(*it)));
+            l->add_label(make_shared_ptr(new DependenciesRunLabel(*it, return_literal_function(true))));
         else if (c == "DependenciesPostLabel")
-            l->add_label(make_shared_ptr(new DependenciesPostLabel(*it)));
+            l->add_label(make_shared_ptr(new DependenciesPostLabel(*it, return_literal_function(true))));
         else if (c == "DependenciesInstallLabel")
-            l->add_label(make_shared_ptr(new DependenciesInstallLabel(*it)));
+            l->add_label(make_shared_ptr(new DependenciesInstallLabel(*it, return_literal_function(true))));
         else if (c == "DependenciesCompileAgainstLabel")
-            l->add_label(make_shared_ptr(new DependenciesCompileAgainstLabel(*it)));
+            l->add_label(make_shared_ptr(new DependenciesCompileAgainstLabel(*it, return_literal_function(true))));
         else if (c == "DependenciesFetchLabel")
-            l->add_label(make_shared_ptr(new DependenciesFetchLabel(*it)));
+            l->add_label(make_shared_ptr(new DependenciesFetchLabel(*it, return_literal_function(true))));
         else if (c == "DependenciesSuggestionLabel")
-            l->add_label(make_shared_ptr(new DependenciesSuggestionLabel(*it)));
+            l->add_label(make_shared_ptr(new DependenciesSuggestionLabel(*it, return_literal_function(true))));
         else if (c == "DependenciesRecommendationLabel")
-            l->add_label(make_shared_ptr(new DependenciesRecommendationLabel(*it)));
+            l->add_label(make_shared_ptr(new DependenciesRecommendationLabel(*it, return_literal_function(true))));
         else if (c == "DependenciesTestLabel")
-            l->add_label(make_shared_ptr(new DependenciesTestLabel(*it)));
+            l->add_label(make_shared_ptr(new DependenciesTestLabel(*it, return_literal_function(true))));
         else
             throw EDepParseError(s, "Label '" + *it + "' maps to unknown class '" + c + "'");
     }

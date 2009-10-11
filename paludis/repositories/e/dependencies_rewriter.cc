@@ -21,6 +21,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/return_literal_function.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
@@ -73,8 +74,8 @@ namespace paludis
         Implementation() :
             default_labels(new DependenciesLabelSequence)
         {
-            default_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("build")));
-            default_labels->push_back(make_shared_ptr(new DependenciesRunLabel("run")));
+            default_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("build", return_literal_function(true))));
+            default_labels->push_back(make_shared_ptr(new DependenciesRunLabel("run", return_literal_function(true))));
             labels.push_front(default_labels);
         }
     };

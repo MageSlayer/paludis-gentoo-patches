@@ -26,6 +26,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/return_literal_function.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_spec.hh>
@@ -190,8 +191,10 @@ namespace paludis
             rdep(new virtuals::VirtualsDepKey(e, "RDEPEND", "Run dependencies", p, rdep_labels, b)),
             has_masks(false)
         {
-            bdep_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("DEPEND")));
-            rdep_labels->push_back(make_shared_ptr(new DependenciesRunLabel("RDEPEND")));
+            bdep_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("DEPEND",
+                            return_literal_function(true))));
+            rdep_labels->push_back(make_shared_ptr(new DependenciesRunLabel("RDEPEND",
+                            return_literal_function(true))));
         }
     };
 }

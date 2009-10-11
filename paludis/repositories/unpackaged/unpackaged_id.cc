@@ -30,6 +30,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/return_literal_function.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -90,8 +91,10 @@ namespace paludis
             description_key(new LiteralMetadataValueKey<std::string> ("description", "Description", mkt_significant, d)),
             choices_key(new UnpackagedChoicesKey(env, "choices", "Choices", mkt_normal, id))
         {
-            build_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("build_dependencies")));
-            run_dependencies_labels->push_back(make_shared_ptr(new DependenciesRunLabel("run_dependencies")));
+            build_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("build_dependencies",
+                            return_literal_function(true))));
+            run_dependencies_labels->push_back(make_shared_ptr(new DependenciesRunLabel("run_dependencies",
+                            return_literal_function(true))));
         }
     };
 }

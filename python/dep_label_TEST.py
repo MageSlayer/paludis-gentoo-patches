@@ -49,14 +49,14 @@ class TestCase_01_URILabels(unittest.TestCase):
 class TestCase_02_DependenciesLabels(unittest.TestCase):
     def setUp(self):
         self.list = []
-        self.list.append((DependenciesBuildLabel("foo"), DependenciesLabel))
-        self.list.append((DependenciesRunLabel("foo"), DependenciesLabel))
-        self.list.append((DependenciesPostLabel("foo"), DependenciesLabel))
-        self.list.append((DependenciesCompileAgainstLabel("foo"), DependenciesLabel))
-        self.list.append((DependenciesInstallLabel("foo"), DependenciesLabel))
-        self.list.append((DependenciesFetchLabel("foo"), DependenciesLabel))
-        self.list.append((DependenciesSuggestionLabel("foo"), DependenciesLabel))
-        self.list.append((DependenciesRecommendationLabel("foo"), DependenciesLabel))
+        self.list.append((DependenciesBuildLabel("foo", True), DependenciesLabel))
+        self.list.append((DependenciesRunLabel("foo", True), DependenciesLabel))
+        self.list.append((DependenciesPostLabel("foo", True), DependenciesLabel))
+        self.list.append((DependenciesCompileAgainstLabel("foo", True), DependenciesLabel))
+        self.list.append((DependenciesInstallLabel("foo", True), DependenciesLabel))
+        self.list.append((DependenciesFetchLabel("foo", True), DependenciesLabel))
+        self.list.append((DependenciesSuggestionLabel("foo", True), DependenciesLabel))
+        self.list.append((DependenciesRecommendationLabel("foo", True), DependenciesLabel))
 
     def test_01_no_create(self):
         self.assertRaises(Exception, DependenciesLabel)

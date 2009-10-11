@@ -34,6 +34,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/return_literal_function.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -423,8 +424,10 @@ namespace paludis
             slot_key(new LiteralMetadataValueKey<SlotName> ("slot", "Slot", mkt_internal, s)),
             fs_location_key(new InstalledUnpackagedFSEntryKey(l))
         {
-            build_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("build_dependencies")));
-            run_dependencies_labels->push_back(make_shared_ptr(new DependenciesRunLabel("run_dependencies")));
+            build_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("build_dependencies",
+                            return_literal_function(true))));
+            run_dependencies_labels->push_back(make_shared_ptr(new DependenciesRunLabel("run_dependencies",
+                            return_literal_function(true))));
 
             if ((l / "contents").exists())
             {

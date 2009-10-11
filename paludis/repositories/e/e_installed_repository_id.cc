@@ -43,6 +43,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/return_literal_function.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/user_dep_spec.hh>
@@ -139,12 +140,17 @@ namespace paludis
             run_dependencies_labels(new DependenciesLabelSequence),
             post_dependencies_labels(new DependenciesLabelSequence)
         {
-            raw_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("build")));
-            raw_dependencies_labels->push_back(make_shared_ptr(new DependenciesRunLabel("run")));
+            raw_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("build",
+                            return_literal_function(true))));
+            raw_dependencies_labels->push_back(make_shared_ptr(new DependenciesRunLabel("run",
+                            return_literal_function(true))));
 
-            build_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("DEPEND")));
-            run_dependencies_labels->push_back(make_shared_ptr(new DependenciesRunLabel("RDEPEND")));
-            post_dependencies_labels->push_back(make_shared_ptr(new DependenciesPostLabel("PDEPEND")));
+            build_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("DEPEND",
+                            return_literal_function(true))));
+            run_dependencies_labels->push_back(make_shared_ptr(new DependenciesRunLabel("RDEPEND",
+                            return_literal_function(true))));
+            post_dependencies_labels->push_back(make_shared_ptr(new DependenciesPostLabel("PDEPEND",
+                            return_literal_function(true))));
         }
     };
 }

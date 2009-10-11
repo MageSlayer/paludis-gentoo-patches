@@ -70,8 +70,10 @@ DependenciesLabel::~DependenciesLabel()
 }
 
 template <typename T_>
-ConcreteDependenciesLabel<T_>::ConcreteDependenciesLabel(const std::string & t) :
-    _text(t)
+ConcreteDependenciesLabel<T_>::ConcreteDependenciesLabel(const std::string & t,
+        const std::tr1::function<bool ()> & e) :
+    _text(t),
+    _enabled(e)
 {
 }
 
@@ -85,6 +87,13 @@ const std::string
 ConcreteDependenciesLabel<T_>::text() const
 {
     return _text;
+}
+
+template <typename T_>
+bool
+ConcreteDependenciesLabel<T_>::enabled() const
+{
+    return _enabled();
 }
 
 template class InstantiationPolicy<DependenciesLabel, instantiation_method::NonCopyableTag>;

@@ -22,10 +22,20 @@
 #include <python/iterable.hh>
 
 #include <paludis/dep_label.hh>
+#include <paludis/util/return_literal_function.hh>
 
 using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
+
+namespace
+{
+    template <typename T_>
+    T_ * make_concrete_dependencies_label(const std::string & t, const bool b)
+    {
+        return new T_(t, return_literal_function(b));
+    }
+}
 
 template <typename L_>
 struct class_concrete_uri_label :
@@ -52,9 +62,14 @@ struct class_concrete_dependencies_label :
         (
          name.c_str(),
          "A concrete dependencies label class.",
-         bp::init<const std::string &>("__init__(string)")
+         bp::no_init
         )
     {
+        def("__init__",
+                bp::make_constructor(&make_concrete_dependencies_label<L_>),
+                "__init__(String, bool)"
+           );
+
         bp::implicitly_convertible<std::tr1::shared_ptr<L_>, std::tr1::shared_ptr<DependenciesLabel> >();
     }
 };

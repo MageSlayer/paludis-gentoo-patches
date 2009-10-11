@@ -20,6 +20,7 @@
 #include <paludis/repositories/accounts/accounts_dep_key.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/return_literal_function.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
@@ -57,8 +58,8 @@ namespace paludis
                 tree->root()->append(spec);
             }
 
-            initial_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("build")));
-            initial_labels->push_back(make_shared_ptr(new DependenciesRunLabel("run")));
+            initial_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("build", return_literal_function(true))));
+            initial_labels->push_back(make_shared_ptr(new DependenciesRunLabel("run", return_literal_function(true))));
         }
     };
 }
