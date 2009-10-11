@@ -352,14 +352,14 @@ paludis::operator<< (std::ostream & s, const ConditionalDepSpec & a)
 std::ostream &
 paludis::operator<< (std::ostream & s, const URILabelsDepSpec & l)
 {
-    s << join(indirect_iterator(l.begin()), indirect_iterator(l.end()), ",") << ":";
+    s << join(indirect_iterator(l.begin()), indirect_iterator(l.end()), "+") << ":";
     return s;
 }
 
 std::ostream &
 paludis::operator<< (std::ostream & s, const DependenciesLabelsDepSpec & l)
 {
-    s << join(indirect_iterator(l.begin()), indirect_iterator(l.end()), ",") << ":";
+    s << join(indirect_iterator(l.begin()), indirect_iterator(l.end()), "+") << ":";
     return s;
 }
 
