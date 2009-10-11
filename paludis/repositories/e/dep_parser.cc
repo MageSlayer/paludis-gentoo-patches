@@ -687,7 +687,7 @@ paludis::erepository::parse_dependency_label(const std::string & s, const EAPI &
     {
         if (std::string::npos != it->find(','))
         {
-            Log::get_instance()->message("e.dep_parser.obsolete_label_syntax", ll_warning, lc_no_context)
+            Log::get_instance()->message("e.dep_parser.obsolete_label_syntax", ll_warning, lc_context)
                 << "Label '" << *it << "' uses commas, which are obsolete, so treating it as a build label instead";
             l->add_label(make_shared_ptr(new DependenciesBuildLabel(*it, return_literal_function(true))));
             continue;
@@ -717,7 +717,7 @@ paludis::erepository::parse_dependency_label(const std::string & s, const EAPI &
             l->add_label(make_shared_ptr(new DependenciesTestLabel(*it, return_literal_function(true))));
         else if (c == "WarnAndIgnore")
         {
-            Log::get_instance()->message("e.dep_parser.obsolete_label", ll_warning, lc_no_context)
+            Log::get_instance()->message("e.dep_parser.obsolete_label", ll_warning, lc_context)
                 << "Label '" << *it << "' no longer exists, pretending it's a build label instead";
             l->add_label(make_shared_ptr(new DependenciesBuildLabel(*it, return_literal_function(true))));
         }
