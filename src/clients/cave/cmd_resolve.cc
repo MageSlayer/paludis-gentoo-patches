@@ -711,13 +711,27 @@ namespace
 
     bool
     take_dependency_fn(const Environment * const,
-            const ResolveCommandLine &,
+            const ResolveCommandLine & cmdline,
             const Resolvent &,
             const SanitisedDependency & dep,
             const std::tr1::shared_ptr<const Reason> &)
     {
         if (is_suggestion(dep))
+        {
+            if (cmdline.resolution_options.a_suggestions.argument() == "take")
+            {
+                return true;
+            }
             return false;
+        }
+        if (is_recommendation(dep))
+        {
+            if (cmdline.resolution_options.a_recommendations.argument() == "take")
+            {
+                return true;
+            }
+            return false;
+        }
 
         return true;
     }

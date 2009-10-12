@@ -122,21 +122,21 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             "Ignore dependencies (except compiled-against dependencies, which are already taken) "
             "for installed packages. (default if --lazy)", true),
 
-//
-//            g_suggestion_options(this, "Suggestion Options", "Control whether suggestions are taken. Suggestions that are "
-//                    "already installed are instead treated as hard dependencies."),
-//            a_suggestions(&g_suggestion_options, "suggestions", '\0', "How to treat suggestions and recommendations",
-//                    args::EnumArg::EnumArgOptions
-//                    ("ignore",                     "Ignore suggestions")
-//                    ("display",                    "Display suggestions, but do not take them unless explicitly told to do so")
-//                    ("take",                       "Take all suggestions"),
-//                    "display"),
-//            a_recommendations(&g_suggestion_options, "recommendations", '\0', "How to treat recommendations",
-//                    args::EnumArg::EnumArgOptions
-//                    ("ignore",                     "Ignore recommendations")
-//                    ("display",                    "Display recommendations, but do not take them unless explicitly told to do so")
-//                    ("take",                       "Take all recommendations"),
-//                    "take"),
+
+    g_suggestion_options(this, "Suggestion Options", "Control whether suggestions are taken. Suggestions that are "
+            "already installed are instead treated as hard dependencies."),
+    a_suggestions(&g_suggestion_options, "suggestions", '\0', "How to treat suggestions and recommendations",
+            args::EnumArg::EnumArgOptions
+            ("ignore",                     "Ignore suggestions")
+            ("display",                    "Display suggestions, but do not take them unless explicitly told to do so")
+            ("take",                       "Take all suggestions"),
+            "display"),
+    a_recommendations(&g_suggestion_options, "recommendations", '\0', "How to treat recommendations",
+            args::EnumArg::EnumArgOptions
+            ("ignore",                     "Ignore recommendations")
+            ("display",                    "Display recommendations, but do not take them unless explicitly told to do so")
+            ("take",                       "Take all recommendations"),
+            "take"),
 //            a_take(&g_suggestion_options, "take", '\0', "Take any suggestion matching the supplied package specification"
 //                    " (e.g. --take 'app-vim/securemodelines' or --take 'app-vim/*')"),
 //            a_take_from(&g_suggestion_options, "take-from", '\0', "Take all suggestions made by any package matching the "
