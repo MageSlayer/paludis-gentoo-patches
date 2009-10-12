@@ -1351,7 +1351,8 @@ REPOSITORY_GROUP_IF(dummy)
 dnl }}}
 
 dnl {{{ environments
-ALL_ENVIRONMENTS="no_config paludis portage test"
+m4_define(ALL_ENVIRONMENTS_m4, [no_config,paludis,portage,test])
+ALL_ENVIRONMENTS=`echo ALL_ENVIRONMENTS_m4 | tr , ' '`
 DEFAULT_ENVIRONMENTS="no_config paludis test"
 AC_MSG_CHECKING([which environments to build...])
 AC_ARG_WITH([environments],
@@ -1374,6 +1375,28 @@ AC_MSG_RESULT([$environments])
 BUILD_ENVIRONMENTS="$environments"
 AC_SUBST([ALL_ENVIRONMENTS])
 AC_SUBST([BUILD_ENVIRONMENTS])
+
+AC_DEFUN([ENVIRONMENT_GROUP_IF], [
+if echo $environments | tr ' ' '\n' | grep '^$1$' >/dev/null ; then
+	AC_DEFINE_UNQUOTED([ENVIRONMENT_GROUP_IF_$1], [$1], [The $1 environment])
+else
+	AC_DEFINE_UNQUOTED([ENVIRONMENT_GROUP_IF_$1], [], [Do not have the $1 environment])
+fi
+	])
+
+m4_foreach(envname, [ALL_ENVIRONMENTS_m4], [
+ENVIRONMENT_GROUP_IF(envname)
+])
+
+AC_DEFINE_UNQUOTED(ENVIRONMENT_GROUPS_DECLS,
+	m4_foreach(envname,
+			[ALL_ENVIRONMENTS_m4],
+			[ struct envname; ] ) struct semicolon_goes_where { },
+	[Our environment groups])
+
+dnl make sure the code works even if everything's enabled
+ENVIRONMENT_GROUP_IF(dummy)
+
 dnl }}}
 
 dnl {{{ distribution

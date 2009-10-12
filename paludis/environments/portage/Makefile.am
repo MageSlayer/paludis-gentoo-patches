@@ -9,25 +9,16 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-libpaludisportageenvironment_@PALUDIS_PC_SLOT@_la_SOURCES = \
+libpaludisportageenvironment_la_SOURCES = \
 	registration.cc \
 	portage_environment.cc portage_environment.hh
-
-libpaludisportageenvironment_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
-
-libpaludisportageenvironment_@PALUDIS_PC_SLOT@_la_LIBADD = \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la
-
-libenvdir = $(libdir)/paludis/environments
 
 libexecenvdir = $(libexecdir)/paludis/environments/portage/
 libexecenv_SCRIPTS = bashrc
 
-libenv_LTLIBRARIES = libpaludisportageenvironment_@PALUDIS_PC_SLOT@.la
+noinst_LTLIBRARIES = libpaludisportageenvironment.la
 
-paludis_environment_portage_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/environments/portage
-paludis_environment_portage_include_HEADERS = \
+noinst_HEADERS = \
 	portage_environment.hh
 
 EXTRA_DIST = \
@@ -65,7 +56,6 @@ TESTS_ENVIRONMENT = env \
 
 portage_environment_TEST_SOURCES = portage_environment_TEST.cc
 portage_environment_TEST_LDADD = \
-	libpaludisportageenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \

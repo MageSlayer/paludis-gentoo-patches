@@ -19,7 +19,6 @@ $1_TEST_LDADD = \
 	ihateautomake.o \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
@@ -81,7 +80,7 @@ EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
 	testscriptlist srlist srcleanlist selist secleanlist \
 	hooker.bash \
 	stripper_TEST_binary.cc
-SUBDIRS = distributions fetchers syncers util selinux repositories . environments args resolver
+SUBDIRS = distributions fetchers syncers util selinux repositories environments . args resolver
 BUILT_SOURCES = srcleanlist secleanlist
 
 libpaludis_@PALUDIS_PC_SLOT@_la_SOURCES = filelist
@@ -115,6 +114,10 @@ libpaludis_@PALUDIS_PC_SLOT@_la_LIBADD = \
 	$(top_builddir)/paludis/repositories/unpackaged/libpaludisunpackagedrepository.la \
 	$(top_builddir)/paludis/repositories/unwritten/libpaludisunwrittenrepository.la \
 	$(top_builddir)/paludis/repositories/virtuals/libpaludisvirtualsrepository.la \
+	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
+	$(top_builddir)/paludis/environments/paludis/libpaludispaludisenvironment.la \
+	$(top_builddir)/paludis/environments/portage/libpaludisportageenvironment.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	@DYNAMIC_LD_LIBS@ \
 	$(PTHREAD_LIBS)
@@ -129,7 +132,6 @@ dep_list_TEST_blockers_LDADD = \
 	ihateautomake.o \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)

@@ -7,29 +7,11 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-libpaludistestenvironment_@PALUDIS_PC_SLOT@_la_SOURCES = \
+libpaludistestenvironment_la_SOURCES = \
 	test_environment.cc test_environment.hh \
 	registration.cc
 
-libpaludistestenvironment_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
-
-if ! MONOLITHIC
-
-libpaludistestenvironment_@PALUDIS_PC_SLOT@_la_LIBADD = \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la
-
-endif
-
-if MONOLITHIC
-
-noinst_LTLIBRARIES = libpaludistestenvironment_@PALUDIS_PC_SLOT@.la
-
-else
-
-lib_LTLIBRARIES = libpaludistestenvironment_@PALUDIS_PC_SLOT@.la
-
-endif
+noinst_LTLIBRARIES = libpaludistestenvironment.la
 
 paludis_environment_test_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/environments/test
 paludis_environment_test_include_HEADERS = test_environment.hh
@@ -44,3 +26,4 @@ distcheck-deps : distcheck-deps-subdirs
 distcheck-deps-subdirs :
 	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
+

@@ -184,10 +184,7 @@ endif
 
 libpaludispython_@PALUDIS_PC_SLOT@_la_LIBADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/environments/paludis/libpaludispaludisenvironment_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la
 
 libadditionaltests_@PALUDIS_PC_SLOT@_la_SOURCES = additional_tests.hh additional_tests.cc
 libadditionaltests_@PALUDIS_PC_SLOT@_la_LIBADD = $(libpaludispython_@PALUDIS_PC_SLOT@_la_LIBADD)

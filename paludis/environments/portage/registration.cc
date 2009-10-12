@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,6 +20,7 @@
 #include <paludis/environment_factory.hh>
 #include <paludis/environments/portage/portage_environment.hh>
 #include <paludis/util/set.hh>
+#include "config.h"
 
 using namespace paludis;
 
@@ -32,12 +33,19 @@ namespace
     }
 }
 
-extern "C" void paludis_initialise_environment_so(EnvironmentFactory * const) PALUDIS_VISIBLE;
-
-void paludis_initialise_environment_so(EnvironmentFactory * const factory)
+namespace paludis
 {
-    std::tr1::shared_ptr<Set<std::string> > portage_formats(new Set<std::string>);
-    portage_formats->insert("portage");
-    factory->add_environment_format(portage_formats, &make_portage_environment);
+    namespace environment_groups
+    {
+        ENVIRONMENT_GROUPS_DECLS;
+    }
+
+    template <>
+    void register_environment<environment_groups::portage>(EnvironmentFactory * const factory)
+    {
+        std::tr1::shared_ptr<Set<std::string> > portage_formats(new Set<std::string>);
+        portage_formats->insert("portage");
+        factory->add_environment_format(portage_formats, &make_portage_environment);
+    }
 }
 

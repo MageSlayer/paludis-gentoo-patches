@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,8 +31,6 @@
 #include <paludis/distribution.hh>
 #include <paludis/about.hh>
 #include <tr1/unordered_map>
-#include <dlfcn.h>
-#include <stdint.h>
 #include <list>
 #include "config.h"
 
@@ -46,17 +44,29 @@ namespace paludis
     struct Implementation<EnvironmentFactory>
     {
         Keys keys;
-        std::list<void *> dl_opened;
     };
+
+    namespace environment_groups
+    {
+        ENVIRONMENT_GROUPS_DECLS;
+    }
+
+    template <>
+    void register_environment<NoType<0u> >(EnvironmentFactory * const)
+    {
+    }
 }
 
 EnvironmentFactory::EnvironmentFactory() :
     PrivateImplementationPattern<EnvironmentFactory>(new Implementation<EnvironmentFactory>)
 {
-    FSEntry so_dir(getenv_with_default("PALUDIS_ENVIRONMENT_SO_DIR", LIBDIR "/paludis/environments"));
-    if (! so_dir.is_directory())
-        throw InternalError(PALUDIS_HERE, "PALUDIS_ENVIRONMENT_SO_DIR '" + stringify(so_dir) + "' not a directory");
-    _load_dir(so_dir);
+    using namespace environment_groups;
+
+    register_environment<ENVIRONMENT_GROUP_IF_dummy>(this);
+    register_environment<ENVIRONMENT_GROUP_IF_no_config>(this);
+    register_environment<ENVIRONMENT_GROUP_IF_paludis>(this);
+    register_environment<ENVIRONMENT_GROUP_IF_portage>(this);
+    register_environment<ENVIRONMENT_GROUP_IF_test>(this);
 }
 
 EnvironmentFactory::~EnvironmentFactory()
@@ -106,43 +116,6 @@ EnvironmentFactory::create(const std::string & s) const
         else
             throw;
     }
-}
-
-void
-EnvironmentFactory::_load_dir(const FSEntry & so_dir)
-{
-    for (DirIterator d(so_dir), d_end ; d != d_end ; ++d)
-    {
-        if (d->is_directory())
-            _load_dir(*d);
-
-        if (! is_file_with_extension(*d, "_" + stringify(PALUDIS_PC_SLOT) + ".so." +
-                    stringify(100 * PALUDIS_VERSION_MAJOR + PALUDIS_VERSION_MINOR),
-                    IsFileWithOptions()))
-            continue;
-
-        /* don't use RTLD_LOCAL, g++ is over happy about template instantiations, and it
-         * can lead to multiple singleton instances. */
-        void * dl(dlopen(stringify(*d).c_str(), RTLD_GLOBAL | RTLD_NOW));
-
-        if (dl)
-        {
-            _imp->dl_opened.push_back(dl);
-
-            void * reg(dlsym(dl, "paludis_initialise_environment_so"));
-            if (reg)
-            {
-                reinterpret_cast<void (*)(EnvironmentFactory * const)>(reinterpret_cast<uintptr_t>(reg))(this);
-            }
-            else
-                throw InternalError(PALUDIS_HERE, "No paludis_initialise_environment_so function defined in '" + stringify(*d) + "'");
-        }
-        else
-            throw InternalError(PALUDIS_HERE, "Couldn't dlopen '" + stringify(*d) + "': " + stringify(dlerror()));
-    }
-
-    if ((so_dir / ".libs").is_directory())
-        _load_dir(so_dir / ".libs");
 }
 
 void
