@@ -11,42 +11,31 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-paludis_repositories_libdir = $(libdir)/paludis/repositories
-paludis_repositories_lib_LTLIBRARIES = libpaludisunavailablerepository_@PALUDIS_PC_SLOT@.la
+noinst_LTLIBRARIES = libpaludisunavailablerepository.la
 
-paludis_repositories_unavailable_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/unavailable/
-libpaludisunavailablerepository_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
-
-paludis_repositories_unavailable_include_HEADERS = \
+noinst_HEADERS = \
 	unavailable_repository.hh unavailable_repository-fwd.hh \
 	unavailable_id.hh \
 	unavailable_mask.hh \
 	unavailable_repository_store.hh \
 	unavailable_repository_file.hh unavailable_repository_file-fwd.hh
 
-libpaludisunavailablerepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
+libpaludisunavailablerepository_la_SOURCES = \
 	unavailable_repository.cc \
 	unavailable_id.cc \
 	unavailable_mask.cc \
 	unavailable_repository_store.cc \
 	unavailable_repository_file.cc \
 	registration.cc \
-	$(paludis_repositories_unavailable_include_HEADERS)
-
-libpaludisunavailablerepository_@PALUDIS_PC_SLOT@_la_LIBADD = \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(DYNAMIC_LD_LIBS)
+	$(noinst_HEADERS)
 
 unavailable_repository_TEST_SOURCES = unavailable_repository_TEST.cc
 
 unavailable_repository_TEST_LDADD = \
-	libpaludisunavailablerepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 

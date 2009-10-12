@@ -1284,7 +1284,8 @@ AC_SUBST([VIM_INSTALL_DIR])
 dnl }}}
 
 dnl {{{ repositories
-ALL_REPOSITORIES="accounts cran e fake gems unavailable unpackaged unwritten virtuals"
+m4_define(ALL_REPOSITORIES_m4, [accounts,cran,e,fake,gems,unavailable,unpackaged,unwritten,virtuals])
+ALL_REPOSITORIES=`echo ALL_REPOSITORIES_m4 | tr , ' '`
 DEFAULT_REPOSITORIES="e fake unavailable unpackaged unwritten virtuals"
 AC_MSG_CHECKING([which repositories to build...])
 AC_ARG_WITH([repositories],
@@ -1326,10 +1327,27 @@ if echo $repositories | tr ' ' '\n' | grep '^virtuals$' >/dev/null ; then
 fi
 AM_CONDITIONAL([ENABLE_VIRTUALS_REPOSITORY], test "x$enable_virtuals_repository" = "xyes")
 
-if echo $repositories | tr ' ' '\n' | grep '^gems$' >/dev/null ; then
-	need_syck_check=yes
-	need_gem_check=yes
+AC_DEFUN([REPOSITORY_GROUP_IF], [
+if echo $repositories | tr ' ' '\n' | grep '^$1$' >/dev/null ; then
+	AC_DEFINE_UNQUOTED([REPOSITORY_GROUP_IF_$1], [$1], [The $1 repository])
+else
+	AC_DEFINE_UNQUOTED([REPOSITORY_GROUP_IF_$1], [], [Do not have the $1 repository])
 fi
+	])
+
+m4_foreach(reponame, [ALL_REPOSITORIES_m4], [
+REPOSITORY_GROUP_IF(reponame)
+])
+
+AC_DEFINE_UNQUOTED(REPOSITORY_GROUPS_DECLS,
+	m4_foreach(reponame,
+			[ALL_REPOSITORIES_m4],
+			[ struct reponame; ] ) struct semicolon_goes_where { },
+	[Our repository groups])
+
+dnl make sure the code works even if everything's enabled
+REPOSITORY_GROUP_IF(dummy)
+
 dnl }}}
 
 dnl {{{ environments

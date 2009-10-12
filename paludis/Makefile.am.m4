@@ -20,7 +20,6 @@ $1_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
 	libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
@@ -82,7 +81,7 @@ EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
 	testscriptlist srlist srcleanlist selist secleanlist \
 	hooker.bash \
 	stripper_TEST_binary.cc
-SUBDIRS = distributions fetchers syncers util selinux . repositories environments args resolver
+SUBDIRS = distributions fetchers syncers util selinux repositories . environments args resolver
 BUILT_SOURCES = srcleanlist secleanlist
 
 libpaludis_@PALUDIS_PC_SLOT@_la_SOURCES = filelist
@@ -107,6 +106,15 @@ libpaludissohooks_TEST_@PALUDIS_PC_SLOT@_la_LIBADD = libpaludis_@PALUDIS_PC_SLOT
 
 libpaludis_@PALUDIS_PC_SLOT@_la_LIBADD = \
 	$(top_builddir)/paludis/selinux/libpaludisselinux_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/repositories/accounts/libpaludisaccountsrepository.la \
+	$(top_builddir)/paludis/repositories/cran/libpaludiscranrepository.la \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
+	$(top_builddir)/paludis/repositories/gems/libpaludisgemsrepository.la \
+	$(top_builddir)/paludis/repositories/unavailable/libpaludisunavailablerepository.la \
+	$(top_builddir)/paludis/repositories/unpackaged/libpaludisunpackagedrepository.la \
+	$(top_builddir)/paludis/repositories/unwritten/libpaludisunwrittenrepository.la \
+	$(top_builddir)/paludis/repositories/virtuals/libpaludisvirtualsrepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	@DYNAMIC_LD_LIBS@ \
 	$(PTHREAD_LIBS)
@@ -122,7 +130,6 @@ dep_list_TEST_blockers_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
 	libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)

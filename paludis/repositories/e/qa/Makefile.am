@@ -28,8 +28,7 @@ dist_paludis_qa_data_DATA = \
 	spec_keys_pds_blacklist.SDEPEND.conf \
 	spec_keys_pds_blacklist.PROVIDE.conf
 
-paludis_repositories_e_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/e/
-paludis_repositories_e_include_HEADERS = \
+noinst_HEADERS = \
 	eapi_supported.hh \
 	metadata_keys.hh \
 	extractors.hh \
@@ -65,6 +64,9 @@ paludis_repositories_e_include_HEADERS = \
 	categories.hh
 
 lib_LTLIBRARIES = libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la
+
+libpaludiserepositoryqa_@PALUDIS_PC_SLOT@_la_LDFLAGS = \
+	$(PCRECPPDEPS_LIBS)
 
 libpaludiserepositoryqa_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	qa.cc \
@@ -102,15 +104,6 @@ libpaludiserepositoryqa_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	repo_name.cc \
 	categories.cc \
 	$(paludis_repositories_e_include_HEADERS)
-
-libpaludiserepositoryqa_@PALUDIS_PC_SLOT@_la_LDFLAGS = \
-	-version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 \
-	$(PCRECPPDEPS_LIBS)
-
-libpaludiserepositoryqa_@PALUDIS_PC_SLOT@_la_LIBADD = \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la
 
 dist_check_SCRIPTS = \
 	visibility_TEST_setup.sh \
@@ -153,7 +146,6 @@ TESTS = \
 	extractors_TEST \
 	homepage_key_TEST \
 	spec_keys_TEST \
-	stray_files_TEST \
 	default_functions_TEST \
 	kv_variables_TEST \
 	visibility_TEST \
@@ -167,8 +159,6 @@ check_PROGRAMS = $(TESTS)
 spec_keys_TEST_SOURCES = spec_keys_TEST.cc
 spec_keys_TEST_LDADD = \
 	libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
@@ -177,24 +167,9 @@ spec_keys_TEST_LDADD = \
 
 spec_keys_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
-stray_files_TEST_SOURCES = stray_files_TEST.cc
-stray_files_TEST_LDADD = \
-	libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/test/libtest.a
-
-stray_files_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
-
 extractors_TEST_SOURCES = extractors_TEST.cc
 extractors_TEST_LDADD = \
 	libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
@@ -206,8 +181,6 @@ extractors_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 homepage_key_TEST_SOURCES = homepage_key_TEST.cc
 homepage_key_TEST_LDADD = \
 	libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
@@ -219,8 +192,6 @@ homepage_key_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 visibility_TEST_SOURCES = visibility_TEST.cc
 visibility_TEST_LDADD = \
 	libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
@@ -232,8 +203,6 @@ visibility_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 default_functions_TEST_SOURCES = default_functions_TEST.cc
 default_functions_TEST_LDADD = \
 	libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
@@ -245,8 +214,6 @@ default_functions_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 kv_variables_TEST_SOURCES = kv_variables_TEST.cc
 kv_variables_TEST_LDADD = \
 	libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
@@ -258,8 +225,6 @@ kv_variables_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 misc_files_TEST_SOURCES = misc_files_TEST.cc
 misc_files_TEST_LDADD = \
 	libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
@@ -271,8 +236,6 @@ misc_files_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 manifest_TEST_SOURCES = manifest_TEST.cc
 manifest_TEST_LDADD = \
 	libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
@@ -284,8 +247,6 @@ manifest_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 subshell_die_TEST_SOURCES = subshell_die_TEST.cc
 subshell_die_TEST_LDADD = \
 	libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
@@ -297,8 +258,6 @@ subshell_die_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 function_keyword_TEST_SOURCES = function_keyword_TEST.cc
 function_keyword_TEST_LDADD = \
 	libpaludiserepositoryqa_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \

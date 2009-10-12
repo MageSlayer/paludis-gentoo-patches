@@ -11,13 +11,9 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-paludis_repositories_libdir = $(libdir)/paludis/repositories
-paludis_repositories_lib_LTLIBRARIES = libpaludisaccountsrepository_@PALUDIS_PC_SLOT@.la
+noinst_LTLIBRARIES = libpaludisaccountsrepository.la
 
-paludis_repositories_accounts_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/accounts/
-libpaludisaccountsrepository_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
-
-paludis_repositories_accounts_include_HEADERS = \
+noinst_HEADERS = \
 	accounts_exceptions.hh \
 	accounts_handler.hh \
 	accounts_repository.hh \
@@ -29,7 +25,7 @@ paludis_repositories_accounts_include_HEADERS = \
 	accounts_installed_mask.hh \
 	installed_accounts_id.hh
 
-libpaludisaccountsrepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
+libpaludisaccountsrepository_la_SOURCES = \
 	accounts_exceptions.cc \
 	accounts_handler.cc \
 	accounts_repository.cc \
@@ -41,17 +37,11 @@ libpaludisaccountsrepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	dummy_accounts_handler.cc \
 	passwd_accounts_handler.cc \
 	registration.cc \
-	$(paludis_repositories_accounts_include_HEADERS)
-
-libpaludisaccountsrepository_@PALUDIS_PC_SLOT@_la_LIBADD = \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(DYNAMIC_LD_LIBS)
+	$(noinst_HEADERS)
 
 accounts_repository_TEST_SOURCES = accounts_repository_TEST.cc
 
 accounts_repository_TEST_LDADD = \
-	libpaludisaccountsrepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \

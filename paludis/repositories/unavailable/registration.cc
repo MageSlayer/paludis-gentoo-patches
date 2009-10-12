@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,7 @@
 #include <paludis/repositories/unavailable/unavailable_repository.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/destringify.hh>
+#include "config.h"
 
 using namespace paludis;
 using namespace paludis::unavailable_repository;
@@ -36,18 +37,25 @@ namespace
     }
 }
 
-extern "C" void paludis_initialise_repository_so(RepositoryFactory * const factory) PALUDIS_VISIBLE;
-
-void paludis_initialise_repository_so(RepositoryFactory * const factory)
+namespace paludis
 {
-    std::tr1::shared_ptr<Set<std::string> > unavailable_formats(new Set<std::string>);
-    unavailable_formats->insert("unavailable");
+    namespace repository_groups
+    {
+        REPOSITORY_GROUPS_DECLS;
+    }
 
-    factory->add_repository_format(unavailable_formats,
-            &UnavailableRepository::repository_factory_name,
-            &generic_importance,
-            &UnavailableRepository::repository_factory_create,
-            &UnavailableRepository::repository_factory_dependencies
-            );
+    template <>
+    void register_repositories<repository_groups::unavailable>(RepositoryFactory * const factory)
+    {
+        std::tr1::shared_ptr<Set<std::string> > unavailable_formats(new Set<std::string>);
+        unavailable_formats->insert("unavailable");
+
+        factory->add_repository_format(unavailable_formats,
+                &UnavailableRepository::repository_factory_name,
+                &generic_importance,
+                &UnavailableRepository::repository_factory_create,
+                &UnavailableRepository::repository_factory_dependencies
+                );
+    }
 }
 

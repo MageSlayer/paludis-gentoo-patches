@@ -10,13 +10,9 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-paludis_repositories_libdir = $(libdir)/paludis/repositories
-paludis_repositories_lib_LTLIBRARIES = libpaludisunpackagedrepository_@PALUDIS_PC_SLOT@.la
+noinst_LTLIBRARIES = libpaludisunpackagedrepository.la
 
-paludis_repositories_unpackaged_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/unpackaged/
-libpaludisunpackagedrepository_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
-
-paludis_repositories_unpackaged_include_HEADERS = \
+noinst_HEADERS = \
 	dep_parser.hh \
 	dep_printer.hh \
 	exceptions.hh \
@@ -27,7 +23,7 @@ paludis_repositories_unpackaged_include_HEADERS = \
 	installed_repository.hh \
 	installed_id.hh
 
-libpaludisunpackagedrepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
+libpaludisunpackagedrepository_la_SOURCES = \
 	dep_parser.cc \
 	dep_printer.cc \
 	exceptions.cc \
@@ -38,17 +34,11 @@ libpaludisunpackagedrepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	installed_repository.cc \
 	installed_id.cc \
 	registration.cc \
-	$(paludis_repositories_unpackaged_include_HEADERS)
-
-libpaludisunpackagedrepository_@PALUDIS_PC_SLOT@_la_LIBADD = \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(DYNAMIC_LD_LIBS)
+	$(noinst_HEADERS)
 
 unpackaged_repository_TEST_SOURCES = unpackaged_repository_TEST.cc
 
 unpackaged_repository_TEST_LDADD = \
-	libpaludisunpackagedrepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
@@ -61,7 +51,6 @@ unpackaged_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGG
 installed_repository_TEST_SOURCES = installed_repository_TEST.cc
 
 installed_repository_TEST_LDADD = \
-	libpaludisunpackagedrepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
@@ -74,7 +63,6 @@ installed_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGI
 dep_parser_TEST_SOURCES = dep_parser_TEST.cc
 
 dep_parser_TEST_LDADD = \
-	libpaludisunpackagedrepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \

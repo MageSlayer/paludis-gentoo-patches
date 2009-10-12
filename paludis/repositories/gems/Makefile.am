@@ -9,15 +9,11 @@ DEFS = \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-paludis_repositories_libdir = $(libdir)/paludis/repositories
 paludis_gems_libexecdir = $(libexecdir)/paludis/gems
 
-paludis_repositories_lib_LTLIBRARIES = libpaludisgemsrepository_@PALUDIS_PC_SLOT@.la
+noinst_LTLIBRARIES = libpaludisgemsrepository.la
 
-paludis_repositories_gems_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/gems/
-libpaludisgemsrepository_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
-
-paludis_repositories_gems_include_HEADERS = \
+noinst_HEADERS = \
 	gems_repository.hh \
 	installed_gems_repository.hh \
 	exceptions.hh \
@@ -27,7 +23,7 @@ paludis_repositories_gems_include_HEADERS = \
 	params-fwd.hh params.hh \
 	extra_distribution_data.hh
 
-libpaludisgemsrepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
+libpaludisgemsrepository_la_SOURCES = \
 	gems_repository.cc \
 	installed_gems_repository.cc \
 	params.cc \
@@ -37,11 +33,9 @@ libpaludisgemsrepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	gem_specifications.cc \
 	extra_distribution_data.cc \
 	registration.cc \
-	$(paludis_repositories_gems_include_HEADERS)
+	$(noinst_HEADERS)
 
-libpaludisgemsrepository_@PALUDIS_PC_SLOT@_la_LIBADD = \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+libpaludisgemsrepository_la_LIBADD = \
 	-lsyck
 
 gems_repository_TEST_SOURCES = gems_repository_TEST.cc
@@ -51,7 +45,6 @@ gem_specification_TEST_SOURCES = gem_specification_TEST.cc
 gem_specifications_TEST_SOURCES = gem_specifications_TEST.cc
 
 gems_repository_TEST_LDADD = \
-	libpaludisgemsrepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
@@ -60,7 +53,6 @@ gems_repository_TEST_LDADD = \
 	-lsyck
 
 installed_gems_repository_TEST_LDADD = \
-	libpaludisgemsrepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
@@ -69,7 +61,6 @@ installed_gems_repository_TEST_LDADD = \
 	-lsyck
 
 yaml_TEST_LDADD = \
-	libpaludisgemsrepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
@@ -78,7 +69,6 @@ yaml_TEST_LDADD = \
 	-lsyck
 
 gem_specification_TEST_LDADD = \
-	libpaludisgemsrepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
@@ -87,7 +77,6 @@ gem_specification_TEST_LDADD = \
 	-lsyck
 
 gem_specifications_TEST_LDADD = \
-	libpaludisgemsrepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \

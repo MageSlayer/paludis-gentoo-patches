@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,24 +29,6 @@ namespace paludis
 {
     class RepositoryFactory;
     class ERepository;
-}
-
-extern "C"
-{
-    void PALUDIS_VISIBLE paludis_initialise_repository_so(paludis::RepositoryFactory * const);
-
-    void PALUDIS_VISIBLE check_qa(
-            const Environment * const,
-            const std::tr1::shared_ptr<const ERepository> &,
-            const QACheckProperties &,
-            const QACheckProperties &,
-            const QAMessageLevel,
-            QAReporter &,
-            const FSEntry &);
-}
-
-void paludis_initialise_repository_so(paludis::RepositoryFactory * const)
-{
 }
 
 void check_qa(

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,6 +23,7 @@
 #include <paludis/repository_factory.hh>
 #include <paludis/repositories/unpackaged/installed_repository.hh>
 #include <paludis/repositories/unpackaged/unpackaged_repository.hh>
+#include "config.h"
 
 using namespace paludis;
 
@@ -37,31 +38,38 @@ namespace
     }
 }
 
-extern "C" void paludis_initialise_repository_so(RepositoryFactory * const factory) PALUDIS_VISIBLE;
-
-void paludis_initialise_repository_so(RepositoryFactory * const factory)
+namespace paludis
 {
-    std::tr1::shared_ptr<Set<std::string> > unpackaged_formats(new Set<std::string>);
-    unpackaged_formats->insert("unpackaged");
+    namespace repository_groups
+    {
+        REPOSITORY_GROUPS_DECLS;
+    }
 
-    factory->add_repository_format(
-            unpackaged_formats,
-            &UnpackagedRepository::repository_factory_name,
-            &generic_importance,
-            &UnpackagedRepository::repository_factory_create,
-            &UnpackagedRepository::repository_factory_dependencies
-            );
+    template <>
+    void register_repositories<repository_groups::unpackaged>(RepositoryFactory * const factory)
+    {
+        std::tr1::shared_ptr<Set<std::string> > unpackaged_formats(new Set<std::string>);
+        unpackaged_formats->insert("unpackaged");
 
-    std::tr1::shared_ptr<Set<std::string> > installed_unpackaged_formats(new Set<std::string>);
-    installed_unpackaged_formats->insert("installed_unpackaged");
-    installed_unpackaged_formats->insert("installed-unpackaged");
+        factory->add_repository_format(
+                unpackaged_formats,
+                &UnpackagedRepository::repository_factory_name,
+                &generic_importance,
+                &UnpackagedRepository::repository_factory_create,
+                &UnpackagedRepository::repository_factory_dependencies
+                );
 
-    factory->add_repository_format(
-            installed_unpackaged_formats,
-            &InstalledUnpackagedRepository::repository_factory_name,
-            &generic_importance,
-            &InstalledUnpackagedRepository::repository_factory_create,
-            &InstalledUnpackagedRepository::repository_factory_dependencies
-            );
+        std::tr1::shared_ptr<Set<std::string> > installed_unpackaged_formats(new Set<std::string>);
+        installed_unpackaged_formats->insert("installed_unpackaged");
+        installed_unpackaged_formats->insert("installed-unpackaged");
+
+        factory->add_repository_format(
+                installed_unpackaged_formats,
+                &InstalledUnpackagedRepository::repository_factory_name,
+                &generic_importance,
+                &InstalledUnpackagedRepository::repository_factory_create,
+                &InstalledUnpackagedRepository::repository_factory_dependencies
+                );
+    }
 }
 

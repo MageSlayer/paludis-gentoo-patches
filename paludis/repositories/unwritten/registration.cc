@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,7 @@
 #include <paludis/repositories/unwritten/unwritten_repository.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/destringify.hh>
+#include "config.h"
 
 using namespace paludis;
 using namespace paludis::unwritten_repository;
@@ -36,18 +37,25 @@ namespace
     }
 }
 
-extern "C" void paludis_initialise_repository_so(RepositoryFactory * const factory) PALUDIS_VISIBLE;
-
-void paludis_initialise_repository_so(RepositoryFactory * const factory)
+namespace paludis
 {
-    std::tr1::shared_ptr<Set<std::string> > unwritten_formats(new Set<std::string>);
-    unwritten_formats->insert("unwritten");
+    namespace repository_groups
+    {
+        REPOSITORY_GROUPS_DECLS;
+    }
 
-    factory->add_repository_format(unwritten_formats,
-            &UnwrittenRepository::repository_factory_name,
-            &generic_importance,
-            &UnwrittenRepository::repository_factory_create,
-            &UnwrittenRepository::repository_factory_dependencies
-            );
+    template <>
+    void register_repositories<repository_groups::unwritten>(RepositoryFactory * const factory)
+    {
+        std::tr1::shared_ptr<Set<std::string> > unwritten_formats(new Set<std::string>);
+        unwritten_formats->insert("unwritten");
+
+        factory->add_repository_format(unwritten_formats,
+                &UnwrittenRepository::repository_factory_name,
+                &generic_importance,
+                &UnwrittenRepository::repository_factory_create,
+                &UnwrittenRepository::repository_factory_dependencies
+                );
+    }
 }
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -34,8 +34,7 @@
 #include <paludis/about.hh>
 #include <tr1/unordered_map>
 #include <list>
-#include <dlfcn.h>
-#include <stdint.h>
+#include "config.h"
 
 using namespace paludis;
 
@@ -82,57 +81,38 @@ namespace paludis
     struct Implementation<RepositoryFactory>
     {
         Keys keys;
-        std::list<void *> dl_opened;
     };
+
+    namespace repository_groups
+    {
+        REPOSITORY_GROUPS_DECLS;
+    }
+
+    template <>
+    void register_repositories<NoType<0u> >(RepositoryFactory * const)
+    {
+    }
 }
 
 RepositoryFactory::RepositoryFactory() :
     PrivateImplementationPattern<RepositoryFactory>(new Implementation<RepositoryFactory>)
 {
-    FSEntry so_dir(getenv_with_default("PALUDIS_REPOSITORY_SO_DIR", LIBDIR "/paludis/repositories"));
-    if (! so_dir.is_directory())
-        throw InternalError(PALUDIS_HERE, "PALUDIS_REPOSITORY_SO_DIR '" + stringify(so_dir) + "' not a directory");
-    _load_dir(so_dir);
+    using namespace repository_groups;
+
+    register_repositories<REPOSITORY_GROUP_IF_accounts>(this);
+    register_repositories<REPOSITORY_GROUP_IF_cran>(this);
+    register_repositories<REPOSITORY_GROUP_IF_dummy>(this);
+    register_repositories<REPOSITORY_GROUP_IF_e>(this);
+    register_repositories<REPOSITORY_GROUP_IF_gems>(this);
+    register_repositories<REPOSITORY_GROUP_IF_fake>(this);
+    register_repositories<REPOSITORY_GROUP_IF_unavailable>(this);
+    register_repositories<REPOSITORY_GROUP_IF_unwritten>(this);
+    register_repositories<REPOSITORY_GROUP_IF_unpackaged>(this);
+    register_repositories<REPOSITORY_GROUP_IF_virtuals>(this);
 }
 
 RepositoryFactory::~RepositoryFactory()
 {
-}
-
-void
-RepositoryFactory::_load_dir(const FSEntry & so_dir)
-{
-    for (DirIterator d(so_dir), d_end ; d != d_end ; ++d)
-    {
-        if (d->is_directory())
-            _load_dir(*d);
-
-        if (! is_file_with_extension(*d, "_" + stringify(PALUDIS_PC_SLOT) + ".so." + stringify(100 * PALUDIS_VERSION_MAJOR + PALUDIS_VERSION_MINOR),
-                    IsFileWithOptions()))
-            continue;
-
-        /* don't use RTLD_LOCAL, g++ is over happy about template instantiations, and it
-         * can lead to multiple singleton instances. */
-        void * dl(dlopen(stringify(*d).c_str(), RTLD_GLOBAL | RTLD_NOW));
-
-        if (dl)
-        {
-            _imp->dl_opened.push_back(dl);
-
-            void * reg(dlsym(dl, "paludis_initialise_repository_so"));
-            if (reg)
-            {
-                reinterpret_cast<void (*)(RepositoryFactory * const)>(reinterpret_cast<uintptr_t>(reg))(this);
-            }
-            else
-                throw InternalError(PALUDIS_HERE, "No paludis_initialise_repository_so function defined in '" + stringify(*d) + "'");
-        }
-        else
-            throw InternalError(PALUDIS_HERE, "Couldn't dlopen '" + stringify(*d) + "': " + stringify(dlerror()));
-    }
-
-    if ((so_dir / ".libs").is_directory())
-        _load_dir(so_dir / ".libs");
 }
 
 const std::tr1::shared_ptr<Repository>
