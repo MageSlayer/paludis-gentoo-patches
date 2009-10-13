@@ -26,6 +26,7 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/no_type.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/name-fwd.hh>
@@ -43,8 +44,6 @@ namespace paludis
         private:
             RepositoryFactory();
             ~RepositoryFactory();
-
-            void _load_dir(const FSEntry &);
 
         public:
             typedef std::tr1::function<std::string (const std::string &)> KeyFunction;
@@ -153,6 +152,9 @@ namespace paludis
             ConstIterator begin_keys() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator end_keys() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
+
+    template <typename RepositoryClass_ = NoType<0u> >
+    void register_repositories(RepositoryFactory * const);
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<RepositoryFactory>;

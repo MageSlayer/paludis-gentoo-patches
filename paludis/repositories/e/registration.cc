@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,6 +25,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/destringify.hh>
+#include "config.h"
 
 using namespace paludis;
 
@@ -41,42 +42,49 @@ namespace
     }
 }
 
-extern "C" void paludis_initialise_repository_so(RepositoryFactory * const factory) PALUDIS_VISIBLE;
-
-void paludis_initialise_repository_so(RepositoryFactory * const factory)
+namespace paludis
 {
-    std::tr1::shared_ptr<Set<std::string> > ebuild_formats(new Set<std::string>);
-    ebuild_formats->insert("ebuild");
-    ebuild_formats->insert("exheres");
+    namespace repository_groups
+    {
+        REPOSITORY_GROUPS_DECLS;
+    }
 
-    factory->add_repository_format(
-            ebuild_formats,
-            &ERepository::repository_factory_name,
-            &generic_importance,
-            &ERepository::repository_factory_create,
-            &ERepository::repository_factory_dependencies
-            );
+    template <>
+    void register_repositories<repository_groups::e>(RepositoryFactory * const factory)
+    {
+        std::tr1::shared_ptr<Set<std::string> > ebuild_formats(new Set<std::string>);
+        ebuild_formats->insert("ebuild");
+        ebuild_formats->insert("exheres");
 
-    std::tr1::shared_ptr<Set<std::string> > vdb_formats(new Set<std::string>);
-    vdb_formats->insert("vdb");
+        factory->add_repository_format(
+                ebuild_formats,
+                &ERepository::repository_factory_name,
+                &generic_importance,
+                &ERepository::repository_factory_create,
+                &ERepository::repository_factory_dependencies
+                );
 
-    factory->add_repository_format(
-            vdb_formats,
-            &VDBRepository::repository_factory_name,
-            &generic_importance,
-            &VDBRepository::repository_factory_create,
-            &VDBRepository::repository_factory_dependencies
-            );
+        std::tr1::shared_ptr<Set<std::string> > vdb_formats(new Set<std::string>);
+        vdb_formats->insert("vdb");
 
-    std::tr1::shared_ptr<Set<std::string> > exndbam_formats(new Set<std::string>);
-    exndbam_formats->insert("exndbam");
+        factory->add_repository_format(
+                vdb_formats,
+                &VDBRepository::repository_factory_name,
+                &generic_importance,
+                &VDBRepository::repository_factory_create,
+                &VDBRepository::repository_factory_dependencies
+                );
 
-    factory->add_repository_format(
-            exndbam_formats,
-            &ExndbamRepository::repository_factory_name,
-            &generic_importance,
-            &ExndbamRepository::repository_factory_create,
-            &ExndbamRepository::repository_factory_dependencies
-            );
+        std::tr1::shared_ptr<Set<std::string> > exndbam_formats(new Set<std::string>);
+        exndbam_formats->insert("exndbam");
+
+        factory->add_repository_format(
+                exndbam_formats,
+                &ExndbamRepository::repository_factory_name,
+                &generic_importance,
+                &ExndbamRepository::repository_factory_create,
+                &ExndbamRepository::repository_factory_dependencies
+                );
+    }
 }
 

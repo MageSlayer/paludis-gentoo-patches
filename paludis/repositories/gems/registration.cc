@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,6 +28,7 @@
 #include <paludis/util/destringify.hh>
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
+#include "config.h"
 
 using namespace paludis;
 
@@ -42,31 +43,38 @@ namespace
     }
 }
 
-extern "C" void paludis_initialise_repository_so(RepositoryFactory * const factory) PALUDIS_VISIBLE;
-
-void paludis_initialise_repository_so(RepositoryFactory * const factory)
+namespace paludis
 {
-    std::tr1::shared_ptr<Set<std::string> > gems_formats(new Set<std::string>);
-    gems_formats->insert("gems");
+    namespace repository_groups
+    {
+        REPOSITORY_GROUPS_DECLS;
+    }
 
-    factory->add_repository_format(
-            gems_formats,
-            GemsRepository::repository_factory_name,
-            &generic_importance,
-            GemsRepository::repository_factory_create,
-            GemsRepository::repository_factory_dependencies
-            );
+    template <>
+    void register_repositories<repository_groups::gems>(RepositoryFactory * const factory)
+    {
+        std::tr1::shared_ptr<Set<std::string> > gems_formats(new Set<std::string>);
+        gems_formats->insert("gems");
 
-    std::tr1::shared_ptr<Set<std::string> > installed_gems_formats(new Set<std::string>);
-    installed_gems_formats->insert("installed_gems");
-    installed_gems_formats->insert("installed-gems");
+        factory->add_repository_format(
+                gems_formats,
+                GemsRepository::repository_factory_name,
+                &generic_importance,
+                GemsRepository::repository_factory_create,
+                GemsRepository::repository_factory_dependencies
+                );
 
-    factory->add_repository_format(
-            installed_gems_formats,
-            InstalledGemsRepository::repository_factory_name,
-            &generic_importance,
-            InstalledGemsRepository::repository_factory_create,
-            InstalledGemsRepository::repository_factory_dependencies
-            );
+        std::tr1::shared_ptr<Set<std::string> > installed_gems_formats(new Set<std::string>);
+        installed_gems_formats->insert("installed_gems");
+        installed_gems_formats->insert("installed-gems");
+
+        factory->add_repository_format(
+                installed_gems_formats,
+                InstalledGemsRepository::repository_factory_name,
+                &generic_importance,
+                InstalledGemsRepository::repository_factory_create,
+                InstalledGemsRepository::repository_factory_dependencies
+                );
+    }
 }
 

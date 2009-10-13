@@ -11,20 +11,9 @@ DEFS= \
 
 paludis_repositories_libdir = $(libdir)/paludis/repositories
 
-if MONOLITHIC
+noinst_LTLIBRARIES = libpaludiscranrepository.la
 
-noinst_LTLIBRARIES = libpaludiscranrepository_@PALUDIS_PC_SLOT@.la
-
-else
-
-paludis_repositories_lib_LTLIBRARIES = libpaludiscranrepository_@PALUDIS_PC_SLOT@.la
-
-endif
-
-paludis_repositories_cran_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/cran/
-libpaludiscranrepository_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
-
-paludis_repositories_cran_include_HEADERS = \
+noinst_HEADERS = \
 	cran_package_id.hh \
 	cran_dep_parser.hh \
 	cran_repository.hh \
@@ -36,7 +25,7 @@ paludis_repositories_cran_include_HEADERS = \
 	dep_spec_pretty_printer.hh \
 	package_dep_spec.hh
 
-libpaludiscranrepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
+libpaludiscranrepository_la_SOURCES = \
 	cran_package_id.cc \
 	cran_dep_parser.cc \
 	cran_repository.cc \
@@ -50,11 +39,6 @@ libpaludiscranrepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	package_dep_spec.cc \
 	$(paludis_repositories_cran_include_HEADERS)
 
-libpaludiscranrepository_@PALUDIS_PC_SLOT@_la_LIBADD = \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(DYNAMIC_LD_LIBS)
-
 TESTS = \
 	cran_dep_parser_TEST \
 	cran_repository_TEST \
@@ -65,8 +49,9 @@ cran_dep_parser_TEST_SOURCES = cran_dep_parser_TEST.cc
 
 cran_dep_parser_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/test/libtest.a \
-	libpaludiscranrepository_@PALUDIS_PC_SLOT@.la
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/test/libtest.a
 
 cran_dep_parser_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
@@ -75,10 +60,8 @@ cran_installed_repository_TEST_SOURCES = cran_installed_repository_TEST.cc
 cran_installed_repository_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	libpaludiscranrepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
 cran_installed_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
@@ -88,10 +71,8 @@ cran_repository_TEST_SOURCES = cran_repository_TEST.cc
 cran_repository_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	libpaludiscranrepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
 cran_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
@@ -101,10 +82,8 @@ description_file_TEST_SOURCES = description_file_TEST.cc
 description_file_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	libpaludiscranrepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
 description_file_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@

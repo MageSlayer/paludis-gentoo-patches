@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,6 +26,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/set-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/no_type.hh>
 #include <paludis/environment-fwd.hh>
 #include <tr1/memory>
 #include <tr1/functional>
@@ -51,8 +52,6 @@ namespace paludis
         private:
             EnvironmentFactory();
             ~EnvironmentFactory();
-
-            void _load_dir(const FSEntry &);
 
         public:
             typedef std::tr1::function<const std::tr1::shared_ptr<Environment>(const std::string &)> CreateFunction;
@@ -87,6 +86,9 @@ namespace paludis
                     const CreateFunction & create_function
                     );
     };
+
+    template <typename EnvironmentClass_ = NoType<0u> >
+    void register_environment(EnvironmentFactory * const);
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<EnvironmentFactory>;

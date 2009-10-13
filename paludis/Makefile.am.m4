@@ -19,8 +19,6 @@ $1_TEST_LDADD = \
 	ihateautomake.o \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
 	libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
@@ -82,7 +80,7 @@ EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
 	testscriptlist srlist srcleanlist selist secleanlist \
 	hooker.bash \
 	stripper_TEST_binary.cc
-SUBDIRS = distributions fetchers syncers util selinux . repositories environments args resolver
+SUBDIRS = distributions fetchers syncers util selinux repositories environments . args resolver
 BUILT_SOURCES = srcleanlist secleanlist
 
 libpaludis_@PALUDIS_PC_SLOT@_la_SOURCES = filelist
@@ -105,8 +103,43 @@ libpaludissohooks_TEST_@PALUDIS_PC_SLOT@_la_LDFLAGS = -rpath /nowhere -version-i
 
 libpaludissohooks_TEST_@PALUDIS_PC_SLOT@_la_LIBADD = libpaludis_@PALUDIS_PC_SLOT@.la
 
+repositories_libadd =
+
+define(`condrepo', `
+if ENABLE_`'translit($1,`a-z',`A-Z')_REPOSITORY
+repositories_libadd += $(top_builddir)/paludis/repositories/$1/libpaludis$1repository.la
+endif
+')
+
+condrepo(accounts)
+condrepo(cran)
+condrepo(dummy)
+condrepo(e)
+condrepo(fake)
+condrepo(gems)
+condrepo(unavailable)
+condrepo(unpackaged)
+condrepo(unwritten)
+condrepo(virtuals)
+
+environments_libadd =
+
+define(`condenv', `
+if ENABLE_`'translit($1,`a-z',`A-Z')_ENVIRONMENT
+environments_libadd += $(top_builddir)/paludis/environments/$1/libpaludis`'translit($1,_,)environment.la
+endif
+')
+
+condenv(dummy)
+condenv(no_config)
+condenv(paludis)
+condenv(portage)
+condenv(test)
+
 libpaludis_@PALUDIS_PC_SLOT@_la_LIBADD = \
 	$(top_builddir)/paludis/selinux/libpaludisselinux_@PALUDIS_PC_SLOT@.la \
+	$(repositories_libadd) \
+	$(environments_libadd) \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	@DYNAMIC_LD_LIBS@ \
 	$(PTHREAD_LIBS)
@@ -121,8 +154,6 @@ dep_list_TEST_blockers_LDADD = \
 	ihateautomake.o \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
 	libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)

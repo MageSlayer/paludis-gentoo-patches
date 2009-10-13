@@ -7,8 +7,6 @@ DEFS= \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DDATADIR=\"$(datadir)\"
 
-paludis_repositories_libdir = $(libdir)/paludis/repositories
-
 TESTS_ENVIRONMENT = env \
 	PALUDIS_GEMS_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/repositories/gems/`" \
 	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/repositories/e/eapis/" \
@@ -34,8 +32,6 @@ EXTRA_DIST = \
 	dep_parser_TEST.cc
 
 fake_repository_TEST_LDADD = \
-	libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
@@ -44,8 +40,6 @@ fake_repository_TEST_LDADD = \
 fake_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
 fake_installed_repository_TEST_LDADD = \
-	libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
@@ -54,8 +48,6 @@ fake_installed_repository_TEST_LDADD = \
 fake_installed_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
 dep_parser_TEST_LDADD = \
-	libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
@@ -72,21 +64,15 @@ fake_installed_repository_TEST_SOURCES = \
 dep_parser_TEST_SOURCES = \
 	dep_parser_TEST.cc
 
-paludis_repositories_lib_LTLIBRARIES = libpaludisfakerepository_@PALUDIS_PC_SLOT@.la
+noinst_LTLIBRARIES = libpaludisfakerepository.la
 
-libpaludisfakerepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
+libpaludisfakerepository_la_SOURCES = \
 	dep_parser.cc dep_parser.hh \
 	fake_repository_base.cc fake_repository_base.hh \
 	fake_repository.cc fake_repository.hh \
 	fake_installed_repository.cc fake_installed_repository.hh \
 	fake_package_id.cc fake_package_id.hh \
 	registration.cc
-
-libpaludisfakerepository_@PALUDIS_PC_SLOT@_la_LIBADD = \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la
-
-libpaludisfakerepository_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 paludis_repositories_fake_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/fake/
 paludis_repositories_fake_include_HEADERS = \

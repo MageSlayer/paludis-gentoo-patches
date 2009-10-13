@@ -10,7 +10,7 @@ DEFS= \
 	-DLIBDIR=\"$(libdir)\" \
 	-DSHAREDIR=\"$(datarootdir)\"
 
-libpaludispaludisenvironment_@PALUDIS_PC_SLOT@_la_SOURCES = \
+libpaludispaludisenvironment_la_SOURCES = \
 	action_to_string.cc    action_to_string.hh \
 	bashable_conf.cc       bashable_conf.hh \
 	keywords_conf.cc       keywords_conf.hh \
@@ -26,36 +26,17 @@ libpaludispaludisenvironment_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	extra_distribution_data.cc extra_distribution_data.hh \
 	registration.cc
 
-libpaludispaludisenvironment_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
-
 shareenvpaludisdir = $(datarootdir)/paludis/environments/paludis/
 
 dist_shareenvpaludis_DATA = \
 	default_output.conf \
 	tests_output.conf
 
-if ! MONOLITHIC
-
-libpaludispaludisenvironment_@PALUDIS_PC_SLOT@_la_LIBADD = \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la
-
-endif
-
 libenvdir = $(libdir)/paludis/environments
 
-if MONOLITHIC
+noinst_LTLIBRARIES = libpaludispaludisenvironment.la
 
-noinst_LTLIBRARIES = libpaludispaludisenvironment_@PALUDIS_PC_SLOT@.la
-
-else
-
-libenv_LTLIBRARIES = libpaludispaludisenvironment_@PALUDIS_PC_SLOT@.la
-
-endif
-
-paludis_environment_paludis_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/environments/paludis
-paludis_environment_paludis_include_HEADERS = \
+noinst_HEADERS = \
 	paludis_config.hh \
 	paludis_environment.hh \
 	use_conf.hh \
@@ -105,7 +86,6 @@ check_SCRIPTS = paludis_environment_TEST_setup.sh paludis_environment_TEST_clean
 paludis_environment_TEST_SOURCES = paludis_environment_TEST.cc
 
 paludis_environment_TEST_LDADD = \
-	libpaludispaludisenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \

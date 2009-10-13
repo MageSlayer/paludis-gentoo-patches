@@ -11,39 +11,19 @@ DEFS= \
 
 paludis_repositories_libdir = $(libdir)/paludis/repositories
 
-if MONOLITHIC
+noinst_LTLIBRARIES = libpaludisvirtualsrepository.la
 
-noinst_LTLIBRARIES = libpaludisvirtualsrepository_@PALUDIS_PC_SLOT@.la
-
-else
-
-paludis_repositories_lib_LTLIBRARIES = libpaludisvirtualsrepository_@PALUDIS_PC_SLOT@.la
-
-endif
-
-paludis_repositories_virtuals_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/virtuals/
-libpaludisvirtualsrepository_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
-
-paludis_repositories_virtuals_include_HEADERS = \
+noinst_HEADERS = \
 	virtuals_repository.hh \
 	installed_virtuals_repository.hh \
 	package_id.hh
 
-libpaludisvirtualsrepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
+libpaludisvirtualsrepository_la_SOURCES = \
 	virtuals_repository.cc \
 	installed_virtuals_repository.cc \
 	package_id.cc \
 	registration.cc \
-	$(paludis_repositories_portage_include_HEADERS)
-
-if ! MONOLITHIC
-
-libpaludisvirtualsrepository_@PALUDIS_PC_SLOT@_la_LIBADD = \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(DYNAMIC_LD_LIBS)
-
-endif
+	$(noinst_HEADERS)
 
 TESTS = virtuals_repository_TEST installed_virtuals_repository_TEST
 
@@ -69,9 +49,6 @@ TESTS_ENVIRONMENT = env \
 	bash $(top_srcdir)/test/run_test.sh
 
 virtuals_repository_TEST_LDADD = \
-	libpaludisvirtualsrepository_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
@@ -80,9 +57,6 @@ virtuals_repository_TEST_LDADD = \
 virtuals_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
 installed_virtuals_repository_TEST_LDADD = \
-	libpaludisvirtualsrepository_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \

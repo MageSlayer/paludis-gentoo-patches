@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,6 +27,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_named_values.hh>
 #include <list>
+#include "config.h"
 
 using namespace paludis;
 
@@ -99,13 +100,20 @@ namespace
     }
 }
 
-extern "C" void paludis_initialise_environment_so(EnvironmentFactory * const) PALUDIS_VISIBLE;
-
-void paludis_initialise_environment_so(EnvironmentFactory * const factory)
+namespace paludis
 {
-    std::tr1::shared_ptr<Set<std::string> > no_config_formats(new Set<std::string>);
-    no_config_formats->insert("no_config");
-    no_config_formats->insert("no-config");
-    factory->add_environment_format(no_config_formats, &make_no_config_environment);
+    namespace environment_groups
+    {
+        ENVIRONMENT_GROUPS_DECLS;
+    }
+
+    template <>
+    void register_environment<environment_groups::no_config>(EnvironmentFactory * const factory)
+    {
+        std::tr1::shared_ptr<Set<std::string> > no_config_formats(new Set<std::string>);
+        no_config_formats->insert("no_config");
+        no_config_formats->insert("no-config");
+        factory->add_environment_format(no_config_formats, &make_no_config_environment);
+    }
 }
 

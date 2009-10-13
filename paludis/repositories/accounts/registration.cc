@@ -21,6 +21,7 @@
 #include <paludis/repositories/accounts/accounts_repository.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/destringify.hh>
+#include "config.h"
 
 using namespace paludis;
 using namespace paludis::accounts_repository;
@@ -36,29 +37,36 @@ namespace
     }
 }
 
-extern "C" void paludis_initialise_repository_so(RepositoryFactory * const factory) PALUDIS_VISIBLE;
-
-void paludis_initialise_repository_so(RepositoryFactory * const factory)
+namespace paludis
 {
-    std::tr1::shared_ptr<Set<std::string> > accounts_formats(new Set<std::string>);
-    accounts_formats->insert("accounts");
+    namespace repository_groups
+    {
+        REPOSITORY_GROUPS_DECLS;
+    }
 
-    factory->add_repository_format(accounts_formats,
-            &AccountsRepository::repository_factory_name,
-            &generic_importance,
-            &AccountsRepository::repository_factory_create,
-            &AccountsRepository::repository_factory_dependencies
-            );
+    template <>
+    void register_repositories<repository_groups::accounts>(RepositoryFactory * const factory)
+    {
+        std::tr1::shared_ptr<Set<std::string> > accounts_formats(new Set<std::string>);
+        accounts_formats->insert("accounts");
 
-    std::tr1::shared_ptr<Set<std::string> > installed_accounts_formats(new Set<std::string>);
-    installed_accounts_formats->insert("installed_accounts");
-    installed_accounts_formats->insert("installed-accounts");
+        factory->add_repository_format(accounts_formats,
+                &AccountsRepository::repository_factory_name,
+                &generic_importance,
+                &AccountsRepository::repository_factory_create,
+                &AccountsRepository::repository_factory_dependencies
+                );
 
-    factory->add_repository_format(installed_accounts_formats,
-            &AccountsRepository::repository_factory_installed_name,
-            &generic_importance,
-            &AccountsRepository::repository_factory_installed_create,
-            &AccountsRepository::repository_factory_installed_dependencies
-            );
+        std::tr1::shared_ptr<Set<std::string> > installed_accounts_formats(new Set<std::string>);
+        installed_accounts_formats->insert("installed_accounts");
+        installed_accounts_formats->insert("installed-accounts");
+
+        factory->add_repository_format(installed_accounts_formats,
+                &AccountsRepository::repository_factory_installed_name,
+                &generic_importance,
+                &AccountsRepository::repository_factory_installed_create,
+                &AccountsRepository::repository_factory_installed_dependencies
+                );
+    }
 }
 

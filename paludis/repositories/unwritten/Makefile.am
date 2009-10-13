@@ -11,41 +11,30 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-paludis_repositories_libdir = $(libdir)/paludis/repositories
-paludis_repositories_lib_LTLIBRARIES = libpaludisunwrittenrepository_@PALUDIS_PC_SLOT@.la
+noinst_LTLIBRARIES = libpaludisunwrittenrepository.la
 
-paludis_repositories_unwritten_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/unwritten/
-libpaludisunwrittenrepository_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
-
-paludis_repositories_unwritten_include_HEADERS = \
+noinst_HEADERS = \
 	unwritten_repository.hh \
 	unwritten_id.hh \
 	unwritten_mask.hh \
 	unwritten_repository_store.hh \
 	unwritten_repository_file.hh
 
-libpaludisunwrittenrepository_@PALUDIS_PC_SLOT@_la_SOURCES = \
+libpaludisunwrittenrepository_la_SOURCES = \
 	unwritten_repository.cc \
 	unwritten_id.cc \
 	unwritten_mask.cc \
 	unwritten_repository_store.cc \
 	unwritten_repository_file.cc \
 	registration.cc \
-	$(paludis_repositories_unwritten_include_HEADERS)
-
-libpaludisunwrittenrepository_@PALUDIS_PC_SLOT@_la_LIBADD = \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(DYNAMIC_LD_LIBS)
+	$(noinst_HEADERS)
 
 unwritten_repository_TEST_SOURCES = unwritten_repository_TEST.cc
 
 unwritten_repository_TEST_LDADD = \
-	libpaludisunwrittenrepository_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 

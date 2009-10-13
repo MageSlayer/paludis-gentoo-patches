@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,10 +22,9 @@
 #include <paludis/repositories/cran/cran_installed_repository.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/destringify.hh>
+#include "config.h"
 
 using namespace paludis;
-
-extern "C" void paludis_initialise_repository_so(RepositoryFactory * const factory) PALUDIS_VISIBLE;
 
 namespace
 {
@@ -38,29 +37,38 @@ namespace
     }
 }
 
-void paludis_initialise_repository_so(RepositoryFactory * const factory)
+namespace paludis
 {
-    std::tr1::shared_ptr<Set<std::string> > cran_formats(new Set<std::string>);
-    cran_formats->insert("cran");
+    namespace repository_groups
+    {
+        REPOSITORY_GROUPS_DECLS;
+    }
 
-    factory->add_repository_format(
-            cran_formats,
-            &CRANRepository::repository_factory_name,
-            &generic_importance,
-            &CRANRepository::repository_factory_create,
-            &CRANRepository::repository_factory_dependencies
-            );
+    template <>
+    void register_repositories<repository_groups::cran>(RepositoryFactory * const factory)
+    {
+        std::tr1::shared_ptr<Set<std::string> > cran_formats(new Set<std::string>);
+        cran_formats->insert("cran");
 
-    std::tr1::shared_ptr<Set<std::string> > installed_cran_formats(new Set<std::string>);
-    installed_cran_formats->insert("installed_cran");
-    installed_cran_formats->insert("installed-cran");
+        factory->add_repository_format(
+                cran_formats,
+                &CRANRepository::repository_factory_name,
+                &generic_importance,
+                &CRANRepository::repository_factory_create,
+                &CRANRepository::repository_factory_dependencies
+                );
 
-    factory->add_repository_format(
-            installed_cran_formats,
-            &CRANInstalledRepository::repository_factory_name,
-            &generic_importance,
-            &CRANInstalledRepository::repository_factory_create,
-            &CRANInstalledRepository::repository_factory_dependencies
-            );
+        std::tr1::shared_ptr<Set<std::string> > installed_cran_formats(new Set<std::string>);
+        installed_cran_formats->insert("installed_cran");
+        installed_cran_formats->insert("installed-cran");
+
+        factory->add_repository_format(
+                installed_cran_formats,
+                &CRANInstalledRepository::repository_factory_name,
+                &generic_importance,
+                &CRANInstalledRepository::repository_factory_create,
+                &CRANInstalledRepository::repository_factory_dependencies
+                );
+    }
 }
 
