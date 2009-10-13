@@ -89,9 +89,21 @@ namespace paludis
     }
 
     template <>
-    void register_repositories<NoType<0u> >(RepositoryFactory * const)
+    void register_repositories<NoType<0u> >(const NoType<0u> *, RepositoryFactory * const)
     {
     }
+}
+
+namespace
+{
+    /**
+     * Alas, fefault template types for functions only works with 0x.
+     */
+    template <typename T_ = NoType<0u> >
+    struct TypeOrNoType
+    {
+        typedef T_ Type;
+    };
 }
 
 RepositoryFactory::RepositoryFactory() :
@@ -99,16 +111,16 @@ RepositoryFactory::RepositoryFactory() :
 {
     using namespace repository_groups;
 
-    register_repositories<REPOSITORY_GROUP_IF_accounts>(this);
-    register_repositories<REPOSITORY_GROUP_IF_cran>(this);
-    register_repositories<REPOSITORY_GROUP_IF_dummy>(this);
-    register_repositories<REPOSITORY_GROUP_IF_e>(this);
-    register_repositories<REPOSITORY_GROUP_IF_gems>(this);
-    register_repositories<REPOSITORY_GROUP_IF_fake>(this);
-    register_repositories<REPOSITORY_GROUP_IF_unavailable>(this);
-    register_repositories<REPOSITORY_GROUP_IF_unwritten>(this);
-    register_repositories<REPOSITORY_GROUP_IF_unpackaged>(this);
-    register_repositories<REPOSITORY_GROUP_IF_virtuals>(this);
+    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_accounts>::Type *>(0), this);
+    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_cran>::Type *>(0), this);
+    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_dummy>::Type *>(0), this);
+    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_e>::Type *>(0), this);
+    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_gems>::Type *>(0), this);
+    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_fake>::Type *>(0), this);
+    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_unavailable>::Type *>(0), this);
+    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_unwritten>::Type *>(0), this);
+    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_unpackaged>::Type *>(0), this);
+    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_virtuals>::Type *>(0), this);
 }
 
 RepositoryFactory::~RepositoryFactory()

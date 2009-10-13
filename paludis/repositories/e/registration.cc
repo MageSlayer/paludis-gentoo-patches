@@ -50,7 +50,8 @@ namespace paludis
     }
 
     template <>
-    void register_repositories<repository_groups::e>(RepositoryFactory * const factory)
+    void register_repositories<repository_groups::e>(const repository_groups::e * const,
+            RepositoryFactory * const factory)
     {
         std::tr1::shared_ptr<Set<std::string> > ebuild_formats(new Set<std::string>);
         ebuild_formats->insert("ebuild");

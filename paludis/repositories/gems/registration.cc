@@ -51,7 +51,8 @@ namespace paludis
     }
 
     template <>
-    void register_repositories<repository_groups::gems>(RepositoryFactory * const factory)
+    void register_repositories<repository_groups::gems>(const repository_groups::gems * const,
+            RepositoryFactory * const factory)
     {
         std::tr1::shared_ptr<Set<std::string> > gems_formats(new Set<std::string>);
         gems_formats->insert("gems");

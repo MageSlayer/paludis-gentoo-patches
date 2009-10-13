@@ -41,7 +41,8 @@ namespace paludis
     }
 
     template <>
-    void register_environment<environment_groups::portage>(EnvironmentFactory * const factory)
+    void register_environment<environment_groups::portage>(const environment_groups::portage * const,
+            EnvironmentFactory * const factory)
     {
         std::tr1::shared_ptr<Set<std::string> > portage_formats(new Set<std::string>);
         portage_formats->insert("portage");

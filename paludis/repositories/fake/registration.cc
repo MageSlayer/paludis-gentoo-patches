@@ -46,7 +46,8 @@ namespace paludis
     }
 
     template <>
-    void register_repositories<repository_groups::fake>(RepositoryFactory * const factory)
+    void register_repositories<repository_groups::fake>(const repository_groups::fake * const,
+            RepositoryFactory * const factory)
     {
         std::tr1::shared_ptr<Set<std::string> > fake_formats(new Set<std::string>);
         fake_formats->insert("fake_installed");

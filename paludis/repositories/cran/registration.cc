@@ -45,7 +45,7 @@ namespace paludis
     }
 
     template <>
-    void register_repositories<repository_groups::cran>(RepositoryFactory * const factory)
+    void register_repositories<repository_groups::cran>(const repository_groups::cran * const, RepositoryFactory * const factory)
     {
         std::tr1::shared_ptr<Set<std::string> > cran_formats(new Set<std::string>);
         cran_formats->insert("cran");

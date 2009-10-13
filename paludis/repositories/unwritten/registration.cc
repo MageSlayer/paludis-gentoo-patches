@@ -45,7 +45,8 @@ namespace paludis
     }
 
     template <>
-    void register_repositories<repository_groups::unwritten>(RepositoryFactory * const factory)
+    void register_repositories<repository_groups::unwritten>(const repository_groups::unwritten * const,
+            RepositoryFactory * const factory)
     {
         std::tr1::shared_ptr<Set<std::string> > unwritten_formats(new Set<std::string>);
         unwritten_formats->insert("unwritten");

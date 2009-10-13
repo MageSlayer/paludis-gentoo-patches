@@ -41,7 +41,8 @@ namespace paludis
     }
 
     template <>
-    void register_environment<environment_groups::paludis>(EnvironmentFactory * const factory)
+    void register_environment<environment_groups::paludis>(const environment_groups::paludis * const,
+            EnvironmentFactory * const factory)
     {
         std::tr1::shared_ptr<Set<std::string> > paludis_formats(new Set<std::string>);
         paludis_formats->insert("paludis");

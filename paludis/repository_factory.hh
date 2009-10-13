@@ -153,8 +153,8 @@ namespace paludis
             ConstIterator end_keys() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    template <typename RepositoryClass_ = NoType<0u> >
-    void register_repositories(RepositoryFactory * const);
+    template <typename RepositoryClass_>
+    void register_repositories(const RepositoryClass_ * const, RepositoryFactory * const);
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<RepositoryFactory>;

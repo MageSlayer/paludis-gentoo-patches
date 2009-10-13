@@ -87,8 +87,8 @@ namespace paludis
                     );
     };
 
-    template <typename EnvironmentClass_ = NoType<0u> >
-    void register_environment(EnvironmentFactory * const);
+    template <typename EnvironmentClass_>
+    void register_environment(const EnvironmentClass_ * const, EnvironmentFactory * const);
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<EnvironmentFactory>;

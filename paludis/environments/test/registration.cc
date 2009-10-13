@@ -31,7 +31,8 @@ namespace paludis
     }
 
     template <>
-    void register_environment<environment_groups::test>(EnvironmentFactory * const)
+    void register_environment<environment_groups::test>(const environment_groups::test * const,
+            EnvironmentFactory * const)
     {
     }
 }

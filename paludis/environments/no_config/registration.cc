@@ -108,7 +108,8 @@ namespace paludis
     }
 
     template <>
-    void register_environment<environment_groups::no_config>(EnvironmentFactory * const factory)
+    void register_environment<environment_groups::no_config>(const environment_groups::no_config * const,
+            EnvironmentFactory * const factory)
     {
         std::tr1::shared_ptr<Set<std::string> > no_config_formats(new Set<std::string>);
         no_config_formats->insert("no_config");

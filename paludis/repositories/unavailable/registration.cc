@@ -45,7 +45,8 @@ namespace paludis
     }
 
     template <>
-    void register_repositories<repository_groups::unavailable>(RepositoryFactory * const factory)
+    void register_repositories<repository_groups::unavailable>(const repository_groups::unavailable * const,
+            RepositoryFactory * const factory)
     {
         std::tr1::shared_ptr<Set<std::string> > unavailable_formats(new Set<std::string>);
         unavailable_formats->insert("unavailable");

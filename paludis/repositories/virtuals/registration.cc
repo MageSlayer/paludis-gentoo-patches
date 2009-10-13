@@ -45,7 +45,8 @@ namespace paludis
     }
 
     template <>
-    void register_repositories<repository_groups::virtuals>(RepositoryFactory * const factory)
+    void register_repositories<repository_groups::virtuals>(const repository_groups::virtuals * const,
+            RepositoryFactory * const factory)
     {
         std::tr1::shared_ptr<Set<std::string> > virtuals_formats(new Set<std::string>);
         virtuals_formats->insert("virtuals");

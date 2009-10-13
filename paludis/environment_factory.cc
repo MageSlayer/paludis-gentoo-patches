@@ -52,9 +52,21 @@ namespace paludis
     }
 
     template <>
-    void register_environment<NoType<0u> >(EnvironmentFactory * const)
+    void register_environment<NoType<0u> >(const NoType<0u> * const, EnvironmentFactory * const)
     {
     }
+}
+
+namespace
+{
+    /**
+     * Alas, fefault template types for functions only works with 0x.
+     */
+    template <typename T_ = NoType<0u> >
+    struct TypeOrNoType
+    {
+        typedef T_ Type;
+    };
 }
 
 EnvironmentFactory::EnvironmentFactory() :
@@ -62,11 +74,11 @@ EnvironmentFactory::EnvironmentFactory() :
 {
     using namespace environment_groups;
 
-    register_environment<ENVIRONMENT_GROUP_IF_dummy>(this);
-    register_environment<ENVIRONMENT_GROUP_IF_no_config>(this);
-    register_environment<ENVIRONMENT_GROUP_IF_paludis>(this);
-    register_environment<ENVIRONMENT_GROUP_IF_portage>(this);
-    register_environment<ENVIRONMENT_GROUP_IF_test>(this);
+    register_environment(static_cast<const TypeOrNoType<ENVIRONMENT_GROUP_IF_dummy>::Type *>(0), this);
+    register_environment(static_cast<const TypeOrNoType<ENVIRONMENT_GROUP_IF_no_config>::Type *>(0), this);
+    register_environment(static_cast<const TypeOrNoType<ENVIRONMENT_GROUP_IF_paludis>::Type *>(0), this);
+    register_environment(static_cast<const TypeOrNoType<ENVIRONMENT_GROUP_IF_portage>::Type *>(0), this);
+    register_environment(static_cast<const TypeOrNoType<ENVIRONMENT_GROUP_IF_test>::Type *>(0), this);
 }
 
 EnvironmentFactory::~EnvironmentFactory()

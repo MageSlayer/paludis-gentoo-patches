@@ -45,7 +45,8 @@ namespace paludis
     }
 
     template <>
-    void register_repositories<repository_groups::accounts>(RepositoryFactory * const factory)
+    void register_repositories<repository_groups::accounts>(const repository_groups::accounts * const,
+            RepositoryFactory * const factory)
     {
         std::tr1::shared_ptr<Set<std::string> > accounts_formats(new Set<std::string>);
         accounts_formats->insert("accounts");

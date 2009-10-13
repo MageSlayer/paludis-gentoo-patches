@@ -46,7 +46,8 @@ namespace paludis
     }
 
     template <>
-    void register_repositories<repository_groups::unpackaged>(RepositoryFactory * const factory)
+    void register_repositories<repository_groups::unpackaged>(const repository_groups::unpackaged * const,
+            RepositoryFactory * const factory)
     {
         std::tr1::shared_ptr<Set<std::string> > unpackaged_formats(new Set<std::string>);
         unpackaged_formats->insert("unpackaged");
