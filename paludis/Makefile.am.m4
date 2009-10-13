@@ -103,21 +103,43 @@ libpaludissohooks_TEST_@PALUDIS_PC_SLOT@_la_LDFLAGS = -rpath /nowhere -version-i
 
 libpaludissohooks_TEST_@PALUDIS_PC_SLOT@_la_LIBADD = libpaludis_@PALUDIS_PC_SLOT@.la
 
+repositories_libadd =
+
+define(`condrepo', `
+if ENABLE_`'translit($1,`a-z',`A-Z')_REPOSITORY
+repositories_libadd += $(top_builddir)/paludis/repositories/$1/libpaludis$1repository.la
+endif
+')
+
+condrepo(accounts)
+condrepo(cran)
+condrepo(dummy)
+condrepo(e)
+condrepo(fake)
+condrepo(gems)
+condrepo(unavailable)
+condrepo(unpackaged)
+condrepo(unwritten)
+condrepo(virtuals)
+
+environments_libadd =
+
+define(`condenv', `
+if ENABLE_`'translit($1,`a-z',`A-Z')_ENVIRONMENT
+environments_libadd += $(top_builddir)/paludis/environments/$1/libpaludis`'translit($1,_,)environment.la
+endif
+')
+
+condenv(dummy)
+condenv(no_config)
+condenv(paludis)
+condenv(portage)
+condenv(test)
+
 libpaludis_@PALUDIS_PC_SLOT@_la_LIBADD = \
 	$(top_builddir)/paludis/selinux/libpaludisselinux_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/repositories/accounts/libpaludisaccountsrepository.la \
-	$(top_builddir)/paludis/repositories/cran/libpaludiscranrepository.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/repositories/gems/libpaludisgemsrepository.la \
-	$(top_builddir)/paludis/repositories/unavailable/libpaludisunavailablerepository.la \
-	$(top_builddir)/paludis/repositories/unpackaged/libpaludisunpackagedrepository.la \
-	$(top_builddir)/paludis/repositories/unwritten/libpaludisunwrittenrepository.la \
-	$(top_builddir)/paludis/repositories/virtuals/libpaludisvirtualsrepository.la \
-	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
-	$(top_builddir)/paludis/environments/paludis/libpaludispaludisenvironment.la \
-	$(top_builddir)/paludis/environments/portage/libpaludisportageenvironment.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(repositories_libadd) \
+	$(environments_libadd) \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	@DYNAMIC_LD_LIBS@ \
 	$(PTHREAD_LIBS)

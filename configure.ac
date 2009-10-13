@@ -1320,19 +1320,16 @@ for r in e fake ; do
 	fi
 done
 
-enable_virtuals_repository=
-if echo $repositories | tr ' ' '\n' | grep '^virtuals$' >/dev/null ; then
-	AC_DEFINE_UNQUOTED([ENABLE_VIRTUALS_REPOSITORY], [1], [Enable virtuals repository])
-	enable_virtuals_repository=yes
-fi
-AM_CONDITIONAL([ENABLE_VIRTUALS_REPOSITORY], test "x$enable_virtuals_repository" = "xyes")
-
 AC_DEFUN([REPOSITORY_GROUP_IF], [
+enable_$1_repository=
 if echo $repositories | tr ' ' '\n' | grep '^$1$' >/dev/null ; then
+	enable_$1_repository=yes
 	AC_DEFINE_UNQUOTED([REPOSITORY_GROUP_IF_$1], [$1], [The $1 repository])
+	AC_DEFINE_UNQUOTED(ENABLE_[]m4_translit($1, [a-z], [A-Z])_REPOSITORY, [1], [Enable $1 repository])
 else
 	AC_DEFINE_UNQUOTED([REPOSITORY_GROUP_IF_$1], [], [Do not have the $1 repository])
 fi
+AM_CONDITIONAL(ENABLE_[]m4_translit($1, [a-z], [A-Z])_REPOSITORY, test "x$enable_$1_repository" = "xyes")
 	])
 
 m4_foreach(reponame, [ALL_REPOSITORIES_m4], [
@@ -1377,11 +1374,15 @@ AC_SUBST([ALL_ENVIRONMENTS])
 AC_SUBST([BUILD_ENVIRONMENTS])
 
 AC_DEFUN([ENVIRONMENT_GROUP_IF], [
+enable_$1_environment=
 if echo $environments | tr ' ' '\n' | grep '^$1$' >/dev/null ; then
+	enable_$1_environment=yes
 	AC_DEFINE_UNQUOTED([ENVIRONMENT_GROUP_IF_$1], [$1], [The $1 environment])
+	AC_DEFINE_UNQUOTED(ENABLE_[]m4_translit($1, [a-z], [A-Z])_ENVIRONMENT, [1], [Enable $1 environment])
 else
 	AC_DEFINE_UNQUOTED([ENVIRONMENT_GROUP_IF_$1], [], [Do not have the $1 environment])
 fi
+AM_CONDITIONAL(ENABLE_[]m4_translit($1, [a-z], [A-Z])_ENVIRONMENT, test "x$enable_$1_environment" = "xyes")
 	])
 
 m4_foreach(envname, [ALL_ENVIRONMENTS_m4], [
