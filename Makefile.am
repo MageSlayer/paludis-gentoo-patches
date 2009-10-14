@@ -39,7 +39,7 @@ htmldocs :
 documentation : doxygen epydoc htmldocs
 	$(MAKE) -C doc $@
 
-check-local :
+check-local : all
 	touch $(top_builddir)/done-check
 
 install-data-local :
