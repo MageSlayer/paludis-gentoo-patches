@@ -41,6 +41,7 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/choice.hh>
+#include <paludis/literal_metadata_key.hh>
 #include <tr1/functional>
 #include <tr1/unordered_map>
 #include <functional>
@@ -669,5 +670,15 @@ std::tr1::shared_ptr<MetadataValueKey<FSEntry> >
 TraditionalLayout::accounts_repository_data_location_key() const
 {
     return make_null_shared_ptr();
+}
+
+std::tr1::shared_ptr<MetadataValueKey<FSEntry> >
+TraditionalLayout::e_updates_location_key() const
+{
+    if ((_imp->tree_root / "profiles" / "updates").exists())
+        return make_shared_ptr(new LiteralMetadataValueKey<FSEntry>("e_updates_location",
+                    "VDBRepository updates data location", mkt_internal, _imp->tree_root / "profiles" / "updates"));
+    else
+        return make_null_shared_ptr();
 }
 

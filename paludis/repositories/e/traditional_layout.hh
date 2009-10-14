@@ -132,6 +132,9 @@ namespace paludis
                 virtual std::tr1::shared_ptr<MetadataValueKey<FSEntry> > accounts_repository_data_location_key() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
+                virtual std::tr1::shared_ptr<MetadataValueKey<FSEntry> > e_updates_location_key() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
                 virtual FSEntry sync_filter_file() const;
 
                 virtual void invalidate_masks();

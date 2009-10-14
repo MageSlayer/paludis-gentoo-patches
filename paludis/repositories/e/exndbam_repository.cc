@@ -599,3 +599,8 @@ ExndbamRepository::regenerate_cache() const
 {
 }
 
+void
+ExndbamRepository::perform_updates()
+{
+}
+

@@ -243,6 +243,7 @@ namespace paludis
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > binary_src_uri_prefix_key;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > binary_keywords;
         std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > accounts_repository_data_location_key;
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > e_updates_location_key;
         std::list<std::tr1::shared_ptr<const MetadataKey> > about_keys;
     };
 
@@ -327,7 +328,8 @@ namespace paludis
                     "binary_uri_prefix", "binary_uri_prefix", mkt_normal, params.binary_uri_prefix())),
         binary_keywords(new LiteralMetadataValueKey<std::string> (
                     "binary_keywords", "binary_keywords", mkt_normal, params.binary_keywords())),
-        accounts_repository_data_location_key(layout->accounts_repository_data_location_key())
+        accounts_repository_data_location_key(layout->accounts_repository_data_location_key()),
+        e_updates_location_key(layout->e_updates_location_key())
     {
         if ((params.location() / "metadata" / "about.conf").is_regular_file_or_symlink_to_regular_file())
         {
@@ -557,6 +559,8 @@ ERepository::_add_metadata_keys() const
     add_metadata_key(_imp->binary_keywords);
     if (_imp->accounts_repository_data_location_key)
         add_metadata_key(_imp->accounts_repository_data_location_key);
+    if (_imp->e_updates_location_key)
+        add_metadata_key(_imp->e_updates_location_key);
 
     std::for_each(_imp->about_keys.begin(), _imp->about_keys.end(), std::tr1::bind(
                 std::tr1::mem_fn(&ERepository::add_metadata_key), this, std::tr1::placeholders::_1));

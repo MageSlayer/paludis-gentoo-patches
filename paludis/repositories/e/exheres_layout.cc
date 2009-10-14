@@ -660,3 +660,9 @@ ExheresLayout::accounts_repository_data_location_key() const
         return make_null_shared_ptr();
 }
 
+std::tr1::shared_ptr<MetadataValueKey<FSEntry> >
+ExheresLayout::e_updates_location_key() const
+{
+    return make_null_shared_ptr();
+}
+

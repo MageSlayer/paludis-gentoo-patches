@@ -154,6 +154,9 @@ EInstalledRepository::perform_hook(const Hook & hook)
     Context context("When performing hook '" + stringify(hook.name()) + "' for repository '"
             + stringify(name()) + "':");
 
+    if (hook.name() == "sync_all_post")
+        perform_updates();
+
     return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
 }
 

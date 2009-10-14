@@ -105,6 +105,8 @@ namespace paludis
                 virtual void populate_sets() const;
 
                 ///\}
+
+                virtual void perform_updates() = 0;
         };
     }
 }

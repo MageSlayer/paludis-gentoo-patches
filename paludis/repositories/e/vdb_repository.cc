@@ -50,6 +50,10 @@
 #include <paludis/version_operator.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/stringify_formatter.hh>
+#include <paludis/selection.hh>
+#include <paludis/generator.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/filter.hh>
 
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -69,6 +73,7 @@
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/safe_ofstream.hh>
@@ -79,6 +84,7 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <iostream>
 #include <cstring>
 #include <cerrno>
 
@@ -1141,5 +1147,360 @@ const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 VDBRepository::installed_root_key() const
 {
     return _imp->root_key;
+}
+
+namespace
+{
+    typedef std::map<QualifiedPackageName, QualifiedPackageName> DepRewrites;
+
+    struct DepRewriter
+    {
+        const DepRewrites & rewrites;
+        bool changed;
+
+        std::stringstream str;
+        StringifyFormatter f;
+
+        DepRewriter(const DepRewrites & w) :
+            rewrites(w),
+            changed(false)
+        {
+        }
+
+        void do_annotations(const DepSpec & p)
+        {
+            if (p.annotations_key() && (p.annotations_key()->begin_metadata() != p.annotations_key()->end_metadata()))
+            {
+                str << " [[ ";
+                for (MetadataSectionKey::MetadataConstIterator k(p.annotations_key()->begin_metadata()),
+                        k_end(p.annotations_key()->end_metadata()) ;
+                        k != k_end ; ++k)
+                {
+                    const MetadataValueKey<std::string> * r(
+                            simple_visitor_cast<const MetadataValueKey<std::string> >(**k));
+                    if (! r)
+                        throw InternalError(PALUDIS_HERE, "annotations must be string keys");
+                    str << (*k)->raw_name() << " = [" << (r->value().empty() ? " " : " " + r->value() + " ") << "] ";
+                }
+                str << "]] ";
+            }
+        }
+
+        void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
+        {
+            str << "|| ( ";
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+            str << " ) ";
+            do_annotations(*node.spec());
+        }
+
+        void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
+        {
+            str << "( ";
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+            str << " ) ";
+            do_annotations(*node.spec());
+        }
+
+        void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type & node)
+        {
+            /* don't rewrite blocks. some people block the old package after
+             * doing a move. */
+            str << f.format(*node.spec(), format::Plain()) << " ";
+            do_annotations(*node.spec());
+        }
+
+        void visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type & node)
+        {
+            str << f.format(*node.spec(), format::Plain()) << " ";
+            do_annotations(*node.spec());
+        }
+
+        void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
+        {
+            if (node.spec()->package_ptr() && rewrites.end() != rewrites.find(*node.spec()->package_ptr()))
+            {
+                changed = true;
+                str << f.format(PartiallyMadePackageDepSpec(*node.spec())
+                        .package(rewrites.find(*node.spec()->package_ptr())->second),
+                        format::Plain()) << " ";
+            }
+            else
+                str << f.format(*node.spec(), format::Plain()) << " ";
+
+            do_annotations(*node.spec());
+        }
+
+        void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
+        {
+            str << f.format(*node.spec(), format::Plain()) << " ( ";
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+            str << " ) ";
+            do_annotations(*node.spec());
+        }
+
+        void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node)
+        {
+            str << f.format(*node.spec(), format::Plain()) << " ";
+            do_annotations(*node.spec());
+        }
+    };
+
+    void rewrite_dependencies(
+            const FSEntry & f,
+            const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > & key,
+            const DepRewrites & rewrites)
+    {
+        DepRewriter v(rewrites);
+        key->value()->root()->accept(v);
+        if (v.changed)
+        {
+            std::cout << "    Rewriting " << f << std::endl;
+            SafeOFStream ff(f);
+            ff << v.str.str() << std::endl;
+        }
+    }
+}
+
+void
+VDBRepository::perform_updates()
+{
+    Context context("When performing updates:");
+
+    DepRewrites dep_rewrites;
+
+    typedef std::list<std::pair<std::tr1::shared_ptr<const PackageID>, QualifiedPackageName> > Moves;
+    Moves moves;
+
+    typedef std::list<std::pair<std::tr1::shared_ptr<const PackageID>, SlotName> > SlotMoves;
+    SlotMoves slot_moves;
+
+    for (PackageDatabase::RepositoryConstIterator r(_imp->params.environment()->package_database()->begin_repositories()),
+            r_end(_imp->params.environment()->package_database()->end_repositories()) ;
+            r != r_end ; ++r)
+    {
+        Context context_2("When performing updates from '" + stringify((*r)->name()) + "':");
+
+        Repository::MetadataConstIterator k_iter((*r)->find_metadata("e_updates_location"));
+        if (k_iter == (*r)->end_metadata())
+        {
+            Log::get_instance()->message("e.vdb.updates.no_key", ll_debug, lc_context) <<
+                "Repository " << (*r)->name() << " defines no e_updates_location key";
+            continue;
+        }
+
+        const MetadataValueKey<FSEntry> * k(simple_visitor_cast<const MetadataValueKey<FSEntry> >(**k_iter));
+        if (! k)
+        {
+            Log::get_instance()->message("e.vdb.udpates.bad_key", ll_warning, lc_context) <<
+                "Repository " << (*r)->name() << " defines an e_updates_location key, but it is not an FSEntry key";
+            continue;
+        }
+
+        FSEntry dir(k->value());
+        if (! dir.is_directory_or_symlink_to_directory())
+        {
+            Log::get_instance()->message("e.vdb.updates.bad_key", ll_warning, lc_context) <<
+                "Repository " << (*r)->name() << " has e_updates_location " << dir << ", but this is not a directory";
+            continue;
+        }
+
+        try
+        {
+            for (DirIterator d(k->value(), DirIteratorOptions()), d_end ;
+                    d != d_end ; ++d)
+            {
+                Context context_3("When performing updates from '" + stringify(*d) + "':");
+
+                if (! d->is_regular_file_or_symlink_to_regular_file())
+                    continue;
+
+                LineConfigFile f(*d, LineConfigFileOptions());
+
+                for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
+                        line != line_end ; ++line)
+                {
+                    std::vector<std::string> tokens;
+                    tokenise_whitespace(*line, std::back_inserter(tokens));
+
+                    if (tokens.empty())
+                        continue;
+
+                    if ("move" == tokens.at(0))
+                    {
+                        if (3 == tokens.size())
+                        {
+                            QualifiedPackageName old_q(tokens.at(1)), new_q(tokens.at(2));
+
+                            /* we want to rewrite deps to avoid a mess. we do
+                             * this even if we don't have an installed thing
+                             * matching the dep, since a package might dep upon
+                             * || ( a b ) where a is installed and b is being
+                             * moved. */
+                            dep_rewrites.insert(std::make_pair(old_q, new_q)).first->second = new_q;
+
+                            const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->params.environment())[selection::AllVersionsSorted(
+                                        generator::Package(old_q) & generator::InRepository(name())
+                                        )]);
+                            if (! ids->empty())
+                            {
+                                for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+                                        i != i_end ; ++i)
+                                    moves.push_back(std::make_pair(*i, new_q));
+                            }
+                        }
+                        else
+                            Log::get_instance()->message("e.vdb.updates.bad_line", ll_warning, lc_context) <<
+                                "Don't know how to handle '" << *line << "' in " << *d << ": expected 3 tokens for a move";
+                    }
+                    else if ("slotmove" == tokens.at(0))
+                    {
+                        if (4 == tokens.size())
+                        {
+                            PackageDepSpec old_spec(parse_user_package_dep_spec(tokens.at(1), _imp->params.environment(),
+                                        UserPackageDepSpecOptions()));
+                            SlotName old_slot(tokens.at(2)), new_slot(tokens.at(3));
+
+                            const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->params.environment())[selection::AllVersionsSorted(
+                                        (generator::Matches(old_spec, MatchPackageOptions()) & generator::InRepository(name())) |
+                                        filter::Slot(old_slot)
+                                        )]);
+                            if (! ids->empty())
+                            {
+                                for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+                                        i != i_end ; ++i)
+                                    slot_moves.push_back(std::make_pair(*i, new_slot));
+                            }
+                        }
+                        else
+                            Log::get_instance()->message("e.vdb.updates.bad_line", ll_warning, lc_context) <<
+                                "Don't know how to handle '" << *line << "' in " << *d << ": expected 4 tokens for a slotmove";
+                    }
+                    else
+                        Log::get_instance()->message("e.vdb.updates.bad_line", ll_warning, lc_context) <<
+                            "Don't know how to handle '" << *line << "' in " << *d << ": unknown operation";
+                }
+            }
+        }
+        catch (const Exception & e)
+        {
+            Log::get_instance()->message("e.vdb.updates.exception", ll_warning, lc_context) <<
+                "Caught exception '" << e.message() << "' (" << e.what() << ") when looking for updates. This is "
+                "probably bad.";
+        }
+    }
+
+    try
+    {
+        if ((! moves.empty()) || (! slot_moves.empty()))
+            std::cout << std::endl;
+
+        if (! moves.empty())
+        {
+            if ("yes" == getenv_with_default("PALUDIS_CARRY_OUT_UPDATES", ""))
+            {
+                std::cout << "Performing package moves:" << std::endl;
+                for (Moves::const_iterator m(moves.begin()), m_end(moves.end()) ;
+                        m != m_end ; ++m)
+                {
+                    std::cout << "    " << *m->first << " to " << m->second << std::endl;
+
+                    FSEntry target_cat_dir(_imp->params.location() / stringify(m->second.category()));
+                    target_cat_dir.mkdir();
+
+                    FSEntry from_dir(m->first->fs_location_key()->value());
+                    FSEntry to_dir(target_cat_dir / ((stringify(m->second.package()) + "-" + stringify(m->first->version()))));
+
+                    from_dir.rename(to_dir);
+                }
+            }
+            else
+            {
+                std::cout << "The following package moves need to be performed:" << std::endl;
+                for (Moves::const_iterator m(moves.begin()), m_end(moves.end()) ;
+                        m != m_end ; ++m)
+                    std::cout << "    " << *m->first << " to " << m->second << std::endl;
+                std::cout << std::endl;
+            }
+        }
+
+        if (! slot_moves.empty())
+        {
+            if ("yes" == getenv_with_default("PALUDIS_CARRY_OUT_UPDATES", ""))
+            {
+                std::cout << "Performing slot moves:" << std::endl;
+                for (SlotMoves::const_iterator m(slot_moves.begin()), m_end(slot_moves.end()) ;
+                        m != m_end ; ++m)
+                {
+                    std::cout << "    " << *m->first << " to " << m->second << std::endl;
+
+                    SafeOFStream f(m->first->fs_location_key()->value() / "SLOT");
+                    f << m->second << std::endl;
+                }
+            }
+            else
+            {
+                std::cout << "The following slot moves need to be performed:" << std::endl;
+                for (SlotMoves::const_iterator m(slot_moves.begin()), m_end(slot_moves.end()) ;
+                        m != m_end ; ++m)
+                    std::cout << "    " << *m->first << " to " << m->second << std::endl;
+                std::cout << std::endl;
+            }
+        }
+
+        if ("yes" != getenv_with_default("PALUDIS_CARRY_OUT_UPDATES", ""))
+        {
+            if ((! moves.empty()) || (! slot_moves.empty()))
+            {
+                std::cout << "Profile updates support is currently considered experimental. See the Paludis" << std::endl;
+                std::cout << "FAQ for how to proceed." << std::endl;
+                std::cout << std::endl;
+            }
+        }
+        else
+        {
+            if ((! moves.empty()) || (! slot_moves.empty()))
+                if (_imp->params.provides_cache() != FSEntry("/var/empty"))
+                    if (_imp->params.provides_cache().is_regular_file_or_symlink_to_regular_file())
+                    {
+                        std::cout << "Invalidating provides cache following updates" << std::endl;
+                        FSEntry(_imp->params.provides_cache()).unlink();
+                        regenerate_provides_cache();
+                    }
+        }
+
+        if ((! moves.empty()) || (! slot_moves.empty()))
+            invalidate();
+
+        if (! dep_rewrites.empty())
+        {
+            std::cout << "Updating installed package dependencies" << std::endl;
+
+            const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->params.environment())[selection::AllVersionsSorted(
+                        generator::InRepository(name()))]);
+            for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+                    i != i_end ; ++i)
+            {
+                if ((*i)->build_dependencies_key())
+                    rewrite_dependencies((*i)->fs_location_key()->value() / (*i)->build_dependencies_key()->raw_name(),
+                            (*i)->build_dependencies_key(), dep_rewrites);
+                if ((*i)->run_dependencies_key())
+                    rewrite_dependencies((*i)->fs_location_key()->value() / (*i)->run_dependencies_key()->raw_name(),
+                            (*i)->run_dependencies_key(), dep_rewrites);
+                if ((*i)->post_dependencies_key())
+                    rewrite_dependencies((*i)->fs_location_key()->value() / (*i)->post_dependencies_key()->raw_name(),
+                            (*i)->post_dependencies_key(), dep_rewrites);
+                if ((*i)->suggested_dependencies_key())
+                    rewrite_dependencies((*i)->fs_location_key()->value() / (*i)->suggested_dependencies_key()->raw_name(),
+                            (*i)->suggested_dependencies_key(), dep_rewrites);
+            }
+        }
+    }
+    catch (const Exception & e)
+    {
+        Log::get_instance()->message("e.vdb.updates.exception", ll_warning, lc_context) <<
+            "Caught exception '" << e.message() << "' (" << e.what() << ") when performing updates. This is "
+            "probably bad.";
+    }
 }
 
