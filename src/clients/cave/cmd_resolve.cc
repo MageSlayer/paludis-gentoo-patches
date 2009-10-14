@@ -23,6 +23,7 @@
 #include "cmd_resolve_dump.hh"
 #include "exceptions.hh"
 #include "command_command_line.hh"
+#include "match_qpns.hh"
 
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/mutex.hh>
@@ -710,13 +711,55 @@ namespace
     }
 
     bool
-    take_dependency_fn(const Environment * const,
+    take_dependency_fn(const Environment * const env,
             const ResolveCommandLine & cmdline,
-            const Resolvent &,
+            const Resolvent & resolvent,
             const SanitisedDependency & dep,
             const std::tr1::shared_ptr<const Reason> &)
     {
-        if (is_suggestion(dep))
+        bool suggestion(is_suggestion(dep)), recommendation(is_recommendation(dep));
+
+        if (suggestion || recommendation)
+        {
+            for (args::StringSetArg::ConstIterator a(cmdline.resolution_options.a_take.begin_args()),
+                    a_end(cmdline.resolution_options.a_take.end_args()) ;
+                    a != a_end ; ++a)
+            {
+                PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+                PackageDepSpec spec(*dep.spec().if_package());
+                if (match_qpns(*env, user_spec, *spec.package_ptr()))
+                    return true;
+            }
+
+            for (args::StringSetArg::ConstIterator a(cmdline.resolution_options.a_take_from.begin_args()),
+                    a_end(cmdline.resolution_options.a_take_from.end_args()) ;
+                    a != a_end ; ++a)
+            {
+                PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+                if (match_qpns(*env, user_spec, resolvent.package()))
+                    return true;
+            }
+
+            for (args::StringSetArg::ConstIterator a(cmdline.resolution_options.a_discard.begin_args()),
+                    a_end(cmdline.resolution_options.a_discard.end_args()) ;
+                    a != a_end ; ++a)
+            {
+                PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+                PackageDepSpec spec(*dep.spec().if_package());
+                if (match_qpns(*env, user_spec, *spec.package_ptr()))
+                    return false;
+            }
+
+            for (args::StringSetArg::ConstIterator a(cmdline.resolution_options.a_discard_from.begin_args()),
+                    a_end(cmdline.resolution_options.a_discard_from.end_args()) ;
+                    a != a_end ; ++a)
+            {
+                PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+                if (match_qpns(*env, user_spec, resolvent.package()))
+                    return false;
+            }
+        }
+        if (suggestion)
         {
             if (cmdline.resolution_options.a_suggestions.argument() == "take")
             {
@@ -724,7 +767,7 @@ namespace
             }
             return false;
         }
-        if (is_recommendation(dep))
+        if (recommendation)
         {
             if (cmdline.resolution_options.a_recommendations.argument() == "take")
             {

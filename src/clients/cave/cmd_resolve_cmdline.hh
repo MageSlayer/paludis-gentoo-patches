@@ -66,10 +66,10 @@ namespace paludis
             args::ArgsGroup g_suggestion_options;
             args::EnumArg a_suggestions;
             args::EnumArg a_recommendations;
-    //        args::StringSetArg a_take;
-    //        args::StringSetArg a_take_from;
-    //        args::StringSetArg a_discard;
-    //        args::StringSetArg a_discard_from;
+            args::StringSetArg a_take;
+            args::StringSetArg a_take_from;
+            args::StringSetArg a_discard;
+            args::StringSetArg a_discard_from;
 
     //        args::ArgsGroup g_package_options;
     //        args::StringSetArg a_prefer;
