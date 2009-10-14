@@ -23,6 +23,7 @@
 #include "command_command_line.hh"
 #include "formats.hh"
 #include "colour_formatter.hh"
+#include "match_qpns.hh"
 #include <paludis/args/do_help.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/safe_ifstream.hh>
@@ -694,27 +695,8 @@ namespace
                     /* decided nothing, so we can only work for cat/pkg, where
                      * either can be wildcards (we could work for :slot too,
                      * but we're lazy) */
-                    if (! package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
-                                    value_for<n::has_additional_requirements>(false),
-                                    value_for<n::has_category_name_part>(indeterminate),
-                                    value_for<n::has_from_repository>(false),
-                                    value_for<n::has_in_repository>(false),
-                                    value_for<n::has_installable_to_path>(false),
-                                    value_for<n::has_installable_to_repository>(false),
-                                    value_for<n::has_installed_at_path>(false),
-                                    value_for<n::has_package>(indeterminate),
-                                    value_for<n::has_package_name_part>(indeterminate),
-                                    value_for<n::has_slot_requirement>(false),
-                                    value_for<n::has_tag>(false),
-                                    value_for<n::has_version_requirements>(false)
-                                    )))
-                        continue;
-
-                    if (spec.package_ptr() && *spec.package_ptr() != (*r)->resolvent().package())
-                        continue;
-                    if (spec.package_name_part_ptr() && *spec.package_name_part_ptr() != (*r)->resolvent().package().package())
-                        continue;
-                    if (spec.category_name_part_ptr() && *spec.category_name_part_ptr() != (*r)->resolvent().package().category())
+                    Resolvent resolvent((*r)->resolvent());
+                    if (! match_qpns(*env, spec, resolvent.package()))
                         continue;
                 }
                 else

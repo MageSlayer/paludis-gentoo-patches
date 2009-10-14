@@ -109,7 +109,8 @@ libcave_a_SOURCES = \
 	format_plain_metadata_key.cc format_plain_metadata_key.hh \
 	format_string.cc format_string.hh \
 	formats.cc formats.hh \
-	select_format_for_spec.cc select_format_for_spec.hh
+	select_format_for_spec.cc select_format_for_spec.hh \
+	match_qpns.cc match_qpns.hh
 
 #	cmd_config.cc \
 #	cmd_contents.cc \
