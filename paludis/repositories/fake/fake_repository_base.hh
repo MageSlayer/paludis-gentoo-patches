@@ -124,7 +124,7 @@ namespace paludis
 
             ///\}
 
-            virtual HookResult perform_hook(const Hook & hook) const;
+            virtual HookResult perform_hook(const Hook & hook);
     };
 }
 

@@ -149,7 +149,7 @@ EInstalledRepository::want_pre_post_phases() const
 }
 
 HookResult
-EInstalledRepository::perform_hook(const Hook & hook) const
+EInstalledRepository::perform_hook(const Hook & hook)
 {
     Context context("When performing hook '" + stringify(hook.name()) + "' for repository '"
             + stringify(name()) + "':");

@@ -1356,7 +1356,7 @@ InstallTask::set_safe_resume(const bool value)
 }
 
 HookResult
-InstallTask::perform_hook(const Hook & hook) const
+InstallTask::perform_hook(const Hook & hook)
 {
     return _imp->env->perform_hook(hook);
 }

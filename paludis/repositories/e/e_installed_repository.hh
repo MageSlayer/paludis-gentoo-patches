@@ -79,7 +79,7 @@ namespace paludis
 
                 virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
 
-                virtual HookResult perform_hook(const Hook & hook) const
+                HookResult perform_hook(const Hook & hook)
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 ///\name For use by EInstalledRepositoryID

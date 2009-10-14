@@ -82,7 +82,7 @@ namespace paludis
 
             virtual bool can_be_favourite_repository() const;
 
-            HookResult perform_hook(const Hook &) const
+            HookResult perform_hook(const Hook &)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* Repository */

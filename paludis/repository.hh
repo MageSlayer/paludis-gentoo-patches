@@ -397,7 +397,7 @@ namespace paludis
              *
              * \since 0.40 (previously in an interface)
              */
-            virtual HookResult perform_hook(const Hook & hook) const
+            virtual HookResult perform_hook(const Hook & hook)
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
 

@@ -512,7 +512,7 @@ InstalledUnpackagedRepository::populate_sets() const
 }
 
 HookResult
-InstalledUnpackagedRepository::perform_hook(const Hook &) const
+InstalledUnpackagedRepository::perform_hook(const Hook &)
 {
     return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
 }

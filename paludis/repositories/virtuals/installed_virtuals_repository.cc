@@ -236,7 +236,7 @@ InstalledVirtualsRepository::invalidate_masks()
 }
 
 HookResult
-InstalledVirtualsRepository::perform_hook(const Hook & hook) const
+InstalledVirtualsRepository::perform_hook(const Hook & hook)
 {
     Context context("When performing hook '" + stringify(hook.name()) + "' for repository '"
             + stringify(name()) + "':");

@@ -1067,7 +1067,7 @@ ERepository::merge(const MergeParams & p)
 }
 
 HookResult
-ERepository::perform_hook(const Hook & hook) const
+ERepository::perform_hook(const Hook & hook)
 {
     Context context("When performing hook '" + stringify(hook.name()) + "' for repository '"
             + stringify(name()) + "':");

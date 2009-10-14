@@ -184,7 +184,7 @@ namespace paludis
 
             ///\}
 
-            HookResult perform_hook(const Hook &) const
+            HookResult perform_hook(const Hook &)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
