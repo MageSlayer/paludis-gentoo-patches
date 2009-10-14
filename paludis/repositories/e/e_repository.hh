@@ -57,7 +57,6 @@ namespace paludis
         public RepositoryVirtualsInterface,
         public RepositoryDestinationInterface,
         public RepositoryEInterface,
-        public RepositoryHookInterface,
         public RepositoryQAInterface,
         public RepositoryManifestInterface,
         public std::tr1::enable_shared_from_this<ERepository>,

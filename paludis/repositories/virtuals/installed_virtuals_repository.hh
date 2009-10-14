@@ -34,7 +34,6 @@ namespace paludis
      */
     class PALUDIS_VISIBLE InstalledVirtualsRepository :
         public Repository,
-        public RepositoryHookInterface,
         public RepositoryDestinationInterface,
         public std::tr1::enable_shared_from_this<InstalledVirtualsRepository>,
         private PrivateImplementationPattern<InstalledVirtualsRepository>

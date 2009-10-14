@@ -121,6 +121,9 @@ namespace paludis
             virtual void populate_sets() const;
 
             ///\}
+
+            virtual HookResult perform_hook(const Hook & hook) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

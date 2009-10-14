@@ -138,6 +138,8 @@ namespace paludis
                 virtual void invalidate_masks();
                 virtual void regenerate_cache() const;
 
+                virtual HookResult perform_hook(const Hook & hook) const;
+
                 ///\}
 
                 ///\name Destination functions

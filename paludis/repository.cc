@@ -212,10 +212,6 @@ RepositoryEInterface::~RepositoryEInterface()
 {
 }
 
-RepositoryHookInterface::~RepositoryHookInterface()
-{
-}
-
 RepositoryMakeVirtualsInterface::~RepositoryMakeVirtualsInterface()
 {
 }

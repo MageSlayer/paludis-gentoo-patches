@@ -499,7 +499,6 @@ ERepository::ERepository(const ERepositoryParams & p) :
                 value_for<n::destination_interface>(p.binary_destination() ? this : 0),
                 value_for<n::e_interface>(this),
                 value_for<n::environment_variable_interface>(this),
-                value_for<n::hook_interface>(this),
                 value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
                 value_for<n::manifest_interface>(this),
                 value_for<n::mirrors_interface>(this),

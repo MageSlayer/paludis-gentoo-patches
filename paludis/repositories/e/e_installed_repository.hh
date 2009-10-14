@@ -45,7 +45,6 @@ namespace paludis
             public Repository,
             public RepositoryEnvironmentVariableInterface,
             public RepositoryDestinationInterface,
-            public RepositoryHookInterface,
             private PrivateImplementationPattern<EInstalledRepository>
         {
             private:
@@ -74,16 +73,14 @@ namespace paludis
                 virtual bool want_pre_post_phases() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                /* RepositoryHookInterface */
-
-                virtual HookResult perform_hook(const Hook & hook) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
                 /* Repository */
 
                 virtual std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
 
                 virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
+
+                virtual HookResult perform_hook(const Hook & hook) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 ///\name For use by EInstalledRepositoryID
                 ///\{

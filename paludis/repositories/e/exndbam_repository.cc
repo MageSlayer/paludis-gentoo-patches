@@ -106,7 +106,6 @@ ExndbamRepository::ExndbamRepository(const RepositoryName & n, const ExndbamRepo
                 value_for<n::destination_interface>(this),
                 value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
                 value_for<n::environment_variable_interface>(this),
-                value_for<n::hook_interface>(this),
                 value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
                 value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
                 value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),

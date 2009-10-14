@@ -38,8 +38,6 @@ namespace paludis
     class Environment;
     class RepositoryNameCache;
     class ERepositoryProfile;
-    class Hook;
-    class HookResult;
 
     class Repository;
     class RepositorySyncableInterface;
@@ -50,7 +48,6 @@ namespace paludis
     class RepositoryMakeVirtualsInterface;
     class RepositoryDestinationInterface;
     class RepositoryEInterface;
-    class RepositoryHookInterface;
     class RepositoryQAInterface;
     class RepositoryManifestInterface;
 

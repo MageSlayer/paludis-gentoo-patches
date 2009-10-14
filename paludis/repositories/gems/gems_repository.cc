@@ -39,6 +39,7 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
+#include <paludis/hook.hh>
 #include <tr1/unordered_map>
 
 using namespace paludis;
@@ -94,7 +95,6 @@ GemsRepository::GemsRepository(const gems::RepositoryParams & params) :
                 value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
                 value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
                 value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
-                value_for<n::hook_interface>(static_cast<RepositoryHookInterface *>(0)),
                 value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
                 value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
                 value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),
@@ -404,4 +404,11 @@ void
 GemsRepository::populate_sets() const
 {
 }
+
+HookResult
+GemsRepository::perform_hook(const Hook &) const
+{
+    return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
+}
+
 
