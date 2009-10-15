@@ -1417,7 +1417,15 @@ VDBRepository::perform_updates()
                     FSEntry from_dir(m->first->fs_location_key()->value());
                     FSEntry to_dir(target_cat_dir / ((stringify(m->second.package()) + "-" + stringify(m->first->version()))));
 
-                    from_dir.rename(to_dir);
+                    if (to_dir.exists())
+                    {
+                        /* Uh oh. It's possible to install both a package and its renamed version. */
+                        Log::get_instance()->message("e.vdb.updates.collision", ll_warning, lc_context) <<
+                            "I wanted to rename '" << from_dir << "' to '" << to_dir << "' for a package move, but the "
+                            "latter already exists. Consult the Paludis FAQ for how to proceed.";
+                    }
+                    else
+                        from_dir.rename(to_dir);
                 }
             }
             else
