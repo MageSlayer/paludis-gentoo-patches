@@ -27,6 +27,7 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/pretty_print.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
@@ -131,12 +132,8 @@ namespace
 
         void visit(const MetadataTimeKey & k)
         {
-            time_t t(k.value());
-            char buf[255];
-            if (! strftime(buf, 254, "%c", gmtime(&t)))
-                buf[0] = '\0';
-
-            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << stringify(buf) << endl;
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " "
+                << pretty_print_time(k.value()) << endl;
         }
 
         void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)

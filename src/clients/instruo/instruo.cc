@@ -40,6 +40,7 @@
 #include <paludis/util/thread_pool.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/safe_ofstream.hh>
+#include <paludis/util/pretty_print.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
@@ -359,13 +360,8 @@ main(int argc, char *argv[])
 
         std::ostream & out(outf ? *outf : cout);
 
-        char t[255];
-        time_t tt(time(0));
-        if (0 == strftime(t, 255, "%c", gmtime(&tt)))
-            throw InternalError(PALUDIS_HERE, "strftime failed");
-
         out << colour(cl_heading, "Instruo results for ") << colour(cl_repository_name, env.main_repository()->name())
-            << colour(cl_heading, " on " + stringify(t) + ":") << endl << endl
+            << colour(cl_heading, " on " + pretty_print_time(time(0)) + ":") << endl << endl
             << total << " IDs, " << success << " successes, " << (total - success) << " failures" << endl << endl;
 
         int exit_status(0);

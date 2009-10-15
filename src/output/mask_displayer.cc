@@ -25,6 +25,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/pretty_print.hh>
 #include <paludis/name.hh>
 #include <paludis/metadata_key.hh>
 #include <sstream>
@@ -106,11 +107,7 @@ namespace
 
         void visit(const MetadataTimeKey & k)
         {
-            time_t t(k.value());
-            char buf[255];
-            if (! strftime(buf, 254, "%c", gmtime(&t)))
-                buf[0] = '\0';
-            s << stringify(buf);
+            s << pretty_print_time(k.value());
         }
 
         void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > &)

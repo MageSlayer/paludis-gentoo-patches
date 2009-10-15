@@ -41,6 +41,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/pretty_print.hh>
 #include <paludis/action.hh>
 #include <paludis/mask.hh>
 #include <paludis/choice.hh>
@@ -587,12 +588,8 @@ namespace
 
         void visit(const MetadataTimeKey & k)
         {
-            char buf[255];
-            time_t t(k.value());
-            if (! strftime(buf, 255, "%c", gmtime(&t)))
-                buf[0] = '\0';
             cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
-                    std::string(buf), indent, important);
+                    pretty_print_time(k.value()), indent, important);
         }
     };
 

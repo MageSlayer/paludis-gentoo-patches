@@ -14,11 +14,11 @@
  */
 
 #include <paludis/paludis.hh>
+#include <paludis/util/pretty_print.hh>
 #include "example_command_line.hh"
 #include <iostream>
 #include <iomanip>
 #include <set>
-#include <time.h>
 
 using namespace paludis;
 using namespace examples;
@@ -92,12 +92,7 @@ namespace
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataTimeKey" << endl;
 
-                /* Yay horrible C formatting routines! */
-                time_t t(key.value());
-                char buf[255];
-                if (! strftime(buf, 254, "%c", gmtime(&t)))
-                    buf[0] = '\0';
-                cout << indent << left << setw(30) << "    Value:" << " " << buf << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << pretty_print_time(key.value()) << endl;
             }
 
             void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > &)

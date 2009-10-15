@@ -31,6 +31,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/pretty_print.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/create_output_manager_info.hh>
@@ -208,13 +209,8 @@ main(int argc, char *argv[])
 
             std::ostream & out(outf ? *outf : cout);
 
-            char t[255];
-            time_t tt(time(0));
-            if (0 == strftime(t, 255, "%c", gmtime(&tt)))
-                throw InternalError(PALUDIS_HERE, "strftime failed");
-
             out << colour(cl_heading, "Accerso results for ") << colour(cl_repository_name, env.main_repository()->name())
-                << colour(cl_heading, " on " + stringify(t) + ":") << endl << endl
+                << colour(cl_heading, " on " + pretty_print_time(time(0)) + ":") << endl << endl
                 << total << " IDs, " << success << " successes, " << (total - success) << " failures" << endl << endl;
 
             int exit_status(0);

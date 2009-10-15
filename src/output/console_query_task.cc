@@ -30,6 +30,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/pretty_print.hh>
 #include <paludis/package_dep_spec_properties.hh>
 #include <paludis/mask.hh>
 #include <paludis/metadata_key.hh>
@@ -648,22 +649,19 @@ namespace
                 if (0 == k.value())
                     return;
 
-                time_t t(k.value());
-                char buf[255];
-                if (! strftime(buf, 254, "%c", gmtime(&t)))
-                    buf[0] = '\0';
+                std::string pretty_time(pretty_print_time(k.value()));
 
                 if (k.type() == type)
                 {
                     if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":", in);
-                        task->output_right_column(stringify(buf));
+                        task->output_right_column(pretty_time);
                     }
                     else
                     {
                         task->output_left_column(k.human_name() + ":", in);
-                        task->output_right_column(stringify(buf));
+                        task->output_right_column(pretty_time);
                     }
                 }
             }
