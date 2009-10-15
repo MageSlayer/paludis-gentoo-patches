@@ -4,7 +4,7 @@ MAINTAINERCLEANFILES = Makefile.in configure config/* aclocal.m4 \
 			config.h config.h.in INSTALL
 AUTOMAKE_OPTIONS = dist-bzip2 no-dist-gzip std-options foreign
 EXTRA_DIST = autogen.bash automake-deps-dist-hack.tmp
-SUBDIRS = misc test paludis python ruby src doc hooks vim bash-completion zsh-completion pkg-config
+SUBDIRS = . misc test paludis python ruby src doc hooks vim bash-completion zsh-completion pkg-config
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-qa --enable-ruby --enable-ruby-doc --enable-vim \
 	--enable-python --enable-python-doc --enable-xml \
@@ -53,7 +53,7 @@ install-data-local :
 built-sources : $(BUILT_SOURCES) built-sources-subdirs
 
 built-sources-subdirs :
-	for s in $(SUBDIRS) ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
 all-then-check :
 	$(MAKE) all
