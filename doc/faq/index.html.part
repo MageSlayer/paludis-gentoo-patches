@@ -43,6 +43,7 @@ functionality. Pestering anyone about these is liable to get you hurt a lot.</p>
     <li><a href="operation.html#updateworldmissesthings">Updating world misses things</a></li>
     <li><a href="operation.html#info">Get package information for a bug report</a></li>
     <li><a href="operation.html#arrows">What do those fancy arrows when merging things mean?</a></li>
+    <li><a href="operation.html#updates">Profiles Updates for Package Moves and Slot Moves</a></li>
 </ul>
 
 <h2>Stricter than Portage</h2>
