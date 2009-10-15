@@ -21,7 +21,7 @@ automake-deps-built-hack.tmp : built-sources-subdirs
 
 BUILT_SOURCES = automake-deps-built-hack.tmp
 
-automake-deps-dist-hack.tmp : distcheck-deps-subdirs
+automake-deps-dist-hack.tmp : all
 	touch $@
 
 dist-hook :
@@ -54,11 +54,6 @@ built-sources : $(BUILT_SOURCES) built-sources-subdirs
 
 built-sources-subdirs :
 	for s in $(SUBDIRS) ; do $(MAKE) -C $$s built-sources || exit 1 ; done
-
-distcheck-deps : $(DISTCHECK_DEPS) distcheck-deps-subdirs
-
-distcheck-deps-subdirs : built-sources-subdirs
-	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s distcheck-deps || exit 1 ; done
 
 all-then-check :
 	$(MAKE) all

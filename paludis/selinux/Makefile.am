@@ -41,11 +41,3 @@ AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
-DISTCHECK_DEPS = libpaludisselinux_@PALUDIS_PC_SLOT@.la
-
-distcheck-deps : $(DISTCHECK_DEPS) distcheck-deps-subdirs
-
-distcheck-deps-subdirs :
-	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s distcheck-deps || exit 1 ; done
-
-

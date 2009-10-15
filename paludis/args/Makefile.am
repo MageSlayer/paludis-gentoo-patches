@@ -78,16 +78,6 @@ args_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
-DISTCHECK_DEPS = libpaludisargs_@PALUDIS_PC_SLOT@.la libpaludisman_@PALUDIS_PC_SLOT@.a
-
-distcheck-deps-local : $(DISTCHECK_DEPS)
-
-distcheck-deps : distcheck-deps-subdirs
-
-distcheck-deps-subdirs :
-	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
-	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
-
 args_handler-se.hh : args_handler.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/args_handler.se > $@ ; then rm -f $@ ; exit 1 ; fi
 
