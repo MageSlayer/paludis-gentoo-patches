@@ -26,7 +26,9 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/hook.hh>
 #include <tr1/functional>
 #include <map>
 #include <algorithm>
@@ -177,5 +179,11 @@ FakeRepositoryBase::need_keys_added() const
 void
 FakeRepositoryBase::populate_sets() const
 {
+}
+
+HookResult
+FakeRepositoryBase::perform_hook(const Hook &)
+{
+    return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
 }
 

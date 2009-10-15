@@ -38,6 +38,7 @@
 #include <paludis/metadata_key-fwd.hh>
 #include <paludis/metadata_key_holder.hh>
 #include <paludis/merger-fwd.hh>
+#include <paludis/hook-fwd.hh>
 #include <string>
 #include <tr1/functional>
 
@@ -60,7 +61,6 @@ namespace paludis
         struct e_interface;
         struct environment_file;
         struct environment_variable_interface;
-        struct hook_interface;
         struct image_dir;
         struct installed_this;
         struct make_virtuals_interface;
@@ -95,7 +95,6 @@ namespace paludis
         NamedValue<n::destination_interface, RepositoryDestinationInterface *> destination_interface;
         NamedValue<n::e_interface, RepositoryEInterface *> e_interface;
         NamedValue<n::environment_variable_interface, RepositoryEnvironmentVariableInterface *> environment_variable_interface;
-        NamedValue<n::hook_interface, RepositoryHookInterface *> hook_interface;
         NamedValue<n::make_virtuals_interface, RepositoryMakeVirtualsInterface *> make_virtuals_interface;
         NamedValue<n::manifest_interface, RepositoryManifestInterface *> manifest_interface;
         NamedValue<n::mirrors_interface, RepositoryMirrorsInterface *> mirrors_interface;
@@ -392,6 +391,15 @@ namespace paludis
              * Purge any invalid on-disk cache entries.
              */
             virtual void purge_invalid_cache() const;
+
+            /**
+             * Perform a hook.
+             *
+             * \since 0.40 (previously in an interface)
+             */
+            virtual HookResult perform_hook(const Hook & hook)
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
 
             ///\}
 
@@ -702,30 +710,6 @@ namespace paludis
             ///\{
 
             virtual ~RepositoryManifestInterface();
-
-            ///\}
-    };
-
-    /**
-     * Interface for handling hooks.
-     *
-     * \see Repository
-     * \ingroup g_repository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE RepositoryHookInterface
-    {
-        public:
-            /**
-             * Perform a hook.
-             */
-            virtual HookResult perform_hook(const Hook & hook) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            ///\name Basic operations
-            ///\{
-
-            virtual ~RepositoryHookInterface();
 
             ///\}
     };

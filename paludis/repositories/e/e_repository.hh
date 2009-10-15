@@ -57,7 +57,6 @@ namespace paludis
         public RepositoryVirtualsInterface,
         public RepositoryDestinationInterface,
         public RepositoryEInterface,
-        public RepositoryHookInterface,
         public RepositoryQAInterface,
         public RepositoryManifestInterface,
         public std::tr1::enable_shared_from_this<ERepository>,
@@ -185,7 +184,7 @@ namespace paludis
 
             ///\}
 
-            HookResult perform_hook(const Hook &) const
+            HookResult perform_hook(const Hook &)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;

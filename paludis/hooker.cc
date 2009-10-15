@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2007 Piotr Jaroszyński
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -711,31 +711,29 @@ Hooker::perform_hook(const Hook & hook) const
             case hod_stdout:
                 for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
                         r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
-                    if ((**r).hook_interface())
-                        result.max_exit_status() = std::max(result.max_exit_status(),
-                                ((**r).hook_interface()->perform_hook(hook)).max_exit_status());
+                    result.max_exit_status() = std::max(result.max_exit_status(),
+                            ((*r)->perform_hook(hook)).max_exit_status());
                 continue;
 
             case hod_grab:
                 for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
                         r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
-                    if ((**r).hook_interface())
+                {
+                    HookResult tmp((*r)->perform_hook(hook));
+                    if (tmp.max_exit_status() > result.max_exit_status())
+                        result = tmp;
+                    else if (! tmp.output().empty())
                     {
-                        HookResult tmp((**r).hook_interface()->perform_hook(hook));
-                        if (tmp.max_exit_status() > result.max_exit_status())
-                            result = tmp;
-                        else if (! tmp.output().empty())
+                        if (hook.validate_value(tmp.output()))
                         {
-                            if (hook.validate_value(tmp.output()))
-                            {
-                                if (result.max_exit_status() == 0)
-                                    return tmp;
-                            }
-                            else
-                                Log::get_instance()->message("hook.bad_output", ll_warning, lc_context)
-                                    << "Hook returned invalid output: '" << tmp.output() << "'";
+                            if (result.max_exit_status() == 0)
+                                return tmp;
                         }
+                        else
+                            Log::get_instance()->message("hook.bad_output", ll_warning, lc_context)
+                                << "Hook returned invalid output: '" << tmp.output() << "'";
                     }
+                }
                 continue;
 
             case last_hod:

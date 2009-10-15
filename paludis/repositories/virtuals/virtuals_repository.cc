@@ -29,6 +29,7 @@
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
+#include <paludis/hook.hh>
 
 #include <paludis/util/log.hh>
 #include <paludis/util/make_shared_ptr.hh>
@@ -124,7 +125,6 @@ VirtualsRepository::VirtualsRepository(const Environment * const env) :
                 value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
                 value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
                 value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
-                value_for<n::hook_interface>(static_cast<RepositoryHookInterface *>(0)),
                 value_for<n::make_virtuals_interface>(this),
                 value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
                 value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),
@@ -457,4 +457,11 @@ void
 VirtualsRepository::populate_sets() const
 {
 }
+
+HookResult
+VirtualsRepository::perform_hook(const Hook &)
+{
+    return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
+}
+
 

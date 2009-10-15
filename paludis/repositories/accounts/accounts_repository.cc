@@ -38,6 +38,7 @@
 #include <paludis/generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/filtered_generator.hh>
+#include <paludis/hook.hh>
 
 using namespace paludis;
 using namespace paludis::accounts_repository;
@@ -112,7 +113,6 @@ AccountsRepository::AccountsRepository(const AccountsRepositoryParams & p) :
                 value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
                 value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
                 value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
-                value_for<n::hook_interface>(static_cast<RepositoryHookInterface *>(0)),
                 value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
                 value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
                 value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),
@@ -135,7 +135,6 @@ AccountsRepository::AccountsRepository(const InstalledAccountsRepositoryParams &
                 value_for<n::destination_interface>(this),
                 value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
                 value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
-                value_for<n::hook_interface>(static_cast<RepositoryHookInterface *>(0)),
                 value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
                 value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
                 value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),
@@ -458,6 +457,12 @@ AccountsRepository::populate_sets() const
                 std::tr1::bind(get_everything_set, _imp->params_if_installed->environment(), this),
                 true);
     }
+}
+
+HookResult
+AccountsRepository::perform_hook(const Hook &)
+{
+    return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
 }
 
 template class PrivateImplementationPattern<AccountsRepository>;

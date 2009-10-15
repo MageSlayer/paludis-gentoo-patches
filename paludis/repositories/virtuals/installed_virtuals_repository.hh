@@ -34,7 +34,6 @@ namespace paludis
      */
     class PALUDIS_VISIBLE InstalledVirtualsRepository :
         public Repository,
-        public RepositoryHookInterface,
         public RepositoryDestinationInterface,
         public std::tr1::enable_shared_from_this<InstalledVirtualsRepository>,
         private PrivateImplementationPattern<InstalledVirtualsRepository>
@@ -83,7 +82,7 @@ namespace paludis
 
             virtual bool can_be_favourite_repository() const;
 
-            HookResult perform_hook(const Hook &) const
+            HookResult perform_hook(const Hook &)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* Repository */

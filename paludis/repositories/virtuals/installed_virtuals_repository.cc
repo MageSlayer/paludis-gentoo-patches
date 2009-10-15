@@ -113,7 +113,6 @@ InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * con
                 value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(this)),
                 value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
                 value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
-                value_for<n::hook_interface>(this),
                 value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
                 value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
                 value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),
@@ -237,7 +236,7 @@ InstalledVirtualsRepository::invalidate_masks()
 }
 
 HookResult
-InstalledVirtualsRepository::perform_hook(const Hook & hook) const
+InstalledVirtualsRepository::perform_hook(const Hook & hook)
 {
     Context context("When performing hook '" + stringify(hook.name()) + "' for repository '"
             + stringify(name()) + "':");

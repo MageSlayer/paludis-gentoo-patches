@@ -28,6 +28,7 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/syncer.hh>
+#include <paludis/hook.hh>
 #include <list>
 
 using namespace paludis;
@@ -88,7 +89,6 @@ UnwrittenRepository::UnwrittenRepository(const UnwrittenRepositoryParams & p) :
                 value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
                 value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
                 value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
-                value_for<n::hook_interface>(static_cast<RepositoryHookInterface *>(0)),
                 value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
                 value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
                 value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),
@@ -342,6 +342,12 @@ UnwrittenRepository::repository_factory_dependencies(
 void
 UnwrittenRepository::populate_sets() const
 {
+}
+
+HookResult
+UnwrittenRepository::perform_hook(const Hook &)
+{
+    return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
 }
 
 template class PrivateImplementationPattern<unwritten_repository::UnwrittenRepository>;

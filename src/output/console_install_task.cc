@@ -1958,7 +1958,7 @@ ConsoleInstallTask::on_installed_paludis()
 }
 
 HookResult
-ConsoleInstallTask::perform_hook(const Hook & hook) const
+ConsoleInstallTask::perform_hook(const Hook & hook)
 {
     std::string resume_command(make_resume_command(true));
     if (resume_command.empty())

@@ -31,6 +31,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/selection.hh>
+#include <paludis/hook.hh>
 #include <paludis/repositories/cran/cran_package_id.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/cran_installed_repository.hh>
@@ -165,7 +166,6 @@ CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryPa
                 value_for<n::destination_interface>(this),
                 value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
                 value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
-                value_for<n::hook_interface>(static_cast<RepositoryHookInterface *>(0)),
                 value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
                 value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
                 value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),
@@ -595,5 +595,11 @@ CRANInstalledRepository::populate_sets() const
             SetName("everything::" + stringify(name())),
             std::tr1::bind(get_everything_set, _imp->params.environment(), this),
             true);
+}
+
+HookResult
+CRANInstalledRepository::perform_hook(const Hook &)
+{
+    return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
 }
 

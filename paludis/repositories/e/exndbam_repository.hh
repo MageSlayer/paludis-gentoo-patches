@@ -139,6 +139,8 @@ namespace paludis
                     const std::tr1::function<std::string (const std::string &)> &);
 
             ///\}
+
+            virtual void perform_updates();
     };
 
     class PALUDIS_VISIBLE ExndbamRepositoryConfigurationError : public ConfigurationError
