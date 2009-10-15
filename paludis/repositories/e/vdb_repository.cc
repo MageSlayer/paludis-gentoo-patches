@@ -1246,7 +1246,7 @@ namespace
         }
     };
 
-    void rewrite_dependencies(
+    bool rewrite_dependencies(
             const FSEntry & f,
             const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > & key,
             const DepRewrites & rewrites)
@@ -1255,10 +1255,17 @@ namespace
         key->value()->root()->accept(v);
         if (v.changed)
         {
-            std::cout << "    Rewriting " << f << std::endl;
-            SafeOFStream ff(f);
-            ff << v.str.str() << std::endl;
+            if ("yes" == getenv_with_default("PALUDIS_CARRY_OUT_UPDATES", ""))
+            {
+                std::cout << "    Rewriting " << f << std::endl;
+                SafeOFStream ff(f);
+                ff << v.str.str() << std::endl;
+            }
+            else
+                std::cout << "    Would rewrite " << f << std::endl;
         }
+
+        return v.changed;
     }
 }
 
@@ -1392,8 +1399,7 @@ VDBRepository::perform_updates()
 
     try
     {
-        if ((! moves.empty()) || (! slot_moves.empty()))
-            std::cout << std::endl;
+        std::cout << std::endl;
 
         if (! moves.empty())
         {
@@ -1476,23 +1482,31 @@ VDBRepository::perform_updates()
         {
             std::cout << "Updating installed package dependencies" << std::endl;
 
+            bool rewrite_done(false);
             const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->params.environment())[selection::AllVersionsSorted(
                         generator::InRepository(name()))]);
             for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                     i != i_end ; ++i)
             {
                 if ((*i)->build_dependencies_key())
-                    rewrite_dependencies((*i)->fs_location_key()->value() / (*i)->build_dependencies_key()->raw_name(),
+                    rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->value() / (*i)->build_dependencies_key()->raw_name(),
                             (*i)->build_dependencies_key(), dep_rewrites);
                 if ((*i)->run_dependencies_key())
-                    rewrite_dependencies((*i)->fs_location_key()->value() / (*i)->run_dependencies_key()->raw_name(),
+                    rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->value() / (*i)->run_dependencies_key()->raw_name(),
                             (*i)->run_dependencies_key(), dep_rewrites);
                 if ((*i)->post_dependencies_key())
-                    rewrite_dependencies((*i)->fs_location_key()->value() / (*i)->post_dependencies_key()->raw_name(),
+                    rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->value() / (*i)->post_dependencies_key()->raw_name(),
                             (*i)->post_dependencies_key(), dep_rewrites);
                 if ((*i)->suggested_dependencies_key())
-                    rewrite_dependencies((*i)->fs_location_key()->value() / (*i)->suggested_dependencies_key()->raw_name(),
+                    rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->value() / (*i)->suggested_dependencies_key()->raw_name(),
                             (*i)->suggested_dependencies_key(), dep_rewrites);
+            }
+
+            if ("yes" != getenv_with_default("PALUDIS_CARRY_OUT_UPDATES", ""))
+            {
+                std::cout << "Some installed packages have dependencies that need rewriting for package" << std::endl;
+                std::cout << "moves. See the Paludis FAQ for how to proceed." << std::endl;
+                std::cout << std::endl;
             }
         }
     }
