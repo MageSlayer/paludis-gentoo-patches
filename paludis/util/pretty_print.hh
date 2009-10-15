@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Mike Kelly
+ * Copyright (c) 2008, 2009 Mike Kelly
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -36,6 +36,11 @@ namespace paludis
      *
      */
     std::string pretty_print_bytes(const long & bytes) PALUDIS_VISIBLE;
+
+    /**
+     * Convert a time_t into a string with localtime.
+     */
+    std::string pretty_print_time(const time_t & t) PALUDIS_VISIBLE;
 }
 
 #endif

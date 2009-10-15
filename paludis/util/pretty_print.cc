@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Mike Kelly
+ * Copyright (c) 2008, 2009 Mike Kelly
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,8 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <paludis/util/exception.hh>
 #include <paludis/util/pretty_print.hh>
+#include <paludis/util/stringify.hh>
 
+#include <ctime>
 #include <iomanip>
 #include <sstream>
 
@@ -44,5 +47,16 @@ paludis::pretty_print_bytes(const long & bytes)
     val << size << " " << suffix[i];
 
     return val.str();
+}
+
+std::string
+paludis::pretty_print_time(const time_t & t)
+{
+    char buf[255];
+
+    if (0 == std::strftime(buf, 255, "%a %b %d %T %Z %Y", std::localtime(&t)))
+        throw InternalError(PALUDIS_HERE, "strftime failed");
+
+    return std::string(buf);
 }
 

@@ -17,6 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <clocale>
+#include <cstdlib>
 #include <paludis/util/pretty_print.hh>
 #include <string>
 #include <test/test_framework.hh>
@@ -53,5 +55,18 @@ namespace test_cases
             TEST_CHECK_EQUAL(pretty_print_bytes(1537598292), "1.43 GBytes");
         }
     } test_case_pretty_print_bytes;
+
+    struct PrettyPrintTimeTests : TestCase
+    {
+        PrettyPrintTimeTests() : TestCase("pretty_print_time") { }
+
+        void run()
+        {
+            std::setlocale(LC_TIME, "C");
+            setenv("TZ", "America/New_York", 1);
+            TEST_CHECK_EQUAL(pretty_print_time(1234567890), "Fri Feb 13 18:31:30 EST 2009");
+            TEST_CHECK_EQUAL(pretty_print_time(1255617780), "Thu Oct 15 10:43:00 EDT 2009");
+        }
+    } test_case_pretty_print_time;
 }
 
