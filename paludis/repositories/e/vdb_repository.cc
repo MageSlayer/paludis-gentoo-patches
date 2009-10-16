@@ -914,7 +914,6 @@ VDBRepository::merge(const MergeParams & m)
     vdb_dir /= (stringify(m.package_id()->name().package()) + "-" + stringify(m.package_id()->version()));
 
 
-    const std::tr1::shared_ptr<FSEntrySet> merged_entries(new FSEntrySet);
     VDBMerger merger(
             make_named_values<VDBMergerParams>(
                 value_for<n::config_protect>(config_protect),
@@ -922,7 +921,7 @@ VDBRepository::merge(const MergeParams & m)
                 value_for<n::contents_file>(vdb_dir / "CONTENTS"),
                 value_for<n::environment>(_imp->params.environment()),
                 value_for<n::image>(m.image_dir()),
-                value_for<n::merged_entries>(merged_entries),
+                value_for<n::merged_entries>(m.merged_entries()),
                 value_for<n::options>(m.options()),
                 value_for<n::output_manager>(m.output_manager()),
                 value_for<n::package_id>(m.package_id()),
@@ -981,7 +980,7 @@ VDBRepository::merge(const MergeParams & m)
         UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                     value_for<n::config_protect>(config_protect),
                     value_for<n::if_for_install_id>(m.package_id()),
-                    value_for<n::ignore_for_unmerge>(std::tr1::bind(&ignore_merged, merged_entries,
+                    value_for<n::ignore_for_unmerge>(std::tr1::bind(&ignore_merged, m.merged_entries(),
                             std::tr1::placeholders::_1)),
                     value_for<n::is_overwrite>(true),
                     value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1))
@@ -1002,7 +1001,7 @@ VDBRepository::merge(const MergeParams & m)
                 UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                             value_for<n::config_protect>(config_protect),
                             value_for<n::if_for_install_id>(m.package_id()),
-                            value_for<n::ignore_for_unmerge>(std::tr1::bind(&ignore_merged, merged_entries,
+                            value_for<n::ignore_for_unmerge>(std::tr1::bind(&ignore_merged, m.merged_entries(),
                                     std::tr1::placeholders::_1)),
                             value_for<n::is_overwrite>(false),
                             value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1))
