@@ -206,6 +206,12 @@ _cave_cmd_resolve()
     '(--dump --no-dump)'{--dump,--no-dump}'[Dump debug output]' \
     '(--dump-dependencies --no-dump-dependencies)'{--dump-dependencies,--no-dump-dependencies}'[Dump the sanitised dependencies selected for every package]' \
     '(--dump-restarts --no-dump-restarts)'{--dump-restarts,--no-dump-restarts}'[Dump restarts]' \
+    '--suggestions[Control whether suggestions are taken]:When:((ignore display take))' \
+    '--recommendations[Control whether recommendations are taken]:When:((ignore display take))' \
+    '--take[Take suggestions matching a package spec]:Spec: ' \
+    '--take-from[Take suggestions made by any package matching a package spec]:Spec: ' \
+    '--discard[Discard any suggestion matching a package spec]:Spec: ' \
+    '--discard-from[Discard all suggestions made by any package matching a package spec]:Spec: ' \
     '(--create-binaries -b)'{--create-binaries,-b}'[Create binary packages in the specified repository]:Repository:_cave_repositories' \
     '(--no-binaries-for -B)'{--no-binaries-for,-B}'[Do not create binary packages from any origin ID matching a spec]:Spec: ' \
     '(--install-to-root -/ --no-install-to-root)'{--install-to-root,-/,--no-install-to-root}'[Install packages to /]' \
