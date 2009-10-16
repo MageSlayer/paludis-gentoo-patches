@@ -313,9 +313,10 @@ namespace
         return o;
     }
 
-    bool ignore_nothing(const FSEntry &)
+    bool ignore_merged(const std::tr1::shared_ptr<const FSEntrySet> & s,
+            const FSEntry & f)
     {
-        return false;
+        return s->end() != s->find(f);
     }
 }
 
@@ -431,7 +432,8 @@ ExndbamRepository::merge(const MergeParams & m)
         UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                     value_for<n::config_protect>(config_protect),
                     value_for<n::if_for_install_id>(m.package_id()),
-                    value_for<n::ignore_for_unmerge>(&ignore_nothing),
+                    value_for<n::ignore_for_unmerge>(std::tr1::bind(&ignore_merged, merger.merged_entries(),
+                            std::tr1::placeholders::_1)),
                     value_for<n::is_overwrite>(true),
                     value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1))
                     ));
@@ -451,7 +453,8 @@ ExndbamRepository::merge(const MergeParams & m)
                 UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                             value_for<n::config_protect>(config_protect),
                             value_for<n::if_for_install_id>(m.package_id()),
-                            value_for<n::ignore_for_unmerge>(&ignore_nothing),
+                            value_for<n::ignore_for_unmerge>(std::tr1::bind(&ignore_merged, merger.merged_entries(),
+                                    std::tr1::placeholders::_1)),
                             value_for<n::is_overwrite>(false),
                             value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1))
                             ));
@@ -532,7 +535,7 @@ ExndbamRepository::perform_uninstall(
                     value_for<n::config_protect_mask>(config_protect_mask),
                     value_for<n::contents_file>(ver_dir / "contents"),
                     value_for<n::environment>(_imp->params.environment()),
-                    value_for<n::ignore>(&ignore_nothing),
+                    value_for<n::ignore>(a.options.ignore_for_unmerge()),
                     value_for<n::ndbam>(&_imp->ndbam),
                     value_for<n::output_manager>(output_manager),
                     value_for<n::package_id>(id),

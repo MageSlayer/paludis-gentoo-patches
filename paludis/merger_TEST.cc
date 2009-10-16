@@ -528,5 +528,22 @@ namespace test_cases
             TEST_CHECK(! merger.check());
         }
     } test_merger_empty_root_disallowed;
+
+    struct MergerMtimesTest : MergerTest
+    {
+        MergerMtimesTest() : MergerTest("mtimes", MergerOptions() + mo_preserve_mtimes) { }
+
+        void run()
+        {
+            time_t m_new((image_dir / "new_file").mtime());
+            time_t m_existing((image_dir / "existing_file").mtime());
+
+            TEST_CHECK(merger.check());
+            merger.merge();
+
+            TEST_CHECK_EQUAL((root_dir / "new_file").mtime(), m_new);
+            TEST_CHECK_EQUAL((root_dir / "existing_file").mtime(), m_existing);
+        }
+    } test_merger_mtimes;
 }
 

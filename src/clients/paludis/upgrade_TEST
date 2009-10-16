@@ -15,15 +15,17 @@ for c in vdb_config exndbam_config ; do
     ./upgrade_TEST_dir/root/usr/bin/testbin1 | grep testbin1 >/dev/null || exit 3
     ./upgrade_TEST_dir/root/usr/bin/testbin2 && exit 4
 
-    PALUDIS_HOME=./upgrade_TEST_dir/$c/ REPEAT=yes \
-       ./paludis -E :upgrade-test --install =test-category/target-1 || exit 5
+    for a in 1 2 ; do
+        PALUDIS_HOME=./upgrade_TEST_dir/$c/ REPEAT=yes \
+           ./paludis -E :upgrade-test --install =test-category/target-1 || exit 5
 
-    PALUDIS_HOME=./upgrade_TEST_dir/$c/ REPEAT= \
-       ./paludis -E :upgrade-test --query -M =test-category/target-1 || exit 15
+        PALUDIS_HOME=./upgrade_TEST_dir/$c/ REPEAT= \
+           ./paludis -E :upgrade-test --query -M =test-category/target-1 || exit 15
 
-    ./upgrade_TEST_dir/root/usr/bin/testbin | grep testbin-1 >/dev/null || exit 6
-    ./upgrade_TEST_dir/root/usr/bin/testbin1 | grep repeatbin1 >/dev/null || exit 7
-    ./upgrade_TEST_dir/root/usr/bin/testbin2 && exit 8
+        ./upgrade_TEST_dir/root/usr/bin/testbin | grep testbin-1 >/dev/null || exit 6
+        ./upgrade_TEST_dir/root/usr/bin/testbin1 | grep repeatbin1 >/dev/null || exit 7
+        ./upgrade_TEST_dir/root/usr/bin/testbin2 && exit 8
+    done
 
     PALUDIS_HOME=./upgrade_TEST_dir/$c/ \
        ./paludis -E :upgrade-test --install target || exit 9

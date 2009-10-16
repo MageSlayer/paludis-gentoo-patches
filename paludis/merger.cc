@@ -26,6 +26,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/set.hh>
 #include <paludis/selinux/security_context.hh>
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
@@ -62,10 +63,13 @@ namespace paludis
         bool result;
         bool skip_dir;
 
+        std::tr1::shared_ptr<FSEntrySet> merged_entries;
+
         Implementation(const MergerParams & p) :
             params(p),
             result(true),
-            skip_dir(false)
+            skip_dir(false),
+            merged_entries(new FSEntrySet)
         {
         }
     };
@@ -155,10 +159,10 @@ Merger::merge()
             if (! d->exists())
             {
                 d->mkdir();
-                record_install_under_dir(*d, MergeStatusFlags());
+                track_install_under_dir(*d, MergeStatusFlags());
             }
             else
-                record_install_under_dir(*d, MergeStatusFlags() + msi_used_existing);
+                track_install_under_dir(*d, MergeStatusFlags() + msi_used_existing);
     }
 
     if (! _imp->params.no_chown())
@@ -506,7 +510,7 @@ Merger::on_file_over_nothing(bool is_check, const FSEntry & src, const FSEntry &
     if (is_check)
         return;
 
-    record_install_file(src, dst, src.basename(), install_file(src, dst, src.basename()));
+    track_install_file(src, dst, src.basename(), install_file(src, dst, src.basename()));
 }
 
 void
@@ -518,10 +522,10 @@ Merger::on_file_over_file(bool is_check, const FSEntry & src, const FSEntry & ds
     if (config_protected(src, dst))
     {
         std::string cfgpro_name(make_config_protect_name(src, dst));
-        record_install_file(src, dst, cfgpro_name, install_file(src, dst, cfgpro_name));
+        track_install_file(src, dst, cfgpro_name, install_file(src, dst, cfgpro_name));
     }
     else
-        record_install_file(src, dst, src.basename(), install_file(src, dst, src.basename()) + msi_unlinked_first);
+        track_install_file(src, dst, src.basename(), install_file(src, dst, src.basename()) + msi_unlinked_first);
 }
 
 void
@@ -537,7 +541,7 @@ Merger::on_file_over_sym(bool is_check, const FSEntry & src, const FSEntry & dst
     if (is_check)
         return;
 
-    record_install_file(src, dst, src.basename(), install_file(src, dst, src.basename()) + msi_unlinked_first);
+    track_install_file(src, dst, src.basename(), install_file(src, dst, src.basename()) + msi_unlinked_first);
 }
 
 void
@@ -546,7 +550,7 @@ Merger::on_file_over_misc(bool is_check, const FSEntry & src, const FSEntry & ds
     if (is_check)
         return;
 
-    record_install_file(src, dst, src.basename(), install_file(src, dst, src.basename()) + msi_unlinked_first);
+    track_install_file(src, dst, src.basename(), install_file(src, dst, src.basename()) + msi_unlinked_first);
 }
 
 void
@@ -555,7 +559,7 @@ Merger::on_dir_over_nothing(bool is_check, const FSEntry & src, const FSEntry & 
     if (is_check)
         return;
 
-    record_install_dir(src, dst, install_dir(src, dst));
+    track_install_dir(src, dst, install_dir(src, dst));
 }
 
 void
@@ -571,7 +575,7 @@ Merger::on_dir_over_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
     if (is_check)
         return;
 
-    record_install_dir(src, dst, MergeStatusFlags() + msi_used_existing);
+    track_install_dir(src, dst, MergeStatusFlags() + msi_used_existing);
 }
 
 void
@@ -592,7 +596,7 @@ Merger::on_dir_over_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
         on_warn(is_check, "Expected '" + stringify(dst / src.basename()) +
                 "' to be a directory but found a symlink to a directory");
         if (! is_check)
-            record_install_dir(src, dst, MergeStatusFlags() + msi_used_existing);
+            track_install_dir(src, dst, MergeStatusFlags() + msi_used_existing);
     }
     else
         on_error(is_check, "Expected '" + stringify(dst / src.basename()) +
@@ -606,7 +610,7 @@ Merger::on_dir_over_misc(bool is_check, const FSEntry & src, const FSEntry & dst
         return;
 
     unlink_misc(dst / src.basename());
-    record_install_dir(src, dst, install_dir(src, dst) + msi_unlinked_first);
+    track_install_dir(src, dst, install_dir(src, dst) + msi_unlinked_first);
 }
 
 void
@@ -615,7 +619,7 @@ Merger::on_sym_over_nothing(bool is_check, const FSEntry & src, const FSEntry & 
     if (is_check)
         return;
 
-    record_install_sym(src, dst, install_sym(src, dst));
+    track_install_sym(src, dst, install_sym(src, dst));
 }
 
 void
@@ -625,7 +629,7 @@ Merger::on_sym_over_file(bool is_check, const FSEntry & src, const FSEntry & dst
         return;
 
     unlink_file(dst / src.basename());
-    record_install_sym(src, dst, install_sym(src, dst) + msi_unlinked_first);
+    track_install_sym(src, dst, install_sym(src, dst) + msi_unlinked_first);
 }
 
 void
@@ -642,7 +646,7 @@ Merger::on_sym_over_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
         return;
 
     unlink_sym(dst / src.basename());
-    record_install_sym(src, dst, install_sym(src, dst) + msi_unlinked_first);
+    track_install_sym(src, dst, install_sym(src, dst) + msi_unlinked_first);
 }
 
 void
@@ -652,7 +656,7 @@ Merger::on_sym_over_misc(bool is_check, const FSEntry & src, const FSEntry & dst
         return;
 
     unlink_misc(dst / src.basename());
-    record_install_sym(src, dst, install_sym(src, dst) + msi_unlinked_first);
+    track_install_sym(src, dst, install_sym(src, dst) + msi_unlinked_first);
 }
 
 void
@@ -749,7 +753,7 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
         bool touch(_imp->merged_ids.end() == _imp->merged_ids.find(src.lowlevel_id()));
         _imp->merged_ids.insert(make_pair(src.lowlevel_id(), stringify(dst_real)));
 
-        if (touch && ! dst_real.utime())
+        if ((! _imp->params.options()[mo_preserve_mtimes]) && touch && ! dst_real.utime())
             throw MergerError("utime(" + stringify(dst_real) + ", 0) failed: " + stringify(::strerror(errno)));
 
         /* set*id bits get partially clobbered on a rename on linux */
@@ -797,6 +801,17 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
         if (0 != ::fchmod(output_fd, src_perms))
             throw MergerError("Cannot fchmod '" + stringify(dst) + "': " + stringify(::strerror(errno)));
         try_to_copy_xattrs(src, output_fd, result);
+
+        /* might need to copy mtime */
+        if (_imp->params.options()[mo_preserve_mtimes])
+        {
+            /* futimens is POSIX, futimes isn't */
+            struct timespec ts;
+            ts.tv_sec = src.mtime();
+            ts.tv_nsec = 0;
+            if (0 != ::futimens(output_fd, &ts))
+                throw MergerError("Cannot futimens '" + stringify(dst) + "': " + stringify(::strerror(errno)));
+        }
 
         char buf[4096];
         ssize_t count;
@@ -857,7 +872,7 @@ Merger::rewrite_symlink_as_needed(const FSEntry & src, const FSEntry & dst_dir)
 }
 
 void
-Merger::record_renamed_dir_recursive(const FSEntry & dst)
+Merger::track_renamed_dir_recursive(const FSEntry & dst)
 {
     for (DirIterator d(dst, DirIteratorOptions() + dio_include_dotfiles + dio_inode_sort), d_end ; d != d_end ; ++d)
     {
@@ -869,7 +884,7 @@ Merger::record_renamed_dir_recursive(const FSEntry & dst)
         {
             case et_sym:
                 rewrite_symlink_as_needed(*d, dst);
-                record_install_sym(*d, dst, merged_how + msi_parent_rename);
+                track_install_sym(*d, dst, merged_how + msi_parent_rename);
                 _imp->merged_ids.insert(make_pair(d->lowlevel_id(), stringify(*d)));
                 continue;
 
@@ -879,13 +894,13 @@ Merger::record_renamed_dir_recursive(const FSEntry & dst)
                 _imp->merged_ids.insert(make_pair(d->lowlevel_id(), stringify(*d)));
                 if (touch && ! FSEntry(*d).utime())
                     throw MergerError("utime(" + stringify(*d) + ", 0) failed: " + stringify(::strerror(errno)));
-                record_install_file(*d, dst, stringify(d->basename()), merged_how + msi_parent_rename);
+                track_install_file(*d, dst, stringify(d->basename()), merged_how + msi_parent_rename);
                 }
                 continue;
 
             case et_dir:
-                record_install_dir(*d, d->dirname(), merged_how + msi_parent_rename);
-                record_renamed_dir_recursive(*d);
+                track_install_dir(*d, d->dirname(), merged_how + msi_parent_rename);
+                track_renamed_dir_recursive(*d);
                 continue;
 
             case et_misc:
@@ -948,7 +963,7 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
     if (0 == std::rename(stringify(src).c_str(), stringify(dst).c_str()))
     {
         result += msi_rename;
-        record_renamed_dir_recursive(dst);
+        track_renamed_dir_recursive(dst);
         _imp->skip_dir = true;
     }
     else
@@ -1225,4 +1240,38 @@ Merger::try_to_copy_xattrs(const FSEntry &, int, MergeStatusFlags &)
 }
 
 #endif
+
+void
+Merger::track_install_file(const FSEntry & src, const FSEntry & dst_dir, const std::string & dst_name, const MergeStatusFlags & flags)
+{
+    _imp->merged_entries->insert(dst_dir / dst_name);
+    record_install_file(src, dst_dir, dst_name, flags);
+}
+
+void
+Merger::track_install_dir(const FSEntry & src, const FSEntry & dst_dir, const MergeStatusFlags & flags)
+{
+    _imp->merged_entries->insert(dst_dir / src.basename());
+    record_install_dir(src, dst_dir, flags);
+}
+
+void
+Merger::track_install_under_dir(const FSEntry & dst, const MergeStatusFlags & flags)
+{
+    _imp->merged_entries->insert(dst);
+    record_install_under_dir(dst, flags);
+}
+
+void
+Merger::track_install_sym(const FSEntry & src, const FSEntry & dst_dir, const MergeStatusFlags & flags)
+{
+    _imp->merged_entries->insert(dst_dir / src.basename());
+    record_install_sym(src, dst_dir, flags);
+}
+
+const std::tr1::shared_ptr<const FSEntrySet>
+Merger::merged_entries() const
+{
+    return _imp->merged_entries;
+}
 

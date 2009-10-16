@@ -123,6 +123,8 @@ the_eclass_works()
 END
 
 cat <<"END" > test-category/target/target-1.ebuild || exit 1
+EAPI="3"
+
 inherit myeclass
 
 DESCRIPTION="Test target"
@@ -153,6 +155,8 @@ src_install() {
 
     dobin testbin
     dobin testbin${PV}
+
+    touch -d "1 April 2000" -m ${D}/usr/bin/testbin
 }
 
 pkg_preinst() {
@@ -177,6 +181,8 @@ pkg_prerm() {
 END
 
 cat <<"END" > test-category/target/target-2.ebuild || exit 1
+EAPI="3"
+
 DESCRIPTION="Test target"
 HOMEPAGE="http://paludis.pioto.org/"
 SRC_URI="http://invalid.domain/${P}.tar.gz"
@@ -188,6 +194,8 @@ KEYWORDS="test"
 src_install() {
     dobin testbin
     dobin testbin${PV}
+
+    touch -d "1 April 2000" -m ${D}/usr/bin/testbin
 }
 END
 cd ..

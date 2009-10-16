@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -106,7 +106,7 @@ namespace paludis
         private PrivateImplementationPattern<Merger>
     {
         private:
-            void record_renamed_dir_recursive(const FSEntry &);
+            void track_renamed_dir_recursive(const FSEntry &);
             void relabel_dir_recursive(const FSEntry &, const FSEntry &);
             void rewrite_symlink_as_needed(const FSEntry &, const FSEntry &);
             void try_to_copy_xattrs(const FSEntry &, int, MergeStatusFlags &);
@@ -150,6 +150,16 @@ namespace paludis
              * Allows subclasses to perform behaviour when leaving a directory.
              */
             virtual void on_leave_dir(bool is_check, const FSEntry);
+
+            ///\name Track and record merges
+            ///\{
+
+            void track_install_file(const FSEntry &, const FSEntry &, const std::string &, const MergeStatusFlags &);
+            void track_install_dir(const FSEntry &, const FSEntry &, const MergeStatusFlags &);
+            void track_install_under_dir(const FSEntry &, const MergeStatusFlags &);
+            void track_install_sym(const FSEntry &, const FSEntry &, const MergeStatusFlags &);
+
+            ///\}
 
             ///\name Handle filesystem entry things
             ///\{
@@ -230,6 +240,13 @@ namespace paludis
              * Perform the merge.
              */
             virtual void merge();
+
+            /**
+             * Every FSEntry (final path) that we merged.
+             *
+             * \since 0.40
+             */
+            const std::tr1::shared_ptr<const FSEntrySet> merged_entries() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
 }

@@ -31,6 +31,7 @@ make_enum_MergerOption()
 
     key mo_rewrite_symlinks            "Fix symlinks that point into the image directory (otherwise throw an error)"
     key mo_allow_empty_dirs            "Allow merging empty directories"
+    key mo_preserve_mtimes             "Preserve mtimes \since 0.42"
 
     doxygen_comment << "END"
         /**

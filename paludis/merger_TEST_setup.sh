@@ -91,6 +91,10 @@ for d in *_dir; do
     ln -s ${d} ${d%_dir}
 done
 
+mkdir -p mtimes/{image,root}
+> mtimes/image/new_file
+> mtimes/image/existing_file
+> mtimes/root/existing_file
 
 mkdir hooks
 cd hooks

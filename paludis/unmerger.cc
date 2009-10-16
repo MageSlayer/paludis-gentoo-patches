@@ -135,6 +135,8 @@ Unmerger::unmerge_file(const std::tr1::shared_ptr<const ContentsEntry> & e) cons
         display("<<< [force] " + stringify(e->location_key()->value()));
         unlink_file(f_real, e);
     }
+    else if (_imp->options.ignore()(f_real))
+        display("--- [ignor] " + stringify(e->location_key()->value()));
     else if (check_file(e))
     {
         display("<<<         " + stringify(e->location_key()->value()));
@@ -161,6 +163,8 @@ Unmerger::unmerge_sym(const std::tr1::shared_ptr<const ContentsEntry> & e) const
         display("<<< [force] " + stringify(e->location_key()->value()));
         unlink_sym(f_real, e);
     }
+    else if (_imp->options.ignore()(f_real))
+        display("--- [ignor] " + stringify(e->location_key()->value()));
     else if (check_sym(e))
     {
         display("<<<         " + stringify(e->location_key()->value()));
@@ -182,6 +186,8 @@ Unmerger::unmerge_dir(const std::tr1::shared_ptr<const ContentsEntry> & e) const
         throw UnmergerError("Unmerge of '" + stringify(e->location_key()->value()) + "' aborted by hook");
     else if (hr.output() == "skip")
         display("--- [skip ] " + stringify(e->location_key()->value()));
+    else if (_imp->options.ignore()(f_real))
+        display("--- [ignor] " + stringify(e->location_key()->value()));
     else if (check_dir(e))
     {
         display("<<<         " + stringify(e->location_key()->value()));
@@ -208,6 +214,8 @@ Unmerger::unmerge_misc(const std::tr1::shared_ptr<const ContentsEntry> & e) cons
         display("<<< [force] " + stringify(e->location_key()->value()));
         unlink_misc(f_real, e);
     }
+    else if (_imp->options.ignore()(f_real))
+        display("--- [ignor] " + stringify(e->location_key()->value()));
     else if (check_misc(e))
     {
         display("<<<         " + stringify(e->location_key()->value()));
