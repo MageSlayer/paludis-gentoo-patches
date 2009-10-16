@@ -887,11 +887,11 @@ Merger::track_renamed_dir_recursive(const FSEntry & dst)
 
             case et_file:
                 {
-                bool touch(_imp->merged_ids.end() == _imp->merged_ids.find(d->lowlevel_id()));
-                _imp->merged_ids.insert(make_pair(d->lowlevel_id(), stringify(*d)));
-                if (touch && ! FSEntry(*d).utime())
-                    throw MergerError("utime(" + stringify(*d) + ", 0) failed: " + stringify(::strerror(errno)));
-                track_install_file(*d, dst, stringify(d->basename()), merged_how + msi_parent_rename);
+                    bool touch(_imp->merged_ids.end() == _imp->merged_ids.find(d->lowlevel_id()));
+                    _imp->merged_ids.insert(make_pair(d->lowlevel_id(), stringify(*d)));
+                    if ((! _imp->params.options()[mo_preserve_mtimes]) && touch && ! FSEntry(*d).utime())
+                        throw MergerError("utime(" + stringify(*d) + ", 0) failed: " + stringify(::strerror(errno)));
+                    track_install_file(*d, dst, stringify(d->basename()), merged_how + msi_parent_rename);
                 }
                 continue;
 
