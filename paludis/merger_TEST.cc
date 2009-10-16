@@ -24,6 +24,8 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/hook.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -167,6 +169,7 @@ namespace
                             value_for<n::get_new_ids_or_minus_one>(&get_new_ids_or_minus_one),
                             value_for<n::image>(image_dir),
                             value_for<n::install_under>(FSEntry("/")),
+                            value_for<n::merged_entries>(make_shared_ptr(new FSEntrySet)),
                             value_for<n::no_chown>(true),
                             value_for<n::options>(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs),
                             value_for<n::root>(root_dir)
@@ -184,6 +187,7 @@ namespace
                         value_for<n::get_new_ids_or_minus_one>(&get_new_ids_or_minus_one),
                         value_for<n::image>(image_dir),
                         value_for<n::install_under>(FSEntry("/")),
+                        value_for<n::merged_entries>(make_shared_ptr(new FSEntrySet)),
                         value_for<n::no_chown>(true),
                         value_for<n::options>(o),
                         value_for<n::root>(root_dir)

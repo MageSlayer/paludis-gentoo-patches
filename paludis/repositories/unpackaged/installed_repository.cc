@@ -354,6 +354,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
                         _imp->params.environment(), rewrite_ids_over_to_root, _1)),
                 value_for<n::image>(m.image_dir()),
                 value_for<n::install_under>(install_under),
+                value_for<n::merged_entries>(make_shared_ptr(new FSEntrySet)),
                 value_for<n::options>(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs),
                 value_for<n::output_manager>(m.output_manager()),
                 value_for<n::package_id>(m.package_id()),

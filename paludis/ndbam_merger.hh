@@ -37,6 +37,7 @@ namespace paludis
         struct get_new_ids_or_minus_one;
         struct image;
         struct install_under;
+        struct merged_entries;
         struct options;
         struct output_manager;
         struct package_id;
@@ -52,6 +53,7 @@ namespace paludis
         NamedValue<n::get_new_ids_or_minus_one, std::tr1::function<std::pair<uid_t, gid_t> (const FSEntry &)> > get_new_ids_or_minus_one;
         NamedValue<n::image, FSEntry> image;
         NamedValue<n::install_under, FSEntry> install_under;
+        NamedValue<n::merged_entries, std::tr1::shared_ptr<FSEntrySet> > merged_entries;
         NamedValue<n::options, MergerOptions> options;
         NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
         NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;

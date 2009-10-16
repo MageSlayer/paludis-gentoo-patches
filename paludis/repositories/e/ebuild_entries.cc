@@ -625,9 +625,10 @@ namespace
     {
     }
 
-    bool ignore_nothing(const FSEntry &)
+    bool ignore_merged(const std::tr1::shared_ptr<const FSEntrySet> & s,
+            const FSEntry & f)
     {
-        return false;
+        return s->end() != s->find(f);
     }
 }
 
@@ -735,6 +736,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
             stringify(id->name().package()) + "-" + stringify(id->version())));
 
     std::string used_config_protect;
+    std::tr1::shared_ptr<FSEntrySet> merged_entries(new FSEntrySet);
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_install());
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
@@ -782,7 +784,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                         make_named_values<MergeParams>(
                             value_for<n::environment_file>(package_builddir / "temp" / "loadsaveenv"),
                             value_for<n::image_dir>(package_builddir / "image"),
-                            value_for<n::installed_this>(&installed_this),
+                            value_for<n::merged_entries>(merged_entries),
                             value_for<n::options>(id->eapi()->supported()->merger_options()),
                             value_for<n::output_manager>(output_manager),
                             value_for<n::package_id>(id),
@@ -915,7 +917,8 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
         UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                     value_for<n::config_protect>(used_config_protect),
                     value_for<n::if_for_install_id>(id),
-                    value_for<n::ignore_for_unmerge>(&ignore_nothing),
+                    value_for<n::ignore_for_unmerge>(std::tr1::bind(&ignore_merged, merged_entries,
+                            std::tr1::placeholders::_1)),
                     value_for<n::is_overwrite>(false),
                     value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, output_manager, std::tr1::placeholders::_1))
                     ));

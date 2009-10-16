@@ -63,13 +63,10 @@ namespace paludis
         bool result;
         bool skip_dir;
 
-        std::tr1::shared_ptr<FSEntrySet> merged_entries;
-
         Implementation(const MergerParams & p) :
             params(p),
             result(true),
-            skip_dir(false),
-            merged_entries(new FSEntrySet)
+            skip_dir(false)
         {
         }
     };
@@ -1244,34 +1241,28 @@ Merger::try_to_copy_xattrs(const FSEntry &, int, MergeStatusFlags &)
 void
 Merger::track_install_file(const FSEntry & src, const FSEntry & dst_dir, const std::string & dst_name, const MergeStatusFlags & flags)
 {
-    _imp->merged_entries->insert(dst_dir / dst_name);
+    _imp->params.merged_entries()->insert(dst_dir / dst_name);
     record_install_file(src, dst_dir, dst_name, flags);
 }
 
 void
 Merger::track_install_dir(const FSEntry & src, const FSEntry & dst_dir, const MergeStatusFlags & flags)
 {
-    _imp->merged_entries->insert(dst_dir / src.basename());
+    _imp->params.merged_entries()->insert(dst_dir / src.basename());
     record_install_dir(src, dst_dir, flags);
 }
 
 void
 Merger::track_install_under_dir(const FSEntry & dst, const MergeStatusFlags & flags)
 {
-    _imp->merged_entries->insert(dst);
+    _imp->params.merged_entries()->insert(dst);
     record_install_under_dir(dst, flags);
 }
 
 void
 Merger::track_install_sym(const FSEntry & src, const FSEntry & dst_dir, const MergeStatusFlags & flags)
 {
-    _imp->merged_entries->insert(dst_dir / src.basename());
+    _imp->params.merged_entries()->insert(dst_dir / src.basename());
     record_install_sym(src, dst_dir, flags);
-}
-
-const std::tr1::shared_ptr<const FSEntrySet>
-Merger::merged_entries() const
-{
-    return _imp->merged_entries;
 }
 

@@ -84,6 +84,7 @@ VDBMerger::VDBMerger(const VDBMergerParams & p) :
             value_for<n::get_new_ids_or_minus_one>(std::tr1::bind(&get_new_ids_or_minus_one, p.environment(), std::tr1::placeholders::_1)),
             value_for<n::image>(p.image()),
             value_for<n::install_under>(FSEntry("/")),
+            value_for<n::merged_entries>(p.merged_entries()),
             value_for<n::no_chown>(! getenv_with_default("PALUDIS_NO_CHOWN", "").empty()),
             value_for<n::options>(p.options()),
             value_for<n::root>(p.root())

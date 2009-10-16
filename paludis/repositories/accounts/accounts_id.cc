@@ -457,10 +457,6 @@ namespace
     {
         return false;
     }
-
-    void installed_this(const FSEntry &)
-    {
-    }
 }
 
 void
@@ -488,7 +484,7 @@ AccountsID::perform_action(Action & action) const
                         make_named_values<MergeParams>(
                             value_for<n::environment_file>(FSEntry("/dev/null")),
                             value_for<n::image_dir>(fs_location_key()->value()),
-                            value_for<n::installed_this>(&installed_this),
+                            value_for<n::merged_entries>(make_shared_ptr(new FSEntrySet)),
                             value_for<n::options>(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs),
                             value_for<n::output_manager>(output_manager),
                             value_for<n::package_id>(shared_from_this()),

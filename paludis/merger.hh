@@ -52,6 +52,7 @@ namespace paludis
         struct get_new_ids_or_minus_one;
         struct image;
         struct install_under;
+        struct merged_entries;
         struct no_chown;
         struct options;
         struct root;
@@ -71,6 +72,14 @@ namespace paludis
         NamedValue<n::get_new_ids_or_minus_one, std::tr1::function<std::pair<uid_t, gid_t> (const FSEntry &)> > get_new_ids_or_minus_one;
         NamedValue<n::image, FSEntry> image;
         NamedValue<n::install_under, FSEntry> install_under;
+
+        /**
+         * We record things we merged here.
+         *
+         * \since 0.41
+         */
+        NamedValue<n::merged_entries, std::tr1::shared_ptr<FSEntrySet> > merged_entries;
+
         NamedValue<n::no_chown, bool> no_chown;
         NamedValue<n::options, MergerOptions> options;
         NamedValue<n::root, FSEntry> root;
@@ -240,13 +249,6 @@ namespace paludis
              * Perform the merge.
              */
             virtual void merge();
-
-            /**
-             * Every FSEntry (final path) that we merged.
-             *
-             * \since 0.40
-             */
-            const std::tr1::shared_ptr<const FSEntrySet> merged_entries() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
 }

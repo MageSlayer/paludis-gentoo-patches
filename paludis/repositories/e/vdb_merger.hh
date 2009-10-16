@@ -36,6 +36,7 @@ namespace paludis
         struct contents_file;
         struct environment;
         struct image;
+        struct merged_entries;
         struct options;
         struct output_manager;
         struct package_id;
@@ -58,6 +59,7 @@ namespace paludis
         NamedValue<n::contents_file, FSEntry> contents_file;
         NamedValue<n::environment, Environment *> environment;
         NamedValue<n::image, FSEntry> image;
+        NamedValue<n::merged_entries, std::tr1::shared_ptr<FSEntrySet> > merged_entries;
         NamedValue<n::options, MergerOptions> options;
         NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
         NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
