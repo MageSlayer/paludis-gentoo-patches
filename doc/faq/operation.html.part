@@ -6,6 +6,7 @@
     <li><a href="operation.html#updatingdepends">Paludis does not update DEPENDs of already installed packages</a></li>
     <li><a href="operation.html#updateworldmissesthings">Updating world misses things</a></li>
     <li><a href="operation.html#info">Get package information for a bug report</a></li>
+    <li><a href="operation.html#arrows">What do those fancy arrows when merging things mean?</a></li>
     <li><a href="operation.html#updates">Profiles Updates for Package Moves and Slot Moves</a></li>
 </ul>
 
