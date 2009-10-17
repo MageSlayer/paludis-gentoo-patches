@@ -4,6 +4,20 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.42.0_alpha1:
+
+    * The Git syncer now has various options for dealing with branches.
+
+    * Experimental support for profile updates (package moves etc). By default
+      updates will be displayed but not carried out; consult the FAQ for
+      details.
+
+    * Support for the recently changed EAPI 3 is present and used during tests
+      but excluded from the install target.
+
+0.40.1:
+    * Bugfix: sometimes fetch failures would not register as errors.
+
 0.40.0:
     * Notifier callbacks allow clients to tell the user what's going on when
       generating metadata, performing resolutions etc.
