@@ -13,6 +13,7 @@
     <li><a href="howdoi.html#deletedvdb">Recover VDB</a></li>
     <li><a href="howdoi.html#removeportage">Remove Portage from my Gentoo installation</a></li>
     <li><a href="howdoi.html#etcupdate">Update Configuration Files (<code>etc-update</code>)</a></li>
+    <li><a href="howdoi.html#sync">Sync while doing anything else</a></li>
 </ul>
 
 <h2 id="ccache">Use <code>ccache</code></h2>
@@ -219,4 +220,8 @@ and there really is no reason to try. Just leave Portage installed.</p>
 or <code>dispatch-conf</code>, since you <a href="howdoi.html#removeportage">can't remove Portage</a>. Or, you can use
 one of the workalikes that are available in the tree, such as <code>app-portage/conf-update</code>, or
 <code>app-portage/cfg-update</code>.</p>
+
+<h2 id="sync">Sync while doing anything else</h2>
+
+<p>If you think this'll work, buy a mac.</p>
 
