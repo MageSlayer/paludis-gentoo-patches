@@ -450,10 +450,7 @@ EAPILabels::~EAPILabels()
 const std::string
 EAPILabels::class_for_label(const std::string & l) const
 {
-    // XXX This could (should) be cleaner.
-    std::string s(l);
-    if (s[0] == '@') s.erase(1);
-    std::map<std::string, std::string>::const_iterator i(_imp->v.find(s));
+    std::map<std::string, std::string>::const_iterator i(_imp->v.find(l));
     if (_imp->v.end() == i)
         return "";
     return i->second;
