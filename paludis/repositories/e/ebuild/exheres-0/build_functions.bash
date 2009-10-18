@@ -131,7 +131,7 @@ econf()
             --prefix=/usr \
             --host=${CHOST} \
             ${CBUILD:+--build=${CBUILD}} \
-            ${CTARGET:+--build=${CTARGET}} \
+            ${CTARGET:+--target=${CTARGET}} \
             --mandir=/usr/share/man \
             --infodir=/usr/share/info \
             --datadir=/usr/share \
