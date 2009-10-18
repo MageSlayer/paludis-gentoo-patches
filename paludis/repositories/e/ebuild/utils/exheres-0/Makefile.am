@@ -30,16 +30,6 @@ libexecprog_SCRIPTS = \
 	strip \
 	banned_in_eapi_exheres-0
 
-all-local :
-	ln -sf $(srcdir)/install-wrapper install
-
-install-data-local :
-	install -d $(DESTDIR)/$(libexecprogdir)
-	install $(srcdir)/install-wrapper $(DESTDIR)/$(libexecprogdir)/install
-
-uninstall-local :
-	rm -f $(DESTDIR)/$(libexecprogdir)/install
-
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 
 TESTS_ENVIRONMENT = env \
@@ -59,14 +49,13 @@ TESTS =
 EXTRA_DIST = \
 	$(check_SCRIPTS) \
 	$(libexecprog_SCRIPTS) \
-	$(TESTS) \
-	install-wrapper
+	$(TESTS)
 
 bannedscripts = prepall prepallstrip prepstrip prepallman prepman prepallinfo \
 		prepinfo prepdocs prepalldocs dohard donewins dosed dohtml \
 		ecompress ecompressdir
 
-CLEANFILES = *~ $(bannedscripts) *.epicfail install
+CLEANFILES = *~ $(bannedscripts) *.epicfail
 
 $(bannedscripts) : banned_in_eapi_exheres-0
 	cat $? > $@
