@@ -238,8 +238,8 @@ EbuildCommand::operator() ()
                     params.package_id()->eapi()->supported()->tools_options()->unpack_suffixes())
             .with_setenv("PALUDIS_DODOC_R",
                     params.package_id()->eapi()->supported()->tools_options()->dodoc_r() ? "yes" : "")
-            .with_setenv("PALUDIS_DOINS_R_SYMLINK",
-                    params.package_id()->eapi()->supported()->tools_options()->doins_r_symlink() ? "yes" : "")
+            .with_setenv("PALUDIS_DOINS_SYMLINK",
+                    params.package_id()->eapi()->supported()->tools_options()->doins_symlink() ? "yes" : "")
             .with_setenv("PALUDIS_DOMAN_LANG_FILENAMES",
                     params.package_id()->eapi()->supported()->tools_options()->doman_lang_filenames() ? "yes" : "")
             .with_setenv("PALUDIS_DOSYM_NO_MKDIR",

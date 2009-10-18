@@ -220,7 +220,7 @@ namespace
     {
         return make_shared_ptr(new EAPIToolsOptions(make_named_values<EAPIToolsOptions>(
                         value_for<n::dodoc_r>(destringify_key<bool>(k, "dodoc_r")),
-                        value_for<n::doins_r_symlink>(destringify_key<bool>(k, "doins_r_symlink")),
+                        value_for<n::doins_symlink>(destringify_key<bool>(k, "doins_symlink")),
                         value_for<n::doman_lang_filenames>(destringify_key<bool>(k, "doman_lang_filenames")),
                         value_for<n::dosym_mkdir>(destringify_key<bool>(k, "dosym_mkdir")),
                         value_for<n::econf_extra_options>(k.get("econf_extra_options")),

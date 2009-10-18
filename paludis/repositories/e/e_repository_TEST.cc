@@ -1681,9 +1681,9 @@ namespace test_cases
             }
 
             {
-                TestMessageSuffix suffix("doins -r symlink", true);
+                TestMessageSuffix suffix("doins symlink", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/doins-r-symlink-3",
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/doins-symlink-3",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "3");

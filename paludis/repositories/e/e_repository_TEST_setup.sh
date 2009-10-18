@@ -1343,8 +1343,8 @@ pkg_preinst() {
     [[ -e ${D}/usr/share/doc/${PF}/five/fifth ]] || die five/fifth
 }
 END
-mkdir -p "cat/doins-r-symlink" || exit 1
-cat << 'END' > cat/doins-r-symlink/doins-r-symlink-3.ebuild || exit 1
+mkdir -p "cat/doins-symlink" || exit 1
+cat << 'END' > cat/doins-symlink/doins-symlink-3.ebuild || exit 1
 EAPI="${PV}"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
@@ -1361,16 +1361,36 @@ src_unpack() {
     mkdir -p ${WORKDIR}
     cd "${WORKDIR}"
 
+    mkdir a
+    cd a
+    echo qwerty > qwerty
+    ln -s qwerty uiop
+    ln -s qwerty adfs
+
+    cd ..
+
+    mkdir b
+    cd b
     echo foo > foo
     ln -s foo bar
+
 }
 
 src_install() {
     insinto /foo
+    doins a/qwerty
+    doins a/uiop
+    newins a/adfs asdf
+    cd b
     doins -r .
 }
 
 pkg_preinst() {
+    [[ -f ${D}/foo/qwerty ]] || die qwerty
+    [[ -L ${D}/foo/uiop ]] || die uiop
+    [[ $(readlink ${D}/foo/uiop ) == qwerty ]] || die sym
+    [[ -L ${D}/foo/asdf ]] || die asdf
+    [[ $(readlink ${D}/foo/asdf ) == qwerty ]] || die sym
     [[ -f ${D}/foo/foo ]] || die foo
     [[ -L ${D}/foo/bar ]] || die bar
     [[ $(readlink ${D}/foo/bar ) == foo ]] || die sym

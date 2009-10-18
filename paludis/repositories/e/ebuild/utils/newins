@@ -32,5 +32,5 @@ if [[ ${#} -ne 2 ]]; then
 fi
 
 rm -rf "${!PALUDIS_TEMP_DIR_VAR}/${2}"
-cp "${1}" "${!PALUDIS_TEMP_DIR_VAR}/${2}"
+cp -P "${1}" "${!PALUDIS_TEMP_DIR_VAR}/${2}"
 doins "${!PALUDIS_TEMP_DIR_VAR}/${2}"

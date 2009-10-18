@@ -62,8 +62,8 @@ ret=0
 
 for x in "$@"; do
     if [[ -L ${x} ]]; then
-        if [[ -n ${PALUDIS_DOINS_R_SYMLINK} ]] && [[ -n "${DOINSRECUR}" ]] ; then
-            ln -s "$(readlink ${x} )" "${!PALUDIS_IMAGE_DIR_VAR}${INSDESTTREE}/${x}"
+        if [[ -n ${PALUDIS_DOINS_SYMLINK} ]] ; then
+            ln -s "$(readlink ${x} )" "${!PALUDIS_IMAGE_DIR_VAR}${INSDESTTREE}/$(basename "${x}")" || ret=2
             continue
         else
             cp "${x}" "${!PALUDIS_TEMP_DIR_VAR}"
