@@ -276,7 +276,10 @@ namespace
                  is_runish(is_runish_dep(reason.sanitised_dependency()));
 
             if ((! is_buildish) && (! is_runish))
-                throw InternalError(PALUDIS_HERE, "not buildish or runish. eek.");
+                throw InternalError(PALUDIS_HERE, "not buildish or runish. eek. labels are { "
+                        + join(indirect_iterator(reason.sanitised_dependency().active_dependency_labels()->begin()),
+                            indirect_iterator(reason.sanitised_dependency().active_dependency_labels()->end()), ", ")
+                        + " }");
 
             if (is_buildish)
                 result += dt_install_to_slash;
