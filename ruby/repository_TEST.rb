@@ -167,8 +167,7 @@ module Paludis
             repo = no_config_testrepo.main_repository
             [:syncable_interface,
                 :mirrors_interface, :environment_variable_interface,
-                :provides_interface, :virtuals_interface, :e_interface,
-                :qa_interface].each do |sym|
+                :provides_interface, :virtuals_interface, :e_interface].each do |sym|
                 assert_respond_to repo, sym
             end
         end
@@ -187,52 +186,6 @@ module Paludis
                 '=foo/bar-1.0', env, []), []))].first;
             assert_equal "hello", repo.get_environment_variable(pid, "TEST_ENV_VAR")
             assert_equal "", repo.get_environment_variable(pid, "TEST_UNSET_ENV_VAR")
-        end
-    end
-
-    class TestCase_RepositoryCheckQA < Test::Unit::TestCase
-        include RepositoryTestCase
-
-        def test_responds
-            assert_respond_to(no_config_testrepo.main_repository, :check_qa)
-        end
-
-        if Paludis.const_defined? :QAReporter
-            class TestQAReporter < QAReporter
-                @messages
-
-                def message(qa_msg)
-                    @messages+=1
-                end
-
-                def messages
-                    @messages||=0
-                    return @messages
-                end
-            end
-
-            def test_check_qa
-                repo = no_config_testrepo.main_repository
-                assert_equal repo, repo.qa_interface
-                dir =  Dir.getwd().to_s + "/repository_TEST_dir/testrepo"
-                assert_nil repo.check_qa(QAReporter.new, QACheckProperties.new, QACheckProperties.new, 0, dir)
-            end
-
-            def test_message
-                repo = no_config_testrepo.main_repository
-                dir =  Dir.getwd().to_s + "/repository_TEST_dir/testrepo"
-                reporter = TestQAReporter.new
-                assert_equal 0, reporter.messages
-                assert_nothing_raised do 
-                    repo.check_qa(reporter, QACheckProperties.new, QACheckProperties.new, 0, dir)
-                end
-                assert reporter.messages > 0
-            end
-        else
-            def test_check_qa
-                repo = no_config_testrepo.main_repository
-                assert_nil repo.qa_interface
-            end
         end
     end
 

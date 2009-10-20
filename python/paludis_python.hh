@@ -193,7 +193,6 @@ void expose_metadata_key() PALUDIS_VISIBLE;
 void expose_name() PALUDIS_VISIBLE;
 void expose_package_database() PALUDIS_VISIBLE;
 void expose_package_id() PALUDIS_VISIBLE;
-void expose_qa() PALUDIS_VISIBLE;
 void expose_repository() PALUDIS_VISIBLE;
 void expose_selection() PALUDIS_VISIBLE;
 void expose_version_operator() PALUDIS_VISIBLE;

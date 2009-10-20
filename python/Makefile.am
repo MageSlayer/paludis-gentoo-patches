@@ -48,9 +48,6 @@ IF_PYTHON_TESTS = \
 	version_requirements_TEST.py \
 	version_spec_TEST.py
 
-IF_PYTHON_QA_TESTS = \
-	qa_TEST.py
-
 IF_PYTHON_SOURCES = \
 	paludis_python.hh \
 	options.hh \
@@ -89,11 +86,7 @@ IF_PYTHON_SOURCES = \
 BUILT_SOURCES = \
 	nice_names-nn.hh nice_names-nn.cc
 
-IF_PYTHON_QA_SOURCES = \
-	qa.cc
-
 EXTRA_DIST = $(IF_PYTHON_TESTS) $(IF_PYTHON_SOURCES) \
-	$(IF_PYTHON_QA_TESTS) $(IF_PYTHON_QA_SOURCES) \
 	paludis_python_so.cc \
 	additional_tests_so.cc \
 	choices_TEST_setup.sh choices_TEST_cleanup.sh \
@@ -126,7 +119,6 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_SUFFIXES_FILE="$(top_srcdir)/paludis/repositories/e/ebuild_entries_suffixes.conf" \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	PALUDIS_DISTRIBUTION="gentoo" \
-	PALUDIS_QA_DATA_DIR="$(top_srcdir)/paludis/repositories/e/qa/" \
 	PALUDIS_REPOSITORY_SO_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories`" \
 	PALUDIS_ENVIRONMENT_SO_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments`" \
 	PALUDIS_ENABLE_VIRTUALS_REPOSITORY="$(PALUDIS_ENABLE_VIRTUALS_REPOSITORY_VALUE)" \
@@ -170,17 +162,8 @@ additional_tests_so.o : additional_tests_so.cc
 	    $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(CXXFLAGS) $(AM_CXXFLAGS) -I$(PYTHON_INCLUDE_DIR) -c \
 	    -o $@ $(srcdir)/additional_tests_so.cc ; then ln -fs .libs/addtional_tests_so.o $@ ; else rm -f $@ ; exit 1 ; fi
 
-if ENABLE_QA
-
-libpaludispython_@PALUDIS_PC_SLOT@_la_SOURCES = $(IF_PYTHON_SOURCES) $(IF_PYTHON_QA_SOURCES)
-TESTS = $(IF_PYTHON_TESTS) $(IF_PYTHON_QA_TESTS)
-
-else
-
 libpaludispython_@PALUDIS_PC_SLOT@_la_SOURCES = $(IF_PYTHON_SOURCES)
 TESTS = $(IF_PYTHON_TESTS)
-
-endif
 
 libpaludispython_@PALUDIS_PC_SLOT@_la_LIBADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \

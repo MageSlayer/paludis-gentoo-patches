@@ -56,8 +56,5 @@ BOOST_PYTHON_MODULE(paludis)
     expose_generator();
     expose_selection();
     expose_choices();
-#ifdef ENABLE_QA
-    expose_qa();
-#endif
 }
 

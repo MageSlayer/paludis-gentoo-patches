@@ -366,14 +366,6 @@ namespace
      *
      * Returns self if the repository supports the interface, otherwise Nil.
      */
-    /*
-     * Document-method: qa_interface
-     *
-     * call-seq:
-     *     qa_interface -> self or Nil
-     *
-     * Returns self if the repository supports the interface, otherwise Nil.
-     */
     template <typename T_, typename R_, NamedValue<T_, R_ *> (RepositoryCapabilities::* f_)>
     struct Interface
     {
@@ -551,114 +543,6 @@ namespace
             return rb_str_new2(stringify(((*ptr).*f_)()).c_str());
         }
     };
-
-#ifdef ENABLE_RUBY_QA
-    struct HackyReporter :
-        QAReporter
-    {
-        RubyQAReporter * const qar;
-        std::list<std::tr1::function<void ()> > & pending;
-        Mutex & mutex;
-        ConditionVariable & cond;
-
-        void message(const QAMessage & m)
-        {
-            Lock lock(mutex);
-            pending.push_back(std::tr1::bind(&RubyQAReporter::message, qar, m));
-            cond.signal();
-        }
-
-        void status(const std::string & s)
-        {
-            Lock lock(mutex);
-            pending.push_back(std::tr1::bind(&RubyQAReporter::status, qar, s));
-            cond.signal();
-        }
-
-        HackyReporter(RubyQAReporter * const q,
-                std::list<std::tr1::function<void ()> > & p,
-                Mutex & m, ConditionVariable & c) :
-            qar(q),
-            pending(p),
-            mutex(m),
-            cond(c)
-        {
-        }
-    };
-
-    void repository_check_qa_thread(RubyQAReporter * const qar, bool & done,
-            std::list<std::tr1::function<void ()> > & pending,
-            Mutex & mutex, ConditionVariable & cond,
-            const QACheckProperties & ignore_if,
-            const QACheckProperties & ignore_unless,
-            const QAMessageLevel minimum_level,
-            const FSEntry & base_dir,
-            Repository * repo)
-    {
-        HackyReporter tr(qar, pending, mutex, cond);
-        repo->qa_interface()->check_qa(tr, ignore_if, ignore_unless, minimum_level, base_dir);
-        Lock lock(mutex);
-        done = true;
-        cond.signal();
-    }
-#endif
-
-    /*
-     * call-seq:
-     *     check_qa(qa_reporter, qa_check_properties_ignore_if, qa_check_properties_ignore_unless, qa_message_minimum_level, dir) -> Qnil
-     *
-     * Check qa in the specified dir. qa_reporter.message (QAReporter) will be called for each error found.
-     *
-     */
-    VALUE
-    repository_check_qa(VALUE self, VALUE reporter, VALUE ignore_if, VALUE ignore_unless, VALUE minumum_level, VALUE dir)
-    {
-        try
-        {
-            std::tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
-#ifdef ENABLE_RUBY_QA
-            if ((**self_ptr).qa_interface())
-            {
-                RubyQAReporter qar(&reporter);
-                /* have to call ruby code in the original thread. icky. */
-                bool done(false);
-                std::list<std::tr1::function<void ()> > pending;
-                Mutex mutex;
-                ConditionVariable cond;
-                {
-                    Thread t(std::tr1::bind(&repository_check_qa_thread, &qar, std::tr1::ref(done),
-                                std::tr1::ref(pending), std::tr1::ref(mutex), std::tr1::ref(cond),
-                                value_to_qa_check_properties(ignore_if),
-                                value_to_qa_check_properties(ignore_unless),
-                                static_cast<QAMessageLevel>(NUM2INT(minumum_level)),
-                                FSEntry(StringValuePtr(dir)),
-                                self_ptr->get()));
-
-                    while (true)
-                    {
-                        Lock lock(mutex);
-                        while (! pending.empty())
-                        {
-                            (*pending.begin())();
-                            pending.pop_front();
-                        }
-
-                        if (done)
-                            break;
-
-                        cond.wait(mutex);
-                    }
-                }
-            }
-#endif
-            return Qnil;
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
 
     /*
      * call-seq:
@@ -955,8 +839,6 @@ namespace
                         n::virtuals_interface, RepositoryVirtualsInterface, &Repository::virtuals_interface>::fetch)), 0);
         rb_define_method(c_repository, "e_interface", RUBY_FUNC_CAST((&Interface<
                         n::e_interface, RepositoryEInterface, &Repository::e_interface>::fetch)), 0);
-        rb_define_method(c_repository, "qa_interface", RUBY_FUNC_CAST((&Interface<
-                        n::qa_interface, RepositoryQAInterface, &Repository::qa_interface>::fetch)), 0);
 
         rb_define_method(c_repository, "some_ids_might_support_action", RUBY_FUNC_CAST(&repository_some_ids_might_support_action), 1);
 
@@ -964,8 +846,6 @@ namespace
         rb_define_method(c_repository, "find_profile", RUBY_FUNC_CAST(&repository_find_profile),1);
         rb_define_method(c_repository, "profile_variable", RUBY_FUNC_CAST(&repository_profile_variable),1);
         rb_define_method(c_repository, "set_profile", RUBY_FUNC_CAST(&repository_set_profile),1);
-
-        rb_define_method(c_repository, "check_qa", RUBY_FUNC_CAST(&repository_check_qa),5);
 
         rb_define_method(c_repository, "[]", RUBY_FUNC_CAST(&repository_subscript), 1);
         rb_define_method(c_repository, "each_metadata", RUBY_FUNC_CAST(&repository_each_metadata), 0);

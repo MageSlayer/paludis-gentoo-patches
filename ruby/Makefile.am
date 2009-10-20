@@ -38,9 +38,6 @@ IF_RUBY_TESTS = \
 	selection_TEST.rb \
 	version_spec_TEST.rb
 
-IF_RUBY_QA_TESTS = \
-	qa_TEST.rb
-
 IF_RUBY_SOURCES = \
 	action.cc \
 	choice.cc \
@@ -70,11 +67,7 @@ IF_RUBY_SOURCES = \
 BUILT_SOURCES = \
 	nice_names-nn.hh nice_names-nn.cc
 
-IF_RUBY_QA_SOURCES = \
-	qa.cc
-
 EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
-	$(IF_RUBY_QA_TESTS) $(IF_RUBY_QA_SOURCES) \
 	paludis_ruby_so.cc \
 	choice_TEST_setup.sh choice_TEST_cleanup.sh \
 	dep_spec_TEST_setup.sh dep_spec_TEST_cleanup.sh \
@@ -107,7 +100,6 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_EXTRA_EBUILD_MODULES_DIRS="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
 	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/repositories/e/eapis/" \
 	PALUDIS_SUFFIXES_FILE="$(top_srcdir)/paludis/repositories/e/ebuild_entries_suffixes.conf" \
-	PALUDIS_QA_DATA_DIR="$(top_srcdir)/paludis/repositories/e/qa/" \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	PALUDIS_DISTRIBUTION="gentoo" \
 	PALUDIS_REPOSITORY_SO_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories`" \
@@ -122,7 +114,6 @@ TESTS_ENVIRONMENT = env \
 			\`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/no_config/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/test/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/.libs\`: \
-			\`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/qa/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/ruby/.libs\`:$$LD_LIBRARY_PATH" \
 			| tr -d ' '` \
 	bash $(top_srcdir)/test/run_test.sh "$(RUBY) -I ./.libs/"
@@ -139,17 +130,8 @@ paludis_ruby_so.o : paludis_ruby_so.cc
 	    $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(CXXFLAGS) $(AM_CXXFLAGS) -I$(RUBY_HDRDIR) -I$(RUBY_HDRARCHDIR) -c \
 	    -o $@ $(srcdir)/paludis_ruby_so.cc ; then ln -fs .libs/paludis_ruby_so.o $@ ; else rm -f $@ ; exit 1 ; fi
 
-if ENABLE_QA
-
-libpaludisruby_@PALUDIS_PC_SLOT@_la_SOURCES = $(IF_RUBY_SOURCES) $(IF_RUBY_QA_SOURCES)
-TESTS = $(IF_RUBY_TESTS) $(IF_RUBY_QA_TESTS)
-
-else
-
 libpaludisruby_@PALUDIS_PC_SLOT@_la_SOURCES = $(IF_RUBY_SOURCES)
 TESTS = $(IF_RUBY_TESTS)
-
-endif
 
 libpaludisruby_@PALUDIS_PC_SLOT@_la_LIBADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \

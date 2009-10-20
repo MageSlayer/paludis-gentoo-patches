@@ -216,10 +216,6 @@ RepositoryMakeVirtualsInterface::~RepositoryMakeVirtualsInterface()
 {
 }
 
-RepositoryQAInterface::~RepositoryQAInterface()
-{
-}
-
 RepositoryManifestInterface::~RepositoryManifestInterface()
 {
 }

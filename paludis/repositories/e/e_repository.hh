@@ -57,7 +57,6 @@ namespace paludis
         public RepositoryVirtualsInterface,
         public RepositoryDestinationInterface,
         public RepositoryEInterface,
-        public RepositoryQAInterface,
         public RepositoryManifestInterface,
         public std::tr1::enable_shared_from_this<ERepository>,
         private PrivateImplementationPattern<ERepository>
@@ -113,14 +112,6 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void merge(const MergeParams &);
-
-            virtual void check_qa(
-                    QAReporter &,
-                    const QACheckProperties &,
-                    const QACheckProperties &,
-                    const QAMessageLevel,
-                    const FSEntry &
-                    ) const;
 
             /* RepositoryManifestInterface */
             virtual void make_manifest(const QualifiedPackageName & qpn);

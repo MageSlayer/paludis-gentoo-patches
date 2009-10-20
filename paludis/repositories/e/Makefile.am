@@ -1,4 +1,4 @@
-SUBDIRS = eapis ebuild . qa
+SUBDIRS = eapis ebuild .
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 DISTCLEANFILES = \
 	e_repository_params-se.hh e_repository_params-se.cc \

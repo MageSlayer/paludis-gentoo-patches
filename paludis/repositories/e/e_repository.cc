@@ -39,10 +39,6 @@
 #include <paludis/repositories/e/extra_distribution_data.hh>
 #include <paludis/repositories/e/memoised_hashes.hh>
 
-#ifdef ENABLE_QA
-#  include <paludis/repositories/e/qa/qa_controller.hh>
-#endif
-
 #include <paludis/util/config_file.hh>
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/safe_ofstream.hh>
@@ -57,7 +53,6 @@
 #include <paludis/syncer.hh>
 #include <paludis/action.hh>
 #include <paludis/mask.hh>
-#include <paludis/qa.hh>
 #include <paludis/elike_package_dep_spec.hh>
 #include <paludis/about.hh>
 #include <paludis/choice.hh>
@@ -505,11 +500,6 @@ ERepository::ERepository(const ERepositoryParams & p) :
                 value_for<n::manifest_interface>(this),
                 value_for<n::mirrors_interface>(this),
                 value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
-#ifdef ENABLE_QA
-                value_for<n::qa_interface>(this),
-#else
-                value_for<n::qa_interface>(static_cast<RepositoryQAInterface *>(0)),
-#endif
                 value_for<n::syncable_interface>(this),
                 value_for<n::virtuals_interface>((*DistributionData::get_instance()->distribution_from_string(p.environment()->distribution())).support_old_style_virtuals() ? this : 0)
                 )),
@@ -1090,87 +1080,6 @@ ERepository::unimportant_category_names() const
     std::tr1::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
     result->insert(CategoryNamePart("virtual"));
     return result;
-}
-
-#ifdef ENABLE_QA
-namespace
-{
-    struct LibQAHandle
-    {
-        Mutex mutex;
-        void * handle;
-        void (* qa_checks_handle)(
-                const Environment * const,
-                const std::tr1::shared_ptr<const ERepository> &,
-                const QACheckProperties & ignore_if,
-                const QACheckProperties & ignore_unless,
-                const QAMessageLevel minimum_level,
-                QAReporter & reporter,
-                const FSEntry & dir);
-
-        LibQAHandle() :
-            handle(0),
-            qa_checks_handle(0)
-        {
-        }
-
-        ~LibQAHandle()
-        {
-            if (0 != handle)
-                dlclose(handle);
-        }
-
-    } libqahandle;
-}
-#endif
-
-void
-ERepository::check_qa(
-        QAReporter & reporter,
-        const QACheckProperties & ignore_if,
-        const QACheckProperties & ignore_unless,
-        const QAMessageLevel minimum_level,
-        const FSEntry & dir
-        ) const
-{
-#ifdef ENABLE_QA
-    Context c("When performing QA checks for '" + stringify(dir) + "':");
-
-    {
-        Lock lock(libqahandle.mutex);
-
-        if (0 == libqahandle.handle)
-            libqahandle.handle = dlopen(getenv_with_default("PALUDIS_E_REPOSITORY_QA_SO",
-                        "libpaludiserepositoryqa_" + stringify(PALUDIS_PC_SLOT) + ".so").c_str(), RTLD_NOW | RTLD_GLOBAL);
-        if (0 == libqahandle.handle)
-        {
-            reporter.message(QAMessage(dir, qaml_severe, "check_qa", "Got error '" + stringify(dlerror()) +
-                        "' when dlopen(" + getenv_with_default("PALUDIS_E_REPOSITORY_QA_SO",
-                                "libpaludiserepositoryqa_" + stringify(PALUDIS_PC_SLOT) + ".so") + ")"));
-            return;
-        }
-
-        if (0 == libqahandle.qa_checks_handle)
-            libqahandle.qa_checks_handle = STUPID_CAST(void (*)(
-                        const Environment * const,
-                        const std::tr1::shared_ptr<const ERepository> &,
-                        const QACheckProperties &,
-                        const QACheckProperties &,
-                        const QAMessageLevel,
-                        QAReporter &,
-                        const FSEntry &),
-                    dlsym(libqahandle.handle, "check_qa"));
-        if (0 == libqahandle.qa_checks_handle)
-        {
-            reporter.message(QAMessage(dir, qaml_severe, "check_qa", "Got error '" + stringify(dlerror) +
-                        "' when dlsym(libpaludisqa.so, \"check_qa\")"));
-            return;
-        }
-    }
-
-    (*libqahandle.qa_checks_handle)(_imp->params.environment(), shared_from_this(), ignore_if, ignore_unless,
-            minimum_level, reporter, dir);
-#endif
 }
 
 namespace

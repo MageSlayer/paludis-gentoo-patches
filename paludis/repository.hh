@@ -26,7 +26,6 @@
 #include <paludis/spec_tree-fwd.hh>
 #include <paludis/name.hh>
 #include <paludis/package_id-fwd.hh>
-#include <paludis/qa-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>
@@ -75,7 +74,6 @@ namespace paludis
         struct provided_by;
         struct provided_by_spec;
         struct provides_interface;
-        struct qa_interface;
         struct status;
         struct syncable_interface;
         struct used_this_for_config_protect;
@@ -99,7 +97,6 @@ namespace paludis
         NamedValue<n::manifest_interface, RepositoryManifestInterface *> manifest_interface;
         NamedValue<n::mirrors_interface, RepositoryMirrorsInterface *> mirrors_interface;
         NamedValue<n::provides_interface, RepositoryProvidesInterface *> provides_interface;
-        NamedValue<n::qa_interface, RepositoryQAInterface *> qa_interface;
         NamedValue<n::syncable_interface, RepositorySyncableInterface *> syncable_interface;
         NamedValue<n::virtuals_interface, RepositoryVirtualsInterface *> virtuals_interface;
     };
@@ -658,35 +655,6 @@ namespace paludis
             ///\}
 
             virtual ~RepositoryEInterface();
-    };
-
-    /**
-     * Interface for handling QA tasks.
-     *
-     * \see Repository
-     * \ingroup g_repository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE RepositoryQAInterface
-    {
-        public:
-            /**
-             * Perform QA checks on the repository.
-             */
-            virtual void check_qa(
-                    QAReporter &,
-                    const QACheckProperties &,
-                    const QACheckProperties &,
-                    const QAMessageLevel,
-                    const FSEntry &
-                    ) const = 0;
-
-            ///\name Basic operations
-            ///\{
-
-            virtual ~RepositoryQAInterface();
-
-            ///\}
     };
 
     /**

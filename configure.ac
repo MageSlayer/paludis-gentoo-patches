@@ -908,23 +908,6 @@ AC_ARG_ENABLE([htmltidy],
 AC_SUBST([HAVE_HTMLTIDY])
 AM_CONDITIONAL([HAVE_HTMLTIDY], test "x$HAVE_HTMLTIDY" = "xyes")
 
-dnl {{{ check for whether to build qa stuff
-AC_MSG_CHECKING([whether to build QA tools])
-AC_ARG_ENABLE([qa],
-			  AS_HELP_STRING([--enable-qa], [Build QA things (needs pcrecpp)]),
-			  [ENABLE_QA=$enableval
-			   AC_MSG_RESULT([$enableval])],
-			  [ENABLE_QA=no
-			   AC_MSG_RESULT([no])])
-if test x"$ENABLE_QA" = "xyes" ; then
-	need_pcrecpp_check=yes
-	AC_DEFINE([ENABLE_RUBY_QA], [1], [Enable QA support in ruby])
-	AC_DEFINE([ENABLE_QA], [1], [Build QA things])
-fi
-AC_SUBST([ENABLE_QA])
-AM_CONDITIONAL([ENABLE_QA], test "x$ENABLE_QA" = "xyes")
-dnl }}}
-
 dnl {{{ check for whether to build xml stuff
 AC_MSG_CHECKING([whether to build xml things for metadata.xml and GLSA support])
 AC_ARG_ENABLE([xml],
@@ -1412,7 +1395,7 @@ AC_DEFINE_UNQUOTED([DEFAULT_DISTRIBUTION], "$DEFAULT_DISTRIBUTION", [Default dis
 dnl }}}
 
 dnl {{{ clients
-ALL_CLIENTS="accerso adjutrix appareo cave importare inquisitio instruo paludis qualudis reconcilio"
+ALL_CLIENTS="accerso adjutrix appareo cave importare inquisitio instruo paludis reconcilio"
 ALL_CLIENTS_HTML=""
 for a in $ALL_CLIENTS ; do
 	if test x$a = xcave ; then
@@ -1422,16 +1405,12 @@ for a in $ALL_CLIENTS ; do
 	fi
 done
 DEFAULT_CLIENTS="adjutrix importare paludis reconcilio"
-if test x"$ENABLE_QA" = "xyes" ; then
-	DEFAULT_CLIENTS="$DEFAULT_CLIENTS qualudis"
-fi
 AC_MSG_CHECKING([which clients to build...])
 AC_ARG_WITH([clients],
 			[  --with-clients=foo,bar,...
 			  Build the specified clients:
 			  all             All available clients
 			  default         Equivalent to adjutrix,importare,paludis,reconcilio
-			                  Also includes qualudis if --enable-qa
 
 			  accerso         A fetch / mirror client
 			  adjutrix        A tool for tree querying
@@ -1441,8 +1420,7 @@ AC_ARG_WITH([clients],
 			  inquisitio      A search client
 			  instruo         A metadata generation client
 			  paludis         The Paludis console client
-			  reconcilio      A linkage repair tool
-			  qualudis        The QA console client],
+			  reconcilio      A linkage repair tool],
 			[clients="`echo $with_clients | tr ',' ' '`"],
 			[clients="$DEFAULT_CLIENTS"])
 clients=`echo $clients | tr ' ' '\n' \
@@ -1488,7 +1466,7 @@ dnl }}}
 dnl {{{ pcrecpp check
 if test "x$need_pcrecpp_check" = "xyes" ; then
 	PKG_CHECK_MODULES(PCRECPPDEPS, [libpcrecpp >= 7.8], [],
-		[AC_MSG_ERROR([pcrecpp (http://www.pcre.org/) is required if --enable-qa or --with-clients=inquisitio is used])])
+		[AC_MSG_ERROR([pcrecpp (http://www.pcre.org/) is required if --with-clients=inquisitio is used])])
 	AC_SUBST(PCRECPPDEPS_CFLAGS)
 	AC_SUBST(PCRECPPDEPS_LIBS)
 fi
@@ -1641,7 +1619,6 @@ AC_OUTPUT(
 	paludis/repositories/e/ebuild/utils/3/Makefile
 	paludis/repositories/e/ebuild/utils/exheres-0/Makefile
 	paludis/repositories/e/ebuild/utils/kdebuild-1/Makefile
-	paludis/repositories/e/qa/Makefile
 	paludis/repositories/fake/Makefile
 	paludis/repositories/gems/Makefile
 	paludis/repositories/unavailable/Makefile
@@ -1667,7 +1644,6 @@ AC_OUTPUT(
 	src/clients/inquisitio/Makefile
 	src/clients/instruo/Makefile
 	src/clients/paludis/Makefile
-	src/clients/qualudis/Makefile
 	src/clients/reconcilio/Makefile
 	src/clients/reconcilio/broken_linkage_finder/Makefile
 	src/clients/reconcilio/littlelf/Makefile

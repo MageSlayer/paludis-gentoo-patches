@@ -27,7 +27,6 @@
 #include <paludis/action.hh>
 #include <paludis/package_id.hh>
 #include <paludis/environment.hh>
-#include <paludis/qa.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 
@@ -79,12 +78,6 @@ struct RepositoryWrapper :
     get_e_interface(const Repository & self)
     {
         return self.e_interface();
-    }
-
-    static RepositoryQAInterface *
-    get_qa_interface(const Repository & self)
-    {
-        return self.qa_interface();
     }
 
     static PyObject *
@@ -246,11 +239,6 @@ void expose_repository()
                 "[ro] RepositoryEInterface"
                 )
 
-        .add_property("qa_interface", bp::make_function(&RepositoryWrapper::get_qa_interface,
-                    bp::return_internal_reference<>()),
-                "[ro] RepositoryQAInterface"
-                )
-
         .def("format_key", &Repository::format_key,
                 "The format_key, if not None, holds our repository's format"
             )
@@ -379,21 +367,6 @@ void expose_repository()
         .add_property("profile", bp::object(), &RepositoryEInterfaceWrapper::my_set_profile,
                 "[wo] RepositoryEInterfaceProfilesDescLine"
                 )
-        ;
-
-    /**
-     * RepositoryQAInterface
-     */
-    bp::class_<RepositoryQAInterface, boost::noncopyable>
-        (
-         "RepositoryQAInterface",
-         "Interface for handling QA tasks.",
-         bp::no_init
-        )
-        .def("check_qa", &RepositoryQAInterface::check_qa,
-                "check_qa(QAReporter, QACheckProperties, QACheckProperties, QAMessageLevel, path)\n"
-                "NEED_DOC"
-            )
         ;
 
     /**
