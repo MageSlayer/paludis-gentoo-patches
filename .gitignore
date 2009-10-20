@@ -86,7 +86,6 @@ paludis-*.*.*.tar.bz2
 /doc/clients/inquisitio.html
 /doc/clients/instruo.html
 /doc/clients/paludis.html
-/doc/clients/qualudis.html
 /doc/clients/reconcilio.html
 /doc/clients/toplinks.html.part
 /doc/configuration/bashrc.html
@@ -424,8 +423,6 @@ paludis-*.*.*.tar.bz2
 /src/clients/inquisitio/inquisitio
 /src/clients/instruo/instruo
 /src/clients/paludis/paludis
-/src/clients/qualudis/qualudis
-/src/clients/qualudis/version_TEST
 /src/clients/reconcilio/broken_linkage_finder/configuration_TEST
 /src/clients/reconcilio/reconcilio
 /src/clients/reconcilio/util/realpath_TEST

@@ -102,16 +102,6 @@ instruo.html : header.html.part footer.html.part
 	    fi ; } && \
 	    cat footer.html.part ; } > $@
 
-qualudis.html : header.html.part footer.html.part
-	{ cat header.html.part && { \
-	    if test -x $(top_builddir)/src/clients/qualudis/man-qualudis ; then \
-	        $(top_builddir)/src/clients/qualudis/man-qualudis --html ; \
-	    else \
-	        echo "<h1>qualudis</h1>"; \
-	        echo "<p>Sorry, documentation was generated without support for the qualudis client.</p>" ; \
-	    fi ; } && \
-	    cat footer.html.part ; } > $@
-
 reconcilio.html : header.html.part footer.html.part
 	{ cat header.html.part && { \
 	    if test -x $(top_builddir)/src/clients/reconcilio/man-reconcilio ; then \

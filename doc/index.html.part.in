@@ -84,7 +84,6 @@ the exheres repository format.</p>
     <li><a href="clients/accerso.html">accerso</a>, the mirror client.</li>
     <li><a href="clients/adjutrix.html">adjutrix</a>, a collection of utilities for ebuild developers and arch teams.</li>
     <li><a href="clients/instruo.html">instruo</a>, the metadata generation client.</li>
-    <li><a href="clients/qualudis.html">qualudis</a>, the QA client.</li>
     <li><a href="clients/appareo.html">appareo</a>, a Manifest generation tool.</li>
 </ul>
 

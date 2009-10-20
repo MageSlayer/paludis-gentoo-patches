@@ -17,7 +17,6 @@
     <li><a href="accerso.html">accerso</a>, the mirror client.</li>
     <li><a href="adjutrix.html">adjutrix</a>, a collection of utilities for ebuild developers and arch teams.</li>
     <li><a href="instruo.html">instruo</a>, the metadata generation client.</li>
-    <li><a href="qualudis.html">qualudis</a>, the QA client.</li>
     <li><a href="appareo.html">appareo</a>, a Manifest generation tool.</li>
 </ul>
 

@@ -1,5 +1,5 @@
 MAINTAINERCLEANFILES = Makefile.in
-noinst_DATA = paludis adjutrix qualudis \
+noinst_DATA = paludis adjutrix \
 	      inquisitio \
 	      accerso instruo reconcilio \
 	      importare
