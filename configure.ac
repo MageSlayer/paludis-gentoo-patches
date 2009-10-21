@@ -141,12 +141,10 @@ dnl }}}
 dnl {{{ check for ptsname_r or ptsname function
 AC_CHECK_FUNCS([ptsname_r],    [],
 	[AC_CHECK_FUNCS([ptsname], [], [AC_MSG_ERROR([I need ptsname_r or ptsname])])])
-AM_CONDITIONAL(HAVE_PTSNAME_R, test x$ac_cv_func_ptsname_r = xyes)
 dnl }}}
 
 dnl {{{ check for lchflags function
 AC_CHECK_FUNCS([lchflags])
-AM_CONDITIONAL(HAVE_LCHFLAGS, test x$ac_cv_func_lchflags = xyes)
 dnl }}}
 
 dnl {{{ check for listxattrf etc
