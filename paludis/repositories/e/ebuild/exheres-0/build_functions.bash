@@ -4,6 +4,7 @@
 # Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
 # Copyright (c) 2008 Bo Ørsted Andresen
 # Copyright (c) 2009 David Leverton
+# Copyright (c) 2009 Mike Kelly
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -219,3 +220,10 @@ emagicdocs()
     fi
     [[ -n ${old_set} ]] || shopt -u nocaseglob
 }
+
+edo()
+{
+    echo "$@"
+    "$@" || paludis_die_unless_nonfatal || return 247
+}
+
