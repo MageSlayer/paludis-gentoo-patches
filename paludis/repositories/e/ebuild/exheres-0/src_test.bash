@@ -29,10 +29,10 @@ default_src_test()
         echo "Makefile found, looking for potential test targets"
         if make -j1 -n "${DEFAULT_SRC_TEST_PARAMS[@]}" check ;  then
             echo "Found check target"
-            emake -j1 "${DEFAULT_SRC_TEST_PARAMS[@]}" check
+            emake "${DEFAULT_SRC_TEST_PARAMS[@]}" check
         elif make -j1 -n "${DEFAULT_SRC_TEST_PARAMS[@]}" test ; then
             echo "Found test target"
-            emake -j1 "${DEFAULT_SRC_TEST_PARAMS[@]}" test
+            emake "${DEFAULT_SRC_TEST_PARAMS[@]}" test
         else
             echo "No check or test target, skipping tests"
         fi
