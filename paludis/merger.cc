@@ -803,10 +803,10 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
         if (_imp->params.options()[mo_preserve_mtimes])
         {
             /* futimens is POSIX, futimes isn't */
-            struct timespec ts;
-            ts.tv_sec = src.mtime();
-            ts.tv_nsec = 0;
-            if (0 != ::futimens(output_fd, &ts))
+            struct timespec ts[2];
+            ts[0].tv_sec = ts[1].tv_sec = src.mtime();
+            ts[0].tv_nsec = ts[1].tv_nsec = 0;
+            if (0 != ::futimens(output_fd, ts))
                 throw MergerError("Cannot futimens '" + stringify(dst) + "': " + stringify(::strerror(errno)));
         }
 
