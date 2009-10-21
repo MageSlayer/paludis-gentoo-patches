@@ -56,24 +56,6 @@ namespace paludis
     };
 }
 
-FakeRepository::FakeRepository(const Environment * const env, const RepositoryName & r) :
-    PrivateImplementationPattern<FakeRepository>(new Implementation<FakeRepository>),
-    FakeRepositoryBase(env, r, make_named_values<RepositoryCapabilities>(
-                value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
-                value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
-                value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
-                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
-                value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
-                value_for<n::mirrors_interface>(this),
-                value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
-                value_for<n::virtuals_interface>((*DistributionData::get_instance()->distribution_from_string(
-                            env->distribution())).support_old_style_virtuals() ? this : 0)
-            )),
-            _imp(PrivateImplementationPattern<FakeRepository>::_imp)
-{
-    add_metadata_key(_imp->format_key);
-}
-
 FakeRepository::FakeRepository(const FakeRepositoryParams & params) :
     PrivateImplementationPattern<FakeRepository>(new Implementation<FakeRepository>),
     FakeRepositoryBase(params.environment(), params.name(), make_named_values<RepositoryCapabilities>(

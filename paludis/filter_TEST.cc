@@ -30,6 +30,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/make_named_values.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <test/test_concepts.hh>
@@ -53,8 +54,14 @@ namespace test_cases
         FilterTestCaseBase(const std::string & s, const Filter & f) :
             TestCase("filter " + s + " with " + stringify(f)),
             filter(f),
-            repo1(new FakeRepository(&env, RepositoryName("repo1"))),
-            repo2(new FakeRepository(&env, RepositoryName("repo2"))),
+            repo1(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo1"))
+                            ))),
+            repo2(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo2"))
+                            ))),
             inst_repo1(new FakeInstalledRepository(&env, RepositoryName("inst_repo1")))
         {
             env.package_database()->add_repository(1, repo1);

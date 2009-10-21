@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,6 +24,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/package_database.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -40,7 +41,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            const std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo"))
+                            )));
             env.package_database()->add_repository(10, repo);
 
             RepositoryNameCache cache(FSEntry("/var/empty"), repo.get());
@@ -55,7 +59,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            const std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo"))
+                            )));
             env.package_database()->add_repository(10, repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/not_generated"), repo.get());
@@ -72,7 +79,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            const std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo"))
+                            )));
             env.package_database()->add_repository(10, repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/not_existing"), repo.get());
@@ -89,7 +99,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            const std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo"))
+                            )));
             env.package_database()->add_repository(10, repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/old_format"), repo.get());
@@ -106,7 +119,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            const std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo"))
+                            )));
             env.package_database()->add_repository(10, repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/bad_repo"), repo.get());
@@ -123,7 +139,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            const std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo"))
+                            )));
             env.package_database()->add_repository(10, repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/good_repo"), repo.get());
@@ -148,7 +167,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            const std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo"))
+                            )));
             env.package_database()->add_repository(10, repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/generated"), repo.get());

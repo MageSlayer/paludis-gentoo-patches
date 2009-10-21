@@ -63,12 +63,10 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            FakeRepository(const Environment * const, const RepositoryName &);
-            ~FakeRepository();
-
             ///\since 0.26
             FakeRepository(const FakeRepositoryParams &);
 
+            ~FakeRepository();
 
             ///\}
 

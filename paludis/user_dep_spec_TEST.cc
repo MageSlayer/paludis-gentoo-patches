@@ -27,6 +27,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
@@ -311,7 +312,9 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
+            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("fake")))));
             std::tr1::shared_ptr<FakeInstalledRepository> fake_inst(new FakeInstalledRepository(&env, RepositoryName("fake_inst")));
             env.package_database()->add_repository(1, fake);
             env.package_database()->add_repository(2, fake_inst);
@@ -357,7 +360,9 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
+            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("fake")))));
             env.package_database()->add_repository(1, fake);
             fake->add_version("cat", "world", "1");
             fake->add_version("cat", "moon", "1");

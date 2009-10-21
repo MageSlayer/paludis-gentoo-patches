@@ -32,6 +32,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/thread.hh>
 #include <paludis/util/condition_variable.hh>
+#include <paludis/util/make_named_values.hh>
 #include <ruby.h>
 #include <list>
 #include <tr1/functional>
@@ -664,8 +665,10 @@ namespace
             if (2 != argc)
                 rb_raise(rb_eArgError, "FakeRepository.new expects two arguments, but got %d", argc);
 
-            std::tr1::shared_ptr<Repository> * r = new std::tr1::shared_ptr<Repository>(new
-                    FakeRepository(value_to_environment(argv[0]).get(), RepositoryName(StringValuePtr(argv[1]))));
+            std::tr1::shared_ptr<Repository> * r = new std::tr1::shared_ptr<Repository>(new FakeRepository(
+                        make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(value_to_environment(argv[0]).get()),
+                            value_for<n::name>(RepositoryName(StringValuePtr(argv[1]))))));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<Repository> >::free, r));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;

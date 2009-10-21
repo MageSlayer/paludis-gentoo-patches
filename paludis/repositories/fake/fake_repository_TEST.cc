@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,7 @@
 #include <test/test_framework.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
+#include <paludis/util/make_named_values.hh>
 
 using namespace test;
 using namespace paludis;
@@ -34,7 +35,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<const FakeRepository> r(new FakeRepository(&env, RepositoryName("fake")));
+            const std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo"))
+                            )));
         }
     } test_fake_repository;
 }

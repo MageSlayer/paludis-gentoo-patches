@@ -24,6 +24,7 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/package_database.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
@@ -42,7 +43,10 @@ namespace test_cases
         {
             StringifyFormatter ff;
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            const std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo"))
+                            )));
             env.package_database()->add_repository(1, repo);
             std::tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
@@ -81,7 +85,10 @@ namespace test_cases
         {
             StringifyFormatter ff;
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            const std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo"))
+                            )));
             env.package_database()->add_repository(1, repo);
             std::tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 

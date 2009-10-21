@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,6 +35,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/user_dep_spec.hh>
 
 using namespace test;
@@ -50,7 +51,10 @@ namespace test_cases
         {
             TestEnvironment env;
             std::tr1::shared_ptr<VirtualsRepository> virtuals(new VirtualsRepository(&env));
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            const std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo"))
+                            )));
             std::tr1::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(&env, RepositoryName("installed")));
 
             TEST_CHECK(repo->virtuals_interface());
@@ -84,8 +88,14 @@ namespace test_cases
         {
             TestEnvironment env;
             std::tr1::shared_ptr<VirtualsRepository> virtuals(new VirtualsRepository(&env));
-            std::tr1::shared_ptr<FakeRepository> repo1(new FakeRepository(&env, RepositoryName("repo1")));
-            std::tr1::shared_ptr<FakeRepository> repo2(new FakeRepository(&env, RepositoryName("repo2")));
+            const std::tr1::shared_ptr<FakeRepository> repo1(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo1"))
+                            )));
+            const std::tr1::shared_ptr<FakeRepository> repo2(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo2"))
+                            )));
             std::tr1::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(&env, RepositoryName("installed")));
 
             env.package_database()->add_repository(2, virtuals);
@@ -125,8 +135,14 @@ namespace test_cases
         {
             TestEnvironment env;
             std::tr1::shared_ptr<VirtualsRepository> virtuals(new VirtualsRepository(&env));
-            std::tr1::shared_ptr<FakeRepository> repo1(new FakeRepository(&env, RepositoryName("repo1")));
-            std::tr1::shared_ptr<FakeRepository> repo2(new FakeRepository(&env, RepositoryName("repo2")));
+            const std::tr1::shared_ptr<FakeRepository> repo1(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo1"))
+                            )));
+            const std::tr1::shared_ptr<FakeRepository> repo2(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo2"))
+                            )));
 
             env.package_database()->add_repository(2, repo1);
             env.package_database()->add_repository(3, repo2);

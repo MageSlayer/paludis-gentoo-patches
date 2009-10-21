@@ -1929,7 +1929,9 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo")))));
             env.package_database()->add_repository(1, repo);
             std::tr1::shared_ptr<FakeInstalledRepository> destination_repo(new FakeInstalledRepository(&env,
                         RepositoryName("installed_repo")));
@@ -1969,7 +1971,9 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo")))));
             env.package_database()->add_repository(1, repo);
             std::tr1::shared_ptr<FakeInstalledRepository> destination_repo(new FakeInstalledRepository(&env,
                         RepositoryName("installed_repo")));
@@ -2010,7 +2014,9 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo")))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1");
 
@@ -2037,7 +2043,9 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo")))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
 
@@ -2065,7 +2073,9 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo")))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
 
@@ -2095,7 +2105,9 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo")))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
 
@@ -2146,7 +2158,9 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo")))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
             repo->add_version("cat", "two", "2");
@@ -2184,7 +2198,9 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo")))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "zero", "1")->build_dependencies_key()->set_from_string(
                 "( cat/one cat/two cat/three-live cat/four-cvs cat/five-svn cat/six-darcs )");
@@ -2226,7 +2242,9 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo")))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/three");
             std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "two", "1"));

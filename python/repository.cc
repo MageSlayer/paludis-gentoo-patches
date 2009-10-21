@@ -29,6 +29,7 @@
 #include <paludis/environment.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/make_named_values.hh>
 
 using namespace paludis;
 using namespace paludis::python;
@@ -129,6 +130,18 @@ struct RepositoryEInterfaceWrapper
 //{
 //    bp::to_python_converter<I_, repository_interface_to_python<I_> >();
 //}
+
+namespace
+{
+    std::tr1::shared_ptr<FakeRepository>
+    make_fake_repository(const Environment * const env, const RepositoryName & n)
+    {
+        return make_shared_ptr(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                        value_for<n::environment>(env),
+                        value_for<n::name>(n)
+                        )));
+    }
+}
 
 void expose_repository()
 {
@@ -357,8 +370,14 @@ void expose_repository()
         (
          "FakeRepository",
          "Fake repository for use in test cases.",
-         bp::init<const Environment * const, const RepositoryName &>("__init__(Environment, RepositoryName)")
+         bp::no_init
         )
+
+        .def("__init__",
+                bp::make_constructor(&make_fake_repository),
+                "__init__(Environment, RepositoryName)"
+            )
+
         .def("add_category", &FakeRepository::add_category)
 
         .def("add_package", &FakeRepository::add_package)

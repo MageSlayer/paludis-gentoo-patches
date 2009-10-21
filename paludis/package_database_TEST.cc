@@ -29,6 +29,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/make_named_values.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -51,8 +52,14 @@ namespace test_cases
             TestEnvironment e;
             PackageDatabase & p(*e.package_database());
 
-            std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(&e, RepositoryName("repo1")));
-            std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&e, RepositoryName("repo2")));
+            const std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&e),
+                            value_for<n::name>(RepositoryName("repo1"))
+                            )));
+            const std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&e),
+                            value_for<n::name>(RepositoryName("repo2"))
+                            )));
 
             TEST_CHECK_THROWS(p.fetch_repository(RepositoryName("repo1")), NoSuchRepositoryError);
             TEST_CHECK_THROWS(p.fetch_repository(RepositoryName("repo2")), NoSuchRepositoryError);
@@ -98,7 +105,10 @@ namespace test_cases
             FakeRepository
         {
             CoolFakeRepository(const Environment * const e, const RepositoryName & rn) :
-                FakeRepository(e, rn)
+                FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(e),
+                            value_for<n::name>(rn)
+                            ))
             {
             }
 
@@ -116,7 +126,9 @@ namespace test_cases
             TestEnvironment e;
             PackageDatabase & p(*e.package_database());
 
-            std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(&e, RepositoryName("repo1")));
+            std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&e),
+                            value_for<n::name>(RepositoryName("repo1")))));
             r1->add_version(CategoryNamePart("cat-one") + PackageNamePart("pkg-one"), VersionSpec("0", VersionSpecOptions()));
             r1->add_version(CategoryNamePart("cat-one") + PackageNamePart("pkg-two"), VersionSpec("0", VersionSpecOptions()));
             r1->add_version(CategoryNamePart("cat-two") + PackageNamePart("pkg-two"), VersionSpec("0", VersionSpecOptions()));
@@ -124,7 +136,9 @@ namespace test_cases
             p.add_repository(10, r1);
             TEST_CHECK(true);
 
-            std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&e, RepositoryName("repo2")));
+            std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&e),
+                            value_for<n::name>(RepositoryName("repo2")))));
             r2->add_version(CategoryNamePart("cat-three") + PackageNamePart("pkg-three"), VersionSpec("0", VersionSpecOptions()));
             r2->add_version(CategoryNamePart("cat-three") + PackageNamePart("pkg-four"), VersionSpec("0", VersionSpecOptions()));
             p.add_repository(10, r2);

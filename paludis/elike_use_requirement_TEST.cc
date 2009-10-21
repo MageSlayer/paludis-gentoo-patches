@@ -24,6 +24,7 @@
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/choice.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -54,7 +55,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
+            const std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo"))
+                            )));
             env.package_database()->add_repository(1, fake);
             std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "pkg1", "1"));
             set_conditionals(id, "enabled disabled");
@@ -92,7 +96,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
+            const std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo"))
+                            )));
             env.package_database()->add_repository(1, fake);
             std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "pkg1", "1"));
             set_conditionals(id, "enabled disabled");
@@ -130,7 +137,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
+            const std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("fake"))
+                            )));
             env.package_database()->add_repository(1, fake);
             std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "pkg1", "1"));
             set_conditionals(id, "enabled disabled");
@@ -174,7 +184,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
+            const std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("fake"))
+                            )));
             env.package_database()->add_repository(1, fake);
             std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
             set_conditionals(id, "pkgname");
@@ -274,7 +287,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
+            const std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("fake"))
+                            )));
             env.package_database()->add_repository(1, fake);
             std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
             set_conditionals(id, "pkgname");
@@ -346,7 +362,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
+            const std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("fake"))
+                            )));
             env.package_database()->add_repository(1, fake);
             std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
             set_conditionals(id, "pkgname");
@@ -474,7 +493,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
+            const std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("fake"))
+                            )));
             env.package_database()->add_repository(1, fake);
             std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
             set_conditionals(id, "pkgname");
@@ -501,7 +523,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
+            const std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("fake"))
+                            )));
             env.package_database()->add_repository(1, fake);
             std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
             set_conditionals(id, "pkgname");
@@ -532,7 +557,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
+            const std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("fake"))
+                            )));
             env.package_database()->add_repository(1, fake);
             std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
             set_conditionals(id, "pkgname");
@@ -558,7 +586,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
+            const std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("fake"))
+                            )));
             env.package_database()->add_repository(1, fake);
             std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
             set_conditionals(id, "pkgname");
@@ -686,7 +717,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
+            const std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("fake"))
+                            )));
             env.package_database()->add_repository(1, fake);
             std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
             set_conditionals(id, "pkgname");
@@ -814,7 +848,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(&env, RepositoryName("fake")));
+            const std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("fake"))
+                            )));
             env.package_database()->add_repository(1, fake);
             std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "pkg1", "1"));
             set_conditionals(id, "enabled disabled");

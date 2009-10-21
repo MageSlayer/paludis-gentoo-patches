@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,6 +29,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/make_named_values.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <test/test_concepts.hh>
@@ -48,7 +49,9 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(&env, RepositoryName("repo1")));
+            std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo1")))));
             r1->add_version("r1c1", "r1c1p1", "1");
             r1->add_version("r1c1", "r1c1p2", "1");
             r1->add_version("r1c1", "r1c1p2", "2");
@@ -57,7 +60,9 @@ namespace test_cases
             env.package_database()->add_repository(11, r1);
             TEST_CHECK(true);
 
-            std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&env, RepositoryName("repo2")));
+            std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo2")))));
             r2->add_version("rac1", "rac1pa", "1");
             r2->add_version("rac1", "rac1pa", "3");
             env.package_database()->add_repository(10, r2);
@@ -112,7 +117,9 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(&env, RepositoryName("repo1")));
+            std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo1")))));
             r1->add_version("cat", "pkg", "1")->set_slot(SlotName("a"));
             r1->add_version("cat", "pkg", "2")->set_slot(SlotName("c"));
             r1->add_version("cat", "pkg", "3")->set_slot(SlotName("c"));
@@ -120,7 +127,9 @@ namespace test_cases
             env.package_database()->add_repository(10, r1);
             TEST_CHECK(true);
 
-            std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&env, RepositoryName("repo2")));
+            std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo2")))));
             r2->add_version("cat", "pkg", "1")->set_slot(SlotName("a"));
             r2->add_version("cat", "pkg", "3")->set_slot(SlotName("b"));
             env.package_database()->add_repository(5, r2);
@@ -144,7 +153,9 @@ namespace test_cases
             TEST_CHECK_EQUAL(join(indirect_iterator(q4->begin()), indirect_iterator(q4->end()), " "),
                     "cat/pkg-3:b::repo2 cat/pkg-3:c::repo1 cat/pkg-4:a::repo1");
 
-            std::tr1::shared_ptr<FakeRepository> r3(new FakeRepository(&env, RepositoryName("repo3")));
+            std::tr1::shared_ptr<FakeRepository> r3(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("repo3")))));
             r3->add_version("cat", "other", "1")->set_slot(SlotName("a"));
             env.package_database()->add_repository(5, r3);
             TEST_CHECK(true);
