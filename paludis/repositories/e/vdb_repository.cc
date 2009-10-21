@@ -1465,6 +1465,9 @@ VDBRepository::perform_updates()
             }
         }
 
+        if ((! moves.empty()) || (! slot_moves.empty()))
+            invalidate();
+
         if ("yes" != getenv_with_default("PALUDIS_CARRY_OUT_UPDATES", ""))
         {
             if ((! moves.empty()) || (! slot_moves.empty()))
@@ -1477,6 +1480,7 @@ VDBRepository::perform_updates()
         else
         {
             if ((! moves.empty()) || (! slot_moves.empty()))
+            {
                 if (_imp->params.provides_cache() != FSEntry("/var/empty"))
                     if (_imp->params.provides_cache().is_regular_file_or_symlink_to_regular_file())
                     {
@@ -1484,10 +1488,11 @@ VDBRepository::perform_updates()
                         FSEntry(_imp->params.provides_cache()).unlink();
                         regenerate_provides_cache();
                     }
-        }
 
-        if ((! moves.empty()) || (! slot_moves.empty()))
-            invalidate();
+                std::cout << "Invalidating names cache following updates" << std::endl;
+                _imp->names_cache->regenerate_cache();
+            }
+        }
 
         if (! dep_rewrites.empty())
         {
