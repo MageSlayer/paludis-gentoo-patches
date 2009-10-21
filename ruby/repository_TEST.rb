@@ -165,7 +165,7 @@ module Paludis
 
         def test_responds
             repo = no_config_testrepo.main_repository
-            [:syncable_interface,
+            [
                 :mirrors_interface, :environment_variable_interface,
                 :provides_interface, :virtuals_interface, :e_interface].each do |sym|
                 assert_respond_to repo, sym
@@ -174,7 +174,7 @@ module Paludis
 
         def test_interfaces
             assert_equal installed_repo.name, installed_repo.provides_interface.name
-            assert_nil installed_repo.syncable_interface
+            assert_nil installed_repo.e_interface
         end
 
         def text_repository_environment_interface

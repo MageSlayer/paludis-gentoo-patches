@@ -99,6 +99,8 @@ namespace paludis
 
             virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
 
+            virtual bool sync(const std::tr1::shared_ptr<OutputManager> &) const;
+
             /* Keys */
 
             virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;

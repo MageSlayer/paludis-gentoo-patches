@@ -500,7 +500,6 @@ ERepository::ERepository(const ERepositoryParams & p) :
                 value_for<n::manifest_interface>(this),
                 value_for<n::mirrors_interface>(this),
                 value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
-                value_for<n::syncable_interface>(this),
                 value_for<n::virtuals_interface>((*DistributionData::get_instance()->distribution_from_string(p.environment()->distribution())).support_old_style_virtuals() ? this : 0)
                 )),
     PrivateImplementationPattern<ERepository>(new Implementation<ERepository>(this, p)),

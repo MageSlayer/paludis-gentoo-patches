@@ -139,6 +139,7 @@ namespace paludis
                 virtual void regenerate_cache() const;
 
                 virtual HookResult perform_hook(const Hook & hook);
+                virtual bool sync(const std::tr1::shared_ptr<OutputManager> &) const;
 
                 ///\}
 

@@ -827,8 +827,6 @@ namespace
         rb_define_method(c_repository, "package_names", RUBY_FUNC_CAST(&repository_package_names), 1);
         rb_define_method(c_repository, "package_ids", RUBY_FUNC_CAST(&repository_package_ids), 1);
 
-        rb_define_method(c_repository, "syncable_interface", RUBY_FUNC_CAST((&Interface<
-                        n::syncable_interface, RepositorySyncableInterface, &Repository::syncable_interface>::fetch)), 0);
         rb_define_method(c_repository, "mirrors_interface", RUBY_FUNC_CAST((&Interface<
                         n::mirrors_interface, RepositoryMirrorsInterface, &Repository::mirrors_interface>::fetch)), 0);
         rb_define_method(c_repository, "environment_variable_interface", RUBY_FUNC_CAST((&Interface<

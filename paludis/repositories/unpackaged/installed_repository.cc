@@ -98,7 +98,6 @@ InstalledUnpackagedRepository::InstalledUnpackagedRepository(
                 value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
                 value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),
                 value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
-                value_for<n::syncable_interface>(static_cast<RepositorySyncableInterface *>(0)),
                 value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
             )),
     _imp(PrivateImplementationPattern<InstalledUnpackagedRepository>::_imp)
@@ -517,4 +516,9 @@ InstalledUnpackagedRepository::perform_hook(const Hook &)
     return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
 }
 
+bool
+InstalledUnpackagedRepository::sync(const std::tr1::shared_ptr<OutputManager> &) const
+{
+    return false;
+}
 

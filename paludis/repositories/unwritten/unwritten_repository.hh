@@ -56,7 +56,6 @@ namespace paludis
         class PALUDIS_VISIBLE UnwrittenRepository :
             private PrivateImplementationPattern<UnwrittenRepository>,
             public Repository,
-            public RepositorySyncableInterface,
             public std::tr1::enable_shared_from_this<UnwrittenRepository>
         {
             private:

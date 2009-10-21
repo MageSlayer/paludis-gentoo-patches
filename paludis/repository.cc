@@ -184,10 +184,6 @@ Repository::purge_invalid_cache() const
 {
 }
 
-RepositorySyncableInterface::~RepositorySyncableInterface()
-{
-}
-
 RepositoryEnvironmentVariableInterface::~RepositoryEnvironmentVariableInterface()
 {
 }

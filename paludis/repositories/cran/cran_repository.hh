@@ -75,7 +75,6 @@ namespace paludis
      */
     class PALUDIS_VISIBLE CRANRepository :
         public Repository,
-        public RepositorySyncableInterface,
         private PrivateImplementationPattern<CRANRepository>,
         public std::tr1::enable_shared_from_this<CRANRepository>
     {

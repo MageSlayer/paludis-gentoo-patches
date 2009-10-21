@@ -189,9 +189,6 @@ namespace
             }
 
             const std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(r));
-            if (! repo->syncable_interface())
-                throw BadRepositoryForCommand(r, "does not support syncing");
-
             bool result(false);
             {
                 Mutex notifier_mutex;
@@ -205,7 +202,7 @@ namespace
 
                 try
                 {
-                    result = repo->syncable_interface()->sync(output_manager);
+                    result = repo->sync(output_manager);
 
                     {
                         Lock lock(mutex);
@@ -331,8 +328,7 @@ SyncCommand::run(
         for (PackageDatabase::RepositoryConstIterator p(env->package_database()->begin_repositories()),
                 p_end(env->package_database()->end_repositories()) ;
                 p != p_end ; ++p)
-            if ((*p)->syncable_interface())
-                repos.insert((*p)->name());
+            repos.insert((*p)->name());
 
     cout << format_general_s(f::sync_heading(), "Starting sync");
 

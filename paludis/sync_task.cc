@@ -117,7 +117,7 @@ namespace
                 std::tr1::shared_ptr<const Repository> rr(env->package_database()->fetch_repository(r));
                 CreateOutputManagerForRepositorySyncInfo info(*rr, oe_exclusive);
                 std::tr1::shared_ptr<OutputManager> output_manager(env->create_output_manager(info));
-                if ((*rr).syncable_interface() && (*rr).syncable_interface()->sync(output_manager))
+                if (rr->sync(output_manager))
                 {
                     Lock l(mutex);
                     task->on_sync_succeed(r);

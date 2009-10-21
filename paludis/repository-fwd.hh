@@ -40,7 +40,6 @@ namespace paludis
     class ERepositoryProfile;
 
     class Repository;
-    class RepositorySyncableInterface;
     class RepositoryEnvironmentVariableInterface;
     class RepositoryMirrorsInterface;
     class RepositoryProvidesInterface;

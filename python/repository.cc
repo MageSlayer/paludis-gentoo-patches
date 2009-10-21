@@ -38,12 +38,6 @@ struct RepositoryWrapper :
     Repository,
     bp::wrapper<Repository>
 {
-    static RepositorySyncableInterface *
-    get_syncable_interface(const Repository & self)
-    {
-        return self.syncable_interface();
-    }
-
     static RepositoryMirrorsInterface *
     get_mirrors_interface(const Repository & self)
     {
@@ -203,11 +197,6 @@ void expose_repository()
                 "entirely when looking for installable packages."
             )
 
-        .add_property("syncable_interface", bp::make_function(&RepositoryWrapper::get_syncable_interface,
-                    bp::return_internal_reference<>()),
-                "[ro] RepositorySyncableInterface"
-                )
-
         .add_property("environment_variable_interface",
                 bp::make_function(&RepositoryWrapper::get_environment_variable_interface,
                     bp::return_internal_reference<>()),
@@ -283,16 +272,6 @@ void expose_repository()
                 &named_values_getter<RepositoryEInterfaceProfilesDescLine, n::status, std::string, &RepositoryEInterfaceProfilesDescLine::status>
                 )
         ;
-
-    /**
-     * RepositorySyncableInterface
-     */
-    bp::class_<RepositorySyncableInterface, boost::noncopyable>
-        (
-         "RepositorySyncableInterface",
-         "Interface for syncing for repositories.",
-         bp::no_init
-        );
 
     /**
      * RepositoryEnvironmentVariableInterface

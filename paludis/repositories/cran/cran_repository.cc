@@ -115,7 +115,6 @@ CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
                 value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
                 value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),
                 value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
-                value_for<n::syncable_interface>(this),
                 value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
                 )),
     PrivateImplementationPattern<CRANRepository>(new Implementation<CRANRepository>(p, make_shared_ptr(new Mutex))),

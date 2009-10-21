@@ -51,7 +51,6 @@ namespace paludis
      */
     class PALUDIS_VISIBLE ERepository :
         public Repository,
-        public RepositorySyncableInterface,
         public RepositoryEnvironmentVariableInterface,
         public RepositoryMirrorsInterface,
         public RepositoryVirtualsInterface,

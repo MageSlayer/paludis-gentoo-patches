@@ -404,3 +404,9 @@ EInstalledRepository::populate_sets() const
             true);
 }
 
+bool
+EInstalledRepository::sync(const std::tr1::shared_ptr<OutputManager> &) const
+{
+    return false;
+}
+

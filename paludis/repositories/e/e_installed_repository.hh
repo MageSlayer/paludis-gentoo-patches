@@ -82,6 +82,8 @@ namespace paludis
                 HookResult perform_hook(const Hook & hook)
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
+                virtual bool sync(const std::tr1::shared_ptr<OutputManager> &) const;
+
                 ///\name For use by EInstalledRepositoryID
                 ///\{
 

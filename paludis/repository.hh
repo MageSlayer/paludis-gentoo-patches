@@ -75,7 +75,6 @@ namespace paludis
         struct provided_by_spec;
         struct provides_interface;
         struct status;
-        struct syncable_interface;
         struct used_this_for_config_protect;
         struct virtual_name;
         struct virtuals_interface;
@@ -97,7 +96,6 @@ namespace paludis
         NamedValue<n::manifest_interface, RepositoryManifestInterface *> manifest_interface;
         NamedValue<n::mirrors_interface, RepositoryMirrorsInterface *> mirrors_interface;
         NamedValue<n::provides_interface, RepositoryProvidesInterface *> provides_interface;
-        NamedValue<n::syncable_interface, RepositorySyncableInterface *> syncable_interface;
         NamedValue<n::virtuals_interface, RepositoryVirtualsInterface *> virtuals_interface;
     };
 
@@ -396,6 +394,13 @@ namespace paludis
             virtual HookResult perform_hook(const Hook & hook)
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
+            /**
+             * Sync, if necessary.
+             *
+             * \return True if we synced successfully, false if we skipped sync.
+             * \since 0.42 (previously in an interface)
+             */
+            virtual bool sync(const std::tr1::shared_ptr<OutputManager> &) const = 0;
 
             ///\}
 
@@ -413,31 +418,6 @@ namespace paludis
             virtual void populate_sets() const = 0;
 
             ///\}
-    };
-
-    /**
-     * Interface for syncing for repositories.
-     *
-     * \see Repository
-     * \ingroup g_repository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE RepositorySyncableInterface
-    {
-        public:
-            ///\name Sync functions
-            ///\{
-
-            /**
-             * Sync, if necessary.
-             *
-             * \return True if we synced successfully, false if we skipped sync.
-             */
-            virtual bool sync(const std::tr1::shared_ptr<OutputManager> &) const = 0;
-
-            ///\}
-
-            virtual ~RepositorySyncableInterface();
     };
 
     /**
