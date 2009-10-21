@@ -694,7 +694,12 @@ namespace
                 rb_raise(rb_eArgError, "FakeInstalledRepository.new expects two arguments, but got %d", argc);
 
             std::tr1::shared_ptr<Repository> * r = new std::tr1::shared_ptr<Repository>(new
-                    FakeInstalledRepository(value_to_environment(argv[0]).get(), RepositoryName(StringValuePtr(argv[1]))));
+                    FakeInstalledRepository(make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(value_to_environment(argv[0]).get()),
+                            value_for<n::name>(RepositoryName(StringValuePtr(argv[1]))),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                        )));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<Repository> >::free, r));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;

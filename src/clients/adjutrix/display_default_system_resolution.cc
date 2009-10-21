@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,6 +29,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/dep_list.hh>
 #include <paludis/dep_list_exceptions.hh>
 
@@ -116,8 +117,13 @@ int do_display_default_system_resolution(NoConfigEnvironment & env)
 
     if (env.default_destinations()->empty())
     {
-        std::tr1::shared_ptr<Repository> fake_destination(new FakeInstalledRepository(&env,
-                    RepositoryName("fake_destination")));
+        std::tr1::shared_ptr<Repository> fake_destination(new FakeInstalledRepository(
+                    make_named_values<FakeInstalledRepositoryParams>(
+                        value_for<n::environment>(&env),
+                        value_for<n::name>(RepositoryName("fake_destination")),
+                        value_for<n::suitable_destination>(true),
+                        value_for<n::supports_uninstall>(true)
+                        )));
         env.package_database()->add_repository(1, fake_destination);
     }
 

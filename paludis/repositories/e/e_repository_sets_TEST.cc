@@ -25,6 +25,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/stringify_formatter.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -85,8 +86,13 @@ namespace test_cases
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
-            std::tr1::shared_ptr<FakeInstalledRepository> installed(
-                new FakeInstalledRepository(&env, RepositoryName("installed")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(
+                        make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("installed")),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                            )));
             installed->add_version("cat-two", "bar", "1.5");
             env.package_database()->add_repository(0, installed);
             env.package_database()->add_repository(1, repo);
@@ -153,8 +159,13 @@ namespace test_cases
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
-            std::tr1::shared_ptr<FakeInstalledRepository> installed(
-                new FakeInstalledRepository(&env, RepositoryName("installed")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(
+                        make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("installed")),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                            )));
             installed->add_version("cat-one", "foo", "2.1");
             installed->add_version("cat-two", "bar", "1.5");
             installed->add_version("cat-three", "baz", "1.0");

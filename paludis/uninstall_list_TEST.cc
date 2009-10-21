@@ -99,7 +99,13 @@ namespace test_cases
             UninstallListTestCaseBase(const std::string & s) :
                 TestCase("uninstall list " + s),
                 env(),
-                installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed"))),
+                installed_repo(new FakeInstalledRepository(
+                            make_named_values<FakeInstalledRepositoryParams>(
+                                value_for<n::environment>(&env),
+                                value_for<n::name>(RepositoryName("installed")),
+                                value_for<n::suitable_destination>(true),
+                                value_for<n::supports_uninstall>(true)
+                                ))),
 #ifdef ENABLE_VIRTUALS_REPOSITORY
                 virtuals_repo(RepositoryFactory::get_instance()->create(&env, virtuals_repo_keys)),
 #endif

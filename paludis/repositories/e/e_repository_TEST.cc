@@ -1110,7 +1110,13 @@ namespace test_cases
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+                        make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("installed")),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                            )));
             installed_repo->add_version("cat", "pretend-installed", "0")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
             installed_repo->add_version("cat", "pretend-installed", "1")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
             env.package_database()->add_repository(2, installed_repo);
@@ -1391,7 +1397,13 @@ namespace test_cases
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+                        make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("installed")),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                            )));
             env.package_database()->add_repository(2, installed_repo);
 
             InstallAction action(make_named_values<InstallActionOptions>(
@@ -1487,7 +1499,13 @@ namespace test_cases
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+                        make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("installed")),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                            )));
             env.package_database()->add_repository(2, installed_repo);
 
             InstallAction action(make_named_values<InstallActionOptions>(
@@ -1613,7 +1631,13 @@ namespace test_cases
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+                        make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("installed")),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                            )));
             env.package_database()->add_repository(2, installed_repo);
 
             InstallAction action(make_named_values<InstallActionOptions>(
@@ -1785,7 +1809,13 @@ namespace test_cases
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+                        make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("installed")),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                            )));
             env.package_database()->add_repository(2, installed_repo);
 
             InstallAction action(make_named_values<InstallActionOptions>(
@@ -1910,7 +1940,13 @@ namespace test_cases
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+                        make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("installed")),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                            )));
             env.package_database()->add_repository(2, installed_repo);
 
             InfoActionOptions options(make_named_values<InfoActionOptions>(
@@ -1978,7 +2014,13 @@ namespace test_cases
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+                        make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("installed")),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                            )));
             installed_repo->add_version("cat", "pretend-installed", "0")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
             installed_repo->add_version("cat", "pretend-installed", "1")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
             env.package_database()->add_repository(2, installed_repo);

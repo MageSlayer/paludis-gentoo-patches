@@ -167,7 +167,13 @@ namespace test_cases
             p.add_repository(10, r3);
             TEST_CHECK(true);
 
-            std::tr1::shared_ptr<FakeInstalledRepository> r4(new FakeInstalledRepository(&e, RepositoryName("repo4")));
+            std::tr1::shared_ptr<FakeInstalledRepository> r4(new FakeInstalledRepository(
+                        make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(&e),
+                            value_for<n::name>(RepositoryName("repo4")),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                            )));
             r4->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-installed"), VersionSpec("0", VersionSpecOptions()));
             r4->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-fail4"), VersionSpec("0", VersionSpecOptions()));
             r4->add_version(CategoryNamePart("good-cat2") + PackageNamePart("pkg-fail4"), VersionSpec("0", VersionSpecOptions()));

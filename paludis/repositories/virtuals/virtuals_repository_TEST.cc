@@ -55,7 +55,13 @@ namespace test_cases
                             value_for<n::environment>(&env),
                             value_for<n::name>(RepositoryName("repo"))
                             )));
-            std::tr1::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(&env, RepositoryName("installed")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(
+                        make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("installed")),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                            )));
 
             TEST_CHECK(repo->virtuals_interface());
 
@@ -96,7 +102,13 @@ namespace test_cases
                             value_for<n::environment>(&env),
                             value_for<n::name>(RepositoryName("repo2"))
                             )));
-            std::tr1::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(&env, RepositoryName("installed")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(
+                        make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("installed")),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                            )));
 
             env.package_database()->add_repository(2, virtuals);
             env.package_database()->add_repository(3, repo1);

@@ -24,6 +24,25 @@
 
 namespace paludis
 {
+    namespace n
+    {
+        struct environment;
+        struct name;
+        struct suitable_destination;
+        struct supports_uninstall;
+    }
+
+    /**
+     * Parameters for a FakeInstalledRepository.
+     */
+    struct FakeInstalledRepositoryParams
+    {
+        NamedValue<n::environment, const Environment *> environment;
+        NamedValue<n::name, RepositoryName> name;
+        NamedValue<n::suitable_destination, bool> suitable_destination;
+        NamedValue<n::supports_uninstall, bool> supports_uninstall;
+    };
+
     /**
      * A fake repository for test cases, for installed packages.
      *
@@ -61,8 +80,8 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            FakeInstalledRepository(const Environment * const, const RepositoryName &, const bool supports_uninstall = true,
-                    const bool suitable_destination = true);
+            ///\since 0.42
+            FakeInstalledRepository(const FakeInstalledRepositoryParams &);
             ~FakeInstalledRepository();
 
             ///\}

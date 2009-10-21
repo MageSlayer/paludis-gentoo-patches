@@ -56,9 +56,8 @@ namespace paludis
     };
 }
 
-FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, const RepositoryName & our_name,
-        const bool supports_uninstall, const bool i) :
-    FakeRepositoryBase(e, our_name, make_named_values<RepositoryCapabilities>(
+FakeInstalledRepository::FakeInstalledRepository(const FakeInstalledRepositoryParams & p) :
+    FakeRepositoryBase(p.environment(), p.name(), make_named_values<RepositoryCapabilities>(
                 value_for<n::destination_interface>(this),
                 value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
                 value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
@@ -68,7 +67,8 @@ FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, co
                 value_for<n::provides_interface>(this),
                 value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
                 )),
-    PrivateImplementationPattern<FakeInstalledRepository>(new Implementation<FakeInstalledRepository>(supports_uninstall, i)),
+    PrivateImplementationPattern<FakeInstalledRepository>(new Implementation<FakeInstalledRepository>(
+                p.supports_uninstall(), p.suitable_destination())),
     _imp(PrivateImplementationPattern<FakeInstalledRepository>::_imp)
 {
     add_metadata_key(_imp->format_key);
@@ -225,7 +225,12 @@ FakeInstalledRepository::repository_factory_create(
     Context context("When creating FakeInstalledRepository:");
     RepositoryName name(f("name"));
 
-    return make_shared_ptr(new FakeInstalledRepository(env, name));
+    return make_shared_ptr(new FakeInstalledRepository(make_named_values<FakeInstalledRepositoryParams>(
+                    value_for<n::environment>(env),
+                    value_for<n::name>(name),
+                    value_for<n::suitable_destination>(true),
+                    value_for<n::supports_uninstall>(true)
+                    )));
 }
 
 std::tr1::shared_ptr<const RepositoryNameSet>

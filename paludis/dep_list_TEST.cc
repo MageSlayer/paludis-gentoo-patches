@@ -1933,8 +1933,13 @@ namespace test_cases
                             value_for<n::environment>(&env),
                             value_for<n::name>(RepositoryName("repo")))));
             env.package_database()->add_repository(1, repo);
-            std::tr1::shared_ptr<FakeInstalledRepository> destination_repo(new FakeInstalledRepository(&env,
-                        RepositoryName("installed_repo")));
+            std::tr1::shared_ptr<FakeInstalledRepository> destination_repo(new FakeInstalledRepository(
+                        make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("installed_repo")),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                            )));
             env.package_database()->add_repository(2, destination_repo);
 
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two cat/three");
@@ -1975,8 +1980,13 @@ namespace test_cases
                             value_for<n::environment>(&env),
                             value_for<n::name>(RepositoryName("repo")))));
             env.package_database()->add_repository(1, repo);
-            std::tr1::shared_ptr<FakeInstalledRepository> destination_repo(new FakeInstalledRepository(&env,
-                        RepositoryName("installed_repo")));
+            std::tr1::shared_ptr<FakeInstalledRepository> destination_repo(new FakeInstalledRepository(
+                        make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("installed_repo")),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                            )));
             env.package_database()->add_repository(2, destination_repo);
 
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two cat/three");
@@ -2020,8 +2030,13 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1");
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
-                    new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+                        make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("installed_repo")),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                            )));
             env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "one", "2");
 
@@ -2049,8 +2064,13 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
-                    new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+                        make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("installed_repo")),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                            )));
             env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "two", "2");
 
@@ -2079,8 +2099,13 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
-                    new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+                        make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("installed_repo")),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                            )));
             env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "two", "2");
 
@@ -2111,8 +2136,13 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
-                    new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+                        make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("installed_repo")),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                            )));
             env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "two", "2");
             installed_repo->add_version("cat", "three", "3");
@@ -2165,8 +2195,13 @@ namespace test_cases
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
             repo->add_version("cat", "two", "2");
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
-                    new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+                        make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("installed_repo")),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                            )));
             env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "two", "0");
 
@@ -2211,8 +2246,13 @@ namespace test_cases
             repo->add_version("cat", "five-svn", "0");
             repo->add_version("cat", "six-darcs", "0");
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
-                    new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+                        make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("installed_repo")),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                            )));
             env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "one", "scm");
             installed_repo->add_version("cat", "two", "2");
@@ -2253,8 +2293,13 @@ namespace test_cases
             repo->add_version("cat", "three", "0.9");
             repo->add_version("cat", "four", "1");
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
-                    new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+                        make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("installed_repo")),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                            )));
             env.package_database()->add_repository(2, installed_repo);
 
             DepList d1(&env, DepListOptions());

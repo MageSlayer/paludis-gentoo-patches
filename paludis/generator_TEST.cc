@@ -60,7 +60,13 @@ namespace test_cases
             repo2(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             value_for<n::environment>(&env),
                             value_for<n::name>(RepositoryName("repo2"))))),
-            inst_repo1(new FakeInstalledRepository(&env, RepositoryName("inst_repo1")))
+            inst_repo1(new FakeInstalledRepository(
+                        make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("inst_repo1")),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                            )))
         {
             env.package_database()->add_repository(1, repo1);
             env.package_database()->add_repository(10, repo2);

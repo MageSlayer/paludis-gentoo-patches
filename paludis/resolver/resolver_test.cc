@@ -263,7 +263,13 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
             std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1));
     env.package_database()->add_repository(1, inst_repo);
 
-    fake_inst_repo.reset(new FakeInstalledRepository(&env, RepositoryName("fake-inst"), true, false));
+    fake_inst_repo.reset(new FakeInstalledRepository(
+                make_named_values<FakeInstalledRepositoryParams>(
+                    value_for<n::environment>(&env),
+                    value_for<n::name>(RepositoryName("fake-inst")),
+                    value_for<n::suitable_destination>(true),
+                    value_for<n::supports_uninstall>(false)
+                    )));
     env.package_database()->add_repository(1, fake_inst_repo);
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY

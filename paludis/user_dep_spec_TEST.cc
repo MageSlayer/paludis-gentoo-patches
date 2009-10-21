@@ -315,7 +315,13 @@ namespace test_cases
             std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             value_for<n::environment>(&env),
                             value_for<n::name>(RepositoryName("fake")))));
-            std::tr1::shared_ptr<FakeInstalledRepository> fake_inst(new FakeInstalledRepository(&env, RepositoryName("fake_inst")));
+            std::tr1::shared_ptr<FakeInstalledRepository> fake_inst(new FakeInstalledRepository(
+                        make_named_values<FakeInstalledRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("fake_inst")),
+                            value_for<n::suitable_destination>(true),
+                            value_for<n::supports_uninstall>(true)
+                            )));
             env.package_database()->add_repository(1, fake);
             env.package_database()->add_repository(2, fake_inst);
             fake->add_version("cat", "pkg1", "1");
