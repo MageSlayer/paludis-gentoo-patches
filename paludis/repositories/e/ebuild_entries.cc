@@ -458,8 +458,8 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
         id->fetches_key()->value()->root()->accept(c);
     }
 
-    if ((c.need_nofetch()) ||
-            ((! fetch_action.options.ignore_unfetched()) && (! id->eapi()->supported()->ebuild_phases()->ebuild_fetch_extra().empty())))
+    if ( (! fetch_action.options.fetch_regulars_only()) && ((c.need_nofetch()) ||
+            ((! fetch_action.options.ignore_unfetched()) && (! id->eapi()->supported()->ebuild_phases()->ebuild_fetch_extra().empty()))))
     {
         bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()) &&
                 check_userpriv(FSEntry(_imp->params.builddir()), _imp->environment,

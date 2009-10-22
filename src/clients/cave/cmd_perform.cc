@@ -323,6 +323,7 @@ PerformCommand::run(
         FetchActionOptions options(make_named_values<FetchActionOptions>(
                     value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                     value_for<n::exclude_unmirrorable>(cmdline.a_exclude_unmirrorable.specified()),
+                    value_for<n::fetch_regulars_only>(false),
                     value_for<n::fetch_unneeded>(cmdline.a_fetch_unneeded.specified()),
                     value_for<n::ignore_unfetched>(cmdline.a_ignore_unfetched.specified()),
                     value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),
@@ -340,6 +341,7 @@ PerformCommand::run(
         FetchActionOptions options(make_named_values<FetchActionOptions>(
                     value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                     value_for<n::exclude_unmirrorable>(cmdline.a_exclude_unmirrorable.specified()),
+                    value_for<n::fetch_regulars_only>(false),
                     value_for<n::fetch_unneeded>(cmdline.a_fetch_unneeded.specified()),
                     value_for<n::ignore_unfetched>(cmdline.a_ignore_unfetched.specified()),
                     value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),

@@ -742,6 +742,7 @@ InstallTask::_pretend()
                 FetchActionOptions options(make_named_values<FetchActionOptions>(
                             value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                             value_for<n::exclude_unmirrorable>(false),
+                            value_for<n::fetch_regulars_only>(false),
                             value_for<n::fetch_unneeded>(false),
                             value_for<n::ignore_unfetched>(true),
                             value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),
@@ -1906,6 +1907,7 @@ InstallTask::make_fetch_action_options(const DepListEntry &, OutputManagerFromEn
     return make_named_values<FetchActionOptions>(
             value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
             value_for<n::exclude_unmirrorable>(false),
+            value_for<n::fetch_regulars_only>(false),
             value_for<n::fetch_unneeded>(false),
             value_for<n::ignore_unfetched>(false),
             value_for<n::make_output_manager>(std::tr1::ref(o)),

@@ -144,6 +144,7 @@ main(int argc, char *argv[])
                 FetchAction a(make_named_values<FetchActionOptions>(
                             value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                             value_for<n::exclude_unmirrorable>(true),
+                            value_for<n::fetch_regulars_only>(true),
                             value_for<n::fetch_unneeded>(true),
                             value_for<n::ignore_unfetched>(false),
                             value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),
@@ -165,7 +166,9 @@ main(int argc, char *argv[])
                 catch (const ActionFailedError & e)
                 {
                     if (a.options.errors()->empty())
-                        results.insert(std::make_pair(*i, "Unknown fetch error"));
+                    {
+                        results.insert(std::make_pair(*i, e.message()));
+                    }
 
                     for (Sequence<FetchActionFailure>::ConstIterator f(a.options.errors()->begin()),
                             f_end(a.options.errors()->end()) ; f != f_end ; ++f)

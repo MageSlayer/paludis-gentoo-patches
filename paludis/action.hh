@@ -54,6 +54,7 @@ namespace paludis
         struct exclude_unmirrorable;
         struct failed_automatic_fetching;
         struct failed_integrity_checks;
+        struct fetch_regulars_only;
         struct fetch_unneeded;
         struct if_for_install_id;
         struct ignore_for_unmerge;
@@ -88,6 +89,15 @@ namespace paludis
          */
         NamedValue<n::exclude_unmirrorable, bool> exclude_unmirrorable;
 
+        /**
+         * Avoid fetching for non-regular packages like -scm
+         * \since 0.43
+         */
+        NamedValue<n::fetch_regulars_only, bool> fetch_regulars_only;
+
+        /**
+         * Fetch things in non-enabled flag? () blocks
+         */
         NamedValue<n::fetch_unneeded, bool> fetch_unneeded;
 
         /**
