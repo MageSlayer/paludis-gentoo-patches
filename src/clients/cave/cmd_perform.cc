@@ -422,6 +422,8 @@ PerformCommand::run(
                     ));
         PretendAction pretend_action(options);
         execute(env, cmdline, id, action, pretend_action);
+        if (pretend_action.failed())
+            return EXIT_FAILURE;
     }
     else if (action == "uninstall")
     {
