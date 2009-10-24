@@ -37,7 +37,6 @@ namespace paludis
 
     class Environment;
     class RepositoryNameCache;
-    class ERepositoryProfile;
 
     class Repository;
     class RepositoryEnvironmentVariableInterface;
