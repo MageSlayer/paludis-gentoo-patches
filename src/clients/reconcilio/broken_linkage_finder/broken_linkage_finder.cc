@@ -329,6 +329,8 @@ Implementation<BrokenLinkageFinder>::gather_package(const std::tr1::shared_ptr<c
             files.insert(std::make_pair(stringify(file->location_key()->value()), pkg));
         }
     }
+
+    pkg->can_drop_in_memory_cache();
 }
 
 BrokenLinkageFinder::BrokenPackageConstIterator
