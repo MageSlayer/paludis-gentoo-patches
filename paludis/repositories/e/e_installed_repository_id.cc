@@ -64,8 +64,6 @@ namespace
 
     struct EInstalledRepositoryIDKeys
     {
-        std::tr1::shared_ptr<const EAPI> eapi;
-
         std::tr1::shared_ptr<const MetadataValueKey<SlotName> > slot;
         std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > fs_location;
         std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use;
@@ -124,6 +122,7 @@ namespace paludis
         const FSEntry dir;
 
         mutable std::tr1::shared_ptr<EInstalledRepositoryIDKeys> keys;
+        std::tr1::shared_ptr<const EAPI> eapi;
 
         std::tr1::shared_ptr<DependenciesLabelSequence> raw_dependencies_labels;
         std::tr1::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
@@ -486,9 +485,9 @@ EInstalledRepositoryID::need_keys_added() const
                 _imp->dir / contents_filename(), mkt_normal));
     add_metadata_key(_imp->keys->installed_time);
 
-    if (_imp->keys->eapi->supported())
+    if (_imp->eapi->supported())
         _imp->keys->choices.reset(new EChoicesKey(_imp->environment, shared_from_this(), "PALUDIS_CHOICES",
-                    _imp->keys->eapi->supported()->ebuild_environment_variables()->description_choices(),
+                    _imp->eapi->supported()->ebuild_environment_variables()->description_choices(),
                     mkt_normal, make_null_shared_ptr(), make_null_shared_ptr()));
     else
         _imp->keys->choices.reset(new EChoicesKey(_imp->environment, shared_from_this(), "PALUDIS_CHOICES", "Choices", mkt_normal,
@@ -578,14 +577,14 @@ EInstalledRepositoryID::canonical_form(const PackageIDCanonicalForm f) const
     switch (f)
     {
         case idcf_full:
-            if (_imp->keys->slot)
+            if (_imp->keys && _imp->keys->slot)
                 return stringify(name()) + "-" + stringify(version()) + ":" + stringify(_imp->keys->slot->value()) + "::" +
                     stringify(repository()->name());
 
             return stringify(name()) + "-" + stringify(version()) + "::" + stringify(repository()->name());
 
         case idcf_no_version:
-            if (_imp->keys->slot)
+            if (_imp->keys && _imp->keys->slot)
                 return stringify(name()) + ":" + stringify(_imp->keys->slot->value()) + "::" +
                     stringify(repository()->name());
 
@@ -632,23 +631,23 @@ EInstalledRepositoryID::eapi() const
 {
     Lock l(_imp->mutex);
 
-    if (_imp->keys->eapi)
-        return _imp->keys->eapi;
+    if (_imp->eapi)
+        return _imp->eapi;
 
     Context context("When finding EAPI for '" + canonical_form(idcf_full) + "':");
 
     if ((_imp->dir / "EAPI").exists())
-        _imp->keys->eapi = EAPIData::get_instance()->eapi_from_string(file_contents(_imp->dir / "EAPI"));
+        _imp->eapi = EAPIData::get_instance()->eapi_from_string(file_contents(_imp->dir / "EAPI"));
     else
     {
         Log::get_instance()->message("e.no_eapi", ll_debug, lc_context) << "No EAPI entry in '" << _imp->dir << "', pretending '"
             << _imp->environment->distribution() << "'";
-        _imp->keys->eapi = EAPIData::get_instance()->eapi_from_string(
+        _imp->eapi = EAPIData::get_instance()->eapi_from_string(
                 EExtraDistributionData::get_instance()->data_from_distribution(*DistributionData::get_instance()->distribution_from_string(
                         _imp->environment->distribution()))->default_eapi_when_unspecified());
     }
 
-    return _imp->keys->eapi;
+    return _imp->eapi;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
