@@ -65,7 +65,6 @@ namespace
     struct EInstalledRepositoryIDKeys
     {
         std::tr1::shared_ptr<const MetadataValueKey<SlotName> > slot;
-        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > fs_location;
         std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use;
         std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > inherited;
         std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string > > > raw_iuse;
@@ -122,6 +121,9 @@ namespace paludis
         const FSEntry dir;
 
         mutable std::tr1::shared_ptr<EInstalledRepositoryIDKeys> keys;
+
+        /* fs location and eapi are special */
+        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > fs_location;
         std::tr1::shared_ptr<const EAPI> eapi;
 
         std::tr1::shared_ptr<DependenciesLabelSequence> raw_dependencies_labels;
@@ -181,11 +183,11 @@ EInstalledRepositoryID::need_keys_added() const
 
     // fs_location key could have been loaded by the ::fs_location_key() already. keep this
     // at the top, other keys use it.
-    if (! _imp->keys->fs_location)
+    if (! _imp->fs_location)
     {
-        _imp->keys->fs_location.reset(new LiteralMetadataValueKey<FSEntry> (fs_location_raw_name(), fs_location_human_name(),
+        _imp->fs_location.reset(new LiteralMetadataValueKey<FSEntry> (fs_location_raw_name(), fs_location_human_name(),
                     mkt_internal, _imp->dir));
-        add_metadata_key(_imp->keys->fs_location);
+        add_metadata_key(_imp->fs_location);
     }
 
     Context context("When loading ID keys from '" + stringify(_imp->dir) + "':");
@@ -846,16 +848,16 @@ const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 EInstalledRepositoryID::fs_location_key() const
 {
     // Avoid loading whole metadata
-    if (! _imp->keys->fs_location)
+    if (! _imp->fs_location)
     {
         Lock l(_imp->mutex);
 
-        _imp->keys->fs_location.reset(new LiteralMetadataValueKey<FSEntry> (fs_location_raw_name(),
+        _imp->fs_location.reset(new LiteralMetadataValueKey<FSEntry> (fs_location_raw_name(),
                     fs_location_human_name(), mkt_internal, _imp->dir));
-        add_metadata_key(_imp->keys->fs_location);
+        add_metadata_key(_imp->fs_location);
     }
 
-    return _imp->keys->fs_location;
+    return _imp->fs_location;
 }
 
 bool
