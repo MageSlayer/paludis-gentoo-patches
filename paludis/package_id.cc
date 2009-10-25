@@ -244,3 +244,8 @@ PackageID::hash() const
         (extra_hash_value() << 13);
 }
 
+void
+PackageID::can_drop_in_memory_cache() const
+{
+}
+

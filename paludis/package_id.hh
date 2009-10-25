@@ -416,6 +416,13 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
+
+            /**
+             * Allow the PackageID to drop any memory-cached metadata it holds.
+             *
+             * \since 0.42
+             */
+            virtual void can_drop_in_memory_cache() const;
     };
 
     /**

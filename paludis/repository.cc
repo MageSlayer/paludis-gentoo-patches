@@ -234,3 +234,8 @@ Repository::unimportant_category_names() const
     return make_shared_ptr(new CategoryNamePartSet);
 }
 
+void
+Repository::can_drop_in_memory_cache() const
+{
+}
+

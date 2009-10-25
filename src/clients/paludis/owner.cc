@@ -124,6 +124,8 @@ do_one_owner(
 
                         found_owner=true;
                     }
+
+                    (*v)->can_drop_in_memory_cache();
                 }
             }
         }

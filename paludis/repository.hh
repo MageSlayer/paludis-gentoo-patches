@@ -402,6 +402,14 @@ namespace paludis
              */
             virtual bool sync(const std::tr1::shared_ptr<OutputManager> &) const = 0;
 
+            /**
+             * Allow the Repository to drop any memory-cached metadata and
+             * PackageIDs it holds.
+             *
+             * \since 0.42
+             */
+            virtual void can_drop_in_memory_cache() const;
+
             ///\}
 
             ///\name Set methods

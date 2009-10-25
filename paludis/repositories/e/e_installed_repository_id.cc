@@ -61,22 +61,9 @@ namespace
         SafeIFStream i(f);
         return strip_trailing(std::string((std::istreambuf_iterator<char>(i)), std::istreambuf_iterator<char>()), "\r\n");
     }
-}
 
-namespace paludis
-{
-    template <>
-    struct Implementation<EInstalledRepositoryID>
+    struct EInstalledRepositoryIDKeys
     {
-        mutable Mutex mutex;
-
-        const QualifiedPackageName name;
-        const VersionSpec version;
-        const Environment * const environment;
-        const std::tr1::shared_ptr<const Repository> repository;
-        const FSEntry dir;
-        mutable bool has_keys;
-
         std::tr1::shared_ptr<const EAPI> eapi;
 
         std::tr1::shared_ptr<const MetadataValueKey<SlotName> > slot;
@@ -120,6 +107,23 @@ namespace paludis
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > ldflags;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > pkgmanager;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > vdb_format;
+    };
+}
+
+namespace paludis
+{
+    template <>
+    struct Implementation<EInstalledRepositoryID>
+    {
+        mutable Mutex mutex;
+
+        const QualifiedPackageName name;
+        const VersionSpec version;
+        const Environment * const environment;
+        const std::tr1::shared_ptr<const Repository> repository;
+        const FSEntry dir;
+
+        mutable std::tr1::shared_ptr<EInstalledRepositoryIDKeys> keys;
 
         std::tr1::shared_ptr<DependenciesLabelSequence> raw_dependencies_labels;
         std::tr1::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
@@ -134,7 +138,6 @@ namespace paludis
             environment(e),
             repository(r),
             dir(f),
-            has_keys(false),
             raw_dependencies_labels(new DependenciesLabelSequence),
             build_dependencies_labels(new DependenciesLabelSequence),
             run_dependencies_labels(new DependenciesLabelSequence),
@@ -173,17 +176,17 @@ EInstalledRepositoryID::need_keys_added() const
 {
     Lock l(_imp->mutex);
 
-    if (_imp->has_keys)
+    if (_imp->keys)
         return;
-    _imp->has_keys = true;
+    _imp->keys.reset(new EInstalledRepositoryIDKeys);
 
     // fs_location key could have been loaded by the ::fs_location_key() already. keep this
     // at the top, other keys use it.
-    if (! _imp->fs_location)
+    if (! _imp->keys->fs_location)
     {
-        _imp->fs_location.reset(new LiteralMetadataValueKey<FSEntry> (fs_location_raw_name(), fs_location_human_name(),
+        _imp->keys->fs_location.reset(new LiteralMetadataValueKey<FSEntry> (fs_location_raw_name(), fs_location_human_name(),
                     mkt_internal, _imp->dir));
-        add_metadata_key(_imp->fs_location);
+        add_metadata_key(_imp->keys->fs_location);
     }
 
     Context context("When loading ID keys from '" + stringify(_imp->dir) + "':");
@@ -204,25 +207,25 @@ EInstalledRepositoryID::need_keys_added() const
     if (! env->env_use().empty())
         if ((_imp->dir / env->env_use()).exists())
         {
-            _imp->raw_use.reset(new EStringSetKey(shared_from_this(), env->env_use(), env->description_use(),
+            _imp->keys->raw_use.reset(new EStringSetKey(shared_from_this(), env->env_use(), env->description_use(),
                         file_contents(_imp->dir / env->env_use()), mkt_internal));
-            add_metadata_key(_imp->raw_use);
+            add_metadata_key(_imp->keys->raw_use);
         }
 
     if (! vars->slot()->name().empty())
         if ((_imp->dir / vars->slot()->name()).exists())
         {
-            _imp->slot.reset(new LiteralMetadataValueKey<SlotName>(vars->slot()->name(), vars->slot()->description(),
+            _imp->keys->slot.reset(new LiteralMetadataValueKey<SlotName>(vars->slot()->name(), vars->slot()->description(),
                         mkt_internal, SlotName(file_contents(_imp->dir / vars->slot()->name()))));
-            add_metadata_key(_imp->slot);
+            add_metadata_key(_imp->keys->slot);
         }
 
     if (! vars->inherited()->name().empty())
         if ((_imp->dir / vars->inherited()->name()).exists())
         {
-            _imp->inherited.reset(new EStringSetKey(shared_from_this(), vars->inherited()->name(), vars->inherited()->description(),
+            _imp->keys->inherited.reset(new EStringSetKey(shared_from_this(), vars->inherited()->name(), vars->inherited()->description(),
                         file_contents(_imp->dir / vars->inherited()->name()), mkt_internal));
-            add_metadata_key(_imp->inherited);
+            add_metadata_key(_imp->keys->inherited);
         }
 
     if (! vars->defined_phases()->name().empty())
@@ -231,76 +234,76 @@ EInstalledRepositoryID::need_keys_added() const
             std::string d(file_contents(_imp->dir / vars->defined_phases()->name()));
             if (! d.empty())
             {
-                _imp->defined_phases.reset(new EStringSetKey(shared_from_this(), vars->defined_phases()->name(), vars->defined_phases()->description(),
+                _imp->keys->defined_phases.reset(new EStringSetKey(shared_from_this(), vars->defined_phases()->name(), vars->defined_phases()->description(),
                             d, mkt_internal));
-                add_metadata_key(_imp->defined_phases);
+                add_metadata_key(_imp->keys->defined_phases);
             }
         }
 
     if (! vars->iuse()->name().empty())
     {
         if ((_imp->dir / vars->iuse()->name()).exists())
-            _imp->raw_iuse.reset(new EStringSetKey(shared_from_this(), vars->iuse()->name(), vars->iuse()->description(),
+            _imp->keys->raw_iuse.reset(new EStringSetKey(shared_from_this(), vars->iuse()->name(), vars->iuse()->description(),
                         file_contents(_imp->dir / vars->iuse()->name()), mkt_internal));
         else
         {
             /* hack: if IUSE doesn't exist, we still need an iuse_key to make the choices
              * code behave sanely. */
-            _imp->raw_iuse.reset(new EStringSetKey(shared_from_this(), vars->iuse()->name(), vars->iuse()->description(),
+            _imp->keys->raw_iuse.reset(new EStringSetKey(shared_from_this(), vars->iuse()->name(), vars->iuse()->description(),
                         "", mkt_internal));
         }
-        add_metadata_key(_imp->raw_iuse);
+        add_metadata_key(_imp->keys->raw_iuse);
     }
 
     if (! vars->iuse_effective()->name().empty())
     {
         if ((_imp->dir / vars->iuse_effective()->name()).exists())
         {
-            _imp->raw_iuse_effective.reset(new EStringSetKey(
+            _imp->keys->raw_iuse_effective.reset(new EStringSetKey(
                         shared_from_this(), vars->iuse_effective()->name(), vars->iuse_effective()->description(),
                         file_contents(_imp->dir / vars->iuse_effective()->name()), mkt_internal));
-            add_metadata_key(_imp->raw_iuse_effective);
+            add_metadata_key(_imp->keys->raw_iuse_effective);
         }
     }
 
     if (! vars->myoptions()->name().empty())
         if ((_imp->dir / vars->myoptions()->name()).exists())
         {
-            _imp->raw_myoptions.reset(new EMyOptionsKey(_imp->environment, shared_from_this(), vars->myoptions()->name(),
+            _imp->keys->raw_myoptions.reset(new EMyOptionsKey(_imp->environment, shared_from_this(), vars->myoptions()->name(),
                         vars->myoptions()->description(), file_contents(_imp->dir / vars->myoptions()->name()), mkt_internal));
-            add_metadata_key(_imp->raw_myoptions);
+            add_metadata_key(_imp->keys->raw_myoptions);
         }
 
     if (! vars->use_expand()->name().empty())
         if ((_imp->dir / vars->use_expand()->name()).exists())
         {
-            _imp->raw_use_expand.reset(new EStringSetKey(shared_from_this(), vars->use_expand()->name(), vars->use_expand()->description(),
+            _imp->keys->raw_use_expand.reset(new EStringSetKey(shared_from_this(), vars->use_expand()->name(), vars->use_expand()->description(),
                         file_contents(_imp->dir / vars->use_expand()->name()), mkt_internal));
-            add_metadata_key(_imp->raw_use_expand);
+            add_metadata_key(_imp->keys->raw_use_expand);
         }
 
     if (! vars->use_expand_hidden()->name().empty())
         if ((_imp->dir / vars->use_expand_hidden()->name()).exists())
         {
-            _imp->raw_use_expand_hidden.reset(new EStringSetKey(shared_from_this(), vars->use_expand_hidden()->name(), vars->use_expand_hidden()->description(),
+            _imp->keys->raw_use_expand_hidden.reset(new EStringSetKey(shared_from_this(), vars->use_expand_hidden()->name(), vars->use_expand_hidden()->description(),
                         file_contents(_imp->dir / vars->use_expand_hidden()->name()), mkt_internal));
-            add_metadata_key(_imp->raw_use_expand_hidden);
+            add_metadata_key(_imp->keys->raw_use_expand_hidden);
         }
 
     if (! vars->license()->name().empty())
         if ((_imp->dir / vars->license()->name()).exists())
         {
-            _imp->license.reset(new ELicenseKey(_imp->environment, shared_from_this(), vars->license(),
+            _imp->keys->license.reset(new ELicenseKey(_imp->environment, shared_from_this(), vars->license(),
                         file_contents(_imp->dir / vars->license()->name()),  mkt_normal));
-            add_metadata_key(_imp->license);
+            add_metadata_key(_imp->keys->license);
         }
 
     if (! vars->provide()->name().empty())
         if ((_imp->dir / vars->provide()->name()).exists())
         {
-            _imp->provide.reset(new EProvideKey(_imp->environment, shared_from_this(), vars->provide()->name(), vars->provide()->description(),
+            _imp->keys->provide.reset(new EProvideKey(_imp->environment, shared_from_this(), vars->provide()->name(), vars->provide()->description(),
                         file_contents(_imp->dir / vars->provide()->name()), mkt_internal));
-            add_metadata_key(_imp->provide);
+            add_metadata_key(_imp->keys->provide);
         }
 
     if (! vars->dependencies()->name().empty())
@@ -313,21 +316,21 @@ EInstalledRepositoryID::need_keys_added() const
                     _imp->environment, shared_from_this(), *eapi()));
             raw_deps->root()->accept(rewriter);
 
-            _imp->raw_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->dependencies()->name(),
+            _imp->keys->raw_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->dependencies()->name(),
                         vars->dependencies()->description(), raw_deps_str, _imp->build_dependencies_labels, mkt_dependencies));
-            add_metadata_key(_imp->raw_dependencies);
+            add_metadata_key(_imp->keys->raw_dependencies);
 
-            _imp->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".DEPEND",
+            _imp->keys->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".DEPEND",
                         vars->dependencies()->description() + " (build)", rewriter.depend(), _imp->build_dependencies_labels, mkt_internal));
-            add_metadata_key(_imp->build_dependencies);
+            add_metadata_key(_imp->keys->build_dependencies);
 
-            _imp->run_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".RDEPEND",
+            _imp->keys->run_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".RDEPEND",
                         vars->dependencies()->description() + " (run)", rewriter.rdepend(), _imp->build_dependencies_labels, mkt_internal));
-            add_metadata_key(_imp->run_dependencies);
+            add_metadata_key(_imp->keys->run_dependencies);
 
-            _imp->post_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".PDEPEND",
+            _imp->keys->post_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".PDEPEND",
                         vars->dependencies()->description() + " (post)", rewriter.pdepend(), _imp->build_dependencies_labels, mkt_internal));
-            add_metadata_key(_imp->post_dependencies);
+            add_metadata_key(_imp->keys->post_dependencies);
         }
     }
     else
@@ -335,61 +338,61 @@ EInstalledRepositoryID::need_keys_added() const
         if (! vars->build_depend()->name().empty())
             if ((_imp->dir / vars->build_depend()->name()).exists())
             {
-                _imp->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->build_depend()->name(),
+                _imp->keys->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->build_depend()->name(),
                             vars->build_depend()->description(), file_contents(_imp->dir / vars->build_depend()->name()),
                             _imp->build_dependencies_labels, mkt_dependencies));
-                add_metadata_key(_imp->build_dependencies);
+                add_metadata_key(_imp->keys->build_dependencies);
             }
 
         if (! vars->run_depend()->name().empty())
             if ((_imp->dir / vars->run_depend()->name()).exists())
             {
-                _imp->run_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->run_depend()->name(),
+                _imp->keys->run_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->run_depend()->name(),
                             vars->run_depend()->description(), file_contents(_imp->dir / vars->run_depend()->name()),
                             _imp->run_dependencies_labels, mkt_dependencies));
-                add_metadata_key(_imp->run_dependencies);
+                add_metadata_key(_imp->keys->run_dependencies);
             }
 
         if (! vars->pdepend()->name().empty())
             if ((_imp->dir / vars->pdepend()->name()).exists())
             {
-                _imp->post_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->pdepend()->name(),
+                _imp->keys->post_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->pdepend()->name(),
                             vars->pdepend()->description(), file_contents(_imp->dir / vars->pdepend()->name()),
                             _imp->post_dependencies_labels, mkt_dependencies));
-                add_metadata_key(_imp->post_dependencies);
+                add_metadata_key(_imp->keys->post_dependencies);
             }
     }
 
     if (! vars->restrictions()->name().empty())
         if ((_imp->dir / vars->restrictions()->name()).exists())
         {
-            _imp->restrictions.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), vars->restrictions(),
+            _imp->keys->restrictions.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), vars->restrictions(),
                         file_contents(_imp->dir / vars->restrictions()->name()), mkt_internal));
-            add_metadata_key(_imp->restrictions);
+            add_metadata_key(_imp->keys->restrictions);
         }
 
     if (! vars->properties()->name().empty())
         if ((_imp->dir / vars->properties()->name()).exists())
         {
-            _imp->properties.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), vars->properties(),
+            _imp->keys->properties.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), vars->properties(),
                         file_contents(_imp->dir / vars->properties()->name()), mkt_internal));
-            add_metadata_key(_imp->properties);
+            add_metadata_key(_imp->keys->properties);
         }
 
     if (! vars->src_uri()->name().empty())
         if ((_imp->dir / vars->src_uri()->name()).exists())
         {
-            _imp->src_uri.reset(new EFetchableURIKey(_imp->environment, shared_from_this(), vars->src_uri(),
+            _imp->keys->src_uri.reset(new EFetchableURIKey(_imp->environment, shared_from_this(), vars->src_uri(),
                         file_contents(_imp->dir / vars->src_uri()->name()), mkt_dependencies));
-            add_metadata_key(_imp->src_uri);
+            add_metadata_key(_imp->keys->src_uri);
         }
 
     if (! vars->short_description()->name().empty())
         if ((_imp->dir / vars->short_description()->name()).exists())
         {
-            _imp->short_description.reset(new LiteralMetadataValueKey<std::string> (vars->short_description()->name(),
+            _imp->keys->short_description.reset(new LiteralMetadataValueKey<std::string> (vars->short_description()->name(),
                         vars->short_description()->description(), mkt_significant, file_contents(_imp->dir / vars->short_description()->name())));
-            add_metadata_key(_imp->short_description);
+            add_metadata_key(_imp->keys->short_description);
         }
 
     if (! vars->long_description()->name().empty())
@@ -398,9 +401,9 @@ EInstalledRepositoryID::need_keys_added() const
             std::string value(file_contents(_imp->dir / vars->long_description()->name()));
             if (! value.empty())
             {
-                _imp->long_description.reset(new LiteralMetadataValueKey<std::string> (vars->long_description()->name(),
+                _imp->keys->long_description.reset(new LiteralMetadataValueKey<std::string> (vars->long_description()->name(),
                             vars->long_description()->description(), mkt_significant, value));
-                add_metadata_key(_imp->long_description);
+                add_metadata_key(_imp->keys->long_description);
             }
         }
 
@@ -410,10 +413,10 @@ EInstalledRepositoryID::need_keys_added() const
             std::string value(file_contents(_imp->dir / vars->upstream_changelog()->name()));
             if (! value.empty())
             {
-                _imp->upstream_changelog.reset(new ESimpleURIKey(_imp->environment, shared_from_this(),
+                _imp->keys->upstream_changelog.reset(new ESimpleURIKey(_imp->environment, shared_from_this(),
                             vars->upstream_changelog()->name(),
                             vars->upstream_changelog()->description(), value, mkt_normal));
-                add_metadata_key(_imp->upstream_changelog);
+                add_metadata_key(_imp->keys->upstream_changelog);
             }
         }
 
@@ -423,10 +426,10 @@ EInstalledRepositoryID::need_keys_added() const
             std::string value(file_contents(_imp->dir / vars->upstream_release_notes()->name()));
             if (! value.empty())
             {
-                _imp->upstream_release_notes.reset(new ESimpleURIKey(_imp->environment, shared_from_this(),
+                _imp->keys->upstream_release_notes.reset(new ESimpleURIKey(_imp->environment, shared_from_this(),
                             vars->upstream_release_notes()->name(),
                             vars->upstream_release_notes()->description(), value, mkt_normal));
-                add_metadata_key(_imp->upstream_release_notes);
+                add_metadata_key(_imp->keys->upstream_release_notes);
             }
         }
 
@@ -436,10 +439,10 @@ EInstalledRepositoryID::need_keys_added() const
             std::string value(file_contents(_imp->dir / vars->upstream_documentation()->name()));
             if (! value.empty())
             {
-                _imp->upstream_documentation.reset(new ESimpleURIKey(_imp->environment, shared_from_this(),
+                _imp->keys->upstream_documentation.reset(new ESimpleURIKey(_imp->environment, shared_from_this(),
                             vars->upstream_documentation()->name(),
                             vars->upstream_documentation()->description(), value, mkt_normal));
-                add_metadata_key(_imp->upstream_documentation);
+                add_metadata_key(_imp->keys->upstream_documentation);
             }
         }
 
@@ -449,9 +452,9 @@ EInstalledRepositoryID::need_keys_added() const
             std::string value(file_contents(_imp->dir / vars->bugs_to()->name()));
             if (! value.empty())
             {
-                _imp->bugs_to.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(),
+                _imp->keys->bugs_to.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(),
                             vars->bugs_to(), value, mkt_normal));
-                add_metadata_key(_imp->bugs_to);
+                add_metadata_key(_imp->keys->bugs_to);
             }
         }
 
@@ -461,37 +464,37 @@ EInstalledRepositoryID::need_keys_added() const
             std::string value(file_contents(_imp->dir / vars->remote_ids()->name()));
             if (! value.empty())
             {
-                _imp->remote_ids.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(),
+                _imp->keys->remote_ids.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(),
                             vars->remote_ids(), value, mkt_internal));
-                add_metadata_key(_imp->remote_ids);
+                add_metadata_key(_imp->keys->remote_ids);
             }
         }
 
     if (! vars->homepage()->name().empty())
         if ((_imp->dir / vars->homepage()->name()).exists())
         {
-            _imp->homepage.reset(new ESimpleURIKey(_imp->environment, shared_from_this(), vars->homepage()->name(),
+            _imp->keys->homepage.reset(new ESimpleURIKey(_imp->environment, shared_from_this(), vars->homepage()->name(),
                         vars->homepage()->description(),
                         file_contents(_imp->dir / vars->homepage()->name()), mkt_significant));
-            add_metadata_key(_imp->homepage);
+            add_metadata_key(_imp->keys->homepage);
         }
 
-    _imp->contents = make_contents_key();
-    add_metadata_key(_imp->contents);
+    _imp->keys->contents = make_contents_key();
+    add_metadata_key(_imp->keys->contents);
 
-    _imp->installed_time.reset(new EMTimeKey(shared_from_this(), "INSTALLED_TIME", "Installed time",
+    _imp->keys->installed_time.reset(new EMTimeKey(shared_from_this(), "INSTALLED_TIME", "Installed time",
                 _imp->dir / contents_filename(), mkt_normal));
-    add_metadata_key(_imp->installed_time);
+    add_metadata_key(_imp->keys->installed_time);
 
-    if (_imp->eapi->supported())
-        _imp->choices.reset(new EChoicesKey(_imp->environment, shared_from_this(), "PALUDIS_CHOICES",
-                    _imp->eapi->supported()->ebuild_environment_variables()->description_choices(),
+    if (_imp->keys->eapi->supported())
+        _imp->keys->choices.reset(new EChoicesKey(_imp->environment, shared_from_this(), "PALUDIS_CHOICES",
+                    _imp->keys->eapi->supported()->ebuild_environment_variables()->description_choices(),
                     mkt_normal, make_null_shared_ptr(), make_null_shared_ptr()));
     else
-        _imp->choices.reset(new EChoicesKey(_imp->environment, shared_from_this(), "PALUDIS_CHOICES", "Choices", mkt_normal,
+        _imp->keys->choices.reset(new EChoicesKey(_imp->environment, shared_from_this(), "PALUDIS_CHOICES", "Choices", mkt_normal,
                     make_null_shared_ptr(), make_null_shared_ptr()));
 
-    add_metadata_key(_imp->choices);
+    add_metadata_key(_imp->keys->choices);
 
     std::tr1::shared_ptr<Set<std::string> > from_repositories_value(new Set<std::string>);
     if ((_imp->dir / "REPOSITORY").exists())
@@ -502,65 +505,65 @@ EInstalledRepositoryID::need_keys_added() const
         from_repositories_value->insert(file_contents(_imp->dir / "BINARY_REPOSITORY"));
     if (! from_repositories_value->empty())
     {
-        _imp->from_repositories.reset(new LiteralMetadataStringSetKey("REPOSITORIES",
+        _imp->keys->from_repositories.reset(new LiteralMetadataStringSetKey("REPOSITORIES",
                     "From repositories", mkt_normal, from_repositories_value));
-        add_metadata_key(_imp->from_repositories);
+        add_metadata_key(_imp->keys->from_repositories);
     }
 
     if ((_imp->dir / "ASFLAGS").exists())
     {
-        _imp->asflags.reset(new LiteralMetadataValueKey<std::string> ("ASFLAGS", "ASFLAGS",
+        _imp->keys->asflags.reset(new LiteralMetadataValueKey<std::string> ("ASFLAGS", "ASFLAGS",
                     mkt_internal, file_contents(_imp->dir / "ASFLAGS")));
-        add_metadata_key(_imp->asflags);
+        add_metadata_key(_imp->keys->asflags);
     }
 
     if ((_imp->dir / "CBUILD").exists())
     {
-        _imp->cbuild.reset(new LiteralMetadataValueKey<std::string> ("CBUILD", "CBUILD",
+        _imp->keys->cbuild.reset(new LiteralMetadataValueKey<std::string> ("CBUILD", "CBUILD",
                     mkt_internal, file_contents(_imp->dir / "CBUILD")));
-        add_metadata_key(_imp->cbuild);
+        add_metadata_key(_imp->keys->cbuild);
     }
 
     if ((_imp->dir / "CFLAGS").exists())
     {
-        _imp->cflags.reset(new LiteralMetadataValueKey<std::string> ("CFLAGS", "CFLAGS",
+        _imp->keys->cflags.reset(new LiteralMetadataValueKey<std::string> ("CFLAGS", "CFLAGS",
                     mkt_internal, file_contents(_imp->dir / "CFLAGS")));
-        add_metadata_key(_imp->cflags);
+        add_metadata_key(_imp->keys->cflags);
     }
 
     if ((_imp->dir / "CHOST").exists())
     {
-        _imp->chost.reset(new LiteralMetadataValueKey<std::string> ("CHOST", "CHOST",
+        _imp->keys->chost.reset(new LiteralMetadataValueKey<std::string> ("CHOST", "CHOST",
                     mkt_internal, file_contents(_imp->dir / "CHOST")));
-        add_metadata_key(_imp->chost);
+        add_metadata_key(_imp->keys->chost);
     }
 
     if ((_imp->dir / "CXXFLAGS").exists())
     {
-        _imp->cxxflags.reset(new LiteralMetadataValueKey<std::string> ("CXXFLAGS", "CXXFLAGS",
+        _imp->keys->cxxflags.reset(new LiteralMetadataValueKey<std::string> ("CXXFLAGS", "CXXFLAGS",
                     mkt_internal, file_contents(_imp->dir / "CXXFLAGS")));
-        add_metadata_key(_imp->cxxflags);
+        add_metadata_key(_imp->keys->cxxflags);
     }
 
     if ((_imp->dir / "LDFLAGS").exists())
     {
-        _imp->ldflags.reset(new LiteralMetadataValueKey<std::string> ("LDFLAGS", "LDFLAGS",
+        _imp->keys->ldflags.reset(new LiteralMetadataValueKey<std::string> ("LDFLAGS", "LDFLAGS",
                     mkt_internal, file_contents(_imp->dir / "LDFLAGS")));
-        add_metadata_key(_imp->ldflags);
+        add_metadata_key(_imp->keys->ldflags);
     }
 
     if ((_imp->dir / "PKGMANAGER").exists())
     {
-        _imp->pkgmanager.reset(new LiteralMetadataValueKey<std::string> ("PKGMANAGER", "Installed using",
+        _imp->keys->pkgmanager.reset(new LiteralMetadataValueKey<std::string> ("PKGMANAGER", "Installed using",
                     mkt_normal, file_contents(_imp->dir / "PKGMANAGER")));
-        add_metadata_key(_imp->pkgmanager);
+        add_metadata_key(_imp->keys->pkgmanager);
     }
 
     if ((_imp->dir / "VDB_FORMAT").exists())
     {
-        _imp->vdb_format.reset(new LiteralMetadataValueKey<std::string> ("VDB_FORMAT", "VDB Format",
+        _imp->keys->vdb_format.reset(new LiteralMetadataValueKey<std::string> ("VDB_FORMAT", "VDB Format",
                     mkt_internal, file_contents(_imp->dir / "VDB_FORMAT")));
-        add_metadata_key(_imp->vdb_format);
+        add_metadata_key(_imp->keys->vdb_format);
     }
 }
 
@@ -575,15 +578,15 @@ EInstalledRepositoryID::canonical_form(const PackageIDCanonicalForm f) const
     switch (f)
     {
         case idcf_full:
-            if (_imp->slot)
-                return stringify(name()) + "-" + stringify(version()) + ":" + stringify(_imp->slot->value()) + "::" +
+            if (_imp->keys->slot)
+                return stringify(name()) + "-" + stringify(version()) + ":" + stringify(_imp->keys->slot->value()) + "::" +
                     stringify(repository()->name());
 
             return stringify(name()) + "-" + stringify(version()) + "::" + stringify(repository()->name());
 
         case idcf_no_version:
-            if (_imp->slot)
-                return stringify(name()) + ":" + stringify(_imp->slot->value()) + "::" +
+            if (_imp->keys->slot)
+                return stringify(name()) + ":" + stringify(_imp->keys->slot->value()) + "::" +
                     stringify(repository()->name());
 
             return stringify(name()) + "::" + stringify(repository()->name());
@@ -629,23 +632,23 @@ EInstalledRepositoryID::eapi() const
 {
     Lock l(_imp->mutex);
 
-    if (_imp->eapi)
-        return _imp->eapi;
+    if (_imp->keys->eapi)
+        return _imp->keys->eapi;
 
     Context context("When finding EAPI for '" + canonical_form(idcf_full) + "':");
 
     if ((_imp->dir / "EAPI").exists())
-        _imp->eapi = EAPIData::get_instance()->eapi_from_string(file_contents(_imp->dir / "EAPI"));
+        _imp->keys->eapi = EAPIData::get_instance()->eapi_from_string(file_contents(_imp->dir / "EAPI"));
     else
     {
         Log::get_instance()->message("e.no_eapi", ll_debug, lc_context) << "No EAPI entry in '" << _imp->dir << "', pretending '"
             << _imp->environment->distribution() << "'";
-        _imp->eapi = EAPIData::get_instance()->eapi_from_string(
+        _imp->keys->eapi = EAPIData::get_instance()->eapi_from_string(
                 EExtraDistributionData::get_instance()->data_from_distribution(*DistributionData::get_instance()->distribution_from_string(
                         _imp->environment->distribution()))->default_eapi_when_unspecified());
     }
 
-    return _imp->eapi;
+    return _imp->keys->eapi;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
@@ -664,49 +667,49 @@ const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EInstalledRepositoryID::raw_use_key() const
 {
     need_keys_added();
-    return _imp->raw_use;
+    return _imp->keys->raw_use;
 }
 
 const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EInstalledRepositoryID::raw_iuse_key() const
 {
     need_keys_added();
-    return _imp->raw_iuse;
+    return _imp->keys->raw_iuse;
 }
 
 const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EInstalledRepositoryID::raw_iuse_effective_key() const
 {
     need_keys_added();
-    return _imp->raw_iuse_effective;
+    return _imp->keys->raw_iuse_effective;
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
 EInstalledRepositoryID::raw_myoptions_key() const
 {
     need_keys_added();
-    return _imp->raw_myoptions;
+    return _imp->keys->raw_myoptions;
 }
 
 const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EInstalledRepositoryID::raw_use_expand_key() const
 {
     need_keys_added();
-    return _imp->raw_use_expand;
+    return _imp->keys->raw_use_expand;
 }
 
 const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EInstalledRepositoryID::raw_use_expand_hidden_key() const
 {
     need_keys_added();
-    return _imp->raw_use_expand_hidden;
+    return _imp->keys->raw_use_expand_hidden;
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
 EInstalledRepositoryID::license_key() const
 {
     need_keys_added();
-    return _imp->license;
+    return _imp->keys->license;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<bool> >
@@ -719,49 +722,49 @@ const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EInstalledRepositoryID::inherited_key() const
 {
     need_keys_added();
-    return _imp->inherited;
+    return _imp->keys->inherited;
 }
 
 const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EInstalledRepositoryID::defined_phases_key() const
 {
     need_keys_added();
-    return _imp->defined_phases;
+    return _imp->keys->defined_phases;
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
 EInstalledRepositoryID::provide_key() const
 {
     need_keys_added();
-    return _imp->provide;
+    return _imp->keys->provide;
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EInstalledRepositoryID::dependencies_key() const
 {
     need_keys_added();
-    return _imp->raw_dependencies;
+    return _imp->keys->raw_dependencies;
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EInstalledRepositoryID::build_dependencies_key() const
 {
     need_keys_added();
-    return _imp->build_dependencies;
+    return _imp->keys->build_dependencies;
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EInstalledRepositoryID::run_dependencies_key() const
 {
     need_keys_added();
-    return _imp->run_dependencies;
+    return _imp->keys->run_dependencies;
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EInstalledRepositoryID::post_dependencies_key() const
 {
     need_keys_added();
-    return _imp->post_dependencies;
+    return _imp->keys->post_dependencies;
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
@@ -774,86 +777,86 @@ const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
 EInstalledRepositoryID::restrict_key() const
 {
     need_keys_added();
-    return _imp->restrictions;
+    return _imp->keys->restrictions;
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
 EInstalledRepositoryID::properties_key() const
 {
     need_keys_added();
-    return _imp->properties;
+    return _imp->keys->properties;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >
 EInstalledRepositoryID::choices_key() const
 {
     need_keys_added();
-    return _imp->choices;
+    return _imp->keys->choices;
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 EInstalledRepositoryID::fetches_key() const
 {
     need_keys_added();
-    return _imp->src_uri;
+    return _imp->keys->src_uri;
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 EInstalledRepositoryID::homepage_key() const
 {
     need_keys_added();
-    return _imp->homepage;
+    return _imp->keys->homepage;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 EInstalledRepositoryID::short_description_key() const
 {
     need_keys_added();
-    return _imp->short_description;
+    return _imp->keys->short_description;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 EInstalledRepositoryID::long_description_key() const
 {
     need_keys_added();
-    return _imp->long_description;
+    return _imp->keys->long_description;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >
 EInstalledRepositoryID::contents_key() const
 {
     need_keys_added();
-    return _imp->contents;
+    return _imp->keys->contents;
 }
 
 const std::tr1::shared_ptr<const MetadataTimeKey>
 EInstalledRepositoryID::installed_time_key() const
 {
     need_keys_added();
-    return _imp->installed_time;
+    return _imp->keys->installed_time;
 }
 
 const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EInstalledRepositoryID::from_repositories_key() const
 {
     need_keys_added();
-    return _imp->from_repositories;
+    return _imp->keys->from_repositories;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 EInstalledRepositoryID::fs_location_key() const
 {
     // Avoid loading whole metadata
-    if (! _imp->fs_location)
+    if (! _imp->keys->fs_location)
     {
         Lock l(_imp->mutex);
 
-        _imp->fs_location.reset(new LiteralMetadataValueKey<FSEntry> (fs_location_raw_name(),
+        _imp->keys->fs_location.reset(new LiteralMetadataValueKey<FSEntry> (fs_location_raw_name(),
                     fs_location_human_name(), mkt_internal, _imp->dir));
-        add_metadata_key(_imp->fs_location);
+        add_metadata_key(_imp->keys->fs_location);
     }
 
-    return _imp->fs_location;
+    return _imp->keys->fs_location;
 }
 
 bool
@@ -992,7 +995,7 @@ const std::tr1::shared_ptr<const MetadataValueKey<SlotName> >
 EInstalledRepositoryID::slot_key() const
 {
     need_keys_added();
-    return _imp->slot;
+    return _imp->keys->slot;
 }
 
 std::tr1::shared_ptr<ChoiceValue>
@@ -1046,5 +1049,14 @@ EInstalledRepositoryID::add_build_options(const std::tr1::shared_ptr<Choices> & 
 void
 EInstalledRepositoryID::purge_invalid_cache() const
 {
+}
+
+void
+EInstalledRepositoryID::can_drop_in_memory_cache() const
+{
+    Lock l(_imp->mutex);
+
+    clear_metadata_keys();
+    _imp->keys.reset();
 }
 
