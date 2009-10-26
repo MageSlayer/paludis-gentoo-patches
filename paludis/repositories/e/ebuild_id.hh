@@ -159,6 +159,7 @@ namespace paludis
                 virtual void add_build_options(const std::tr1::shared_ptr<Choices> &) const;
 
                 virtual void purge_invalid_cache() const;
+                virtual void can_drop_in_memory_cache() const;
         };
     }
 }

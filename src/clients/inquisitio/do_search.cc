@@ -249,9 +249,15 @@ namespace
                     {
                         if (invert_match ^ m(**i))
                             return *i;
-                        else if (! all_versions)
-                            return std::tr1::shared_ptr<const PackageID>();
+                        else
+                        {
+                            (*i)->can_drop_in_memory_cache();
+                            if (! all_versions)
+                                return std::tr1::shared_ptr<const PackageID>();
+                        }
                     }
+                    else
+                        (*i)->can_drop_in_memory_cache();
                 }
                 catch (const InternalError &)
                 {
