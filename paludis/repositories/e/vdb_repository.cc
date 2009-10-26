@@ -1518,7 +1518,7 @@ VDBRepository::perform_updates()
                             (*i)->suggested_dependencies_key(), dep_rewrites);
             }
 
-            if ("yes" != getenv_with_default("PALUDIS_CARRY_OUT_UPDATES", ""))
+            if ((rewrite_done) && ("yes" != getenv_with_default("PALUDIS_CARRY_OUT_UPDATES", "")))
             {
                 std::cout << "Some installed packages have dependencies that need rewriting for package" << std::endl;
                 std::cout << "moves. See the Paludis FAQ for how to proceed." << std::endl;
