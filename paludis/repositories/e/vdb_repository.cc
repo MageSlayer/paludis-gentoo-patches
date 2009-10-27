@@ -1285,6 +1285,14 @@ VDBRepository::perform_updates()
     typedef std::list<std::pair<std::tr1::shared_ptr<const PackageID>, SlotName> > SlotMoves;
     SlotMoves slot_moves;
 
+    std::time_t ignore_updates_before(0);
+    FSEntry cache_dir(_imp->params.location() / ".cache");
+    FSEntry cache_file(cache_dir / "updates_time_cache");
+    if (cache_file.is_regular_file_or_symlink_to_regular_file())
+        ignore_updates_before = cache_file.mtime();
+
+    std::cout << std::endl << "Checking for updates (package moves etc):" << std::endl;
+
     for (PackageDatabase::RepositoryConstIterator r(_imp->params.environment()->package_database()->begin_repositories()),
             r_end(_imp->params.environment()->package_database()->end_repositories()) ;
             r != r_end ; ++r)
@@ -1324,6 +1332,15 @@ VDBRepository::perform_updates()
 
                 if (! d->is_regular_file_or_symlink_to_regular_file())
                     continue;
+
+                if (d->mtime() <= ignore_updates_before)
+                {
+                    Log::get_instance()->message("e.vdb.updates.ignoring", ll_debug, lc_context) <<
+                        "Ignoring " << *d << " because it hasn't changed";
+                    continue;
+                }
+
+                std::cout << "    Considering " << *d << std::endl;
 
                 LineConfigFile f(*d, LineConfigFileOptions());
 
@@ -1400,6 +1417,7 @@ VDBRepository::perform_updates()
         }
     }
 
+    bool failed(false);
     try
     {
         std::cout << std::endl;
@@ -1408,7 +1426,7 @@ VDBRepository::perform_updates()
         {
             if ("yes" == getenv_with_default("PALUDIS_CARRY_OUT_UPDATES", ""))
             {
-                std::cout << "Performing package moves:" << std::endl;
+                std::cout << std::endl << "Performing moves:" << std::endl;
                 for (Moves::const_iterator m(moves.begin()), m_end(moves.end()) ;
                         m != m_end ; ++m)
                 {
@@ -1426,6 +1444,7 @@ VDBRepository::perform_updates()
                         Log::get_instance()->message("e.vdb.updates.collision", ll_warning, lc_context) <<
                             "I wanted to rename '" << from_dir << "' to '" << to_dir << "' for a package move, but the "
                             "latter already exists. Consult the Paludis FAQ for how to proceed.";
+                        failed = true;
                     }
                     else
                         from_dir.rename(to_dir);
@@ -1433,7 +1452,7 @@ VDBRepository::perform_updates()
             }
             else
             {
-                std::cout << "The following package moves need to be performed:" << std::endl;
+                std::cout << std::endl << "The following package moves need to be performed:" << std::endl;
                 for (Moves::const_iterator m(moves.begin()), m_end(moves.end()) ;
                         m != m_end ; ++m)
                     std::cout << "    " << *m->first << " to " << m->second << std::endl;
@@ -1445,7 +1464,7 @@ VDBRepository::perform_updates()
         {
             if ("yes" == getenv_with_default("PALUDIS_CARRY_OUT_UPDATES", ""))
             {
-                std::cout << "Performing slot moves:" << std::endl;
+                std::cout << std::endl << "Performing slot moves:" << std::endl;
                 for (SlotMoves::const_iterator m(slot_moves.begin()), m_end(slot_moves.end()) ;
                         m != m_end ; ++m)
                 {
@@ -1457,7 +1476,7 @@ VDBRepository::perform_updates()
             }
             else
             {
-                std::cout << "The following slot moves need to be performed:" << std::endl;
+                std::cout << std::endl << "The following slot moves need to be performed:" << std::endl;
                 for (SlotMoves::const_iterator m(slot_moves.begin()), m_end(slot_moves.end()) ;
                         m != m_end ; ++m)
                     std::cout << "    " << *m->first << " to " << m->second << std::endl;
@@ -1484,19 +1503,19 @@ VDBRepository::perform_updates()
                 if (_imp->params.provides_cache() != FSEntry("/var/empty"))
                     if (_imp->params.provides_cache().is_regular_file_or_symlink_to_regular_file())
                     {
-                        std::cout << "Invalidating provides cache following updates" << std::endl;
+                        std::cout << std::endl << "Invalidating provides cache following updates" << std::endl;
                         FSEntry(_imp->params.provides_cache()).unlink();
                         regenerate_provides_cache();
                     }
 
-                std::cout << "Invalidating names cache following updates" << std::endl;
+                std::cout << std::endl << "Invalidating names cache following updates" << std::endl;
                 _imp->names_cache->regenerate_cache();
             }
         }
 
         if (! dep_rewrites.empty())
         {
-            std::cout << "Updating installed package dependencies" << std::endl;
+            std::cout << std::endl << "Updating installed package dependencies" << std::endl;
 
             bool rewrite_done(false);
             const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->params.environment())[selection::AllVersionsSorted(
@@ -1524,6 +1543,13 @@ VDBRepository::perform_updates()
                 std::cout << "moves. See the Paludis FAQ for how to proceed." << std::endl;
                 std::cout << std::endl;
             }
+        }
+
+        if ((! failed) && ("yes" == getenv_with_default("PALUDIS_CARRY_OUT_UPDATES", "")))
+        {
+            cache_dir.mkdir();
+            SafeOFStream cache_file_f(cache_file);
+            cache_file_f << std::endl;
         }
     }
     catch (const Exception & e)
