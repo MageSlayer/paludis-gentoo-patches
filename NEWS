@@ -4,6 +4,18 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.42.0:
+
+    * Qualudis has been removed.
+
+    * Various cached values are now forcibly discarded when they're not going to
+      be used any more, leading to paludis --owner and reconcilio using
+      considerably RAM.
+
+    * Various bug, style and performance fixes related to updates (package moves
+      etc). By default updates will still only be displayed but not carried out;
+      consult the FAQ for details.
+
 0.42.0_alpha1:
 
     * The Git syncer now has various options for dealing with branches.
