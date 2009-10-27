@@ -10,7 +10,7 @@ of every change, see the ChangeLog.
 
     * Various cached values are now forcibly discarded when they're not going to
       be used any more, leading to paludis --owner and reconcilio using
-      considerably RAM.
+      considerably less RAM.
 
     * Various bug, style and performance fixes related to updates (package moves
       etc). By default updates will still only be displayed but not carried out;
