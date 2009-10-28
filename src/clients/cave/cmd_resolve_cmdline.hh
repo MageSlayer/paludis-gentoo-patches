@@ -98,7 +98,6 @@ namespace paludis
 
             args::ArgsGroup g_dump_options;
             args::SwitchArg a_dump;
-            args::SwitchArg a_dump_dependencies;
             args::SwitchArg a_dump_restarts;
         };
 

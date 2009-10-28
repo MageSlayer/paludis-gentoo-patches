@@ -225,7 +225,7 @@ namespace
     void dump(
             const std::tr1::shared_ptr<Environment> &,
             const std::tr1::shared_ptr<Resolver> & resolver,
-            const ResolveCommandLine & cmdline)
+            const ResolveCommandLine &)
     {
         std::cout << "Dumping resolutions by QPN:S:" << std::endl << std::endl;
 
@@ -235,11 +235,6 @@ namespace
         {
             std::cout << c->first << std::endl;
             std::cout << "  = " << *c->second << std::endl;
-            if (cmdline.resolution_options.a_dump_dependencies.specified() && c->second->sanitised_dependencies())
-                for (SanitisedDependencies::ConstIterator d(c->second->sanitised_dependencies()->begin()),
-                        d_end(c->second->sanitised_dependencies()->end()) ;
-                        d != d_end ; ++d)
-                    std::cout << "  -> " << *d << std::endl;
         }
 
         std::cout << std::endl;

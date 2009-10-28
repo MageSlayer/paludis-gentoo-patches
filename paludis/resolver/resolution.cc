@@ -60,8 +60,7 @@ Resolution::deserialise(Deserialisation & d)
                     value_for<n::arrows>(arrows),
                     value_for<n::constraints>(v.member<std::tr1::shared_ptr<Constraints> >("constraints")),
                     value_for<n::decision>(v.member<std::tr1::shared_ptr<Decision> >("decision")),
-                    value_for<n::resolvent>(v.member<Resolvent>("resolvent")),
-                    value_for<n::sanitised_dependencies>(make_null_shared_ptr())
+                    value_for<n::resolvent>(v.member<Resolvent>("resolvent"))
                     )));
 }
 

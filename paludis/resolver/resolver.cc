@@ -365,8 +365,7 @@ Resolver::_create_resolution_for_resolvent(const Resolvent & r) const
                     value_for<n::arrows>(make_shared_ptr(new ArrowSequence)),
                     value_for<n::constraints>(_initial_constraints_for(r)),
                     value_for<n::decision>(make_null_shared_ptr()),
-                    value_for<n::resolvent>(r),
-                    value_for<n::sanitised_dependencies>(make_null_shared_ptr())
+                    value_for<n::resolvent>(r)
                     )));
 }
 
@@ -767,7 +766,6 @@ Resolver::_add_dependencies_if_necessary(
 
     const std::tr1::shared_ptr<SanitisedDependencies> deps(new SanitisedDependencies);
     deps->populate(*this, our_resolvent, package_id);
-    our_resolution->sanitised_dependencies() = deps;
 
     for (SanitisedDependencies::ConstIterator s(deps->begin()), s_end(deps->end()) ;
             s != s_end ; ++s)
