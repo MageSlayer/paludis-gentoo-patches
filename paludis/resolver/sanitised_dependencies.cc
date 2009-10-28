@@ -20,12 +20,14 @@
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/resolvent.hh>
+#include <paludis/resolver/spec_rewriter.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/make_shared_copy.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/slot_requirement.hh>
 #include <paludis/metadata_key.hh>
@@ -124,9 +126,10 @@ namespace
         {
             seen_any = true;
 
-            std::tr1::shared_ptr<DependencySpecTree> if_rewritten(resolver.rewrite_if_special(spec, our_resolvent));
+            const std::tr1::shared_ptr<const RewrittenSpec> if_rewritten(resolver.rewrite_if_special(spec,
+                        make_shared_copy(our_resolvent)));
             if (if_rewritten)
-                if_rewritten->root()->accept(*this);
+                if_rewritten->as_spec_tree()->root()->accept(*this);
             else
             {
                 if (active_sublist)
@@ -313,9 +316,10 @@ namespace
 
         void add(const SanitisedDependency & dep)
         {
-            std::tr1::shared_ptr<DependencySpecTree> if_rewritten(resolver.rewrite_if_special(dep.spec(), our_resolvent));
+            const std::tr1::shared_ptr<const RewrittenSpec> if_rewritten(resolver.rewrite_if_special(dep.spec(),
+                        make_shared_copy(our_resolvent)));
             if (if_rewritten)
-                if_rewritten->root()->accept(*this);
+                if_rewritten->as_spec_tree()->root()->accept(*this);
             else
                 sanitised_dependencies.add(dep);
         }

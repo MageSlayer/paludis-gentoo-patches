@@ -97,5 +97,37 @@ namespace test_cases
             }
         }
     } test_virtuals;
+
+    struct TestVirtualsTarget : ResolverVirtualsTestCase
+    {
+        TestVirtualsTarget() : ResolverVirtualsTestCase("virtuals target") { }
+
+        void run()
+        {
+            std::tr1::shared_ptr<const ResolutionLists> resolutions(get_resolutions("virtual/virtual-target"));
+
+            {
+                TestMessageSuffix s("errors");
+                check_resolution_list(resolutions->errors(), ResolutionListChecks()
+                        .finished()
+                        );
+            }
+
+            {
+                TestMessageSuffix s("ordered");
+                check_resolution_list(resolutions->ordered(), ResolutionListChecks()
+                        .qpn(QualifiedPackageName("cat/real-target"))
+                        .finished()
+                        );
+            }
+
+            {
+                TestMessageSuffix s("untaken");
+                check_resolution_list(resolutions->untaken(), ResolutionListChecks()
+                        .finished()
+                        );
+            }
+        }
+    } test_virtuals_target;
 }
 

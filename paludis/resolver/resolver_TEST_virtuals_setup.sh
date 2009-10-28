@@ -18,11 +18,20 @@ ARCH=test
 END
 cat <<'END' > profiles/profile/virtuals
 virtual/foo cat/foo-a
+virtual/virtual-target cat/real-target
 END
 
 # common providers
 
 echo 'cat' >> profiles/categories
+
+mkdir -p 'cat/real-target'
+cat <<END > cat/real-target/real-target-1.ebuild
+DESCRIPTION="dep"
+KEYWORDS="test"
+SLOT="0"
+PROVIDE="virtual/virtual-target"
+END
 
 mkdir -p 'cat/foo-a'
 cat <<END > cat/foo-a/foo-a-1.ebuild

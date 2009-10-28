@@ -33,6 +33,7 @@
 #include <paludis/resolver/destination_types-fwd.hh>
 #include <paludis/resolver/destination-fwd.hh>
 #include <paludis/resolver/unsuitable_candidates-fwd.hh>
+#include <paludis/resolver/spec_rewriter-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -189,8 +190,6 @@ namespace paludis
                         const std::tr1::shared_ptr<const Resolution> &,
                         const std::tr1::shared_ptr<const PackageID> &) const;
 
-                void _need_rewrites() const;
-
             public:
                 Resolver(
                         const Environment * const,
@@ -216,8 +215,8 @@ namespace paludis
 
                 int find_any_score(const Resolvent &, const SanitisedDependency &) const;
 
-                const std::tr1::shared_ptr<DependencySpecTree> rewrite_if_special(const PackageOrBlockDepSpec &,
-                        const Resolvent & from) const;
+                const std::tr1::shared_ptr<const RewrittenSpec> rewrite_if_special(const PackageOrBlockDepSpec &,
+                        const std::tr1::shared_ptr<const Resolvent> & maybe_from) const;
         };
     }
 }

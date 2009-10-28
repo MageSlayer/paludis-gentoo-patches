@@ -30,6 +30,7 @@
 #include <paludis/resolver/resolutions.hh>
 #include <paludis/resolver/destination.hh>
 #include <paludis/resolver/unsuitable_candidates.hh>
+#include <paludis/resolver/spec_rewriter.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/log.hh>
@@ -68,7 +69,6 @@ using namespace paludis;
 using namespace paludis::resolver;
 
 typedef std::map<Resolvent, std::tr1::shared_ptr<Resolution> > ResolutionsByResolventMap;
-typedef std::map<QualifiedPackageName, std::set<QualifiedPackageName> > Rewrites;
 
 namespace paludis
 {
@@ -77,19 +77,16 @@ namespace paludis
     {
         const Environment * const env;
         const ResolverFunctions fns;
+        SpecRewriter rewriter;
 
         ResolutionsByResolventMap resolutions_by_resolvent;
-
-        mutable Mutex rewrites_mutex;
-        mutable Rewrites rewrites;
-        mutable bool has_rewrites;
 
         std::tr1::shared_ptr<ResolutionLists> resolution_lists;
 
         Implementation(const Environment * const e, const ResolverFunctions & f) :
             env(e),
             fns(f),
-            has_rewrites(false),
+            rewriter(env),
             resolution_lists(new ResolutionLists(make_named_values<ResolutionLists>(
                             value_for<n::all>(new Resolutions),
                             value_for<n::errors>(new Resolutions),
@@ -303,22 +300,35 @@ Resolver::add_target_with_reason(const PackageDepSpec & spec, const std::tr1::sh
 
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-    std::tr1::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(spec, reason));
-    if (resolvents->empty())
-        resolvents = _get_error_resolvents_for(spec, reason);
-
-    for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
-            r != r_end ; ++r)
+    const std::tr1::shared_ptr<const RewrittenSpec> if_rewritten(rewrite_if_special(spec, make_null_shared_ptr()));
+    if (if_rewritten)
     {
-        Context context_2("When adding constraints from target '" + stringify(spec) + "' to resolvent '"
-                + stringify(*r) + "':");
+        for (Sequence<PackageOrBlockDepSpec>::ConstIterator i(if_rewritten->specs()->begin()), i_end(if_rewritten->specs()->end()) ;
+                i != i_end ; ++i)
+            if (i->if_package())
+                add_target_with_reason(*i->if_package(), reason);
+            else
+                throw InternalError(PALUDIS_HERE, "resolver bug: rewritten " + stringify(spec) + " includes " + stringify(*i));
+    }
+    else
+    {
+        std::tr1::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(spec, reason));
+        if (resolvents->empty())
+            resolvents = _get_error_resolvents_for(spec, reason);
 
-        const std::tr1::shared_ptr<Resolution> dep_resolution(_resolution_for_resolvent(*r, true));
-        const std::tr1::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_target(*r, spec, reason));
+        for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
+                r != r_end ; ++r)
+        {
+            Context context_2("When adding constraints from target '" + stringify(spec) + "' to resolvent '"
+                    + stringify(*r) + "':");
 
-        for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
-                c != c_end ; ++c)
-            _apply_resolution_constraint(*r, dep_resolution, *c);
+            const std::tr1::shared_ptr<Resolution> dep_resolution(_resolution_for_resolvent(*r, true));
+            const std::tr1::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_target(*r, spec, reason));
+
+            for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
+                    c != c_end ; ++c)
+                _apply_resolution_constraint(*r, dep_resolution, *c);
+        }
     }
 }
 
@@ -1737,58 +1747,6 @@ Resolver::resolution_lists() const
     return _imp->resolution_lists;
 }
 
-const std::tr1::shared_ptr<DependencySpecTree>
-Resolver::rewrite_if_special(const PackageOrBlockDepSpec & s, const Resolvent & our_resolvent) const
-{
-    if (s.if_package() && s.if_package()->package_ptr())
-    {
-        if (s.if_package()->package_ptr()->category() != CategoryNamePart("virtual"))
-            return make_null_shared_ptr();
-        _need_rewrites();
-
-        Rewrites::const_iterator r(_imp->rewrites.find(*s.if_package()->package_ptr()));
-        if (r == _imp->rewrites.end())
-            return make_null_shared_ptr();
-
-        std::tr1::shared_ptr<DependencySpecTree> result(new DependencySpecTree(make_shared_ptr(new AllDepSpec)));
-        std::tr1::shared_ptr<DependencySpecTree::NodeType<AnyDepSpec>::Type> any(result->root()->append(make_shared_ptr(new AnyDepSpec)));
-        for (std::set<QualifiedPackageName>::const_iterator n(r->second.begin()), n_end(r->second.end()) ;
-                n != n_end ; ++n)
-            any->append(make_shared_ptr(new PackageDepSpec(PartiallyMadePackageDepSpec(*s.if_package()).package(*n))));
-
-        return result;
-    }
-    else if (s.if_block() && s.if_block()->blocking().package_ptr())
-    {
-        if (s.if_block()->blocking().package_ptr()->category() != CategoryNamePart("virtual"))
-            return make_null_shared_ptr();
-        _need_rewrites();
-
-        Rewrites::const_iterator r(_imp->rewrites.find(*s.if_block()->blocking().package_ptr()));
-        if (r == _imp->rewrites.end())
-            return make_null_shared_ptr();
-
-        std::tr1::shared_ptr<DependencySpecTree> result(new DependencySpecTree(make_shared_ptr(new AllDepSpec)));
-        for (std::set<QualifiedPackageName>::const_iterator n(r->second.begin()), n_end(r->second.end()) ;
-                n != n_end ; ++n)
-        {
-            if (*n == our_resolvent.package())
-                continue;
-
-            PackageDepSpec spec(PartiallyMadePackageDepSpec(s.if_block()->blocking()).package(*n));
-            std::string prefix(s.if_block()->blocking().text());
-            std::string::size_type p(prefix.find_first_not_of('!'));
-            if (std::string::npos != p)
-                prefix.erase(p);
-            result->root()->append(make_shared_ptr(new BlockDepSpec(prefix + stringify(spec), spec, s.if_block()->strong())));
-        }
-
-        return result;
-    }
-    else
-        return make_null_shared_ptr();
-}
-
 const std::tr1::shared_ptr<const Constraints>
 Resolver::_get_unmatching_constraints(
         const Resolvent & resolvent,
@@ -1813,28 +1771,12 @@ Resolver::_get_unmatching_constraints(
     return result;
 }
 
-void
-Resolver::_need_rewrites() const
+const std::tr1::shared_ptr<const RewrittenSpec>
+Resolver::rewrite_if_special(
+        const PackageOrBlockDepSpec & spec,
+        const std::tr1::shared_ptr<const Resolvent> & maybe_from) const
 {
-#ifdef ENABLE_VIRTUALS_REPOSITORY
-    Lock lock(_imp->rewrites_mutex);
-    if (_imp->has_rewrites)
-        return;
-    _imp->has_rewrites = true;
-
-    const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::AllVersionsSorted(
-                generator::InRepository(RepositoryName("virtuals")) +
-                generator::InRepository(RepositoryName("installed-virtuals"))
-                )]);
-    for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-            i != i_end ; ++i)
-    {
-        if (! ((*i)->virtual_for_key()))
-            throw InternalError(PALUDIS_HERE, "huh? " + stringify(**i) + " has no virtual_for_key");
-        _imp->rewrites.insert(std::make_pair((*i)->name(), std::set<QualifiedPackageName>())).first->second.insert(
-                (*i)->virtual_for_key()->value()->name());
-    }
-#endif
+    return _imp->rewriter.rewrite_if_special(spec, maybe_from);
 }
 
 template class WrappedForwardIterator<Resolver::ResolutionsByResolventConstIteratorTag,
