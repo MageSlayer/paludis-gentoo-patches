@@ -96,8 +96,11 @@ paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, Partial
     if (std::string::npos == ((use_group_p = s.rfind('['))))
         return false;
 
-    if (s.at(s.length() - 1) != ']')
+    if (std::string::npos == s.rfind(']'))
         throw PackageDepSpecError("Mismatched []");
+
+    if (s.at(s.length() - 1) != ']')
+        throw PackageDepSpecError("Trailing garbage after [] block");
 
     std::string flag(s.substr(use_group_p + 1));
     if (flag.length() < 2)
