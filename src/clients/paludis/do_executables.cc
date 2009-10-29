@@ -42,24 +42,33 @@ namespace
 
             bool is_file_in_path(FSEntry file)
             {
-                if (file.exists())
+                try
                 {
-                    if (file.has_permission(fs_ug_others, fs_perm_execute))
+                    if (file.exists())
                     {
-                        FSEntry dirname(file.dirname());
-                        for (std::list<std::string>::const_iterator it(_paths.begin()),
-                                it_end(_paths.end()); it_end != it; ++it)
+                        if (file.has_permission(fs_ug_others, fs_perm_execute))
                         {
-                            if (dirname == *it)
-                                return true;
+                            FSEntry dirname(file.dirname());
+                            for (std::list<std::string>::const_iterator it(_paths.begin()),
+                                    it_end(_paths.end()); it_end != it; ++it)
+                            {
+                                if (dirname == *it)
+                                    return true;
+                            }
                         }
                     }
-                } else {
-                    Context context("When checking permissions on '" + stringify(file) + "'");
-                    Log::get_instance()->message("do_executables.file_does_not_exist", ll_warning, lc_context)
-                        << "'" << stringify(file) << "' is listed as installed but does not exist";
+                    else
+                    {
+                        Context context("When checking permissions on '" + stringify(file) + "'");
+                        Log::get_instance()->message("do_executables.file_does_not_exist", ll_warning, lc_context)
+                            << "'" << stringify(file) << "' is listed as installed but does not exist";
+                    }
+                    return false;
                 }
-                return false;
+                catch (const FSError & e)
+                {
+                    return false;
+                }
             }
 
         public:
