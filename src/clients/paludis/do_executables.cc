@@ -67,6 +67,9 @@ namespace
                 }
                 catch (const FSError & e)
                 {
+                    Context context("When checking if '" + stringify(file) + "' exists:");
+                    Log::get_instance()->message("do_executables.stat_failed", ll_warning, lc_context)
+                        << "Cannot stat '" << stringify(file) << "': '" << e.message() << "' (" << e.what() << ")";
                     return false;
                 }
             }
