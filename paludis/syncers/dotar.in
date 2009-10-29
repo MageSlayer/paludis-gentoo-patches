@@ -12,6 +12,9 @@ done
 LOCAL=
 REMOTE=
 
+unset LANG ${!LC_*}
+export LC_ALL=C
+
 TMPDIR=/var/tmp
 
 FETCHER_OPTIONS=( )

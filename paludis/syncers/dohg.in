@@ -12,6 +12,9 @@ done
 LOCAL=
 REMOTE=
 
+unset LANG ${!LC_*}
+export LC_ALL=C
+
 HG_OPTIONS=( )
 HG_CLONE_OPTIONS=( )
 HG_PULL_OPTIONS=( )

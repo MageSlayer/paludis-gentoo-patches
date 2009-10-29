@@ -12,6 +12,9 @@ done
 LOCAL=
 REMOTE=
 
+unset LANG ${!LC_*}
+export LC_ALL=C
+
 GIT_CLONE_OPTIONS=( )
 GIT_PULL_OPTIONS=( )
 GIT_FETCH_OPTIONS=( )
