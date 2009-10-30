@@ -210,6 +210,8 @@ EbuildCommand::operator() ()
                     params.package_id()->eapi()->supported()->ebuild_options()->bracket_merged_variables_annotation())
             .with_setenv("PALUDIS_MUST_NOT_CHANGE_VARIABLES",
                     params.package_id()->eapi()->supported()->ebuild_options()->must_not_change_variables())
+            .with_setenv("PALUDIS_MUST_NOT_SET_VARS_STARTING_WITH",
+                    params.package_id()->eapi()->supported()->ebuild_options()->must_not_set_vars_starting_with())
             .with_setenv("PALUDIS_MUST_NOT_CHANGE_AFTER_SOURCE_VARIABLES",
                     params.package_id()->eapi()->supported()->ebuild_options()->must_not_change_after_source_variables())
             .with_setenv("PALUDIS_RDEPEND_DEFAULTS_TO_DEPEND",

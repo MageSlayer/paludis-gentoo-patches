@@ -377,6 +377,14 @@ ebuild_load_ebuild()
         export ${paludis_s_v}="$(declare -p ${paludis_v} 2>/dev/null)"
     done
 
+    local paludis_p
+    for paludis_p in ${PALUDIS_MUST_NOT_SET_VARS_STARTING_WITH} ; do
+        for paludis_v in $(eval echo \${!${paludis_p}*}) ; do
+            has ${paludis_v} ${PALUDIS_MUST_NOT_CHANGE_AFTER_SOURCE_VARIABLES} ||
+                die "${paludis_v} starts with ${paludis_p} but isn't a known variable name"
+        done
+    done
+
     PALUDIS_DECLARED_FUNCTIONS=$(declare -F | while read paludis_v ; do
         echo -n ${paludis_v#declare -f } " "
     done )
