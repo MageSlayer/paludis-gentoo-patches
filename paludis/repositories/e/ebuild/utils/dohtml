@@ -111,10 +111,15 @@ install_file() {
             pfx=${bn}
             [[ -n ${prefix} ]] && pfx="${prefix}/${pfx}"
             install_file "$(basename "${f}")" "${dn}" "${pfx}"
-            (( ret += $? ))
+            (( ret |= $? ))
         done
     else
-        (( ++ret ))
+        if [[ -d "${path}" ]] ; then
+            echo "!!! Directory '${path}' encountered, but -r not specified"
+        else
+            echo "!!! Don't know what to do with '${path}'"
+        fi
+        (( ret |= 1 ))
     fi
     return ${ret}
 }
