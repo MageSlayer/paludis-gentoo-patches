@@ -135,9 +135,9 @@ namespace paludis
         struct myoptions_number_selected_at_most_one;
         struct myoptions_number_selected_exactly_one;
         struct myoptions_requires;
-        struct must_not_set_vars_starting_with;
         struct must_not_change_after_source_variables;
         struct must_not_change_variables;
+        struct must_not_set_vars_starting_with;
         struct name;
         struct no_s_workdir_fallback;
         struct no_slot_or_repo;
@@ -370,9 +370,9 @@ namespace paludis
             NamedValue<n::ignore_pivot_env_functions, std::string> ignore_pivot_env_functions;
             NamedValue<n::ignore_pivot_env_variables, std::string> ignore_pivot_env_variables;
             NamedValue<n::load_modules, std::string> load_modules;
-            NamedValue<n::must_not_set_vars_starting_with, std::string> must_not_set_vars_starting_with;
             NamedValue<n::must_not_change_after_source_variables, std::string> must_not_change_after_source_variables;
             NamedValue<n::must_not_change_variables, std::string> must_not_change_variables;
+            NamedValue<n::must_not_set_vars_starting_with, std::string> must_not_set_vars_starting_with;
             NamedValue<n::no_s_workdir_fallback, bool> no_s_workdir_fallback;
             NamedValue<n::non_empty_variables, std::string> non_empty_variables;
             NamedValue<n::rdepend_defaults_to_depend, bool> rdepend_defaults_to_depend;
