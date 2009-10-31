@@ -43,7 +43,7 @@ how concepts map on to different language bindings.</p>
     <tr>
         <td>example_command_line</td>
         <td>C++:
-            <a href="cplusplus/example__command__line_8hh-source.html">hh</a>
+            <a href="cplusplus/example__command__line_8hh_source.html">hh</a>
             <a href="cplusplus/example__command__line_8cc.html">cc</a>
         </td>
         <td><a href="ruby/example_command_line.html">Ruby</a></td>
