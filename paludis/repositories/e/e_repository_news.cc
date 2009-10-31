@@ -255,6 +255,9 @@ NewsFile::NewsFile(const FSEntry & our_filename) :
 {
     Context context("When parsing GLEP 42 news file '" + stringify(our_filename) + "':");
 
+    bool seen_content_type(false), seen_title(false), seen_author(false), seen_news_item_format(false), seen_posted(false),
+         seen_revision(false);
+
     LineConfigFile line_file(our_filename, LineConfigFileOptions() + lcfo_disallow_continuations + lcfo_no_skip_blank_lines
             + lcfo_disallow_comments);
     for (LineConfigFile::ConstIterator line(line_file.begin()), line_end(line_file.end()) ;
@@ -266,9 +269,7 @@ NewsFile::NewsFile(const FSEntry & our_filename) :
         std::string::size_type p(line->find(':'));
         if (std::string::npos == p)
         {
-            Log::get_instance()->message("e.news.bad_header", ll_warning, lc_context)
-                << "Bad header line '" << *line << "'";
-            break;
+            throw NewsError(our_filename, "Bad header line '" + *line + "'");
         }
         else
         {
@@ -278,10 +279,58 @@ NewsFile::NewsFile(const FSEntry & our_filename) :
                 _imp->display_if_installed.push_back(v);
             else if (k == "Display-If-Keyword")
                 _imp->display_if_keyword.push_back(v);
-            if (k == "Display-If-Profile")
+            else if (k == "Display-If-Profile")
                 _imp->display_if_profile.push_back(v);
+            else if (k == "Title")
+                seen_title = true;
+            else if (k == "Author")
+                seen_author = true;
+            else if (k == "Translator")
+            {
+            }
+            else if (k == "Content-Type")
+            {
+                if (seen_content_type)
+                    throw NewsError(our_filename, "Multiple Content-Type headers specified");
+
+                seen_content_type = true;
+                if (v != "text/plain")
+                    throw NewsError(our_filename, "Bad Content-Type line '" + *line + "'");
+            }
+            else if (k == "News-Item-Format")
+            {
+                if (seen_news_item_format)
+                    throw NewsError(our_filename, "Multiple News-Item-Format headers specified");
+
+                seen_news_item_format = true;
+                if (0 != v.compare(0, 2, "1.", 0, 2))
+                    throw NewsError(our_filename, "Unsupported News-Item-Format '" + v + "'");
+                if (v != "1.0")
+                    Log::get_instance()->message("e.news.format", ll_warning, lc_context) <<
+                        "News file '" << our_filename << "' uses news item format '" << v << "', but we only support "
+                        "versions up to 1.0.";
+            }
+            else if (k == "Posted")
+                seen_posted = true;
+            else if (k == "Revision")
+                seen_revision = true;
+            else
+                throw NewsError(our_filename, "Invalid header '" + *line + "'");
         }
     }
+
+    if (! seen_news_item_format)
+        throw NewsError(our_filename, "No News-Item-Format header specified");
+    if (! seen_author)
+        throw NewsError(our_filename, "No Author header specified");
+    if (! seen_content_type)
+        throw NewsError(our_filename, "No Content-Type header specified");
+    if (! seen_title)
+        throw NewsError(our_filename, "No Title header specified");
+    if (! seen_posted)
+        throw NewsError(our_filename, "No Posted header specified");
+    if (! seen_revision)
+        throw NewsError(our_filename, "No Revision header specified");
 }
 
 NewsFile::~NewsFile()
@@ -324,4 +373,8 @@ NewsFile::end_display_if_profile() const
     return DisplayIfProfileConstIterator(_imp->display_if_profile.end());
 }
 
+NewsError::NewsError(const FSEntry & f, const std::string & m) throw () :
+    Exception("Error in news file '" + stringify(f) + "': " + m)
+{
+}
 
