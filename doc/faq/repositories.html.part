@@ -13,9 +13,9 @@
     =</code> setting for ebuild format repositories. The special files
 immediately under <code>profiles/</code>, such as
 <code>profiles/thirdpartymirrors</code>, <code>profiles/use.desc</code>
-and <code>profiles/package.mask</code>, are specific to the repository. Not to
-the profiles that are specified below them, and hence the <code>profiles =</code>
-key has no effect upon them. This is where repository masks are defined.</p>
+and <code>profiles/package.mask</code>, are specific to the repository and not
+to the profiles that are specified below them. Thus, the <code>profiles =</code>
+key has no effect upon them but is rather where repository masks are defined.</p>
 
 <h2 id="repo_name">Repository names</h2>
 
