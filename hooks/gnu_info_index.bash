@@ -27,6 +27,9 @@ fi
 echo
 einfo_unhooked "Checking whether the GNU info directory needs updating..."
 
+# ticket:767
+export INFOPATH=$(source /etc/profile.env 2>/dev/null ; echo $INFOPATH )
+
 regen_info_dirs=
 vdb_loc=$(${PALUDIS_COMMAND} --configuration-variable installed location )
 for info_path in ${INFOPATH//:/ } ; do
