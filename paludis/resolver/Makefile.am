@@ -12,6 +12,8 @@ BUILT_SOURCES = \
 	destination_types-se.hh destination_types-se.cc \
 	use_existing-se.hh use_existing-se.cc
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 noinst_HEADERS = \
 	arrow.hh arrow-fwd.hh \
 	constraint.hh constraint-fwd.hh \

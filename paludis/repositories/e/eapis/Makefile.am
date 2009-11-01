@@ -2,6 +2,8 @@ MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT .keep *.epicfail
 SUBDIRS =
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 eapis = \
 	0.conf \
 	1.conf \

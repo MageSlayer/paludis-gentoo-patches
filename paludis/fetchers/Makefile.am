@@ -2,6 +2,8 @@ MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~ dohttp dohttps doftp .keep *.epicfail
 SUBDIRS = . demos
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 .keep :
 	touch $@
 

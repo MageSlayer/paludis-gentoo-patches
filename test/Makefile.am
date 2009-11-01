@@ -3,6 +3,8 @@ MAINTAINERCLEANFILES = Makefile.in
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 EXTRA_DIST = run_test.sh
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 libtest_a_SOURCES = \
 	test_framework.cc \
 	test_framework.hh \

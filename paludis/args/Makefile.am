@@ -5,6 +5,8 @@ AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 EXTRA_DIST = args_handler-se.hh args_handler-se.cc args_handler.se
 BUILT_SOURCES = args_handler-se.hh args_handler-se.cc
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 TESTS = \
 	args_TEST
 

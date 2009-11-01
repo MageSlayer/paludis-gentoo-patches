@@ -9,6 +9,8 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 shareenvpaludisdir = $(datarootdir)/paludis/environments/paludis/output_managers
 
 dist_shareenvpaludis_DATA = \

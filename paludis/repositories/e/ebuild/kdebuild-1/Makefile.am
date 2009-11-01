@@ -2,6 +2,8 @@ MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~ *.epicfail
 SUBDIRS = .
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 libexecprogkdebuild1dir = $(libexecdir)/paludis/kdebuild-1
 
 libexecprogkdebuild1_SCRIPTS = \

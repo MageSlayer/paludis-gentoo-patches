@@ -8,6 +8,8 @@ DEFS= \
 
 SUBDIRS = .
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 bin_PROGRAMS = accerso
 noinst_PROGRAMS = man-accerso
 man_MANS = accerso.1

@@ -7,6 +7,8 @@ DEFS= \
 
 SUBDIRS = .
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 bin_PROGRAMS = adjutrix
 noinst_PROGRAMS = man-adjutrix
 

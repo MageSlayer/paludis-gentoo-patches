@@ -2,6 +2,8 @@ MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT .keep *.epicfail
 SUBDIRS = . exherbo gentoo
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 distributions = \
 	exherbo.conf \
 	gentoo.conf

@@ -1,6 +1,8 @@
 MAINTAINERCLEANFILES = Makefile.in
 SUBDIRS = .
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 libexecprogdir = $(libexecdir)/paludis/utils/kdebuild-1
 
 libexecprog_SCRIPTS = \

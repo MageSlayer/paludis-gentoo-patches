@@ -7,6 +7,8 @@ DEFS= \
 
 SUBDIRS = .
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 bin_PROGRAMS = inquisitio
 noinst_PROGRAMS = man-inquisitio
 man_MANS = inquisitio.1

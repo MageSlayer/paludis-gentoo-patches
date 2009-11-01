@@ -8,6 +8,8 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 libpaludisnoconfigenvironment_la_SOURCES = \
 	no_config_environment.cc no_config_environment.hh \
 	registration.cc

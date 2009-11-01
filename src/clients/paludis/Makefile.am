@@ -10,6 +10,8 @@ DEFS= \
 
 SUBDIRS = .
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 bin_PROGRAMS = paludis
 noinst_PROGRAMS = man-paludis
 man_MANS = paludis.1

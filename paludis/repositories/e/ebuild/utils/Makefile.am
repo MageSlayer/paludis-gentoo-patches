@@ -1,6 +1,8 @@
 MAINTAINERCLEANFILES = Makefile.in
 SUBDIRS = . 3 exheres-0 kdebuild-1
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 libexecprogdir = $(libexecdir)/paludis/utils
 
 libexecprog_SCRIPTS = \

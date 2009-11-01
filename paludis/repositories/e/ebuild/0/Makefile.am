@@ -2,6 +2,8 @@ MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~ *.epicfail
 SUBDIRS = .
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 libexecprog0dir = $(libexecdir)/paludis/0/
 
 libexecprog0_SCRIPTS = \

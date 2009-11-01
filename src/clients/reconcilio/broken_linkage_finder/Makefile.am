@@ -4,6 +4,8 @@ SUBDIRS = .
 
 noinst_LIBRARIES = libbrokenlinkagefinder.a
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 libbrokenlinkagefinder_a_SOURCES = \
 	broken_linkage_finder.cc   broken_linkage_finder.hh   \
 	configuration.cc           configuration.hh           \

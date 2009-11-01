@@ -1,5 +1,7 @@
 SUBDIRS = .
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 AM_CXXFLAGS = -I$(top_srcdir) -I$(srcdir)/ \
 	      -I$(top_builddir)/ \
 	      @PALUDIS_CXXFLAGS@ \

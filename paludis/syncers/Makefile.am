@@ -64,6 +64,8 @@ EXTRA_DIST = $(libexecprog_SCRIPTS) dobzr.in docvs.in dodarcs.in dogit.in dohg.i
 check_SCRIPTS =
 check_PROGRAMS = $(TESTS)
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 
 dobzr dobzr+aftp dobzr+file dobzr+ftp dobzr+http dobzr+https dobzr+sftp dobzr+ssh : dobzr.in

@@ -3,6 +3,8 @@ SUBDIRS = .
 DEMOS = \
 	docurl
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.o *.so *.epicfail
 

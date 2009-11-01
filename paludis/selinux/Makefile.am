@@ -2,6 +2,8 @@ MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~ *.epicfail
 SUBDIRS = .
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 paludis_selinux_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/selinux/
 
 paludis_selinux_include_HEADERS = \

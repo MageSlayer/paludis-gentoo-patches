@@ -1,5 +1,7 @@
 SUBDIRS = .
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 AM_CXXFLAGS = -I$(top_srcdir) -I$(srcdir)/ -I$(top_srcdir)/ruby/ \
 	      @PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC@ \
 	      @PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS@ \

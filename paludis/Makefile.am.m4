@@ -83,6 +83,8 @@ EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
 SUBDIRS = distributions fetchers syncers util selinux repositories environments . args resolver
 BUILT_SOURCES = srcleanlist secleanlist
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 libpaludis_@PALUDIS_PC_SLOT@_la_SOURCES = filelist
 libpaludis_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 $(PTHREAD_LIBS)
 

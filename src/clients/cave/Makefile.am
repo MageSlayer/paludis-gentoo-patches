@@ -11,6 +11,8 @@ DEFS= \
 
 SUBDIRS = .
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 bin_PROGRAMS = cave
 
 noinst_PROGRAMS = man-cave

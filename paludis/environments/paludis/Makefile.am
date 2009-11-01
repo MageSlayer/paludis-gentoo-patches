@@ -10,6 +10,8 @@ DEFS= \
 	-DLIBDIR=\"$(libdir)\" \
 	-DSHAREDIR=\"$(datarootdir)\"
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 libpaludispaludisenvironment_la_SOURCES = \
 	action_to_string.cc    action_to_string.hh \
 	bashable_conf.cc       bashable_conf.hh \

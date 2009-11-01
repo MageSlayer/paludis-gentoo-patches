@@ -1,6 +1,8 @@
 MAINTAINERCLEANFILES = Makefile.in
 SUBDIRS = .
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 libexecprogdir = $(libexecdir)/paludis/utils/exheres-0
 
 libexecprog_SCRIPTS = \

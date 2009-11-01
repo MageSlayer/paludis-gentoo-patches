@@ -2,6 +2,8 @@ AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_NO_WOLD_STYLE
 
 SUBDIRS = .
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 noinst_LIBRARIES = liblittlelf.a
 
 liblittlelf_a_SOURCES = \

@@ -4,6 +4,8 @@ SUBDIRS = .
 
 noinst_LIBRARIES = libreconcilioutil.a
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 libreconcilioutil_a_SOURCES = \
 	realpath.cc          realpath.hh \
 	wildcard_expander.cc wildcard_expander.hh

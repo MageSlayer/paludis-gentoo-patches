@@ -3,6 +3,8 @@ AM_CXXFLAGS = -I$(top_srcdir) -I$(top_srcdir)/src \
 
 SUBDIRS = .
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 bin_PROGRAMS = importare
 noinst_PROGRAMS = man-importare
 man_MANS = importare.1

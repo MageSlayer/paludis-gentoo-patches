@@ -6,6 +6,8 @@ DEMOS = \
 	new_packages.bash \
 	pretend_resume.hook
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 EXTRA_DIST = \
 	report.bash.in \
 	elog.bash.in \

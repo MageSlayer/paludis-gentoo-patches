@@ -1,6 +1,8 @@
 MAINTAINERCLEANFILES = Makefile.in
 SUBDIRS = .
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 libexecprog3dir = $(libexecdir)/paludis/utils/3/
 
 libexecprog3_SCRIPTS = \

@@ -10,6 +10,8 @@ endif
 
 DIST_SUBDIRS = $(ALL_REPOSITORIES)
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 MAINTAINERCLEANFILES = Makefile.in
 

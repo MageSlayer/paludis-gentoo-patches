@@ -2,6 +2,8 @@ MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~ *.epicfail
 SUBDIRS = .
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 libexecprogexheresdir = $(libexecdir)/paludis/exheres-0
 
 libexecprogexheres_SCRIPTS = \

@@ -2,6 +2,8 @@ MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~ *.epicfail
 SUBDIRS = . 0 1 2 3 exheres-0 kdebuild-1 paludis-1 pbin-1 utils
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 
 libexecprogdir = $(libexecdir)/paludis/

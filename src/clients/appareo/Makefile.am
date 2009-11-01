@@ -8,6 +8,8 @@ DEFS= \
 
 SUBDIRS = .
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 bin_PROGRAMS = appareo
 noinst_PROGRAMS = man-appareo
 man_MANS = appareo.1

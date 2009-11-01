@@ -7,6 +7,8 @@ bin_PROGRAMS = reconcilio
 noinst_PROGRAMS = man-reconcilio
 man_MANS = reconcilio.1
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 reconcilio.1 : man-reconcilio
 	./man-reconcilio > $@
 

@@ -1,6 +1,8 @@
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 MAINTAINERCLEANFILES = Makefile.in
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 noinst_LIBRARIES = liboutput.a
 liboutput_a_SOURCES = \
 	colour.cc colour.hh \

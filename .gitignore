@@ -24,6 +24,7 @@ man-*
 .keep
 *.epicfail
 *.tmp
+*.log
 paludis-*.*.*.tar.bz2
 
 !/paludis/repositories/e/ebuild/utils/dolib.a

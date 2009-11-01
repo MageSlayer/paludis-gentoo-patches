@@ -9,6 +9,8 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 libpaludisportageenvironment_la_SOURCES = \
 	registration.cc \
 	portage_environment.cc portage_environment.hh

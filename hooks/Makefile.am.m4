@@ -7,6 +7,8 @@ MAINTAINERCLEANFILES = Makefile.in Makefile.am
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT .keep *.epicfail
 SUBDIRS = . demos
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 installvarlibpaludisnewsdir = $(localstatedir)/gentoo/news
 
 installhookcommonprogdir = $(libexecdir)/paludis/hooks/common

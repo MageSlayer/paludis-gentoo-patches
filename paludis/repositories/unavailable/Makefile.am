@@ -2,6 +2,8 @@ SUBDIRS = .
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 DISTCLEANFILES =
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 MAINTAINERCLEANFILES = Makefile.in
 
 AM_CXXFLAGS = -I$(top_srcdir) -I$(top_builddir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@

@@ -2,6 +2,8 @@ MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT .keep *.epicfail
 SUBDIRS =
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 distributiondir = $(datadir)/paludis/distributions/gentoo/
 
 distribution_DATA = e.conf gems.conf paludis.conf repository_blacklist.conf

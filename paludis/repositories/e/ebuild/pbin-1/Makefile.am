@@ -2,6 +2,8 @@ MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~ *.epicfail
 SUBDIRS = .
 
+AUTOMAKE_OPTIONS = parallel-tests
+
 libexecprogpaludisbinary1dir = $(libexecdir)/paludis/pbin-1
 libexecprogpaludisbinary1_SCRIPTS = \
 	builtin_installbin.bash \
