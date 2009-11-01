@@ -95,7 +95,7 @@ QueryVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & n
                 filter::InstalledAtRoot(_imp->environment->root()))]);
 
     if (indirect_iterator(matches->end()) != std::find_if(indirect_iterator(matches->begin()), indirect_iterator(matches->end()),
-                std::tr1::bind(std::tr1::mem_fn(&DepList::replaced), _imp->dep_list, _1)))
+                std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(std::tr1::mem_fn(&DepList::replaced), _imp->dep_list, _1))))
     {
         _imp->result = true;
         return;
