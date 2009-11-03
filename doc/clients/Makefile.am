@@ -1,12 +1,12 @@
+include $(top_srcdir)/misc/common-makefile.am
+
 SUBDIRS = .
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail \
+CLEANFILES += \
 	header.html.part \
 	toplinks.html.part \
 	footer.html.part \
 	index.html
-
-MAINTAINERCLEANFILES = Makefile.in
 
 DISTCLEANFILES = \
 	$(ALL_CLIENTS_HTML)
@@ -25,9 +25,13 @@ paludisclientshtml_DATA = \
 if HAVE_HTMLTIDY
 
 TESTS = $(paludisclientshtml_DATA)
-TESTS_ENVIRONMENT = bash $(top_srcdir)/doc/htmltidy.bash
+LOG_COMPILER_INTERP = $(top_srcdir)/doc/htmltidy.bash
 
 endif
+
+# automake is retartded
+TEST_EXTENSIONS = .html
+HTML_LOG_COMPILER = $(LOG_COMPILER)
 
 index.html : header.html.part $(srcdir)/index.html.part footer.html.part
 	cat header.html.part $(srcdir)/index.html.part footer.html.part > $@
@@ -126,9 +130,6 @@ toplinks.html.part : $(srcdir)/toplinks.html.part.in
 
 footer.html.part : $(srcdir)/../footer.html.part.in
 	sed -e 's,###TOPURI###,./,g' < $(srcdir)/../footer.html.part.in > footer.html.part
-
-built-sources : $(BUILT_SOURCES)
-	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
 htmldocs : htmldocs-subdirs
 

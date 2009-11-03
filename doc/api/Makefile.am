@@ -1,6 +1,8 @@
+include $(top_srcdir)/misc/common-makefile.am
+
 SUBDIRS = cplusplus python ruby .
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail \
+CLEANFILES += \
 	header.html.part \
 	toplinks.html.part \
 	footer.html.part \
@@ -10,8 +12,6 @@ EXTRA_DIST = \
 	toplinks.html.part.in \
 	index.html.part
 
-MAINTAINERCLEANFILES = Makefile.in
-
 paludisapihtmldir = $(htmldir)/api
 
 paludisapihtml_DATA = \
@@ -20,7 +20,7 @@ paludisapihtml_DATA = \
 if HAVE_HTMLTIDY
 
 TESTS = $(paludisapihtml_DATA)
-TESTS_ENVIRONMENT = bash $(top_srcdir)/doc/htmltidy.bash
+LOG_COMPILER_INTERP = $(top_srcdir)/doc/htmltidy.bash
 
 endif
 
@@ -41,10 +41,6 @@ toplinks.html.part : $(srcdir)/toplinks.html.part.in
 
 footer.html.part : $(srcdir)/../footer.html.part.in
 	sed -e 's,###TOPURI###,./,g' < $(srcdir)/../footer.html.part.in > footer.html.part
-
-
-built-sources : $(BUILT_SOURCES)
-	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
 doxygen :
 	$(MAKE) -C cplusplus $@

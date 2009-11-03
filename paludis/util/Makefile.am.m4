@@ -3,6 +3,8 @@ ifdef(`__gnu__',`',`errprint(`This is not GNU m4...
 
 dnl vim: set ft=m4 noet :
 
+include $(top_srcdir)/misc/common-makefile.am
+
 define(`filelist', `')dnl
 define(`headerlist', `')dnl
 define(`testlist', `')dnl
@@ -64,8 +66,7 @@ AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_NO_WOLD_STYLE
 
 include(`paludis/util/files.m4')
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
-MAINTAINERCLEANFILES = Makefile.in Makefile.am paludis.hh \
+MAINTAINERCLEANFILES += Makefile.am paludis.hh \
 	hashed_containers.hh util.hh echo_functions.bash
 DISTCLEANFILES = srcleanlist secleanlist
 BUILT_SOURCES = srcleanlist secleanlist
@@ -78,19 +79,11 @@ EXTRA_DIST = util.hh.m4 Makefile.am.m4 files.m4 srlist srcleanlist selist seclea
 	echo_functions.bash.in
 SUBDIRS = .
 
-AUTOMAKE_OPTIONS = parallel-tests
-
 libpaludisutil_@PALUDIS_PC_SLOT@_la_SOURCES = filelist
 libpaludisutil_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 $(PTHREAD_LIBS) $(RT_LIBS)
 libpaludisutil_@PALUDIS_PC_SLOT@_la_LIBADD = $(PTHREAD_LIBS) $(RT_LIBS)
 
 TESTS = testlist
-
-TESTS_ENVIRONMENT = env \
-	PALUDIS_EBUILD_DIR="$(srcdir)/ebuild/" \
-	PALUDIS_OPTIONS="" \
-	TEST_SCRIPT_DIR="$(srcdir)/" \
-	bash $(top_srcdir)/test/run_test.sh
 
 check_PROGRAMS = $(TESTS) system_TEST_become_child
 check_SCRIPTS = testscriptlist
@@ -117,8 +110,4 @@ libexecpaludisdir = $(libexecdir)/paludis
 libexecpaludis_SCRIPTS = echo_functions.bash
 
 outputwrapper_SOURCES = output_wrapper.cc
-
-changequote(`<', `>')
-built-sources : $(BUILT_SOURCES)
-	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 

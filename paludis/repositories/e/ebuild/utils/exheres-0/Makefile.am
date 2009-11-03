@@ -1,7 +1,6 @@
-MAINTAINERCLEANFILES = Makefile.in
-SUBDIRS = .
+include $(top_srcdir)/misc/common-makefile.am
 
-AUTOMAKE_OPTIONS = parallel-tests
+SUBDIRS = .
 
 libexecprogdir = $(libexecdir)/paludis/utils/exheres-0
 
@@ -34,18 +33,6 @@ libexecprog_SCRIPTS = \
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 
-TESTS_ENVIRONMENT = env \
-	PALUDIS_UTILITY_PATH_SUFFIXES="exheres-0" \
-	PALUDIS_EBUILD_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise \
-			   $(top_srcdir)/paludis/repositories/e/ebuild/`" \
-	PALUDIS_EBUILD_DIR_FALLBACK="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/ebuild/`" \
-	TOP_BUILD_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/`" \
-	PALUDIS_EBUILD_LOG_LEVEL="silent" \
-	PALUDIS_DISTRIBUTION="gentoo" \
-	PALUDIS_OPTIONS="" \
-	TEST_SCRIPT_DIR="$(srcdir)/" \
-	bash $(top_srcdir)/paludis/repositories/e/ebuild/utils/run_test.bash
-
 TESTS =
 
 EXTRA_DIST = \
@@ -57,14 +44,11 @@ bannedscripts = prepall prepallstrip prepstrip prepallman prepman prepallinfo \
 		prepinfo prepdocs prepalldocs dohard donewins dosed dohtml \
 		ecompress ecompressdir
 
-CLEANFILES = *~ $(bannedscripts) *.epicfail
+CLEANFILES += $(bannedscripts)
 
 $(bannedscripts) : banned_in_eapi_exheres-0
 	cat $? > $@
 	chmod +x $@
 
 check_PROGRAMS =
-
-built-sources : $(BUILT_SOURCES)
-	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 

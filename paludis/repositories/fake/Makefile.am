@@ -1,29 +1,10 @@
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
-MAINTAINERCLEANFILES = Makefile.in
-
-AUTOMAKE_OPTIONS = parallel-tests
+include $(top_srcdir)/misc/common-makefile.am
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DDATADIR=\"$(datadir)\"
-
-TESTS_ENVIRONMENT = env \
-	PALUDIS_GEMS_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/repositories/gems/`" \
-	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/repositories/e/eapis/" \
-	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
-	PALUDIS_DISTRIBUTION="gentoo" \
-	PALUDIS_OPTIONS="" \
-	PALUDIS_SKIP_CONFIG="yes" \
-	PALUDIS_DEFAULT_OUTPUT_CONF="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/environments/paludis/tests_output.conf`" \
-	PALUDIS_OUTPUT_MANAGERS_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/environments/paludis/output_managers/`" \
-	TEST_SCRIPT_DIR="$(srcdir)/" \
-	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
-	LD_LIBRARY_PATH="`echo $$LD_LIBRARY_PATH: | sed -e 's,^:,,'`` \
-		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/gems/`:` \
-		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/gems/.libs/`" \
-	bash $(top_srcdir)/test/run_test.sh
 
 TESTS = fake_repository_TEST fake_installed_repository_TEST dep_parser_TEST
 check_PROGRAMS = $(TESTS)
@@ -83,7 +64,4 @@ paludis_repositories_fake_include_HEADERS = \
 	fake_repository_base.hh \
 	fake_installed_repository.hh \
 	fake_package_id.hh
-
-built-sources : $(BUILT_SOURCES)
-	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 

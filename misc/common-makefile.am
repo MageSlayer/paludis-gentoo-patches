@@ -1,0 +1,67 @@
+# vim: ft=automake :
+
+CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
+MAINTAINERCLEANFILES = Makefile.in
+AUTOMAKE_OPTIONS = parallel-tests
+
+LOG_COMPILER = \
+	unset PALUDIS_TESTS_REAL_STDOUT_FD 2>&1 >/dev/null ; \
+	test "x$$BASH_VERSION" == x || eval "exec 3<&1 ; export PALUDIS_TESTS_REAL_STDOUT_FD=3" ; \
+	env \
+		ACCERSO_OPTIONS="" \
+		ADJUTRIX_OPTIONS="" \
+		APPAREO_OPTIONS="" \
+		CRAN_BASH_DIR="$(top_srcdir)/paludis/repositories/cran/cran/" \
+		INQUISITIO_OPTIONS="" \
+		LD_LIBRARY_PATH="`echo $$LD_LIBRARY_PATH: | sed -e 's,^:,,'`` \
+			$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/.libs/ \
+			`:`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/.libs/ \
+			`:`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/ruby/.libs/ \
+			`:`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/python/.libs/ \
+			`:`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/.libs/`" \
+		PALUDIS_BYPASS_USERPRIV_CHECKS="yes" \
+		PALUDIS_COMMAND="$(top_builddir)/src/clients/paludis/paludis" \
+		PALUDIS_DEFAULT_OUTPUT_CONF="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/environments/paludis/tests_output.conf`" \
+		PALUDIS_DISTRIBUTION="gentoo" \
+		PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
+		PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/repositories/e/eapis/" \
+		PALUDIS_EBUILD_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/repositories/e/ebuild/`" \
+		PALUDIS_EBUILD_DIR_FALLBACK="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/ebuild/`" \
+		PALUDIS_ECHO_FUNCTIONS_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
+		PALUDIS_ENABLE_VIRTUALS_REPOSITORY="$(PALUDIS_ENABLE_VIRTUALS_REPOSITORY_VALUE)" \
+		PALUDIS_EXTRA_EBUILD_MODULES_DIRS="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
+		PALUDIS_FETCHERS_DIR="$(top_srcdir)/paludis/fetchers/" \
+		PALUDIS_GEMS_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/repositories/gems/`" \
+		PALUDIS_HOOKER_DIR="$(top_srcdir)/paludis/" \
+		PALUDIS_NO_CHOWN="yupyup" \
+		PALUDIS_NO_GLOBAL_HOOKS="yes" \
+		PALUDIS_NO_XTERM_TITLES="yes" \
+		PALUDIS_OPTIONS="" \
+		PALUDIS_OUTPUT_MANAGERS_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/environments/paludis/output_managers/`" \
+		PALUDIS_OUTPUTWRAPPER_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
+		PALUDIS_PC_SLOT=@PALUDIS_PC_SLOT@ \
+		PALUDIS_PIPE_COMMAND_READ_FD="" \
+		PALUDIS_PIPE_COMMAND_WRITE_FD="" \
+		PALUDIS_PORTAGE_BASHRC="$(top_srcdir)/paludis/environments/portage/bashrc" \
+		PALUDIS_PORTAGE_BASHRC="$(top_srcdir)/paludis/environments/portage/bashrc" \
+		PALUDIS_PYTHON_DIR="$(top_srcdir)/python/" \
+		PALUDIS_REDUCED_USERNAME="`id -un`" \
+		PALUDIS_SKIP_CONFIG="yes" \
+		PALUDIS_SUFFIXES_FILE="$(top_srcdir)/paludis/repositories/e/ebuild_entries_suffixes.conf" \
+		PALUDIS_SYNCERS_DIR="$(top_srcdir)/paludis/syncers/" \
+		PALUDIS_TMPDIR="`pwd`" \
+		PATH="${PATH}:/sbin:/usr/sbin" \
+		PYTHON="$(PYTHON)" \
+		RUBY="$(RUBY)" \
+		SO_SUFFIX=@VERSION_LIB_CURRENT@ \
+		SYSCONFDIR="$(sysconfdir)" \
+		PYTHONPATH="$(top_builddir)/python/:$(top_builddir)/python/.libs/" \
+		TEST_SCRIPT_DIR="$(srcdir)/" \
+		TOP_SRCDIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)`" \
+		TOP_BUILDDIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)`" \
+		$(LOG_COMPILER_EXTRA) \
+		bash $(top_srcdir)/test/run_test.sh $(LOG_COMPILER_INTERP)
+
+built-sources : $(BUILT_SOURCES)
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+

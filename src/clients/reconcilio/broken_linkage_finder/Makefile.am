@@ -1,10 +1,10 @@
+include $(top_srcdir)/misc/common-makefile.am
+
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST@ @PALUDIS_CXXFLAGS_NO_WSHADOW@
 
 SUBDIRS = .
 
 noinst_LIBRARIES = libbrokenlinkagefinder.a
-
-AUTOMAKE_OPTIONS = parallel-tests
 
 libbrokenlinkagefinder_a_SOURCES = \
 	broken_linkage_finder.cc   broken_linkage_finder.hh   \
@@ -12,12 +12,6 @@ libbrokenlinkagefinder_a_SOURCES = \
 	linkage_checker.cc         linkage_checker.hh         \
 	libtool_linkage_checker.cc libtool_linkage_checker.hh \
 	elf_linkage_checker.cc     elf_linkage_checker.hh
-
-TESTS_ENVIRONMENT = env \
-	PALUDIS_OPTIONS="" \
-	TEST_SCRIPT_DIR="$(srcdir)/" \
-	TEST_OUTPUT_WRAPPER="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/outputwrapper`" \
-	bash $(top_srcdir)/test/run_test.sh bash
 
 TESTS = configuration_TEST
 check_PROGRAMS = $(TESTS)
@@ -35,10 +29,4 @@ configuration_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a
 configuration_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
-
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
-MAINTAINERCLEANFILES = Makefile.in
-
-built-sources : $(BUILT_SOURCES)
-	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 

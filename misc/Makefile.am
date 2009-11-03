@@ -1,6 +1,6 @@
 CLEANFILES = *~ *.epicfail
 MAINTAINERCLEANFILES = Makefile.in
-EXTRA_DIST = generated-file.txt do_m4.bash make_se.bash make_nn.bash
+EXTRA_DIST = generated-file.txt do_m4.bash make_se.bash make_nn.bash common-makefile.am
 
 AUTOMAKE_OPTIONS = parallel-tests
 

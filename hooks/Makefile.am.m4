@@ -3,11 +3,11 @@ ifdef(`__gnu__',`',`errprint(`This is not GNU m4...
 
 dnl vim: set ft=m4 noet :
 
-MAINTAINERCLEANFILES = Makefile.in Makefile.am
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT .keep *.epicfail
-SUBDIRS = . demos
+include $(top_srcdir)/misc/common-makefile.am
 
-AUTOMAKE_OPTIONS = parallel-tests
+CLEANFILES += .keep
+MAINTAINERCLEANFILES += Makefile.am
+SUBDIRS = . demos
 
 installvarlibpaludisnewsdir = $(localstatedir)/gentoo/news
 
@@ -271,31 +271,6 @@ uninstall-local :
 
 Makefile.am : Makefile.am.m4
 	$(top_srcdir)/misc/do_m4.bash Makefile.am
-
-changequote(`<', `>')
-built-sources : $(BUILT_SOURCES)
-	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
-
-TESTS_ENVIRONMENT = env \
-	TEST_SCRIPT_DIR="$(srcdir)/" \
-	PATH="${PATH}:/sbin:/usr/sbin" \
-	PALUDIS_COMMAND="$(top_builddir)/src/clients/paludis/paludis" \
-	PALUDIS_HOOKER_DIR="$(top_srcdir)/paludis/" \
-	PALUDIS_OUTPUTWRAPPER_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
-	PALUDIS_ECHO_FUNCTIONS_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
-	PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/repositories/e/ebuild/" \
-	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/repositories/e/eapis/" \
-	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
-	PALUDIS_DISTRIBUTION="gentoo" \
-	PALUDIS_OPTIONS="" \
-	PALUDIS_SKIP_CONFIG="yes" \
-	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
-	PALUDIS_ENVIRONMENT_SO_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments`" \
-	PALUDIS_DEFAULT_OUTPUT_CONF="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/environments/paludis/tests_output.conf`" \
-	PALUDIS_OUTPUT_MANAGERS_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/environments/paludis/output_managers/`" \
-	TOP_SRCDIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)`" \
-	TOP_BUILDDIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)`" \
-	bash $(top_srcdir)/hooks/run_test.bash
 
 all-local :
 	chmod +x $(builddir)/news.hook $(builddir)/eselect_env_update.bash

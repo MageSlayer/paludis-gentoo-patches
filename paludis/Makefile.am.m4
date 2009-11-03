@@ -3,6 +3,8 @@ ifdef(`__gnu__',`',`errprint(`This is not GNU m4...
 
 dnl vim: set ft=m4 noet :
 
+include $(top_srcdir)/misc/common-makefile.am
+
 define(`filelist', `')dnl
 define(`testlist', `')dnl
 define(`headerlist', `')dnl
@@ -16,7 +18,6 @@ define(`testscriptlist', `')dnl
 define(`addtest', `define(`testlist', testlist `$1_TEST')dnl
 $1_TEST_SOURCES = $1_TEST.cc
 $1_TEST_LDADD = \
-	ihateautomake.o \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	libpaludis_@PALUDIS_PC_SLOT@.la \
@@ -67,8 +68,7 @@ AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 
 include(`paludis/files.m4')
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT ihateautomake.cc ihateautomake.o *.epicfail
-MAINTAINERCLEANFILES = Makefile.in Makefile.am about.hh paludis.hh
+MAINTAINERCLEANFILES += Makefile.am about.hh paludis.hh
 DISTCLEANFILES = srcleanlist secleanlist
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
@@ -82,8 +82,6 @@ EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
 	stripper_TEST_binary.cc
 SUBDIRS = distributions fetchers syncers util selinux repositories environments . args resolver
 BUILT_SOURCES = srcleanlist secleanlist
-
-AUTOMAKE_OPTIONS = parallel-tests
 
 libpaludis_@PALUDIS_PC_SLOT@_la_SOURCES = filelist
 libpaludis_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 $(PTHREAD_LIBS)
@@ -153,7 +151,6 @@ dep_list_TEST_SOURCES += dep_list_TEST.hh
 define(`testlist', testlist `dep_list_TEST_blockers')dnl
 dep_list_TEST_blockers_SOURCES = dep_list_TEST_blockers.cc dep_list_TEST.hh
 dep_list_TEST_blockers_LDADD = \
-	ihateautomake.o \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	libpaludis_@PALUDIS_PC_SLOT@.la \
@@ -172,21 +169,12 @@ stripper_TEST_binary_SOURCES = stripper_TEST_binary.cc
 paludis_libexecdir = $(libexecdir)/paludis
 paludis_libexec_SCRIPTS = hooker.bash
 
-if MONOLITHIC
-
-noinst_LTLIBRARIES = libpaludis_@PALUDIS_PC_SLOT@.la libpaludismanpagethings_@PALUDIS_PC_SLOT@.la
-
-else
-
 lib_LTLIBRARIES = libpaludis_@PALUDIS_PC_SLOT@.la
 noinst_LTLIBRARIES = libpaludismanpagethings_@PALUDIS_PC_SLOT@.la
 
 if ENABLE_PYTHON_HOOKS
 lib_LTLIBRARIES += libpaludispythonhooks_@PALUDIS_PC_SLOT@.la
 endif
-
-endif
-
 
 paludis_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/
 paludis_include_HEADERS = headerlist srheaderlist seheaderlist
@@ -199,34 +187,4 @@ paludis.hh : paludis.hh.m4 files.m4
 
 comparison_policy.hh : comparison_policy.hh.m4
 	$(top_srcdir)/misc/do_m4.bash comparison_policy.hh.m4
-
-ihateautomake.cc : all
-	test -f $@ || touch $@
-
-changequote(`<', `>')
-built-sources : $(BUILT_SOURCES)
-	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
-
-TESTS_ENVIRONMENT = env \
-	PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/repositories/e/ebuild/" \
-	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/repositories/e/eapis/" \
-	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
-	PALUDIS_DISTRIBUTION="gentoo" \
-	PALUDIS_HOOKER_DIR="$(top_srcdir)/paludis/" \
-	PALUDIS_OPTIONS="" \
-	PALUDIS_OUTPUTWRAPPER_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
-	PALUDIS_SKIP_CONFIG="yes" \
-	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
-	TEST_SCRIPT_DIR="$(srcdir)/" \
-	SO_SUFFIX=@VERSION_LIB_CURRENT@ \
-	PALUDIS_PC_SLOT=@PALUDIS_PC_SLOT@ \
-	PYTHONPATH="$(top_builddir)/python/" \
-	PALUDIS_PYTHON_DIR="$(top_srcdir)/python/" \
-	PALUDIS_DEFAULT_OUTPUT_CONF="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/environments/paludis/tests_output.conf`" \
-	PALUDIS_OUTPUT_MANAGERS_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/environments/paludis/output_managers/`" \
-	LD_LIBRARY_PATH="`echo $$LD_LIBRARY_PATH: | sed -e 's,^:,,'`` \
-		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/.libs/ \
-		`:`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/.libs/ \
-		`:`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/python/.libs/`" \
-	bash $(top_srcdir)/test/run_test.sh
 

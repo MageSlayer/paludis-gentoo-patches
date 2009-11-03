@@ -1,13 +1,10 @@
+include $(top_srcdir)/misc/common-makefile.am
+
 SUBDIRS = eapis ebuild .
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 DISTCLEANFILES = \
 	e_repository_params-se.hh e_repository_params-se.cc \
 	dep_parser-se.hh dep_parser-se.cc \
 	iuse-se.hh iuse-se.cc
-
-MAINTAINERCLEANFILES = Makefile.in
-
-AUTOMAKE_OPTIONS = parallel-tests
 
 AM_CXXFLAGS = -I$(top_srcdir) -I$(top_builddir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 DEFS= \
@@ -421,32 +418,6 @@ check_SCRIPTS = \
 	e_repository_sets_TEST_setup.sh e_repository_sets_TEST_cleanup.sh \
 	fetch_visitor_TEST_setup.sh fetch_visitor_TEST_cleanup.sh
 
-TESTS_ENVIRONMENT = env \
-	TEST_OUTPUT_WRAPPER="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/outputwrapper`" \
-	PALUDIS_OPTIONS="" \
-	PALUDIS_OUTPUTWRAPPER_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
-	PALUDIS_EBUILD_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/repositories/e/ebuild/`" \
-	PALUDIS_EBUILD_DIR_FALLBACK="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/ebuild/`" \
-	PALUDIS_EXTRA_EBUILD_MODULES_DIRS="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
-	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/repositories/e/eapis/" \
-	PALUDIS_SUFFIXES_FILE="$(top_srcdir)/paludis/repositories/e/ebuild_entries_suffixes.conf" \
-	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
-	PALUDIS_DISTRIBUTION="gentoo" \
-	PALUDIS_FETCHERS_DIR="$(top_srcdir)/paludis/fetchers/" \
-	PALUDIS_SKIP_CONFIG="yes" \
-	TEST_SCRIPT_DIR="$(srcdir)/" \
-	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
-	PALUDIS_NO_CHOWN="yes" \
-	PALUDIS_TESTS_KEEP_STDERR="yes" \
-	PALDUIS_TMPDIR="`pwd`" \
-	PALUDIS_BYPASS_USERPRIV_CHECKS="yes" \
-	PALUDIS_DEFAULT_OUTPUT_CONF="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/environments/paludis/tests_output.conf`" \
-	PALUDIS_OUTPUT_MANAGERS_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/environments/paludis/output_managers/`" \
-	LD_LIBRARY_PATH="`echo $$LD_LIBRARY_PATH: | sed -e 's,^:,,'`` \
-		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/`:` \
-		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/.libs/`" \
-	bash $(top_srcdir)/test/run_test.sh
-
 dep_parser-se.hh : dep_parser.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/dep_parser.se > $@ ; then rm -f $@ ; exit 1 ; fi
 
@@ -517,7 +488,4 @@ TESTS = \
 	$(GLSA_TESTS)
 
 check_PROGRAMS = $(TESTS)
-
-built-sources : $(BUILT_SOURCES)
-	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 

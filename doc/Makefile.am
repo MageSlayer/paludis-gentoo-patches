@@ -1,7 +1,8 @@
+include $(top_srcdir)/misc/common-makefile.am
+
 SUBDIRS = . api clients configuration faq overview
 
-MAINTAINERCLEANFILES = Makefile.in
-CLEANFILES = *~ *.epicfail \
+CLEANFILES += \
 	header.html.part \
 	toplinks.html.part \
 	footer.html.part \
@@ -40,7 +41,7 @@ dist_check_SCRIPTS = \
 if HAVE_HTMLTIDY
 
 TESTS = $(paludishtml_DATA)
-TESTS_ENVIRONMENT = bash $(top_srcdir)/doc/htmltidy.bash
+LOG_COMPILER_INTERP = $(top_srcdir)/doc/htmltidy.bash
 
 endif
 
@@ -98,9 +99,6 @@ changelog.subst :
 	    -e 's,\([[:blank:][:punct:]]\)\?\([0-9a-f]\{40\}\)\([[:blank:][:punct:]]\)\?,\1<a href="http://git.pioto.org/?p=paludis.git;a=commit;h=\2">\2</a>,g' \
 	    -e 's,ticket:\([0-9]\+\),<a href="http://trac.pioto.org/paludis/ticket/\1">ticket:\1</a>,g' \
 	    > changelog.subst
-
-built-sources : $(BUILT_SOURCES)
-	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
 documentation : doxygen epydoc htmldocs
 

@@ -1,14 +1,12 @@
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT ihateautomake.cc ihateautomake.o *.epicfail
+include $(top_srcdir)/misc/common-makefile.am
+
 DISTCLEANFILES = no_config_environment-se.hh no_config_environment-se.cc
-MAINTAINERCLEANFILES = Makefile.in
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
-
-AUTOMAKE_OPTIONS = parallel-tests
 
 libpaludisnoconfigenvironment_la_SOURCES = \
 	no_config_environment.cc no_config_environment.hh \
@@ -30,17 +28,6 @@ EXTRA_DIST = \
 	no_config_environment_TEST_cleanup.sh
 
 TESTS = no_config_environment_TEST
-
-TESTS_ENVIRONMENT = env \
-	PALUDIS_EBUILD_DIR="$(top_srcdir)/ebuild/" \
-	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/repositories/e/eapis/" \
-	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
-	PALUDIS_DISTRIBUTION="gentoo" \
-	PALUDIS_OPTIONS="" \
-	PALUDIS_SKIP_CONFIG="yes" \
-	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
-	TEST_SCRIPT_DIR="$(srcdir)/" \
-	bash $(top_srcdir)/test/run_test.sh
 
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = no_config_environment_TEST_setup.sh no_config_environment_TEST_cleanup.sh
@@ -65,7 +52,4 @@ no_config_environment-se.hh : no_config_environment.se $(top_srcdir)/misc/make_s
 
 no_config_environment-se.cc : no_config_environment.se $(top_srcdir)/misc/make_se.bash
 	$(top_srcdir)/misc/make_se.bash --source $(srcdir)/no_config_environment.se > $@
-
-built-sources : $(BUILT_SOURCES)
-	for s in $(SUBDIRS) ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 

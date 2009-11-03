@@ -1,5 +1,5 @@
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
-MAINTAINERCLEANFILES = Makefile.in
+include $(top_srcdir)/misc/common-makefile.am
+
 DISTCLEANFILES = \
 	destination_types-se.hh destination_types-se.cc \
 	use_existing-se.hh use_existing-se.cc
@@ -11,8 +11,6 @@ EXTRA_DIST = \
 BUILT_SOURCES = \
 	destination_types-se.hh destination_types-se.cc \
 	use_existing-se.hh use_existing-se.cc
-
-AUTOMAKE_OPTIONS = parallel-tests
 
 noinst_HEADERS = \
 	arrow.hh arrow-fwd.hh \
@@ -48,31 +46,6 @@ libpaludisresolver_a_SOURCES = \
 	suggest_restart.cc \
 	unsuitable_candidates.cc \
 	use_existing.cc
-
-TESTS_ENVIRONMENT = env \
-	PALUDIS_OPTIONS="" \
-	TEST_OUTPUT_WRAPPER="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/outputwrapper`" \
-	PALUDIS_OUTPUTWRAPPER_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
-	PALUDIS_EBUILD_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/repositories/e/ebuild/`" \
-	PALUDIS_EBUILD_DIR_FALLBACK="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/ebuild/`" \
-	PALUDIS_EXTRA_EBUILD_MODULES_DIRS="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
-	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/repositories/e/eapis/" \
-	PALUDIS_SUFFIXES_FILE="$(top_srcdir)/paludis/repositories/e/ebuild_entries_suffixes.conf" \
-	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
-	PALUDIS_DISTRIBUTION="gentoo" \
-	PALUDIS_OPTIONS="" \
-	PALUDIS_FETCHERS_DIR="$(top_srcdir)/paludis/fetchers/" \
-	PALUDIS_SKIP_CONFIG="yes" \
-	TEST_SCRIPT_DIR="$(srcdir)/" \
-	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
-	PALUDIS_NO_CHOWN="yes" \
-	PALUDIS_TESTS_KEEP_STDERR="yes" \
-	PALUDIS_DEFAULT_OUTPUT_CONF="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/environments/paludis/tests_output.conf`" \
-	PALUDIS_OUTPUT_MANAGERS_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/environments/paludis/output_managers/`" \
-	LD_LIBRARY_PATH="`echo $$LD_LIBRARY_PATH: | sed -e 's,^:,,'`` \
-		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/`:` \
-		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/.libs/`" \
-	bash $(top_srcdir)/test/run_test.sh
 
 if ENABLE_VIRTUALS_REPOSITORY
 virtuals_tests = resolver_TEST_virtuals
@@ -152,9 +125,6 @@ resolver_TEST_serialisation_LDADD = \
 	$(DYNAMIC_LD_LIBS)
 
 resolver_TEST_serialisation_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
-
-built-sources : $(BUILT_SOURCES)
-	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
 use_existing-se.hh : use_existing.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/use_existing.se > $@ ; then rm -f $@ ; exit 1 ; fi

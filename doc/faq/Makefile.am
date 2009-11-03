@@ -1,6 +1,8 @@
+include $(top_srcdir)/misc/common-makefile.am
+
 SUBDIRS = .
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail \
+CLEANFILES += \
 	header.html.part \
 	toplinks.html.part \
 	footer.html.part \
@@ -42,7 +44,7 @@ paludisfaqhtml_DATA = \
 if HAVE_HTMLTIDY
 
 TESTS = $(paludisfaqhtml_DATA)
-TESTS_ENVIRONMENT = bash $(top_srcdir)/doc/htmltidy.bash
+LOG_COMPILER_INTERP = $(top_srcdir)/doc/htmltidy.bash
 
 endif
 
@@ -87,11 +89,6 @@ toplinks.html.part : $(srcdir)/toplinks.html.part.in
 
 footer.html.part : $(srcdir)/../footer.html.part.in
 	sed -e 's,###TOPURI###,./,g' < $(srcdir)/../footer.html.part.in > footer.html.part
-
-MAINTAINERCLEANFILES = Makefile.in
-
-built-sources : $(BUILT_SOURCES)
-	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
 htmldocs : htmldocs-subdirs
 
