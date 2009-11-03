@@ -468,6 +468,23 @@ InstallTask::_add_target(const std::string & target)
                         _imp->env, UserPackageDepSpecOptions() + updso_throw_if_set + updso_allow_wildcards,
                         filter::SupportsAction<InstallAction>())));
 
+        bool spec_is_installed(false);
+
+        if (spec->in_repository_ptr() &&
+                _imp->env->package_database()->has_repository_named(*spec->in_repository_ptr()) &&
+                _imp->env->package_database()->fetch_repository(*spec->in_repository_ptr())->installed_root_key())
+            spec_is_installed = true;
+        else if (spec->from_repository_ptr())
+            spec_is_installed = true;
+        else if (spec->installed_at_path_ptr())
+            spec_is_installed = true;
+
+        if (spec_is_installed)
+            Log::get_instance()->message("install_task.installed_spec", ll_warning, lc_context)
+                << "Target '" << target << "' appears to make use of ::repository restrictions "
+                << "that restrict to an installed repository. This probably does not do what you "
+                << "think it does. Consult the FAQ for an explanation";
+
         if (_imp->had_set_targets)
             throw HadBothPackageAndSetTargets();
         _imp->had_package_targets = true;

@@ -8,6 +8,8 @@
     <li><a href="operation.html#info">Get package information for a bug report</a></li>
     <li><a href="operation.html#arrows">What do those fancy arrows when merging things mean?</a></li>
     <li><a href="operation.html#updates">Profiles Updates for Package Moves and Slot Moves</a></li>
+    <li><a href="operation.html#repospecs">I can't install <code>*/*::installed</code> or
+        <code>*/*::overlay-&gt;</code></a></li>
 </ul>
 
 <h2 id="updatingdepends">Paludis does not update DEPENDs of already installed packages</h2>
@@ -98,4 +100,10 @@ variable to <code>yes</code> and then sync to perform updates.</p>
 <code>bar</code>, and you have both <code>foo</code> and <code>bar</code> installed, Paludis will be unable to perform
 the update. In this situation, you should generally manually uninstall the older of <code>foo</code> or
 <code>bar</code>.</p>
+
+<h2 id="repospecs">I can't install <code>*/*::installed</code> or <code>*/*::overlay-&gt;</code></h2>
+
+<p>You can't install (or reinstall) a package ID that is already installed. The <code>foo/bar-1.23</code> you have
+installed has absolutely nothing whatsoever to do with any other <code>foo/bar-1.23</code>, and by specifying
+<code>::installed</code> or <code>::overlay-&gt;</code> you are specifically saying "give me the installed ID".</p>
 
