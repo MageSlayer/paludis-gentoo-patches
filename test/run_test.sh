@@ -32,12 +32,14 @@ else
     echo ">>> No $TEST_SCRIPT_DIR${testname}_setup.sh to run" 1>&$PALUDIS_TESTS_REAL_STDOUT_FD
 fi
 
+now=$(date +'%s' )
 echo ">>> test ${testname}" 1>&$PALUDIS_TESTS_REAL_STDOUT_FD 1>&$PALUDIS_TESTS_REAL_STDOUT_FD
 $interp ${@}
 code=$?
+duration=$(( $(date +'%s' ) - ${now} ))
 
 if [[ 0 != ${code} ]] ; then
-    echo ">>> test ${testname} returned ${code}" 1>&$PALUDIS_TESTS_REAL_STDOUT_FD
+    echo ">>> test ${testname} returned ${code} [${duration}s]" 1>&$PALUDIS_TESTS_REAL_STDOUT_FD
     if [[ -z "${PALUDIS_TESTS_RERUN_VERBOSELY}" ]] && [[ "${testname#./}" != "test_fail_TEST" ]] ; then
         out=`pwd`/${testname#./}.epicfail
         echo ">>> rerunning test ${testname} verbosely redirected to ${out}" 1>&$PALUDIS_TESTS_REAL_STDOUT_FD
@@ -59,7 +61,7 @@ else
     echo ">>> No $TEST_SCRIPT_DIR${testname}_cleanup.sh to run" 1>&$PALUDIS_TESTS_REAL_STDOUT_FD
 fi
 
-echo ">>> exiting with success for test ${testname}" 1>&$PALUDIS_TESTS_REAL_STDOUT_FD
+echo ">>> exiting with success for test ${testname} [${duration}s]" 1>&$PALUDIS_TESTS_REAL_STDOUT_FD
 exit 0
 
 
