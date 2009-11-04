@@ -76,18 +76,32 @@ main(int argc, char *argv[])
     }
 
     /* copy write buffer to stdout until we get a null, and discard that null */
-    while (((c = read(read_fd, buf, 1))) > 0)
+    while (((c = read(read_fd, buf, 1024))) > 0)
     {
-        if (buf[0] == '\0')
-            break;
+        bool done(false);
+        if (buf[c - 1] == '\0')
+        {
+            done = true;
+            --c;
+        }
 
-        while (((w = write(1, buf, c))) == 0)
-            sleep(0);
+        char * buf_p(buf);
+        while (((w = write(1, buf_p, c))) > 0)
+        {
+            c -= w;
+            buf_p += w;
+            if (c == 0)
+                break;
+        }
+
         if (w == -1)
         {
             std::cerr << "Error: " << argv[0] << ": write failed with " << ::strerror(errno) << std::endl;
             return EXIT_FAILURE;
         }
+
+        if (done)
+            break;
     }
 
     if (c == -1)
