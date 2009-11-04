@@ -222,6 +222,10 @@ paludis-*.*.*.tar.bz2
 /paludis/repositories/e/dep_spec_pretty_printer_TEST
 /paludis/repositories/e/depend_rdepend_TEST
 /paludis/repositories/e/e_repository_TEST
+/paludis/repositories/e/e_repository_TEST_0
+/paludis/repositories/e/e_repository_TEST_1
+/paludis/repositories/e/e_repository_TEST_2
+/paludis/repositories/e/e_repository_TEST_3
 /paludis/repositories/e/e_repository_TEST_dependencies_rewriter
 /paludis/repositories/e/e_repository_TEST_ever
 /paludis/repositories/e/e_repository_TEST_exheres_0

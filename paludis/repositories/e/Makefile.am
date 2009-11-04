@@ -207,6 +207,50 @@ e_repository_TEST_kdebuild_1_LDADD = \
 
 e_repository_TEST_kdebuild_1_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
+e_repository_TEST_3_SOURCES = e_repository_TEST_3.cc
+
+e_repository_TEST_3_LDADD = \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
+e_repository_TEST_3_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
+e_repository_TEST_2_SOURCES = e_repository_TEST_2.cc
+
+e_repository_TEST_2_LDADD = \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
+e_repository_TEST_2_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
+e_repository_TEST_1_SOURCES = e_repository_TEST_1.cc
+
+e_repository_TEST_1_LDADD = \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
+e_repository_TEST_1_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
+e_repository_TEST_0_SOURCES = e_repository_TEST_0.cc
+
+e_repository_TEST_0_LDADD = \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
+e_repository_TEST_0_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
 e_repository_TEST_phases_SOURCES = e_repository_TEST_phases.cc
 
 e_repository_TEST_phases_LDADD = \
@@ -408,6 +452,18 @@ EXTRA_DIST = \
 	e_repository_TEST_kdebuild_1.cc \
 	e_repository_TEST_kdebuild_1_setup.sh \
 	e_repository_TEST_kdebuild_1_cleanup.sh \
+	e_repository_TEST_0.cc \
+	e_repository_TEST_0_setup.sh \
+	e_repository_TEST_0_cleanup.sh \
+	e_repository_TEST_1.cc \
+	e_repository_TEST_1_setup.sh \
+	e_repository_TEST_1_cleanup.sh \
+	e_repository_TEST_2.cc \
+	e_repository_TEST_2_setup.sh \
+	e_repository_TEST_2_cleanup.sh \
+	e_repository_TEST_3.cc \
+	e_repository_TEST_3_setup.sh \
+	e_repository_TEST_3_cleanup.sh \
 	e_repository_TEST_phases.cc \
 	e_repository_TEST_phases_setup.sh \
 	e_repository_TEST_phases_cleanup.sh \
@@ -468,6 +524,10 @@ check_SCRIPTS = \
 	e_repository_TEST_ever_setup.sh e_repository_TEST_ever_cleanup.sh \
 	e_repository_TEST_exheres_0_setup.sh e_repository_TEST_exheres_0_cleanup.sh \
 	e_repository_TEST_kdebuild_1_setup.sh e_repository_TEST_kdebuild_1_cleanup.sh \
+	e_repository_TEST_0_setup.sh e_repository_TEST_0_cleanup.sh \
+	e_repository_TEST_1_setup.sh e_repository_TEST_1_cleanup.sh \
+	e_repository_TEST_2_setup.sh e_repository_TEST_2_cleanup.sh \
+	e_repository_TEST_3_setup.sh e_repository_TEST_3_cleanup.sh \
 	e_repository_TEST_phases_setup.sh e_repository_TEST_phases_cleanup.sh \
 	e_repository_TEST_exlibs_setup.sh e_repository_TEST_exlibs_cleanup.sh \
 	e_repository_TEST_replacing_setup.sh e_repository_TEST_replacing_cleanup.sh \
@@ -532,12 +592,16 @@ TESTS = \
 	dep_spec_pretty_printer_TEST \
 	depend_rdepend_TEST \
 	e_repository_TEST \
+	e_repository_TEST_0 \
+	e_repository_TEST_1 \
+	e_repository_TEST_2 \
+	e_repository_TEST_3 \
 	e_repository_TEST_dependencies_rewriter \
 	e_repository_TEST_ever \
 	e_repository_TEST_exheres_0 \
+	e_repository_TEST_exlibs \
 	e_repository_TEST_kdebuild_1 \
 	e_repository_TEST_phases \
-	e_repository_TEST_exlibs \
 	e_repository_TEST_replacing \
 	e_repository_TEST_symlink_rewriting \
 	e_repository_sets_TEST \
