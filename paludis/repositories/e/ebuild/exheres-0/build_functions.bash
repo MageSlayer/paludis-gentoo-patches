@@ -183,6 +183,7 @@ einstall()
 
 emagicdocs()
 {
+    local done_docs old_set f d p doc e
     done_docs=
     old_set=$(shopt | grep 'nocaseglob[[:space:]]*on')
     shopt -s nocaseglob

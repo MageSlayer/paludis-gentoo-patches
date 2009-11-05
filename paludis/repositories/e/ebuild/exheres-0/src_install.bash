@@ -25,7 +25,6 @@ default_src_install()
     verify_not_called_cross_phase ${FUNCNAME[0]#default_}
     ebuild_verify_not_changed_from_global_scope DEFAULT_SRC_INSTALL_PARAMS
 
-    local done_docs old_set f d p doc e
     if [[ -f Makefile ]] || [[ -f makefile ]] || [[ -f GNUmakefile ]] ; then
         if make -j1 -n DESTDIR="${IMAGE}" "${DEFAULT_SRC_INSTALL_PARAMS[@]}" install ; then
             echo "Found a makefile, using the install target" 
