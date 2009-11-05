@@ -55,7 +55,7 @@ void expose_version_spec()
          "VersionSpec",
          "A VersionSpec represents a version number (for example, 1.2.3b-r1).\n\n"
 
-         "See U{example_version_spec<###EX###../example_version_spec.html>}",
+         "See U{example_version_spec<###EX###example_version_spec.html>}",
          bp::no_init
         )
         .def("__init__",
