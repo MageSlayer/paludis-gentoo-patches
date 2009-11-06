@@ -391,6 +391,7 @@ namespace
                             value_for<n::extra_params>(std::tr1::shared_ptr<Map<std::string, std::string> >()),
                             value_for<n::extra_repository_dirs>(extra_repository_dirs),
                             value_for<n::master_repository_name>(master_repository_name),
+                            value_for<n::profiles_if_not_auto>(""),
                             value_for<n::repository_dir>(FSEntry(path)),
                             value_for<n::repository_type>(no_config_environment::ncer_auto),
                             value_for<n::write_cache>(write_cache)

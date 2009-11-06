@@ -59,7 +59,6 @@ namespace paludis
 FakeInstalledRepository::FakeInstalledRepository(const FakeInstalledRepositoryParams & p) :
     FakeRepositoryBase(p.environment(), p.name(), make_named_values<RepositoryCapabilities>(
                 value_for<n::destination_interface>(this),
-                value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
                 value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
                 value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
                 value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
@@ -239,5 +238,11 @@ FakeInstalledRepository::repository_factory_dependencies(
         const std::tr1::function<std::string (const std::string&)> &)
 {
     return make_shared_ptr(new RepositoryNameSet);
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+FakeInstalledRepository::accept_keywords_key() const
+{
+    return make_null_shared_ptr();
 }
 

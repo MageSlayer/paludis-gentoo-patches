@@ -167,14 +167,14 @@ module Paludis
             repo = no_config_testrepo.main_repository
             [
                 :mirrors_interface, :environment_variable_interface,
-                :provides_interface, :virtuals_interface, :e_interface].each do |sym|
+                :provides_interface, :virtuals_interface].each do |sym|
                 assert_respond_to repo, sym
             end
         end
 
         def test_interfaces
             assert_equal installed_repo.name, installed_repo.provides_interface.name
-            assert_nil installed_repo.e_interface
+            assert_nil installed_repo.mirrors_interface
         end
 
         def text_repository_environment_interface
@@ -251,83 +251,6 @@ module Paludis
             assert cat_mirrors.include?('http://a')
             assert cat_mirrors.include?('http://b')
             assert repo.mirrors('dog').empty?
-        end
-    end
-
-    class TestCase_RepositoryPortageInterface < Test::Unit::TestCase
-        include RepositoryTestCase
-
-        def test_responds
-            repo = no_config_testrepo.main_repository
-            [:profile_variable, :profiles, :find_profile, :set_profile].each do |sym|
-                assert_respond_to repo, sym
-            end
-        end
-
-        def test_profiles
-            repo = no_config_testrepo.main_repository
-            assert_kind_of Array, repo.profiles
-        end
-
-        def test_find_profile
-            repo = no_config_testrepo.main_repository
-            assert_nothing_raised do
-                profile = repo.find_profile(Dir.getwd().to_s + '/repository_TEST_dir/testrepo/profiles/testprofile')
-                assert_kind_of ProfilesDescLine, profile
-                profile = repo.find_profile('broken')
-                assert profile.nil?
-            end
-        end
-
-        def test_set_profile
-            repo = no_config_testrepo.main_repository
-            assert_nothing_raised do
-                profile = repo.profiles.first
-                repo.set_profile(profile)
-            end
-        end
-
-        def test_profile_variable
-            repo = no_config_testrepo.main_repository
-            assert_nothing_raised do
-                assert_equal 'test', repo.profile_variable('ARCH')
-            end
-        end
-    end
-
-    class TestCase_ProfilesDescLine < Test::Unit::TestCase
-        include RepositoryTestCase
-
-        def profiles
-            no_config_testrepo.main_repository.profiles
-        end
-
-        def test_profiles
-            assert_kind_of Array, profiles
-            assert_equal 1, profiles.length
-            assert_kind_of ProfilesDescLine, profiles.first
-        end
-
-        def test_respond
-            assert_respond_to profiles.first, :path
-            assert_respond_to profiles.first, :arch
-            assert_respond_to profiles.first, :status
-        end
-
-        def test_profile_path
-            assert_kind_of String, profiles.first.path
-            assert_equal Dir.getwd().to_s + "/repository_TEST_dir/testrepo/profiles/testprofile",
-                profiles.first.path
-        end
-
-        def test_profile_arch
-            assert_kind_of String, profiles.first.arch
-            assert_equal 'x86', profiles.first.arch
-        end
-
-        def test_profile_status
-            assert_kind_of String, profiles.first.status
-            assert_equal 'stable', profiles.first.status
         end
     end
 

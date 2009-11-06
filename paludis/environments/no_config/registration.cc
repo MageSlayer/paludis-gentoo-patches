@@ -43,6 +43,7 @@ namespace
         FSEntry repository_dir(FSEntry::cwd());
         std::tr1::shared_ptr<FSEntrySequence> extra_repository_dirs(new FSEntrySequence);
         FSEntry write_cache("/var/empty");
+        std::string profile;
         std::string master_repository_name;
         bool disable_metadata_cache(false);
         bool accept_unstable(false);
@@ -70,6 +71,8 @@ namespace
                             "supported, use master-repository-name and extra-repository-dir");
                 else if (key == "extra-repository-dir")
                     extra_repository_dirs->push_back(value);
+                else if (key == "profile")
+                    profile = value;
                 else if (key == "repository-dir")
                     repository_dir = value;
                 else if (key == "disable-metadata-cache")
@@ -93,6 +96,7 @@ namespace
                         value_for<n::extra_params>(extra_params),
                         value_for<n::extra_repository_dirs>(extra_repository_dirs),
                         value_for<n::master_repository_name>(master_repository_name),
+                        value_for<n::profiles_if_not_auto>(profile),
                         value_for<n::repository_dir>(repository_dir),
                         value_for<n::repository_type>(repository_type),
                         value_for<n::write_cache>(write_cache)

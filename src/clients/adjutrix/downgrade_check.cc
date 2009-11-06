@@ -78,38 +78,6 @@ namespace
         return 0;
     }
 
-    std::string
-    make_filename(const RepositoryEInterface::ProfilesConstIterator & p, bool unstable)
-    {
-        std::string result;
-        FSEntry f((*p).path());
-        while (f.basename() != "profiles" && f != FSEntry("/"))
-        {
-            result = f.basename() + (result.empty() ? "" : "_" + result);
-            f = f.dirname();
-        }
-
-        result.append(unstable ? ".unstable.txt" : ".stable.txt");
-
-        return result;
-    }
-
-    std::string
-    make_desc(const RepositoryEInterface::ProfilesConstIterator & p, bool unstable)
-    {
-        std::string result;
-        FSEntry f((*p).path());
-        while (f.basename() != "profiles" && f != FSEntry("/"))
-        {
-            result = f.basename() + (result.empty() ? "" : "/" + result);
-            f = f.dirname();
-        }
-
-        result.append(unstable ? " (unstable)" : " (stable)");
-
-        return result;
-    }
-
     void
     load_list(std::map<std::pair<QualifiedPackageName, std::string>, VersionSpec> & map, std::istream & f)
     {
@@ -177,19 +145,13 @@ do_build_downgrade_check_list(NoConfigEnvironment & env)
     if (! output_dir.mkdir())
         throw ConfigurationError("Output directory already exists");
 
-    for (RepositoryEInterface::ProfilesConstIterator
-            p((*env.main_repository()).e_interface()->begin_profiles()),
-            p_end((*env.main_repository()).e_interface()->end_profiles()) ; p != p_end ; ++p)
+    for (int i = 0 ; i < 2 ; ++i)
     {
-        for (int i = 0 ; i < 2 ; ++i)
-        {
-            env.set_accept_unstable(i);
-            (*env.main_repository()).e_interface()->set_profile(p);
-            std::string n(make_filename(p, i));
-            std::cerr << "Generating " << n << "..." << std::endl;
-            SafeOFStream f(output_dir / n);
-            exit_status |= build_one_list(env, f);
-        }
+        bool b(i);
+        env.set_accept_unstable(b);
+        std::cerr << "Generating " << (b ? "unstable" : "stable")  << "..." << std::endl;
+        SafeOFStream f(output_dir / ((b ? "unstable" : "stable") + std::string(".txt")));
+        exit_status |= build_one_list(env, f);
     }
 
     return exit_status;
@@ -210,28 +172,24 @@ do_downgrade_check(NoConfigEnvironment & env)
 
     std::multimap<std::pair<QualifiedPackageName, std::string>, std::string> results;
 
-    for (RepositoryEInterface::ProfilesConstIterator
-            p((*env.main_repository()).e_interface()->begin_profiles()),
-            p_end((*env.main_repository()).e_interface()->end_profiles()) ; p != p_end ; ++p)
+    for (int i = 0 ; i < 2 ; ++i)
     {
-        for (int i = 0 ; i < 2 ; ++i)
+        bool b(i);
+        env.set_accept_unstable(b);
+        std::string f(b ? "unstable" : "stable");
+        f.append(".txt");
+
+        if ((before_dir / f).exists() && (after_dir / f).exists())
         {
-            env.set_accept_unstable(i);
-            (*env.main_repository()).e_interface()->set_profile(p);
-            std::string n(make_filename(p, i)), desc(make_desc(p, i));
+            std::cerr << "Checking " << (b ? "unstable" : "stable") << "..." << std::endl;
 
-            if ((before_dir / n).exists() && (after_dir / n).exists())
-            {
-                std::cerr << "Checking " << n << "..." << std::endl;
+            SafeIFStream f1(before_dir / f);
+            SafeIFStream f2(after_dir / f);
 
-                SafeIFStream f1(before_dir / n);
-                SafeIFStream f2(after_dir / n);
-
-                exit_status |= check_one_list(env, f1, f2, results, desc);
-            }
-            else
-                std::cerr << "Skipping " << n << "..." << std::endl;
+            exit_status |= check_one_list(env, f1, f2, results, b ? "unstable" : "stable");
         }
+        else
+            std::cerr << "Skipping " << (b ? "unstable" : "stable") << "..." << std::endl;
     }
 
     std::pair<QualifiedPackageName, std::string> old_qpns(QualifiedPackageName("dummy/dummmy"),

@@ -73,9 +73,6 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
     KeywordName target_keyword(*CommandLine::get_instance()->begin_parameters());
     std::string target_arch(strip_leading_string(*CommandLine::get_instance()->begin_parameters(), "~"));
 
-    (*env.main_repository()).e_interface()->set_profile_by_arch(target_arch);
-    env.set_accept_unstable('~' == stringify(target_keyword).at(0));
-
     DepListOptions d_options;
     d_options.circular() = dl_circular_discard_silently;
     d_options.use() = dl_use_deps_take_all;

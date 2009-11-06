@@ -119,7 +119,6 @@ namespace paludis
         QualifiedPackageName value_to_qualified_package_name(VALUE v);
         std::tr1::shared_ptr<Environment> value_to_environment(VALUE v);
         std::tr1::shared_ptr<NoConfigEnvironment> value_to_no_config_environment(VALUE v);
-        RepositoryEInterface::ProfilesDescLine value_to_profiles_desc_line(VALUE v);
         std::tr1::shared_ptr<Repository> value_to_repository(VALUE);
         std::tr1::shared_ptr<const SupportsActionTestBase> value_to_supports_action_test_base(VALUE v);
         std::tr1::shared_ptr<Action> value_to_action(VALUE v);

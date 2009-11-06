@@ -55,7 +55,6 @@ namespace paludis
         public RepositoryMirrorsInterface,
         public RepositoryVirtualsInterface,
         public RepositoryDestinationInterface,
-        public RepositoryEInterface,
         public RepositoryManifestInterface,
         public std::tr1::enable_shared_from_this<ERepository>,
         private PrivateImplementationPattern<ERepository>
@@ -150,29 +149,9 @@ namespace paludis
 
             virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
 
-
-            ///\name Information about ERepository
-            ///\{
-
-            std::string profile_variable(const std::string &) const;
-            virtual std::string accept_keywords_variable() const;
-            virtual std::string arch_variable() const;
-
             const erepository::ERepositoryParams & params() const;
 
-            ///\}
-
-            ///\name Profile setting and querying functions
-            ///\{
-
-            ProfilesConstIterator begin_profiles() const;
-            ProfilesConstIterator end_profiles() const;
-
-            ProfilesConstIterator find_profile(const FSEntry & location) const;
-            void set_profile(const ProfilesConstIterator & iter);
-            void set_profile_by_arch(const std::string &);
-
-            ///\}
+            std::string profile_variable(const std::string &) const;
 
             HookResult perform_hook(const Hook &)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -198,6 +177,7 @@ namespace paludis
             virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
             virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
             virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > info_vars_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const;
 
             ///\name RepositoryFactory functions
             ///\{

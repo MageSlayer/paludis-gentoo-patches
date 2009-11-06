@@ -45,7 +45,6 @@ namespace paludis
     class RepositoryVirtualsInterface;
     class RepositoryMakeVirtualsInterface;
     class RepositoryDestinationInterface;
-    class RepositoryEInterface;
     class RepositoryManifestInterface;
 
     class RepositoryEInterfaceProfilesDescLine;

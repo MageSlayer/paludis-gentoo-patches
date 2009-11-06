@@ -770,39 +770,6 @@ namespace test_cases
         }
     } test_e_repository_query_profile_masks;
 
-    struct ERepositoryInvalidateMasksTest : TestCase
-    {
-        ERepositoryInvalidateMasksTest() : TestCase("invalidate_masks") { }
-
-        void run()
-        {
-            TestEnvironment env;
-            env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
-                    new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
-            keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo10"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo10/profiles/profile"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
-            std::tr1::shared_ptr<ERepository> repo(std::tr1::static_pointer_cast<ERepository>(ERepository::repository_factory_create(&env,
-                            std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1))));
-            env.package_database()->add_repository(1, repo);
-
-            TEST_CHECK((*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/was_masked-0",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin())->masked());
-            repo->set_profile(repo->find_profile(repo->params().location() / "profiles/profile/subprofile"));
-            TEST_CHECK(! (*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/was_masked-0",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin())->masked());
-            repo->set_profile(repo->find_profile(repo->params().location() / "profiles/profile"));
-            TEST_CHECK((*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/was_masked-0",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin())->masked());
-        }
-    } test_e_repository_invalidate_masks;
-
     struct ERepositoryVirtualsTest : TestCase
     {
         ERepositoryVirtualsTest() : TestCase("virtuals") { }
@@ -822,7 +789,7 @@ namespace test_cases
                             std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1))));
             env.package_database()->add_repository(1, repo);
 
-            bool has_one(false), has_two(false), has_three(false);
+            bool has_one(false), has_two(false);
             int count(0);
 
             std::tr1::shared_ptr<const RepositoryVirtualsInterface::VirtualsSequence> seq(repo->virtual_packages());
@@ -843,13 +810,32 @@ namespace test_cases
             TEST_CHECK(has_one);
             TEST_CHECK(has_two);
             TEST_CHECK_EQUAL(count, 2);
+        }
+    } test_e_repository_virtuals;
 
-            repo->set_profile(repo->find_profile(repo->params().location() / "profiles/profile/subprofile"));
+    struct ERepositoryVirtuals2Test : TestCase
+    {
+        ERepositoryVirtuals2Test() : TestCase("virtuals 2") { }
 
-            has_one = has_two = false;
-            count = 0;
+        void run()
+        {
+            TestEnvironment env;
+            env.set_paludis_command("/bin/false");
+            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo15"));
+            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo15/profiles/profile/subprofile"));
+            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            std::tr1::shared_ptr<ERepository> repo(std::tr1::static_pointer_cast<ERepository>(ERepository::repository_factory_create(&env,
+                            std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1))));
+            env.package_database()->add_repository(1, repo);
 
-            seq = repo->virtual_packages();
+            bool has_one(false), has_two(false), has_three(false);
+            int count(0);
+
+            std::tr1::shared_ptr<const RepositoryVirtualsInterface::VirtualsSequence> seq(repo->virtual_packages());
             for (RepositoryVirtualsInterface::VirtualsSequence::ConstIterator it(seq->begin()),
                     it_end(seq->end()); it_end != it; ++it, ++count)
                 if ("virtual/one" == stringify(it->virtual_name()))
@@ -874,7 +860,7 @@ namespace test_cases
             TEST_CHECK(has_three);
             TEST_CHECK_EQUAL(count, 3);
         }
-    } test_e_repository_virtuals;
+    } test_e_repository_virtuals_2;
 
     struct ERepositoryManifestTest : TestCase
     {

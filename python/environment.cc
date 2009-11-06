@@ -452,6 +452,7 @@ struct NoConfigEnvironmentWrapper :
                     value_for<n::extra_params>(make_null_shared_ptr()),
                     value_for<n::extra_repository_dirs>(extra_repository_dirs),
                     value_for<n::master_repository_name>(master_repo_name),
+                    value_for<n::profiles_if_not_auto>(""),
                     value_for<n::repository_dir>(env_dir),
                     value_for<n::repository_type>(no_config_environment::ncer_auto),
                     value_for<n::write_cache>(cache_dir)

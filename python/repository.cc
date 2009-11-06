@@ -69,12 +69,6 @@ struct RepositoryWrapper :
         return self.destination_interface();
     }
 
-    static RepositoryEInterface *
-    get_e_interface(const Repository & self)
-    {
-        return self.e_interface();
-    }
-
     static PyObject *
     find_metadata(const Repository & self, const std::string & key)
     {
@@ -92,24 +86,6 @@ struct FakeRepositoryWrapper
     add_version(FakeRepository & self, const QualifiedPackageName & qpn, const VersionSpec & vs)
     {
         return self.add_version(qpn, vs);
-    }
-};
-
-struct RepositoryEInterfaceWrapper
-{
-    static bp::object
-    my_find_profile(const RepositoryEInterface & self, const FSEntry & location)
-    {
-        RepositoryEInterface::ProfilesConstIterator p(self.find_profile(location));
-        if (p == self.end_profiles())
-            return bp::object();
-        return bp::object(bp::ptr(&*p));
-    }
-
-    static void
-    my_set_profile(RepositoryEInterface & self, const RepositoryEInterface::ProfilesDescLine & pdl)
-    {
-        self.set_profile(self.find_profile(pdl.path()));
     }
 };
 
@@ -236,11 +212,6 @@ void expose_repository()
                 "[ro] RepositoryDestinationInterface"
                 )
 
-        .add_property("e_interface", bp::make_function(&RepositoryWrapper::get_e_interface,
-                    bp::return_internal_reference<>()),
-                "[ro] RepositoryEInterface"
-                )
-
         .def("format_key", &Repository::format_key,
                 "The format_key, if not None, holds our repository's format"
             )
@@ -264,26 +235,6 @@ void expose_repository()
                 "find_metadata(string) -> MetadataKey\n"
                 "NEED_DOC"
             )
-        ;
-
-    /**
-     * RepositoryEInterfaceProfilesDescLine
-     */
-    bp::class_<RepositoryEInterfaceProfilesDescLine>
-        (
-         "RepositoryEInterfaceProfilesDescLine",
-         "A profiles.desc line in a Repository implementing RepositoryEInterface.",
-         bp::no_init
-        )
-        .add_property("path",
-                &named_values_getter<RepositoryEInterfaceProfilesDescLine, n::path, FSEntry, &RepositoryEInterfaceProfilesDescLine::path>
-                )
-        .add_property("arch",
-                &named_values_getter<RepositoryEInterfaceProfilesDescLine, n::arch, std::string, &RepositoryEInterfaceProfilesDescLine::arch>
-                )
-        .add_property("status",
-                &named_values_getter<RepositoryEInterfaceProfilesDescLine, n::status, std::string, &RepositoryEInterfaceProfilesDescLine::status>
-                )
         ;
 
     /**
@@ -335,31 +286,6 @@ void expose_repository()
          "Interface for repositories that can be used as an install destination.",
          bp::no_init
         );
-
-    /**
-     * RepositoryEInterface
-     */
-    bp::class_<RepositoryEInterface, boost::noncopyable>
-        (
-         "RepositoryEInterface",
-         "Interface for handling ERepository specific functionality.",
-         bp::no_init
-        )
-        .add_property("profiles", bp::range(&RepositoryEInterface::begin_profiles,
-                    &RepositoryEInterface::end_profiles),
-                "[ro] Iterable of Profiles"
-                )
-
-        .def("profile_variable", &RepositoryEInterface::profile_variable)
-
-        .def("find_profile", &RepositoryEInterfaceWrapper::my_find_profile,
-                "find_profile(path_string) -> RepositoryEInterfaceProfilesDescLine"
-            )
-
-        .add_property("profile", bp::object(), &RepositoryEInterfaceWrapper::my_set_profile,
-                "[wo] RepositoryEInterfaceProfilesDescLine"
-                )
-        ;
 
     /**
      * FakeRepository

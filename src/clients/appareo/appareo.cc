@@ -228,6 +228,7 @@ main(int argc, char *argv[])
                     value_for<n::extra_params>(keys),
                     value_for<n::extra_repository_dirs>(extra_repository_dirs),
                     value_for<n::master_repository_name>(CommandLine::get_instance()->a_master_repository_name.argument()),
+                    value_for<n::profiles_if_not_auto>(""),
                     value_for<n::repository_dir>(get_location_and_add_filters()),
                     value_for<n::repository_type>(no_config_environment::ncer_ebuild),
                     value_for<n::write_cache>(CommandLine::get_instance()->a_write_cache_dir.argument())

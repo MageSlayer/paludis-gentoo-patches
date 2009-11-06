@@ -40,6 +40,7 @@ namespace paludis
     namespace n
     {
         struct append_repository_name_to_write_cache;
+        struct auto_profiles;
         struct binary_destination;
         struct binary_distdir;
         struct binary_keywords;
@@ -77,6 +78,7 @@ namespace paludis
         struct ERepositoryParams
         {
             NamedValue<n::append_repository_name_to_write_cache, bool> append_repository_name_to_write_cache;
+            NamedValue<n::auto_profiles, bool> auto_profiles;
             NamedValue<n::binary_destination, bool> binary_destination;
             NamedValue<n::binary_distdir, FSEntry> binary_distdir;
             NamedValue<n::binary_keywords, std::string> binary_keywords;

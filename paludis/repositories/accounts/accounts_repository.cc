@@ -111,7 +111,6 @@ AccountsRepository::AccountsRepository(const AccountsRepositoryParams & p) :
             p.name(),
             make_named_values<RepositoryCapabilities>(
                 value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
-                value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
                 value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
                 value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
                 value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
@@ -131,7 +130,6 @@ AccountsRepository::AccountsRepository(const InstalledAccountsRepositoryParams &
             p.name(),
             make_named_values<RepositoryCapabilities>(
                 value_for<n::destination_interface>(this),
-                value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
                 value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
                 value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
                 value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
@@ -465,6 +463,12 @@ bool
 AccountsRepository::sync(const std::tr1::shared_ptr<OutputManager> &) const
 {
     return false;
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+AccountsRepository::accept_keywords_key() const
+{
+    return make_null_shared_ptr();
 }
 
 template class PrivateImplementationPattern<AccountsRepository>;

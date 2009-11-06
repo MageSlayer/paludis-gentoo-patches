@@ -113,7 +113,7 @@ typedef std::tr1::unordered_map<QualifiedPackageName,
         Hash<QualifiedPackageName> > RepositoryMaskMap;
 typedef std::tr1::unordered_multimap<std::string, std::string, Hash<std::string> > MirrorMap;
 typedef std::tr1::unordered_map<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec>, Hash<QualifiedPackageName> > VirtualsMap;
-typedef std::list<RepositoryEInterface::ProfilesDescLine> ProfilesDesc;
+
 typedef std::map<FSEntry, std::string> EAPIForFileMap;
 
 namespace
@@ -166,7 +166,6 @@ namespace paludis
             Mutex repo_mask_mutex;
             Mutex arch_flags_mutex;
             Mutex mirrors_mutex;
-            Mutex profiles_desc_mutex;
             Mutex use_desc_mutex;
             Mutex profile_ptr_mutex;
             Mutex news_ptr_mutex;
@@ -191,16 +190,14 @@ namespace paludis
         mutable bool has_mirrors;
         mutable MirrorMap mirrors;
 
-        mutable bool has_profiles_desc;
-        mutable ProfilesDesc profiles_desc;
-
         mutable std::tr1::shared_ptr<ERepositoryProfile> profile_ptr;
+        mutable std::tr1::shared_ptr<const FSEntry> main_profile_path;
 
         mutable std::tr1::shared_ptr<ERepositoryNews> news_ptr;
 
         mutable std::tr1::shared_ptr<ERepositorySets> sets_ptr;
         mutable std::tr1::shared_ptr<ERepositoryEntries> entries_ptr;
-        mutable std::tr1::shared_ptr<Layout> layout;
+        const std::tr1::shared_ptr<Layout> layout;
 
         mutable EAPIForFileMap eapi_for_file_map;
 
@@ -208,7 +205,6 @@ namespace paludis
         ~Implementation();
 
         void need_profiles() const;
-        void need_profiles_desc() const;
 
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > layout_key;
@@ -239,6 +235,7 @@ namespace paludis
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > binary_keywords;
         std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > accounts_repository_data_location_key;
         std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > e_updates_location_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key;
         std::list<std::tr1::shared_ptr<const MetadataKey> > about_keys;
     };
 
@@ -250,7 +247,6 @@ namespace paludis
         names_cache(new RepositoryNameCache(p.names_cache(), r)),
         has_repo_mask(false),
         has_mirrors(false),
-        has_profiles_desc(false),
         sets_ptr(new ERepositorySets(params.environment(), r, p)),
         entries_ptr(ERepositoryEntriesFactory::get_instance()->create(params.entry_format(), params.environment(), r, p)),
         layout(LayoutFactory::get_instance()->create(params.layout(), r, params.location(), entries_ptr, get_master_locations(
@@ -361,82 +357,54 @@ namespace paludis
         if (profile_ptr)
             return;
 
+        std::tr1::shared_ptr<const FSEntrySequence> profiles(params.profiles());
+
+        if (params.auto_profiles())
+        {
+            FSEntry profiles_desc("/dev/null");
+            for (FSEntrySequence::ConstIterator f(layout->profiles_desc_files()->begin()),
+                    f_end(layout->profiles_desc_files()->end()) ;
+                    f != f_end ; ++f)
+                if (f->is_regular_file_or_symlink_to_regular_file())
+                    profiles_desc = *f;
+
+            std::tr1::shared_ptr<FSEntrySequence> auto_profiles(new FSEntrySequence);
+
+            if (profiles_desc == FSEntry("/dev/null"))
+            {
+                auto_profiles->push_back(FSEntry("/var/empty"));
+                main_profile_path.reset(new FSEntry("/var/empty"));
+            }
+            else
+            {
+                Context context("When loading profiles.desc file '" + stringify(profiles_desc) + "':");
+                LineConfigFile f(profiles_desc, LineConfigFileOptions());
+                for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
+                        line != line_end ; ++line)
+                {
+                    std::vector<std::string> tokens;
+                    tokenise_whitespace(*line, std::back_inserter(tokens));
+                    if (tokens.size() < 3)
+                        continue;
+
+                    FSEntry p(params.location() / "profiles" / tokens.at(1));
+                    auto_profiles->push_back(p);
+                    main_profile_path.reset(new FSEntry(p));
+                    break;
+                }
+            }
+            profiles = auto_profiles;
+        }
+        else if (params.profiles()->empty())
+            main_profile_path.reset(new FSEntry("/var/empty"));
+        else
+            main_profile_path.reset(new FSEntry(*params.profiles()->begin()));
+
         profile_ptr.reset(new ERepositoryProfile(
-                    params.environment(), repo, repo->name(), *params.profiles(),
+                    params.environment(), repo, repo->name(), *profiles,
                     EAPIData::get_instance()->eapi_from_string(
                         params.eapi_when_unknown())->supported()->ebuild_environment_variables()->env_arch(),
                     params.profiles_explicitly_set()));
-    }
-
-    void
-    Implementation<ERepository>::need_profiles_desc() const
-    {
-        if (has_profiles_desc)
-            return;
-
-        Lock l(mutexes->profiles_desc_mutex);
-
-        if (has_profiles_desc)
-            return;
-
-        Context context("When loading profiles.desc:");
-
-        bool found_one(false);
-        std::tr1::shared_ptr<const FSEntrySequence> profiles_desc_files(layout->profiles_desc_files());
-        for (FSEntrySequence::ConstIterator p(profiles_desc_files->begin()), p_end(profiles_desc_files->end()) ;
-                p != p_end ; ++p)
-        {
-            if (! p->exists())
-                continue;
-
-            found_one = true;
-
-            LineConfigFile f(*p, LineConfigFileOptions() + lcfo_disallow_continuations);
-            for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ; line != line_end ; ++line)
-            {
-                std::vector<std::string> tokens;
-                tokenise_whitespace(*line, std::back_inserter(tokens));
-                if (tokens.size() < 3)
-                    continue;
-
-                std::tr1::shared_ptr<FSEntrySequence> profiles(new FSEntrySequence);
-                profiles->push_back(layout->profiles_base_dir() / tokens.at(1));
-                try
-                {
-                    profiles_desc.push_back(make_named_values<RepositoryEInterface::ProfilesDescLine>(
-                            value_for<n::arch>(tokens.at(0)),
-                            value_for<n::path>(*profiles->begin()),
-                            value_for<n::profile>(make_shared_ptr(new RepositoryEInterfaceProfilesDescLineProfile(
-                                        make_named_values<RepositoryEInterfaceProfilesDescLineProfile>(
-                                            value_for<n::arch_var_if_special>(EAPIData::get_instance()->eapi_from_string(params.eapi_when_unknown())->supported()->ebuild_environment_variables()->env_arch()),
-                                            value_for<n::environment>(params.environment()),
-                                            value_for<n::location>(profiles),
-                                            value_for<n::mutex>(make_shared_ptr(new Mutex)),
-                                            value_for<n::profiles_explicitly_set>(true),
-                                            value_for<n::repository>(repo),
-                                            value_for<n::repository_name>(repo->name()),
-                                            value_for<n::value>(make_null_shared_ptr())
-                                            )))),
-                            value_for<n::status>(tokens.at(2))
-                            ));
-                }
-                catch (const InternalError &)
-                {
-                    throw;
-                }
-                catch (const Exception & e)
-                {
-                    Log::get_instance()->message("e.profile.failure", ll_warning, lc_context) << "Not loading profile '"
-                        << tokens.at(1) << "' due to exception '" << e.message() << "' (" << e.what() << ")";
-                }
-            }
-        }
-
-        if (! found_one)
-            throw ERepositoryConfigurationError("No profiles.desc found (maybe this repository is not synced, or maybe "
-                    "you need to specify its master");
-
-        has_profiles_desc = true;
     }
 }
 
@@ -494,7 +462,6 @@ ERepository::ERepository(const ERepositoryParams & p) :
             fetch_repo_name(p.location()),
             make_named_values<RepositoryCapabilities>(
                 value_for<n::destination_interface>(p.binary_destination() ? this : 0),
-                value_for<n::e_interface>(this),
                 value_for<n::environment_variable_interface>(this),
                 value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
                 value_for<n::manifest_interface>(this),
@@ -550,6 +517,8 @@ ERepository::_add_metadata_keys() const
         add_metadata_key(_imp->accounts_repository_data_location_key);
     if (_imp->e_updates_location_key)
         add_metadata_key(_imp->e_updates_location_key);
+    if (_imp->accept_keywords_key)
+        add_metadata_key(_imp->accept_keywords_key);
 
     std::for_each(_imp->about_keys.begin(), _imp->about_keys.end(), std::tr1::bind(
                 std::tr1::mem_fn(&ERepository::add_metadata_key), this, std::tr1::placeholders::_1));
@@ -959,72 +928,6 @@ ERepository::category_names_containing_package(const PackageNamePart & p) const
     return result ? result : Repository::category_names_containing_package(p);
 }
 
-ERepository::ProfilesConstIterator
-ERepository::begin_profiles() const
-{
-    _imp->need_profiles_desc();
-    return ProfilesConstIterator(_imp->profiles_desc.begin());
-}
-
-ERepository::ProfilesConstIterator
-ERepository::end_profiles() const
-{
-    _imp->need_profiles_desc();
-    return ProfilesConstIterator(_imp->profiles_desc.end());
-}
-
-ERepository::ProfilesConstIterator
-ERepository::find_profile(const FSEntry & location) const
-{
-    _imp->need_profiles_desc();
-    for (ProfilesDesc::const_iterator i(_imp->profiles_desc.begin()),
-            i_end(_imp->profiles_desc.end()) ; i != i_end ; ++i)
-        if ((*i).path() == location)
-            return ProfilesConstIterator(i);
-    return ProfilesConstIterator(_imp->profiles_desc.end());
-}
-
-void
-ERepository::set_profile(const ProfilesConstIterator & iter)
-{
-    Context context("When setting profile by iterator:");
-
-    Log::get_instance()->message("e.profile.using", ll_debug, lc_context)
-        << "Using profile '" << ((*iter).path()) << "'";
-
-    _imp->profile_ptr = (*iter).profile()->fetch();
-
-    if ((*DistributionData::get_instance()->distribution_from_string(_imp->params.environment()->distribution()))
-            .support_old_style_virtuals())
-        if (_imp->params.environment()->package_database()->has_repository_named(RepositoryName("virtuals")))
-            _imp->params.environment()->package_database()->fetch_repository(
-                    RepositoryName("virtuals"))->invalidate();
-
-    invalidate_masks();
-}
-
-void
-ERepository::set_profile_by_arch(const std::string & arch)
-{
-    Context context("When setting profile by arch '" + stringify(arch) + "':");
-
-    for (ProfilesConstIterator p(begin_profiles()), p_end(end_profiles()) ; p != p_end ; ++p)
-        if ((*p).arch() == stringify(arch) && (*p).status() == "stable")
-        {
-            set_profile(p);
-            return;
-        }
-
-    for (ProfilesConstIterator p(begin_profiles()), p_end(end_profiles()) ; p != p_end ; ++p)
-        if ((*p).arch() == stringify(arch))
-        {
-            set_profile(p);
-            return;
-        }
-
-    throw ConfigurationError("Cannot find a profile appropriate for '" + stringify(arch) + "'");
-}
-
 const ERepositoryParams &
 ERepository::params() const
 {
@@ -1208,25 +1111,36 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
     }
 }
 
-std::string
-ERepository::accept_keywords_variable() const
-{
-    return EAPIData::get_instance()->eapi_from_string(
-            eapi_for_file(*_imp->profiles_key->value()->begin())
-            )->supported()->ebuild_environment_variables()->env_accept_keywords();
-}
-
-std::string
-ERepository::arch_variable() const
-{
-    return EAPIData::get_instance()->eapi_from_string(
-            eapi_for_file(*_imp->profiles_key->value()->begin())
-            )->supported()->ebuild_environment_variables()->env_arch();
-}
-
 void
 ERepository::need_keys_added() const
 {
+    Lock l(_imp->mutexes->profile_ptr_mutex);
+
+    if (! _imp->accept_keywords_key)
+    {
+        _imp->need_profiles();
+
+        std::string k, v;
+
+        v = EAPIData::get_instance()->eapi_from_string(eapi_for_file(*_imp->main_profile_path)
+                )->supported()->ebuild_environment_variables()->env_accept_keywords();
+        if (! v.empty())
+            k = _imp->profile_ptr->environment_variable(v);
+
+        if (k.empty())
+        {
+            v = EAPIData::get_instance()->eapi_from_string(eapi_for_file(*_imp->main_profile_path)
+                    )->supported()->ebuild_environment_variables()->env_arch();
+            if (! v.empty())
+                k = _imp->profile_ptr->environment_variable(v);
+        }
+
+        _imp->accept_keywords_key.reset(new LiteralMetadataValueKey<std::string>(v,
+                    "Default accepted keywords", mkt_internal, k));
+        add_metadata_key(_imp->accept_keywords_key);
+    }
+
+    return;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
@@ -1350,7 +1264,7 @@ ERepository::repository_factory_create(
     }
 
     std::tr1::shared_ptr<FSEntrySequence> profiles(new FSEntrySequence);
-    bool profiles_explicitly_set(false);
+    bool profiles_explicitly_set(false), auto_profiles(false);
     tokenise_whitespace(f("profiles"), create_inserter<FSEntry>(std::back_inserter(*profiles)));
     if (profiles->empty())
     {
@@ -1364,6 +1278,15 @@ ERepository::repository_factory_create(
              * unsynced doesn't play nice with layout.conf specifying masters. */
             throw ERepositoryConfigurationError("No profiles have been specified");
         }
+    }
+    else if (f("profiles") == "(auto)")
+    {
+        profiles.reset(new FSEntrySequence);
+        if (master_repositories)
+            std::copy((*master_repositories->begin())->params().profiles()->begin(),
+                    (*master_repositories->begin())->params().profiles()->end(), profiles->back_inserter());
+        else
+            auto_profiles = true;
     }
     else
         profiles_explicitly_set = true;
@@ -1543,6 +1466,7 @@ ERepository::repository_factory_create(
 
     return std::tr1::shared_ptr<ERepository>(new ERepository(make_named_values<ERepositoryParams>(
                     value_for<n::append_repository_name_to_write_cache>(append_repository_name_to_write_cache),
+                    value_for<n::auto_profiles>(auto_profiles),
                     value_for<n::binary_destination>(binary_destination),
                     value_for<n::binary_distdir>(binary_distdir),
                     value_for<n::binary_keywords>(binary_keywords),
@@ -1694,5 +1618,12 @@ ERepository::populate_sets() const
                         true);
         }
     }
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+ERepository::accept_keywords_key() const
+{
+    need_keys_added();
+    return _imp->accept_keywords_key;
 }
 

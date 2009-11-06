@@ -209,7 +209,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 
             keys->insert("format", "ebuild");
             keys->insert("location", stringify(r->first.realpath()));
-            keys->insert("profiles", "/var/empty");
+            keys->insert("profiles", params.profiles_if_not_auto().empty() ? "(auto)" : params.profiles_if_not_auto());
             keys->insert("ignore_deprecated_profiles", "true");
             keys->insert("write_cache", stringify(params.write_cache()));
             keys->insert("names_cache", "/var/empty");
@@ -354,6 +354,7 @@ NoConfigEnvironment::NoConfigEnvironment(const no_config_environment::Params & p
 {
     _imp->initialise(this);
 
+#if 0
     if (_imp->main_repo)
         if ((*_imp->main_repo).e_interface()->end_profiles() != (*_imp->main_repo).e_interface()->begin_profiles())
             (*_imp->main_repo).e_interface()->set_profile((*_imp->main_repo).e_interface()->begin_profiles());
@@ -363,6 +364,7 @@ NoConfigEnvironment::NoConfigEnvironment(const no_config_environment::Params & p
                 (*_imp->master_repo).e_interface()->begin_profiles())
             (*_imp->master_repo).e_interface()->set_profile(
                     (*_imp->master_repo).e_interface()->begin_profiles());
+#endif
 
     add_metadata_key(_imp->format_key);
     add_metadata_key(_imp->repository_dir_key);
@@ -443,63 +445,26 @@ NoConfigEnvironment::accept_keywords(const std::tr1::shared_ptr<const KeywordNam
     if (_imp->is_vdb)
         return true;
 
-    std::string accept_keywords_var((*_imp->main_repo).e_interface()->accept_keywords_variable());
-    std::string ak;
-    if (! accept_keywords_var.empty())
-        ak = (*_imp->main_repo).e_interface()->profile_variable(accept_keywords_var);
-
-    if (ak.empty())
-    {
-        std::string arch_var((*_imp->main_repo).e_interface()->arch_variable());
-
-        if (arch_var.empty())
-        {
-            if (_imp->params.extra_accept_keywords().empty())
-                throw ConfigurationError("Don't know how to work out whether keywords are acceptable");
-        }
-        else
-        {
-            std::string arch((*_imp->main_repo).e_interface()->profile_variable(arch_var));
-
-            if (keywords->end() != keywords->find(KeywordName(arch)))
-                return true;
-
-            if (_imp->accept_unstable && keywords->end() != keywords->find(KeywordName("~" + arch)))
-                return true;
-        }
-    }
-    else
-    {
-        std::list<KeywordName> accepted;
-        tokenise_whitespace(ak, create_inserter<KeywordName>(std::back_inserter(accepted)));
-
-        for (KeywordNameSet::ConstIterator k(keywords->begin()), k_end(keywords->end()) ;
-                k != k_end ; ++k)
-        {
-            if (accepted.end() != std::find(accepted.begin(), accepted.end(), *k))
-                return true;
-
-            if (_imp->accept_unstable && stringify(*k).at(0) == '~')
-                if (accepted.end() != std::find(accepted.begin(), accepted.end(), KeywordName(stringify(*k).substr(1))))
-                    return true;
-        }
-    }
-
-    {
-        std::list<KeywordName> accepted;
-        tokenise_whitespace(_imp->params.extra_accept_keywords(),
+    std::list<KeywordName> accepted;
+    if (_imp->main_repo->accept_keywords_key())
+        tokenise_whitespace(_imp->main_repo->accept_keywords_key()->value(),
                 create_inserter<KeywordName>(std::back_inserter(accepted)));
 
-        for (KeywordNameSet::ConstIterator k(keywords->begin()), k_end(keywords->end()) ;
-                k != k_end ; ++k)
-        {
-            if (accepted.end() != std::find(accepted.begin(), accepted.end(), *k))
-                return true;
+    tokenise_whitespace(_imp->params.extra_accept_keywords(),
+            create_inserter<KeywordName>(std::back_inserter(accepted)));
 
-            if (_imp->accept_unstable && stringify(*k).at(0) == '~')
-                if (accepted.end() != std::find(accepted.begin(), accepted.end(), KeywordName(stringify(*k).substr(1))))
-                    return true;
-        }
+    if (accepted.empty())
+        throw ConfigurationError("Don't know how to work out whether keywords are acceptable");
+
+    for (KeywordNameSet::ConstIterator k(keywords->begin()), k_end(keywords->end()) ;
+            k != k_end ; ++k)
+    {
+        if (accepted.end() != std::find(accepted.begin(), accepted.end(), *k))
+            return true;
+
+        if (_imp->accept_unstable && stringify(*k).at(0) == '~')
+            if (accepted.end() != std::find(accepted.begin(), accepted.end(), KeywordName(stringify(*k).substr(1))))
+                return true;
     }
 
     return false;

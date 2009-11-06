@@ -43,17 +43,9 @@ using namespace paludis::ruby;
 namespace
 {
     static VALUE c_repository;
-    static VALUE c_profiles_desc_line;
     static VALUE c_fake_repository_base;
     static VALUE c_fake_repository;
     static VALUE c_fake_installed_repository;
-
-    VALUE
-    profiles_desc_line_to_value(const RepositoryEInterface::ProfilesDescLine & v)
-    {
-        RepositoryEInterface::ProfilesDescLine * vv(new RepositoryEInterface::ProfilesDescLine(v));
-        return Data_Wrap_Struct(c_profiles_desc_line, 0, &Common<RepositoryEInterface::ProfilesDescLine>::free, vv);
-    }
 
     std::tr1::shared_ptr<FakeRepositoryBase>
     value_to_fake_repository_base(VALUE v)
@@ -395,158 +387,6 @@ namespace
 
     /*
      * call-seq:
-     *     profiles -> Array
-     *
-     * Fetch an array of our profiles, as ProfilesDescLine.
-     */
-    VALUE
-    repository_profiles(VALUE self)
-    {
-        try
-        {
-            std::tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
-            if ((**self_ptr).e_interface())
-            {
-                VALUE result(rb_ary_new());
-                for (RepositoryEInterface::ProfilesConstIterator i((**self_ptr).e_interface()->begin_profiles()),
-                        i_end((**self_ptr).e_interface()->end_profiles()) ; i != i_end ; ++i)
-                {
-                    rb_ary_push(result, profiles_desc_line_to_value(*i));
-                }
-                return result;
-            }
-            else
-            {
-                return Qnil;
-            }
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * call-seq:
-     *     find_profile(profile_location) -> ProfilesDescLine
-     *
-     * Fetches the named profile.
-     */
-    VALUE
-    repository_find_profile(VALUE self, VALUE profile)
-    {
-        try
-        {
-            std::tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
-
-            if ((**self_ptr).e_interface())
-            {
-                RepositoryEInterface::ProfilesConstIterator p((**self_ptr).e_interface()->find_profile(FSEntry(StringValuePtr(profile))));
-
-                if (p == (**self_ptr).e_interface()->end_profiles())
-                    return Qnil;
-
-                return profiles_desc_line_to_value(*p);
-            }
-            else
-            {
-                return Qnil;
-            }
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * call-seq:
-     *     set_profile(profile) -> Nil
-     *
-     * Sets the repository profile to the given profile.
-     */
-    VALUE
-    repository_set_profile(VALUE self, VALUE profile)
-    {
-        try
-        {
-            std::tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
-            if ((**self_ptr).e_interface())
-                (**self_ptr).e_interface()->set_profile(
-                    (**self_ptr).e_interface()->find_profile(
-                        value_to_profiles_desc_line(profile).path()));
-            return Qnil;
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * call-seq:
-     *     profile_variable(variable) -> String
-     *
-     * Fetches the named variable.
-     */
-    VALUE
-    repository_profile_variable(VALUE self, VALUE var)
-    {
-        try
-        {
-            std::tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
-            if ((**self_ptr).e_interface())
-                return rb_str_new2(((**self_ptr).e_interface()->profile_variable(StringValuePtr(var))).c_str());
-            return Qnil;
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * Document-method: arch
-     *
-     * call-seq:
-     *     arch -> String
-     *
-     * Fetch arch for this ProfilesDescLine.
-     */
-    /*
-     * Document-method: status
-     *
-     * call-seq:
-     *     status -> String
-     *
-     * Fetch status for this ProfilesDescLine.
-     */
-    /*
-     * Document-method: path
-     *
-     * call-seq:
-     *     path -> String
-     *
-     * Fetch path to this ProfilesDescLine.
-     */
-    template <typename K_, typename V_, NamedValue<V_, K_> (RepositoryEInterface::ProfilesDescLine::* f_)>
-    struct DescLineValue
-    {
-        static VALUE
-        fetch(VALUE self)
-        {
-            RepositoryEInterface::ProfilesDescLine * ptr;
-            Data_Get_Struct(self, RepositoryEInterface::ProfilesDescLine, ptr);
-            return rb_str_new2(stringify(((*ptr).*f_)()).c_str());
-        }
-    };
-
-    /*
-     * call-seq:
      *     add_category(category_name) -> Nil
      *
      * Add a category.
@@ -843,15 +683,7 @@ namespace
                         n::provides_interface, RepositoryProvidesInterface, &Repository::provides_interface>::fetch)), 0);
         rb_define_method(c_repository, "virtuals_interface", RUBY_FUNC_CAST((&Interface<
                         n::virtuals_interface, RepositoryVirtualsInterface, &Repository::virtuals_interface>::fetch)), 0);
-        rb_define_method(c_repository, "e_interface", RUBY_FUNC_CAST((&Interface<
-                        n::e_interface, RepositoryEInterface, &Repository::e_interface>::fetch)), 0);
-
         rb_define_method(c_repository, "some_ids_might_support_action", RUBY_FUNC_CAST(&repository_some_ids_might_support_action), 1);
-
-        rb_define_method(c_repository, "profiles", RUBY_FUNC_CAST(&repository_profiles),0);
-        rb_define_method(c_repository, "find_profile", RUBY_FUNC_CAST(&repository_find_profile),1);
-        rb_define_method(c_repository, "profile_variable", RUBY_FUNC_CAST(&repository_profile_variable),1);
-        rb_define_method(c_repository, "set_profile", RUBY_FUNC_CAST(&repository_set_profile),1);
 
         rb_define_method(c_repository, "[]", RUBY_FUNC_CAST(&repository_subscript), 1);
         rb_define_method(c_repository, "each_metadata", RUBY_FUNC_CAST(&repository_each_metadata), 0);
@@ -865,20 +697,6 @@ namespace
 
         rb_define_method(c_repository, "is_mirror?", RUBY_FUNC_CAST(&repository_is_mirror), 1);
         rb_define_method(c_repository, "mirrors", RUBY_FUNC_CAST(&repository_mirrors), 1);
-
-        /*
-         * Document-class: Paludis::ProfilesDescLine
-         *
-         *
-         */
-        c_profiles_desc_line = rb_define_class_under(paludis_module(), "ProfilesDescLine", rb_cObject);
-        rb_funcall(c_profiles_desc_line, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_profiles_desc_line, "path",
-                RUBY_FUNC_CAST((&DescLineValue<FSEntry, n::path, &RepositoryEInterface::ProfilesDescLine::path>::fetch)), 0);
-        rb_define_method(c_profiles_desc_line, "arch",
-                RUBY_FUNC_CAST((&DescLineValue<std::string, n::arch, &RepositoryEInterface::ProfilesDescLine::arch>::fetch)), 0);
-        rb_define_method(c_profiles_desc_line, "status",
-                RUBY_FUNC_CAST((&DescLineValue<std::string, n::status, &RepositoryEInterface::ProfilesDescLine::status>::fetch)), 0);
 
         /*
          * Document-class: Paludis::FakeRepositoryBase
@@ -949,21 +767,6 @@ paludis::ruby::value_to_repository(VALUE v)
     else
     {
         rb_raise(rb_eTypeError, "Can't convert %s into Repository", rb_obj_classname(v));
-    }
-}
-
-RepositoryEInterface::ProfilesDescLine
-paludis::ruby::value_to_profiles_desc_line(VALUE v)
-{
-    if (rb_obj_is_kind_of(v, c_profiles_desc_line))
-    {
-        RepositoryEInterface::ProfilesDescLine * v_ptr;
-        Data_Get_Struct(v, RepositoryEInterface::ProfilesDescLine, v_ptr);
-        return *v_ptr;
-    }
-    else
-    {
-        rb_raise(rb_eTypeError, "Can't convert %s into ProfilesDescLine", rb_obj_classname(v));
     }
 }
 

@@ -60,7 +60,6 @@ FakeRepository::FakeRepository(const FakeRepositoryParams & params) :
     PrivateImplementationPattern<FakeRepository>(new Implementation<FakeRepository>),
     FakeRepositoryBase(params.environment(), params.name(), make_named_values<RepositoryCapabilities>(
                 value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
-                value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
                 value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
                 value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
                 value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
@@ -174,5 +173,11 @@ const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 FakeRepository::installed_root_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+FakeRepository::accept_keywords_key() const
+{
+    return make_null_shared_ptr();
 }
 

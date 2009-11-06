@@ -127,27 +127,6 @@ class TestCase_02_RepositoryInterfaces(unittest.TestCase):
         di = irepo.destination_interface
         self.assert_(isinstance(di, RepositoryDestinationInterface))
 
-    def test_12_e_interface(self):
-        ei = nce.main_repository.e_interface
-
-        self.assert_(isinstance(ei, RepositoryEInterface))
-
-        path = os.path.join(os.getcwd(), "repository_TEST_dir/testrepo/profiles/testprofile")
-        profile = ei.find_profile(path)
-
-        self.assert_(isinstance(profile, RepositoryEInterfaceProfilesDescLine))
-        self.assertEquals(profile.path, path)
-        self.assertEquals(profile.arch, "x86")
-        self.assertEquals(profile.status, "stable")
-
-
-        self.assertEquals(ei.find_profile("broken"), None)
-
-        profile = iter(ei.profiles).next()
-        ei.profile = profile
-
-        self.assertEquals(ei.profile_variable("ARCH"), "test")
-
     def test_12_qa_interface(self):
         if hasattr(paludis, "QAReporter"):
             class PyQAR(QAReporter):

@@ -35,6 +35,7 @@ namespace paludis
         struct extra_params;
         struct extra_repository_dirs;
         struct master_repository_name;
+        struct profiles_if_not_auto;
         struct repository_dir;
         struct repository_type;
         struct write_cache;
@@ -59,6 +60,16 @@ namespace paludis
             NamedValue<n::extra_params, std::tr1::shared_ptr<Map<std::string, std::string> > > extra_params;
             NamedValue<n::extra_repository_dirs, std::tr1::shared_ptr<const FSEntrySequence> > extra_repository_dirs;
             NamedValue<n::master_repository_name, std::string> master_repository_name;
+
+            /**
+             * The profiles to use.
+             *
+             * Leave empty for automatic selection (which may not always be possible).
+             *
+             * \since 0.44
+             */
+            NamedValue<n::profiles_if_not_auto, std::string> profiles_if_not_auto;
+
             NamedValue<n::repository_dir, FSEntry> repository_dir;
             NamedValue<n::repository_type, no_config_environment::RepositoryType> repository_type;
             NamedValue<n::write_cache, FSEntry> write_cache;

@@ -50,26 +50,11 @@ using namespace paludis;
 namespace
 {
     int
-    display_default_system_resolution(const NoConfigEnvironment & env, const std::string & desc,
-            const FSEntry & profile)
+    display_default_system_resolution(const NoConfigEnvironment & env)
     {
         int return_code(0);
 
-        Context context("When displaying system resolution for '" + stringify(desc) + "' at '"
-                + stringify(profile) + "':");
-
-        std::string display_profile(stringify(profile)), display_profile_chop(
-                stringify(env.main_repository_dir() / "profiles"));
-        if (0 == display_profile.compare(0, display_profile_chop.length(), display_profile_chop))
-        {
-            display_profile.erase(0, display_profile_chop.length());
-            if (0 == display_profile.compare(0, 1, "/"))
-                display_profile.erase(0, 1);
-            if (display_profile.empty())
-                display_profile = "/";
-        }
-
-        cout << std::left << std::setw(20) << (desc + ":") << display_profile << endl;
+        Context context("When displaying system resolution:");
 
         DepListOptions d_options;
         d_options.circular() = dl_circular_discard_silently;
@@ -111,8 +96,6 @@ namespace
 
 int do_display_default_system_resolution(NoConfigEnvironment & env)
 {
-    int return_code(0);
-
     Context context("When performing display-default-system-resolution action:");
 
     if (env.default_destinations()->empty())
@@ -127,35 +110,7 @@ int do_display_default_system_resolution(NoConfigEnvironment & env)
         env.package_database()->add_repository(1, fake_destination);
     }
 
-    if (CommandLine::get_instance()->a_profile.begin_args() ==
-            CommandLine::get_instance()->a_profile.end_args())
-    {
-        for (RepositoryEInterface::ProfilesConstIterator
-                p((*env.main_repository()).e_interface()->begin_profiles()),
-                p_end((*env.main_repository()).e_interface()->end_profiles()) ; p != p_end ; ++p)
-        {
-            (*env.main_repository()).e_interface()->set_profile(p);
-            return_code |= display_default_system_resolution(env, (*p).arch() + "." + (*p).status(), (*p).path());
-        }
-    }
-    else
-    {
-        for (args::StringSetArg::ConstIterator i(CommandLine::get_instance()->a_profile.begin_args()),
-                i_end(CommandLine::get_instance()->a_profile.end_args()) ; i != i_end ; ++i)
-        {
-            RepositoryEInterface::ProfilesConstIterator
-                p((*env.main_repository()).e_interface()->find_profile(
-                            env.main_repository_dir() / "profiles" / (*i)));
-            if (p == (*env.main_repository()).e_interface()->end_profiles())
-                throw ConfigurationError("Repository does not have a profile listed in profiles.desc matching '"
-                        + stringify(*i) + "'");
-            (*env.main_repository()).e_interface()->set_profile(p);
-            return_code |= display_default_system_resolution(env, *i, env.main_repository_dir()
-                    / "profiles" / *i);
-        }
-    }
-
-    return return_code;
+    return display_default_system_resolution(env);
 }
 
 

@@ -57,7 +57,6 @@ namespace paludis
     {
         struct arch;
         struct destination_interface;
-        struct e_interface;
         struct environment_file;
         struct environment_variable_interface;
         struct image_dir;
@@ -90,29 +89,12 @@ namespace paludis
     struct RepositoryCapabilities
     {
         NamedValue<n::destination_interface, RepositoryDestinationInterface *> destination_interface;
-        NamedValue<n::e_interface, RepositoryEInterface *> e_interface;
         NamedValue<n::environment_variable_interface, RepositoryEnvironmentVariableInterface *> environment_variable_interface;
         NamedValue<n::make_virtuals_interface, RepositoryMakeVirtualsInterface *> make_virtuals_interface;
         NamedValue<n::manifest_interface, RepositoryManifestInterface *> manifest_interface;
         NamedValue<n::mirrors_interface, RepositoryMirrorsInterface *> mirrors_interface;
         NamedValue<n::provides_interface, RepositoryProvidesInterface *> provides_interface;
         NamedValue<n::virtuals_interface, RepositoryVirtualsInterface *> virtuals_interface;
-    };
-
-    /**
-     * A profiles.desc line in a Repository implementing RepositoryEInterface.
-     *
-     * \see Repository
-     * \see RepositoryEInterface
-     * \ingroup g_repository
-     * \since 0.30
-     */
-    struct RepositoryEInterfaceProfilesDescLine
-    {
-        NamedValue<n::arch, std::string> arch;
-        NamedValue<n::path, FSEntry> path;
-        NamedValue<n::profile, std::tr1::shared_ptr<const RepositoryEInterfaceProfilesDescLineProfile> > profile;
-        NamedValue<n::status, std::string> status;
     };
 
     /**
@@ -309,6 +291,17 @@ namespace paludis
              * an 'installed' repository or not.
              */
             virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const = 0;
+
+            /**
+             * The accept_keywords_key belonging to a NoConfigEnvironment's
+             * main repository is used to work out whether to accept keywords.
+             *
+             * This only needs to be defined for repositories that can be a
+             * NoConfigEnvironment main repository.
+             *
+             * \since 0.44
+             */
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const = 0;
 
             ///\}
 
@@ -605,44 +598,6 @@ namespace paludis
             ///\}
 
             virtual ~RepositoryDestinationInterface();
-    };
-
-    /**
-     * Interface for handling ERepository specific functionality.
-     *
-     * \see Repository
-     * \ingroup g_repository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE RepositoryEInterface
-    {
-        public:
-            ///\name Information about a ERepository
-            ///\{
-
-            virtual std::string profile_variable(const std::string &) const = 0;
-            virtual std::string accept_keywords_variable() const = 0;
-            virtual std::string arch_variable() const = 0;
-
-            ///\}
-
-            ///\name Profile setting and querying functions
-            ///\{
-
-            typedef RepositoryEInterfaceProfilesDescLine ProfilesDescLine;
-
-            struct ProfilesConstIteratorTag;
-            typedef WrappedForwardIterator<ProfilesConstIteratorTag, const ProfilesDescLine> ProfilesConstIterator;
-            virtual ProfilesConstIterator begin_profiles() const = 0;
-            virtual ProfilesConstIterator end_profiles() const = 0;
-
-            virtual ProfilesConstIterator find_profile(const FSEntry & location) const = 0;
-            virtual void set_profile(const ProfilesConstIterator & iter) = 0;
-            virtual void set_profile_by_arch(const std::string &) = 0;
-
-            ///\}
-
-            virtual ~RepositoryEInterface();
     };
 
     /**

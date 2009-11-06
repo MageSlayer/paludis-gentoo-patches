@@ -109,7 +109,6 @@ CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
             CRANRepository::fetch_repo_name(stringify(p.location())),
             make_named_values<RepositoryCapabilities>(
                 value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
-                value_for<n::e_interface>(static_cast<RepositoryEInterface *>(0)),
                 value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
                 value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
                 value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
@@ -547,5 +546,11 @@ HookResult
 CRANRepository::perform_hook(const Hook &)
 {
     return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+CRANRepository::accept_keywords_key() const
+{
+    return make_null_shared_ptr();
 }
 
