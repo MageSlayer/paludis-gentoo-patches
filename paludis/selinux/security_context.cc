@@ -70,7 +70,7 @@ namespace
                     _matchpathcon_init = STUPID_CAST(int (*) (const char *),
                             dlsym(_handle, "matchpathcon_init"));
                     _setfilecon = STUPID_CAST(int (*) (const char *, security_context_t),
-                            dlsym(_handle, "setfilecon"));
+                            dlsym(_handle, "lsetfilecon"));
                     _is_selinux_enabled = STUPID_CAST(int (*)(void),
                             dlsym(_handle, "is_selinux_enabled"));
                 }
