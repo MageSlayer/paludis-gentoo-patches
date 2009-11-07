@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/e/e_repository_profile.hh>
-#include <paludis/repositories/e/e_repository_profile_file.hh>
+#include <paludis/repositories/e/traditional_profile.hh>
+#include <paludis/repositories/e/profile_file.hh>
 #include <paludis/repositories/e/e_repository_mask_file.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository.hh>
@@ -62,7 +62,7 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-template class WrappedForwardIterator<ERepositoryProfile::VirtualsConstIteratorTag,
+template class WrappedForwardIterator<TraditionalProfile::VirtualsConstIteratorTag,
          const std::pair<const QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > >;
 
 typedef std::tr1::unordered_map<std::string, std::tr1::shared_ptr<Set<UnprefixedChoiceName> > > KnownMap;
@@ -100,13 +100,13 @@ namespace
 namespace paludis
 {
     /**
-     * Implementation for ERepositoryProfile.
+     * Implementation for TraditionalProfile.
      *
      * \ingroup grperepository
-     * \see ERepositoryProfile
+     * \see TraditionalProfile
      */
     template<>
-    class Implementation<ERepositoryProfile>
+    class Implementation<TraditionalProfile>
     {
         private:
             void load_environment();
@@ -241,14 +241,14 @@ namespace paludis
 }
 
 void
-Implementation<ERepositoryProfile>::load_environment()
+Implementation<TraditionalProfile>::load_environment()
 {
     environment_variables["CONFIG_PROTECT"] = getenv_with_default("CONFIG_PROTECT", "/etc");
     environment_variables["CONFIG_PROTECT_MASK"] = getenv_with_default("CONFIG_PROTECT_MASK", "");
 }
 
 void
-Implementation<ERepositoryProfile>::load_profile_directory_recursively(const FSEntry & dir)
+Implementation<TraditionalProfile>::load_profile_directory_recursively(const FSEntry & dir)
 {
     Context context("When adding profile directory '" + stringify(dir) + ":");
 
@@ -284,7 +284,7 @@ Implementation<ERepositoryProfile>::load_profile_directory_recursively(const FSE
 }
 
 void
-Implementation<ERepositoryProfile>::load_profile_parent(const FSEntry & dir)
+Implementation<TraditionalProfile>::load_profile_parent(const FSEntry & dir)
 {
     Context context("When handling parent file for profile directory '" + stringify(dir) + ":");
 
@@ -330,7 +330,7 @@ Implementation<ERepositoryProfile>::load_profile_parent(const FSEntry & dir)
 }
 
 void
-Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & dir)
+Implementation<TraditionalProfile>::load_profile_make_defaults(const FSEntry & dir)
 {
     Context context("When handling make.defaults file for profile directory '" + stringify(dir) + ":");
 
@@ -478,7 +478,7 @@ Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & d
 }
 
 void
-Implementation<ERepositoryProfile>::load_special_make_defaults_vars(const FSEntry & dir)
+Implementation<TraditionalProfile>::load_special_make_defaults_vars(const FSEntry & dir)
 {
     const std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
                 repository->eapi_for_file(dir / "make.defaults")));
@@ -546,7 +546,7 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars(const FSEntr
 }
 
 bool
-Implementation<ERepositoryProfile>::is_incremental(const EAPI & e, const std::string & s) const
+Implementation<TraditionalProfile>::is_incremental(const EAPI & e, const std::string & s) const
 {
     Context c("When checking whether '" + s + "' is incremental:");
 
@@ -562,7 +562,7 @@ Implementation<ERepositoryProfile>::is_incremental(const EAPI & e, const std::st
 }
 
 void
-Implementation<ERepositoryProfile>::make_vars_from_file_vars()
+Implementation<TraditionalProfile>::make_vars_from_file_vars()
 {
     try
     {
@@ -660,7 +660,7 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
 }
 
 void
-Implementation<ERepositoryProfile>::load_basic_use_file(const FSEntry & file, FlagStatusMap & m)
+Implementation<TraditionalProfile>::load_basic_use_file(const FSEntry & file, FlagStatusMap & m)
 {
     if (! file.exists())
         return;
@@ -699,7 +699,7 @@ Implementation<ERepositoryProfile>::load_basic_use_file(const FSEntry & file, Fl
 }
 
 void
-Implementation<ERepositoryProfile>::load_spec_use_file(const EAPI & eapi, const FSEntry & file, PackageFlagStatusMapList & m)
+Implementation<TraditionalProfile>::load_spec_use_file(const EAPI & eapi, const FSEntry & file, PackageFlagStatusMapList & m)
 {
     if (! file.exists())
         return;
@@ -755,7 +755,7 @@ Implementation<ERepositoryProfile>::load_spec_use_file(const EAPI & eapi, const 
 }
 
 void
-Implementation<ERepositoryProfile>::add_use_expand_to_use()
+Implementation<TraditionalProfile>::add_use_expand_to_use()
 {
     Context context("When adding USE_EXPAND to USE:");
 
@@ -776,7 +776,7 @@ Implementation<ERepositoryProfile>::add_use_expand_to_use()
 }
 
 void
-Implementation<ERepositoryProfile>::fish_out_use_expand_names()
+Implementation<TraditionalProfile>::fish_out_use_expand_names()
 {
     Context context("When finding all known USE_EXPAND names:");
 
@@ -802,7 +802,7 @@ Implementation<ERepositoryProfile>::fish_out_use_expand_names()
 }
 
 void
-Implementation<ERepositoryProfile>::handle_profile_arch_var(const std::string & s)
+Implementation<TraditionalProfile>::handle_profile_arch_var(const std::string & s)
 {
     Context context("When handling profile " + s + " variable:");
 
@@ -828,21 +828,21 @@ Implementation<ERepositoryProfile>::handle_profile_arch_var(const std::string & 
     }
 }
 
-ERepositoryProfile::ERepositoryProfile(
+TraditionalProfile::TraditionalProfile(
         const Environment * const env, const ERepository * const p, const RepositoryName & name,
         const FSEntrySequence & location,
         const std::string & arch_var_if_special, const bool x) :
-    PrivateImplementationPattern<ERepositoryProfile>(
-            new Implementation<ERepositoryProfile>(env, p, name, location, arch_var_if_special, x))
+    PrivateImplementationPattern<TraditionalProfile>(
+            new Implementation<TraditionalProfile>(env, p, name, location, arch_var_if_special, x))
 {
 }
 
-ERepositoryProfile::~ERepositoryProfile()
+TraditionalProfile::~TraditionalProfile()
 {
 }
 
 bool
-ERepositoryProfile::use_masked(
+TraditionalProfile::use_masked(
         const std::tr1::shared_ptr<const PackageID> & id,
         const std::tr1::shared_ptr<const Choice> & choice,
         const UnprefixedChoiceName & value_unprefixed,
@@ -878,7 +878,7 @@ ERepositoryProfile::use_masked(
 }
 
 bool
-ERepositoryProfile::use_forced(
+TraditionalProfile::use_forced(
         const std::tr1::shared_ptr<const PackageID> & id,
         const std::tr1::shared_ptr<const Choice> & choice,
         const UnprefixedChoiceName & value_unprefixed,
@@ -914,7 +914,7 @@ ERepositoryProfile::use_forced(
 }
 
 Tribool
-ERepositoryProfile::use_state_ignoring_masks(
+TraditionalProfile::use_state_ignoring_masks(
         const std::tr1::shared_ptr<const PackageID> & id,
         const std::tr1::shared_ptr<const Choice> & choice,
         const UnprefixedChoiceName & value_unprefixed,
@@ -964,8 +964,8 @@ namespace
     }
 }
 
-std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
-ERepositoryProfile::known_choice_value_names(
+const std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
+TraditionalProfile::known_choice_value_names(
         const std::tr1::shared_ptr<const ERepositoryID> & id,
         const std::tr1::shared_ptr<const Choice> & choice
         ) const
@@ -1007,8 +1007,8 @@ ERepositoryProfile::known_choice_value_names(
     return it2->second;
 }
 
-std::string
-ERepositoryProfile::environment_variable(const std::string & s) const
+const std::string
+TraditionalProfile::environment_variable(const std::string & s) const
 {
     EnvironmentVariablesMap::const_iterator i(_imp->environment_variables.find(s));
     if (_imp->environment_variables.end() == i)
@@ -1018,31 +1018,31 @@ ERepositoryProfile::environment_variable(const std::string & s) const
 }
 
 const std::tr1::shared_ptr<const SetSpecTree>
-ERepositoryProfile::system_packages() const
+TraditionalProfile::system_packages() const
 {
     return _imp->system_packages;
 }
 
-ERepositoryProfile::VirtualsConstIterator
-ERepositoryProfile::begin_virtuals() const
+TraditionalProfile::VirtualsConstIterator
+TraditionalProfile::begin_virtuals() const
 {
     return VirtualsConstIterator(_imp->virtuals.begin());
 }
 
-ERepositoryProfile::VirtualsConstIterator
-ERepositoryProfile::find_virtual(const QualifiedPackageName & n) const
+TraditionalProfile::VirtualsConstIterator
+TraditionalProfile::find_virtual(const QualifiedPackageName & n) const
 {
     return VirtualsConstIterator(_imp->virtuals.find(n));
 }
 
-ERepositoryProfile::VirtualsConstIterator
-ERepositoryProfile::end_virtuals() const
+TraditionalProfile::VirtualsConstIterator
+TraditionalProfile::end_virtuals() const
 {
     return VirtualsConstIterator(_imp->virtuals.end());
 }
 
-std::tr1::shared_ptr<const RepositoryMaskInfo>
-ERepositoryProfile::profile_masked(const PackageID & id) const
+const std::tr1::shared_ptr<const RepositoryMaskInfo>
+TraditionalProfile::profile_masked(const PackageID & id) const
 {
     PackageMaskMap::const_iterator rr(_imp->package_mask.find(id.name()));
     if (_imp->package_mask.end() == rr)
@@ -1059,31 +1059,31 @@ ERepositoryProfile::profile_masked(const PackageID & id) const
 }
 
 const std::tr1::shared_ptr<const Set<std::string> >
-ERepositoryProfile::use_expand() const
+TraditionalProfile::use_expand() const
 {
     return _imp->use_expand;
 }
 
 const std::tr1::shared_ptr<const Set<std::string> >
-ERepositoryProfile::use_expand_hidden() const
+TraditionalProfile::use_expand_hidden() const
 {
     return _imp->use_expand_hidden;
 }
 
 const std::tr1::shared_ptr<const Set<std::string> >
-ERepositoryProfile::use_expand_unprefixed() const
+TraditionalProfile::use_expand_unprefixed() const
 {
     return _imp->use_expand_unprefixed;
 }
 
 const std::tr1::shared_ptr<const Set<std::string> >
-ERepositoryProfile::use_expand_implicit() const
+TraditionalProfile::use_expand_implicit() const
 {
     return _imp->use_expand_implicit;
 }
 
 const std::tr1::shared_ptr<const Set<std::string> >
-ERepositoryProfile::use_expand_values(const std::string & x) const
+TraditionalProfile::use_expand_values(const std::string & x) const
 {
     Context context("When finding USE_EXPAND_VALUES_" + x + ":");
     std::tr1::unordered_map<std::string, std::tr1::shared_ptr<Set<std::string> > >::const_iterator i(_imp->use_expand_values.find(x));
@@ -1093,7 +1093,7 @@ ERepositoryProfile::use_expand_values(const std::string & x) const
 }
 
 const std::tr1::shared_ptr<const Set<std::string> >
-ERepositoryProfile::iuse_implicit() const
+TraditionalProfile::iuse_implicit() const
 {
     return _imp->iuse_implicit;
 }

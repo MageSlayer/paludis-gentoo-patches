@@ -23,7 +23,6 @@
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/repositories/e/vdb_contents_tokeniser.hh>
-#include <paludis/repositories/e/e_repository_profile.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/myoption.hh>
 

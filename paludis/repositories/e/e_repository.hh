@@ -26,7 +26,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/repositories/e/e_repository_params.hh>
-#include <paludis/repositories/e/e_repository_profile.hh>
+#include <paludis/repositories/e/profile.hh>
 #include <paludis/repositories/e/layout.hh>
 #include <tr1/memory>
 #include <string>
@@ -39,7 +39,6 @@
 
 namespace paludis
 {
-    class ERepositoryProfile;
     class ERepositoryNews;
 
     /**
@@ -165,7 +164,7 @@ namespace paludis
 
             const std::tr1::shared_ptr<const erepository::Layout> layout() const;
             const std::tr1::shared_ptr<const erepository::ERepositoryEntries> entries() const;
-            const std::tr1::shared_ptr<const ERepositoryProfile> profile() const;
+            const std::tr1::shared_ptr<const erepository::Profile> profile() const;
 
             std::tr1::shared_ptr<const RepositoryMaskInfo> repository_masked(const PackageID &) const;
 

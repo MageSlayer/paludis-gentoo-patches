@@ -22,7 +22,7 @@
 #include <paludis/repositories/e/ebuild_id.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
-#include <paludis/repositories/e/e_repository_profile.hh>
+#include <paludis/repositories/e/profile.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/myoption.hh>
 

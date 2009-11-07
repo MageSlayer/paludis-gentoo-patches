@@ -24,8 +24,9 @@
 #include <paludis/repositories/e/e_key.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/e_repository_mask_file.hh>
-#include <paludis/repositories/e/e_repository_profile_file.hh>
-#include <paludis/repositories/e/e_repository_profile.hh>
+#include <paludis/repositories/e/profile.hh>
+#include <paludis/repositories/e/profile_file.hh>
+#include <paludis/repositories/e/traditional_profile.hh>
 #include <paludis/repositories/e/e_repository_news.hh>
 #include <paludis/repositories/e/e_repository_sets.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
@@ -190,7 +191,7 @@ namespace paludis
         mutable bool has_mirrors;
         mutable MirrorMap mirrors;
 
-        mutable std::tr1::shared_ptr<ERepositoryProfile> profile_ptr;
+        mutable std::tr1::shared_ptr<erepository::Profile> profile_ptr;
         mutable std::tr1::shared_ptr<const FSEntry> main_profile_path;
 
         mutable std::tr1::shared_ptr<ERepositoryNews> news_ptr;
@@ -400,7 +401,7 @@ namespace paludis
         else
             main_profile_path.reset(new FSEntry(*params.profiles()->begin()));
 
-        profile_ptr.reset(new ERepositoryProfile(
+        profile_ptr.reset(new TraditionalProfile(
                     params.environment(), repo, repo->name(), *profiles,
                     EAPIData::get_instance()->eapi_from_string(
                         params.eapi_when_unknown())->supported()->ebuild_environment_variables()->env_arch(),
@@ -841,7 +842,7 @@ ERepository::layout() const
     return _imp->layout;
 }
 
-const std::tr1::shared_ptr<const ERepositoryProfile>
+const std::tr1::shared_ptr<const Profile>
 ERepository::profile() const
 {
     _imp->need_profiles();
@@ -900,7 +901,7 @@ ERepository::virtual_packages() const
 
     std::tr1::shared_ptr<VirtualsSequence> result(new VirtualsSequence);
 
-    for (ERepositoryProfile::VirtualsConstIterator i(_imp->profile_ptr->begin_virtuals()),
+    for (erepository::Profile::VirtualsConstIterator i(_imp->profile_ptr->begin_virtuals()),
             i_end(_imp->profile_ptr->end_virtuals()) ; i != i_end ; ++i)
         result->push_back(make_named_values<RepositoryVirtualsEntry>(
                     value_for<n::provided_by_spec>(i->second),

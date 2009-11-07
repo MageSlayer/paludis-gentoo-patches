@@ -28,7 +28,7 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/output_manager-fwd.hh>
-#include <paludis/repositories/e/e_repository_profile.hh>
+#include <paludis/repositories/e/profile.hh>
 #include <paludis/repositories/e/e_repository_params.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <tr1/memory>
@@ -78,40 +78,40 @@ namespace paludis
                  * Fetch an environment variable.
                  */
                 virtual std::string get_environment_variable(const std::tr1::shared_ptr<const ERepositoryID> &, const std::string & var,
-                        const std::tr1::shared_ptr<const ERepositoryProfile> &) const = 0;
+                        const std::tr1::shared_ptr<const erepository::Profile> &) const = 0;
 
                 /**
                  * Handle an install.
                  */
                 virtual void install(const std::tr1::shared_ptr<const ERepositoryID> &, const InstallAction &,
-                        const std::tr1::shared_ptr<const ERepositoryProfile> &) const = 0;
+                        const std::tr1::shared_ptr<const erepository::Profile> &) const = 0;
 
                 /**
                  * Handle a fetch.
                  */
                 virtual void fetch(const std::tr1::shared_ptr<const ERepositoryID> &,
                         const FetchAction &,
-                        const std::tr1::shared_ptr<const ERepositoryProfile> &) const = 0;
+                        const std::tr1::shared_ptr<const erepository::Profile> &) const = 0;
 
                 /**
                  * Handle a pretend fetch.
                  */
                 virtual void pretend_fetch(const std::tr1::shared_ptr<const ERepositoryID> &, PretendFetchAction &,
-                        const std::tr1::shared_ptr<const ERepositoryProfile> &) const = 0;
+                        const std::tr1::shared_ptr<const erepository::Profile> &) const = 0;
 
                 /**
                  * Handle a pretend.
                  */
                 virtual bool pretend(const std::tr1::shared_ptr<const ERepositoryID> &,
                         const PretendAction &,
-                        const std::tr1::shared_ptr<const ERepositoryProfile> &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                        const std::tr1::shared_ptr<const erepository::Profile> &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 /**
                  * Handle an info.
                  */
                 virtual void info(const std::tr1::shared_ptr<const ERepositoryID> &,
                         const InfoAction &,
-                        const std::tr1::shared_ptr<const ERepositoryProfile> &) const = 0;
+                        const std::tr1::shared_ptr<const erepository::Profile> &) const = 0;
 
                 /**
                  * Handle a merge.

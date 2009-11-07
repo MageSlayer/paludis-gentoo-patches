@@ -226,7 +226,7 @@ namespace
 {
     std::string make_use(const Environment * const,
             const ERepositoryID & id,
-            std::tr1::shared_ptr<const ERepositoryProfile> profile)
+            std::tr1::shared_ptr<const Profile> profile)
     {
         if (! id.eapi()->supported())
         {
@@ -262,7 +262,7 @@ namespace
     std::tr1::shared_ptr<Map<std::string, std::string> >
     make_expand(const Environment * const,
             const ERepositoryID & e,
-            std::tr1::shared_ptr<const ERepositoryProfile> profile)
+            std::tr1::shared_ptr<const Profile> profile)
     {
         std::tr1::shared_ptr<Map<std::string, std::string> > expand_vars(
             new Map<std::string, std::string>);
@@ -350,7 +350,7 @@ namespace
 
 void
 EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
-        const FetchAction & fetch_action, const std::tr1::shared_ptr<const ERepositoryProfile> & p) const
+        const FetchAction & fetch_action, const std::tr1::shared_ptr<const Profile> & p) const
 {
     using namespace std::tr1::placeholders;
 
@@ -585,7 +585,7 @@ EbuildEntries::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
 void
 EbuildEntries::pretend_fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
-        PretendFetchAction & a, const std::tr1::shared_ptr<const ERepositoryProfile> &) const
+        PretendFetchAction & a, const std::tr1::shared_ptr<const Profile> &) const
 {
     using namespace std::tr1::placeholders;
 
@@ -634,7 +634,7 @@ namespace
 
 void
 EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
-        const InstallAction & install_action, const std::tr1::shared_ptr<const ERepositoryProfile> & p) const
+        const InstallAction & install_action, const std::tr1::shared_ptr<const Profile> & p) const
 {
     using namespace std::tr1::placeholders;
 
@@ -931,7 +931,7 @@ EbuildEntries::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
 void
 EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
         const InfoAction & a,
-        const std::tr1::shared_ptr<const ERepositoryProfile> & p) const
+        const std::tr1::shared_ptr<const Profile> & p) const
 {
     using namespace std::tr1::placeholders;
 
@@ -1015,7 +1015,7 @@ EbuildEntries::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
 std::string
 EbuildEntries::get_environment_variable(
         const std::tr1::shared_ptr<const ERepositoryID> & id,
-        const std::string & var, const std::tr1::shared_ptr<const ERepositoryProfile> &) const
+        const std::string & var, const std::tr1::shared_ptr<const Profile> &) const
 {
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_variable());
 
@@ -1146,7 +1146,7 @@ bool
 EbuildEntries::pretend(
         const std::tr1::shared_ptr<const ERepositoryID> & id,
         const PretendAction & a,
-        const std::tr1::shared_ptr<const ERepositoryProfile> & p) const
+        const std::tr1::shared_ptr<const Profile> & p) const
 {
     using namespace std::tr1::placeholders;
 

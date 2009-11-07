@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_PROFILE_FILE_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_PROFILE_FILE_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_PROFILE_FILE_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_PROFILE_FILE_HH 1
 
 #include <paludis/repositories/e/eapi-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
@@ -34,13 +34,6 @@ namespace paludis
 
     namespace erepository
     {
-        /**
-         * A file in a ERepository profile.
-         *
-         * Handles -lines, comments, inherits automatically.
-         *
-         * \ingroup grperepository
-         */
         template <typename F_>
         class PALUDIS_VISIBLE ProfileFile :
             private PrivateImplementationPattern<ProfileFile<F_> >

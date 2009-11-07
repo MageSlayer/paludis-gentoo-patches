@@ -42,8 +42,6 @@ noinst_HEADERS = \
 	e_repository_news.hh \
 	e_repository_params-se.hh \
 	e_repository_params.hh \
-	e_repository_profile.hh \
-	e_repository_profile_file.hh \
 	e_repository_sets.hh \
 	e_stripper.hh \
 	eapi.hh \
@@ -72,8 +70,11 @@ noinst_HEADERS = \
 	myoption.hh \
 	myoptions_requirements_verifier.hh \
 	pipe_command_handler.hh \
+	profile.hh \
+	profile_file.hh \
 	source_uri_finder.hh \
 	traditional_layout.hh \
+	traditional_profile.hh \
 	use_desc.hh \
 	xml_things_handle.hh \
 	vdb_contents_tokeniser.hh \
@@ -102,8 +103,6 @@ libpaludiserepository_la_SOURCES = \
 	e_repository_mask_file.cc \
 	e_repository_news.cc \
 	e_repository_params.cc \
-	e_repository_profile.cc \
-	e_repository_profile_file.cc \
 	e_repository_sets.cc \
 	e_stripper.cc \
 	eapi.cc \
@@ -130,9 +129,12 @@ libpaludiserepository_la_SOURCES = \
 	myoption.cc \
 	myoptions_requirements_verifier.cc \
 	pipe_command_handler.cc \
+	profile.cc \
+	profile_file.cc \
 	registration.cc \
 	source_uri_finder.cc \
 	traditional_layout.cc \
+	traditional_profile.cc \
 	use_desc.cc \
 	xml_things_handle.cc \
 	vdb_id.cc \
