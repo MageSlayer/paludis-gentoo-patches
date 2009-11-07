@@ -24,6 +24,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <unistd.h>
+#include <cstdlib>
 #include <sys/time.h>
 
 /** \file
@@ -271,6 +272,31 @@ RunTest::operator() (TestCase * test_case) const
     }
 
     std::cout << "* \"" << test_case->name() << "\": " << std::flush;
+
+    int extra_fd = -1;
+    if (getenv("PALUDIS_TESTS_REAL_STDOUT_FD"))
+    {
+        std::stringstream s;
+        s << getenv("PALUDIS_TESTS_REAL_STDOUT_FD");
+        s >> extra_fd;
+
+        std::stringstream t;
+        t << ">>> ";
+        if (getenv("PALUDIS_TEST_PROGRAM"))
+            t << getenv("PALUDIS_TEST_PROGRAM");
+        else
+            t << "Unknown Test Program";
+        t << " test " << test_case->name() << "..." << std::endl;
+
+        std::string buf(t.str());
+        while (! buf.empty())
+        {
+            int n(write(extra_fd, buf.c_str(), buf.length()));
+            if (-1 == n)
+                break;
+            buf.erase(0, n);
+        }
+    }
 
     for (int repeat = 0 ; repeat < 2 ; ++repeat)
     {

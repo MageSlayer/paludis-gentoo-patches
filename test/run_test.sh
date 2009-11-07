@@ -10,6 +10,8 @@ testname=${testname%.rb}
 testname=${testname%.py}
 testname=${testname%.bash}
 
+export PALUDIS_TEST_PROGRAM=$testname
+
 [[ -z "PALUDIS_TESTS_REAL_STDOUT_FD" ]] && export PALUDIS_TESTS_REAL_STDOUT_FD=1
 
 if test -f "$TEST_SCRIPT_DIR""${testname}"_"cleanup.sh" ; then
