@@ -18,7 +18,6 @@
  */
 
 #include <paludis/repositories/e/exheres_layout.hh>
-#include <paludis/repositories/e/e_repository_entries.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/util/config_file.hh>
@@ -72,7 +71,6 @@ namespace paludis
         mutable IDMap ids;
 
         mutable std::tr1::shared_ptr<CategoryNamePartSet> category_names_collection;
-        std::tr1::shared_ptr<const ERepositoryEntries> entries;
 
         std::tr1::shared_ptr<FSEntrySequence> arch_list_files;
         std::tr1::shared_ptr<FSEntrySequence> repository_mask_files;
@@ -82,12 +80,10 @@ namespace paludis
         std::tr1::shared_ptr<FSEntrySequence> info_packages_files;
         std::tr1::shared_ptr<UseDescFileInfoSequence> use_desc_files;
 
-        Implementation(const ERepository * const n, const FSEntry & t,
-                std::tr1::shared_ptr<const ERepositoryEntries> e) :
+        Implementation(const ERepository * const n, const FSEntry & t) :
             repository(n),
             tree_root(t),
             has_category_names(false),
-            entries(e),
             arch_list_files(new FSEntrySequence),
             repository_mask_files(new FSEntrySequence),
             profiles_desc_files(new FSEntrySequence),
@@ -101,10 +97,9 @@ namespace paludis
 }
 
 ExheresLayout::ExheresLayout(const ERepository * const r, const FSEntry & tree_root,
-        const std::tr1::shared_ptr<const ERepositoryEntries> & e,
         const std::tr1::shared_ptr<const FSEntrySequence> & f) :
     Layout(f),
-    PrivateImplementationPattern<ExheresLayout>(new Implementation<ExheresLayout>(r, tree_root, e))
+    PrivateImplementationPattern<ExheresLayout>(new Implementation<ExheresLayout>(r, tree_root))
 {
     if (master_repositories_locations())
     {
@@ -244,12 +239,12 @@ ExheresLayout::need_package_ids(const QualifiedPackageName & n) const
 
     for (DirIterator e(path), e_end ; e != e_end ; ++e)
     {
-        if (! _imp->entries->is_package_file(n, *e))
+        if (! _imp->repository->is_package_file(n, *e))
             continue;
 
         try
         {
-            std::tr1::shared_ptr<const PackageID> id(_imp->entries->make_id(n, *e));
+            std::tr1::shared_ptr<const PackageID> id(_imp->repository->make_id(n, *e));
             if (indirect_iterator(v->end()) != std::find_if(indirect_iterator(v->begin()), indirect_iterator(v->end()),
                         std::tr1::bind(std::equal_to<VersionSpec>(), id->version(), std::tr1::bind(std::tr1::mem_fn(&PackageID::version), _1))))
                 Log::get_instance()->message("e.exheres_layout.id.duplicate", ll_warning, lc_context)
@@ -621,8 +616,8 @@ ExheresLayout::manifest_files(const QualifiedPackageName & qpn) const
             continue;
 
         std::string file_type("MISC");
-        if (_imp->entries->is_package_file(qpn, (*f)))
-            file_type=_imp->entries->get_package_file_manifest_key((*f), qpn);
+        if (_imp->repository->is_package_file(qpn, (*f)))
+            file_type=_imp->repository->get_package_file_manifest_key((*f), qpn);
 
         result->insert((*f), file_type);
     }
@@ -647,7 +642,7 @@ FSEntry
 ExheresLayout::binary_ebuild_location(const QualifiedPackageName & q, const VersionSpec & v,
         const std::string & eapi) const
 {
-    return package_directory(q) / _imp->entries->binary_ebuild_name(q, v, eapi);
+    return package_directory(q) / _imp->repository->binary_ebuild_name(q, v, eapi);
 }
 
 std::tr1::shared_ptr<MetadataValueKey<FSEntry> >

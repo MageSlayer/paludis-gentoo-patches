@@ -35,7 +35,6 @@ noinst_HEADERS = \
 	e_key.hh \
 	e_mask.hh \
 	e_repository.hh \
-	e_repository_entries.hh \
 	e_repository_exceptions.hh \
 	e_repository_id.hh \
 	e_repository_mask_file.hh \
@@ -48,7 +47,6 @@ noinst_HEADERS = \
 	eapi-fwd.hh \
 	eapi_phase.hh \
 	ebuild.hh \
-	ebuild_entries.hh \
 	ebuild_flat_metadata_cache.hh \
 	ebuild_id.hh \
 	eclass_mtimes.hh \
@@ -97,7 +95,6 @@ libpaludiserepository_la_SOURCES = \
 	e_key.cc \
 	e_mask.cc \
 	e_repository.cc \
-	e_repository_entries.cc \
 	e_repository_exceptions.cc \
 	e_repository_id.cc \
 	e_repository_mask_file.cc \
@@ -108,7 +105,6 @@ libpaludiserepository_la_SOURCES = \
 	eapi.cc \
 	eapi_phase.cc \
 	ebuild.cc \
-	ebuild_entries.cc \
 	ebuild_flat_metadata_cache.cc \
 	ebuild_id.cc \
 	eclass_mtimes.cc \

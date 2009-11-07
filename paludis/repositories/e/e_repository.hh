@@ -26,6 +26,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/repositories/e/e_repository_params.hh>
+#include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/repositories/e/profile.hh>
 #include <paludis/repositories/e/layout.hh>
 #include <tr1/memory>
@@ -63,6 +64,8 @@ namespace paludis
             void _add_metadata_keys() const;
 
             void need_mirrors() const;
+
+            const std::string _guess_eapi(const QualifiedPackageName &, const FSEntry & e) const;
 
         protected:
             virtual void need_keys_added() const;
@@ -163,7 +166,6 @@ namespace paludis
             void update_news() const;
 
             const std::tr1::shared_ptr<const erepository::Layout> layout() const;
-            const std::tr1::shared_ptr<const erepository::ERepositoryEntries> entries() const;
             const std::tr1::shared_ptr<const erepository::Profile> profile() const;
 
             std::tr1::shared_ptr<const RepositoryMaskInfo> repository_masked(const PackageID &) const;
@@ -204,6 +206,41 @@ namespace paludis
             ///\{
 
             virtual void populate_sets() const;
+
+            ///\}
+
+            ///\name Entries
+            ///\{
+
+            bool is_package_file(const QualifiedPackageName &, const FSEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            VersionSpec extract_package_file_version(const QualifiedPackageName &, const FSEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            const std::tr1::shared_ptr<const erepository::ERepositoryID> make_id(
+                    const QualifiedPackageName &, const FSEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            void fetch(const std::tr1::shared_ptr<const erepository::ERepositoryID> &,
+                    const FetchAction &) const;
+
+            void pretend_fetch(const std::tr1::shared_ptr<const erepository::ERepositoryID> &,
+                    PretendFetchAction &) const;
+
+            void install(const std::tr1::shared_ptr<const erepository::ERepositoryID> &,
+                    const InstallAction &) const;
+
+            bool pretend(const std::tr1::shared_ptr<const erepository::ERepositoryID> &,
+                    const PretendAction &) const;
+
+            void info(const std::tr1::shared_ptr<const erepository::ERepositoryID> &,
+                    const InfoAction &) const;
+
+            const std::string get_package_file_manifest_key(const FSEntry &, const QualifiedPackageName &) const;
+
+            const std::string binary_ebuild_name(const QualifiedPackageName &, const VersionSpec &, const std::string &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
     };

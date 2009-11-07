@@ -28,8 +28,6 @@ namespace paludis
 {
     namespace erepository
     {
-        class ERepositoryEntries;
-
         /**
          * The traditional tree layout (as used by Gentoo) for a ERepository.
          *
@@ -50,7 +48,6 @@ namespace paludis
                 ///\{
 
                 TraditionalLayout(const ERepository * const, const FSEntry &,
-                        const std::tr1::shared_ptr<const ERepositoryEntries> &,
                         const std::tr1::shared_ptr<const FSEntrySequence> &);
 
                 virtual ~TraditionalLayout();

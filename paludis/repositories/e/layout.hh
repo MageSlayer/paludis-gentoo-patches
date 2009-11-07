@@ -38,8 +38,6 @@ namespace paludis
 
     namespace erepository
     {
-        class ERepositoryEntries;
-
         /**
          * Manages the layout of a ERepository.
          *
@@ -180,7 +178,6 @@ namespace paludis
                         const std::string &,
                         const ERepository * const,
                         const FSEntry &,
-                        const std::tr1::shared_ptr<const ERepositoryEntries> &,
                         const std::tr1::shared_ptr<const FSEntrySequence> &)
                     const PALUDIS_ATTRIBUTE((warn_unused_result));
         };

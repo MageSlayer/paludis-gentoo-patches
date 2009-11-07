@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2006 Danny van Dyk
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -58,10 +58,9 @@ namespace
     template <typename T_>
     std::tr1::shared_ptr<Layout>
     make_layout(const ERepository * const n, const FSEntry & b,
-            std::tr1::shared_ptr<const ERepositoryEntries> e,
             std::tr1::shared_ptr<const FSEntrySequence> f)
     {
-        return std::tr1::shared_ptr<Layout>(new T_(n, b, e, f));
+        return std::tr1::shared_ptr<Layout>(new T_(n, b, f));
     }
 }
 
@@ -74,13 +73,12 @@ LayoutFactory::create(
         const std::string & s,
         const ERepository * const r,
         const FSEntry & f,
-        const std::tr1::shared_ptr<const ERepositoryEntries> & e,
         const std::tr1::shared_ptr<const FSEntrySequence> & ff) const
 {
     if (s == "traditional")
-        return make_layout<TraditionalLayout>(r, f, e, ff);
+        return make_layout<TraditionalLayout>(r, f, ff);
     if (s == "exheres")
-        return make_layout<ExheresLayout>(r, f, e, ff);
+        return make_layout<ExheresLayout>(r, f, ff);
     throw ConfigurationError("Unrecognised layout '" + s + "'");
 }
 

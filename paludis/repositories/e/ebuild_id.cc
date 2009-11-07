@@ -21,7 +21,6 @@
 #include <paludis/repositories/e/ebuild_flat_metadata_cache.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/e_repository_params.hh>
-#include <paludis/repositories/e/e_repository_entries.hh>
 #include <paludis/repositories/e/eapi_phase.hh>
 #include <paludis/repositories/e/e_key.hh>
 #include <paludis/repositories/e/e_choices_key.hh>
@@ -1132,43 +1131,38 @@ namespace
 
         void visit(InstallAction & a)
         {
-            std::tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->install(
+            std::tr1::static_pointer_cast<const ERepository>(id->repository())->install(
                     std::tr1::static_pointer_cast<const ERepositoryID>(id),
-                    a.options,
-                    std::tr1::static_pointer_cast<const ERepository>(id->repository())->profile());
+                    a.options);
         }
 
         void visit(FetchAction & a)
         {
-            std::tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->fetch(
+            std::tr1::static_pointer_cast<const ERepository>(id->repository())->fetch(
                     std::tr1::static_pointer_cast<const ERepositoryID>(id),
-                    a.options,
-                    std::tr1::static_pointer_cast<const ERepository>(id->repository())->profile());
+                    a.options);
         }
 
         void visit(PretendFetchAction & a)
         {
-            std::tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->pretend_fetch(
+            std::tr1::static_pointer_cast<const ERepository>(id->repository())->pretend_fetch(
                     std::tr1::static_pointer_cast<const ERepositoryID>(id),
-                    a,
-                    std::tr1::static_pointer_cast<const ERepository>(id->repository())->profile());
+                    a);
         }
 
         void visit(PretendAction & action)
         {
-            if (! std::tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->pretend(
+            if (! std::tr1::static_pointer_cast<const ERepository>(id->repository())->pretend(
                         std::tr1::static_pointer_cast<const ERepositoryID>(id),
-                        action,
-                        std::tr1::static_pointer_cast<const ERepository>(id->repository())->profile()))
+                        action))
                 action.set_failed();
         }
 
         void visit(InfoAction & action)
         {
-            std::tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->info(
+            std::tr1::static_pointer_cast<const ERepository>(id->repository())->info(
                     std::tr1::static_pointer_cast<const ERepositoryID>(id),
-                    action,
-                    std::tr1::static_pointer_cast<const ERepository>(id->repository())->profile());
+                    action);
         }
 
         void visit(UninstallAction & a) PALUDIS_ATTRIBUTE((noreturn));
