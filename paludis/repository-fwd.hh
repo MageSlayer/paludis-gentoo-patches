@@ -47,9 +47,6 @@ namespace paludis
     class RepositoryDestinationInterface;
     class RepositoryManifestInterface;
 
-    class RepositoryEInterfaceProfilesDescLine;
-    class RepositoryEInterfaceProfilesDescLineProfile;
-
     /**
      * A set of destinations, used to decide whether a PackageID can be
      * installed to a particular Repository.

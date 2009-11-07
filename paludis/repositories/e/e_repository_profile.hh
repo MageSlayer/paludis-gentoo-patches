@@ -63,20 +63,6 @@ namespace paludis
 
     class ERepositoryProfile;
 
-    struct PALUDIS_VISIBLE RepositoryEInterfaceProfilesDescLineProfile
-    {
-        NamedValue<n::arch_var_if_special, std::string> arch_var_if_special;
-        NamedValue<n::environment, const Environment *> environment;
-        NamedValue<n::location, std::tr1::shared_ptr<const FSEntrySequence> > location;
-        NamedValue<n::mutex, std::tr1::shared_ptr<Mutex> > mutex;
-        NamedValue<n::profiles_explicitly_set, bool> profiles_explicitly_set;
-        NamedValue<n::repository, const ERepository *> repository;
-        NamedValue<n::repository_name, RepositoryName> repository_name;
-        mutable NamedValue<n::value, std::tr1::shared_ptr<ERepositoryProfile> > value;
-
-        const std::tr1::shared_ptr<ERepositoryProfile> fetch() const PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
-
     /**
      * Holds the profile data (but <em>not</em> the profiles/ top level data) for
      * a ERepository instance.

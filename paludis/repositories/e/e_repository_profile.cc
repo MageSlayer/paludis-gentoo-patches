@@ -1098,14 +1098,3 @@ ERepositoryProfile::iuse_implicit() const
     return _imp->iuse_implicit;
 }
 
-const std::tr1::shared_ptr<ERepositoryProfile>
-RepositoryEInterfaceProfilesDescLineProfile::fetch() const
-{
-    Lock lock(*mutex());
-    if (! value())
-        value().reset(new ERepositoryProfile(environment(), repository(), repository_name(), *location(),
-                    arch_var_if_special(), profiles_explicitly_set()));
-
-    return value();
-}
-
