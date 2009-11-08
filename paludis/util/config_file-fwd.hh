@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_CONFIG_FILE_FWD_HH 1
 
 #include <paludis/util/attributes.hh>
+#include <paludis/util/options-fwd.hh>
 #include <iosfwd>
 
 namespace paludis
@@ -29,6 +30,23 @@ namespace paludis
 
     class KeyValueConfigFile;
     class LineConfigFile;
+
+    /**
+     * Options for a LineConfigFile.
+     *
+     * \see LineConfigFileOption
+     * \see LineConfigFile
+     * \ingroup g_config_file
+     */
+    typedef Options<LineConfigFileOption> LineConfigFileOptions;
+
+    /**
+     * Options for a KeyValueConfigFileOptions.
+     *
+     * \see KeyValueConfigFileOption
+     * \see KeyValueConfigFile
+     */
+    typedef Options<KeyValueConfigFileOption> KeyValueConfigFileOptions;
 }
 
 #endif
