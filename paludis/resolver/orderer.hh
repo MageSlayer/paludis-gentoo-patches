@@ -66,13 +66,10 @@ namespace paludis
                 Orderer(
                         const Environment * const,
                         const std::tr1::shared_ptr<const Decider> &,
-                        const ResolverLists &);
+                        const std::tr1::shared_ptr<ResolverLists> &);
                 ~Orderer();
 
                 void resolve();
-
-                const std::tr1::shared_ptr<const Resolutions> ordered_resolutions() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

@@ -58,23 +58,21 @@ namespace paludis
         const Environment * const env;
         const std::tr1::shared_ptr<const Decider> decider;
 
-        const std::tr1::shared_ptr<Resolutions> all_resolutions;
-        const std::tr1::shared_ptr<Resolutions> ordered_resolutions;
+        const std::tr1::shared_ptr<ResolverLists> lists;
 
         Implementation(const Environment * const e,
                 const std::tr1::shared_ptr<const Decider> & d,
-                const ResolverLists & l) :
+                const std::tr1::shared_ptr<ResolverLists> & l) :
             env(e),
             decider(d),
-            all_resolutions(l.all()),
-            ordered_resolutions(l.ordered())
+            lists(l)
         {
         }
     };
 }
 
 Orderer::Orderer(const Environment * const e, const std::tr1::shared_ptr<const Decider> & d,
-        const ResolverLists & l) :
+        const std::tr1::shared_ptr<ResolverLists> & l) :
     PrivateImplementationPattern<Orderer>(new Implementation<Orderer>(e, d, l))
 {
 }
@@ -88,8 +86,8 @@ Orderer::_resolve_arrows()
 {
     Context context("When creating arrows for order resolution:");
 
-    for (Resolutions::ConstIterator i(_imp->all_resolutions->begin()),
-            i_end(_imp->all_resolutions->end()) ;
+    for (Resolutions::ConstIterator i(_imp->lists->all()->begin()),
+            i_end(_imp->lists->all()->end()) ;
             i != i_end ; ++i)
         for (Constraints::ConstIterator c((*i)->constraints()->begin()),
                 c_end((*i)->constraints()->end()) ;
@@ -267,8 +265,8 @@ Orderer::_resolve_order()
         int ignore_pass(0);
         while (true)
         {
-            for (Resolutions::ConstIterator i(_imp->decider->unordered_resolutions()->begin()),
-                    i_end(_imp->decider->unordered_resolutions()->end()) ;
+            for (Resolutions::ConstIterator i(_imp->lists->unordered()->begin()),
+                    i_end(_imp->lists->unordered()->end()) ;
                     i != i_end ; ++i)
             {
                 if ((*i)->already_ordered())
@@ -329,7 +327,7 @@ Orderer::_can_order_now(const Resolvent &, const std::tr1::shared_ptr<const Reso
 void
 Orderer::_do_order(const Resolvent &, const std::tr1::shared_ptr<Resolution> & resolution)
 {
-    _imp->ordered_resolutions->append(resolution);
+    _imp->lists->ordered()->append(resolution);
     resolution->already_ordered() = true;
 }
 
@@ -338,8 +336,8 @@ Orderer::_unable_to_order_more() const
 {
     std::cout << "Unable to order any of the following:" << std::endl;
 
-    for (Resolutions::ConstIterator i(_imp->decider->unordered_resolutions()->begin()),
-            i_end(_imp->decider->unordered_resolutions()->end()) ;
+    for (Resolutions::ConstIterator i(_imp->lists->unordered()->begin()),
+            i_end(_imp->lists->unordered()->end()) ;
             i != i_end ; ++i)
     {
         if ((*i)->already_ordered())
@@ -424,12 +422,6 @@ Orderer::_find_cycle(const Resolvent & start_resolvent, const int ignorable_pass
     }
 
     return result.str();
-}
-
-const std::tr1::shared_ptr<const Resolutions>
-Orderer::ordered_resolutions() const
-{
-    return _imp->ordered_resolutions;
 }
 
 void

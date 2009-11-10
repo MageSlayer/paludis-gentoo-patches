@@ -45,6 +45,7 @@ namespace paludis
         struct all;
         struct errors;
         struct ordered;
+        struct unordered;
         struct untaken;
     }
 
@@ -55,6 +56,7 @@ namespace paludis
             NamedValue<n::all, std::tr1::shared_ptr<Resolutions> > all;
             NamedValue<n::errors, std::tr1::shared_ptr<Resolutions> > errors;
             NamedValue<n::ordered, std::tr1::shared_ptr<Resolutions> > ordered;
+            NamedValue<n::unordered, std::tr1::shared_ptr<Resolutions> > unordered;
             NamedValue<n::untaken, std::tr1::shared_ptr<Resolutions> > untaken;
 
             static const ResolverLists deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));

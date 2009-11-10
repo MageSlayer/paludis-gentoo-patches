@@ -172,7 +172,7 @@ namespace paludis
             public:
                 Decider(const Environment * const,
                         const ResolverFunctions &,
-                        const ResolverLists &);
+                        const std::tr1::shared_ptr<ResolverLists> &);
                 ~Decider();
 
                 void resolve();
@@ -183,9 +183,6 @@ namespace paludis
 
                 const std::tr1::shared_ptr<const RewrittenSpec> rewrite_if_special(const PackageOrBlockDepSpec &,
                         const std::tr1::shared_ptr<const Resolvent> & maybe_from) const;
-
-                const std::tr1::shared_ptr<const Resolutions> unordered_resolutions() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::tr1::shared_ptr<Resolution> resolution_for_resolvent(const Resolvent &) const;
         };

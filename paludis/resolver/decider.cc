@@ -68,26 +68,21 @@ namespace paludis
 
         ResolutionsByResolventMap resolutions_by_resolvent;
 
-        const std::tr1::shared_ptr<Resolutions> all_resolutions;
-        const std::tr1::shared_ptr<Resolutions> untaken_resolutions;
-        const std::tr1::shared_ptr<Resolutions> error_resolutions;
-        const std::tr1::shared_ptr<Resolutions> unordered_resolutions;
+        const std::tr1::shared_ptr<ResolverLists> lists;
 
         Implementation(const Environment * const e, const ResolverFunctions & f,
-                const ResolverLists & l) :
+                const std::tr1::shared_ptr<ResolverLists> & l) :
             env(e),
             fns(f),
             rewriter(env),
-            all_resolutions(l.all()),
-            untaken_resolutions(l.untaken()),
-            error_resolutions(l.errors()),
-            unordered_resolutions(new Resolutions)
+            lists(l)
         {
         }
     };
 }
 
-Decider::Decider(const Environment * const e, const ResolverFunctions & f, const ResolverLists & l) :
+Decider::Decider(const Environment * const e, const ResolverFunctions & f,
+        const std::tr1::shared_ptr<ResolverLists> & l) :
     PrivateImplementationPattern<Decider>(new Implementation<Decider>(e, f, l))
 {
 }
@@ -294,7 +289,7 @@ Decider::_resolution_for_resolvent(const Resolvent & r, const bool create)
         {
             std::tr1::shared_ptr<Resolution> resolution(_create_resolution_for_resolvent(r));
             i = _imp->resolutions_by_resolvent.insert(std::make_pair(r, resolution)).first;
-            _imp->all_resolutions->append(resolution);
+            _imp->lists->all()->append(resolution);
         }
         else
             throw InternalError(PALUDIS_HERE, "resolver bug: expected resolution for "
@@ -1317,12 +1312,6 @@ Decider::add_target_with_reason(const PackageDepSpec & spec, const std::tr1::sha
     }
 }
 
-const std::tr1::shared_ptr<const Resolutions>
-Decider::unordered_resolutions() const
-{
-    return _imp->unordered_resolutions;
-}
-
 void
 Decider::resolve()
 {
@@ -1386,16 +1375,16 @@ namespace
 void
 Decider::_resolve_unordered()
 {
-    for (Resolutions::ConstIterator i(_imp->all_resolutions->begin()),
-            i_end(_imp->all_resolutions->end()) ;
+    for (Resolutions::ConstIterator i(_imp->lists->all()->begin()),
+            i_end(_imp->lists->all()->end()) ;
             i != i_end ; ++i)
     {
         (*i)->decision()->accept(ResolveOrderVisitor(
                     std::tr1::bind(&NamedValue<n::already_ordered, bool>::operator=,
                         &(*i)->already_ordered, value_for<n::already_ordered>(true)),
-                    std::tr1::bind(&Resolutions::append, _imp->error_resolutions, *i),
-                    std::tr1::bind(&Resolutions::append, _imp->unordered_resolutions, *i),
-                    std::tr1::bind(&Resolutions::append, _imp->untaken_resolutions, *i)
+                    std::tr1::bind(&Resolutions::append, _imp->lists->errors(), *i),
+                    std::tr1::bind(&Resolutions::append, _imp->lists->unordered(), *i),
+                    std::tr1::bind(&Resolutions::append, _imp->lists->untaken(), *i)
                     ));
     }
 }

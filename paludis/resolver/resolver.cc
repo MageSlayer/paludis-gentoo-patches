@@ -50,7 +50,7 @@ namespace paludis
         const std::tr1::shared_ptr<ResolverLists> lists;
 
         const std::tr1::shared_ptr<Decider> decider;
-        std::tr1::shared_ptr<Orderer> orderer;
+        const std::tr1::shared_ptr<Orderer> orderer;
 
         Implementation(const Environment * const e, const ResolverFunctions & f) :
             env(e),
@@ -59,9 +59,11 @@ namespace paludis
                             value_for<n::all>(make_shared_ptr(new Resolutions)),
                             value_for<n::errors>(make_shared_ptr(new Resolutions)),
                             value_for<n::ordered>(make_shared_ptr(new Resolutions)),
+                            value_for<n::unordered>(make_shared_ptr(new Resolutions)),
                             value_for<n::untaken>(make_shared_ptr(new Resolutions))
                             ))),
-            decider(new Decider(e, f, *lists))
+            decider(new Decider(e, f, lists)),
+            orderer(new Orderer(e, decider, lists))
         {
         }
     };
@@ -105,8 +107,6 @@ void
 Resolver::resolve()
 {
     _imp->decider->resolve();
-
-    _imp->orderer.reset(new Orderer(_imp->env, _imp->decider, *_imp->lists));
     _imp->orderer->resolve();
 }
 
@@ -123,6 +123,7 @@ ResolverLists::serialise(Serialiser & s) const
         .member(SerialiserFlags<serialise::might_be_null>(), "all", all())
         .member(SerialiserFlags<serialise::might_be_null>(), "errors", errors())
         .member(SerialiserFlags<serialise::might_be_null>(), "ordered", ordered())
+        .member(SerialiserFlags<serialise::might_be_null>(), "unordered", unordered())
         .member(SerialiserFlags<serialise::might_be_null>(), "untaken", untaken())
         ;
 }
@@ -135,6 +136,7 @@ ResolverLists::deserialise(Deserialisation & d)
             value_for<n::all>(v.member<std::tr1::shared_ptr<Resolutions> >("all")),
             value_for<n::errors>(v.member<std::tr1::shared_ptr<Resolutions> >("errors")),
             value_for<n::ordered>(v.member<std::tr1::shared_ptr<Resolutions> >("ordered")),
+            value_for<n::unordered>(v.member<std::tr1::shared_ptr<Resolutions> >("unordered")),
             value_for<n::untaken>(v.member<std::tr1::shared_ptr<Resolutions> >("untaken"))
             );
 }
