@@ -615,7 +615,7 @@ namespace
 
     void display_resolution(
             const std::tr1::shared_ptr<Environment> & env,
-            const ResolutionLists & lists,
+            const ResolverLists & lists,
             const DisplayResolutionCommandLine & cmdline)
     {
         Context context("When displaying chosen resolution:");
@@ -633,7 +633,7 @@ namespace
 
     void display_untaken(
             const std::tr1::shared_ptr<Environment> & env,
-            const ResolutionLists & lists,
+            const ResolverLists & lists,
             const DisplayResolutionCommandLine & cmdline)
     {
         Context context("When displaying untaken resolutions:");
@@ -647,7 +647,7 @@ namespace
 
     void display_errors(
             const std::tr1::shared_ptr<Environment> & env,
-            const ResolutionLists & lists,
+            const ResolverLists & lists,
             const DisplayResolutionCommandLine & cmdline)
     {
         Context context("When displaying errors for chosen resolution:");
@@ -666,7 +666,7 @@ namespace
 
     void display_explanations(
             const std::tr1::shared_ptr<Environment> & env,
-            const ResolutionLists & lists,
+            const ResolverLists & lists,
             const DisplayResolutionCommandLine & cmdline)
     {
         Context context("When displaying explanations:");
@@ -811,8 +811,8 @@ DisplayResolutionCommand::run(
     SafeIFStream deser_stream(fd);
     const std::string deser_str((std::istreambuf_iterator<char>(deser_stream)), std::istreambuf_iterator<char>());
     Deserialiser deserialiser(env.get(), deser_str);
-    Deserialisation deserialisation("ResolutionLists", deserialiser);
-    ResolutionLists lists(ResolutionLists::deserialise(deserialisation));
+    Deserialisation deserialisation("ResolverLists", deserialiser);
+    ResolverLists lists(ResolverLists::deserialise(deserialisation));
 
     display_resolution(env, lists, cmdline);
     display_untaken(env, lists, cmdline);

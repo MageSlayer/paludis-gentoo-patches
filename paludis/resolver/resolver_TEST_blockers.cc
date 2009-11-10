@@ -74,7 +74,7 @@ namespace test_cases
             install("hard", "a-pkg", "1");
             install("hard", "z-pkg", "1");
 
-            std::tr1::shared_ptr<const ResolutionLists> resolutions(get_resolutions("hard/target"));
+            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("hard/target"));
 
             {
                 TestMessageSuffix s("errors");

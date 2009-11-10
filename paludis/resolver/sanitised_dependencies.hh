@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_SANITISED_DEPENDENCIES_HH 1
 
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
-#include <paludis/resolver/resolver-fwd.hh>
+#include <paludis/resolver/decider-fwd.hh>
 #include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/dep_label-fwd.hh>
@@ -82,7 +82,7 @@ namespace paludis
         {
             private:
                 void _populate_one(
-                        const Resolver &,
+                        const Decider &,
                         const Resolvent &,
                         const std::tr1::shared_ptr<const PackageID> &,
                         const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > (PackageID::* const) () const
@@ -93,7 +93,7 @@ namespace paludis
                 ~SanitisedDependencies();
 
                 void populate(
-                        const Resolver &,
+                        const Decider &,
                         const Resolvent &,
                         const std::tr1::shared_ptr<const PackageID> &);
 

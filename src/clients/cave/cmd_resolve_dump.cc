@@ -27,6 +27,7 @@
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/arrow.hh>
 #include <paludis/resolver/destination.hh>
+#include <paludis/resolver/resolutions.hh>
 #include <paludis/util/enum_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/join.hh>
@@ -229,12 +230,12 @@ namespace
     {
         std::cout << "Dumping resolutions by QPN:S:" << std::endl << std::endl;
 
-        for (Resolver::ResolutionsByResolventConstIterator c(resolver->begin_resolutions_by_resolvent()),
-                c_end(resolver->end_resolutions_by_resolvent()) ;
+        for (Resolutions::ConstIterator c(resolver->lists()->all()->begin()),
+                c_end(resolver->lists()->all()->end()) ;
                 c != c_end ; ++c)
         {
-            std::cout << c->first << std::endl;
-            std::cout << "  = " << *c->second << std::endl;
+            std::cout << (*c)->resolvent() << std::endl;
+            std::cout << "  = " << **c << std::endl;
         }
 
         std::cout << std::endl;

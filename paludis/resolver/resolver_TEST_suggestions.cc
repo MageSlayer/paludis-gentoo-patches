@@ -71,7 +71,7 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolutionLists> resolutions(get_resolutions("suggestion/target"));
+            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("suggestion/target"));
 
             {
                 TestMessageSuffix s("errors");
@@ -104,7 +104,7 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolutionLists> resolutions(get_resolutions("unmeetable-suggestion/target"));
+            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("unmeetable-suggestion/target"));
 
             {
                 TestMessageSuffix s("errors");
@@ -137,7 +137,7 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolutionLists> resolutions(get_resolutions("suggestion-then-dependency/target"));
+            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("suggestion-then-dependency/target"));
 
             {
                 TestMessageSuffix s("errors");

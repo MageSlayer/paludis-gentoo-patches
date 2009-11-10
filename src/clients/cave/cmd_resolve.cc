@@ -851,7 +851,7 @@ namespace
 
     int display_resolution(
             const std::tr1::shared_ptr<Environment> &,
-            const ResolutionLists & resolution_lists,
+            const ResolverLists & resolution_lists,
             const ResolveCommandLine & cmdline)
     {
         Context context("When displaying chosen resolution:");
@@ -886,13 +886,13 @@ namespace
 
     void perform_resolution(
             const std::tr1::shared_ptr<Environment> &,
-            const ResolutionLists & resolution_lists,
+            const ResolverLists & resolution_lists,
             const ResolveCommandLine & cmdline,
             const bool is_set) PALUDIS_ATTRIBUTE((noreturn));
 
     void perform_resolution(
             const std::tr1::shared_ptr<Environment> &,
-            const ResolutionLists & resolution_lists,
+            const ResolverLists & resolution_lists,
             const ResolveCommandLine & cmdline,
             const bool is_set)
     {
@@ -1162,13 +1162,13 @@ ResolveCommand::run(
 
         dump_if_requested(env, resolver, cmdline);
 
-        retcode |= display_resolution(env, *resolver->resolution_lists(), cmdline);
+        retcode |= display_resolution(env, *resolver->lists(), cmdline);
 
-        if (! resolver->resolution_lists()->errors()->empty())
+        if (! resolver->lists()->errors()->empty())
             retcode |= 1;
 
         if (0 == retcode)
-            perform_resolution(env, *resolver->resolution_lists(), cmdline, is_set);
+            perform_resolution(env, *resolver->lists(), cmdline, is_set);
     }
     catch (...)
     {

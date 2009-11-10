@@ -72,16 +72,16 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolutionLists> resolutions;
+            std::tr1::shared_ptr<const ResolverLists> resolutions;
             {
-                std::tr1::shared_ptr<const ResolutionLists> orig_resolutions(get_resolutions("serialisation/target"));
+                std::tr1::shared_ptr<const ResolverLists> orig_resolutions(get_resolutions("serialisation/target"));
                 std::stringstream str;
                 Serialiser ser(str);
                 orig_resolutions->serialise(ser);
 
                 Deserialiser deser(&env, str.str());
-                Deserialisation desern("ResolutionLists", deser);
-                resolutions = make_shared_ptr(new ResolutionLists(ResolutionLists::deserialise(desern)));
+                Deserialisation desern("ResolverLists", deser);
+                resolutions = make_shared_ptr(new ResolverLists(ResolverLists::deserialise(desern)));
             }
 
             {

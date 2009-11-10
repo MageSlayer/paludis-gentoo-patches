@@ -267,7 +267,7 @@ namespace
 
     int execute_resolution(
             const std::tr1::shared_ptr<Environment> & env,
-            const ResolutionLists & lists,
+            const ResolverLists & lists,
             const ExecuteResolutionCommandLine & cmdline)
     {
         Context context("When executing chosen resolution:");
@@ -457,8 +457,8 @@ ExecuteResolutionCommand::run(
     SafeIFStream deser_stream(fd);
     const std::string deser_str((std::istreambuf_iterator<char>(deser_stream)), std::istreambuf_iterator<char>());
     Deserialiser deserialiser(env.get(), deser_str);
-    Deserialisation deserialisation("ResolutionLists", deserialiser);
-    ResolutionLists lists(ResolutionLists::deserialise(deserialisation));
+    Deserialisation deserialisation("ResolverLists", deserialiser);
+    ResolverLists lists(ResolverLists::deserialise(deserialisation));
 
     return execute_resolution(env, lists, cmdline);
 }

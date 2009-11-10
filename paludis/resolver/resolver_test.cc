@@ -26,6 +26,8 @@
 #include <paludis/resolver/resolver_functions.hh>
 #include <paludis/resolver/suggest_restart.hh>
 #include <paludis/resolver/decision.hh>
+#include <paludis/resolver/decider.hh>
+#include <paludis/resolver/orderer.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
@@ -34,6 +36,7 @@
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_shared_copy.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/package_database.hh>
@@ -278,7 +281,7 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
 #endif
 }
 
-const std::tr1::shared_ptr<const ResolutionLists>
+const std::tr1::shared_ptr<const ResolverLists>
 ResolverTestCase::get_resolutions(const PackageDepSpec & target)
 {
     InitialConstraints initial_constraints;
@@ -303,7 +306,7 @@ ResolverTestCase::get_resolutions(const PackageDepSpec & target)
                         ));
             resolver.add_target(target);
             resolver.resolve();
-            return resolver.resolution_lists();
+            return resolver.lists();
         }
         catch (const SuggestRestart & e)
         {
@@ -312,7 +315,7 @@ ResolverTestCase::get_resolutions(const PackageDepSpec & target)
     }
 }
 
-const std::tr1::shared_ptr<const ResolutionLists>
+const std::tr1::shared_ptr<const ResolverLists>
 ResolverTestCase::get_resolutions(const std::string & target)
 {
     PackageDepSpec target_spec(parse_user_package_dep_spec(target, &env, UserPackageDepSpecOptions()));

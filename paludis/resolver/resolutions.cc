@@ -34,7 +34,7 @@ namespace paludis
     template <>
     struct Implementation<Resolutions>
     {
-        Sequence<std::tr1::shared_ptr<const Resolution> > resolutions;
+        Sequence<std::tr1::shared_ptr<Resolution> > resolutions;
     };
 }
 
@@ -48,7 +48,7 @@ Resolutions::~Resolutions()
 }
 
 void
-Resolutions::append(const std::tr1::shared_ptr<const Resolution> & r)
+Resolutions::append(const std::tr1::shared_ptr<Resolution> & r)
 {
     _imp->resolutions.push_back(r);
 }
@@ -88,29 +88,6 @@ Resolutions::deserialise(Deserialisation & d)
     for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
         result->append(vv.member<std::tr1::shared_ptr<Resolution> >(stringify(n)));
     return result;
-}
-
-void
-ResolutionLists::serialise(Serialiser & s) const
-{
-    s.object("ResolutionLists")
-        .member(SerialiserFlags<serialise::might_be_null>(), "all", all())
-        .member(SerialiserFlags<serialise::might_be_null>(), "errors", errors())
-        .member(SerialiserFlags<serialise::might_be_null>(), "ordered", ordered())
-        .member(SerialiserFlags<serialise::might_be_null>(), "untaken", untaken())
-        ;
-}
-
-ResolutionLists
-ResolutionLists::deserialise(Deserialisation & d)
-{
-    Deserialisator v(d, "ResolutionLists");
-    return make_named_values<ResolutionLists>(
-            value_for<n::all>(v.member<std::tr1::shared_ptr<Resolutions> >("all")),
-            value_for<n::errors>(v.member<std::tr1::shared_ptr<Resolutions> >("errors")),
-            value_for<n::ordered>(v.member<std::tr1::shared_ptr<Resolutions> >("ordered")),
-            value_for<n::untaken>(v.member<std::tr1::shared_ptr<Resolutions> >("untaken"))
-            );
 }
 
 template class PrivateImplementationPattern<Resolutions>;

@@ -25,8 +25,13 @@
 #include <paludis/resolver/resolution-fwd.hh>
 #include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/resolver/reason-fwd.hh>
+#include <paludis/resolver/sanitised_dependencies-fwd.hh>
+#include <paludis/resolver/decision-fwd.hh>
+#include <paludis/resolver/destination_types-fwd.hh>
+#include <paludis/resolver/constraint-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/filter-fwd.hh>
+#include <paludis/name-fwd.hh>
 #include <tr1/functional>
 
 namespace paludis

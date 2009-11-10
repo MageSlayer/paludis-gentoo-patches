@@ -17,15 +17,14 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLVER_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLVER_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_DECIDER_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_DECIDER_FWD_HH 1
 
 namespace paludis
 {
     namespace resolver
     {
-        struct Resolver;
-        struct ResolverLists;
+        struct Decider;
     }
 }
 

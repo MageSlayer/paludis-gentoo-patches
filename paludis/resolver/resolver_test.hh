@@ -29,6 +29,7 @@
 #include <paludis/resolver/resolutions-fwd.hh>
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/resolver/destination_types-fwd.hh>
+#include <paludis/resolver/resolver-fwd.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/map-fwd.hh>
@@ -95,9 +96,9 @@ namespace paludis
                 ResolverTestCase(const std::string & group, const std::string & test_name, const std::string & eapi,
                         const std::string & layout);
 
-                const std::tr1::shared_ptr<const ResolutionLists> get_resolutions(const PackageDepSpec & target);
+                const std::tr1::shared_ptr<const ResolverLists> get_resolutions(const PackageDepSpec & target);
 
-                const std::tr1::shared_ptr<const ResolutionLists> get_resolutions(const std::string & target);
+                const std::tr1::shared_ptr<const ResolverLists> get_resolutions(const std::string & target);
 
                 struct ResolutionListChecks
                 {

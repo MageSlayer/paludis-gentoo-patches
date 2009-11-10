@@ -71,7 +71,7 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolutionLists> resolutions(get_resolutions("virtuals/target"));
+            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("virtuals/target"));
 
             {
                 TestMessageSuffix s("errors");
@@ -104,7 +104,7 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolutionLists> resolutions(get_resolutions("virtual/virtual-target"));
+            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("virtual/virtual-target"));
 
             {
                 TestMessageSuffix s("errors");

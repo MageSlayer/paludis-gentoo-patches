@@ -40,18 +40,6 @@ namespace paludis
 
     namespace resolver
     {
-        struct ResolutionLists
-        {
-            NamedValue<n::all, std::tr1::shared_ptr<Resolutions> > all;
-            NamedValue<n::errors, std::tr1::shared_ptr<Resolutions> > errors;
-            NamedValue<n::ordered, std::tr1::shared_ptr<Resolutions> > ordered;
-            NamedValue<n::untaken, std::tr1::shared_ptr<Resolutions> > untaken;
-
-            void serialise(Serialiser &) const;
-            static ResolutionLists deserialise(
-                    Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
-        };
-
         class PALUDIS_VISIBLE Resolutions :
             private PrivateImplementationPattern<Resolutions>
         {
@@ -59,11 +47,11 @@ namespace paludis
                 Resolutions();
                 ~Resolutions();
 
-                void append(const std::tr1::shared_ptr<const Resolution> &);
+                void append(const std::tr1::shared_ptr<Resolution> &);
 
                 struct ConstIteratorTag;
                 typedef WrappedForwardIterator<ConstIteratorTag,
-                        const std::tr1::shared_ptr<const Resolution> > ConstIterator;
+                        const std::tr1::shared_ptr<Resolution> > ConstIterator;
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

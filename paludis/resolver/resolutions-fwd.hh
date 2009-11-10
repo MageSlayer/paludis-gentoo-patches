@@ -27,7 +27,6 @@ namespace paludis
 {
     namespace resolver
     {
-        struct ResolutionLists;
         struct Resolutions;
     }
 }

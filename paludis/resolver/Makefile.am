@@ -15,9 +15,11 @@ BUILT_SOURCES = \
 noinst_HEADERS = \
 	arrow.hh arrow-fwd.hh \
 	constraint.hh constraint-fwd.hh \
+	decider.hh decider-fwd.hh \
 	decision.hh decision-fwd.hh \
 	destination.hh destination-fwd.hh \
 	destination_types.hh destination_types-fwd.hh destination_types-se.hh \
+	orderer.hh orderer-fwd.hh \
 	reason.hh reason-fwd.hh \
 	resolution.hh resolution-fwd.hh \
 	resolutions.hh resolutions-fwd.hh \
@@ -33,9 +35,11 @@ noinst_HEADERS = \
 libpaludisresolver_a_SOURCES = \
 	arrow.cc \
 	constraint.cc \
+	decider.cc \
 	decision.cc \
 	destination.cc \
 	destination_types.cc \
+	orderer.cc \
 	reason.cc \
 	resolution.cc \
 	resolutions.cc \
