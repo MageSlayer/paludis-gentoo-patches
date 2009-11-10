@@ -75,7 +75,7 @@ OutputManagers::add(const FSEntry & filename, const std::tr1::shared_ptr<const M
 {
     Context context("When adding source '" + stringify(filename) + "' as an output manager file:");
 
-    std::tr1::shared_ptr<KeyValueConfigFile> f(make_bashable_kv_conf(filename, predefined_variables));
+    std::tr1::shared_ptr<KeyValueConfigFile> f(make_bashable_kv_conf(filename, predefined_variables, KeyValueConfigFileOptions()));
     if (! f)
         return;
 

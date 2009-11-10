@@ -43,7 +43,7 @@ std::string defined_vars_to_kv_func(
 }
 
 std::tr1::shared_ptr<LineConfigFile>
-paludis::paludis_environment::make_bashable_conf(const FSEntry & f)
+paludis::paludis_environment::make_bashable_conf(const FSEntry & f, const LineConfigFileOptions & o)
 {
     Context context("When making a config file out of '" + stringify(f) + "':");
 
@@ -58,7 +58,7 @@ paludis::paludis_environment::make_bashable_conf(const FSEntry & f)
                 .with_stderr_prefix(f.basename() + "> ")
                 .with_captured_stdout_stream(&s));
         int exit_status(run_command(cmd));
-        result.reset(new LineConfigFile(s, LineConfigFileOptions()));
+        result.reset(new LineConfigFile(s, o));
 
         if (exit_status != 0)
         {
@@ -68,13 +68,15 @@ paludis::paludis_environment::make_bashable_conf(const FSEntry & f)
         }
     }
     else
-        result.reset(new LineConfigFile(f, LineConfigFileOptions()));
+        result.reset(new LineConfigFile(f, o));
 
     return result;
 }
 
 std::tr1::shared_ptr<KeyValueConfigFile>
-paludis::paludis_environment::make_bashable_kv_conf(const FSEntry & f, const std::tr1::shared_ptr<const Map<std::string, std::string> > & predefined_variables)
+paludis::paludis_environment::make_bashable_kv_conf(const FSEntry & f,
+        const std::tr1::shared_ptr<const Map<std::string, std::string> > & predefined_variables,
+        const KeyValueConfigFileOptions & o)
 {
     Context context("When making a key=value config file out of '" + stringify(f) + "':");
 
@@ -92,7 +94,7 @@ paludis::paludis_environment::make_bashable_kv_conf(const FSEntry & f, const std
                 end(predefined_variables->end()); i != end; ++i)
             cmd.with_setenv(i->first, i->second);
         int exit_status(run_command(cmd));
-        result.reset(new KeyValueConfigFile(s, KeyValueConfigFileOptions(), &KeyValueConfigFile::no_defaults,
+        result.reset(new KeyValueConfigFile(s, o, &KeyValueConfigFile::no_defaults,
                     &KeyValueConfigFile::no_transformation));
 
         if (exit_status != 0)
@@ -104,7 +106,7 @@ paludis::paludis_environment::make_bashable_kv_conf(const FSEntry & f, const std
     }
     else
     {
-        result.reset(new KeyValueConfigFile(f, KeyValueConfigFileOptions(),
+        result.reset(new KeyValueConfigFile(f, o,
                     std::tr1::bind(
                         &defined_vars_to_kv_func,
                         predefined_variables,

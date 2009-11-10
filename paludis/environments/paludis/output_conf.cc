@@ -199,7 +199,7 @@ OutputConf::add(const FSEntry & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as an output file:");
 
-    std::tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename));
+    std::tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename, LineConfigFileOptions()));
     if (! f)
         return;
 

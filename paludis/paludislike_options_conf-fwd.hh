@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,28 +17,13 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_ENVIRONMENTS_PALUDIS_BASHABLE_CONF_HH
-#define PALUDIS_GUARD_PALUDIS_ENVIRONMENTS_PALUDIS_BASHABLE_CONF_HH 1
-
-#include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/util/config_file-fwd.hh>
-#include <paludis/util/map-fwd.hh>
-#include <tr1/memory>
-#include <string>
+#ifndef PALUDIS_GUARD_PALUDIS_PALUDISLIKE_OPTIONS_CONF_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_PALUDISLIKE_OPTIONS_CONF_FWD_HH 1
 
 namespace paludis
 {
-    namespace paludis_environment
-    {
-        std::tr1::shared_ptr<LineConfigFile> make_bashable_conf(
-                const FSEntry &,
-                const LineConfigFileOptions &);
-
-        std::tr1::shared_ptr<KeyValueConfigFile> make_bashable_kv_conf(
-                const FSEntry &,
-                const std::tr1::shared_ptr<const Map<std::string, std::string> > &,
-                const KeyValueConfigFileOptions &);
-    }
+    struct PaludisLikeOptionsConf;
+    struct PaludisLikeOptionsConfParams;
 }
 
 #endif
