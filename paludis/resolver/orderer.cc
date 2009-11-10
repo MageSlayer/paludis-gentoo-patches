@@ -29,7 +29,7 @@
 #include <paludis/resolver/resolver.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/make_named_values.hh>
