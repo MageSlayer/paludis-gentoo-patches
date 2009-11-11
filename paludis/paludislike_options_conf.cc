@@ -288,7 +288,7 @@ PaludisLikeOptionsConf::add_file(const FSEntry & f)
                         values_group->values().insert(make_named_values<Value>(
                                     value_for<n::equals_value>(t->substr(equals_p + 1)),
                                     value_for<n::minus>(false),
-                                    value_for<n::unprefixed_name>(UnprefixedChoiceName(t->substr(0, equals_p - 1)))
+                                    value_for<n::unprefixed_name>(UnprefixedChoiceName(t->substr(0, equals_p)))
                                     ));
                     }
                 }
