@@ -36,10 +36,12 @@ namespace
         paludis::args::ArgsHandler
     {
         paludis::args::ArgsGroup group;
+        paludis::args::SwitchArg a_asciidoc;
         paludis::args::SwitchArg a_html;
 
         ManCommandLine() :
             group(main_options_section(), "", ""),
+            a_asciidoc(&group, "asciidoc", '\0', "", false),
             a_html(&group, "html", '\0', "", false)
         {
         }
@@ -68,7 +70,9 @@ main(int argc, char * argv[])
     cmdline.run(argc, argv, "", "", "");
 
     std::shared_ptr<paludis::args::DocWriter> w;
-    if (cmdline.a_html.specified())
+    if (cmdline.a_asciidoc.specified())
+        w = std::make_shared<paludis::args::AsciidocWriter>(cout);
+    else if (cmdline.a_html.specified())
         w = std::make_shared<paludis::args::HtmlWriter>(cout);
     else
         w = std::make_shared<paludis::args::ManWriter>(cout);

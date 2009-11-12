@@ -82,17 +82,23 @@ man_MANS = \
 	cave.1 \
 	$(command_MANS)
 
-cave.1 : man-cave
-	env \
-	    CAVE_FORMATS_CONF="/dev/null" \
-	    CAVE_COMMANDS_PATH="" \
-	    ./man-cave > $@
+man_MANS_txts = $(man_MANS:.1=.txt)
+man_MANS_xmls = $(man_MANS_txts:.txt=.xml)
 
-$(command_MANS) : man-cave
+SUFFIXES = .1 .txt .xml
+
+$(man_MANS_txts) : man-cave
 	if ! env \
 	    CAVE_FORMATS_CONF="/dev/null" \
 	    CAVE_COMMANDS_PATH="" \
-	    ./man-cave `echo $@ | sed -e 's.^cave-..' -e 's,\.1$$,,'` > $@ ; then rm -f $@ ; exit 1 ; fi
+	    ./man-cave --asciidoc `echo $@ | sed -e 's.^cave-*..' -e 's,\.txt$$,,'` > $@ ; then rm -f $@ ; exit 1 ; fi
+
+.txt.xml :
+	asciidoc --doctype=manpage --backend=docbook --out-file=$@ $<
+
+.xml.1 :
+	xmlto man $<
+	@: $@
 
 cave_SOURCES = \
 	cave.cc
@@ -209,7 +215,11 @@ EXTRA_DIST = \
 	continue_on_failure_TEST_setup.sh continue_on_failure_TEST_cleanup.sh \
 	moo
 
-DISTCLEANFILES = $(man_MANS) $(noinst_DATA)
+DISTCLEANFILES = \
+	$(man_MANS) \
+	$(noinst_DATA) \
+	$(man_MANS_txts) \
+	$(man_MANS_xmls)
 
 lib_LTLIBRARIES =
 
