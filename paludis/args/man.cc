@@ -102,6 +102,8 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
     for (ArgsHandler::UsageLineConstIterator u(h->begin_usage_lines()),
             u_end(h->end_usage_lines()) ; u != u_end ; ++u)
     {
+        if (u == h->begin_usage_lines())
+            dw.start_usage_lines();
         dw.usage_line(h->app_name(), *u);
     }
 
@@ -190,6 +192,11 @@ HtmlWriter::heading(const std::string & name, const std::string & section_, cons
     _os << "<h1>" << name << "(" << section_ << ")" << "</h1>" << endl;
     _os << "<h2>Name</h2>" << endl;
     _os << "<p>" << name << " - " << synopsis << "</p>" << endl;
+}
+
+void
+HtmlWriter::start_usage_lines()
+{
     _os << "<h2>Synopsis</h2>" << endl;
 }
 
@@ -380,6 +387,11 @@ ManWriter::heading(const std::string & name, const std::string & section_, const
     _os << ".TH \"" << name << "\" " << section_ << endl;
     _os << ".SH NAME" << endl;
     _os << name << " \\- " << synopsis << endl;
+}
+
+void
+ManWriter::start_usage_lines()
+{
     _os << ".SH SYNOPSIS" << endl;
 }
 

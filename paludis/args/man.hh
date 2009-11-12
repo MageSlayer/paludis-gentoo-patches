@@ -57,6 +57,7 @@ namespace paludis
 
                 virtual void heading(const std::string & name, const std::string & section,
                         const std::string & synopsis) = 0;
+                virtual void start_usage_lines() = 0;
                 virtual void usage_line(const std::string & name, const std::string & line) = 0;
 
                 virtual void start_description(const std::string & description) = 0;
@@ -116,6 +117,7 @@ namespace paludis
 
                 void heading(const std::string & name, const std::string & section,
                         const std::string & synopis);
+                void start_usage_lines();
                 void usage_line(const std::string & name, const std::string & line);
 
                 void start_description(const std::string & description);
@@ -173,6 +175,7 @@ namespace paludis
 
                 void heading(const std::string & name, const std::string & section,
                         const std::string & synopis);
+                void start_usage_lines();
                 void usage_line(const std::string & name, const std::string & line);
 
                 void start_description(const std::string & description);
