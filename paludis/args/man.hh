@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2006, 2007, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2011 Ingmar Vanhassel
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -96,6 +97,66 @@ namespace paludis
                 virtual void end_see_alsos() = 0;
 
                 ///\}
+        };
+
+        /**
+         * Create Asciidoc documentation from args classes.
+         *
+         * \ingroup grplibpaludisargs
+         * \nosubgrouping
+         */
+        class PALUDIS_VISIBLE AsciidocWriter :
+            public DocWriter
+        {
+            private:
+                std::ostream & _os;
+
+            public:
+                ///\name Basic operations
+                ///\{
+                AsciidocWriter(std::ostream & os);
+                ~AsciidocWriter();
+                ///\}
+
+                void heading(const std::string & name, const std::string & section,
+                        const std::string & synopis);
+                void start_usage_lines();
+                void usage_line(const std::string & name, const std::string & line);
+
+                void start_description(const std::string & description);
+                void extra_description(const std::string & description);
+                void end_description();
+
+                void start_options(const std::string & s);
+                void start_arg_group(const std::string & name, const std::string & description);
+                void arg_group_item(const char & short_name, const std::string & long_name,
+                        const std::string & negated_long_name, const std::string & description);
+                void start_extra_arg();
+                void extra_arg_enum(const AllowedEnumArg &, const std::string & default_arg);
+                void extra_arg_string_set(const std::string & first, const std::string & second);
+                void end_extra_arg();
+                void end_arg_group();
+                void end_options();
+
+                void start_environment();
+                void environment_line(const std::string & first, const std::string & second);
+                void end_environment();
+
+                void start_examples();
+                void example(const std::string &, const std::string &);
+                void end_examples();
+
+                void start_notes();
+                void note(const std::string &);
+                void end_notes();
+
+                void section(const std::string & title);
+                void subsection(const std::string & title);
+                void paragraph(const std::string & text);
+
+                void start_see_alsos();
+                void see_also(const std::string &, const int, const bool first);
+                void end_see_alsos();
         };
 
         /**

@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2011 Ingmar Vanhassel
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -202,6 +203,236 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
 DocWriter::~DocWriter()
 {
 }
+
+AsciidocWriter::AsciidocWriter(std::ostream & os) :
+    _os(os)
+{
+}
+
+AsciidocWriter::~AsciidocWriter()
+{
+}
+
+void
+AsciidocWriter::heading(const std::string & name, const std::string & section_, const std::string & synopsis)
+{
+    std::string name_no_spaces(name);
+    std::replace(name_no_spaces.begin(), name_no_spaces.end(), ' ', '-');
+    _os << name_no_spaces << "(" << section_ << ")" << endl;
+    _os << std::string(name_no_spaces.size() + 3, '=') << endl << endl << endl;
+    _os << "NAME" << endl;
+    _os << "----" << endl << endl;
+    _os << name_no_spaces << " - " << synopsis << endl << endl;
+}
+
+void
+AsciidocWriter::start_usage_lines()
+{
+    _os << "SYNOPSIS" << endl;
+    _os << "--------" << endl << endl;
+}
+
+void
+AsciidocWriter::usage_line(const std::string & name, const std::string & line)
+{
+    _os << "*" << name << " " << line << "*" << endl << endl;
+}
+
+void
+AsciidocWriter::start_description(const std::string & description)
+{
+    _os << "DESCRIPTION" << endl;
+    _os << "-----------" << endl;
+    _os << description << endl;
+}
+
+void
+AsciidocWriter::extra_description(const std::string & description)
+{
+    _os << description << endl << endl;
+}
+
+void
+AsciidocWriter::end_description()
+{
+    _os << endl;
+}
+
+void
+AsciidocWriter::start_options(const std::string & s)
+{
+    std::string upper_s;
+    std::transform(s.begin(), s.end(), std::back_inserter(upper_s), &::toupper);
+    _os << upper_s << endl;
+    _os << std::string(s.size(), char('-')) << endl;
+}
+
+void
+AsciidocWriter::start_arg_group(const std::string & name, const std::string & description)
+{
+    _os << name << endl;
+    _os << std::string(name.size(), char('~')) << endl;
+    _os << description << endl << endl;
+}
+
+void
+AsciidocWriter::arg_group_item(const char & short_name, const std::string & long_name,
+        const std::string & negated_long_name, const std::string & description)
+{
+    _os << "*";
+    if (short_name)
+        _os << "-" << short_name << " , ";
+    _os << "--" << long_name;
+    if (! negated_long_name.empty())
+        _os << " (" << "--" << negated_long_name << ")";
+    _os << "*::" << endl;
+    _os << "        " << description << endl;
+    _os << endl;
+}
+
+void
+AsciidocWriter::start_extra_arg()
+{
+}
+
+void
+AsciidocWriter::extra_arg_enum(const AllowedEnumArg & e, const std::string & default_arg)
+{
+    std::string default_string;
+
+    if (e.long_name() == default_arg)
+        default_string = " (default)";
+    _os << "    *" << e.long_name();
+    if (e.short_name())
+        _os << " (" << std::string(1, e.short_name()) << ")";
+    _os << "*;;" << endl;
+    _os << "        " << e.description() << default_string << endl << endl;
+}
+
+void
+AsciidocWriter::extra_arg_string_set(const std::string & first, const std::string & second)
+{
+    _os << first << endl;
+    _os << second << endl;
+}
+
+void
+AsciidocWriter::end_extra_arg()
+{
+    _os << endl;
+}
+
+void
+AsciidocWriter::end_arg_group()
+{
+    _os << endl;
+}
+
+void
+AsciidocWriter::end_options()
+{
+    _os << endl;
+}
+
+void
+AsciidocWriter::start_environment()
+{
+    _os << "ENVIRONMENT" << endl;
+    _os << "-----------" << endl;
+}
+
+void
+AsciidocWriter::environment_line(const std::string & first, const std::string & second)
+{
+    _os << first << "::" << endl;
+    _os << second << endl;
+}
+
+void
+AsciidocWriter::end_environment()
+{
+    _os << endl;
+}
+
+void
+AsciidocWriter::start_examples()
+{
+    _os << "EXAMPLES" << endl;
+    _os << "--------" << endl;
+}
+
+void
+AsciidocWriter::example(const std::string & first, const std::string & second)
+{
+    _os << first << "::" << endl;
+    _os << second << endl;
+}
+
+void
+AsciidocWriter::end_examples()
+{
+    _os << endl;
+}
+
+void
+AsciidocWriter::start_notes()
+{
+    _os << "NOTES" << endl;
+    _os << "-----" << endl;
+}
+
+void
+AsciidocWriter::note(const std::string & s)
+{
+    _os << "* " << s << endl;
+}
+
+void
+AsciidocWriter::end_notes()
+{
+    _os << endl;
+}
+
+void
+AsciidocWriter::section(const std::string & title)
+{
+    _os << title << endl;
+    _os << std::string(title.size(), '-') << endl;
+}
+
+void
+AsciidocWriter::subsection(const std::string & title)
+{
+    _os << title << endl;
+    _os << std::string(title.size(), '~') << endl;
+}
+
+void
+AsciidocWriter::paragraph(const std::string & text)
+{
+    _os << text << endl;
+}
+
+void
+AsciidocWriter::start_see_alsos()
+{
+    _os << "SEE ALSO" << endl;
+    _os << "--------" << endl;
+}
+
+void
+AsciidocWriter::see_also(const std::string & page, const int s, const bool)
+{
+    // FIXME: Bold page
+    _os << "*" << page << "*(" << s << ")" << endl;
+}
+
+void
+AsciidocWriter::end_see_alsos()
+{
+    _os << endl;
+}
+
 
 HtmlWriter::HtmlWriter(std::ostream & os) :
     _os(os)
