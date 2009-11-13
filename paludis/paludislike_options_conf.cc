@@ -31,6 +31,8 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/active_object_ptr.hh>
+#include <paludis/util/deferred_construction_ptr.hh>
 #include <paludis/choice.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/name.hh>
@@ -38,6 +40,7 @@
 #include <paludis/match_package.hh>
 #include <paludis/package_id.hh>
 #include <paludis/environment.hh>
+#include <paludis/spec_tree.hh>
 #include <tr1/unordered_map>
 #include <tr1/unordered_set>
 #include <list>
@@ -68,6 +71,7 @@ namespace paludis
         struct minus_star;
         struct prefix;
         struct set_name;
+        struct set_value;
         struct spec;
         struct unprefixed_name;
         struct values;
@@ -116,12 +120,29 @@ namespace
     struct SetNameWithValuesGroups
     {
         NamedValue<n::set_name, SetName> set_name;
+        NamedValue<n::set_value, ActiveObjectPtr<DeferredConstructionPtr<std::tr1::shared_ptr<const SetSpecTree> > > > set_value;
         NamedValue<n::values_groups, ValuesGroups> values_groups;
     };
 
     typedef std::list<SetNameWithValuesGroups> SetNamesWithValuesGroups;
 
     typedef std::tr1::unordered_map<QualifiedPackageName, SpecsWithValuesGroups, Hash<QualifiedPackageName> > SpecificSpecs;
+
+    const std::tr1::shared_ptr<const SetSpecTree> make_set_value(
+            const Environment * const env,
+            const FSEntry from,
+            const SetName name)
+    {
+        std::tr1::shared_ptr<const SetSpecTree> result(env->set(name));
+        if (! result)
+        {
+            Log::get_instance()->message("paludislike_options_conf.bad_set", ll_warning, lc_context)
+                << "Set '" << name << "' in '" << from << "' does not exist";
+            result.reset(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+        }
+
+        return result;
+    }
 }
 
 namespace paludis
@@ -208,17 +229,11 @@ PaludisLikeOptionsConf::add_file(const FSEntry & f)
         {
             SetName n(tokens.at(0));
 
-            const std::tr1::shared_ptr<const SetSpecTree> set(_imp->params.environment()->set(n));
-            if (! set)
-            {
-                Log::get_instance()->message("paludislike_options_conf.bad_set", ll_warning, lc_context)
-                    << "Set '" << n << "' in '" << f << "' does not exist";
-                continue;
-            }
-
             values_groups = &_imp->set_specs.insert(_imp->set_specs.end(),
                     make_named_values<SetNameWithValuesGroups>(
                         value_for<n::set_name>(n),
+                        value_for<n::set_value>(DeferredConstructionPtr<std::tr1::shared_ptr<const SetSpecTree> >(
+                                std::tr1::bind(&make_set_value, _imp->params.environment(), f, n))),
                         value_for<n::values_groups>(ValuesGroups())
                         ))->values_groups();
         }
@@ -431,11 +446,7 @@ PaludisLikeOptionsConf::want_choice_enabled(
         for (SetNamesWithValuesGroups::const_iterator r(_imp->set_specs.begin()), r_end(_imp->set_specs.end()) ;
                 r != r_end ; ++r)
         {
-            const std::tr1::shared_ptr<const SetSpecTree> set(_imp->params.environment()->set(r->set_name()));
-            if (! set)
-                throw InternalError(PALUDIS_HERE, "huh?");
-
-            if (! match_package_in_set(*_imp->params.environment(), *set, *id, MatchPackageOptions()))
+            if (! match_package_in_set(*_imp->params.environment(), *r->set_value().value().value(), *id, MatchPackageOptions()))
                 continue;
 
             check_values_groups(_imp->params.environment(), id, choice, unprefixed_name, r->values_groups(),
@@ -497,11 +508,7 @@ PaludisLikeOptionsConf::value_for_choice_parameter(
         for (SetNamesWithValuesGroups::const_iterator r(_imp->set_specs.begin()), r_end(_imp->set_specs.end()) ;
                 r != r_end ; ++r)
         {
-            const std::tr1::shared_ptr<const SetSpecTree> set(_imp->params.environment()->set(r->set_name()));
-            if (! set)
-                throw InternalError(PALUDIS_HERE, "huh?");
-
-            if (! match_package_in_set(*_imp->params.environment(), *set, *id, MatchPackageOptions()))
+            if (! match_package_in_set(*_imp->params.environment(), *r->set_value().value().value(), *id, MatchPackageOptions()))
                 continue;
 
             check_values_groups(_imp->params.environment(), id, choice, unprefixed_name, r->values_groups(),
@@ -544,11 +551,7 @@ PaludisLikeOptionsConf::known_choice_value_names(
         for (SetNamesWithValuesGroups::const_iterator r(_imp->set_specs.begin()), r_end(_imp->set_specs.end()) ;
                 r != r_end ; ++r)
         {
-            const std::tr1::shared_ptr<const SetSpecTree> set(_imp->params.environment()->set(r->set_name()));
-            if (! set)
-                throw InternalError(PALUDIS_HERE, "huh?");
-
-            if (! match_package_in_set(*_imp->params.environment(), *set, *id, MatchPackageOptions()))
+            if (! match_package_in_set(*_imp->params.environment(), *r->set_value().value().value(), *id, MatchPackageOptions()))
                 continue;
 
             collect_known_from_values_groups(_imp->params.environment(), id, choice, r->values_groups(), result);
