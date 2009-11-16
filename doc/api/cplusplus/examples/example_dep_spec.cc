@@ -12,7 +12,6 @@
  * This example demonstrates how to handle dependency specs.
  *
  * See \ref example_dep_label.cc "example_dep_label.cc" for labels.
- * See \ref example_dep_tree.cc "example_dep_tree.cc" for trees.
  */
 
 #include <paludis/paludis.hh>
