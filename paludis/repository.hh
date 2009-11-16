@@ -261,6 +261,8 @@ namespace paludis
 
             /**
              * Are we allowed to be favourite repository?
+             *
+             * Clients may show packages from the favourite repository without the ::repository suffix.
              */
             virtual bool can_be_favourite_repository() const;
 
