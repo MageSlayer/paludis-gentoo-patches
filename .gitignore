@@ -23,6 +23,7 @@ Makefile
 man-*
 .keep
 *.epicfail
+*_TEST_dir/
 *.tmp
 *.log
 paludis-*.*.*.tar.bz2
