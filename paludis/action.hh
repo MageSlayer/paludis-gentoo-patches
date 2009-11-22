@@ -84,13 +84,16 @@ namespace paludis
          * \since 0.40
          */
         NamedValue<n::errors, std::tr1::shared_ptr<Sequence<FetchActionFailure> > > errors;
+
         /**
          * \since 0.32
          */
         NamedValue<n::exclude_unmirrorable, bool> exclude_unmirrorable;
 
         /**
-         * Avoid fetching for non-regular packages like -scm
+         * Avoid fetching for non-regular packages like -scm. If this is specified, the fetch
+         * must be background-safe.
+         *
          * \since 0.43
          */
         NamedValue<n::fetch_regulars_only, bool> fetch_regulars_only;
