@@ -19,3 +19,22 @@ make_enum_WantPhase()
 END
 }
 
+make_enum_FetchPart()
+{
+    prefix fp
+
+    key fp_regulars            "Fetch regular parts (backgroundable)"
+    key fp_extras              "Fetch extra parts (not backgroundable or separable)"
+    key fp_unneeded            "Also fetch untaken foo? ( ... ) sections etc"
+
+    doxygen_comment << "END"
+        /**
+         * Which bits to fetch for a FetchAction.
+         *
+         * \see FetchActionOptions
+         * \ingroup g_repository
+         * \since 0.43
+         */
+END
+}
+

@@ -87,6 +87,11 @@ namespace
             jobs_list_by_resolvent_index.insert(std::make_pair(j.resolution()->resolvent(), i));
         }
 
+        void visit(const FetchJob & j)
+        {
+            jobs_list_by_resolvent_index.insert(std::make_pair(j.resolution()->resolvent(), i));
+        }
+
         void visit(const SyncPointJob &)
         {
         }
@@ -111,6 +116,11 @@ namespace
         }
 
         bool visit(const SyncPointJob &) const
+        {
+            return false;
+        }
+
+        bool visit(const FetchJob &) const
         {
             return false;
         }

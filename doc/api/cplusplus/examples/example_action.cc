@@ -79,8 +79,7 @@ int main(int argc, char * argv[])
                 FetchAction fetch_action(make_named_values<FetchActionOptions>(
                             value_for<n::errors>(failures),
                             value_for<n::exclude_unmirrorable>(false),
-                            value_for<n::fetch_regulars_only>(false),
-                            value_for<n::fetch_unneeded>(false),
+                            value_for<n::fetch_parts>(FetchParts() + fp_regulars + fp_extras),
                             value_for<n::ignore_unfetched>(false),
                             value_for<n::make_output_manager>(&make_standard_output_manager),
                             value_for<n::safe_resume>(true)

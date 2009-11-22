@@ -145,8 +145,7 @@ main(int argc, char *argv[])
                 FetchAction a(make_named_values<FetchActionOptions>(
                             value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                             value_for<n::exclude_unmirrorable>(true),
-                            value_for<n::fetch_regulars_only>(true),
-                            value_for<n::fetch_unneeded>(true),
+                            value_for<n::fetch_parts>(FetchParts() + fp_regulars + fp_unneeded),
                             value_for<n::ignore_unfetched>(false),
                             value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),
                             value_for<n::safe_resume>(true)

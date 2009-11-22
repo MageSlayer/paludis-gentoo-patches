@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # vim: set sw=4 sts=4 et tw=80 :
 #
-# Copyright (c) 2007, 2008 Ciaran McCreesh
+# Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -167,12 +167,10 @@ module Paludis
         def test_options
             a = FetchAction.new(FetchActionOptions.new(false, true, false))
             assert_kind_of FetchActionOptions, a.options
-            assert !a.options.fetch_unneeded?
             assert a.options.safe_resume?
 
             a = FetchAction.new(FetchActionOptions.new({:safe_resume => false, :fetch_unneeded => true, :exclude_unmirrorable => false}))
             assert_kind_of FetchActionOptions, a.options
-            assert a.options.fetch_unneeded?
             assert !a.options.safe_resume?
             assert !a.options.exclude_unmirrorable?
         end

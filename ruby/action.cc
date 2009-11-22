@@ -248,11 +248,15 @@ namespace
                 rb_raise(rb_eArgError, "FetchActionOptions expects one or three arguments, but got %d",argc);
             }
 
+            FetchParts parts;
+            parts = parts + fp_regulars + fp_extras;
+            if (v_fetch_unneeded)
+                parts += fp_unneeded;
+
             ptr = new FetchActionOptions(make_named_values<FetchActionOptions>(
                         value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                         value_for<n::exclude_unmirrorable>(v_exclude_unmirrorable),
-                        value_for<n::fetch_regulars_only>(false),
-                        value_for<n::fetch_unneeded>(v_fetch_unneeded),
+                        value_for<n::fetch_parts>(parts),
                         value_for<n::ignore_unfetched>(false),
                         value_for<n::make_output_manager>(&make_standard_output_manager),
                         value_for<n::safe_resume>(v_safe_resume)
@@ -743,9 +747,6 @@ namespace
         c_fetch_action_options = rb_define_class_under(paludis_module(), "FetchActionOptions", rb_cObject);
         rb_define_singleton_method(c_fetch_action_options, "new", RUBY_FUNC_CAST(&fetch_action_options_new), -1);
         rb_define_method(c_fetch_action_options, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
-        rb_define_method(c_fetch_action_options, "fetch_unneeded?",
-                RUBY_FUNC_CAST((&NVFetch<FetchActionOptions, n::fetch_unneeded, bool,
-                        &FetchActionOptions::fetch_unneeded>::fetch)), 0);
         rb_define_method(c_fetch_action_options, "safe_resume?",
                 RUBY_FUNC_CAST((&NVFetch<FetchActionOptions, n::safe_resume, bool,
                         &FetchActionOptions::safe_resume>::fetch)), 0);

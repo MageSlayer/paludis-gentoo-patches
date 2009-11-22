@@ -1944,7 +1944,7 @@ ERepository::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
     std::tr1::shared_ptr<OutputManager> output_manager(fetch_action.options.make_output_manager()(fetch_action));
 
     CheckFetchedFilesVisitor c(_imp->params.environment(), id, _imp->params.distdir(),
-            fetch_action.options.fetch_unneeded(), fetch_restrict,
+            fetch_action.options.fetch_parts()[fp_unneeded], fetch_restrict,
             ((_imp->layout->package_directory(id->name())) / "Manifest"),
             _imp->params.use_manifest(),
             output_manager, fetch_action.options.exclude_unmirrorable(),
@@ -1959,10 +1959,10 @@ ERepository::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                 stringify((*_imp->params.master_repositories()->begin())->name()) :
                 stringify(name()));
 
-        if (! fetch_action.options.ignore_unfetched())
+        if (fetch_action.options.fetch_parts()[fp_regulars] && ! fetch_action.options.ignore_unfetched())
         {
             FetchVisitor f(_imp->params.environment(), id, *id->eapi(),
-                    _imp->params.distdir(), fetch_action.options.fetch_unneeded(),
+                    _imp->params.distdir(), fetch_action.options.fetch_parts()[fp_unneeded],
                     fetch_userpriv_ok, mirrors_name,
                     id->fetches_key()->initial_label(), fetch_action.options.safe_resume(),
                     output_manager);
@@ -1972,7 +1972,7 @@ ERepository::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
         id->fetches_key()->value()->root()->accept(c);
     }
 
-    if ( (! fetch_action.options.fetch_regulars_only()) && ((c.need_nofetch()) ||
+    if ( (fetch_action.options.fetch_parts()[fp_extras]) && ((c.need_nofetch()) ||
             ((! fetch_action.options.ignore_unfetched()) && (! id->eapi()->supported()->ebuild_phases()->ebuild_fetch_extra().empty()))))
     {
         bool userpriv_ok((! userpriv_restrict) && (_imp->params.environment()->reduced_gid() != getgid()) &&
@@ -2108,7 +2108,7 @@ ERepository::pretend_fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
     if (id->fetches_key())
     {
         PretendFetchVisitor f(_imp->params.environment(), id, *id->eapi(),
-                params().distdir(), a.options.fetch_unneeded(),
+                params().distdir(), a.options.fetch_parts()[fp_unneeded],
                 id->fetches_key()->initial_label(), a);
         id->fetches_key()->value()->root()->accept(f);
     }

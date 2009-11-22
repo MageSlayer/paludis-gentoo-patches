@@ -83,6 +83,7 @@ namespace
         args::SwitchArg a_exclude_unmirrorable;
         args::SwitchArg a_fetch_unneeded;
         args::SwitchArg a_ignore_unfetched;
+        args::SwitchArg a_regulars_only;
 
         args::ArgsGroup g_install_action_options;
         args::StringArg a_destination;
@@ -116,6 +117,9 @@ namespace
             a_ignore_unfetched(&g_fetch_action_options, "ignore-unfetched", '\0',
                     "Do not fetch any component that has not already been downloaded (but do verify "
                     "components that have already been downloaded", true),
+            a_regulars_only(&g_fetch_action_options, "regulars-only", '\0',
+                    "Only fetch regular components. If this option is not specified, the job cannot safely "
+                    "be backgrounded or run in parallel with installs", true),
 
             g_install_action_options(main_options_section(), "Install Action Options",
                     "Options for if the action is 'install'"),
@@ -315,6 +319,13 @@ PerformCommand::run(
     if (cmdline.a_background.specified())
         exclusivity = oe_background;
 
+    FetchParts parts;
+    parts += fp_regulars;
+    if (! cmdline.a_regulars_only.specified())
+        parts += fp_extras;
+    if (cmdline.a_fetch_unneeded.specified())
+        parts += fp_unneeded;
+
     if (action == "config")
     {
         if (cmdline.a_if_supported.specified() && ! id->supports_action(SupportsActionTest<ConfigAction>()))
@@ -336,8 +347,7 @@ PerformCommand::run(
         FetchActionOptions options(make_named_values<FetchActionOptions>(
                     value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                     value_for<n::exclude_unmirrorable>(cmdline.a_exclude_unmirrorable.specified()),
-                    value_for<n::fetch_regulars_only>(false),
-                    value_for<n::fetch_unneeded>(cmdline.a_fetch_unneeded.specified()),
+                    value_for<n::fetch_parts>(parts),
                     value_for<n::ignore_unfetched>(cmdline.a_ignore_unfetched.specified()),
                     value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),
                     value_for<n::safe_resume>(true)
@@ -354,8 +364,7 @@ PerformCommand::run(
         FetchActionOptions options(make_named_values<FetchActionOptions>(
                     value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                     value_for<n::exclude_unmirrorable>(cmdline.a_exclude_unmirrorable.specified()),
-                    value_for<n::fetch_regulars_only>(false),
-                    value_for<n::fetch_unneeded>(cmdline.a_fetch_unneeded.specified()),
+                    value_for<n::fetch_parts>(parts),
                     value_for<n::ignore_unfetched>(cmdline.a_ignore_unfetched.specified()),
                     value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),
                     value_for<n::safe_resume>(true)

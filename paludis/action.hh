@@ -30,6 +30,7 @@
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/options.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/util/type_list.hh>
 #include <tr1/functional>
@@ -54,8 +55,7 @@ namespace paludis
         struct exclude_unmirrorable;
         struct failed_automatic_fetching;
         struct failed_integrity_checks;
-        struct fetch_regulars_only;
-        struct fetch_unneeded;
+        struct fetch_parts;
         struct if_for_install_id;
         struct ignore_for_unmerge;
         struct ignore_unfetched;
@@ -91,17 +91,11 @@ namespace paludis
         NamedValue<n::exclude_unmirrorable, bool> exclude_unmirrorable;
 
         /**
-         * Avoid fetching for non-regular packages like -scm. If this is specified, the fetch
-         * must be background-safe.
+         * Which parts to fetch.
          *
          * \since 0.43
          */
-        NamedValue<n::fetch_regulars_only, bool> fetch_regulars_only;
-
-        /**
-         * Fetch things in non-enabled flag? () blocks
-         */
-        NamedValue<n::fetch_unneeded, bool> fetch_unneeded;
+        NamedValue<n::fetch_parts, FetchParts> fetch_parts;
 
         /**
          * Ignore any unfetched packages. Verify digests for anything that's

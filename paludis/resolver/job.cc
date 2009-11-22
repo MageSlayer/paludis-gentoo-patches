@@ -63,6 +63,22 @@ namespace paludis
     };
 
     template <>
+    struct Implementation<FetchJob>
+    {
+        const std::tr1::shared_ptr<const Resolution> resolution;
+        const std::tr1::shared_ptr<const ChangesToMakeDecision> decision;
+        const std::tr1::shared_ptr<ArrowSequence> arrows;
+
+        Implementation(const std::tr1::shared_ptr<const Resolution> & r,
+                const std::tr1::shared_ptr<const ChangesToMakeDecision> & d) :
+            resolution(r),
+            decision(d),
+            arrows(new ArrowSequence)
+        {
+        }
+    };
+
+    template <>
     struct Implementation<SimpleInstallJob>
     {
         const std::tr1::shared_ptr<const Resolution> resolution;
@@ -147,6 +163,15 @@ Job::deserialise(Deserialisation & d)
     {
         Deserialisator v(d, "PretendJob");
         result.reset(new PretendJob(
+                    v.member<std::tr1::shared_ptr<Resolution> >("resolution"),
+                    v.member<std::tr1::shared_ptr<ChangesToMakeDecision> >("decision")
+                    ));
+        do_arrows(result, v);
+    }
+    else if (d.class_name() == "FetchJob")
+    {
+        Deserialisator v(d, "FetchJob");
+        result.reset(new FetchJob(
                     v.member<std::tr1::shared_ptr<Resolution> >("resolution"),
                     v.member<std::tr1::shared_ptr<ChangesToMakeDecision> >("decision")
                     ));
@@ -252,6 +277,52 @@ void
 PretendJob::serialise(Serialiser & s) const
 {
     s.object("PretendJob")
+        .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "arrows", arrows())
+        .member(SerialiserFlags<serialise::might_be_null>(), "decision", decision())
+        .member(SerialiserFlags<serialise::might_be_null>(), "resolution", resolution())
+        ;
+}
+
+FetchJob::FetchJob(const std::tr1::shared_ptr<const Resolution> & r,
+        const std::tr1::shared_ptr<const ChangesToMakeDecision> & d) :
+    PrivateImplementationPattern<FetchJob>(new Implementation<FetchJob>(r, d))
+{
+}
+
+FetchJob::~FetchJob()
+{
+}
+
+const std::tr1::shared_ptr<const Resolution>
+FetchJob::resolution() const
+{
+    return _imp->resolution;
+}
+
+const std::tr1::shared_ptr<const ChangesToMakeDecision>
+FetchJob::decision() const
+{
+    return _imp->decision;
+}
+
+const std::tr1::shared_ptr<ArrowSequence>
+FetchJob::arrows() const
+{
+    return _imp->arrows;
+}
+
+const JobID
+FetchJob::id() const
+{
+    return make_named_values<JobID>(
+            value_for<n::string_id>("f:" + stringify(resolution()->resolvent()))
+            );
+}
+
+void
+FetchJob::serialise(Serialiser & s) const
+{
+    s.object("FetchJob")
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "arrows", arrows())
         .member(SerialiserFlags<serialise::might_be_null>(), "decision", decision())
         .member(SerialiserFlags<serialise::might_be_null>(), "resolution", resolution())
@@ -382,6 +453,7 @@ SyncPointJob::serialise(Serialiser & s) const
 
 template class PrivateImplementationPattern<resolver::NoChangeJob>;
 template class PrivateImplementationPattern<resolver::PretendJob>;
+template class PrivateImplementationPattern<resolver::FetchJob>;
 template class PrivateImplementationPattern<resolver::SimpleInstallJob>;
 template class PrivateImplementationPattern<resolver::SyncPointJob>;
 template class PrivateImplementationPattern<resolver::UntakenInstallJob>;

@@ -509,6 +509,11 @@ namespace
             return make_null_shared_ptr();
         }
 
+        std::tr1::shared_ptr<const Resolution> visit(const FetchJob &) const
+        {
+            return make_null_shared_ptr();
+        }
+
         std::tr1::shared_ptr<const Resolution> visit(const PretendJob &) const
         {
             return make_null_shared_ptr();

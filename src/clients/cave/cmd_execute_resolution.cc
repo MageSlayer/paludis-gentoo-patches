@@ -166,12 +166,12 @@ namespace
             const std::tr1::shared_ptr<Environment> &,
             const ExecuteResolutionCommandLine & cmdline,
             const ChangesToMakeDecision & decision,
-            const int x, const int y)
+            const int x, const int y, bool normal_only)
     {
         const std::tr1::shared_ptr<const PackageID> id(decision.origin_id());
         Context context("When fetching for '" + stringify(*id) + "':");
 
-        starting_action("fetch", decision, x, y);
+        starting_action("fetch (" + std::string(normal_only ? "regular parts" : "extra parts") + ")", decision, x, y);
 
         std::string command(cmdline.program_options.a_perform_program.argument());
         if (command.empty())
@@ -181,10 +181,13 @@ namespace
         command.append(stringify(id->uniquely_identifying_spec()));
         command.append(" --x-of-y '" + stringify(x) + " of " + stringify(y) + "'");
 
+        if (normal_only)
+            command.append(" --regulars-only");
+
         paludis::Command cmd(command);
         int retcode(run_command(cmd));
 
-        done_action("fetch", decision, 0 == retcode);
+        done_action("fetch (" + std::string(normal_only ? "regular parts" : "extra parts") + ")", decision, 0 == retcode);
         return retcode;
     }
 
@@ -290,6 +293,10 @@ namespace
         void visit(const SimpleInstallJob &)
         {
             ++y_installs;
+        }
+
+        void visit(const FetchJob &)
+        {
             ++y_fetches;
         }
 
@@ -364,12 +371,27 @@ namespace
                     throw ActionAbortedError("Aborted by hook");
             }
 
-            retcode |= do_fetch(env, cmdline, *job.decision(), ++counts.x_fetches, counts.y_fetches);
+            ++counts.x_installs;
+
+            /* not all of the fetch is done in the background */
+            retcode |= do_fetch(env, cmdline, *job.decision(), counts.x_installs, counts.y_installs, false);
             if (0 != retcode)
                 return false;
 
             retcode |= do_install(env, cmdline, job.resolution(),
-                    *job.decision(), ++counts.x_installs, counts.y_installs);
+                    *job.decision(), counts.x_installs, counts.y_installs);
+            if (0 != retcode)
+                return false;
+
+            return true;
+        }
+
+        bool visit(const FetchJob & job)
+        {
+            if (0 != retcode)
+                return false;
+
+            retcode |= do_fetch(env, cmdline, *job.decision(), ++counts.x_fetches, counts.y_fetches, true);
             if (0 != retcode)
                 return false;
 

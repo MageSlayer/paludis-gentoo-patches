@@ -123,11 +123,15 @@ namespace
             const bool safe_resume
             )
     {
+        FetchParts parts;
+        parts = parts + fp_regulars + fp_extras;
+        if (fetch_unneeded)
+            parts += fp_unneeded;
+
         return new FetchActionOptions(make_named_values<FetchActionOptions>(
                     value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                     value_for<n::exclude_unmirrorable>(exclude_unmirrorable),
-                    value_for<n::fetch_regulars_only>(false),
-                    value_for<n::fetch_unneeded>(fetch_unneeded),
+                    value_for<n::fetch_parts>(parts),
                     value_for<n::ignore_unfetched>(false),
                     value_for<n::make_output_manager>(&make_standard_output_manager),
                     value_for<n::safe_resume>(safe_resume)
@@ -258,12 +262,6 @@ void expose_action()
         .add_property("exclude_unmirrorable",
                 &named_values_getter<FetchActionOptions, n::exclude_unmirrorable, bool, &FetchActionOptions::exclude_unmirrorable>,
                 &named_values_setter<FetchActionOptions, n::exclude_unmirrorable, bool, &FetchActionOptions::exclude_unmirrorable>,
-                "[rw] bool"
-                )
-
-        .add_property("fetch_unneeded",
-                &named_values_getter<FetchActionOptions, n::fetch_unneeded, bool, &FetchActionOptions::fetch_unneeded>,
-                &named_values_setter<FetchActionOptions, n::fetch_unneeded, bool, &FetchActionOptions::fetch_unneeded>,
                 "[rw] bool"
                 )
 

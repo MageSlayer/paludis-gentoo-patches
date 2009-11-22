@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_ACTION_FWD_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <tr1/memory>
+#include <paludis/util/options-fwd.hh>
 #include <iosfwd>
 
 /** \file
@@ -57,6 +57,8 @@ namespace paludis
     struct FetchActionFailure;
 
 #include <paludis/action-se.hh>
+
+    typedef Options<FetchPart> FetchParts;
 
 }
 

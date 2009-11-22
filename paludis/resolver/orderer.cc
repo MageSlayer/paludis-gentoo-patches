@@ -190,12 +190,22 @@ namespace
                 lists->jobs()->add(pretend_job);
                 lists->unordered_job_ids()->push_back(pretend_job->id());
 
+                const std::tr1::shared_ptr<FetchJob> fetch_job(new FetchJob(resolution,
+                            d.shared_from_this()));
+                lists->jobs()->add(fetch_job);
+                lists->unordered_job_ids()->push_back(fetch_job->id());
+
                 const std::tr1::shared_ptr<SimpleInstallJob> install_job(new SimpleInstallJob(resolution,
                             d.shared_from_this()));
                 lists->jobs()->add(install_job);
                 lists->unordered_job_ids()->push_back(install_job->id());
 
-                /* we can't do any installs until all pretends have passed */
+                /* we can't do any fetches or installs until all pretends have passed */
+                fetch_job->arrows()->push_back(make_named_values<Arrow>(
+                            value_for<n::comes_after>(common_jobs.done_pretends()->id()),
+                            value_for<n::maybe_reason>(make_null_shared_ptr())
+                            ));
+
                 install_job->arrows()->push_back(make_named_values<Arrow>(
                             value_for<n::comes_after>(common_jobs.done_pretends()->id()),
                             value_for<n::maybe_reason>(make_null_shared_ptr())
@@ -210,6 +220,12 @@ namespace
                 /* we haven't done all our installs until we've done our install */
                 common_jobs.done_installs()->arrows()->push_back(make_named_values<Arrow>(
                             value_for<n::comes_after>(install_job->id()),
+                            value_for<n::maybe_reason>(make_null_shared_ptr())
+                            ));
+
+                /* we can't install until we've fetched */
+                install_job->arrows()->push_back(make_named_values<Arrow>(
+                            value_for<n::comes_after>(fetch_job->id()),
                             value_for<n::maybe_reason>(make_null_shared_ptr())
                             ));
             }
@@ -436,6 +452,10 @@ namespace
         {
             /* a dep b dep c, b not changing. we still want c before a. */
             add_dep_arrows(c.resolution());
+        }
+
+        void visit(const FetchJob &)
+        {
         }
 
         void visit(const PretendJob &)

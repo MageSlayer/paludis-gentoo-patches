@@ -39,7 +39,7 @@ namespace paludis
     {
         class PALUDIS_VISIBLE Job :
             public virtual DeclareAbstractAcceptMethods<Job, MakeTypeList<
-                NoChangeJob, SimpleInstallJob, PretendJob, UntakenInstallJob, SyncPointJob>::Type>
+                NoChangeJob, SimpleInstallJob, PretendJob, FetchJob, UntakenInstallJob, SyncPointJob>::Type>
         {
             public:
                 virtual ~Job() = 0;
@@ -85,6 +85,28 @@ namespace paludis
                         const std::tr1::shared_ptr<const Resolution> &,
                         const std::tr1::shared_ptr<const ChangesToMakeDecision> &);
                 ~PretendJob();
+
+                virtual const JobID id() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<ArrowSequence> arrows()
+                    const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const std::tr1::shared_ptr<const Resolution> resolution() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::tr1::shared_ptr<const ChangesToMakeDecision> decision() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual void serialise(Serialiser &) const;
+        };
+
+        class PALUDIS_VISIBLE FetchJob :
+            public Job,
+            public ImplementAcceptMethods<Job, FetchJob>,
+            private PrivateImplementationPattern<FetchJob>
+        {
+            public:
+                FetchJob(
+                        const std::tr1::shared_ptr<const Resolution> &,
+                        const std::tr1::shared_ptr<const ChangesToMakeDecision> &);
+                ~FetchJob();
 
                 virtual const JobID id() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -161,6 +183,7 @@ namespace paludis
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<resolver::NoChangeJob>;
     extern template class PrivateImplementationPattern<resolver::PretendJob>;
+    extern template class PrivateImplementationPattern<resolver::FetchJob>;
     extern template class PrivateImplementationPattern<resolver::SimpleInstallJob>;
     extern template class PrivateImplementationPattern<resolver::SyncPointJob>;
     extern template class PrivateImplementationPattern<resolver::UntakenInstallJob>;

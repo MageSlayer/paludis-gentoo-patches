@@ -52,15 +52,12 @@ class TestCase_02_FetchActionOptions(unittest.TestCase):
         fao = FetchActionOptions(True, True, True)
 
         self.assertEquals(fao.exclude_unmirrorable, True)
-        self.assertEquals(fao.fetch_unneeded, True)
         self.assertEquals(fao.safe_resume, True)
 
         fao.exclude_unmirrorable = False
-        fao.fetch_unneeded = False
         fao.safe_resume = False
 
         self.assertEquals(fao.exclude_unmirrorable, False)
-        self.assertEquals(fao.fetch_unneeded, False)
         self.assertEquals(fao.safe_resume, False)
 
 class TestCase_04_InstallAction(unittest.TestCase):
