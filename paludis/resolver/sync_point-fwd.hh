@@ -17,20 +17,17 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_ARROW_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_ARROW_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_SYNC_POINT_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_SYNC_POINT_FWD_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <paludis/util/sequence-fwd.hh>
-#include <tr1/memory>
+#include <iosfwd>
 
 namespace paludis
 {
     namespace resolver
     {
-        struct Arrow;
-
-        typedef Sequence<Arrow> ArrowSequence;
+#include <paludis/resolver/sync_point-se.hh>
     }
 }
 

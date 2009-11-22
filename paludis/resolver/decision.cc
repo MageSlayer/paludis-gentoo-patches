@@ -88,6 +88,18 @@ Decision::deserialise(Deserialisation & d)
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 }
 
+const std::tr1::shared_ptr<ChangesToMakeDecision>
+ChangesToMakeDecision::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "ChangesToMakeDecision");
+    return make_shared_ptr(new ChangesToMakeDecision(
+                v.member<std::tr1::shared_ptr<const PackageID> >("origin_id"),
+                v.member<bool>("best"),
+                v.member<bool>("taken"),
+                v.member<std::tr1::shared_ptr<const Destination> >("destination")
+                ));
+}
+
 namespace paludis
 {
     template <>

@@ -35,6 +35,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_shared_copy.hh>
 #include <paludis/resolver/resolutions.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
@@ -45,6 +46,10 @@
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/destination.hh>
 #include <paludis/resolver/unsuitable_candidates.hh>
+#include <paludis/resolver/resolver_lists.hh>
+#include <paludis/resolver/job.hh>
+#include <paludis/resolver/jobs.hh>
+#include <paludis/resolver/job_id.hh>
 #include <paludis/package_id.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -360,19 +365,58 @@ namespace
         }
     };
 
+    struct GetResolutionIfInstall
+    {
+        const std::tr1::shared_ptr<const Resolution> visit(
+                const SimpleInstallJob & j) const
+        {
+            return j.resolution();
+        }
+
+        const std::tr1::shared_ptr<const Resolution> visit(
+                const UntakenInstallJob & j) const
+        {
+            return j.resolution();
+        }
+
+        const std::tr1::shared_ptr<const Resolution> visit(
+                const NoChangeJob &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::tr1::shared_ptr<const Resolution> visit(
+                const PretendJob &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::tr1::shared_ptr<const Resolution> visit(
+                const SyncPointJob &) const
+        {
+            return make_null_shared_ptr();
+        }
+    };
+
     void display_resolution_list(
             const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<const Resolutions> & list,
+            const std::tr1::shared_ptr<const Jobs> & jobs,
+            const std::tr1::shared_ptr<const JobIDSequence> & list,
             const DisplayResolutionCommandLine & cmdline)
     {
-        for (Resolutions::ConstIterator c(list->begin()), c_end(list->end()) ;
+        for (JobIDSequence::ConstIterator c(list->begin()), c_end(list->end()) ;
                 c != c_end ; ++c)
         {
-            const std::tr1::shared_ptr<const PackageID> id((*c)->decision()->accept_returning<
+            const std::tr1::shared_ptr<const Resolution> resolution(jobs->fetch(*c)->accept_returning<
+                    std::tr1::shared_ptr<const Resolution> >(GetResolutionIfInstall()));
+            if (! resolution)
+                continue;
+
+            const std::tr1::shared_ptr<const PackageID> id(resolution->decision()->accept_returning<
                     std::tr1::shared_ptr<const PackageID> >(ChosenIDVisitor()));
             if (! id)
             {
-                display_one_error(env, cmdline, *c, false);
+                display_one_error(env, cmdline, resolution, false);
                 continue;
             }
 
@@ -380,7 +424,7 @@ namespace
                  other_slots(false);
             std::tr1::shared_ptr<const PackageID> old_id;
 
-            const std::tr1::shared_ptr<const Destination> destination((*c)->decision()->accept_returning<
+            const std::tr1::shared_ptr<const Destination> destination(resolution->decision()->accept_returning<
                     std::tr1::shared_ptr<const Destination> >(DestinationVisitor()));
             if (! destination)
                 throw InternalError(PALUDIS_HERE, "huh? ! destination");
@@ -413,7 +457,7 @@ namespace
             is_reinstall = is_reinstall && (! is_downgrade);
 
             std::string destination_string(c::red() + "/" + c::normal());
-            switch ((*c)->resolvent().destination_type())
+            switch (resolution->resolvent().destination_type())
             {
                 case dt_install_to_slash:
                     destination_string = "/";
@@ -427,7 +471,7 @@ namespace
                     break;
             }
 
-            if (! (*c)->decision()->taken())
+            if (! resolution->decision()->taken())
             {
                 cout << "-" << destination_string << "  " << c::blue() << id->canonical_form(idcf_no_version);
             }
@@ -607,7 +651,7 @@ namespace
                     cout << "    \"" << id->short_description_key()->value() << "\"" << endl;
             }
 
-            display_reasons(*c, false);
+            display_reasons(resolution, false);
         }
 
         cout << endl;
@@ -620,15 +664,15 @@ namespace
     {
         Context context("When displaying chosen resolution:");
 
-        if (lists.ordered()->empty())
+        if (lists.ordered_job_ids()->empty())
         {
-            if (lists.errors()->empty())
+            if (lists.error_resolutions()->empty())
                 cout << "There are no actions to carry out" << endl << endl;
             return;
         }
 
         cout << "These are the actions I will take, in order:" << endl << endl;
-        display_resolution_list(env, lists.ordered(), cmdline);
+        display_resolution_list(env, lists.jobs(), lists.ordered_job_ids(), cmdline);
     }
 
     void display_untaken(
@@ -638,11 +682,11 @@ namespace
     {
         Context context("When displaying untaken resolutions:");
 
-        if (lists.untaken()->empty())
+        if (lists.untaken_job_ids()->empty())
             return;
 
         cout << "I didn't take the following suggestions:" << endl << endl;
-        display_resolution_list(env, lists.untaken(), cmdline);
+        display_resolution_list(env, lists.jobs(), lists.untaken_job_ids(), cmdline);
     }
 
     void display_errors(
@@ -652,12 +696,13 @@ namespace
     {
         Context context("When displaying errors for chosen resolution:");
 
-        if (lists.errors()->empty())
+        if (lists.error_resolutions()->empty())
             return;
 
         cout << "I encountered the following errors:" << endl << endl;
 
-        for (Resolutions::ConstIterator c(lists.errors()->begin()), c_end(lists.errors()->end()) ;
+        for (Resolutions::ConstIterator c(lists.error_resolutions()->begin()),
+                c_end(lists.error_resolutions()->end()) ;
                 c != c_end ; ++c)
             display_one_error(env, cmdline, *c, true);
 
@@ -682,7 +727,7 @@ namespace
         {
             bool any(false);
             PackageDepSpec spec(parse_user_package_dep_spec(*i, env.get(), UserPackageDepSpecOptions() + updso_allow_wildcards));
-            for (Resolutions::ConstIterator r(lists.all()->begin()), r_end(lists.all()->end()) ;
+            for (Resolutions::ConstIterator r(lists.all_resolutions()->begin()), r_end(lists.all_resolutions()->end()) ;
                     r != r_end ; ++r)
             {
                 const std::tr1::shared_ptr<const PackageID> id((*r)->decision()->accept_returning<

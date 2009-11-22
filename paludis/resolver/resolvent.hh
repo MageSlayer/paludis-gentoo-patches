@@ -49,6 +49,8 @@ namespace paludis
 
             void serialise(Serialiser &) const;
             static const SlotNameOrNull deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            std::size_t hash() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         struct Resolvent
@@ -69,6 +71,8 @@ namespace paludis
 
             void serialise(Serialiser &) const;
             static const Resolvent deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            std::size_t hash() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

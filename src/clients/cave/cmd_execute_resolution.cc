@@ -43,6 +43,10 @@
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/destination.hh>
+#include <paludis/resolver/resolver_lists.hh>
+#include <paludis/resolver/jobs.hh>
+#include <paludis/resolver/job.hh>
+#include <paludis/resolver/job_id.hh>
 #include <paludis/package_id.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -189,7 +193,6 @@ namespace
             const ExecuteResolutionCommandLine & cmdline,
             const std::tr1::shared_ptr<const Resolution> & resolution,
             const ChangesToMakeDecision & decision,
-            const std::tr1::shared_ptr<const Destination> & destination,
             const int x, const int y)
     {
         std::string destination_string, action_string;
@@ -223,9 +226,9 @@ namespace
 
         command.append(" install --hooks ");
         command.append(stringify(id->uniquely_identifying_spec()));
-        command.append(" --destination " + stringify(destination->repository()));
-        for (PackageIDSequence::ConstIterator i(destination->replacing()->begin()),
-                i_end(destination->replacing()->end()) ;
+        command.append(" --destination " + stringify(decision.destination()->repository()));
+        for (PackageIDSequence::ConstIterator i(decision.destination()->replacing()->begin()),
+                i_end(decision.destination()->replacing()->end()) ;
                 i != i_end ; ++i)
             command.append(" --replacing " + stringify((*i)->uniquely_identifying_spec()));
 
@@ -265,6 +268,159 @@ namespace
         return retcode;
     }
 
+    struct JobCounts
+    {
+        int x_pretends, y_pretends, x_fetches, y_fetches, x_installs, y_installs;
+
+        JobCounts() :
+            x_pretends(0),
+            y_pretends(0),
+            x_fetches(0),
+            y_fetches(0),
+            x_installs(0),
+            y_installs(0)
+        {
+        }
+
+        void visit(const PretendJob &)
+        {
+            ++y_pretends;
+        }
+
+        void visit(const SimpleInstallJob &)
+        {
+            ++y_installs;
+            ++y_fetches;
+        }
+
+        void visit(const NoChangeJob &)
+        {
+        }
+
+        void visit(const SyncPointJob &)
+        {
+        }
+
+        void visit(const UntakenInstallJob &)
+        {
+        }
+    };
+
+    struct PerformJobs
+    {
+        const std::tr1::shared_ptr<Environment> env;
+        const ExecuteResolutionCommandLine & cmdline;
+        JobCounts & counts;
+
+        bool done_any_pretends;
+        bool done_any_installs;
+        int retcode;
+
+        PerformJobs(
+                const std::tr1::shared_ptr<Environment> & e,
+                const ExecuteResolutionCommandLine & c,
+                JobCounts & k) :
+            env(e),
+            cmdline(c),
+            counts(k),
+            done_any_pretends(false),
+            done_any_installs(false),
+            retcode(0)
+        {
+        }
+
+        bool visit(const PretendJob & job)
+        {
+            if (! done_any_pretends)
+            {
+                done_any_pretends = true;
+
+                if (0 != env->perform_hook(Hook("pretend_all_pre")
+                            ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
+                            ).max_exit_status())
+                    throw ActionAbortedError("Aborted by hook");
+
+                std::cout << "Executing pretend actions: " << std::flush;
+            }
+
+            retcode |= do_pretend(env, cmdline, *job.decision(), ++counts.x_pretends, counts.y_pretends);
+
+            /* a pretend failing doesn't abort us yet */
+            return true;
+        }
+
+        bool visit(const SimpleInstallJob & job)
+        {
+            if (0 != retcode)
+                return false;
+
+            if (! done_any_installs)
+            {
+                done_any_installs = true;
+
+                if (0 != env->perform_hook(Hook("install_all_pre")
+                            ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
+                            ).max_exit_status())
+                    throw ActionAbortedError("Aborted by hook");
+            }
+
+            retcode |= do_fetch(env, cmdline, *job.decision(), ++counts.x_fetches, counts.y_fetches);
+            if (0 != retcode)
+                return false;
+
+            retcode |= do_install(env, cmdline, job.resolution(),
+                    *job.decision(), ++counts.x_installs, counts.y_installs);
+            if (0 != retcode)
+                return false;
+
+            return true;
+        }
+
+        bool visit(const SyncPointJob & job)
+        {
+            switch (job.sync_point())
+            {
+                case sp_done_installs:
+                    {
+                        if (0 != env->perform_hook(Hook("install_all_post")
+                                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
+                                    ).max_exit_status())
+                            throw ActionAbortedError("Aborted by hook");
+                    }
+                    break;
+
+                case sp_done_pretends:
+                    {
+                        std::cout << std::endl;
+
+                        if (0 != env->perform_hook(Hook("pretend_all_post")
+                                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
+                                    ).max_exit_status())
+                            throw ActionAbortedError("Aborted by hook");
+
+                        if ((0 != retcode) || (cmdline.a_pretend.specified()))
+                            return false;
+                    }
+                    break;
+
+                case last_sp:
+                    break;
+            }
+
+            return true;
+        }
+
+        bool visit(const UntakenInstallJob &)
+        {
+            return true;
+        }
+
+        bool visit(const NoChangeJob &)
+        {
+            return true;
+        }
+    };
+
     int execute_resolution(
             const std::tr1::shared_ptr<Environment> & env,
             const ResolverLists & lists,
@@ -272,7 +428,7 @@ namespace
     {
         Context context("When executing chosen resolution:");
 
-        int retcode(0), x(0), y(std::distance(lists.ordered()->begin(), lists.ordered()->end()));
+        int retcode(0);
 
         if (0 != env->perform_hook(Hook("install_task_execute_pre")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
@@ -281,63 +437,22 @@ namespace
 
         try
         {
-            if (0 != env->perform_hook(Hook("pretend_all_pre")
-                        ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
-                        ).max_exit_status())
-                throw ActionAbortedError("Aborted by hook");
-
-            std::cout << "Executing pretend actions: " << std::flush;
-
-            for (Resolutions::ConstIterator c(lists.ordered()->begin()), c_end(lists.ordered()->end()) ;
+            JobCounts counts;
+            for (JobIDSequence::ConstIterator c(lists.ordered_job_ids()->begin()),
+                    c_end(lists.ordered_job_ids()->end()) ;
                     c != c_end ; ++c)
-            {
-                const ChangesToMakeDecision * const decision(simple_visitor_cast<const ChangesToMakeDecision>(
-                            *(*c)->decision()));
-                if (! decision)
-                    throw InternalError(PALUDIS_HERE, "huh? not ChangesToMakeDecision");
-                retcode |= do_pretend(env, cmdline, *decision, ++x, y);
-            }
+                lists.jobs()->fetch(*c)->accept(counts);
 
-            std::cout << std::endl;
+            PerformJobs perform_jobs(env, cmdline, counts);
+            for (JobIDSequence::ConstIterator c(lists.ordered_job_ids()->begin()),
+                    c_end(lists.ordered_job_ids()->end()) ;
+                    c != c_end ; ++c)
+                if (! lists.jobs()->fetch(*c)->accept_returning<bool>(perform_jobs))
+                    break;
 
-            if (0 != env->perform_hook(Hook("pretend_all_post")
-                        ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
-                        ).max_exit_status())
-                throw ActionAbortedError("Aborted by hook");
-
-            if (0 != retcode || cmdline.a_pretend.specified())
+            retcode |= perform_jobs.retcode;
+            if ((0 != retcode) || (cmdline.a_pretend.specified()))
                 return retcode;
-
-            x = 0;
-
-            if (0 != env->perform_hook(Hook("install_all_pre")
-                        ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
-                    ).max_exit_status())
-                throw ActionAbortedError("Aborted by hook");
-
-            for (Resolutions::ConstIterator c(lists.ordered()->begin()), c_end(lists.ordered()->end()) ;
-                    c != c_end ; ++c)
-            {
-                ++x;
-
-                const ChangesToMakeDecision * const decision(simple_visitor_cast<const ChangesToMakeDecision>(
-                            *(*c)->decision()));
-                if (! decision)
-                    throw InternalError(PALUDIS_HERE, "huh? not ChangesToMakeDecision");
-
-                retcode = do_fetch(env, cmdline, *decision, x, y);
-                if (0 != retcode)
-                    return retcode;
-
-                retcode = do_install(env, cmdline, *c, *decision, decision->destination(), x, y);
-                if (0 != retcode)
-                    return retcode;
-            }
-
-            if (0 != env->perform_hook(Hook("install_all_post")
-                        ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
-                    ).max_exit_status())
-                throw ActionAbortedError("Aborted by hook");
 
             if (! cmdline.execution_options.a_preserve_world.specified())
             {

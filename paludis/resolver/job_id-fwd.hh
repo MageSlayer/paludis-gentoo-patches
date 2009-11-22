@@ -17,20 +17,21 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_ARROW_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_ARROW_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_ID_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_ID_FWD_HH 1
 
-#include <paludis/util/attributes.hh>
 #include <paludis/util/sequence-fwd.hh>
-#include <tr1/memory>
+#include <paludis/util/attributes.hh>
 
 namespace paludis
 {
     namespace resolver
     {
-        struct Arrow;
+        struct JobID;
 
-        typedef Sequence<Arrow> ArrowSequence;
+        bool operator== (const JobID &, const JobID &) PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
+
+        typedef Sequence<JobID> JobIDSequence;
     }
 }
 

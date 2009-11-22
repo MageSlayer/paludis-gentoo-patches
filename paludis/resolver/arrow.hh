@@ -23,6 +23,7 @@
 #include <paludis/resolver/arrow-fwd.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/reason-fwd.hh>
+#include <paludis/resolver/job_id.hh>
 #include <paludis/serialise-fwd.hh>
 #include <paludis/util/named_value.hh>
 
@@ -31,22 +32,19 @@ namespace paludis
     namespace n
     {
         struct comes_after;
-        struct ignorable_pass;
-        struct reason;
+        struct maybe_reason;
     }
 
     namespace resolver
     {
         struct Arrow
         {
-            NamedValue<n::comes_after, Resolvent> comes_after;
-            NamedValue<n::ignorable_pass, int> ignorable_pass;
-            NamedValue<n::reason, std::tr1::shared_ptr<const Reason> > reason;
+            NamedValue<n::comes_after, JobID> comes_after;
+            NamedValue<n::maybe_reason, std::tr1::shared_ptr<const Reason> > maybe_reason;
 
             void serialise(Serialiser &) const;
 
-            static const std::tr1::shared_ptr<Arrow> deserialise(
-                    Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
+            static const Arrow deserialise(Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

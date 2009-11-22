@@ -27,8 +27,11 @@
 #include <paludis/resolver/decision.hh>
 #include <paludis/resolver/resolutions.hh>
 #include <paludis/resolver/resolver.hh>
+#include <paludis/resolver/resolver_lists.hh>
+#include <paludis/resolver/job.hh>
+#include <paludis/resolver/jobs.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/sequence.hh>
+#include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
@@ -37,15 +40,16 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/hashes.hh>
 #include <paludis/match_package.hh>
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/notifier_callback.hh>
-#include <iostream>
 #include <algorithm>
-#include <set>
+#include <tr1/unordered_set>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -59,6 +63,8 @@ namespace paludis
         const std::tr1::shared_ptr<const Decider> decider;
 
         const std::tr1::shared_ptr<ResolverLists> lists;
+
+        std::tr1::unordered_set<JobID, Hash<JobID> > already_ordered;
 
         Implementation(const Environment * const e,
                 const std::tr1::shared_ptr<const Decider> & d,
@@ -82,352 +88,541 @@ Orderer::~Orderer()
 }
 
 void
-Orderer::_resolve_arrows()
+Orderer::resolve()
 {
-    Context context("When creating arrows for order resolution:");
+    _resolve_jobs();
+    _resolve_jobs_dep_arrows();
+    _resolve_order();
+}
 
-    for (Resolutions::ConstIterator i(_imp->lists->all()->begin()),
-            i_end(_imp->lists->all()->end()) ;
-            i != i_end ; ++i)
-        for (Constraints::ConstIterator c((*i)->constraints()->begin()),
-                c_end((*i)->constraints()->end()) ;
-                c != c_end ; ++c)
-            _resolve_arrow((*i)->resolvent(), _imp->decider->resolution_for_resolvent((*i)->resolvent()), *c);
+namespace paludis
+{
+    namespace n
+    {
+        struct done_installs;
+        struct done_pretends;
+    }
 }
 
 namespace
 {
-    struct GetDependencyReason
+    struct CommonJobs
     {
-        const DependencyReason * visit(const DependencyReason & r) const
-        {
-            return &r;
-        }
-
-        const DependencyReason * visit(const SetReason & r) const
-        {
-            return r.reason_for_set()->accept_returning<const DependencyReason *>(*this);
-        }
-
-        const DependencyReason * visit(const TargetReason &) const
-        {
-            return 0;
-        }
-
-        const DependencyReason * visit(const PresetReason &) const
-        {
-            return 0;
-        }
+        NamedValue<n::done_installs, std::tr1::shared_ptr<Job> > done_installs;
+        NamedValue<n::done_pretends, std::tr1::shared_ptr<Job> > done_pretends;
     };
 
-    struct ArrowInfo
+    struct DecisionHandler
     {
-        bool causes_pre_arrow;
-        bool ignorable;
+        CommonJobs & common_jobs;
+        const std::tr1::shared_ptr<Resolution> resolution;
+        const std::tr1::shared_ptr<ResolverLists> lists;
 
-        ArrowInfo(const DependencyReason & reason) :
-            causes_pre_arrow(false),
-            ignorable(true)
+        DecisionHandler(
+                CommonJobs & c,
+                const std::tr1::shared_ptr<Resolution> & r,
+                const std::tr1::shared_ptr<ResolverLists> & l) :
+            common_jobs(c),
+            resolution(r),
+            lists(l)
         {
-            std::for_each(indirect_iterator(reason.sanitised_dependency().active_dependency_labels()->begin()),
-                    indirect_iterator(reason.sanitised_dependency().active_dependency_labels()->end()), accept_visitor(*this));
+        }
+
+        void visit(const NothingNoChangeDecision & d)
+        {
+            if (d.taken())
+            {
+                Log::get_instance()->message("resolver.orderer.job.nothing_no_change", ll_debug, lc_no_context)
+                    << "taken " << resolution->resolvent() << " nothing no change";
+
+                const std::tr1::shared_ptr<NoChangeJob> no_change_job(new NoChangeJob(resolution));
+                lists->jobs()->add(no_change_job);
+                lists->unordered_job_ids()->push_back(no_change_job->id());
+
+                /* we want to do all of these as part of the main build process,
+                 * not at pretend time */
+                no_change_job->arrows()->push_back(make_named_values<Arrow>(
+                            value_for<n::comes_after>(common_jobs.done_pretends()->id()),
+                            value_for<n::maybe_reason>(make_null_shared_ptr())
+                            ));
+            }
+            else
+            {
+                Log::get_instance()->message("resolver.orderer.job.nothing_no_change", ll_debug, lc_no_context)
+                    << "untaken " << resolution->resolvent() << " nothing no change";
+            }
+        }
+
+        void visit(const ExistingNoChangeDecision & d)
+        {
+            if (d.taken())
+            {
+                Log::get_instance()->message("resolver.orderer.job.existing_no_change", ll_debug, lc_no_context)
+                    << "taken " << resolution->resolvent() << " existing no change";
+
+                const std::tr1::shared_ptr<NoChangeJob> no_change_job(new NoChangeJob(resolution));
+                lists->jobs()->add(no_change_job);
+                lists->unordered_job_ids()->push_back(no_change_job->id());
+
+                /* we want to do all of these as part of the main build process,
+                 * not at pretend time */
+                no_change_job->arrows()->push_back(make_named_values<Arrow>(
+                            value_for<n::comes_after>(common_jobs.done_pretends()->id()),
+                            value_for<n::maybe_reason>(make_null_shared_ptr())
+                            ));
+            }
+            else
+            {
+                Log::get_instance()->message("resolver.orderer.job.existing_no_change", ll_debug, lc_no_context)
+                    << "untaken " << resolution->resolvent() << " existing no change";
+            }
+        }
+
+        void visit(const ChangesToMakeDecision & d)
+        {
+            if (d.taken())
+            {
+                Log::get_instance()->message("resolver.orderer.job.changes_to_make", ll_debug, lc_no_context)
+                    << "taken " << resolution->resolvent() << " changes to make";
+
+                const std::tr1::shared_ptr<PretendJob> pretend_job(new PretendJob(resolution,
+                            d.shared_from_this()));
+                lists->jobs()->add(pretend_job);
+                lists->unordered_job_ids()->push_back(pretend_job->id());
+
+                const std::tr1::shared_ptr<SimpleInstallJob> install_job(new SimpleInstallJob(resolution,
+                            d.shared_from_this()));
+                lists->jobs()->add(install_job);
+                lists->unordered_job_ids()->push_back(install_job->id());
+
+                /* we can't do any installs until all pretends have passed */
+                install_job->arrows()->push_back(make_named_values<Arrow>(
+                            value_for<n::comes_after>(common_jobs.done_pretends()->id()),
+                            value_for<n::maybe_reason>(make_null_shared_ptr())
+                            ));
+
+                /* we haven't done all our pretends until we've done our pretend */
+                common_jobs.done_pretends()->arrows()->push_back(make_named_values<Arrow>(
+                            value_for<n::comes_after>(pretend_job->id()),
+                            value_for<n::maybe_reason>(make_null_shared_ptr())
+                            ));
+
+                /* we haven't done all our installs until we've done our install */
+                common_jobs.done_installs()->arrows()->push_back(make_named_values<Arrow>(
+                            value_for<n::comes_after>(install_job->id()),
+                            value_for<n::maybe_reason>(make_null_shared_ptr())
+                            ));
+            }
+            else
+            {
+                Log::get_instance()->message("resolver.orderer.job.changes_to_make", ll_debug, lc_no_context)
+                    << "untaken " << resolution->resolvent() << " changes to make";
+
+                const std::tr1::shared_ptr<UntakenInstallJob> install_job(new UntakenInstallJob(resolution));
+                lists->jobs()->add(install_job);
+                lists->untaken_job_ids()->push_back(install_job->id());
+            }
+        }
+
+        void visit(const UnableToMakeDecision & d)
+        {
+            if (d.taken())
+            {
+                Log::get_instance()->message("resolver.orderer.job.unable_to_make", ll_debug, lc_no_context)
+                    << "taken " << resolution->resolvent() << " unable to make";
+
+                lists->error_resolutions()->append(resolution);
+            }
+            else
+            {
+                Log::get_instance()->message("resolver.orderer.job.unable_to_make", ll_debug, lc_no_context)
+                    << "untaken " << resolution->resolvent() << " unable to make";
+
+                const std::tr1::shared_ptr<UntakenInstallJob> install_job(new UntakenInstallJob(resolution));
+                lists->jobs()->add(install_job);
+                lists->untaken_job_ids()->push_back(install_job->id());
+            }
+        }
+    };
+}
+
+void
+Orderer::_resolve_jobs()
+{
+    CommonJobs common_jobs(make_named_values<CommonJobs>(
+                value_for<n::done_installs>(make_shared_ptr(new SyncPointJob(sp_done_installs))),
+                value_for<n::done_pretends>(make_shared_ptr(new SyncPointJob(sp_done_pretends)))
+                ));
+
+    _imp->lists->jobs()->add(common_jobs.done_installs());
+    _imp->lists->unordered_job_ids()->push_back(common_jobs.done_installs()->id());
+
+    _imp->lists->jobs()->add(common_jobs.done_pretends());
+    _imp->lists->unordered_job_ids()->push_back(common_jobs.done_pretends()->id());
+
+    for (Resolutions::ConstIterator i(_imp->lists->all_resolutions()->begin()),
+            i_end(_imp->lists->all_resolutions()->end()) ;
+            i != i_end ; ++i)
+    {
+        DecisionHandler d(common_jobs, *i, _imp->lists);
+        (*i)->decision()->accept(d);
+    }
+}
+
+namespace
+{
+    struct LabelArrowsInfo
+    {
+        bool build;
+        bool run;
+
+        LabelArrowsInfo() :
+            build(false),
+            run(false)
+        {
         }
 
         void visit(const DependenciesBuildLabel &)
         {
-            causes_pre_arrow = true;
-            ignorable = false;
+            build = true;
         }
 
-        void visit(const DependenciesTestLabel &)
+        void visit(const DependenciesInstallLabel &)
         {
-            causes_pre_arrow = true;
-            ignorable = false;
+            build = true;
+        }
+
+        void visit(const DependenciesFetchLabel &)
+        {
+            build = true;
         }
 
         void visit(const DependenciesRunLabel &)
         {
-            causes_pre_arrow = true;
+            run = true;
+        }
+
+        void visit(const DependenciesTestLabel &)
+        {
+            build = true;
         }
 
         void visit(const DependenciesPostLabel &)
         {
         }
 
-        void visit(const DependenciesInstallLabel &)
+        void visit(const DependenciesSuggestionLabel &)
         {
-            causes_pre_arrow = true;
-            ignorable = false;
-        }
-
-        void visit(const DependenciesCompileAgainstLabel &)
-        {
-            causes_pre_arrow = true;
-            ignorable = false;
-        }
-
-        void visit(const DependenciesFetchLabel &)
-        {
-            causes_pre_arrow = true;
-            ignorable = false;
         }
 
         void visit(const DependenciesRecommendationLabel &)
         {
         }
 
-        void visit(const DependenciesSuggestionLabel &)
+        void visit(const DependenciesCompileAgainstLabel &)
+        {
+            build = true;
+        }
+    };
+
+    struct DepArrowsAdder
+    {
+        const std::tr1::shared_ptr<Jobs> jobs;
+        const JobID we_are_usable_identifier;
+        const std::tr1::shared_ptr<const Reason> reason;
+
+        DepArrowsAdder(
+                const std::tr1::shared_ptr<Jobs> & j,
+                const JobID & i,
+                const std::tr1::shared_ptr<const Reason> & r) :
+            jobs(j),
+            we_are_usable_identifier(i),
+            reason(r)
+        {
+        }
+
+        void visit(const TargetReason &) const
+        {
+        }
+
+        void visit(const PresetReason &) const
+        {
+        }
+
+        void visit(const SetReason & r) const
+        {
+            r.reason_for_set()->accept(*this);
+        }
+
+        void visit(const DependencyReason & r) const
+        {
+            Context context("When adding arrows for job '" + stringify(we_are_usable_identifier.string_id())
+                    + "' with reason '" + stringify(r.sanitised_dependency().spec())
+                    + "' from '" + stringify(r.from_resolvent()) + "':");
+
+            /* we might not be changing anything (e.g. for a blocker), or we
+             * might be a dependency that got cancelled out later when
+             * something was changed from a decision to an error. */
+            if (! jobs->have_job_for_building(r.from_resolvent()))
+            {
+                Log::get_instance()->message("resolver.orderer.job.no_job_for_building", ll_warning, lc_context)
+                    << "No job for building '" << r.from_resolvent() << "'. Verify manually that this is sane for now.";
+                return;
+            }
+
+            if (r.sanitised_dependency().spec().if_block())
+            {
+                /* only strong blockers impose arrows. todo: maybe weak
+                 * blockers should impose some kind of weak arrow? or would
+                 * that make matters worse with silly Gentoo KDE blockers? */
+                if (r.sanitised_dependency().spec().if_block()->strong())
+                {
+                    /* todo: this should probably only cause an arrow if the
+                     * blocker is currently met */
+                    jobs->fetch(jobs->find_id_for_building(r.from_resolvent()))->arrows()->push_back(
+                            make_named_values<Arrow>(
+                                value_for<n::comes_after>(we_are_usable_identifier),
+                                value_for<n::maybe_reason>(reason)
+                                ));
+                }
+            }
+            else
+            {
+                LabelArrowsInfo v;
+                for (DependenciesLabelSequence::ConstIterator l(r.sanitised_dependency().active_dependency_labels()->begin()),
+                        l_end(r.sanitised_dependency().active_dependency_labels()->end()) ;
+                        l != l_end ; ++l)
+                    (*l)->accept(v);
+
+                if (v.build || v.run)
+                {
+                    jobs->fetch(jobs->find_id_for_building(r.from_resolvent()))->arrows()->push_back(
+                            make_named_values<Arrow>(
+                                value_for<n::comes_after>(we_are_usable_identifier),
+                                value_for<n::maybe_reason>(reason)
+                                ));
+                }
+            }
+        }
+    };
+
+    struct DepArrowHandler
+    {
+        const std::tr1::shared_ptr<Jobs> jobs;
+        const JobID we_are_usable_identifier;
+
+        DepArrowHandler(
+                const std::tr1::shared_ptr<Jobs> & j,
+                const JobID & i) :
+            jobs(j),
+            we_are_usable_identifier(i)
+        {
+        }
+
+        void add_dep_arrows(const std::tr1::shared_ptr<const Resolution> & r)
+        {
+            for (Constraints::ConstIterator c(r->constraints()->begin()), c_end(r->constraints()->end()) ;
+                    c != c_end ; ++c)
+                if ((*c)->reason())
+                    (*c)->reason()->accept(DepArrowsAdder(jobs, we_are_usable_identifier, (*c)->reason()));
+        }
+
+        void visit(const SimpleInstallJob & c)
+        {
+            add_dep_arrows(c.resolution());
+        }
+
+        void visit(const NoChangeJob & c)
+        {
+            /* a dep b dep c, b not changing. we still want c before a. */
+            add_dep_arrows(c.resolution());
+        }
+
+        void visit(const PretendJob &)
+        {
+        }
+
+        void visit(const UntakenInstallJob &)
+        {
+        }
+
+        void visit(const SyncPointJob &)
         {
         }
     };
 }
 
 void
-Orderer::_resolve_arrow(
-        const Resolvent & resolvent,
-        const std::tr1::shared_ptr<Resolution> &,
-        const std::tr1::shared_ptr<const Constraint> & constraint)
+Orderer::_resolve_jobs_dep_arrows()
 {
-    GetDependencyReason gdr;
-    const DependencyReason * if_dependency_reason(constraint->reason()->accept_returning<const DependencyReason *>(gdr));
-    if (! if_dependency_reason)
-        return;
+    Context context("When resolving dep arrows:");
 
-    const Resolvent from_resolvent(if_dependency_reason->from_resolvent());
-    const std::tr1::shared_ptr<Resolution> resolution(_imp->decider->resolution_for_resolvent(from_resolvent));
-
-    /* deps between binaries don't count */
-    if (resolvent.destination_type() == dt_create_binary &&
-            if_dependency_reason->from_resolvent().destination_type() == dt_create_binary)
-        return;
-
-    if (constraint->spec().if_block())
+    for (JobIDSequence::ConstIterator i(_imp->lists->unordered_job_ids()->begin()),
+            i_end(_imp->lists->unordered_job_ids()->end()) ;
+            i != i_end ; ++i)
     {
-        if (constraint->spec().if_block()->strong())
-        {
-            resolution->arrows()->push_back(make_shared_ptr(new Arrow(make_named_values<Arrow>(
-                                value_for<n::comes_after>(resolvent),
-                                value_for<n::ignorable_pass>(0),
-                                value_for<n::reason>(constraint->reason())
-                                ))));
-        }
+        DepArrowHandler d(_imp->lists->jobs(), *i);
+        _imp->lists->jobs()->fetch(*i)->accept(d);
     }
-    else
-    {
-        ArrowInfo a(*if_dependency_reason);
-        if (a.causes_pre_arrow)
-        {
-            int ignorable_pass(0);
-            if (_already_met(if_dependency_reason->sanitised_dependency()))
-                ignorable_pass = 1;
-            else if (a.ignorable)
-                ignorable_pass = 2;
-
-            resolution->arrows()->push_back(make_shared_ptr(new Arrow(make_named_values<Arrow>(
-                                value_for<n::comes_after>(resolvent),
-                                value_for<n::ignorable_pass>(ignorable_pass),
-                                value_for<n::reason>(constraint->reason())
-                                ))));
-        }
-    }
-}
-
-bool
-Orderer::_already_met(const SanitisedDependency & dep) const
-{
-    if (dep.spec().if_package())
-    {
-        std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::SomeArbitraryVersion(
-                    generator::Matches(*dep.spec().if_package(), MatchPackageOptions()) |
-                    filter::InstalledAtRoot(FSEntry("/")))]);
-        return ! ids->empty();
-    }
-    else if (dep.spec().if_block())
-    {
-        /* it's imposing an arrow, so it's a strong block */
-        return false;
-    }
-    else
-        throw InternalError(PALUDIS_HERE, "resolver bug: huh? it's not a block and it's not a package");
 }
 
 void
 Orderer::_resolve_order()
 {
-    Context context("When finding an order for selected packages:");
-
-    bool done(false);
-    while (! done)
+    bool remaining(true);
+    int pass(1);
+    while (remaining)
     {
+        remaining = false;
         bool any(false);
-        done = true;
 
-        int ignore_pass(0);
-        while (true)
+        _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
+
+        for (JobIDSequence::ConstIterator i(_imp->lists->unordered_job_ids()->begin()),
+                i_end(_imp->lists->unordered_job_ids()->end()) ;
+                i != i_end ; ++i)
         {
-            for (Resolutions::ConstIterator i(_imp->lists->unordered()->begin()),
-                    i_end(_imp->lists->unordered()->end()) ;
+            if (_already_ordered(*i))
+                continue;
+
+            remaining = true;
+
+            if (! _can_order(*i, pass))
+                continue;
+
+            _imp->lists->ordered_job_ids()->push_back(*i);
+            any = true;
+            _mark_already_ordered(*i);
+
+            if (pass >= 3)
+                Log::get_instance()->message("resolver.orderer.job.broke_cycle", ll_warning, lc_context)
+                    << "Had to use cycle breaking to order " << i->string_id() << " (pass " << pass << ")";
+
+            pass = 1;
+        }
+
+        if (remaining && ! any)
+        {
+            if (++pass < 4)
+                continue;
+
+            std::stringstream s;
+            for (JobIDSequence::ConstIterator i(_imp->lists->unordered_job_ids()->begin()),
+                    i_end(_imp->lists->unordered_job_ids()->end()) ;
                     i != i_end ; ++i)
             {
-                if ((*i)->already_ordered())
+                if (_already_ordered(*i))
                     continue;
 
-                if (_can_order_now((*i)->resolvent(), *i, ignore_pass))
-                {
-                    if (0 != ignore_pass)
-                        Log::get_instance()->message("resolver.cycle_breaking", ll_warning, lc_context)
-                            << "Had to use cycle breaking with ignore pass " << ignore_pass
-                            << " to order " << (*i)->resolvent() << " because of cycle "
-                            << _find_cycle((*i)->resolvent(), false);
-
-                    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
-                    _do_order((*i)->resolvent(), _imp->decider->resolution_for_resolvent((*i)->resolvent()));
-                    any = true;
-
-                    if (0 != ignore_pass)
-                        break;
-                }
-                else
-                    done = false;
+                s << " {{{" << i->string_id() << " missing";
+                const std::tr1::shared_ptr<const Job> job(_imp->lists->jobs()->fetch(*i));
+                for (ArrowSequence::ConstIterator a(job->arrows()->begin()), a_end(job->arrows()->end()) ;
+                        a != a_end ; ++a)
+                    if (! _already_ordered(a->comes_after()))
+                        s << " [" << a->comes_after().string_id() << "]";
+                s << " }}}";
             }
 
-            if ((! done) && (! any))
-            {
-                if (ignore_pass >= 2)
-                    _unable_to_order_more();
-                else
-                    ++ignore_pass;
-            }
-            else
-                break;
+            throw InternalError(PALUDIS_HERE, "unbreakable cycle, remaining" + s.str());
         }
     }
 }
 
-bool
-Orderer::_can_order_now(const Resolvent &, const std::tr1::shared_ptr<const Resolution> & resolution,
-        const int ignorable_pass) const
+namespace
 {
-    for (ArrowSequence::ConstIterator a(resolution->arrows()->begin()), a_end(resolution->arrows()->end()) ;
+    typedef std::tr1::function<bool (const PackageOrBlockDepSpec &)> AlreadyMetFn;
+
+    struct AlreadyMetDep
+    {
+        const AlreadyMetFn already_met;
+
+        AlreadyMetDep(const AlreadyMetFn & a) :
+            already_met(a)
+        {
+        }
+
+        bool visit(const PresetReason &) const
+        {
+            return false;
+        }
+
+        bool visit(const TargetReason &) const
+        {
+            return false;
+        }
+
+        bool visit(const SetReason & r) const
+        {
+            return r.reason_for_set()->accept_returning<bool>(*this);
+        }
+
+        bool visit(const DependencyReason & r) const
+        {
+            return already_met(r.sanitised_dependency().spec());
+        }
+    };
+}
+
+bool
+Orderer::_can_order(const JobID & i, const int pass) const
+{
+    const std::tr1::shared_ptr<const Job> job(_imp->lists->jobs()->fetch(i));
+    for (ArrowSequence::ConstIterator a(job->arrows()->begin()), a_end(job->arrows()->end()) ;
             a != a_end ; ++a)
     {
-        if (0 != (*a)->ignorable_pass())
-            if ((*a)->ignorable_pass() <= ignorable_pass)
-                continue;
+        if (! _already_ordered(a->comes_after()))
+        {
+            bool skippable(false);
 
-        const std::tr1::shared_ptr<const Resolution> dep_resolution(
-                _imp->decider->resolution_for_resolvent((*a)->comes_after()));
-        if (! dep_resolution->already_ordered())
-            return false;
+            if ((! skippable) && (pass >= 2))
+            {
+                /* if our job is a NoChangeJob, and we're supposed to come
+                 * after a NoChangeJob, ignore the arrow. */
+                const std::tr1::shared_ptr<const Job> other_job(_imp->lists->jobs()->fetch(a->comes_after()));
+                if (simple_visitor_cast<const NoChangeJob>(*job) &&
+                        simple_visitor_cast<const NoChangeJob>(*other_job))
+                    skippable = true;
+            }
+
+            if ((! skippable) && (pass >= 3))
+            {
+                /* we can also ignore any arrows that are already met (e.g a
+                 * dep b, b dep a, a is already installed */
+                if (a->maybe_reason() && a->maybe_reason()->accept_returning<bool>(
+                            AlreadyMetDep(std::tr1::bind(&Orderer::_already_met, this, std::tr1::placeholders::_1))))
+                    skippable = true;
+            }
+
+            if (! skippable)
+                return false;
+        }
     }
 
     return true;
 }
 
-void
-Orderer::_do_order(const Resolvent &, const std::tr1::shared_ptr<Resolution> & resolution)
+bool
+Orderer::_already_ordered(const JobID & i) const
 {
-    _imp->lists->ordered()->append(resolution);
-    resolution->already_ordered() = true;
+    return _imp->already_ordered.end() != _imp->already_ordered.find(i);
 }
 
 void
-Orderer::_unable_to_order_more() const
+Orderer::_mark_already_ordered(const JobID & i)
 {
-    std::cout << "Unable to order any of the following:" << std::endl;
-
-    for (Resolutions::ConstIterator i(_imp->lists->unordered()->begin()),
-            i_end(_imp->lists->unordered()->end()) ;
-            i != i_end ; ++i)
-    {
-        if ((*i)->already_ordered())
-            continue;
-
-        std::cout << "  * " << (*i)->resolvent() << " because of cycle "
-            << _find_cycle((*i)->resolvent(), true)
-            << std::endl;
-    }
-
-    throw InternalError(PALUDIS_HERE, "unimplemented: unfixable dep cycle");
+    if (! _imp->already_ordered.insert(i).second)
+        throw InternalError(PALUDIS_HERE, "already already ordered");
 }
 
-namespace
+bool
+Orderer::_already_met(const PackageOrBlockDepSpec & spec) const
 {
-    struct ReasonDescriber
-    {
-        const std::string visit(const DependencyReason & r) const
-        {
-            return " (" + r.sanitised_dependency().active_dependency_labels_as_string() + " " +
-                stringify(r.sanitised_dependency().spec()) + ")";
-        }
-
-        const std::string visit(const TargetReason &) const
-        {
-            return "";
-        }
-
-        const std::string visit(const PresetReason &) const
-        {
-            return "";
-        }
-
-        const std::string visit(const SetReason &) const
-        {
-            return "";
-        }
-    };
-}
-
-const std::string
-Orderer::_find_cycle(const Resolvent & start_resolvent, const int ignorable_pass) const
-{
-    std::stringstream result;
-
-    std::set<Resolvent> seen;
-    Resolvent current(start_resolvent);
-
-    bool first(true);
-    while (true)
-    {
-        if (! first)
-            result << " -> ";
-        first = false;
-
-        result << current;
-
-        if (! seen.insert(current).second)
-            break;
-
-        bool ok(false);
-        const std::tr1::shared_ptr<const Resolution> resolution(_imp->decider->resolution_for_resolvent(current));
-        for (ArrowSequence::ConstIterator a(resolution->arrows()->begin()), a_end(resolution->arrows()->end()) ;
-                a != a_end ; ++a)
-        {
-            if (_can_order_now(current, resolution, ignorable_pass))
-                continue;
-
-            const std::tr1::shared_ptr<const Resolution> to_resolution(
-                    _imp->decider->resolution_for_resolvent((*a)->comes_after()));
-            if (to_resolution->already_ordered())
-                continue;
-
-            ok = true;
-            result << (*a)->reason()->accept_returning<std::string>(ReasonDescriber());
-            current = (*a)->comes_after();
-            break;
-        }
-
-        if (! ok)
-            throw InternalError(PALUDIS_HERE, "resolver bug: there's a cycle, but we don't know what it is");
-    }
-
-    return result.str();
-}
-
-void
-Orderer::resolve()
-{
-    _resolve_arrows();
-    _resolve_order();
+    const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
+                generator::Matches(spec.if_package() ? *spec.if_package() : spec.if_block()->blocking(), MatchPackageOptions()) |
+                filter::InstalledAtRoot(FSEntry("/")))]);
+    if (installed_ids->empty())
+        return spec.if_block();
+    else
+        return spec.if_package();
 }
 

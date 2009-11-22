@@ -17,20 +17,32 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_ARROW_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_ARROW_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_ID_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_ID_HH 1
 
-#include <paludis/util/attributes.hh>
-#include <paludis/util/sequence-fwd.hh>
-#include <tr1/memory>
+#include <paludis/resolver/job_id-fwd.hh>
+#include <paludis/util/named_value.hh>
+#include <paludis/serialise-fwd.hh>
+#include <string>
 
 namespace paludis
 {
+    namespace n
+    {
+        struct string_id;
+    }
+
     namespace resolver
     {
-        struct Arrow;
+        struct JobID
+        {
+            NamedValue<n::string_id, std::string> string_id;
 
-        typedef Sequence<Arrow> ArrowSequence;
+            std::size_t hash() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            void serialise(Serialiser &) const;
+            static const JobID deserialise(Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
     }
 }
 

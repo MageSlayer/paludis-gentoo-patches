@@ -30,6 +30,7 @@
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/unsuitable_candidates.hh>
 #include <paludis/resolver/resolver.hh>
+#include <paludis/resolver/resolver_lists.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
@@ -271,8 +272,6 @@ const std::tr1::shared_ptr<Resolution>
 Decider::_create_resolution_for_resolvent(const Resolvent & r) const
 {
     return make_shared_ptr(new Resolution(make_named_values<Resolution>(
-                    value_for<n::already_ordered>(false),
-                    value_for<n::arrows>(make_shared_ptr(new ArrowSequence)),
                     value_for<n::constraints>(_initial_constraints_for(r)),
                     value_for<n::decision>(make_null_shared_ptr()),
                     value_for<n::resolvent>(r)
@@ -289,7 +288,7 @@ Decider::_resolution_for_resolvent(const Resolvent & r, const bool create)
         {
             std::tr1::shared_ptr<Resolution> resolution(_create_resolution_for_resolvent(r));
             i = _imp->resolutions_by_resolvent.insert(std::make_pair(r, resolution)).first;
-            _imp->lists->all()->append(resolution);
+            _imp->lists->all_resolutions()->append(resolution);
         }
         else
             throw InternalError(PALUDIS_HERE, "resolver bug: expected resolution for "
@@ -1317,75 +1316,5 @@ Decider::resolve()
 {
     _resolve_decide_with_dependencies();
     _resolve_destinations();
-    _resolve_unordered();
-}
-
-namespace
-{
-    struct ResolveOrderVisitor
-    {
-        const std::tr1::function<void ()> already_ordered;
-        const std::tr1::function<void ()> error;
-        const std::tr1::function<void ()> unordered;
-        const std::tr1::function<void ()> untaken;
-
-        ResolveOrderVisitor(const std::tr1::function<void ()> & a,
-                const std::tr1::function<void ()> & e,
-                const std::tr1::function<void ()> & o,
-                const std::tr1::function<void ()> & u) :
-            already_ordered(a),
-            error(e),
-            unordered(o),
-            untaken(u)
-        {
-        }
-
-        void visit(const ExistingNoChangeDecision &) const
-        {
-            already_ordered();
-        }
-
-        void visit(const NothingNoChangeDecision &) const
-        {
-            already_ordered();
-        }
-
-        void visit(const UnableToMakeDecision & d) const
-        {
-            already_ordered();
-            if (d.taken())
-                error();
-            else
-                untaken();
-        }
-
-        void visit(const ChangesToMakeDecision & d) const
-        {
-            if (! d.taken())
-            {
-                already_ordered();
-                untaken();
-            }
-            else
-                unordered();
-        }
-    };
-}
-
-void
-Decider::_resolve_unordered()
-{
-    for (Resolutions::ConstIterator i(_imp->lists->all()->begin()),
-            i_end(_imp->lists->all()->end()) ;
-            i != i_end ; ++i)
-    {
-        (*i)->decision()->accept(ResolveOrderVisitor(
-                    std::tr1::bind(&NamedValue<n::already_ordered, bool>::operator=,
-                        &(*i)->already_ordered, value_for<n::already_ordered>(true)),
-                    std::tr1::bind(&Resolutions::append, _imp->lists->errors(), *i),
-                    std::tr1::bind(&Resolutions::append, _imp->lists->unordered(), *i),
-                    std::tr1::bind(&Resolutions::append, _imp->lists->untaken(), *i)
-                    ));
-    }
 }
 

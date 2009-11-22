@@ -55,10 +55,10 @@ using namespace test;
 
 namespace
 {
-    struct ResolverBlockersTestCase : ResolverTestCase
+    struct ResolverSimpleTestCase : ResolverTestCase
     {
-        ResolverBlockersTestCase(const std::string & s) :
-            ResolverTestCase("blockers", s, "exheres-0", "exheres")
+        ResolverSimpleTestCase(const std::string & s) :
+            ResolverTestCase("simple", s, "exheres-0", "exheres")
         {
         }
     };
@@ -66,16 +66,13 @@ namespace
 
 namespace test_cases
 {
-    struct TestHardBlocker : ResolverBlockersTestCase
+    struct TestNoDeps : ResolverSimpleTestCase
     {
-        TestHardBlocker() : ResolverBlockersTestCase("hard") { }
+        TestNoDeps() : ResolverSimpleTestCase("no-deps") { }
 
         void run()
         {
-            install("hard", "a-pkg", "1");
-            install("hard", "z-pkg", "1");
-
-            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("hard/target"));
+            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("no-deps/target"));
 
             {
                 TestMessageSuffix s("errors");
@@ -87,13 +84,39 @@ namespace test_cases
             {
                 TestMessageSuffix s("ordered");
                 check_resolution_list(resolutions->jobs(), resolutions->ordered_job_ids(), ResolutionListChecks()
-                        .qpn(QualifiedPackageName("hard/a-pkg"))
-                        .qpn(QualifiedPackageName("hard/z-pkg"))
-                        .qpn(QualifiedPackageName("hard/target"))
+                        .qpn(QualifiedPackageName("no-deps/target"))
                         .finished()
                         );
             }
         }
-    } test_hard_blocker;
+    } test_no_deps;
+
+    struct TestBuildDeps : ResolverSimpleTestCase
+    {
+        TestBuildDeps() : ResolverSimpleTestCase("build-deps") { }
+
+        void run()
+        {
+            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("build-deps/target"));
+
+            {
+                TestMessageSuffix s("errors");
+                check_resolution_list(resolutions->jobs(), resolutions->error_resolutions(), ResolutionListChecks()
+                        .finished()
+                        );
+            }
+
+            {
+                TestMessageSuffix s("ordered");
+                check_resolution_list(resolutions->jobs(), resolutions->ordered_job_ids(), ResolutionListChecks()
+                        .qpn(QualifiedPackageName("build-deps/a-dep"))
+                        .qpn(QualifiedPackageName("build-deps/b-dep"))
+                        .qpn(QualifiedPackageName("build-deps/z-dep"))
+                        .qpn(QualifiedPackageName("build-deps/target"))
+                        .finished()
+                        );
+            }
+        }
+    } test_build_deps;
 }
 

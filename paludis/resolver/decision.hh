@@ -92,7 +92,8 @@ namespace paludis
         class PALUDIS_VISIBLE ChangesToMakeDecision :
             public Decision,
             public ImplementAcceptMethods<Decision, ChangesToMakeDecision>,
-            private PrivateImplementationPattern<ChangesToMakeDecision>
+            private PrivateImplementationPattern<ChangesToMakeDecision>,
+            public std::tr1::enable_shared_from_this<ChangesToMakeDecision>
         {
             public:
                 ChangesToMakeDecision(
@@ -117,6 +118,9 @@ namespace paludis
                 virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;
+
+                static const std::tr1::shared_ptr<ChangesToMakeDecision> deserialise(
+                        Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class PALUDIS_VISIBLE UnableToMakeDecision :

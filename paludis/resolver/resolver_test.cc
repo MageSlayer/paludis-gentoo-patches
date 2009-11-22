@@ -28,6 +28,9 @@
 #include <paludis/resolver/decision.hh>
 #include <paludis/resolver/decider.hh>
 #include <paludis/resolver/orderer.hh>
+#include <paludis/resolver/job.hh>
+#include <paludis/resolver/jobs.hh>
+#include <paludis/resolver/job_id.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
@@ -281,6 +284,25 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
 #endif
 }
 
+ResolverFunctions
+ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraints)
+{
+    return make_named_values<ResolverFunctions>(
+            value_for<n::care_about_dep_fn>(&care_about_dep_fn),
+            value_for<n::find_repository_for_fn>(std::tr1::bind(&find_repository_for_fn,
+                    &env, std::tr1::placeholders::_1, std::tr1::placeholders::_2,
+                    std::tr1::placeholders::_3)),
+            value_for<n::get_destination_types_for_fn>(&get_destination_types_for_fn),
+            value_for<n::get_initial_constraints_for_fn>(
+                std::tr1::bind(&initial_constraints_for_fn, std::tr1::ref(initial_constraints),
+                    std::tr1::placeholders::_1)),
+            value_for<n::get_resolvents_for_fn>(&get_resolvents_for_fn),
+            value_for<n::get_use_existing_fn>(&get_use_existing_fn),
+            value_for<n::make_destination_filtered_generator_fn>(&make_destination_filtered_generator_fn),
+            value_for<n::take_dependency_fn>(&take_dependency_fn)
+            );
+}
+
 const std::tr1::shared_ptr<const ResolverLists>
 ResolverTestCase::get_resolutions(const PackageDepSpec & target)
 {
@@ -290,20 +312,7 @@ ResolverTestCase::get_resolutions(const PackageDepSpec & target)
     {
         try
         {
-            Resolver resolver(&env, make_named_values<ResolverFunctions>(
-                        value_for<n::care_about_dep_fn>(&care_about_dep_fn),
-                        value_for<n::find_repository_for_fn>(std::tr1::bind(&find_repository_for_fn,
-                                &env, std::tr1::placeholders::_1, std::tr1::placeholders::_2,
-                                std::tr1::placeholders::_3)),
-                        value_for<n::get_destination_types_for_fn>(&get_destination_types_for_fn),
-                        value_for<n::get_initial_constraints_for_fn>(
-                            std::tr1::bind(&initial_constraints_for_fn, std::tr1::ref(initial_constraints),
-                                std::tr1::placeholders::_1)),
-                        value_for<n::get_resolvents_for_fn>(&get_resolvents_for_fn),
-                        value_for<n::get_use_existing_fn>(&get_use_existing_fn),
-                        value_for<n::make_destination_filtered_generator_fn>(&make_destination_filtered_generator_fn),
-                        value_for<n::take_dependency_fn>(&take_dependency_fn)
-                        ));
+            Resolver resolver(&env, get_resolver_functions(initial_constraints));
             resolver.add_target(target);
             resolver.resolve();
             return resolver.lists();
@@ -374,9 +383,12 @@ namespace
 bool
 ResolverTestCase::ResolutionListChecks::check_qpn(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Resolution> & r)
 {
+    if ((! r) || (! r->decision()))
+        return false;
+
     const std::tr1::shared_ptr<const PackageID> id(r->decision()->accept_returning<
             std::tr1::shared_ptr<const PackageID> >(ChosenIDVisitor()));
-    if ((! r) || (! r->decision()) || ! id)
+    if (! id)
         return false;
 
     return id->name() == q;
@@ -472,25 +484,99 @@ ResolverTestCase::ResolutionListChecks::finished()
     return *this;
 }
 
-void
-ResolverTestCase::check_resolution_list(
-        const std::tr1::shared_ptr<const Resolutions> & list, const ResolutionListChecks & checks)
+namespace
 {
-    Resolutions::ConstIterator r(list->begin()), r_end(list->end());
-    for (ResolutionListChecks::List::const_iterator c(checks.checks.begin()), c_end(checks.checks.end()) ;
-            c != c_end ; ++c)
+    template <typename T_>
+    struct CheckLists;
+
+    template <>
+    struct CheckLists<std::tr1::shared_ptr<Resolutions> >
     {
-        if (r == r_end)
-            TEST_CHECK_MESSAGE(c->first(make_null_shared_ptr()), c->second(make_null_shared_ptr()));
-        else
-            TEST_CHECK_MESSAGE(c->first(*r), c->second(*r));
-        ++r;
-    }
+        typedef Resolutions Type;
+
+        static const std::tr1::shared_ptr<const Resolution> get_resolution(
+                const std::tr1::shared_ptr<const Jobs> &,
+                const std::tr1::shared_ptr<const Resolution> & r)
+        {
+            return r;
+        }
+    };
+
+    struct InstallJobResolution
+    {
+        std::tr1::shared_ptr<const Resolution> visit(const NoChangeJob &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        std::tr1::shared_ptr<const Resolution> visit(const PretendJob &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        std::tr1::shared_ptr<const Resolution> visit(const SyncPointJob &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        std::tr1::shared_ptr<const Resolution> visit(const UntakenInstallJob & j) const
+        {
+            return j.resolution();
+        }
+
+        std::tr1::shared_ptr<const Resolution> visit(const SimpleInstallJob & j) const
+        {
+            return j.resolution();
+        }
+    };
+
+    template <>
+    struct CheckLists<std::tr1::shared_ptr<JobIDSequence> >
+    {
+        typedef JobIDSequence Type;
+
+        static const std::tr1::shared_ptr<const Resolution> get_resolution(
+                const std::tr1::shared_ptr<const Jobs> & jobs,
+                const JobID & j)
+        {
+            return jobs->fetch(j)->accept_returning<std::tr1::shared_ptr<const Resolution> >(InstallJobResolution());
+        }
+    };
 }
 
+template <typename List_>
 void
+ResolverTestCase::check_resolution_list(
+        const std::tr1::shared_ptr<const Jobs> & jobs,
+        const List_ & list, const ResolutionListChecks & checks)
+{
+    typename CheckLists<List_>::Type::ConstIterator r(list->begin()), r_end(list->end());
+    ResolutionListChecks::List::const_iterator c(checks.checks.begin()), c_end(checks.checks.end());
+    while (true)
+    {
+        std::tr1::shared_ptr<const Resolution> rn;
+        while ((! rn) && (r != r_end))
+            rn = CheckLists<List_>::get_resolution(jobs, *r++);
+
+        if (c == c_end)
+            break;
+
+        TEST_CHECK_MESSAGE(c->first(rn), c->second(rn));
+        ++c;
+    }
+
+    TEST_CHECK(r == r_end);
+    TEST_CHECK(c == c_end);
+}
+
+const std::tr1::shared_ptr<FakePackageID>
 ResolverTestCase::install(const std::string & c, const std::string & p, const std::string & v)
 {
-    fake_inst_repo->add_version(c, p, v);
+    return fake_inst_repo->add_version(c, p, v);
 }
+
+template void ResolverTestCase::check_resolution_list(const std::tr1::shared_ptr<const Jobs> &,
+        const std::tr1::shared_ptr<Resolutions> &, const ResolutionListChecks &);
+template void ResolverTestCase::check_resolution_list(const std::tr1::shared_ptr<const Jobs> &,
+        const std::tr1::shared_ptr<JobIDSequence> &, const ResolutionListChecks &);
 

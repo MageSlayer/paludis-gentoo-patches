@@ -30,7 +30,10 @@
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/resolver/destination_types-fwd.hh>
 #include <paludis/resolver/resolver-fwd.hh>
+#include <paludis/resolver/jobs-fwd.hh>
+#include <paludis/resolver/resolver_functions-fwd.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
+#include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/map-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
@@ -100,6 +103,8 @@ namespace paludis
 
                 const std::tr1::shared_ptr<const ResolverLists> get_resolutions(const std::string & target);
 
+                virtual ResolverFunctions get_resolver_functions(InitialConstraints &);
+
                 struct ResolutionListChecks
                 {
                     typedef std::tr1::function<bool (const std::tr1::shared_ptr<const Resolution> &) > CheckFunction;
@@ -130,9 +135,12 @@ namespace paludis
                     ResolutionListChecks & finished();
                 };
 
-                void check_resolution_list(const std::tr1::shared_ptr<const Resolutions> & list, const ResolutionListChecks & checks);
+                template <typename List_>
+                void check_resolution_list(const std::tr1::shared_ptr<const Jobs> &,
+                        const List_ & list, const ResolutionListChecks & checks);
 
-                void install(const std::string & c, const std::string & p, const std::string & v);
+                const std::tr1::shared_ptr<FakePackageID> install(
+                        const std::string & c, const std::string & p, const std::string & v);
             };
         }
     }

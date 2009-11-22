@@ -25,6 +25,7 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/suggest_restart.hh>
+#include <paludis/resolver/resolver_lists.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/options.hh>
@@ -75,14 +76,14 @@ namespace test_cases
 
             {
                 TestMessageSuffix s("errors");
-                check_resolution_list(resolutions->errors(), ResolutionListChecks()
+                check_resolution_list(resolutions->jobs(), resolutions->error_resolutions(), ResolutionListChecks()
                         .finished()
                         );
             }
 
             {
                 TestMessageSuffix s("ordered");
-                check_resolution_list(resolutions->ordered(), ResolutionListChecks()
+                check_resolution_list(resolutions->jobs(), resolutions->ordered_job_ids(), ResolutionListChecks()
                         .qpn(QualifiedPackageName("cat/foo-a"))
                         .qpn(QualifiedPackageName("virtuals/target"))
                         .finished()
@@ -91,7 +92,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix s("untaken");
-                check_resolution_list(resolutions->untaken(), ResolutionListChecks()
+                check_resolution_list(resolutions->jobs(), resolutions->untaken_job_ids(), ResolutionListChecks()
                         .finished()
                         );
             }
@@ -108,14 +109,14 @@ namespace test_cases
 
             {
                 TestMessageSuffix s("errors");
-                check_resolution_list(resolutions->errors(), ResolutionListChecks()
+                check_resolution_list(resolutions->jobs(), resolutions->error_resolutions(), ResolutionListChecks()
                         .finished()
                         );
             }
 
             {
                 TestMessageSuffix s("ordered");
-                check_resolution_list(resolutions->ordered(), ResolutionListChecks()
+                check_resolution_list(resolutions->jobs(), resolutions->ordered_job_ids(), ResolutionListChecks()
                         .qpn(QualifiedPackageName("cat/real-target"))
                         .finished()
                         );
@@ -123,7 +124,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix s("untaken");
-                check_resolution_list(resolutions->untaken(), ResolutionListChecks()
+                check_resolution_list(resolutions->jobs(), resolutions->untaken_job_ids(), ResolutionListChecks()
                         .finished()
                         );
             }

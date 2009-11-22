@@ -26,8 +26,8 @@
 #include <paludis/resolver/decider-fwd.hh>
 #include <paludis/resolver/orderer-fwd.hh>
 #include <paludis/resolver/resolutions-fwd.hh>
+#include <paludis/resolver/resolver_lists-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/named_value.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/name.hh>
@@ -40,29 +40,8 @@
 
 namespace paludis
 {
-    namespace n
-    {
-        struct all;
-        struct errors;
-        struct ordered;
-        struct unordered;
-        struct untaken;
-    }
-
     namespace resolver
     {
-        struct ResolverLists
-        {
-            NamedValue<n::all, std::tr1::shared_ptr<Resolutions> > all;
-            NamedValue<n::errors, std::tr1::shared_ptr<Resolutions> > errors;
-            NamedValue<n::ordered, std::tr1::shared_ptr<Resolutions> > ordered;
-            NamedValue<n::unordered, std::tr1::shared_ptr<Resolutions> > unordered;
-            NamedValue<n::untaken, std::tr1::shared_ptr<Resolutions> > untaken;
-
-            static const ResolverLists deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
-            void serialise(Serialiser &) const;
-        };
-
         class PALUDIS_VISIBLE Resolver :
             private PrivateImplementationPattern<Resolver>
         {

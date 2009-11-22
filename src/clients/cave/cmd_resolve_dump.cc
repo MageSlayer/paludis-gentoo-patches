@@ -28,6 +28,7 @@
 #include <paludis/resolver/arrow.hh>
 #include <paludis/resolver/destination.hh>
 #include <paludis/resolver/resolutions.hh>
+#include <paludis/resolver/resolver_lists.hh>
 #include <paludis/util/enum_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/join.hh>
@@ -152,7 +153,7 @@ namespace
         {
             std::stringstream s;
             s << r.sanitised_dependency();
-            str = "Dependency(" + s.str() + ")";
+            str = "Dependency(" + s.str() + " from " + stringify(r.from_resolvent()) + ")";
         }
     };
 
@@ -181,9 +182,7 @@ namespace
     std::ostream &
     operator<< (std::ostream & s, const Arrow & a)
     {
-        s << "Arrow(-> " << a.comes_after();
-        if (0 != a.ignorable_pass())
-            s << ", ignorable pass " << a.ignorable_pass();
+        s << "Arrow(-> " << a.comes_after().string_id();
         s << ")";
         return s;
     }
@@ -214,11 +213,7 @@ namespace
             ss << *r.decision();
         else
             ss << "none";
-        ss
-            << "; arrows: " << join(indirect_iterator(r.arrows()->begin()),
-                    indirect_iterator(r.arrows()->end()), ", ", stringify_arrow)
-            << "; already_ordered: " << stringify(r.already_ordered()) << ")"
-            << ")";
+        ss << ")";
         s << ss.str();
         return s;
     }
@@ -230,8 +225,8 @@ namespace
     {
         std::cout << "Dumping resolutions by QPN:S:" << std::endl << std::endl;
 
-        for (Resolutions::ConstIterator c(resolver->lists()->all()->begin()),
-                c_end(resolver->lists()->all()->end()) ;
+        for (Resolutions::ConstIterator c(resolver->lists()->all_resolutions()->begin()),
+                c_end(resolver->lists()->all_resolutions()->end()) ;
                 c != c_end ; ++c)
         {
             std::cout << (*c)->resolvent() << std::endl;

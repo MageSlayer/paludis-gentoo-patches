@@ -22,6 +22,7 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/destringify.hh>
+#include <paludis/util/hashes.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/filter.hh>
 #include <paludis/package_id.hh>
@@ -77,7 +78,7 @@ paludis::resolver::operator== (const Resolvent & a, const Resolvent & b)
 bool
 paludis::resolver::operator== (const SlotNameOrNull & a, const SlotNameOrNull & b)
 {
-    if (a.name_or_null() != b.name_or_null())
+    if ((!! a.name_or_null()) != (!! b.name_or_null()))
         return false;
 
     if ((a.name_or_null()) && (*a.name_or_null() != *b.name_or_null()))
@@ -189,6 +190,16 @@ Resolvent::deserialise(Deserialisation & d)
             );
 }
 
+std::size_t
+Resolvent::hash() const
+{
+    return
+        static_cast<int>(destination_type()) ^
+        Hash<QualifiedPackageName>()(package()) ^
+        Hash<SlotNameOrNull>()(slot())
+        ;
+}
+
 Filter
 paludis::resolver::make_slot_filter(const Resolvent & r)
 {
@@ -241,6 +252,14 @@ SlotNameOrNull::deserialise(Deserialisation & d)
             );
 }
 
+std::size_t
+SlotNameOrNull::hash() const
+{
+    if (name_or_null())
+        return Hash<SlotName>()(*name_or_null());
+    else
+        return 0xdeadbeef;
+}
 
 template class Sequence<Resolvent>;
 template class WrappedForwardIterator<Resolvents::ConstIteratorTag, Resolvent>;

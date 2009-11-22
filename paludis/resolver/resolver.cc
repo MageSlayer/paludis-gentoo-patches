@@ -19,19 +19,21 @@
 
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/resolver_functions.hh>
+#include <paludis/resolver/resolver_lists.hh>
 #include <paludis/resolver/spec_rewriter.hh>
 #include <paludis/resolver/decider.hh>
 #include <paludis/resolver/orderer.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/resolutions.hh>
+#include <paludis/resolver/jobs.hh>
+#include <paludis/resolver/job_id.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_copy.hh>
-#include <paludis/serialise-impl.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/dep_spec_flattener.hh>
@@ -56,11 +58,12 @@ namespace paludis
             env(e),
             fns(f),
             lists(new ResolverLists(make_named_values<ResolverLists>(
-                            value_for<n::all>(make_shared_ptr(new Resolutions)),
-                            value_for<n::errors>(make_shared_ptr(new Resolutions)),
-                            value_for<n::ordered>(make_shared_ptr(new Resolutions)),
-                            value_for<n::unordered>(make_shared_ptr(new Resolutions)),
-                            value_for<n::untaken>(make_shared_ptr(new Resolutions))
+                            value_for<n::all_resolutions>(make_shared_ptr(new Resolutions)),
+                            value_for<n::error_resolutions>(make_shared_ptr(new Resolutions)),
+                            value_for<n::jobs>(make_shared_ptr(new Jobs)),
+                            value_for<n::ordered_job_ids>(make_shared_ptr(new JobIDSequence)),
+                            value_for<n::unordered_job_ids>(make_shared_ptr(new JobIDSequence)),
+                            value_for<n::untaken_job_ids>(make_shared_ptr(new JobIDSequence))
                             ))),
             decider(new Decider(e, f, lists)),
             orderer(new Orderer(e, decider, lists))
@@ -114,30 +117,5 @@ const std::tr1::shared_ptr<const ResolverLists>
 Resolver::lists() const
 {
     return _imp->lists;
-}
-
-void
-ResolverLists::serialise(Serialiser & s) const
-{
-    s.object("ResolverLists")
-        .member(SerialiserFlags<serialise::might_be_null>(), "all", all())
-        .member(SerialiserFlags<serialise::might_be_null>(), "errors", errors())
-        .member(SerialiserFlags<serialise::might_be_null>(), "ordered", ordered())
-        .member(SerialiserFlags<serialise::might_be_null>(), "unordered", unordered())
-        .member(SerialiserFlags<serialise::might_be_null>(), "untaken", untaken())
-        ;
-}
-
-const ResolverLists
-ResolverLists::deserialise(Deserialisation & d)
-{
-    Deserialisator v(d, "ResolverLists");
-    return make_named_values<ResolverLists>(
-            value_for<n::all>(v.member<std::tr1::shared_ptr<Resolutions> >("all")),
-            value_for<n::errors>(v.member<std::tr1::shared_ptr<Resolutions> >("errors")),
-            value_for<n::ordered>(v.member<std::tr1::shared_ptr<Resolutions> >("ordered")),
-            value_for<n::unordered>(v.member<std::tr1::shared_ptr<Resolutions> >("unordered")),
-            value_for<n::untaken>(v.member<std::tr1::shared_ptr<Resolutions> >("untaken"))
-            );
 }
 

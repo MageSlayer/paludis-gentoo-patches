@@ -43,6 +43,7 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/resolutions.hh>
+#include <paludis/resolver/resolver_lists.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/generator.hh>
@@ -1164,7 +1165,7 @@ ResolveCommand::run(
 
         retcode |= display_resolution(env, *resolver->lists(), cmdline);
 
-        if (! resolver->lists()->errors()->empty())
+        if (! resolver->lists()->error_resolutions()->empty())
             retcode |= 1;
 
         if (0 == retcode)

@@ -55,27 +55,44 @@ using namespace test;
 
 namespace
 {
-    struct ResolverBlockersTestCase : ResolverTestCase
+    struct ResolverCyclesTestCase : ResolverTestCase
     {
-        ResolverBlockersTestCase(const std::string & s) :
-            ResolverTestCase("blockers", s, "exheres-0", "exheres")
+        ResolverCyclesTestCase(const std::string & s) :
+            ResolverTestCase("cycles", s, "exheres-0", "exheres")
         {
         }
     };
+
+    UseExisting
+    use_existing_if_same(
+            const Resolvent &,
+            const PackageDepSpec &,
+            const std::tr1::shared_ptr<const Reason> &)
+    {
+        return ue_if_same;
+    }
 }
 
 namespace test_cases
 {
-    struct TestHardBlocker : ResolverBlockersTestCase
+    struct TestNoChanges : ResolverCyclesTestCase
     {
-        TestHardBlocker() : ResolverBlockersTestCase("hard") { }
+        TestNoChanges() : ResolverCyclesTestCase("no-changes") { }
+
+        virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)
+        {
+            ResolverFunctions result(ResolverCyclesTestCase::get_resolver_functions(initial_constraints));
+            result.get_use_existing_fn() = std::tr1::bind(&use_existing_if_same, std::tr1::placeholders::_1,
+                    std::tr1::placeholders::_2, std::tr1::placeholders::_3);
+            return result;
+        }
 
         void run()
         {
-            install("hard", "a-pkg", "1");
-            install("hard", "z-pkg", "1");
+            install("no-changes", "dep-a", "1")->build_dependencies_key()->set_from_string("no-changes/dep-b");
+            install("no-changes", "dep-b", "1")->build_dependencies_key()->set_from_string("no-changes/dep-a");
 
-            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("hard/target"));
+            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("no-changes/target"));
 
             {
                 TestMessageSuffix s("errors");
@@ -87,13 +104,39 @@ namespace test_cases
             {
                 TestMessageSuffix s("ordered");
                 check_resolution_list(resolutions->jobs(), resolutions->ordered_job_ids(), ResolutionListChecks()
-                        .qpn(QualifiedPackageName("hard/a-pkg"))
-                        .qpn(QualifiedPackageName("hard/z-pkg"))
-                        .qpn(QualifiedPackageName("hard/target"))
+                        .qpn(QualifiedPackageName("no-changes/target"))
                         .finished()
                         );
             }
         }
-    } test_hard_blocker;
+    } test_no_changes;
+
+    struct TestExistingUsable : ResolverCyclesTestCase
+    {
+        TestExistingUsable() : ResolverCyclesTestCase("existing-usable") { }
+
+        void run()
+        {
+            install("existing-usable", "dep", "1");
+
+            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("existing-usable/target"));
+
+            {
+                TestMessageSuffix s("errors");
+                check_resolution_list(resolutions->jobs(), resolutions->error_resolutions(), ResolutionListChecks()
+                        .finished()
+                        );
+            }
+
+            {
+                TestMessageSuffix s("ordered");
+                check_resolution_list(resolutions->jobs(), resolutions->ordered_job_ids(), ResolutionListChecks()
+                        .qpn(QualifiedPackageName("existing-usable/target"))
+                        .qpn(QualifiedPackageName("existing-usable/dep"))
+                        .finished()
+                        );
+            }
+        }
+    } test_existing_usable;
 }
 

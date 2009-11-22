@@ -118,7 +118,6 @@ namespace paludis
 
                 void _resolve_decide_with_dependencies();
                 void _resolve_destinations();
-                void _resolve_unordered();
 
                 const std::tr1::shared_ptr<Destination> _make_destination_for(
                         const Resolvent & resolvent,

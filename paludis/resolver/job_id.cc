@@ -17,35 +17,45 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/resolver/arrow.hh>
-#include <paludis/resolver/reason.hh>
-#include <paludis/util/sequence-impl.hh>
-#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/resolver/job_id.hh>
+#include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/sequence-impl.hh>
 #include <paludis/serialise-impl.hh>
 
 using namespace paludis;
 using namespace paludis::resolver;
 
-void
-Arrow::serialise(Serialiser & s) const
+bool
+paludis::resolver::operator== (const JobID & a, const JobID & b)
 {
-    s.object("Arrow")
-        .member(SerialiserFlags<>(), "comes_after", comes_after())
-        .member(SerialiserFlags<serialise::might_be_null>(), "maybe_reason", maybe_reason())
+    return a.string_id() == b.string_id();
+}
+
+std::size_t
+JobID::hash() const
+{
+    return Hash<std::string>()(string_id());
+}
+
+void
+JobID::serialise(Serialiser & s) const
+{
+    s.object("JobID")
+        .member(SerialiserFlags<>(), "string_id", string_id())
         ;
 }
 
-const Arrow
-Arrow::deserialise(Deserialisation & d)
+const JobID
+JobID::deserialise(Deserialisation & d)
 {
-    Deserialisator v(d, "Arrow");
-    return make_named_values<Arrow>(
-            value_for<n::comes_after>(v.member<JobID>("comes_after")),
-            value_for<n::maybe_reason>(v.member<std::tr1::shared_ptr<const Reason> >("maybe_reason"))
+    Deserialisator v(d, "JobID");
+    return make_named_values<JobID>(
+            value_for<n::string_id>(v.member<std::string>("string_id"))
             );
 }
 
-template class Sequence<Arrow>;
-template class WrappedForwardIterator<ArrowSequence::ConstIteratorTag, const Arrow>;
+template class Sequence<JobID>;
+template class WrappedForwardIterator<JobIDSequence::ConstIteratorTag, const JobID>;
 

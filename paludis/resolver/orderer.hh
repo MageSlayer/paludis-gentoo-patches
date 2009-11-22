@@ -30,6 +30,7 @@
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
 #include <paludis/resolver/decider-fwd.hh>
 #include <paludis/resolver/resolver-fwd.hh>
+#include <paludis/resolver/job_id-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/environment.hh>
@@ -43,24 +44,15 @@ namespace paludis
             private PrivateImplementationPattern<Orderer>
         {
             private:
-                bool _can_order_now(const Resolvent &, const std::tr1::shared_ptr<const Resolution> & resolution,
-                        const int ignorable_pass) const;
-
-                void _do_order(const Resolvent &, const std::tr1::shared_ptr<Resolution> & resolution);
-
-                void _unable_to_order_more() const PALUDIS_ATTRIBUTE((noreturn));
-
-                void _resolve_arrow(const Resolvent &, const std::tr1::shared_ptr<Resolution> &,
-                        const std::tr1::shared_ptr<const Constraint> &);
-
-                void _resolve_arrows();
+                void _resolve_jobs();
+                void _resolve_jobs_dep_arrows();
                 void _resolve_order();
 
-                bool _causes_pre_arrow(const DependencyReason &) const;
+                bool _already_ordered(const JobID &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool _can_order(const JobID &, const int pass) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                void _mark_already_ordered(const JobID &);
 
-                const std::string _find_cycle(const Resolvent &, const int ignorable_pass) const;
-
-                bool _already_met(const SanitisedDependency & dep) const;
+                bool _already_met(const PackageOrBlockDepSpec &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             public:
                 Orderer(

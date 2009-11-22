@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLUTION_HH 1
 
 #include <paludis/resolver/resolution-fwd.hh>
-#include <paludis/resolver/arrow-fwd.hh>
 #include <paludis/resolver/constraint-fwd.hh>
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/resolver/resolvent.hh>
@@ -32,8 +31,6 @@ namespace paludis
 {
     namespace n
     {
-        struct already_ordered;
-        struct arrows;
         struct constraints;
         struct decision;
         struct resolvent;
@@ -43,8 +40,6 @@ namespace paludis
     {
         struct Resolution
         {
-            NamedValue<n::already_ordered, bool> already_ordered;
-            NamedValue<n::arrows, std::tr1::shared_ptr<ArrowSequence> > arrows;
             NamedValue<n::constraints, std::tr1::shared_ptr<Constraints> > constraints;
             NamedValue<n::decision, std::tr1::shared_ptr<Decision> > decision;
             NamedValue<n::resolvent, Resolvent> resolvent;

@@ -37,8 +37,6 @@ void
 Resolution::serialise(Serialiser & s) const
 {
     s.object("Resolution")
-        .member(SerialiserFlags<>(), "already_ordered", already_ordered())
-        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "arrows", arrows())
         .member(SerialiserFlags<>(), "constraints", *constraints())
         .member(SerialiserFlags<serialise::might_be_null>(), "decision", decision())
         .member(SerialiserFlags<>(), "resolvent", resolvent())
@@ -50,14 +48,7 @@ Resolution::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "Resolution");
 
-    std::tr1::shared_ptr<ArrowSequence> arrows(new ArrowSequence);
-    Deserialisator vv(*v.find_remove_member("arrows"), "c");
-    for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
-        arrows->push_back(vv.member<std::tr1::shared_ptr<Arrow> >(stringify(n)));
-
     return make_shared_ptr(new Resolution(make_named_values<Resolution>(
-                    value_for<n::already_ordered>(v.member<bool>("already_ordered")),
-                    value_for<n::arrows>(arrows),
                     value_for<n::constraints>(v.member<std::tr1::shared_ptr<Constraints> >("constraints")),
                     value_for<n::decision>(v.member<std::tr1::shared_ptr<Decision> >("decision")),
                     value_for<n::resolvent>(v.member<Resolvent>("resolvent"))
