@@ -1128,10 +1128,10 @@ ResolveCommand::run(
                 ));
     std::tr1::shared_ptr<Resolver> resolver(new Resolver(env.get(), resolver_functions));
     bool is_set(false);
+    std::list<SuggestRestart> restarts;
+
     try
     {
-        std::list<SuggestRestart> restarts;
-
         {
             DisplayCallback display_callback;
             ScopedNotifierCallback display_callback_holder(env.get(),
@@ -1172,6 +1172,9 @@ ResolveCommand::run(
     }
     catch (...)
     {
+        if (! restarts.empty())
+            display_restarts_if_requested(restarts, cmdline);
+
         dump_if_requested(env, resolver, cmdline);
         throw;
     }
