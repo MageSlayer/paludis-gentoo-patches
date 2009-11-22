@@ -134,6 +134,18 @@ namespace paludis
         }
     };
 
+    template <typename T_>
+    struct SerialiserConstIteratorType
+    {
+        typedef typename T_::ConstIterator Type;
+    };
+
+    template <typename T_>
+    struct SerialiserConstIteratorType<std::list<T_> >
+    {
+        typedef typename std::list<T_>::const_iterator Type;
+    };
+
     template <
         typename T_>
     struct SerialiserObjectWriterHandler<true, false, T_>
@@ -142,10 +154,11 @@ namespace paludis
         {
             s.raw_stream() << "c(";
             unsigned n(0);
-            for (typename T_::ConstIterator i(t.begin()), i_end(t.end()) ;
+            for (typename SerialiserConstIteratorType<T_>::Type i(t.begin()), i_end(t.end()) ;
                     i != i_end ; ++i)
             {
-                typedef typename std::iterator_traits<typename T_::ConstIterator>::value_type ItemValueType;
+                typedef typename std::iterator_traits<
+                    typename SerialiserConstIteratorType<T_>::Type>::value_type ItemValueType;
                 typedef typename std::tr1::remove_reference<ItemValueType>::type ItemType;
 
                 s.raw_stream() << ++n << "=";
