@@ -154,6 +154,10 @@ namespace
             const std::string & action_name,
             Action & action)
     {
+        if (cmdline.a_x_of_y.specified() && ! cmdline.a_background.specified())
+            std::cout << "\x1b]2;" << cmdline.a_x_of_y.argument() << " " << action_name << " "
+                << stringify(*id) << "\x07" << std::flush;
+
         if (cmdline.a_hooks.specified())
             if (0 != env->perform_hook(Hook(action_name + "_pre")
                         ("TARGET", stringify(*id))
@@ -169,6 +173,10 @@ namespace
                         ("X_OF_Y", cmdline.a_x_of_y.argument())
                         ).max_exit_status())
                 throw ActionAbortedError("Aborted by hook");
+
+        if (cmdline.a_x_of_y.specified() && ! cmdline.a_background.specified())
+            std::cout << "\x1b]2;Completed " << cmdline.a_x_of_y.argument() << " " << action_name << " "
+                << stringify(*id) << "\x07" << std::flush;
     }
 
     bool ignore_nothing(const FSEntry &)
@@ -180,10 +188,15 @@ namespace
             const std::tr1::shared_ptr<Environment> & env,
             const PerformCommandLine & cmdline,
             const std::tr1::shared_ptr<const PackageID> & id,
+            const std::string & action_name,
             const UninstallActionOptions & options)
     {
         UninstallAction uninstall_action(options);
         execute(env, cmdline, id, "clean", uninstall_action);
+
+        if (cmdline.a_x_of_y.specified() && ! cmdline.a_background.specified())
+            std::cout << "\x1b]2;" << cmdline.a_x_of_y.argument() << " " << action_name << " "
+                << stringify(*id) << "\x07" << std::flush;
     }
 
     struct WantInstallPhase
@@ -405,7 +418,8 @@ PerformCommand::run(
                     value_for<n::destination>(destination),
                     value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),
                     value_for<n::perform_uninstall>(std::tr1::bind(&perform_uninstall,
-                            env, std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2
+                            env, std::tr1::cref(cmdline), std::tr1::placeholders::_1,
+                            action, std::tr1::placeholders::_2
                             )),
                     value_for<n::replacing>(replacing),
                     value_for<n::want_phase>(want_phase)
