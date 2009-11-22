@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,20 +29,35 @@ namespace paludis
     template <typename To_, typename From_>
     struct SimpleVisitorCaster
     {
-        To_ * visit(const To_ & t)
+        To_ * visit(To_ & t)
         {
             return &t;
         }
 
-        To_ * visit(const From_ &)
+        To_ * visit(From_ &)
         {
             return 0;
         }
     };
 
-    template <typename To_, typename From_>
-    To_ * simple_visitor_cast(const From_ & from)
+    template <typename To_, typename From_, bool ok_>
+    struct VerifySimpleVisitorCastType
     {
+    };
+
+    template <typename To_, typename From_>
+    struct VerifySimpleVisitorCastType<To_, From_, true>
+    {
+        typedef int IsOK;
+    };
+
+    template <typename To_, typename From_>
+    To_ * simple_visitor_cast(From_ & from)
+    {
+        /* verify that we are attempting to simple_visitor_cast something that
+         * could potentially be true */
+        typedef typename VerifySimpleVisitorCastType<To_, From_, std::tr1::is_base_of<From_, To_>::value>::IsOK TypeIsOK;
+
         SimpleVisitorCaster<To_, From_> q;
         return from.template accept_returning<To_ *>(q);
     }
