@@ -117,13 +117,15 @@ _cave_cmd_perform()
             _arguments -s : \
               '(--exclude-unmirrorable --no-exclude-unmirrorable)'{--exclude-unmirrorable,--no-exclude-unmirrorable}'[Do not include unmirrorable components]' \
               '(--fetch-unneeded --no-fetch-unneeded)'{--fetch-unneeded,--no-fetch-unneeded}'[Fetch components that aren'\''t needed]' \
-              '(--ignore-unfetched --no-ignore-unfetched)'{--ignore-unfetched,--no-ignore-unfetched}'[Only verify components that have already been downloaded]' && ret=0
+              '(--ignore-unfetched --no-ignore-unfetched)'{--ignore-unfetched,--no-ignore-unfetched}'[Only verify components that have already been downloaded]' \
+              '(--regulars-only --no-regulars-only)'{--regulars-only,--no-regulars-only}'[Only fetch regular components]' && ret=0
             ;;
           install|pretend)
             _arguments -s : \
               '--destination[Repository to which the install should take place]:repository name:_cave_repositories' \
               '--replacing[Spec uniquely identifying the ID to be replaced]:package spec: ' \
               '--skip-phase[Skip the named phase]:phase: ' \
+              '--abort-at-phase[Abort when a named phase is encountered]:phase: ' \
               '--skip-until-phase[Skip every phase until a named phase is encountered]:phase: '
             ;;
           uninstall)
