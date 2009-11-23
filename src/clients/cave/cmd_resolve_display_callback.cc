@@ -33,11 +33,13 @@ namespace paludis
     struct Implementation<DisplayCallback>
     {
         mutable Mutex mutex;
-        mutable unsigned width;
         mutable std::map<std::string, int> metadata, steps;
+        mutable std::string stage;
+        mutable unsigned width;
 
         Implementation() :
-            width(0)
+            stage("Resolving: "),
+            width(stage.length())
         {
         }
     };
@@ -47,7 +49,7 @@ namespace paludis
 DisplayCallback::DisplayCallback() :
     PrivateImplementationPattern<DisplayCallback>(new Implementation<DisplayCallback>)
 {
-    std::cout << "Resolving: " << std::flush;
+    std::cout << _imp->stage << std::flush;
 }
 
 DisplayCallback::~DisplayCallback()
@@ -78,6 +80,14 @@ DisplayCallback::visit(const NotifierCallbackGeneratingMetadataEvent & e) const
 }
 
 void
+DisplayCallback::visit(const NotifierCallbackResolverStageEvent & e) const
+{
+    Lock lock(_imp->mutex);
+    _imp->stage = e.stage() + ": ";
+    update();
+}
+
+void
 DisplayCallback::visit(const NotifierCallbackResolverStepEvent &) const
 {
     Lock lock(_imp->mutex);
@@ -88,14 +98,17 @@ DisplayCallback::visit(const NotifierCallbackResolverStepEvent &) const
 void
 DisplayCallback::update() const
 {
-    std::string s;
+    std::string s(_imp->stage);
+    bool first(true);
+
     if (! _imp->steps.empty())
     {
         for (std::map<std::string, int>::const_iterator i(_imp->steps.begin()), i_end(_imp->steps.end()) ;
                 i != i_end ; ++i)
         {
-            if (! s.empty())
+            if (! first)
                 s.append(", ");
+            first = false;
 
             s.append(stringify(i->second) + " " + i->first);
         }

@@ -49,6 +49,8 @@ namespace paludis
                 void visit(const NotifierCallbackGeneratingMetadataEvent &) const;
 
                 void visit(const NotifierCallbackResolverStepEvent &) const;
+
+                void visit(const NotifierCallbackResolverStageEvent &) const;
         };
     }
 }

@@ -32,7 +32,8 @@ namespace paludis
     class PALUDIS_VISIBLE NotifierCallbackEvent :
         public virtual DeclareAbstractAcceptMethods<NotifierCallbackEvent, MakeTypeList<
             NotifierCallbackGeneratingMetadataEvent,
-            NotifierCallbackResolverStepEvent>::Type>
+            NotifierCallbackResolverStepEvent,
+            NotifierCallbackResolverStageEvent>::Type>
     {
     };
 
@@ -53,6 +54,19 @@ namespace paludis
         public NotifierCallbackEvent,
         public ImplementAcceptMethods<NotifierCallbackEvent, NotifierCallbackResolverStepEvent>
     {
+    };
+
+    class PALUDIS_VISIBLE NotifierCallbackResolverStageEvent :
+        public NotifierCallbackEvent,
+        public ImplementAcceptMethods<NotifierCallbackEvent, NotifierCallbackResolverStageEvent>
+    {
+        private:
+            const std::string _stage;
+
+        public:
+            NotifierCallbackResolverStageEvent(const std::string &);
+
+            const std::string stage() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE ScopedNotifierCallback :

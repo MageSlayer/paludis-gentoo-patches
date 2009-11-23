@@ -77,6 +77,10 @@ namespace
             update();
         }
 
+        void visit(const NotifierCallbackResolverStageEvent &) const
+        {
+        }
+
         void visit(const NotifierCallbackResolverStepEvent &) const
         {
             Lock lock(mutex);

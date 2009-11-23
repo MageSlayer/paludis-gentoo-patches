@@ -230,6 +230,10 @@ struct ConsoleInstallTask::CallbackDisplayer
         update();
     }
 
+    void visit(const NotifierCallbackResolverStageEvent &)
+    {
+    }
+
     void update()
     {
         std::string s;

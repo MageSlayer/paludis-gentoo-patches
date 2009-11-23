@@ -35,6 +35,17 @@ NotifierCallbackGeneratingMetadataEvent::repository() const
     return _repo;
 }
 
+NotifierCallbackResolverStageEvent::NotifierCallbackResolverStageEvent(const std::string & r) :
+    _stage(r)
+{
+}
+
+const std::string
+NotifierCallbackResolverStageEvent::stage() const
+{
+    return _stage;
+}
+
 namespace paludis
 {
     template <>

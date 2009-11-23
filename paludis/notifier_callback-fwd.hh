@@ -27,6 +27,7 @@ namespace paludis
     struct NotifierCallbackEvent;
     struct NotifierCallbackGeneratingMetadataEvent;
     struct NotifierCallbackResolverStepEvent;
+    struct NotifierCallbackResolverStageEvent;
 
     typedef std::tr1::function<void (const NotifierCallbackEvent &) > NotifierCallbackFunction;
 
