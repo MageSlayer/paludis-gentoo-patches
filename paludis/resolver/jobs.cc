@@ -67,11 +67,6 @@ namespace
         {
         }
 
-        void visit(const NoChangeJob & j)
-        {
-            jobs_list_by_resolvent_index.insert(std::make_pair(j.resolution()->resolvent(), i));
-        }
-
         void visit(const UsableJob & j)
         {
             jobs_list_by_resolvent_index.insert(std::make_pair(j.resolution()->resolvent(), i));
@@ -135,11 +130,6 @@ namespace
             return true;
         }
 
-        bool visit(const NoChangeJob &) const
-        {
-            return true;
-        }
-
         bool visit(const UsableJob &) const
         {
             return false;
@@ -173,11 +163,6 @@ namespace
             return true;
         }
 
-        bool visit(const NoChangeJob &) const
-        {
-            return true;
-        }
-
         bool visit(const UsableJob &) const
         {
             return true;
@@ -202,22 +187,7 @@ Jobs::find_id_for_installed(const Resolvent & r) const
             return (*candidates.first->second)->id();
     }
 
-    throw InternalError(PALUDIS_HERE, "no build job for " + stringify(r));
-}
-
-bool
-Jobs::have_job_for_installed(const Resolvent & r) const
-{
-    std::pair<JobsListByResolventIndex::const_iterator, JobsListByResolventIndex::const_iterator> candidates(
-                _imp->jobs_list_by_resolvent_index.equal_range(r));
-
-    for ( ; candidates.first != candidates.second ; ++candidates.first)
-    {
-        if ((*candidates.first->second)->accept_returning<bool>(InstalledJobChecker()))
-            return true;
-    }
-
-    return false;
+    return find_id_for_usable(r);
 }
 
 const JobID
@@ -233,6 +203,21 @@ Jobs::find_id_for_usable(const Resolvent & r) const
     }
 
     throw InternalError(PALUDIS_HERE, "no build job for " + stringify(r));
+}
+
+bool
+Jobs::have_job_for_installed(const Resolvent & r) const
+{
+    std::pair<JobsListByResolventIndex::const_iterator, JobsListByResolventIndex::const_iterator> candidates(
+                _imp->jobs_list_by_resolvent_index.equal_range(r));
+
+    for ( ; candidates.first != candidates.second ; ++candidates.first)
+    {
+        if ((*candidates.first->second)->accept_returning<bool>(UsableJobChecker()))
+            return true;
+    }
+
+    return have_job_for_usable(r);
 }
 
 bool

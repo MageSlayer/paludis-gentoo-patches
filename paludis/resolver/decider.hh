@@ -167,6 +167,7 @@ namespace paludis
                         const std::tr1::shared_ptr<const Resolution> &,
                         const std::tr1::shared_ptr<const PackageID> &) const;
 
+                bool _already_met(const SanitisedDependency &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             public:
                 Decider(const Environment * const,

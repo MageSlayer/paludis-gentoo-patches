@@ -685,7 +685,7 @@ Decider::_add_dependencies_if_necessary(
             continue;
 
         const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(
-                    package_id, our_resolvent, *s));
+                    package_id, our_resolvent, *s, _already_met(*s)));
 
         std::tr1::shared_ptr<const Resolvents> resolvents;
 
@@ -827,7 +827,7 @@ Decider::find_any_score(const Resolvent & our_resolvent, const SanitisedDependen
     if (! id)
         throw InternalError(PALUDIS_HERE, "resolver bug: why don't we have an id?");
 
-    const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(id, our_resolvent, dep));
+    const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(id, our_resolvent, dep, _already_met(dep)));
     const std::tr1::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(spec, reason));
 
     /* next: will already be installing */
@@ -1316,5 +1316,20 @@ Decider::resolve()
 {
     _resolve_decide_with_dependencies();
     _resolve_destinations();
+}
+
+bool
+Decider::_already_met(const SanitisedDependency & dep) const
+{
+    const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
+                generator::Matches(dep.spec().if_package() ?
+                    *dep.spec().if_package() :
+                    dep.spec().if_block()->blocking(),
+                    MatchPackageOptions()) |
+                filter::InstalledAtRoot(FSEntry("/")))]);
+    if (installed_ids->empty())
+        return dep.spec().if_block();
+    else
+        return dep.spec().if_package();
 }
 

@@ -65,13 +65,15 @@ namespace paludis
                 DependencyReason(
                         const std::tr1::shared_ptr<const PackageID> & id,
                         const Resolvent &,
-                        const SanitisedDependency & s);
+                        const SanitisedDependency & s,
+                        const bool already_met);
 
                 ~DependencyReason();
 
                 const std::tr1::shared_ptr<const PackageID> from_id() const;
                 const Resolvent from_resolvent() const;
                 const SanitisedDependency & sanitised_dependency() const;
+                bool already_met() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;
         };

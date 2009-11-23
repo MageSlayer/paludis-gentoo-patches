@@ -300,10 +300,6 @@ namespace
             ++y_fetches;
         }
 
-        void visit(const NoChangeJob &)
-        {
-        }
-
         void visit(const UsableJob &)
         {
         }
@@ -437,11 +433,6 @@ namespace
         }
 
         bool visit(const UntakenInstallJob &)
-        {
-            return true;
-        }
-
-        bool visit(const NoChangeJob &)
         {
             return true;
         }

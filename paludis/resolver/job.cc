@@ -34,19 +34,6 @@ using namespace paludis::resolver;
 namespace paludis
 {
     template <>
-    struct Implementation<NoChangeJob>
-    {
-        const std::tr1::shared_ptr<const Resolution> resolution;
-        const std::tr1::shared_ptr<ArrowSequence> arrows;
-
-        Implementation(const std::tr1::shared_ptr<const Resolution> & r) :
-            resolution(r),
-            arrows(new ArrowSequence)
-        {
-        }
-    };
-
-    template <>
     struct Implementation<UsableJob>
     {
         const std::tr1::shared_ptr<const Resolution> resolution;
@@ -155,15 +142,7 @@ Job::deserialise(Deserialisation & d)
 {
     std::tr1::shared_ptr<Job> result;
 
-    if (d.class_name() == "NoChangeJob")
-    {
-        Deserialisator v(d, "NoChangeJob");
-        result.reset(new NoChangeJob(
-                    v.member<std::tr1::shared_ptr<Resolution> >("resolution")
-                    ));
-        do_arrows(result, v);
-    }
-    else if (d.class_name() == "UsableJob")
+    if (d.class_name() == "UsableJob")
     {
         Deserialisator v(d, "UsableJob");
         result.reset(new UsableJob(
@@ -218,44 +197,6 @@ Job::deserialise(Deserialisation & d)
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 
     return result;
-}
-
-NoChangeJob::NoChangeJob(const std::tr1::shared_ptr<const Resolution> & r) :
-    PrivateImplementationPattern<NoChangeJob>(new Implementation<NoChangeJob>(r))
-{
-}
-
-NoChangeJob::~NoChangeJob()
-{
-}
-
-const std::tr1::shared_ptr<const Resolution>
-NoChangeJob::resolution() const
-{
-    return _imp->resolution;
-}
-
-const std::tr1::shared_ptr<ArrowSequence>
-NoChangeJob::arrows() const
-{
-    return _imp->arrows;
-}
-
-const JobID
-NoChangeJob::id() const
-{
-    return make_named_values<JobID>(
-            value_for<n::string_id>("n:" + stringify(resolution()->resolvent()))
-            );
-}
-
-void
-NoChangeJob::serialise(Serialiser & s) const
-{
-    s.object("NoChangeJob")
-        .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "arrows", arrows())
-        .member(SerialiserFlags<serialise::might_be_null>(), "resolution", resolution())
-        ;
 }
 
 UsableJob::UsableJob(const std::tr1::shared_ptr<const Resolution> & r) :
@@ -510,7 +451,6 @@ SyncPointJob::serialise(Serialiser & s) const
         ;
 }
 
-template class PrivateImplementationPattern<resolver::NoChangeJob>;
 template class PrivateImplementationPattern<resolver::UsableJob>;
 template class PrivateImplementationPattern<resolver::PretendJob>;
 template class PrivateImplementationPattern<resolver::FetchJob>;

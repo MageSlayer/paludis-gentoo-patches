@@ -135,13 +135,13 @@ namespace
                 Log::get_instance()->message("resolver.orderer.job.nothing_no_change", ll_debug, lc_no_context)
                     << "taken " << resolution->resolvent() << " nothing no change";
 
-                const std::tr1::shared_ptr<NoChangeJob> no_change_job(new NoChangeJob(resolution));
-                lists->jobs()->add(no_change_job);
-                lists->unordered_job_ids()->push_back(no_change_job->id());
+                const std::tr1::shared_ptr<UsableJob> usable_job(new UsableJob(resolution));
+                lists->jobs()->add(usable_job);
+                lists->unordered_job_ids()->push_back(usable_job->id());
 
                 /* we want to do all of these as part of the main build process,
                  * not at pretend time */
-                no_change_job->arrows()->push_back(make_named_values<Arrow>(
+                usable_job->arrows()->push_back(make_named_values<Arrow>(
                             value_for<n::comes_after>(common_jobs.done_pretends()->id()),
                             value_for<n::maybe_reason>(make_null_shared_ptr())
                             ));
@@ -160,13 +160,13 @@ namespace
                 Log::get_instance()->message("resolver.orderer.job.existing_no_change", ll_debug, lc_no_context)
                     << "taken " << resolution->resolvent() << " existing no change";
 
-                const std::tr1::shared_ptr<NoChangeJob> no_change_job(new NoChangeJob(resolution));
-                lists->jobs()->add(no_change_job);
-                lists->unordered_job_ids()->push_back(no_change_job->id());
+                const std::tr1::shared_ptr<UsableJob> usable_job(new UsableJob(resolution));
+                lists->jobs()->add(usable_job);
+                lists->unordered_job_ids()->push_back(usable_job->id());
 
                 /* we want to do all of these as part of the main build process,
                  * not at pretend time */
-                no_change_job->arrows()->push_back(make_named_values<Arrow>(
+                usable_job->arrows()->push_back(make_named_values<Arrow>(
                             value_for<n::comes_after>(common_jobs.done_pretends()->id()),
                             value_for<n::maybe_reason>(make_null_shared_ptr())
                             ));
@@ -489,12 +489,6 @@ namespace
             add_dep_arrows(false, c.resolution());
         }
 
-        void visit(const NoChangeJob & c)
-        {
-            /* a dep b dep c, b not changing. we still want c before a. */
-            add_dep_arrows(true, c.resolution());
-        }
-
         void visit(const UsableJob & c)
         {
             add_dep_arrows(true, c.resolution());
@@ -600,13 +594,6 @@ namespace
 
     struct AlreadyMetDep
     {
-        const AlreadyMetFn already_met;
-
-        AlreadyMetDep(const AlreadyMetFn & a) :
-            already_met(a)
-        {
-        }
-
         bool visit(const PresetReason &) const
         {
             return false;
@@ -624,17 +611,12 @@ namespace
 
         bool visit(const DependencyReason & r) const
         {
-            return already_met(r.sanitised_dependency().spec());
+            return r.already_met();
         }
     };
 
     struct Pass2Ignorable
     {
-        bool visit(const NoChangeJob &) const
-        {
-            return true;
-        }
-
         bool visit(const UsableJob &) const
         {
             return true;
@@ -693,8 +675,7 @@ Orderer::_can_order(const JobID & i, const int pass) const
             {
                 /* we can also ignore any arrows that are already met (e.g a
                  * dep b, b dep a, a is already installed */
-                if (a->maybe_reason() && a->maybe_reason()->accept_returning<bool>(
-                            AlreadyMetDep(std::tr1::bind(&Orderer::_already_met, this, std::tr1::placeholders::_1))))
+                if (a->maybe_reason() && a->maybe_reason()->accept_returning<bool>(AlreadyMetDep()))
                     skippable = true;
             }
 
@@ -717,17 +698,5 @@ Orderer::_mark_already_ordered(const JobID & i)
 {
     if (! _imp->already_ordered.insert(i).second)
         throw InternalError(PALUDIS_HERE, "already already ordered");
-}
-
-bool
-Orderer::_already_met(const PackageOrBlockDepSpec & spec) const
-{
-    const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
-                generator::Matches(spec.if_package() ? *spec.if_package() : spec.if_block()->blocking(), MatchPackageOptions()) |
-                filter::InstalledAtRoot(FSEntry("/")))]);
-    if (installed_ids->empty())
-        return spec.if_block();
-    else
-        return spec.if_package();
 }
 

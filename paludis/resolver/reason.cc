@@ -46,12 +46,14 @@ namespace paludis
         const std::tr1::shared_ptr<const PackageID> from_id;
         const Resolvent from_resolvent;
         const SanitisedDependency dep;
+        const bool already_met;
 
         Implementation(const std::tr1::shared_ptr<const PackageID> & i,
-                const Resolvent & r, const SanitisedDependency & d) :
+                const Resolvent & r, const SanitisedDependency & d, const bool a) :
             from_id(i),
             from_resolvent(r),
-            dep(d)
+            dep(d),
+            already_met(a)
         {
         }
     };
@@ -59,8 +61,9 @@ namespace paludis
 
 DependencyReason::DependencyReason(const std::tr1::shared_ptr<const PackageID> & i,
         const Resolvent & r,
-        const SanitisedDependency & d) :
-    PrivateImplementationPattern<DependencyReason>(new Implementation<DependencyReason>(i, r, d))
+        const SanitisedDependency & d,
+        const bool a) :
+    PrivateImplementationPattern<DependencyReason>(new Implementation<DependencyReason>(i, r, d, a))
 {
 }
 
@@ -86,10 +89,17 @@ DependencyReason::sanitised_dependency() const
     return _imp->dep;
 }
 
+bool
+DependencyReason::already_met() const
+{
+    return _imp->already_met;
+}
+
 void
 DependencyReason::serialise(Serialiser & s) const
 {
     s.object("DependencyReason")
+        .member(SerialiserFlags<>(), "already_met", already_met())
         .member(SerialiserFlags<serialise::might_be_null>(), "from_id", from_id())
         .member(SerialiserFlags<>(), "from_resolvent", from_resolvent())
         .member(SerialiserFlags<>(), "sanitised_dependency", sanitised_dependency())
@@ -177,7 +187,8 @@ Reason::deserialise(Deserialisation & d)
         return make_shared_ptr(new DependencyReason(
                     from_id,
                     v.member<Resolvent>("from_resolvent"),
-                    SanitisedDependency::deserialise(*v.find_remove_member("sanitised_dependency"), from_id))
+                    SanitisedDependency::deserialise(*v.find_remove_member("sanitised_dependency"), from_id),
+                    v.member<bool>("already_met"))
                 );
     }
     else

@@ -52,8 +52,6 @@ namespace paludis
                 bool _can_order(const JobID &, const int pass) const PALUDIS_ATTRIBUTE((warn_unused_result));
                 void _mark_already_ordered(const JobID &);
 
-                bool _already_met(const PackageOrBlockDepSpec &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-
             public:
                 Orderer(
                         const Environment * const,

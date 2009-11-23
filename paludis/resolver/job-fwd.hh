@@ -29,7 +29,6 @@ namespace paludis
         struct SimpleInstallJob;
         struct PretendJob;
         struct FetchJob;
-        struct NoChangeJob;
         struct UsableJob;
         struct SyncPointJob;
         struct UntakenInstallJob;
