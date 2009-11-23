@@ -42,9 +42,13 @@ namespace paludis
 
                 void add(const std::tr1::shared_ptr<Job> &);
 
-                bool have_job_for_building(const Resolvent &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool have_job_for_installed(const Resolvent &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                const JobID find_id_for_building(const Resolvent &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const JobID find_id_for_installed(const Resolvent &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                bool have_job_for_usable(const Resolvent &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const JobID find_id_for_usable(const Resolvent &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::tr1::shared_ptr<Job> fetch(
                         const JobID &) PALUDIS_ATTRIBUTE((warn_unused_result));

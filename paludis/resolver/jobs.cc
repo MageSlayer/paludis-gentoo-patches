@@ -72,6 +72,11 @@ namespace
             jobs_list_by_resolvent_index.insert(std::make_pair(j.resolution()->resolvent(), i));
         }
 
+        void visit(const UsableJob & j)
+        {
+            jobs_list_by_resolvent_index.insert(std::make_pair(j.resolution()->resolvent(), i));
+        }
+
         void visit(const SimpleInstallJob & j)
         {
             jobs_list_by_resolvent_index.insert(std::make_pair(j.resolution()->resolvent(), i));
@@ -108,7 +113,7 @@ Jobs::add(const std::tr1::shared_ptr<Job> & j)
 
 namespace
 {
-    struct BuildJobChecker
+    struct InstalledJobChecker
     {
         bool visit(const PretendJob &) const
         {
@@ -135,22 +140,65 @@ namespace
             return true;
         }
 
+        bool visit(const UsableJob &) const
+        {
+            return false;
+        }
+
         bool visit(const SimpleInstallJob &) const
         {
             return true;
         }
     };
+
+    struct UsableJobChecker
+    {
+        bool visit(const PretendJob &) const
+        {
+            return false;
+        }
+
+        bool visit(const SyncPointJob &) const
+        {
+            return false;
+        }
+
+        bool visit(const FetchJob &) const
+        {
+            return false;
+        }
+
+        bool visit(const UntakenInstallJob &) const
+        {
+            return true;
+        }
+
+        bool visit(const NoChangeJob &) const
+        {
+            return true;
+        }
+
+        bool visit(const UsableJob &) const
+        {
+            return true;
+        }
+
+        bool visit(const SimpleInstallJob &) const
+        {
+            return false;
+        }
+    };
 }
 
 const JobID
-Jobs::find_id_for_building(const Resolvent & r) const
+Jobs::find_id_for_installed(const Resolvent & r) const
 {
     std::pair<JobsListByResolventIndex::const_iterator, JobsListByResolventIndex::const_iterator> candidates(
                 _imp->jobs_list_by_resolvent_index.equal_range(r));
 
     for ( ; candidates.first != candidates.second ; ++candidates.first)
     {
-        if ((*candidates.first->second)->accept_returning<bool>(BuildJobChecker()))
+        if ((*candidates.first->second)->accept_returning<bool>(InstalledJobChecker()))
             return (*candidates.first->second)->id();
     }
 
@@ -158,14 +206,44 @@ Jobs::find_id_for_building(const Resolvent & r) const
 }
 
 bool
-Jobs::have_job_for_building(const Resolvent & r) const
+Jobs::have_job_for_installed(const Resolvent & r) const
 {
     std::pair<JobsListByResolventIndex::const_iterator, JobsListByResolventIndex::const_iterator> candidates(
                 _imp->jobs_list_by_resolvent_index.equal_range(r));
 
     for ( ; candidates.first != candidates.second ; ++candidates.first)
     {
-        if ((*candidates.first->second)->accept_returning<bool>(BuildJobChecker()))
+        if ((*candidates.first->second)->accept_returning<bool>(InstalledJobChecker()))
+            return true;
+    }
+
+    return false;
+}
+
+const JobID
+Jobs::find_id_for_usable(const Resolvent & r) const
+{
+    std::pair<JobsListByResolventIndex::const_iterator, JobsListByResolventIndex::const_iterator> candidates(
+                _imp->jobs_list_by_resolvent_index.equal_range(r));
+
+    for ( ; candidates.first != candidates.second ; ++candidates.first)
+    {
+        if ((*candidates.first->second)->accept_returning<bool>(UsableJobChecker()))
+            return (*candidates.first->second)->id();
+    }
+
+    throw InternalError(PALUDIS_HERE, "no build job for " + stringify(r));
+}
+
+bool
+Jobs::have_job_for_usable(const Resolvent & r) const
+{
+    std::pair<JobsListByResolventIndex::const_iterator, JobsListByResolventIndex::const_iterator> candidates(
+                _imp->jobs_list_by_resolvent_index.equal_range(r));
+
+    for ( ; candidates.first != candidates.second ; ++candidates.first)
+    {
+        if ((*candidates.first->second)->accept_returning<bool>(UsableJobChecker()))
             return true;
     }
 

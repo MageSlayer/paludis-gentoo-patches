@@ -138,5 +138,43 @@ namespace test_cases
             }
         }
     } test_existing_usable;
+
+    struct TestMutualRunDeps : ResolverCyclesTestCase
+    {
+        TestMutualRunDeps() : ResolverCyclesTestCase("mutual-run-deps") { }
+
+        void run()
+        {
+            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("mutual-run-deps/target"));
+
+            {
+                TestMessageSuffix s("errors");
+                check_resolution_list(resolutions->jobs(), resolutions->error_resolutions(), ResolutionListChecks()
+                        .finished()
+                        );
+            }
+
+            {
+                TestMessageSuffix s("ordered");
+                check_resolution_list(resolutions->jobs(), resolutions->ordered_job_ids(), ResolutionListChecks()
+                        .qpn(QualifiedPackageName("mutual-run-deps/dep-a"))
+                        .qpn(QualifiedPackageName("mutual-run-deps/dep-b"))
+                        .qpn(QualifiedPackageName("mutual-run-deps/dep-c"))
+                        .qpn(QualifiedPackageName("mutual-run-deps/target"))
+                        .finished()
+                        );
+            }
+        }
+    } test_mutual_run_deps;
+
+    struct TestMutualBuildDeps : ResolverCyclesTestCase
+    {
+        TestMutualBuildDeps() : ResolverCyclesTestCase("mutual-build-deps") { }
+
+        void run()
+        {
+            TEST_CHECK_THROWS(get_resolutions("mutual-build-deps/target"), Exception);
+        }
+    } test_mutual_build_deps;
 }
 

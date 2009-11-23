@@ -386,6 +386,12 @@ namespace
         }
 
         const std::tr1::shared_ptr<const Resolution> visit(
+                const UsableJob &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::tr1::shared_ptr<const Resolution> visit(
                 const PretendJob &) const
         {
             return make_null_shared_ptr();

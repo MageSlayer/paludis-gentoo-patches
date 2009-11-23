@@ -47,6 +47,19 @@ namespace paludis
     };
 
     template <>
+    struct Implementation<UsableJob>
+    {
+        const std::tr1::shared_ptr<const Resolution> resolution;
+        const std::tr1::shared_ptr<ArrowSequence> arrows;
+
+        Implementation(const std::tr1::shared_ptr<const Resolution> & r) :
+            resolution(r),
+            arrows(new ArrowSequence)
+        {
+        }
+    };
+
+    template <>
     struct Implementation<PretendJob>
     {
         const std::tr1::shared_ptr<const Resolution> resolution;
@@ -150,6 +163,14 @@ Job::deserialise(Deserialisation & d)
                     ));
         do_arrows(result, v);
     }
+    else if (d.class_name() == "UsableJob")
+    {
+        Deserialisator v(d, "UsableJob");
+        result.reset(new UsableJob(
+                    v.member<std::tr1::shared_ptr<Resolution> >("resolution")
+                    ));
+        do_arrows(result, v);
+    }
     else if (d.class_name() == "SimpleInstallJob")
     {
         Deserialisator v(d, "SimpleInstallJob");
@@ -232,6 +253,44 @@ void
 NoChangeJob::serialise(Serialiser & s) const
 {
     s.object("NoChangeJob")
+        .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "arrows", arrows())
+        .member(SerialiserFlags<serialise::might_be_null>(), "resolution", resolution())
+        ;
+}
+
+UsableJob::UsableJob(const std::tr1::shared_ptr<const Resolution> & r) :
+    PrivateImplementationPattern<UsableJob>(new Implementation<UsableJob>(r))
+{
+}
+
+UsableJob::~UsableJob()
+{
+}
+
+const std::tr1::shared_ptr<const Resolution>
+UsableJob::resolution() const
+{
+    return _imp->resolution;
+}
+
+const std::tr1::shared_ptr<ArrowSequence>
+UsableJob::arrows() const
+{
+    return _imp->arrows;
+}
+
+const JobID
+UsableJob::id() const
+{
+    return make_named_values<JobID>(
+            value_for<n::string_id>("o:" + stringify(resolution()->resolvent()))
+            );
+}
+
+void
+UsableJob::serialise(Serialiser & s) const
+{
+    s.object("UsableJob")
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "arrows", arrows())
         .member(SerialiserFlags<serialise::might_be_null>(), "resolution", resolution())
         ;
@@ -452,6 +511,7 @@ SyncPointJob::serialise(Serialiser & s) const
 }
 
 template class PrivateImplementationPattern<resolver::NoChangeJob>;
+template class PrivateImplementationPattern<resolver::UsableJob>;
 template class PrivateImplementationPattern<resolver::PretendJob>;
 template class PrivateImplementationPattern<resolver::FetchJob>;
 template class PrivateImplementationPattern<resolver::SimpleInstallJob>;

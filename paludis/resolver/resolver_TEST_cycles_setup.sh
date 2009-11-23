@@ -60,5 +60,75 @@ SLOT="0"
 DEPENDENCIES="existing-usable/target"
 END
 
+# mutual-run-deps
+echo 'mutual-run-deps' >> metadata/categories.conf
+
+mkdir -p 'packages/mutual-run-deps/target'
+cat <<END > packages/mutual-run-deps/target/target-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="mutual-run-deps/dep-a"
+END
+
+mkdir -p 'packages/mutual-run-deps/dep-a'
+cat <<END > packages/mutual-run-deps/dep-a/dep-a-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="run: mutual-run-deps/dep-b mutual-run-deps/dep-c"
+END
+
+mkdir -p 'packages/mutual-run-deps/dep-b'
+cat <<END > packages/mutual-run-deps/dep-b/dep-b-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="run: mutual-run-deps/dep-a"
+END
+
+mkdir -p 'packages/mutual-run-deps/dep-c'
+cat <<END > packages/mutual-run-deps/dep-c/dep-c-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="run: mutual-run-deps/dep-b"
+END
+
+# mutual-build-deps
+echo 'mutual-build-deps' >> metadata/categories.conf
+
+mkdir -p 'packages/mutual-build-deps/target'
+cat <<END > packages/mutual-build-deps/target/target-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="mutual-build-deps/dep-a"
+END
+
+mkdir -p 'packages/mutual-build-deps/dep-a'
+cat <<END > packages/mutual-build-deps/dep-a/dep-a-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="build: mutual-build-deps/dep-b mutual-build-deps/dep-c"
+END
+
+mkdir -p 'packages/mutual-build-deps/dep-b'
+cat <<END > packages/mutual-build-deps/dep-b/dep-b-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="build: mutual-build-deps/dep-a"
+END
+
+mkdir -p 'packages/mutual-build-deps/dep-c'
+cat <<END > packages/mutual-build-deps/dep-c/dep-c-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="build: mutual-build-deps/dep-b"
+END
+
 cd ..
 

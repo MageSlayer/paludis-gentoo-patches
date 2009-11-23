@@ -304,6 +304,10 @@ namespace
         {
         }
 
+        void visit(const UsableJob &)
+        {
+        }
+
         void visit(const SyncPointJob &)
         {
         }
@@ -438,6 +442,11 @@ namespace
         }
 
         bool visit(const NoChangeJob &)
+        {
+            return true;
+        }
+
+        bool visit(const UsableJob &)
         {
             return true;
         }

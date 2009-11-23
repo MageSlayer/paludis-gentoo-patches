@@ -39,7 +39,7 @@ namespace paludis
     {
         class PALUDIS_VISIBLE Job :
             public virtual DeclareAbstractAcceptMethods<Job, MakeTypeList<
-                NoChangeJob, SimpleInstallJob, PretendJob, FetchJob, UntakenInstallJob, SyncPointJob>::Type>
+                NoChangeJob, UsableJob, SimpleInstallJob, PretendJob, FetchJob, UntakenInstallJob, SyncPointJob>::Type>
         {
             public:
                 virtual ~Job() = 0;
@@ -64,6 +64,25 @@ namespace paludis
             public:
                 NoChangeJob(const std::tr1::shared_ptr<const Resolution> &);
                 ~NoChangeJob();
+
+                virtual const JobID id() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<ArrowSequence> arrows()
+                    const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const std::tr1::shared_ptr<const Resolution> resolution() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual void serialise(Serialiser &) const;
+        };
+
+        class PALUDIS_VISIBLE UsableJob :
+            public Job,
+            public ImplementAcceptMethods<Job, UsableJob>,
+            private PrivateImplementationPattern<UsableJob>
+        {
+            public:
+                UsableJob(const std::tr1::shared_ptr<const Resolution> &);
+                ~UsableJob();
 
                 virtual const JobID id() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -182,6 +201,7 @@ namespace paludis
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<resolver::NoChangeJob>;
+    extern template class PrivateImplementationPattern<resolver::UsableJob>;
     extern template class PrivateImplementationPattern<resolver::PretendJob>;
     extern template class PrivateImplementationPattern<resolver::FetchJob>;
     extern template class PrivateImplementationPattern<resolver::SimpleInstallJob>;

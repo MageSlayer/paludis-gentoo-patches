@@ -200,6 +200,10 @@ namespace
                 lists->jobs()->add(install_job);
                 lists->unordered_job_ids()->push_back(install_job->id());
 
+                const std::tr1::shared_ptr<UsableJob> usable_job(new UsableJob(resolution));
+                lists->jobs()->add(usable_job);
+                lists->unordered_job_ids()->push_back(usable_job->id());
+
                 /* we can't do any fetches or installs until all pretends have passed */
                 fetch_job->arrows()->push_back(make_named_values<Arrow>(
                             value_for<n::comes_after>(common_jobs.done_pretends()->id()),
@@ -217,15 +221,23 @@ namespace
                             value_for<n::maybe_reason>(make_null_shared_ptr())
                             ));
 
-                /* we haven't done all our installs until we've done our install */
+                /* we haven't done all our installs until we're usable
+                 * (arguably this should just be install rather than usable,
+                 * but the stronger requirement doesn't seem to hurt */
                 common_jobs.done_installs()->arrows()->push_back(make_named_values<Arrow>(
-                            value_for<n::comes_after>(install_job->id()),
+                            value_for<n::comes_after>(usable_job->id()),
                             value_for<n::maybe_reason>(make_null_shared_ptr())
                             ));
 
                 /* we can't install until we've fetched */
                 install_job->arrows()->push_back(make_named_values<Arrow>(
                             value_for<n::comes_after>(fetch_job->id()),
+                            value_for<n::maybe_reason>(make_null_shared_ptr())
+                            ));
+
+                /* we aren't usable until we've been installed */
+                usable_job->arrows()->push_back(make_named_values<Arrow>(
+                            value_for<n::comes_after>(install_job->id()),
                             value_for<n::maybe_reason>(make_null_shared_ptr())
                             ));
             }
@@ -344,15 +356,18 @@ namespace
     struct DepArrowsAdder
     {
         const std::tr1::shared_ptr<Jobs> jobs;
-        const JobID we_are_usable_identifier;
+        const JobID our_identifier;
+        const bool is_usable;
         const std::tr1::shared_ptr<const Reason> reason;
 
         DepArrowsAdder(
                 const std::tr1::shared_ptr<Jobs> & j,
                 const JobID & i,
+                const bool u,
                 const std::tr1::shared_ptr<const Reason> & r) :
             jobs(j),
-            we_are_usable_identifier(i),
+            our_identifier(i),
+            is_usable(u),
             reason(r)
         {
         }
@@ -372,19 +387,9 @@ namespace
 
         void visit(const DependencyReason & r) const
         {
-            Context context("When adding arrows for job '" + stringify(we_are_usable_identifier.string_id())
+            Context context("When adding arrows for job '" + stringify(our_identifier.string_id())
                     + "' with reason '" + stringify(r.sanitised_dependency().spec())
                     + "' from '" + stringify(r.from_resolvent()) + "':");
-
-            /* we might not be changing anything (e.g. for a blocker), or we
-             * might be a dependency that got cancelled out later when
-             * something was changed from a decision to an error. */
-            if (! jobs->have_job_for_building(r.from_resolvent()))
-            {
-                Log::get_instance()->message("resolver.orderer.job.no_job_for_building", ll_warning, lc_context)
-                    << "No job for building '" << r.from_resolvent() << "'. Verify manually that this is sane for now.";
-                return;
-            }
 
             if (r.sanitised_dependency().spec().if_block())
             {
@@ -393,11 +398,21 @@ namespace
                  * that make matters worse with silly Gentoo KDE blockers? */
                 if (r.sanitised_dependency().spec().if_block()->strong())
                 {
+                    /* we might not be changing anything (e.g. for a blocker), or we
+                     * might be a dependency that got cancelled out later when
+                     * something was changed from a decision to an error. */
+                    if (! jobs->have_job_for_installed(r.from_resolvent()))
+                    {
+                        Log::get_instance()->message("resolver.orderer.job.no_job_for_installed", ll_warning, lc_context)
+                            << "No job for building '" << r.from_resolvent() << "'. Verify manually that this is sane for now.";
+                        return;
+                    }
+
                     /* todo: this should probably only cause an arrow if the
                      * blocker is currently met */
-                    jobs->fetch(jobs->find_id_for_building(r.from_resolvent()))->arrows()->push_back(
+                    jobs->fetch(jobs->find_id_for_installed(r.from_resolvent()))->arrows()->push_back(
                             make_named_values<Arrow>(
-                                value_for<n::comes_after>(we_are_usable_identifier),
+                                value_for<n::comes_after>(our_identifier),
                                 value_for<n::maybe_reason>(reason)
                                 ));
                 }
@@ -412,11 +427,37 @@ namespace
 
                 if (v.build || v.run)
                 {
-                    jobs->fetch(jobs->find_id_for_building(r.from_resolvent()))->arrows()->push_back(
-                            make_named_values<Arrow>(
-                                value_for<n::comes_after>(we_are_usable_identifier),
-                                value_for<n::maybe_reason>(reason)
-                                ));
+                    /* we might not be changing anything (e.g. for a blocker), or we
+                     * might be a dependency that got cancelled out later when
+                     * something was changed from a decision to an error. */
+                    if (! jobs->have_job_for_usable(r.from_resolvent()))
+                    {
+                        Log::get_instance()->message("resolver.orderer.job.no_job_for_usable", ll_warning, lc_context)
+                            << "No job for building '" << r.from_resolvent() << "'. Verify manually that this is sane for now.";
+                        return;
+                    }
+
+                    if (v.build)
+                    {
+                        /* build: we must be usable before the other package is built */
+                        if (is_usable)
+                            jobs->fetch(jobs->find_id_for_installed(r.from_resolvent()))->arrows()->push_back(
+                                    make_named_values<Arrow>(
+                                        value_for<n::comes_after>(our_identifier),
+                                        value_for<n::maybe_reason>(reason)
+                                        ));
+                    }
+
+                    if (v.run)
+                    {
+                        /* run: we must be usable before the other package is usable */
+                        if (is_usable)
+                            jobs->fetch(jobs->find_id_for_usable(r.from_resolvent()))->arrows()->push_back(
+                                    make_named_values<Arrow>(
+                                        value_for<n::comes_after>(our_identifier),
+                                        value_for<n::maybe_reason>(reason)
+                                        ));
+                    }
                 }
             }
         }
@@ -425,33 +466,38 @@ namespace
     struct DepArrowHandler
     {
         const std::tr1::shared_ptr<Jobs> jobs;
-        const JobID we_are_usable_identifier;
+        const JobID our_identifier;
 
         DepArrowHandler(
                 const std::tr1::shared_ptr<Jobs> & j,
                 const JobID & i) :
             jobs(j),
-            we_are_usable_identifier(i)
+            our_identifier(i)
         {
         }
 
-        void add_dep_arrows(const std::tr1::shared_ptr<const Resolution> & r)
+        void add_dep_arrows(const bool u, const std::tr1::shared_ptr<const Resolution> & r)
         {
             for (Constraints::ConstIterator c(r->constraints()->begin()), c_end(r->constraints()->end()) ;
                     c != c_end ; ++c)
                 if ((*c)->reason())
-                    (*c)->reason()->accept(DepArrowsAdder(jobs, we_are_usable_identifier, (*c)->reason()));
+                    (*c)->reason()->accept(DepArrowsAdder(jobs, our_identifier, u, (*c)->reason()));
         }
 
         void visit(const SimpleInstallJob & c)
         {
-            add_dep_arrows(c.resolution());
+            add_dep_arrows(false, c.resolution());
         }
 
         void visit(const NoChangeJob & c)
         {
             /* a dep b dep c, b not changing. we still want c before a. */
-            add_dep_arrows(c.resolution());
+            add_dep_arrows(true, c.resolution());
+        }
+
+        void visit(const UsableJob & c)
+        {
+            add_dep_arrows(true, c.resolution());
         }
 
         void visit(const FetchJob &)
@@ -581,6 +627,44 @@ namespace
             return already_met(r.sanitised_dependency().spec());
         }
     };
+
+    struct Pass2Ignorable
+    {
+        bool visit(const NoChangeJob &) const
+        {
+            return true;
+        }
+
+        bool visit(const UsableJob &) const
+        {
+            return true;
+        }
+
+        bool visit(const PretendJob &) const
+        {
+            return false;
+        }
+
+        bool visit(const SyncPointJob &) const
+        {
+            return false;
+        }
+
+        bool visit(const FetchJob &) const
+        {
+            return false;
+        }
+
+        bool visit(const UntakenInstallJob &) const
+        {
+            return false;
+        }
+
+        bool visit(const SimpleInstallJob &) const
+        {
+            return false;
+        }
+    };
 }
 
 bool
@@ -596,11 +680,12 @@ Orderer::_can_order(const JobID & i, const int pass) const
 
             if ((! skippable) && (pass >= 2))
             {
-                /* if our job is a NoChangeJob, and we're supposed to come
-                 * after a NoChangeJob, ignore the arrow. */
+                /* if our job is a NoChangeJob or a UsableJob, and we're
+                 * supposed to come after a NoChangeJob or a UsableJob, ignore
+                 * the arrow. */
                 const std::tr1::shared_ptr<const Job> other_job(_imp->lists->jobs()->fetch(a->comes_after()));
-                if (simple_visitor_cast<const NoChangeJob>(*job) &&
-                        simple_visitor_cast<const NoChangeJob>(*other_job))
+                if (job->accept_returning<bool>(Pass2Ignorable()) &&
+                        other_job->accept_returning<bool>(Pass2Ignorable()))
                     skippable = true;
             }
 
