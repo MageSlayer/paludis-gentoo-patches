@@ -224,7 +224,7 @@ emagicdocs()
 
 edo()
 {
-    echo "$@"
+    echo "$@" 1>&2
     "$@" || paludis_die_unless_nonfatal "$* failed" || return 247
 }
 
