@@ -555,8 +555,18 @@ Orderer::_resolve_order()
             _mark_already_ordered(*i);
 
             if (pass >= 3)
+            {
+                std::stringstream s;
+                const std::tr1::shared_ptr<const Job> job(_imp->lists->jobs()->fetch(*i));
+                for (ArrowSequence::ConstIterator a(job->arrows()->begin()), a_end(job->arrows()->end()) ;
+                        a != a_end ; ++a)
+                    if (! _already_ordered(a->comes_after()))
+                        s << " " << a->comes_after().string_id();
+
                 Log::get_instance()->message("resolver.orderer.job.broke_cycle", ll_warning, lc_context)
-                    << "Had to use cycle breaking to order " << i->string_id() << " (pass " << pass << ")";
+                    << "Had to use cycle breaking to order " << i->string_id() << " (pass " << pass
+                    << ", remaining arrows are" << s.str() << ")";
+            }
 
             pass = 1;
         }
