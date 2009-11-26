@@ -52,7 +52,6 @@ namespace paludis
     class PALUDIS_VISIBLE ERepository :
         public Repository,
         public RepositoryEnvironmentVariableInterface,
-        public RepositoryMirrorsInterface,
         public RepositoryVirtualsInterface,
         public RepositoryDestinationInterface,
         public RepositoryManifestInterface,
@@ -86,14 +85,6 @@ namespace paludis
             virtual void invalidate_masks();
 
             virtual void purge_invalid_cache() const;
-
-            /* RepositoryMirrorsInterface */
-
-            virtual MirrorsConstIterator begin_mirrors(const std::string & s) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual MirrorsConstIterator end_mirrors(const std::string & s) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* RepositoryVirtualsInterface */
 

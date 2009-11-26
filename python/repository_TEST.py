@@ -111,10 +111,6 @@ class TestCase_02_RepositoryInterfaces(unittest.TestCase):
         evi = repo.environment_variable_interface
         self.assert_(isinstance(evi, RepositoryEnvironmentVariableInterface))
 
-    def test_07_mirrors_interface(self):
-        mi = repo.mirrors_interface
-        self.assert_(isinstance(mi, RepositoryMirrorsInterface))
-
     def test_08_provides_interface(self):
         pi = irepo.provides_interface
         self.assert_(isinstance(pi, RepositoryProvidesInterface))

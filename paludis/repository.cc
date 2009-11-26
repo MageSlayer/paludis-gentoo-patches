@@ -55,9 +55,6 @@ template class Sequence<RepositoryProvidesEntry>;
 template class WrappedForwardIterator<Sequence<RepositoryProvidesEntry>::ConstIteratorTag, const RepositoryProvidesEntry>;
 template class WrappedOutputIterator<Sequence<RepositoryProvidesEntry>::InserterTag, RepositoryProvidesEntry>;
 
-template class WrappedForwardIterator<RepositoryMirrorsInterface::MirrorsConstIteratorTag,
-         const std::pair<const std::string, std::string> >;
-
 NoSuchSetError::NoSuchSetError(const std::string & our_name) throw () :
     Exception("Could not find '" + our_name + "'"),
     _name(our_name)
@@ -187,10 +184,6 @@ RepositoryEnvironmentVariableInterface::~RepositoryEnvironmentVariableInterface(
 {
 }
 
-RepositoryMirrorsInterface::~RepositoryMirrorsInterface()
-{
-}
-
 RepositoryProvidesInterface::~RepositoryProvidesInterface()
 {
 }
@@ -209,12 +202,6 @@ RepositoryMakeVirtualsInterface::~RepositoryMakeVirtualsInterface()
 
 RepositoryManifestInterface::~RepositoryManifestInterface()
 {
-}
-
-bool
-RepositoryMirrorsInterface::is_mirror(const std::string & s) const
-{
-    return begin_mirrors(s) != end_mirrors(s);
 }
 
 bool

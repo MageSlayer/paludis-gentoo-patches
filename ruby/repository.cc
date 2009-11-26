@@ -320,14 +320,6 @@ namespace
      * Returns self if the repository supports the interface, otherwise Nil.
      */
     /*
-     * Document-method: mirrors_interface
-     *
-     * call-seq:
-     *     mirrors_interface -> self or Nil
-     *
-     * Returns self if the repository supports the interface, otherwise Nil.
-     */
-    /*
      * Document-method: environment_variable_interface
      *
      * call-seq:
@@ -618,43 +610,6 @@ namespace
         return Qnil;
     }
 
-    /*
-     * call-seq:
-     *     is_mirror?(mirror_name) -> true or false
-     *
-     * Is the named item a mirror?
-     */
-    VALUE
-    repository_is_mirror(VALUE self, VALUE mirror)
-    {
-        std::tr1::shared_ptr<Repository> * self_ptr;
-        Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
-        if ((**self_ptr).mirrors_interface())
-            return (**self_ptr).mirrors_interface()->is_mirror(StringValuePtr(mirror)) ? Qtrue : Qfalse;
-        return Qnil;
-    }
-
-    /*
-     * call-seq:
-     *     mirrors(mirror_name) -> Array
-     *
-     * Return the mirror URI prefixes for a named mirror.
-     */
-    VALUE
-    repository_mirrors(VALUE self, VALUE mirror)
-    {
-        std::tr1::shared_ptr<Repository> * self_ptr;
-        Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
-        if (!(**self_ptr).mirrors_interface())
-            return Qnil;
-        VALUE result(rb_ary_new());
-        for (RepositoryMirrorsInterface::MirrorsConstIterator m((**self_ptr).mirrors_interface()->begin_mirrors(StringValuePtr(mirror))),
-                    m_end((**self_ptr).mirrors_interface()->end_mirrors(StringValuePtr(mirror))) ;
-                    m != m_end ; ++m)
-            rb_ary_push(result, rb_str_new2((m->second).c_str()));
-        return result;
-    }
-
     void do_register_repository()
     {
         /*
@@ -675,8 +630,6 @@ namespace
         rb_define_method(c_repository, "package_names", RUBY_FUNC_CAST(&repository_package_names), 1);
         rb_define_method(c_repository, "package_ids", RUBY_FUNC_CAST(&repository_package_ids), 1);
 
-        rb_define_method(c_repository, "mirrors_interface", RUBY_FUNC_CAST((&Interface<
-                        n::mirrors_interface, RepositoryMirrorsInterface, &Repository::mirrors_interface>::fetch)), 0);
         rb_define_method(c_repository, "environment_variable_interface", RUBY_FUNC_CAST((&Interface<
                         n::environment_variable_interface, RepositoryEnvironmentVariableInterface, &Repository::environment_variable_interface>::fetch)), 0);
         rb_define_method(c_repository, "provides_interface", RUBY_FUNC_CAST((&Interface<
@@ -694,9 +647,6 @@ namespace
         rb_define_method(c_repository, "installed_root_key",
                 RUBY_FUNC_CAST((&RepositoryKey<MetadataValueKey<FSEntry>, &Repository::installed_root_key>::fetch)), 0);
         rb_define_method(c_repository, "get_environment_variable", RUBY_FUNC_CAST(&repository_get_environment_variable), 2);
-
-        rb_define_method(c_repository, "is_mirror?", RUBY_FUNC_CAST(&repository_is_mirror), 1);
-        rb_define_method(c_repository, "mirrors", RUBY_FUNC_CAST(&repository_mirrors), 1);
 
         /*
          * Document-class: Paludis::FakeRepositoryBase

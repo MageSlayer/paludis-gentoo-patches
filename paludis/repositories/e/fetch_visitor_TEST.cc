@@ -42,6 +42,20 @@ using namespace test;
 using namespace paludis;
 using namespace paludis::erepository;
 
+namespace
+{
+    const std::tr1::shared_ptr<const MirrorsSequence>
+    get_mirrors_fn(const std::string & m)
+    {
+        const std::tr1::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
+        if (m == "repo")
+            result->push_back("http://fake-repo/fake-repo/");
+        if (m == "example")
+            result->push_back("http://fake-example/fake-example/");
+        return result;
+    }
+}
+
 namespace test_cases
 {
     struct FetchVisitorTest : TestCase
@@ -67,7 +81,7 @@ namespace test_cases
                                 &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin(),
                     *eapi, FSEntry("fetch_visitor_TEST_dir/out"),
                     false, false, "test", make_shared_ptr(new URIListedThenMirrorsLabel("listed-then-mirrors")), false,
-                    make_shared_ptr(new StandardOutputManager));
+                    make_shared_ptr(new StandardOutputManager), get_mirrors_fn);
             parse_fetchable_uri("file:///" + stringify(FSEntry("fetch_visitor_TEST_dir/in/input1").realpath()), &env, id, *eapi)->root()->accept(v);
 
             TEST_CHECK(FSEntry("fetch_visitor_TEST_dir/out/input1").is_regular_file());

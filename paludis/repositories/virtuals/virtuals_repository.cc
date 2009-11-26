@@ -126,7 +126,6 @@ VirtualsRepository::VirtualsRepository(const Environment * const env) :
                 value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
                 value_for<n::make_virtuals_interface>(this),
                 value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
-                value_for<n::mirrors_interface>(static_cast<RepositoryMirrorsInterface *>(0)),
                 value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
                 value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
             )),

@@ -166,7 +166,7 @@ module Paludis
         def test_responds
             repo = no_config_testrepo.main_repository
             [
-                :mirrors_interface, :environment_variable_interface,
+                :environment_variable_interface,
                 :provides_interface, :virtuals_interface].each do |sym|
                 assert_respond_to repo, sym
             end
@@ -174,7 +174,7 @@ module Paludis
 
         def test_interfaces
             assert_equal installed_repo.name, installed_repo.provides_interface.name
-            assert_nil installed_repo.mirrors_interface
+            assert_nil installed_repo.virtuals_interface
         end
 
         def text_repository_environment_interface
@@ -226,31 +226,6 @@ module Paludis
             assert_kind_of ContentsSymEntry, entries[2]
             assert_equal '/test/test_file', entries[2].target_key.value
             assert_equal '/test/test_link', entries[2].location_key.value
-        end
-    end
-
-    class TestCase_RepositoryMirrorsInterface < Test::Unit::TestCase
-        include RepositoryTestCase
-
-        def test_responds
-            repo = no_config_testrepo.main_repository
-            [:is_mirror?, :mirrors].each do |sym|
-                assert_respond_to repo, sym
-            end
-        end
-
-        def test_is_mirror?
-            repo = no_config_testrepo.main_repository
-            assert repo.is_mirror?('cat')
-            assert !repo.is_mirror?('dog')
-        end
-
-        def test_mirrors
-            cat_mirrors = repo.mirrors('cat')
-            assert_equal 2, cat_mirrors.length
-            assert cat_mirrors.include?('http://a')
-            assert cat_mirrors.include?('http://b')
-            assert repo.mirrors('dog').empty?
         end
     end
 

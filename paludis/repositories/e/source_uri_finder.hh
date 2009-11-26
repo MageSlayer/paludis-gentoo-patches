@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,11 +26,14 @@
 #include <paludis/dep_label.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/repository-fwd.hh>
+#include <tr1/functional>
 
 namespace paludis
 {
     namespace erepository
     {
+        typedef std::tr1::function<std::tr1::shared_ptr<const MirrorsSequence> (const std::string &)> GetMirrorsFunction;
+
         class PALUDIS_VISIBLE SourceURIFinder :
             private PrivateImplementationPattern<SourceURIFinder>
         {
@@ -44,7 +47,8 @@ namespace paludis
                         const Repository * const repo,
                         const std::string & url,
                         const std::string & filename,
-                        const std::string & mirrors_name);
+                        const std::string & mirrors_name,
+                        const GetMirrorsFunction & fn);
 
                 ~SourceURIFinder();
 

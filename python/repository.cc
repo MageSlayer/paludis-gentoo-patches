@@ -39,12 +39,6 @@ struct RepositoryWrapper :
     Repository,
     bp::wrapper<Repository>
 {
-    static RepositoryMirrorsInterface *
-    get_mirrors_interface(const Repository & self)
-    {
-        return self.mirrors_interface();
-    }
-
     static RepositoryEnvironmentVariableInterface *
     get_environment_variable_interface(const Repository & self)
     {
@@ -192,11 +186,6 @@ void expose_repository()
                 "[ro] RepositoryEnvironmentInterface"
                 )
 
-        .add_property("mirrors_interface", bp::make_function(&RepositoryWrapper::get_mirrors_interface,
-                    bp::return_internal_reference<>()),
-                "[ro] RepositoryMirrorsInterface"
-                )
-
         .add_property("virtuals_interface", bp::make_function(&RepositoryWrapper::get_virtuals_interface,
                     bp::return_internal_reference<>()),
                 "[ro] RepositoryVirtualsInterface"
@@ -244,16 +233,6 @@ void expose_repository()
         (
          "RepositoryEnvironmentVariableInterface",
          "Interface for environment variable querying for repositories.",
-         bp::no_init
-        );
-
-    /**
-     * RepositoryMirrorsInterface
-     */
-    bp::class_<RepositoryMirrorsInterface, boost::noncopyable>
-        (
-         "RepositoryMirrorsInterface",
-         "Interface for mirror querying for repositories.",
          bp::no_init
         );
 

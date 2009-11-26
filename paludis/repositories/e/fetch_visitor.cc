@@ -56,6 +56,7 @@ namespace paludis
         std::tr1::shared_ptr<const URILabel> default_label;
         const bool safe_resume;
         const std::tr1::shared_ptr<OutputManager> output_manager;
+        const GetMirrorsFunction get_mirrors_fn;
 
         std::list<const URILabel *> labels;
 
@@ -69,7 +70,8 @@ namespace paludis
                 const std::string & m,
                 const std::tr1::shared_ptr<const URILabel> & n,
                 const bool sr,
-                const std::tr1::shared_ptr<OutputManager> & md) :
+                const std::tr1::shared_ptr<OutputManager> & md,
+                const GetMirrorsFunction & g) :
             env(e),
             id(i),
             eapi(p),
@@ -79,7 +81,8 @@ namespace paludis
             mirrors_name(m),
             default_label(n),
             safe_resume(sr),
-            output_manager(md)
+            output_manager(md),
+            get_mirrors_fn(g)
         {
             labels.push_front(default_label.get());
         }
@@ -96,8 +99,9 @@ FetchVisitor::FetchVisitor(
         const std::string & m,
         const std::tr1::shared_ptr<const URILabel> & n,
         const bool sr,
-        const std::tr1::shared_ptr<OutputManager> & md) :
-    PrivateImplementationPattern<FetchVisitor>(new Implementation<FetchVisitor>(e, i, p, d, f, u, m, n, sr, md))
+        const std::tr1::shared_ptr<OutputManager> & md,
+        const GetMirrorsFunction & g) :
+    PrivateImplementationPattern<FetchVisitor>(new Implementation<FetchVisitor>(e, i, p, d, f, u, m, n, sr, md, g))
 {
 }
 
@@ -151,7 +155,7 @@ FetchVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::T
         throw ActionFailedError("No fetch action label available");
 
     SourceURIFinder source_uri_finder(_imp->env, _imp->id->repository().get(),
-            node.spec()->original_url(), node.spec()->filename(), _imp->mirrors_name);
+            node.spec()->original_url(), node.spec()->filename(), _imp->mirrors_name, _imp->get_mirrors_fn);
     (*_imp->labels.begin())->accept(source_uri_finder);
     for (SourceURIFinder::ConstIterator i(source_uri_finder.begin()), i_end(source_uri_finder.end()) ;
             i != i_end ; ++i)

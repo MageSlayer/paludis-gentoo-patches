@@ -53,8 +53,7 @@ namespace paludis
     class PALUDIS_VISIBLE FakeRepository :
         private PrivateImplementationPattern<FakeRepository>,
         public FakeRepositoryBase,
-        public RepositoryVirtualsInterface,
-        public RepositoryMirrorsInterface
+        public RepositoryVirtualsInterface
     {
         private:
             PrivateImplementationPattern<FakeRepository>::ImpPtr & _imp;
@@ -78,13 +77,6 @@ namespace paludis
             /* RepositoryVirtualsInterface */
 
             virtual std::tr1::shared_ptr<const VirtualsSequence> virtual_packages() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /* RepositoryMirrorsInterface */
-
-            virtual MirrorsConstIterator begin_mirrors(const std::string & s) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual MirrorsConstIterator end_mirrors(const std::string & s) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;

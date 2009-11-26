@@ -125,7 +125,7 @@ using namespace paludis::erepository;
 typedef std::tr1::unordered_map<QualifiedPackageName,
         std::list<std::pair<std::tr1::shared_ptr<const PackageDepSpec>, std::tr1::shared_ptr<const RepositoryMaskInfo> > >,
         Hash<QualifiedPackageName> > RepositoryMaskMap;
-typedef std::tr1::unordered_multimap<std::string, std::string, Hash<std::string> > MirrorMap;
+typedef std::tr1::unordered_map<std::string, std::tr1::shared_ptr<MirrorsSequence> > MirrorMap;
 typedef std::tr1::unordered_map<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec>, Hash<QualifiedPackageName> > VirtualsMap;
 
 typedef std::map<FSEntry, std::string> EAPIForFileMap;
@@ -487,7 +487,6 @@ ERepository::ERepository(const ERepositoryParams & p) :
                 value_for<n::environment_variable_interface>(this),
                 value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
                 value_for<n::manifest_interface>(this),
-                value_for<n::mirrors_interface>(this),
                 value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
                 value_for<n::virtuals_interface>((*DistributionData::get_instance()->distribution_from_string(p.environment()->distribution())).support_old_style_virtuals() ? this : 0)
                 )),
@@ -695,9 +694,13 @@ ERepository::need_mirrors() const
                         std::random_shuffle(next(ee.begin()), ee.end(), r);
                         if (ee.size() > 6)
                             ee.resize(6);
+
+                        std::tr1::shared_ptr<MirrorsSequence> ms(new MirrorsSequence);
                         for (std::vector<std::string>::const_iterator e(next(ee.begin())),
                                 e_end(ee.end()) ; e != e_end ; ++e)
-                            _imp->mirrors.insert(std::make_pair(ee.at(0), *e));
+                            ms->push_back(*e);
+
+                        _imp->mirrors.insert(std::make_pair(ee.at(0), ms));
                     }
                 }
             }
@@ -876,20 +879,6 @@ ERepository::profile_variable(const std::string & s) const
     _imp->need_profiles();
 
     return _imp->profile_ptr->environment_variable(s);
-}
-
-ERepository::MirrorsConstIterator
-ERepository::begin_mirrors(const std::string & s) const
-{
-    need_mirrors();
-    return MirrorsConstIterator(_imp->mirrors.equal_range(s).first);
-}
-
-ERepository::MirrorsConstIterator
-ERepository::end_mirrors(const std::string & s) const
-{
-    need_mirrors();
-    return MirrorsConstIterator(_imp->mirrors.equal_range(s).second);
 }
 
 std::tr1::shared_ptr<const ERepository::VirtualsSequence>
@@ -1859,6 +1848,16 @@ namespace
 
         return true;
     }
+
+    const std::tr1::shared_ptr<const MirrorsSequence>
+    get_mirrors_fn(const std::string & m, const MirrorMap & map)
+    {
+        MirrorMap::const_iterator i(map.find(m));
+        if (i == map.end())
+            return make_shared_ptr(new MirrorsSequence);
+        else
+            return i->second;
+    }
 }
 
 void
@@ -1961,11 +1960,13 @@ ERepository::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
         if (fetch_action.options.fetch_parts()[fp_regulars] && ! fetch_action.options.ignore_unfetched())
         {
+            need_mirrors();
+
             FetchVisitor f(_imp->params.environment(), id, *id->eapi(),
                     _imp->params.distdir(), fetch_action.options.fetch_parts()[fp_unneeded],
                     fetch_userpriv_ok, mirrors_name,
                     id->fetches_key()->initial_label(), fetch_action.options.safe_resume(),
-                    output_manager);
+                    output_manager, std::tr1::bind(&get_mirrors_fn, std::tr1::placeholders::_1, std::tr1::cref(_imp->mirrors)));
             id->fetches_key()->value()->root()->accept(f);
         }
 

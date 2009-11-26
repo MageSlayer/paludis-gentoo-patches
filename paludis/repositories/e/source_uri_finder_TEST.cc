@@ -22,6 +22,7 @@
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/package_database.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
@@ -29,6 +30,20 @@
 using namespace test;
 using namespace paludis;
 using namespace paludis::erepository;
+
+namespace
+{
+    const std::tr1::shared_ptr<MirrorsSequence>
+    get_mirrors_fn(const std::string & m)
+    {
+        const std::tr1::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
+        if (m == "example")
+            result->push_back("http://fake-example/fake-example/");
+        if (m == "repo")
+            result->push_back("http://fake-repo/fake-repo/");
+        return result;
+    }
+}
 
 namespace test_cases
 {
@@ -45,7 +60,8 @@ namespace test_cases
                             )));
             env.package_database()->add_repository(1, repo);
 
-            SourceURIFinder f(&env, repo.get(), "http://example.com/path/input", "output", "monkey");
+            SourceURIFinder f(&env, repo.get(), "http://example.com/path/input", "output", "monkey",
+                    get_mirrors_fn);
             URIMirrorsThenListedLabel label("mirrors-then-listed");
             label.accept(f);
 
@@ -74,7 +90,7 @@ namespace test_cases
                             )));
             env.package_database()->add_repository(1, repo);
 
-            SourceURIFinder f(&env, repo.get(), "mirror://example/path/input", "output", "repo");
+            SourceURIFinder f(&env, repo.get(), "mirror://example/path/input", "output", "repo", get_mirrors_fn);
             URIMirrorsThenListedLabel label("mirrors-then-listed");
             label.accept(f);
 

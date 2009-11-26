@@ -41,8 +41,6 @@ namespace paludis
     struct Implementation<FakeRepository>
     {
         std::tr1::shared_ptr<FakeRepository::VirtualsSequence> virtual_packages;
-        std::map<std::string, std::string> mirrors;
-
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
         Implementation() :
@@ -50,8 +48,6 @@ namespace paludis
             format_key(new LiteralMetadataValueKey<std::string> (
                         "format", "format", mkt_significant, "fake"))
         {
-            mirrors.insert(std::make_pair("example", "http://fake-example/fake-example/"));
-            mirrors.insert(std::make_pair("repo", "http://fake-repo/fake-repo/"));
         }
     };
 }
@@ -63,7 +59,6 @@ FakeRepository::FakeRepository(const FakeRepositoryParams & params) :
                 value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
                 value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
                 value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
-                value_for<n::mirrors_interface>(this),
                 value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
                 value_for<n::virtuals_interface>((*DistributionData::get_instance()->distribution_from_string(
                             params.environment()->distribution())).support_old_style_virtuals() ? this : 0)
@@ -143,18 +138,6 @@ FakeRepository::some_ids_might_support_action(const SupportsActionTestBase & a) 
 {
     SupportsActionQuery q;
     return a.accept_returning<bool>(q);
-}
-
-FakeRepository::MirrorsConstIterator
-FakeRepository::begin_mirrors(const std::string & s) const
-{
-    return MirrorsConstIterator(_imp->mirrors.equal_range(s).first);
-}
-
-FakeRepository::MirrorsConstIterator
-FakeRepository::end_mirrors(const std::string & s) const
-{
-    return MirrorsConstIterator(_imp->mirrors.equal_range(s).second);
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::string> >

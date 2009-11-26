@@ -36,6 +36,8 @@ namespace paludis
 {
     namespace erepository
     {
+        typedef std::tr1::function<std::tr1::shared_ptr<const MirrorsSequence> (const std::string &)> GetMirrorsFunction;
+
         class PALUDIS_VISIBLE FetchVisitor :
             private PrivateImplementationPattern<FetchVisitor>
         {
@@ -50,7 +52,8 @@ namespace paludis
                         const std::string & mirrors_name,
                         const std::tr1::shared_ptr<const URILabel> & initial_label,
                         const bool safe_resume,
-                        const std::tr1::shared_ptr<OutputManager> &);
+                        const std::tr1::shared_ptr<OutputManager> &,
+                        const GetMirrorsFunction &);
 
                 ~FetchVisitor();
 

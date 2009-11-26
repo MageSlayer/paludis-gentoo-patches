@@ -63,7 +63,6 @@ namespace paludis
         struct make_virtuals_interface;
         struct manifest_interface;
         struct merged_entries;
-        struct mirrors_interface;
         struct options;
         struct output_manager;
         struct package_id;
@@ -92,7 +91,6 @@ namespace paludis
         NamedValue<n::environment_variable_interface, RepositoryEnvironmentVariableInterface *> environment_variable_interface;
         NamedValue<n::make_virtuals_interface, RepositoryMakeVirtualsInterface *> make_virtuals_interface;
         NamedValue<n::manifest_interface, RepositoryManifestInterface *> manifest_interface;
-        NamedValue<n::mirrors_interface, RepositoryMirrorsInterface *> mirrors_interface;
         NamedValue<n::provides_interface, RepositoryProvidesInterface *> provides_interface;
         NamedValue<n::virtuals_interface, RepositoryVirtualsInterface *> virtuals_interface;
     };
@@ -447,38 +445,6 @@ namespace paludis
             ///\}
 
             virtual ~RepositoryEnvironmentVariableInterface();
-    };
-
-    /**
-     * Interface for mirror querying for repositories.
-     *
-     * \see Repository
-     * \ingroup g_repository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE RepositoryMirrorsInterface
-    {
-        public:
-            ///\name Iterate over our mirrors
-            ///\{
-
-            struct MirrorsConstIteratorTag;
-            typedef WrappedForwardIterator<MirrorsConstIteratorTag,
-                    const std::pair<const std::string, std::string> > MirrorsConstIterator;
-
-            virtual MirrorsConstIterator begin_mirrors(const std::string & s) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-            virtual MirrorsConstIterator end_mirrors(const std::string & s) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Is the named item a mirror?
-             */
-            bool is_mirror(const std::string & s) const;
-
-            ///\}
-
-            virtual ~RepositoryMirrorsInterface();
     };
 
     /**
