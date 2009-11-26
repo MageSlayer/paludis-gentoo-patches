@@ -31,6 +31,7 @@
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/map-fwd.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <string>
 
@@ -89,13 +90,8 @@ namespace paludis
 
                 virtual const std::tr1::shared_ptr<const SetSpecTree> system_packages() const = 0;
 
-                struct VirtualsConstIteratorTag;
-                typedef WrappedForwardIterator<VirtualsConstIteratorTag,
-                    const std::pair<const QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > > VirtualsConstIterator;
-
-                virtual VirtualsConstIterator begin_virtuals() const = 0;
-                virtual VirtualsConstIterator end_virtuals() const = 0;
-                virtual VirtualsConstIterator find_virtual(const QualifiedPackageName &) const = 0;
+                virtual const std::tr1::shared_ptr<const Map<QualifiedPackageName, PackageDepSpec> >
+                    virtuals() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
         };
     }
 }

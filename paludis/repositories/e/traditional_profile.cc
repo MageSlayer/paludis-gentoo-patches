@@ -29,7 +29,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/sequence.hh>
@@ -41,6 +41,7 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/mutex.hh>
+#include <paludis/util/map.hh>
 #include <paludis/choice.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/environment.hh>
@@ -62,15 +63,11 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-template class WrappedForwardIterator<TraditionalProfile::VirtualsConstIteratorTag,
-         const std::pair<const QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > >;
-
 typedef std::tr1::unordered_map<std::string, std::tr1::shared_ptr<Set<UnprefixedChoiceName> > > KnownMap;
 
 namespace
 {
     typedef std::tr1::unordered_map<std::string, std::string, Hash<std::string> > EnvironmentVariablesMap;
-    typedef std::tr1::unordered_map<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec>, Hash<QualifiedPackageName> > VirtualsMap;
     typedef std::tr1::unordered_map<QualifiedPackageName,
             std::list<std::pair<std::tr1::shared_ptr<const PackageDepSpec>, std::tr1::shared_ptr<const RepositoryMaskInfo> > >,
             Hash<QualifiedPackageName> > PackageMaskMap;
@@ -156,7 +153,7 @@ namespace paludis
             ///\name Virtuals
             ///\{
 
-            VirtualsMap virtuals;
+            std::tr1::shared_ptr<Map<QualifiedPackageName, PackageDepSpec> > virtuals;
 
             ///\}
 
@@ -197,6 +194,7 @@ namespace paludis
                 repository(p),
                 system_packages(new SetSpecTree(make_shared_ptr(new AllDepSpec))),
                 system_tag(new GeneralSetDepTag(SetName("system"), stringify(name))),
+                virtuals(new Map<QualifiedPackageName, PackageDepSpec>),
                 use_expand(new Set<std::string>),
                 use_expand_hidden(new Set<std::string>),
                 use_expand_unprefixed(new Set<std::string>),
@@ -607,12 +605,11 @@ Implementation<TraditionalProfile>::make_vars_from_file_vars()
                     continue;
 
                 QualifiedPackageName v(tokens[0]);
-                virtuals.erase(v);
-                virtuals.insert(std::make_pair(v, std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
-                                    parse_elike_package_dep_spec(tokens[1],
-                                        line->first->supported()->package_dep_spec_parse_options(),
-                                        line->first->supported()->version_spec_options(),
-                                        std::tr1::shared_ptr<const PackageID>())))));
+                virtuals->erase(v);
+                virtuals->insert(v, parse_elike_package_dep_spec(tokens[1],
+                            line->first->supported()->package_dep_spec_parse_options(),
+                            line->first->supported()->version_spec_options(),
+                            std::tr1::shared_ptr<const PackageID>()));
             }
         }
         catch (const InternalError &)
@@ -1023,22 +1020,10 @@ TraditionalProfile::system_packages() const
     return _imp->system_packages;
 }
 
-TraditionalProfile::VirtualsConstIterator
-TraditionalProfile::begin_virtuals() const
+const std::tr1::shared_ptr<const Map<QualifiedPackageName, PackageDepSpec> >
+TraditionalProfile::virtuals() const
 {
-    return VirtualsConstIterator(_imp->virtuals.begin());
-}
-
-TraditionalProfile::VirtualsConstIterator
-TraditionalProfile::find_virtual(const QualifiedPackageName & n) const
-{
-    return VirtualsConstIterator(_imp->virtuals.find(n));
-}
-
-TraditionalProfile::VirtualsConstIterator
-TraditionalProfile::end_virtuals() const
-{
-    return VirtualsConstIterator(_imp->virtuals.end());
+    return _imp->virtuals;
 }
 
 const std::tr1::shared_ptr<const RepositoryMaskInfo>

@@ -77,6 +77,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/options.hh>
@@ -891,10 +892,10 @@ ERepository::virtual_packages() const
 
     std::tr1::shared_ptr<VirtualsSequence> result(new VirtualsSequence);
 
-    for (erepository::Profile::VirtualsConstIterator i(_imp->profile_ptr->begin_virtuals()),
-            i_end(_imp->profile_ptr->end_virtuals()) ; i != i_end ; ++i)
+    for (Map<QualifiedPackageName, PackageDepSpec>::ConstIterator i(_imp->profile_ptr->virtuals()->begin()),
+            i_end(_imp->profile_ptr->virtuals()->end()) ; i != i_end ; ++i)
         result->push_back(make_named_values<RepositoryVirtualsEntry>(
-                    value_for<n::provided_by_spec>(i->second),
+                    value_for<n::provided_by_spec>(make_shared_copy(i->second)),
                     value_for<n::virtual_name>(i->first)
                 ));
 

@@ -88,9 +88,8 @@ namespace paludis
 
                 virtual const std::tr1::shared_ptr<const SetSpecTree> system_packages() const;
 
-                virtual VirtualsConstIterator begin_virtuals() const;
-                virtual VirtualsConstIterator end_virtuals() const;
-                virtual VirtualsConstIterator find_virtual(const QualifiedPackageName &) const;
+                virtual const std::tr1::shared_ptr<const Map<QualifiedPackageName, PackageDepSpec> >
+                    virtuals() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }
