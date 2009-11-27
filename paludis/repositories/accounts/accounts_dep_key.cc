@@ -18,7 +18,7 @@
  */
 
 #include <paludis/repositories/accounts/accounts_dep_key.hh>
-#include <paludis/util/set.hh>
+#include <paludis/util/set-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/selection.hh>
@@ -28,7 +28,9 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/formatter.hh>
 #include <paludis/environment.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <sstream>
+#include <list>
 
 using namespace paludis;
 using namespace paludis::accounts_repository;
@@ -39,13 +41,13 @@ namespace paludis
     struct Implementation<AccountsDepKey>
     {
         const Environment * const env;
-        const std::tr1::shared_ptr<Sequence<std::tr1::shared_ptr<PackageDepSpec> > > specs;
+        const std::tr1::shared_ptr<std::list<std::tr1::shared_ptr<PackageDepSpec> > > specs;
         const std::tr1::shared_ptr<DependencySpecTree> tree;
         const std::tr1::shared_ptr<DependenciesLabelSequence> initial_labels;
 
         Implementation(const Environment * const e, const std::tr1::shared_ptr<const Set<std::string> > & s) :
             env(e),
-            specs(new Sequence<std::tr1::shared_ptr<PackageDepSpec> >),
+            specs(new std::list<std::tr1::shared_ptr<PackageDepSpec> >),
             tree(new DependencySpecTree(make_shared_ptr(new AllDepSpec))),
             initial_labels(new DependenciesLabelSequence)
         {
@@ -115,7 +117,7 @@ AccountsDepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) c
 {
     std::stringstream s;
 
-    for (Sequence<std::tr1::shared_ptr<PackageDepSpec> >::ConstIterator i(_imp->specs->begin()),
+    for (std::list<std::tr1::shared_ptr<PackageDepSpec> >::const_iterator i(_imp->specs->begin()),
             i_end(_imp->specs->end()) ; i != i_end ; ++i)
     {
         if (! s.str().empty())

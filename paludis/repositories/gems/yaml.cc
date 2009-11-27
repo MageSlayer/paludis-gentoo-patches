@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,9 +32,6 @@
 using namespace paludis;
 using namespace paludis::yaml;
 
-template class WrappedForwardIterator<MapNode::ConstIteratorTag, const std::pair<const Node *, const Node *> >;
-template class WrappedForwardIterator<SequenceNode::ConstIteratorTag, const Node * const>;
-
 Node::~Node()
 {
 }
@@ -50,6 +47,18 @@ namespace paludis
             text(t)
         {
         }
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<MapNode::ConstIteratorTag>
+    {
+        typedef std::list<std::pair<const Node *, const Node *> >::const_iterator UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<SequenceNode::ConstIteratorTag>
+    {
+        typedef std::list<const Node *>::const_iterator UnderlyingIterator;
     };
 }
 
@@ -389,4 +398,8 @@ ParseError::ParseError(const std::string & s) throw () :
 }
 
 template class InstantiationPolicy<NodeManager, instantiation_method::SingletonTag>;
+
+template class WrappedForwardIterator<MapNode::ConstIteratorTag, const std::pair<const Node *, const Node *> >;
+template class WrappedForwardIterator<SequenceNode::ConstIteratorTag, const Node * const>;
+
 

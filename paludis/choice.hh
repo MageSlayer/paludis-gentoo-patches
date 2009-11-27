@@ -22,7 +22,7 @@
 
 #include <paludis/choice-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/named_value.hh>
@@ -388,6 +388,9 @@ namespace paludis
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<Choices>;
     extern template class PrivateImplementationPattern<Choice>;
+
+    extern template class WrappedForwardIterator<Choices::ConstIteratorTag, const std::tr1::shared_ptr<const Choice> >;
+    extern template class WrappedForwardIterator<Choice::ConstIteratorTag, const std::tr1::shared_ptr<const ChoiceValue> >;
 #endif
 }
 

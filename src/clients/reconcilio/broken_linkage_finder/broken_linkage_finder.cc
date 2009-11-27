@@ -31,6 +31,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/set-impl.hh>
+#include <paludis/util/sequence-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/member_iterator-impl.hh>
@@ -55,12 +56,6 @@
 
 using namespace paludis;
 using namespace broken_linkage_finder;
-
-template class WrappedForwardIterator<BrokenLinkageFinder::BrokenPackageConstIteratorTag,
-         const std::tr1::shared_ptr<const paludis::PackageID> >;
-template class WrappedForwardIterator<BrokenLinkageFinder::BrokenFileConstIteratorTag,
-         const paludis::FSEntry>;
-template class WrappedForwardIterator<BrokenLinkageFinder::MissingRequirementConstIteratorTag, const std::string>;
 
 typedef std::multimap<FSEntry, std::tr1::shared_ptr<const PackageID> > Files;
 typedef std::map<FSEntry, std::set<std::string> > PackageBreakage;
@@ -102,12 +97,30 @@ namespace paludis
         {
         }
     };
+
+    template <>
+    struct WrappedForwardIteratorTraits<BrokenLinkageFinder::BrokenPackageConstIteratorTag>
+    {
+        typedef FirstIteratorTypes<Breakage::const_iterator>::Type UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<BrokenLinkageFinder::BrokenFileConstIteratorTag>
+    {
+        typedef FirstIteratorTypes<PackageBreakage::const_iterator>::Type UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<BrokenLinkageFinder::MissingRequirementConstIteratorTag>
+    {
+        typedef std::set<std::string>::const_iterator UnderlyingIterator;
+    };
 }
 
 namespace
 {
-    std::set<FSEntry> no_files;
-    std::set<std::string> no_reqs;
+    const std::map<FSEntry, std::set<std::string> > no_files;
+    const std::set<std::string> no_reqs;
 
     struct ParentOf : std::unary_function<FSEntry, bool>
     {
@@ -161,7 +174,7 @@ BrokenLinkageFinder::BrokenLinkageFinder(const Environment * env, const std::str
     std::for_each(search_dirs_pruned.begin(), search_dirs_pruned.end(),
                       std::tr1::bind(&Implementation<BrokenLinkageFinder>::search_directory, _imp.get(), _1));
 
-    for (Configuration::DirsIterator it(_imp->extra_lib_dirs.begin()),
+    for (std::set<FSEntry>::const_iterator it(_imp->extra_lib_dirs.begin()),
              it_end(_imp->extra_lib_dirs.end()); it_end != it; ++it)
     {
         Log::get_instance()->message("reconcilio.broken_linkage_finder.config", ll_debug, lc_context)
@@ -426,4 +439,10 @@ BrokenLinkageFinder::end_missing_requirements(
         return MissingRequirementConstIterator(file_it->second.end());
     }
 }
+
+template class WrappedForwardIterator<BrokenLinkageFinder::BrokenPackageConstIteratorTag,
+         const std::tr1::shared_ptr<const paludis::PackageID> >;
+template class WrappedForwardIterator<BrokenLinkageFinder::BrokenFileConstIteratorTag,
+         const paludis::FSEntry>;
+template class WrappedForwardIterator<BrokenLinkageFinder::MissingRequirementConstIteratorTag, const std::string>;
 

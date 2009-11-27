@@ -38,6 +38,9 @@
 #include <paludis/stringify_formatter.hh>
 #include <paludis/action.hh>
 #include <paludis/choice.hh>
+
+#include <paludis/util/indirect_iterator-impl.hh>
+
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <tr1/functional>

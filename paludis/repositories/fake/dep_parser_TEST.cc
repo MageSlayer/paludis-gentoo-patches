@@ -19,6 +19,7 @@
 
 #include <paludis/repositories/fake/dep_parser.hh>
 #include <paludis/environments/test/test_environment.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <sstream>

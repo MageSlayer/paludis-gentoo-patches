@@ -37,7 +37,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/package_dep_spec_properties.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/set.hh>
+#include <paludis/util/set-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -46,7 +46,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/sequence.hh>
+#include <paludis/util/sequence-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/handled_information.hh>
@@ -63,8 +63,6 @@
 #include <set>
 
 using namespace paludis;
-
-template class WrappedForwardIterator<InstallTask::TargetsConstIteratorTag, const std::string>;
 
 #include <paludis/install_task-se.cc>
 
@@ -175,6 +173,12 @@ namespace paludis
             had_resolution_failures(false)
         {
         }
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<InstallTask::TargetsConstIteratorTag>
+    {
+        typedef std::list<std::string>::const_iterator UnderlyingIterator;
     };
 }
 
@@ -1929,4 +1933,6 @@ InstallTask::make_fetch_action_options(const DepListEntry &, OutputManagerFromEn
             value_for<n::safe_resume>(_imp->safe_resume)
             );
 }
+
+template class WrappedForwardIterator<InstallTask::TargetsConstIteratorTag, const std::string>;
 

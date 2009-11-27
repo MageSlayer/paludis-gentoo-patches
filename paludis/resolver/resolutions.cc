@@ -36,6 +36,12 @@ namespace paludis
     {
         Sequence<std::tr1::shared_ptr<Resolution> > resolutions;
     };
+
+    template <>
+    struct WrappedForwardIteratorTraits<Resolutions::ConstIteratorTag>
+    {
+        typedef Sequence<std::tr1::shared_ptr<Resolution> >::ConstIterator UnderlyingIterator;
+    };
 }
 
 Resolutions::Resolutions() :
@@ -91,5 +97,5 @@ Resolutions::deserialise(Deserialisation & d)
 }
 
 template class PrivateImplementationPattern<Resolutions>;
-template class WrappedForwardIterator<Resolutions::ConstIteratorTag, const std::tr1::shared_ptr<const Resolution> >;
+template class WrappedForwardIterator<Resolutions::ConstIteratorTag, const std::tr1::shared_ptr<Resolution> >;
 

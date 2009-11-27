@@ -45,6 +45,9 @@ namespace paludis
         template <typename Tree_>
         class BasicInnerNode;
 
+        template <typename Tree_>
+        struct BasicInnerNodeConstIteratorTag;
+
         template <typename Tree_, typename NodeList_>
         struct MakeVisitableTypeListEntry;
 

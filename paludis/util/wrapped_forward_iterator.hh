@@ -41,12 +41,11 @@ namespace paludis
         public equality_operators::HasEqualityOperators
     {
         private:
-            struct Base;
-            template <typename T_> struct BaseImpl;
-
-            Base * _base;
+             WrappedForwardIteratorUnderlyingIteratorHolder * _iter;
 
         public:
+            typedef Tag_ Tag;
+
             ///\name Basic operations
             ///\{
 

@@ -32,10 +32,8 @@
 #include <paludis/resolver/jobs.hh>
 #include <paludis/resolver/job_id.hh>
 #include <paludis/util/map.hh>
-#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/make_named_values.hh>
@@ -47,6 +45,12 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/generator.hh>
+
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/map-impl.hh>
+#include <paludis/util/sequence-impl.hh>
+
 #include <algorithm>
 #include "config.h"
 

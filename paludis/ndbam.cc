@@ -44,8 +44,6 @@
 
 using namespace paludis;
 
-template class Sequence<std::tr1::shared_ptr<NDBAMEntry> >;
-
 namespace
 {
     struct CategoryContents;
@@ -672,4 +670,8 @@ NDBAM::index(const QualifiedPackageName & q, const std::string & d) const
     if (! pc_index_sym.exists())
         pc_index_sym.symlink("../../../data/" + d);
 }
+
+template class Sequence<std::tr1::shared_ptr<NDBAMEntry> >;
+template class WrappedForwardIterator<Sequence<std::tr1::shared_ptr<NDBAMEntry> >::ConstIteratorTag, const std::tr1::shared_ptr<NDBAMEntry> >;
+
 

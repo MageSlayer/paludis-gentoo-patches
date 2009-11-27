@@ -24,6 +24,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/config_file.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/mask-fwd.hh>
 
 namespace paludis
@@ -61,6 +62,11 @@ namespace paludis
                 ///\}
         };
     }
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class WrappedForwardIterator<erepository::MaskFile::ConstIteratorTag,
+             const std::pair<const std::string, std::tr1::shared_ptr<const RepositoryMaskInfo> > >;
+#endif
 }
 
 #endif

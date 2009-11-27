@@ -22,7 +22,7 @@
 
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/dep_tag-fwd.hh>
@@ -152,6 +152,10 @@ namespace paludis
 
             ///\}
     };
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class WrappedForwardIterator<UninstallList::UninstallListTag, const UninstallListEntry>;
+#endif
 }
 
 #endif

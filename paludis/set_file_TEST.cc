@@ -27,6 +27,8 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/safe_ifstream.hh>
 
+#include <paludis/util/indirect_iterator-impl.hh>
+
 using namespace test;
 using namespace paludis;
 

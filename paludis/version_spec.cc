@@ -77,6 +77,12 @@ namespace paludis
         }
     };
 
+    template <>
+    struct WrappedForwardIteratorTraits<VersionSpec::ConstIteratorTag>
+    {
+        typedef Parts::const_iterator UnderlyingIterator;
+    };
+
     simple_parser::SimpleParserExpression make_dash_parse_expression(const std::string & strict_dash,
             const std::string & text,
             const bool ignore_case,

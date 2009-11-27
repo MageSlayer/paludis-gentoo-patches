@@ -20,8 +20,8 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/repositories/e/aa_visitor.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/indirect_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <list>
 #include <algorithm>
@@ -41,6 +41,12 @@ namespace paludis
     struct Implementation<AAVisitor>
     {
         std::list<std::string> aa;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<AAVisitor::ConstIteratorTag>
+    {
+        typedef std::list<std::string>::const_iterator UnderlyingIterator;
     };
 }
 
@@ -82,4 +88,6 @@ AAVisitor::end() const
 {
     return ConstIterator(_imp->aa.end());
 }
+
+template class WrappedForwardIterator<AAVisitor::ConstIteratorTag, const std::string>;
 

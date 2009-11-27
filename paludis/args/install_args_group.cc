@@ -23,6 +23,7 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/util/iterator_funcs.hh>
+#include <paludis/util/set-impl.hh>
 
 using namespace paludis;
 using namespace paludis::args;

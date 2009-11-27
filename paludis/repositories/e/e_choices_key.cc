@@ -35,9 +35,11 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/member_iterator-impl.hh>
-#include <paludis/util/map.hh>
-#include <paludis/util/sequence.hh>
+#include <paludis/util/map-impl.hh>
+#include <paludis/util/sequence-impl.hh>
+#include <paludis/util/set-impl.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 
 #include <paludis/environment.hh>
 #include <paludis/stringify_formatter-impl.hh>
@@ -593,4 +595,6 @@ EChoicesKey::type() const
 {
     return _imp->type;
 }
+
+template class Map<ChoiceNameWithPrefix, std::string>;
 

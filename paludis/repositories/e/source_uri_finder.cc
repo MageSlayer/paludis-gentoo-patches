@@ -21,16 +21,20 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
-#include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/sequence.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/repository.hh>
 #include <paludis/environment.hh>
 #include <paludis/action.hh>
+
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/sequence-impl.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
+
 #include <list>
 
 using namespace paludis;
 using namespace paludis::erepository;
+
+typedef std::list<std::pair<std::string, std::string> > Items;
 
 namespace paludis
 {
@@ -44,7 +48,7 @@ namespace paludis
         const std::string mirrors_name;
         const GetMirrorsFunction get_mirrors_fn;
 
-        std::list<std::pair<std::string, std::string> > items;
+        Items items;
 
         Implementation(const Environment * const e, const Repository * const r, const std::string & u, const std::string & f,
                 const std::string & m, const GetMirrorsFunction & g) :
@@ -56,6 +60,12 @@ namespace paludis
             get_mirrors_fn(g)
         {
         }
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<SourceURIFinder::ConstIteratorTag>
+    {
+        typedef Items::const_iterator UnderlyingIterator;
     };
 }
 

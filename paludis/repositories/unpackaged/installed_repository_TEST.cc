@@ -34,6 +34,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/standard_output_manager.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <algorithm>

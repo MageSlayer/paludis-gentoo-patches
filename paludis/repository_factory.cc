@@ -25,7 +25,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/set.hh>
+#include <paludis/util/set-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -92,6 +92,12 @@ namespace paludis
     void register_repositories<NoType<0u> >(const NoType<0u> *, RepositoryFactory * const)
     {
     }
+
+    template <>
+    struct WrappedForwardIteratorTraits<RepositoryFactory::ConstIteratorTag>
+    {
+        typedef FirstIteratorTypes<Keys::const_iterator>::Type UnderlyingIterator;
+    };
 }
 
 namespace
@@ -174,13 +180,13 @@ RepositoryFactory::importance(
 RepositoryFactory::ConstIterator
 RepositoryFactory::begin_keys() const
 {
-    return first_iterator(_imp->keys.begin());
+    return ConstIterator(first_iterator(_imp->keys.begin()));
 }
 
 RepositoryFactory::ConstIterator
 RepositoryFactory::end_keys() const
 {
-    return first_iterator(_imp->keys.end());
+    return ConstIterator(first_iterator(_imp->keys.end()));
 }
 
 void

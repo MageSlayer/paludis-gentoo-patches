@@ -32,6 +32,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/join.hh>
 #include <tr1/functional>
 #include <set>

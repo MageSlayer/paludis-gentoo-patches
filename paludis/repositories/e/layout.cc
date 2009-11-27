@@ -24,13 +24,12 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/map-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
 
 template class InstantiationPolicy<LayoutFactory, instantiation_method::SingletonTag>;
-
-template class Map<FSEntry, std::string>;
 
 Layout::Layout(const std::tr1::shared_ptr<const FSEntrySequence> & l) :
     _master_repositories_locations(l)
@@ -81,4 +80,7 @@ LayoutFactory::create(
         return make_layout<ExheresLayout>(r, f, ff);
     throw ConfigurationError("Unrecognised layout '" + s + "'");
 }
+
+template class Map<FSEntry, std::string>;
+template class WrappedForwardIterator<Map<FSEntry, std::string>::ConstIteratorTag, const std::pair<const FSEntry, std::string> >;
 

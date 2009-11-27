@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2007 Piotr Jaroszyński
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -29,13 +29,11 @@
 
 using namespace paludis;
 
-template class WrappedForwardIterator<Hook::ConstIteratorTag, const std::pair<const std::string, std::string> >;
-
 #include <paludis/hook-se.cc>
 
 namespace paludis
 {
-    template<>
+    template <>
     struct Implementation<Hook>
     {
         std::string name;
@@ -51,10 +49,16 @@ namespace paludis
         }
     };
 
-    template<>
+    template <>
     struct Implementation<Hook::AllowedOutputValues>
     {
         std::set<std::string> allowed_values;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<Hook::ConstIteratorTag>
+    {
+        typedef std::map<std::string, std::string>::const_iterator UnderlyingIterator;
     };
 }
 
@@ -152,4 +156,6 @@ Hook::name() const
 {
     return _imp->name;
 }
+
+template class WrappedForwardIterator<Hook::ConstIteratorTag, const std::pair<const std::string, std::string> >;
 

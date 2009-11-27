@@ -28,12 +28,16 @@
 #include <paludis/environment.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/version_requirements.hh>
-#include <paludis/util/clone-impl.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
+
+#include <paludis/util/clone-impl.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_output_iterator-impl.hh>
+#include <paludis/util/sequence-impl.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 
 #include <tr1/type_traits>
 #include <list>
@@ -41,9 +45,6 @@
 using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
-
-template class WrappedForwardIterator<PythonCompositeDepSpec::ConstIteratorTag,
-         const std::tr1::shared_ptr<const PythonDepSpec> >;
 
 PythonDepSpec::PythonDepSpec()
 {
@@ -71,6 +72,12 @@ namespace paludis
     struct Implementation<PythonCompositeDepSpec>
     {
         std::list<std::tr1::shared_ptr<const PythonDepSpec> > children;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<PythonCompositeDepSpec::ConstIteratorTag>
+    {
+        typedef std::list<std::tr1::shared_ptr<const PythonDepSpec> >::const_iterator UnderlyingIterator;
     };
 
     template<>
@@ -1390,4 +1397,7 @@ void expose_dep_spec()
                 )
         ;
 }
+
+template class WrappedForwardIterator<PythonCompositeDepSpec::ConstIteratorTag,
+         const std::tr1::shared_ptr<const PythonDepSpec> >;
 

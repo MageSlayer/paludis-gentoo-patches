@@ -50,6 +50,9 @@
 #include <paludis/version_requirements.hh>
 #include <paludis/slot_requirement.hh>
 #include <paludis/choice.hh>
+
+#include <paludis/util/private_implementation_pattern-impl.hh>
+
 #include <map>
 #include <set>
 

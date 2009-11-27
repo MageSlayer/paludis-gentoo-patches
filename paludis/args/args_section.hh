@@ -22,7 +22,7 @@
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <string>
 
 namespace paludis
@@ -59,6 +59,7 @@ namespace paludis
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<args::ArgsSection>;
+    extern template class WrappedForwardIterator<args::ArgsSection::GroupsConstIteratorTag, const args::ArgsGroup>;
 #endif
 }
 

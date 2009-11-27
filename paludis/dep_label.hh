@@ -27,6 +27,8 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/type_list.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <tr1/functional>
 
 /** \file
@@ -177,6 +179,9 @@ namespace paludis
     extern template class ConcreteDependenciesLabel<DependenciesSuggestionLabelTag>;
     extern template class ConcreteDependenciesLabel<DependenciesRecommendationLabelTag>;
     extern template class ConcreteDependenciesLabel<DependenciesTestLabelTag>;
+
+    extern template class WrappedForwardIterator<Sequence<std::tr1::shared_ptr<const DependenciesLabel> >::ConstIteratorTag,
+             const std::tr1::shared_ptr<const DependenciesLabel> >;
 #endif
 }
 

@@ -69,14 +69,18 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/safe_ofstream.hh>
+
+#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/create_iterator-impl.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+
 #include <tr1/unordered_map>
 #include <tr1/functional>
 #include <functional>
@@ -93,7 +97,7 @@ using namespace paludis::erepository;
 
 typedef std::tr1::unordered_map<CategoryNamePart, std::tr1::shared_ptr<QualifiedPackageNameSet>, Hash<CategoryNamePart> > CategoryMap;
 typedef std::tr1::unordered_map<QualifiedPackageName, std::tr1::shared_ptr<PackageIDSequence>, Hash<QualifiedPackageName> > IDMap;
-typedef std::map<std::pair<QualifiedPackageName, VersionSpec>, std::tr1::shared_ptr<const Sequence<QualifiedPackageName> > > ProvidesMap;
+typedef std::map<std::pair<QualifiedPackageName, VersionSpec>, std::tr1::shared_ptr<std::list<QualifiedPackageName> > > ProvidesMap;
 
 namespace paludis
 {
@@ -586,7 +590,7 @@ VDBRepository::provided_packages() const
             continue;
         }
 
-        for (Sequence<QualifiedPackageName>::ConstIterator it2(it->second->begin()),
+        for (std::list<QualifiedPackageName>::const_iterator it2(it->second->begin()),
                  it2_end(it->second->end()); it2_end != it2; ++it2)
             _imp->provides->push_back(make_named_values<RepositoryProvidesEntry>(
                         value_for<n::provided_by>(id),
@@ -659,8 +663,9 @@ VDBRepository::load_provided_using_cache() const
             VersionSpec v(tokens.at(1), EAPIData::get_instance()->eapi_from_string(
                         _imp->params.eapi_when_unknown())->supported()->version_spec_options());
 
-            std::tr1::shared_ptr<Sequence<QualifiedPackageName> > qpns(new Sequence<QualifiedPackageName>);
-            std::copy(tokens.begin() + 2, tokens.end(), create_inserter<QualifiedPackageName>(qpns->back_inserter()));
+            std::tr1::shared_ptr<std::list<QualifiedPackageName> > qpns(new std::list<QualifiedPackageName>);
+            std::copy(tokens.begin() + 2, tokens.end(), create_inserter<QualifiedPackageName>(
+                        std::back_inserter(*qpns)));
 
             if (_imp->provides_map->end() != _imp->provides_map->find(std::make_pair(q, v)))
                 Log::get_instance()->message("e.vdb.provides_cache.duplicate", ll_warning, lc_context)
@@ -697,7 +702,7 @@ VDBRepository::provides_from_package_id(const PackageID & id) const
         DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->params.environment());
         provide->root()->accept(f);
 
-        std::tr1::shared_ptr<Sequence<QualifiedPackageName> > qpns(new Sequence<QualifiedPackageName>);
+        std::tr1::shared_ptr<std::list<QualifiedPackageName> > qpns(new std::list<QualifiedPackageName>);
 
         for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator
                  p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
@@ -780,7 +785,7 @@ VDBRepository::write_provides_cache() const
                  it_end(_imp->provides_map->end()); it_end != it; ++it)
         {
             f << it->first.first << " " << it->first.second;
-            for (Sequence<QualifiedPackageName>::ConstIterator it2(it->second->begin()),
+            for (std::list<QualifiedPackageName>::const_iterator it2(it->second->begin()),
                      it2_end(it->second->end()); it2_end != it2; ++it2)
                 f << " " << *it2;
             f << std::endl;

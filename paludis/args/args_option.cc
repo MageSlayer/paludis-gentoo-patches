@@ -17,9 +17,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "args.hh"
-#include "args_error.hh"
-#include "escape.hh"
+#include <paludis/args/args_option.hh>
+#include <paludis/args/args_error.hh>
+#include <paludis/args/args_group.hh>
+#include <paludis/args/args_section.hh>
+#include <paludis/args/args_handler.hh>
+#include <paludis/args/escape.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
@@ -31,13 +34,6 @@
 
 using namespace paludis;
 using namespace paludis::args;
-
-template class WrappedForwardIterator<StringSetArg::ConstIteratorTag, const std::string>;
-template class WrappedForwardIterator<StringSetArg::AllowedArgConstIteratorTag,
-         const std::pair<std::string, std::string> >;
-template class WrappedForwardIterator<EnumArg::AllowedArgConstIteratorTag,
-         const AllowedEnumArg>;
-template class WrappedForwardIterator<StringSequenceArg::ConstIteratorTag, const std::string>;
 
 namespace
 {
@@ -156,6 +152,18 @@ namespace paludis
     {
         std::vector<std::pair<std::string, std::string> > options;
     };
+
+    template <>
+    struct WrappedForwardIteratorTraits<StringSetArg::ConstIteratorTag>
+    {
+        typedef std::set<std::string>::const_iterator UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<StringSetArg::AllowedArgConstIteratorTag>
+    {
+        typedef std::vector<std::pair<std::string, std::string> >::const_iterator UnderlyingIterator;
+    };
 }
 
 StringSetArg::StringSetArg(ArgsGroup * const g, const std::string & our_long_name,
@@ -224,6 +232,12 @@ namespace paludis
     struct Implementation<StringSequenceArg>
     {
         std::list<std::string> args;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<StringSequenceArg::ConstIteratorTag>
+    {
+        typedef std::list<std::string>::const_iterator UnderlyingIterator;
     };
 }
 
@@ -294,6 +308,12 @@ namespace paludis
     struct Implementation<EnumArg::EnumArgOptions>
     {
         std::vector<AllowedEnumArg> options;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<EnumArg::AllowedArgConstIteratorTag>
+    {
+        typedef std::vector<AllowedEnumArg>::const_iterator UnderlyingIterator;
     };
 }
 
@@ -496,4 +516,12 @@ SwitchArg::can_be_negated() const
 {
     return _can_be_negated;
 }
+
+template class WrappedForwardIterator<StringSetArg::ConstIteratorTag, const std::string>;
+template class WrappedForwardIterator<StringSetArg::AllowedArgConstIteratorTag,
+         const std::pair<std::string, std::string> >;
+template class WrappedForwardIterator<EnumArg::AllowedArgConstIteratorTag,
+         const AllowedEnumArg>;
+template class WrappedForwardIterator<StringSequenceArg::ConstIteratorTag, const std::string>;
+
 

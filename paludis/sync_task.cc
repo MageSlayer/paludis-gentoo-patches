@@ -35,8 +35,6 @@
 
 using namespace paludis;
 
-template class WrappedForwardIterator<SyncTask::TargetsConstIteratorTag, const RepositoryName>;
-
 namespace paludis
 {
     template<>
@@ -51,6 +49,12 @@ namespace paludis
             parallel(p)
         {
         }
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<SyncTask::TargetsConstIteratorTag>
+    {
+        typedef std::list<RepositoryName>::const_iterator UnderlyingIterator;
     };
 }
 
@@ -214,4 +218,6 @@ SyncTask::end_targets() const
 {
     return TargetsConstIterator(_imp->targets.end());
 }
+
+template class WrappedForwardIterator<SyncTask::TargetsConstIteratorTag, const RepositoryName>;
 

@@ -26,6 +26,7 @@
 #include <paludis/util/config_file.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/sequence-impl.hh>
 #include <paludis/mask.hh>
 
 #include <list>
@@ -33,15 +34,20 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-template class WrappedForwardIterator<MaskFile::ConstIteratorTag,
-         const std::pair<const std::string, std::tr1::shared_ptr<const RepositoryMaskInfo> > >;
+typedef std::list<std::pair<const std::string, std::tr1::shared_ptr<const RepositoryMaskInfo> > > MaskFileLines;
 
 namespace paludis
 {
     template <>
     struct Implementation<MaskFile>
     {
-        std::list<std::pair<const std::string, std::tr1::shared_ptr<const RepositoryMaskInfo> > > lines;
+        MaskFileLines lines;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<MaskFile::ConstIteratorTag>
+    {
+        typedef MaskFileLines::const_iterator UnderlyingIterator;
     };
 }
 
@@ -98,4 +104,7 @@ MaskFile::end() const
 MaskFile::~MaskFile()
 {
 }
+
+template class WrappedForwardIterator<MaskFile::ConstIteratorTag,
+         const std::pair<const std::string, std::tr1::shared_ptr<const RepositoryMaskInfo> > >;
 

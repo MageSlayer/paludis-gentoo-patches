@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -60,6 +60,12 @@ namespace paludis
     struct Implementation<Map<K_, V_, C_> >
     {
         std::map<K_, V_, C_> map;
+    };
+
+    template <typename K_, typename V_, typename C_>
+    struct WrappedForwardIteratorTraits<MapConstIteratorTag<K_, V_, C_> >
+    {
+        typedef typename std::map<K_, V_, C_>::const_iterator UnderlyingIterator;
     };
 }
 

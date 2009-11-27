@@ -49,7 +49,16 @@
 
 using namespace paludis;
 
-template class WrappedForwardIterator<Command::ConstIteratorTag, const std::pair<const std::string, std::string> >;
+typedef std::map<std::string, std::string> CommandSetenvValues;
+
+namespace paludis
+{
+    template <>
+    struct WrappedForwardIteratorTraits<Command::ConstIteratorTag>
+    {
+        typedef CommandSetenvValues::const_iterator UnderlyingIterator;
+    };
+}
 
 namespace
 {
@@ -154,7 +163,7 @@ namespace paludis
     {
         std::string command;
         bool clearenv;
-        std::map<std::string, std::string> setenv_values;
+        CommandSetenvValues setenv_values;
         std::string chdir;
         bool echo_to_stderr;
         std::tr1::shared_ptr<uid_t> uid;
@@ -1321,4 +1330,6 @@ paludis::get_group_name(const gid_t u)
         return stringify(u);
     }
 }
+
+template class WrappedForwardIterator<Command::ConstIteratorTag, const std::pair<const std::string, std::string> >;
 

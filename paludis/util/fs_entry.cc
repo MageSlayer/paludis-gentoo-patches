@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2006 Mark Loeser
  * Copyright (c) 2008 Fernando J. Pereda
  *
@@ -52,12 +52,6 @@
  */
 
 using namespace paludis;
-
-template class Sequence<FSEntry>;
-template class WrappedForwardIterator<Sequence<FSEntry>::ConstIteratorTag, const FSEntry>;
-template class WrappedForwardIterator<Sequence<FSEntry>::ReverseConstIteratorTag, const FSEntry>;
-template class WrappedOutputIterator<Sequence<FSEntry>::InserterTag, FSEntry>;
-template class Set<FSEntry>;
 
 FSError::FSError(const std::string & our_message) throw () :
     Exception(our_message)
@@ -707,3 +701,12 @@ FSEntry::lowlevel_id() const
 
     return std::make_pair(_imp->stat_info->st_dev, _imp->stat_info->st_ino);
 }
+
+template class Sequence<FSEntry>;
+template class WrappedForwardIterator<Sequence<FSEntry>::ConstIteratorTag, const FSEntry>;
+template class WrappedForwardIterator<Sequence<FSEntry>::ReverseConstIteratorTag, const FSEntry>;
+template class WrappedOutputIterator<Sequence<FSEntry>::InserterTag, FSEntry>;
+
+template class Set<FSEntry>;
+template class WrappedForwardIterator<Set<FSEntry>::ConstIteratorTag, const FSEntry>;
+

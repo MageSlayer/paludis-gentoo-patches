@@ -44,6 +44,7 @@ namespace paludis
 {
     namespace args
     {
+        class ArgsOption;
 
 #include <paludis/args/args_handler-se.hh>
 
@@ -182,7 +183,7 @@ namespace paludis
                 ///\{
 
                 struct EnvironmentLineConstIteratorTag;
-                typedef WrappedForwardIterator<EnvironmentLineConstIteratorTag, 
+                typedef WrappedForwardIterator<EnvironmentLineConstIteratorTag,
                         const std::pair<std::string, std::string> > EnvironmentLineConstIterator;
 
                 EnvironmentLineConstIterator begin_environment_lines() const;
@@ -245,6 +246,13 @@ namespace paludis
 
                 ///\}
 
+                ///\name For use by ArgsVisitor
+                ///\{
+
+                struct ArgsIteratorTag;
+                typedef WrappedForwardIterator<ArgsIteratorTag, std::string> ArgsIterator;
+
+                ///\}
 
                 /**
                  * Parse command line arguments. The third argument is used to
@@ -283,6 +291,20 @@ namespace paludis
          */
         std::ostream & operator<< (std::ostream &, const ArgsHandler &) PALUDIS_VISIBLE;
     }
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class WrappedForwardIterator<args::ArgsHandler::ParametersConstIteratorTag, const std::string>;
+    extern template class WrappedForwardIterator<args::ArgsHandler::UsageLineConstIteratorTag, const std::string>;
+    extern template class WrappedForwardIterator<args::ArgsHandler::EnvironmentLineConstIteratorTag,
+            const std::pair<std::string, std::string> >;
+    extern template class WrappedForwardIterator<args::ArgsHandler::ExamplesConstIteratorTag,
+            const std::pair<std::string, std::string> >;
+    extern template class WrappedForwardIterator<args::ArgsHandler::ArgsSectionsConstIteratorTag, const args::ArgsSection>;
+    extern template class WrappedForwardIterator<args::ArgsHandler::DescriptionLineConstIteratorTag, const std::string>;
+    extern template class WrappedForwardIterator<args::ArgsHandler::NotesIteratorTag, const std::string>;
+    extern template class WrappedForwardIterator<args::ArgsHandler::ArgsIteratorTag, std::string>;
+
+#endif
 }
 
 #endif

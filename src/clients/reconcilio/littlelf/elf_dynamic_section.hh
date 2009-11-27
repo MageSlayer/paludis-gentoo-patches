@@ -189,6 +189,9 @@ class DynamicEntries :
 };
 
 template <typename ElfType_>
+struct DynamicSectionEntryIteratorTag;
+
+template <typename ElfType_>
 class DynamicSection :
     public Section<ElfType_>,
     public paludis::ImplementAcceptMethods<Section<ElfType_>, DynamicSection<ElfType_> >,
@@ -204,7 +207,7 @@ class DynamicSection :
 
         void resolve_entry_names(Section<ElfType_> &);
 
-        struct EntryIteratorTag;
+        typedef DynamicSectionEntryIteratorTag<ElfType_> EntryIteratorTag;
         typedef paludis::WrappedForwardIterator<EntryIteratorTag, DynamicEntry<ElfType_> > EntryIterator;
         EntryIterator entry_begin() const;
         EntryIterator entry_end() const;

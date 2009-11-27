@@ -117,6 +117,10 @@ namespace paludis
                 }
         };
     }
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class WrappedForwardIterator<args::ArgsGroup::ConstIteratorTag, args::ArgsOption * const>;
+#endif
 }
 
 #endif

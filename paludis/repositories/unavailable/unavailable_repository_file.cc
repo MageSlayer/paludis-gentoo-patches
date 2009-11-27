@@ -19,7 +19,6 @@
 
 #include <paludis/repositories/unavailable/unavailable_repository_file.hh>
 #include <paludis/repositories/unavailable/unavailable_repository.hh>
-#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
@@ -30,10 +29,13 @@
 #include <paludis/version_spec.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <list>
 
 using namespace paludis;
 using namespace paludis::unavailable_repository;
+
+typedef std::list<UnavailableRepositoryFileEntry> Entries;
 
 namespace paludis
 {
@@ -41,7 +43,13 @@ namespace paludis
     struct Implementation<UnavailableRepositoryFile>
     {
         std::string repo_name, homepage, description;
-        std::list<UnavailableRepositoryFileEntry> entries;
+        Entries entries;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<UnavailableRepositoryFile::ConstIteratorTag>
+    {
+        typedef Entries::const_iterator UnderlyingIterator;
     };
 }
 

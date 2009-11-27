@@ -39,6 +39,9 @@ class InvalidElfFileError :
 };
 
 template <typename ElfType_>
+struct ElfObjectSectionIteratorTag;
+
+template <typename ElfType_>
 class ElfObject :
     private paludis::PrivateImplementationPattern<ElfObject<ElfType_> >
 {
@@ -108,7 +111,7 @@ class ElfObject :
             return _hdr.e_shnum;
         }
 
-        struct SectionIteratorTag;
+        typedef ElfObjectSectionIteratorTag<ElfType_> SectionIteratorTag;
         typedef paludis::WrappedForwardIterator<SectionIteratorTag, Section<ElfType_> > SectionIterator;
         SectionIterator section_begin() const;
         SectionIterator section_end() const;

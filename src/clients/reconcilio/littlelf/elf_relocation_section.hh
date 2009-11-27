@@ -92,6 +92,9 @@ struct RelocationA
 };
 
 template <typename ElfType_, typename Relocation_>
+struct RelocationSectionRelocationIteratorTag;
+
+template <typename ElfType_, typename Relocation_>
 class RelocationSection :
     public Section<ElfType_>,
     public paludis::ImplementAcceptMethods<Section<ElfType_>, RelocationSection<ElfType_, Relocation_> >,
@@ -108,7 +111,7 @@ class RelocationSection :
             return Relocation_::type_name;
         }
 
-        struct RelocationIteratorTag;
+        typedef RelocationSectionRelocationIteratorTag<ElfType_, Relocation_> RelocationIteratorTag;
         typedef paludis::WrappedForwardIterator<RelocationIteratorTag, const typename Relocation_::Entry> RelocationIterator;
         RelocationIterator relocation_begin() const;
         RelocationIterator relocation_end() const;

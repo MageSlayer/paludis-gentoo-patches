@@ -30,6 +30,9 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/member_iterator-impl.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/hook.hh>
 #include <paludis/distribution.hh>
 #include <paludis/selection.hh>

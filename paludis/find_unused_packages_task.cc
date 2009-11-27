@@ -27,7 +27,7 @@
 #include <paludis/filter.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
-#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>

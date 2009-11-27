@@ -23,13 +23,14 @@
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
+#include <paludis/util/set-impl.hh>
 
 using namespace paludis;
-
-template class WrappedForwardIterator<Sequence<std::string>::ConstIteratorTag, const std::string>;
-template class WrappedOutputIterator<Sequence<std::string>::InserterTag, std::string>;
 
 Environment::~Environment()
 {
 }
 
+template class Set<UnprefixedChoiceName>;
+template class WrappedForwardIterator<Set<UnprefixedChoiceName>::ConstIteratorTag, const UnprefixedChoiceName>;
+template class WrappedOutputIterator<Set<UnprefixedChoiceName>::InserterTag, UnprefixedChoiceName>;

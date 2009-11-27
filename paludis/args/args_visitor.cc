@@ -1,6 +1,6 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -16,8 +16,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "args_visitor.hh"
 #include "args_option.hh"
 #include "args_error.hh"
+#include "args_handler.hh"
 #include "bad_argument.hh"
 
 #include <paludis/util/destringify.hh>
@@ -32,9 +34,7 @@
 using namespace paludis;
 using namespace paludis::args;
 
-template class WrappedForwardIterator<ArgsVisitor::ArgsIteratorTag, std::string>;
-
-ArgsVisitor::ArgsVisitor(ArgsIterator * ai, ArgsIterator ae,
+ArgsVisitor::ArgsVisitor(ArgsHandler::ArgsIterator * ai, ArgsHandler::ArgsIterator ae,
         const std::string & env_prefix) :
     _args_index(ai),
     _args_end(ae),

@@ -34,8 +34,8 @@
 #include <paludis/filter_handler.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
-#include <paludis/util/set.hh>
-#include <paludis/util/sequence.hh>
+#include <paludis/util/set-impl.hh>
+#include <paludis/util/sequence-impl.hh>
 #include <list>
 #include <algorithm>
 #include <set>
@@ -43,9 +43,6 @@
 #include <cctype>
 
 using namespace paludis;
-
-template class WrappedForwardIterator<FuzzyCandidatesFinder::CandidatesConstIteratorTag, const QualifiedPackageName>;
-template class WrappedForwardIterator<FuzzyRepositoriesFinder::RepositoriesConstIteratorTag, const RepositoryName>;
 
 namespace
 {
@@ -126,6 +123,12 @@ namespace paludis
     {
         std::list<QualifiedPackageName> candidates;
     };
+
+    template <>
+    struct WrappedForwardIteratorTraits<FuzzyCandidatesFinder::CandidatesConstIteratorTag>
+    {
+        typedef std::list<QualifiedPackageName>::const_iterator UnderlyingIterator;
+    };
 }
 
 FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::string & name, const Filter & filter) :
@@ -181,6 +184,12 @@ namespace paludis
     {
         std::list<RepositoryName> candidates;
     };
+
+    template <>
+    struct WrappedForwardIteratorTraits<FuzzyRepositoriesFinder::RepositoriesConstIteratorTag>
+    {
+        typedef std::list<RepositoryName>::const_iterator UnderlyingIterator;
+    };
 }
 
 FuzzyRepositoriesFinder::FuzzyRepositoriesFinder(const Environment & e, const std::string & name) :
@@ -221,4 +230,7 @@ FuzzyRepositoriesFinder::end() const
 {
     return RepositoriesConstIterator(_imp->candidates.end());
 }
+
+template class WrappedForwardIterator<FuzzyCandidatesFinder::CandidatesConstIteratorTag, const QualifiedPackageName>;
+template class WrappedForwardIterator<FuzzyRepositoriesFinder::RepositoriesConstIteratorTag, const RepositoryName>;
 

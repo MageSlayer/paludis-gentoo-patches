@@ -29,6 +29,9 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_shared_copy.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/wrapped_output_iterator-impl.hh>
+#include <paludis/util/sequence-impl.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/slot_requirement.hh>
 #include <paludis/metadata_key.hh>
@@ -409,6 +412,12 @@ namespace paludis
     {
         std::list<SanitisedDependency> sanitised_dependencies;
     };
+
+    template <>
+    struct WrappedForwardIteratorTraits<SanitisedDependencies::ConstIteratorTag>
+    {
+        typedef std::list<SanitisedDependency>::const_iterator UnderlyingIterator;
+    };
 }
 
 SanitisedDependencies::SanitisedDependencies() :
@@ -574,6 +583,9 @@ SanitisedDependency::deserialise(Deserialisation & d, const std::tr1::shared_ptr
                     from_id))
             );
 }
+
+template class Sequence<PackageOrBlockDepSpec>;
+template class WrappedForwardIterator<Sequence<PackageOrBlockDepSpec>::ConstIteratorTag, const PackageOrBlockDepSpec>;
 
 template class WrappedForwardIterator<SanitisedDependencies::ConstIteratorTag, const SanitisedDependency>;
 

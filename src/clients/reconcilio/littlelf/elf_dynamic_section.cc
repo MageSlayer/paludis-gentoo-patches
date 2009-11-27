@@ -55,6 +55,12 @@ namespace paludis
     {
         std::vector<std::tr1::shared_ptr<DynamicEntry<ElfType_> > > dynamic_entries;
     };
+
+    template <typename ElfType_>
+    struct WrappedForwardIteratorTraits<DynamicSectionEntryIteratorTag<ElfType_> >
+    {
+        typedef IndirectIterator<typename std::vector<std::tr1::shared_ptr<DynamicEntry<ElfType_> > >::const_iterator> UnderlyingIterator;
+    };
 }
 
 namespace littlelf_internals
@@ -353,5 +359,4 @@ template class DynamicSection<Elf64Type>;
 
 template class WrappedForwardIterator<DynamicSection<Elf32Type>::EntryIteratorTag, DynamicEntry<Elf32Type> >;
 template class WrappedForwardIterator<DynamicSection<Elf64Type>::EntryIteratorTag, DynamicEntry<Elf64Type> >;
-
 

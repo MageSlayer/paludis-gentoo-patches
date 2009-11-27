@@ -30,6 +30,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>

@@ -23,6 +23,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/sequence-impl.hh>
 #include <paludis/serialise-impl.hh>
 
 using namespace paludis;

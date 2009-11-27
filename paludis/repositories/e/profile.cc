@@ -18,10 +18,11 @@
  */
 
 #include <paludis/repositories/e/profile.hh>
-#include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/map-impl.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
+
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/map-impl.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -31,4 +32,6 @@ Profile::~Profile()
 }
 
 template class Map<QualifiedPackageName, PackageDepSpec>;
+template class WrappedForwardIterator<Map<QualifiedPackageName, PackageDepSpec>::ConstIteratorTag,
+         const std::pair<const QualifiedPackageName, PackageDepSpec> >;
 

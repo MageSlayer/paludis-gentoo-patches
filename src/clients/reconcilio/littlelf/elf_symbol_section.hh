@@ -75,6 +75,9 @@ class Symbol
 };
 
 template <typename ElfType_>
+struct SymbolSectionSymbolIteratorTag;
+
+template <typename ElfType_>
 class SymbolSection :
     public Section<ElfType_>,
     public paludis::ImplementAcceptMethods<Section<ElfType_>, SymbolSection<ElfType_> >,
@@ -96,7 +99,7 @@ class SymbolSection :
 
         void resolve_symbols(Section<ElfType_> &);
 
-        struct SymbolIteratorTag;
+        typedef SymbolSectionSymbolIteratorTag<ElfType_> SymbolIteratorTag;
         typedef paludis::WrappedForwardIterator<SymbolIteratorTag, const Symbol<ElfType_ > > SymbolIterator;
         SymbolIterator symbol_begin() const;
         SymbolIterator symbol_end() const;

@@ -17,15 +17,14 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "args.hh"
+#include <paludis/args/args_group.hh>
+#include <paludis/args/args_section.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <list>
 
 using namespace paludis;
 using namespace paludis::args;
-
-template class WrappedForwardIterator<ArgsGroup::ConstIteratorTag, ArgsOption * const>;
 
 namespace paludis
 {
@@ -38,6 +37,12 @@ namespace paludis
     struct Implementation<ArgsGroup>
     {
         std::list<ArgsOption *> args_options;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<ArgsGroup::ConstIteratorTag>
+    {
+        typedef std::list<ArgsOption *>::const_iterator UnderlyingIterator;
     };
 }
 
@@ -79,4 +84,6 @@ ArgsGroup::end() const
 {
     return ConstIterator(_imp->args_options.end());
 }
+
+template class WrappedForwardIterator<ArgsGroup::ConstIteratorTag, ArgsOption * const>;
 

@@ -49,6 +49,18 @@ namespace paludis
     {
         std::list<T_> list;
     };
+
+    template <typename T_>
+    struct WrappedForwardIteratorTraits<SequenceConstIteratorTag<T_> >
+    {
+        typedef typename std::list<T_>::const_iterator UnderlyingIterator;
+    };
+
+    template <typename T_>
+    struct WrappedForwardIteratorTraits<SequenceReverseConstIteratorTag<T_> >
+    {
+        typedef typename std::list<T_>::const_reverse_iterator UnderlyingIterator;
+    };
 }
 
 template <typename T_>

@@ -28,6 +28,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/choice.hh>
 #include <paludis/metadata_key.hh>
 #include <algorithm>

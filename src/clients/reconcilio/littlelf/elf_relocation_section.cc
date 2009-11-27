@@ -39,6 +39,12 @@ namespace paludis
     {
         std::vector<typename Relocation_::Entry> relocations;
     };
+
+    template <typename ElfType_, typename Relocation_>
+    struct WrappedForwardIteratorTraits<RelocationSectionRelocationIteratorTag<ElfType_, Relocation_> >
+    {
+        typedef typename std::vector<typename Relocation_::Entry>::const_iterator UnderlyingIterator;
+    };
 }
 
 namespace

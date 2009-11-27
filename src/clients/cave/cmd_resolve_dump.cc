@@ -33,7 +33,8 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <iostream>
 #include <sstream>
 

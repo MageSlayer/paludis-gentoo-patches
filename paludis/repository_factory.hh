@@ -24,7 +24,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/no_type.hh>
 #include <paludis/environment-fwd.hh>
@@ -159,6 +159,7 @@ namespace paludis
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<RepositoryFactory>;
     extern template class InstantiationPolicy<RepositoryFactory, instantiation_method::SingletonTag>;
+    extern template class WrappedForwardIterator<RepositoryFactory::ConstIteratorTag, const std::string>;
 #endif
 }
 

@@ -19,8 +19,6 @@
 
 #include <paludis/repositories/unwritten/unwritten_repository_file.hh>
 #include <paludis/repositories/unwritten/unwritten_repository.hh>
-#include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/simple_parser.hh>
@@ -29,6 +27,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/literal_metadata_key.hh>
@@ -36,17 +35,31 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/formatter.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/spec_tree.hh>
+
+#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+
 #include <list>
 
 using namespace paludis;
 using namespace paludis::unwritten_repository;
+
+typedef std::list<UnwrittenRepositoryFileEntry> Entries;
 
 namespace paludis
 {
     template <>
     struct Implementation<UnwrittenRepositoryFile>
     {
-        std::list<UnwrittenRepositoryFileEntry> entries;
+        Entries entries;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<UnwrittenRepositoryFile::ConstIteratorTag>
+    {
+        typedef Entries::const_iterator UnderlyingIterator;
     };
 }
 

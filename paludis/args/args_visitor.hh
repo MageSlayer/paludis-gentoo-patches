@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2006 Stephen Bennett
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -24,6 +24,7 @@
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/attributes.hh>
+#include <paludis/args/args_handler.hh>
 #include <string>
 
 /** \file
@@ -56,12 +57,8 @@ namespace paludis
          */
         class PALUDIS_VISIBLE ArgsVisitor
         {
-            public:
-                struct ArgsIteratorTag;
-                typedef WrappedForwardIterator<ArgsIteratorTag, std::string> ArgsIterator;
-
             private:
-                ArgsIterator * _args_index, _args_end;
+                ArgsHandler::ArgsIterator * _args_index, _args_end;
                 std::string _env_prefix;
 
                 const std::string & get_param(const ArgsOption &);
@@ -74,7 +71,7 @@ namespace paludis
                 /**
                  * Constructor
                  */
-                ArgsVisitor(ArgsIterator *, ArgsIterator,
+                ArgsVisitor(ArgsHandler::ArgsIterator *, ArgsHandler::ArgsIterator,
                         const std::string & env_prefix = "");
 
                 /// Visit a StringArg.

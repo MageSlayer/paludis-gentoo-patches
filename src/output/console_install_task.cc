@@ -28,7 +28,6 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/set-impl.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/iterator_funcs.hh>
@@ -37,7 +36,7 @@
 #include <paludis/util/pretty_print.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/indirect_iterator.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>

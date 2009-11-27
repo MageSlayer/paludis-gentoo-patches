@@ -21,8 +21,9 @@
 #ifndef PALUDIS_GUARD_SRC_COMMON_ARGS_DEP_LIST_ARGS_HH
 #define PALUDIS_GUARD_SRC_COMMON_ARGS_DEP_LIST_ARGS_HH 1
 
-#include <paludis/args/args.hh>
+#include <paludis/args/args_option.hh>
 #include <paludis/args/deps_option_arg.hh>
+#include <paludis/args/args_group.hh>
 #include <paludis/dep_list.hh>
 #include <paludis/install_task.hh>
 

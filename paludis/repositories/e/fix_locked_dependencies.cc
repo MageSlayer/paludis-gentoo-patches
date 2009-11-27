@@ -25,6 +25,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>

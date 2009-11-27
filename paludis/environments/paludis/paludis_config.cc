@@ -77,7 +77,7 @@
 using namespace paludis;
 using namespace paludis::paludis_environment;
 
-template class WrappedForwardIterator<PaludisConfig::RepositoryConstIteratorTag, const std::tr1::function<std::string (const std::string &)> >;
+typedef std::list<std::tr1::function<std::string (const std::string &)> > Repos;
 
 namespace
 {
@@ -174,7 +174,7 @@ namespace paludis
         mutable std::string distribution;
         std::tr1::shared_ptr<FSEntrySequence> bashrc_files;
 
-        std::list<std::tr1::function<std::string (const std::string &)> > repos;
+        Repos repos;
 
         std::tr1::shared_ptr<KeywordsConf> keywords_conf;
         std::tr1::shared_ptr<UseConf> use_conf;
@@ -327,6 +327,12 @@ namespace paludis
 
         has_environment_conf = true;
     }
+
+    template <>
+    struct WrappedForwardIteratorTraits<PaludisConfig::RepositoryConstIteratorTag>
+    {
+        typedef Repos::const_iterator UnderlyingIterator;
+    };
 }
 
 PaludisConfigError::PaludisConfigError(const std::string & msg) throw () :
@@ -1061,4 +1067,6 @@ PaludisConfig::distribution() const
 
     return _imp->distribution;
 }
+
+template class WrappedForwardIterator<PaludisConfig::RepositoryConstIteratorTag, const std::tr1::function<std::string (const std::string &)> >;
 

@@ -27,10 +27,11 @@
 #include <paludis/util/map-impl.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/strip.hh>
-#include <paludis/util/sequence.hh>
+#include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/pretty_print.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/package_dep_spec_properties.hh>
 #include <paludis/mask.hh>
 #include <paludis/metadata_key.hh>
@@ -46,8 +47,6 @@
 #include <algorithm>
 
 using namespace paludis;
-
-template class Map<char, std::string>;
 
 namespace paludis
 {
@@ -953,4 +952,7 @@ ConsoleQueryTask::masks_to_explain() const
 {
     return _imp->masks_to_explain;
 }
+
+template class Map<char, std::string>;
+template class WrappedForwardIterator<Map<char, std::string>::ConstIteratorTag, const std::pair<const char, std::string> >;
 

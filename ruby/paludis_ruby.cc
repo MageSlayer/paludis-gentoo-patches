@@ -18,12 +18,17 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/paludis.hh>
 #include <paludis_ruby.hh>
 #include <paludis/util/config_file.hh>
-#include <paludis/dep_list_exceptions.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/dep_list_exceptions.hh>
+#include <paludis/match_package.hh>
+#include <paludis/version_spec.hh>
+#include <paludis/version_operator.hh>
+#include <paludis/about.hh>
+#include <paludis/user_dep_spec.hh>
+#include <paludis/action.hh>
 #include <ruby.h>
 #include <list>
 #include <ctype.h>

@@ -71,6 +71,7 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/iterator_funcs.hh>

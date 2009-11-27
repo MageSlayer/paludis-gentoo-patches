@@ -31,7 +31,7 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/hashes.hh>
-#include <paludis/util/sequence.hh>
+#include <paludis/util/sequence-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
@@ -60,11 +60,6 @@ typedef std::tr1::unordered_map<
     std::tr1::shared_ptr<const DepListEntryTags>,
     Hash<std::tr1::shared_ptr<const PackageID> > > DepCollectorCache;
 
-template class Set<std::tr1::shared_ptr<DepTag> >;
-template class WrappedForwardIterator<Set<std::tr1::shared_ptr<DepTag> >::ConstIteratorTag, const std::tr1::shared_ptr<DepTag> >;
-template class WrappedOutputIterator<Set<std::tr1::shared_ptr<DepTag> >::InserterTag, std::tr1::shared_ptr<DepTag> >;
-template class WrappedForwardIterator<UninstallList::UninstallListTag, const UninstallListEntry>;
-
 namespace paludis
 {
     template<>
@@ -82,6 +77,12 @@ namespace paludis
             options(o)
         {
         }
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<UninstallList::UninstallListTag>
+    {
+        typedef std::list<UninstallListEntry>::const_iterator UnderlyingIterator;
     };
 }
 
@@ -587,4 +588,9 @@ UninstallList::has_errors() const
 {
     return end() != std::find_if(begin(), end(), IsError());
 }
+
+template class Set<std::tr1::shared_ptr<DepTag> >;
+template class WrappedForwardIterator<Set<std::tr1::shared_ptr<DepTag> >::ConstIteratorTag, const std::tr1::shared_ptr<DepTag> >;
+template class WrappedOutputIterator<Set<std::tr1::shared_ptr<DepTag> >::InserterTag, std::tr1::shared_ptr<DepTag> >;
+template class WrappedForwardIterator<UninstallList::UninstallListTag, const UninstallListEntry>;
 

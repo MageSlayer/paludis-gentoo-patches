@@ -262,5 +262,5 @@ SlotNameOrNull::hash() const
 }
 
 template class Sequence<Resolvent>;
-template class WrappedForwardIterator<Resolvents::ConstIteratorTag, Resolvent>;
+template class WrappedForwardIterator<Resolvents::ConstIteratorTag, const Resolvent>;
 

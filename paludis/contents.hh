@@ -25,7 +25,7 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/type_list.hh>
-#include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/metadata_key_holder.hh>
 #include <tr1/memory>
@@ -235,6 +235,8 @@ namespace paludis
     extern template class PrivateImplementationPattern<Contents>;
     extern template class PrivateImplementationPattern<ContentsEntry>;
     extern template class PrivateImplementationPattern<ContentsSymEntry>;
+
+    extern template class WrappedForwardIterator<Contents::ConstIteratorTag, const std::tr1::shared_ptr<const ContentsEntry> >;
 #endif
 }
 

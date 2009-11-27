@@ -29,6 +29,24 @@
 
 using namespace paludis;
 
+typedef std::list<std::tr1::shared_ptr<const Choice> > ChoicesList;
+typedef std::list<std::tr1::shared_ptr<const ChoiceValue> > ChoiceList;
+
+namespace paludis
+{
+    template <>
+    struct WrappedForwardIteratorTraits<Choices::ConstIteratorTag>
+    {
+        typedef ChoicesList::const_iterator UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<Choice::ConstIteratorTag>
+    {
+        typedef ChoiceList::const_iterator UnderlyingIterator;
+    };
+}
+
 ChoicePrefixNameError::ChoicePrefixNameError(const std::string & n) throw () :
     NameError(n, "choice prefix name")
 {
@@ -133,7 +151,7 @@ namespace paludis
     template <>
     struct Implementation<Choices>
     {
-        std::list<std::tr1::shared_ptr<const Choice> > choices;
+        ChoicesList choices;
     };
 }
 
@@ -203,7 +221,7 @@ namespace paludis
     template <>
     struct Implementation<Choice>
     {
-        std::list<std::tr1::shared_ptr<const ChoiceValue> > values;
+        ChoiceList values;
         const ChoiceParams params;
 
         Implementation(const ChoiceParams & p) :

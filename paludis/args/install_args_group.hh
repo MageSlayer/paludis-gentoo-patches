@@ -23,7 +23,8 @@
 
 #include <paludis/util/set.hh>
 
-#include <paludis/args/args.hh>
+#include <paludis/args/args_option.hh>
+#include <paludis/args/args_group.hh>
 #include <paludis/dep_list-fwd.hh>
 #include <paludis/install_task.hh>
 

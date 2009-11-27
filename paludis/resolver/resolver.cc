@@ -38,6 +38,8 @@
 #include <paludis/notifier_callback.hh>
 #include <paludis/dep_spec_flattener.hh>
 
+#include <paludis/util/private_implementation_pattern-impl.hh>
+
 using namespace paludis;
 using namespace paludis::resolver;
 

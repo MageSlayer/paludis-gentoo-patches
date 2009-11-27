@@ -30,6 +30,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <list>
 #include <set>
 

@@ -32,6 +32,7 @@
 #include <paludis/repositories/e/dependencies_rewriter.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/repositories/e/eapi.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <tr1/functional>
 #include <set>
 #include <map>

@@ -22,7 +22,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/simple_parser.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/sequence.hh>
+#include <paludis/util/sequence-impl.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/package_id.hh>
@@ -164,6 +164,12 @@ namespace paludis
             class_name(c)
         {
         }
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<Deserialisation::ConstIteratorTag>
+    {
+        typedef std::list<std::tr1::shared_ptr<Deserialisation> >::const_iterator UnderlyingIterator;
     };
 }
 
@@ -358,4 +364,5 @@ DeserialisatorHandler<std::tr1::shared_ptr<const PackageID> >::handle(Deserialis
 template class PrivateImplementationPattern<Deserialiser>;
 template class PrivateImplementationPattern<Deserialisation>;
 template class PrivateImplementationPattern<Deserialisator>;
+template class WrappedForwardIterator<Deserialisation::ConstIteratorTag, const std::tr1::shared_ptr<Deserialisation> >;
 

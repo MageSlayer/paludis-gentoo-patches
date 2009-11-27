@@ -26,7 +26,7 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/options-fwd.hh>
-#include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 
 #include <iosfwd>
@@ -252,8 +252,10 @@ namespace paludis
     extern template class PrivateImplementationPattern<ConfigFile::Source>;
     extern template class PrivateImplementationPattern<LineConfigFile>;
     extern template class PrivateImplementationPattern<KeyValueConfigFile>;
-#endif
 
+    extern template class WrappedForwardIterator<LineConfigFile::ConstIteratorTag, const std::string>;
+    extern template class WrappedForwardIterator<KeyValueConfigFile::ConstIteratorTag, const std::pair<const std::string, std::string> >;
+#endif
 }
 
 #endif

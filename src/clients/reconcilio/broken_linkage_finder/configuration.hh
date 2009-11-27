@@ -24,7 +24,7 @@
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 
 #include <string>
 
@@ -49,6 +49,13 @@ namespace broken_linkage_finder
             bool lib_is_masked(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+namespace paludis
+{
+    extern template class WrappedForwardIterator<broken_linkage_finder::Configuration::DirsIteratorTag, const FSEntry>;
+}
+#endif
 
 #endif
 

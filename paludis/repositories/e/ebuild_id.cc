@@ -51,7 +51,9 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/return_literal_function.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 
 #include <set>
 #include <iterator>

@@ -41,8 +41,6 @@
 using namespace paludis;
 using namespace broken_linkage_finder;
 
-template class WrappedForwardIterator<Configuration::DirsIteratorTag, const paludis::FSEntry>;
-
 namespace paludis
 {
     template <>
@@ -58,6 +56,12 @@ namespace paludis
         void load_from_etc_profile_env(const FSEntry &);
         void load_from_etc_ld_so_conf(const FSEntry &);
         void add_defaults();
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<Configuration::DirsIteratorTag>
+    {
+        typedef std::vector<FSEntry>::const_iterator UnderlyingIterator;
     };
 }
 
@@ -349,4 +353,6 @@ Configuration::lib_is_masked(const std::string & lib) const
 {
     return std::binary_search(_imp->ld_library_mask.begin(), _imp->ld_library_mask.end(), lib);
 }
+
+template class WrappedForwardIterator<Configuration::DirsIteratorTag, const paludis::FSEntry>;
 

@@ -96,6 +96,20 @@ namespace paludis
         {
         }
     };
+
+    template <>
+    struct WrappedForwardIteratorTraits<ProfileFile<LineConfigFile>::ConstIteratorTag>
+    {
+        typedef std::list<std::pair<std::tr1::shared_ptr<const EAPI>,
+                const std::tr1::remove_reference<LineConfigFile::ConstIterator::value_type>::type> >::const_iterator UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<ProfileFile<MaskFile>::ConstIteratorTag>
+    {
+        typedef std::list<std::pair<std::tr1::shared_ptr<const EAPI>,
+                const std::tr1::remove_reference<MaskFile::ConstIterator::value_type>::type> >::const_iterator UnderlyingIterator;
+    };
 }
 
 template <typename F_>
@@ -174,5 +188,12 @@ ProfileFile<F_>::end() const
 }
 
 template class ProfileFile<LineConfigFile>;
+template class WrappedForwardIterator<ProfileFile<LineConfigFile>::ConstIteratorTag, const std::pair<
+    std::tr1::shared_ptr<const EAPI>,
+    const std::tr1::remove_reference<LineConfigFile::ConstIterator::value_type>::type> >;
+
 template class ProfileFile<MaskFile>;
+template class WrappedForwardIterator<ProfileFile<MaskFile>::ConstIteratorTag, const std::pair<
+    std::tr1::shared_ptr<const EAPI>,
+    const std::tr1::remove_reference<MaskFile::ConstIterator::value_type>::type> >;
 

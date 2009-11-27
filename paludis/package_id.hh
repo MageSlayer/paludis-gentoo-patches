@@ -25,7 +25,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/operators.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 
 #include <paludis/action-fwd.hh>
@@ -487,6 +487,11 @@ namespace paludis
             bool operator() (const std::tr1::shared_ptr<const PackageID> &,
                     const std::tr1::shared_ptr<const PackageID> &) const;
     };
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class WrappedForwardIterator<PackageID::MasksConstIteratorTag, const std::tr1::shared_ptr<const Mask> >;
+    extern template class WrappedForwardIterator<PackageID::OverriddenMasksConstIteratorTag, const std::tr1::shared_ptr<const OverriddenMask> >;
+#endif
 }
 
 #endif

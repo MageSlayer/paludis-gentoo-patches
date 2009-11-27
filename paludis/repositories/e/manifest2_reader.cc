@@ -36,20 +36,26 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-template class WrappedForwardIterator<Manifest2Reader::ConstIteratorTag, const Manifest2Entry>;
+typedef std::map<std::pair<std::string, std::string>, Manifest2Entry> Entries;
 
 namespace paludis
 {
-    template<>
+    template <>
     struct Implementation<Manifest2Reader>
     {
         FSEntry manifest;
-        std::map<std::pair<std::string, std::string>, Manifest2Entry> entries;
+        Entries entries;
 
         Implementation(const FSEntry & f) :
             manifest(f)
         {
         }
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<Manifest2Reader::ConstIteratorTag>
+    {
+        typedef SecondIteratorTypes<Entries::const_iterator>::Type UnderlyingIterator;
     };
 }
 
@@ -159,3 +165,6 @@ Manifest2Reader::find(const std::pair<const std::string, const std::string> & p)
 {
     return ConstIterator(second_iterator(_imp->entries.find(p)));
 }
+
+template class WrappedForwardIterator<Manifest2Reader::ConstIteratorTag, const Manifest2Entry>;
+

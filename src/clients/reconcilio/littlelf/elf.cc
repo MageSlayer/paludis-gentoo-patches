@@ -50,6 +50,12 @@ namespace paludis
     {
         std::vector<std::tr1::shared_ptr<Section<ElfType_> > > sections;
     };
+
+    template <typename ElfType_>
+    struct WrappedForwardIteratorTraits<ElfObjectSectionIteratorTag<ElfType_> >
+    {
+        typedef IndirectIterator<typename std::vector<std::tr1::shared_ptr<Section<ElfType_> > >::const_iterator> UnderlyingIterator;
+    };
 }
 
 enum {

@@ -37,8 +37,23 @@ using namespace paludis;
 
 #include <paludis/util/config_file-se.cc>
 
-template class WrappedForwardIterator<LineConfigFile::ConstIteratorTag, const std::string>;
-template class WrappedForwardIterator<KeyValueConfigFile::ConstIteratorTag, const std::pair<const std::string, std::string> >;
+typedef std::list<std::string> LineConfigFileLines;
+typedef std::map<std::string, std::string> KeyValueConfigFileValues;
+
+namespace paludis
+{
+    template <>
+    struct WrappedForwardIteratorTraits<LineConfigFile::ConstIteratorTag>
+    {
+        typedef LineConfigFileLines::const_iterator UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<KeyValueConfigFile::ConstIteratorTag>
+    {
+        typedef KeyValueConfigFileValues::const_iterator UnderlyingIterator;
+    };
+}
 
 ConfigFileError::ConfigFileError(const std::string & filename, const std::string & m) throw () :
     ConfigurationError(filename.empty() ? m : "In file '" + filename + "': " + m)
@@ -153,7 +168,7 @@ namespace paludis
     struct Implementation<LineConfigFile>
     {
         const LineConfigFileOptions options;
-        std::list<std::string> lines;
+        LineConfigFileLines lines;
 
         Implementation(const LineConfigFileOptions & o) :
             options(o)
@@ -317,7 +332,7 @@ namespace paludis
         const KeyValueConfigFile::DefaultFunction default_function;
         const KeyValueConfigFile::TransformationFunction transformation_function;
 
-        std::map<std::string, std::string> values;
+        KeyValueConfigFileValues values;
 
         Implementation(
                 const KeyValueConfigFileOptions & o,
@@ -757,4 +772,7 @@ KeyValueConfigFile::transformation_function() const
 }
 
 template class PrivateImplementationPattern<KeyValueConfigFile>;
+
+template class WrappedForwardIterator<LineConfigFile::ConstIteratorTag, const std::string>;
+template class WrappedForwardIterator<KeyValueConfigFile::ConstIteratorTag, const std::pair<const std::string, std::string> >;
 

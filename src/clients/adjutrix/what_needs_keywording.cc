@@ -26,7 +26,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/iterator_funcs.hh>
-#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/dep_list_exceptions.hh>

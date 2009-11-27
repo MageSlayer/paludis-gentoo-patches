@@ -35,6 +35,7 @@
 #include <paludis/util/graph-impl.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/member_iterator-impl.hh>
+#include <paludis/util/sequence-impl.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/distribution.hh>
 #include <paludis/package_database.hh>

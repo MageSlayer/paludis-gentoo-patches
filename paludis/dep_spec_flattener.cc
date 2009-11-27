@@ -25,6 +25,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/repository.hh>
 #include <list>
 #include <algorithm>
@@ -49,6 +50,30 @@ namespace paludis
             env(e)
         {
         }
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIteratorTag>
+    {
+        typedef std::list<std::tr1::shared_ptr<const PackageDepSpec> >::const_iterator UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>::ConstIteratorTag>
+    {
+        typedef std::list<std::tr1::shared_ptr<const PlainTextDepSpec> >::const_iterator UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<DepSpecFlattener<SetSpecTree, PackageDepSpec>::ConstIteratorTag>
+    {
+        typedef std::list<std::tr1::shared_ptr<const PackageDepSpec> >::const_iterator UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec>::ConstIteratorTag>
+    {
+        typedef std::list<std::tr1::shared_ptr<const SimpleURIDepSpec> >::const_iterator UnderlyingIterator;
     };
 }
 
@@ -250,4 +275,13 @@ template class DepSpecFlattener<ProvideSpecTree, PackageDepSpec>;
 template class DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>;
 template class DepSpecFlattener<SetSpecTree, PackageDepSpec>;
 template class DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec>;
+
+template class WrappedForwardIterator<DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIteratorTag,
+         const std::tr1::shared_ptr<const PackageDepSpec> >;
+template class WrappedForwardIterator<DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>::ConstIteratorTag,
+         const std::tr1::shared_ptr<const PlainTextDepSpec> >;
+template class WrappedForwardIterator<DepSpecFlattener<SetSpecTree, PackageDepSpec>::ConstIteratorTag,
+         const std::tr1::shared_ptr<const PackageDepSpec> >;
+template class WrappedForwardIterator<DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec>::ConstIteratorTag,
+         const std::tr1::shared_ptr<const SimpleURIDepSpec> >;
 

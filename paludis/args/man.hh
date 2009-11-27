@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_ARGS_MAN_HH
 #define PALUDIS_GUARD_PALUDIS_ARGS_MAN_HH 1
 
-#include <paludis/args/args.hh>
+#include <paludis/args/args_handler.hh>
 #include <iosfwd>
 
 namespace paludis

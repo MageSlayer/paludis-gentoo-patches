@@ -29,7 +29,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/sequence.hh>
+#include <paludis/util/sequence-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/safe_ofstream.hh>
@@ -50,9 +50,7 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-template class WrappedForwardIterator<NewsFile::DisplayIfInstalledConstIteratorTag, const std::string>;
-template class WrappedForwardIterator<NewsFile::DisplayIfKeywordConstIteratorTag, const std::string>;
-template class WrappedForwardIterator<NewsFile::DisplayIfProfileConstIteratorTag, const std::string>;
+typedef std::list<std::string> DisplayIfList;
 
 namespace paludis
 {
@@ -86,6 +84,24 @@ namespace paludis
                     ("news-" + stringify(e_repository->name()) + ".unread"))
         {
         }
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<NewsFile::DisplayIfInstalledConstIteratorTag>
+    {
+        typedef DisplayIfList::const_iterator UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<NewsFile::DisplayIfKeywordConstIteratorTag>
+    {
+        typedef DisplayIfList::const_iterator UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<NewsFile::DisplayIfProfileConstIteratorTag>
+    {
+        typedef DisplayIfList::const_iterator UnderlyingIterator;
     };
 }
 
@@ -244,9 +260,9 @@ namespace paludis
     template<>
     struct Implementation<NewsFile>
     {
-        std::list<std::string> display_if_installed;
-        std::list<std::string> display_if_keyword;
-        std::list<std::string> display_if_profile;
+        DisplayIfList display_if_installed;
+        DisplayIfList display_if_keyword;
+        DisplayIfList display_if_profile;
     };
 }
 
@@ -377,4 +393,8 @@ NewsError::NewsError(const FSEntry & f, const std::string & m) throw () :
     Exception("Error in news file '" + stringify(f) + "': " + m)
 {
 }
+
+template class WrappedForwardIterator<NewsFile::DisplayIfInstalledConstIteratorTag, const std::string>;
+template class WrappedForwardIterator<NewsFile::DisplayIfKeywordConstIteratorTag, const std::string>;
+template class WrappedForwardIterator<NewsFile::DisplayIfProfileConstIteratorTag, const std::string>;
 

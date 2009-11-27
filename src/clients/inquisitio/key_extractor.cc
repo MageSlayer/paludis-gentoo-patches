@@ -25,6 +25,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/stringify_formatter.hh>

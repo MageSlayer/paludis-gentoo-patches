@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,7 +28,7 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/no_type.hh>
-#include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <tr1/memory>
 
 /** \file
@@ -118,6 +118,15 @@ namespace paludis
     extern template class DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>;
     extern template class DepSpecFlattener<SetSpecTree, PackageDepSpec>;
     extern template class DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec>;
+
+    extern template class WrappedForwardIterator<DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIteratorTag,
+           const std::tr1::shared_ptr<const PackageDepSpec> >;
+    extern template class WrappedForwardIterator<DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>::ConstIteratorTag,
+           const std::tr1::shared_ptr<const PlainTextDepSpec> >;
+    extern template class WrappedForwardIterator<DepSpecFlattener<SetSpecTree, PackageDepSpec>::ConstIteratorTag,
+           const std::tr1::shared_ptr<const PackageDepSpec> >;
+    extern template class WrappedForwardIterator<DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec>::ConstIteratorTag,
+           const std::tr1::shared_ptr<const SimpleURIDepSpec> >;
 #endif
 }
 

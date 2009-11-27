@@ -33,7 +33,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/member_iterator-impl.hh>
-#include <paludis/util/set.hh>
+#include <paludis/util/set-impl.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/map-impl.hh>
 #include <paludis/util/sequence.hh>
@@ -48,8 +48,20 @@
 
 using namespace paludis;
 
-template class WrappedForwardIterator<AmbiguousPackageNameError::OptionsConstIteratorTag, const std::string>;
-template class WrappedForwardIterator<PackageDatabase::RepositoryConstIteratorTag, const std::tr1::shared_ptr<Repository> >;
+namespace paludis
+{
+    template <>
+    struct WrappedForwardIteratorTraits<AmbiguousPackageNameError::OptionsConstIteratorTag>
+    {
+        typedef std::list<std::string>::const_iterator UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<PackageDatabase::RepositoryConstIteratorTag>
+    {
+        typedef std::list<std::tr1::shared_ptr<Repository> >::const_iterator UnderlyingIterator;
+    };
+}
 
 PackageDatabaseError::PackageDatabaseError(const std::string & our_message) throw () :
     Exception(our_message)
@@ -397,4 +409,7 @@ PackageDatabase::all_filter()
     static const Filter result((filter::All()));
     return result;
 }
+
+template class WrappedForwardIterator<AmbiguousPackageNameError::OptionsConstIteratorTag, const std::string>;
+template class WrappedForwardIterator<PackageDatabase::RepositoryConstIteratorTag, const std::tr1::shared_ptr<Repository> >;
 

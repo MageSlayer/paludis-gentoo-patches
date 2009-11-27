@@ -25,7 +25,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/set.hh>
+#include <paludis/util/set-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -81,6 +81,12 @@ namespace paludis
         Keys keys;
         std::list<void *> dl_opened;
     };
+
+    template <>
+    struct WrappedForwardIteratorTraits<OutputManagerFactory::ConstIteratorTag>
+    {
+        typedef FirstIteratorTypes<Keys::const_iterator>::Type UnderlyingIterator;
+    };
 }
 
 OutputManagerFactory::OutputManagerFactory() :
@@ -112,13 +118,13 @@ OutputManagerFactory::create(
 OutputManagerFactory::ConstIterator
 OutputManagerFactory::begin_keys() const
 {
-    return first_iterator(_imp->keys.begin());
+    return ConstIterator(first_iterator(_imp->keys.begin()));
 }
 
 OutputManagerFactory::ConstIterator
 OutputManagerFactory::end_keys() const
 {
-    return first_iterator(_imp->keys.end());
+    return ConstIterator(first_iterator(_imp->keys.end()));
 }
 
 void

@@ -29,6 +29,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/member_iterator-impl.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <list>
 #include <ruby.h>
 

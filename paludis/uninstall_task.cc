@@ -31,10 +31,11 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/iterator_funcs.hh>
-#include <paludis/util/sequence.hh>
+#include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
 #include <paludis/dep_tag.hh>
@@ -49,8 +50,6 @@
 #include <functional>
 
 using namespace paludis;
-
-template class WrappedForwardIterator<AmbiguousUnmergeTargetError::ConstIteratorTag, const std::tr1::shared_ptr<const PackageID> >;
 
 AmbiguousUnmergeTargetError::AmbiguousUnmergeTargetError(const std::string & t,
         const std::tr1::shared_ptr<const PackageIDSequence> m) throw () :
@@ -116,6 +115,12 @@ namespace paludis
             had_package_targets(false)
         {
         }
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<AmbiguousUnmergeTargetError::ConstIteratorTag>
+    {
+        typedef PackageIDSequence::ConstIterator UnderlyingIterator;
     };
 }
 
@@ -473,4 +478,6 @@ UninstallTask::world_remove_packages(const std::tr1::shared_ptr<const SetSpecTre
     WorldTargetFinder w(_imp->env, this);
     a->root()->accept(w);
 }
+
+template class WrappedForwardIterator<AmbiguousUnmergeTargetError::ConstIteratorTag, const std::tr1::shared_ptr<const PackageID> >;
 

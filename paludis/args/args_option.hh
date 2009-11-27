@@ -21,11 +21,11 @@
 #ifndef PALUDIS_GUARD_ARGS_ARGS_OPTION_HH
 #define PALUDIS_GUARD_ARGS_ARGS_OPTION_HH 1
 
-#include <paludis/args/args_visitor.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/util/named_value.hh>
+#include <paludis/util/simple_visitor.hh>
 
 /** \file
  * Declarations for ArgsOption.
@@ -49,6 +49,13 @@ namespace paludis
     namespace args
     {
         class ArgsGroup;
+        class StringArg;
+        class AliasArg;
+        class SwitchArg;
+        class IntegerArg;
+        class EnumArg;
+        class StringSetArg;
+        class StringSequenceArg;
 
         /**
          * Base class for a command line option.
@@ -319,7 +326,7 @@ namespace paludis
                 ///\{
 
                 struct AllowedArgConstIteratorTag;
-                typedef WrappedForwardIterator<AllowedArgConstIteratorTag, 
+                typedef WrappedForwardIterator<AllowedArgConstIteratorTag,
                         const std::pair<std::string, std::string> > AllowedArgConstIterator;
 
                 AllowedArgConstIterator begin_allowed_args() const;
@@ -593,6 +600,15 @@ namespace paludis
                 virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class WrappedForwardIterator<args::StringSetArg::ConstIteratorTag, const std::string>;
+    extern template class WrappedForwardIterator<args::StringSetArg::AllowedArgConstIteratorTag,
+                        const std::pair<std::string, std::string> >;
+    extern template class WrappedForwardIterator<args::StringSequenceArg::ConstIteratorTag, const std::string>;
+    extern template class WrappedForwardIterator<args::EnumArg::AllowedArgConstIteratorTag,
+                        const args::AllowedEnumArg>;
+#endif
 }
 
 #endif

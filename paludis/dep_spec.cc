@@ -556,6 +556,18 @@ namespace paludis
     {
         std::list<std::tr1::shared_ptr<const T_> > items;
     };
+
+    template <>
+    struct WrappedForwardIteratorTraits<DependenciesLabelsDepSpec::ConstIteratorTag>
+    {
+        typedef std::list<std::tr1::shared_ptr<const DependenciesLabel> >::const_iterator UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<URILabelsDepSpec::ConstIteratorTag>
+    {
+        typedef std::list<std::tr1::shared_ptr<const URILabel> >::const_iterator UnderlyingIterator;
+    };
 }
 
 template <typename T_>
@@ -1295,4 +1307,9 @@ template class PrivateImplementationPattern<PackageDepSpec>;
 template class CloneUsingThis<DepSpec, PackageDepSpec>;
 template class PrivateImplementationPattern<URILabelsDepSpec>;
 template class PrivateImplementationPattern<DependenciesLabelsDepSpec>;
+
+template class WrappedForwardIterator<DependenciesLabelsDepSpec::ConstIteratorTag,
+         const std::tr1::shared_ptr<const DependenciesLabel> >;
+template class WrappedForwardIterator<URILabelsDepSpec::ConstIteratorTag,
+         const std::tr1::shared_ptr<const URILabel> >;
 

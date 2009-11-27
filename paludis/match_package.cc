@@ -34,6 +34,9 @@
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
 #include <paludis/metadata_key.hh>
+
+#include <paludis/util/indirect_iterator-impl.hh>
+
 #include <tr1/functional>
 #include <algorithm>
 #include <istream>

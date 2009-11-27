@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,9 +32,9 @@
 
 using namespace paludis;
 
-template class WrappedForwardIterator<GLSAPackage::ArchsConstIteratorTag, const std::string>;
-template class WrappedForwardIterator<GLSAPackage::RangesConstIteratorTag, const erepository::GLSARange>;
-template class WrappedForwardIterator<GLSA::PackagesConstIteratorTag, const GLSAPackage>;
+typedef std::list<std::string> Archs;
+typedef std::list<erepository::GLSARange> Ranges;
+typedef std::list<std::tr1::shared_ptr<const GLSAPackage> > Packages;
 
 namespace paludis
 {
@@ -42,9 +42,9 @@ namespace paludis
     struct Implementation<GLSAPackage>
     {
         QualifiedPackageName name;
-        std::list<std::string> archs;
-        std::list<erepository::GLSARange> unaffected;
-        std::list<erepository::GLSARange> vulnerable;
+        Archs archs;
+        Ranges unaffected;
+        Ranges vulnerable;
 
         Implementation(const QualifiedPackageName & n) :
             name(n)
@@ -57,7 +57,25 @@ namespace paludis
     {
         std::string id;
         std::string title;
-        std::list<std::tr1::shared_ptr<const GLSAPackage> > packages;
+        Packages packages;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<GLSAPackage::ArchsConstIteratorTag>
+    {
+        typedef Archs::const_iterator UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<GLSAPackage::RangesConstIteratorTag>
+    {
+        typedef Ranges::const_iterator UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<GLSA::PackagesConstIteratorTag>
+    {
+        typedef IndirectIterator<Packages::const_iterator> UnderlyingIterator;
     };
 }
 
@@ -200,4 +218,8 @@ GLSAError::GLSAError(const std::string & msg, const std::string & filename) thro
     ConfigurationError("GLSA error: " + msg + (filename.empty() ? "" : " in file " + filename))
 {
 }
+
+template class WrappedForwardIterator<GLSAPackage::ArchsConstIteratorTag, const std::string>;
+template class WrappedForwardIterator<GLSAPackage::RangesConstIteratorTag, const erepository::GLSARange>;
+template class WrappedForwardIterator<GLSA::PackagesConstIteratorTag, const GLSAPackage>;
 

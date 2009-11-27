@@ -44,6 +44,12 @@ namespace paludis
     {
         std::vector<Symbol<ElfType_> > symbols;
     };
+
+    template <typename ElfType_>
+    struct WrappedForwardIteratorTraits<SymbolSectionSymbolIteratorTag<ElfType_> >
+    {
+        typedef typename std::vector<Symbol<ElfType_> >::const_iterator UnderlyingIterator;
+    };
 }
 
 namespace
@@ -218,5 +224,4 @@ template class SymbolSection<Elf64Type>;
 
 template class WrappedForwardIterator<SymbolSection<Elf32Type>::SymbolIteratorTag, const Symbol<Elf32Type> >;
 template class WrappedForwardIterator<SymbolSection<Elf64Type>::SymbolIteratorTag, const Symbol<Elf64Type> >;
-
 

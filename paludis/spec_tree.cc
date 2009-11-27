@@ -18,9 +18,10 @@
  */
 
 #include <paludis/spec_tree.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 
 using namespace paludis;
 using namespace paludis::spec_tree_internals;
@@ -163,6 +164,15 @@ InnerNode<Tree_, Item_>::operator InnerNode<OtherTree_, Item_> () const
     InnerNodeCopier<Tree_, OtherTree_, Item_> copier(this->spec());
     std::for_each(indirect_iterator(this->begin()), indirect_iterator(this->end()), accept_visitor(copier));
     return copier.result;
+}
+
+namespace paludis
+{
+    template <typename T_>
+    struct WrappedForwardIteratorTraits<BasicInnerNodeConstIteratorTag<T_> >
+    {
+        typedef typename Sequence<std::tr1::shared_ptr<const BasicNode<T_> > >::ConstIterator UnderlyingIterator;
+    };
 }
 
 template class SpecTree<MakeTypeList<

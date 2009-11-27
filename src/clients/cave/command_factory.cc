@@ -60,6 +60,12 @@ namespace paludis
     {
         Handlers handlers;
     };
+
+    template <>
+    struct WrappedForwardIteratorTraits<CommandFactory::ConstIteratorTag>
+    {
+        typedef FirstIteratorTypes<Handlers::const_iterator>::Type UnderlyingIterator;
+    };
 }
 
 namespace

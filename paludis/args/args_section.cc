@@ -42,6 +42,12 @@ namespace paludis
         {
         }
     };
+
+    template <>
+    struct WrappedForwardIteratorTraits<ArgsSection::GroupsConstIteratorTag>
+    {
+        typedef IndirectIterator<std::list<ArgsGroup *>::const_iterator> UnderlyingIterator;
+    };
 }
 
 ArgsSection::ArgsSection(ArgsHandler * const h, const std::string & s) :
@@ -85,4 +91,5 @@ ArgsSection::name() const
 }
 
 template class PrivateImplementationPattern<ArgsSection>;
+template class WrappedForwardIterator<args::ArgsSection::GroupsConstIteratorTag, const args::ArgsGroup>;
 

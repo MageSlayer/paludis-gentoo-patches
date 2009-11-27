@@ -36,7 +36,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tokeniser.hh>

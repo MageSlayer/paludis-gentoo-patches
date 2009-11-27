@@ -22,7 +22,7 @@
 
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/dep_list.hh>
 #include <paludis/dep_list_exceptions.hh>
 #include <paludis/tasks_exceptions.hh>
@@ -278,6 +278,10 @@ namespace paludis
              */
             std::string serialised_format() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class WrappedForwardIterator<InstallTask::TargetsConstIteratorTag, const std::string>;
+#endif
 }
 
 #endif

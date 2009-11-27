@@ -21,14 +21,13 @@
 #define PALUDIS_GUARD_PALUDIS_SPEC_TREE_HH 1
 
 #include <paludis/spec_tree-fwd.hh>
-#include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/select.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/sequence-fwd.hh>
 
-#include <paludis/util/sequence-impl.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/util/accept_visitor.hh>
-#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <algorithm>
 
@@ -73,7 +72,7 @@ namespace paludis
             public:
                 BasicInnerNode();
 
-                struct ConstIteratorTag;
+                typedef BasicInnerNodeConstIteratorTag<Tree_> ConstIteratorTag;
                 typedef WrappedForwardIterator<ConstIteratorTag,
                         const std::tr1::shared_ptr<const BasicNode<Tree_> > > ConstIterator;
 
@@ -207,6 +206,26 @@ namespace paludis
         private:
             const std::tr1::shared_ptr<typename InnerNodeType<RootNode_>::Type> _root;
     };
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<GenericSpecTree>::ConstIteratorTag,
+           const std::tr1::shared_ptr<const spec_tree_internals::BasicNode<GenericSpecTree> > >;
+    extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<DependencySpecTree>::ConstIteratorTag,
+           const std::tr1::shared_ptr<const spec_tree_internals::BasicNode<DependencySpecTree> > >;
+    extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<SetSpecTree>::ConstIteratorTag,
+             const std::tr1::shared_ptr<const spec_tree_internals::BasicNode<SetSpecTree> > >;
+    extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<PlainTextSpecTree>::ConstIteratorTag,
+             const std::tr1::shared_ptr<const spec_tree_internals::BasicNode<PlainTextSpecTree> > >;
+    extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<ProvideSpecTree>::ConstIteratorTag,
+             const std::tr1::shared_ptr<const spec_tree_internals::BasicNode<ProvideSpecTree> > >;
+    extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<SimpleURISpecTree>::ConstIteratorTag,
+             const std::tr1::shared_ptr<const spec_tree_internals::BasicNode<SimpleURISpecTree> > >;
+    extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<FetchableURISpecTree>::ConstIteratorTag,
+             const std::tr1::shared_ptr<const spec_tree_internals::BasicNode<FetchableURISpecTree> > >;
+    extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<LicenseSpecTree>::ConstIteratorTag,
+             const std::tr1::shared_ptr<const spec_tree_internals::BasicNode<LicenseSpecTree> > >;
+#endif
+
 }
 
 #endif

@@ -21,8 +21,11 @@
 #include <paludis/repository.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
+
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_output_iterator-impl.hh>
+
 #include <ostream>
 
 using namespace paludis;
@@ -292,4 +295,5 @@ template class PrivateImplementationPattern<ConfigAction>;
 
 template class Sequence<FetchActionFailure>;
 template class WrappedForwardIterator<Sequence<FetchActionFailure>::ConstIteratorTag, const FetchActionFailure>;
+template class WrappedOutputIterator<Sequence<FetchActionFailure>::InserterTag, FetchActionFailure>;
 

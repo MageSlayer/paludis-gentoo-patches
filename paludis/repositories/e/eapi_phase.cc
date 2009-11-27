@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,8 +32,7 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-template class WrappedForwardIterator<EAPIPhase::ConstIteratorTag, const std::string>;
-template class WrappedForwardIterator<EAPIPhases::ConstIteratorTag, const EAPIPhase>;
+typedef std::list<std::tr1::shared_ptr<const EAPIPhase> > EAPIPhasesList;
 
 namespace paludis
 {
@@ -47,7 +46,19 @@ namespace paludis
     template <>
     struct Implementation<EAPIPhases>
     {
-        std::list<std::tr1::shared_ptr<const EAPIPhase> > phases;
+        EAPIPhasesList phases;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<EAPIPhases::ConstIteratorTag>
+    {
+        typedef IndirectIterator<EAPIPhasesList::const_iterator> UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<EAPIPhase::ConstIteratorTag>
+    {
+        typedef std::list<std::string>::const_iterator UnderlyingIterator;
     };
 }
 
@@ -127,4 +138,8 @@ EAPIPhases::end_phases() const
 {
     return ConstIterator(indirect_iterator(_imp->phases.end()));
 }
+
+template class WrappedForwardIterator<EAPIPhase::ConstIteratorTag, const std::string>;
+template class WrappedForwardIterator<EAPIPhases::ConstIteratorTag, const EAPIPhase>;
+
 

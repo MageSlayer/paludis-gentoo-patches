@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,9 +33,6 @@
 using namespace paludis;
 using namespace paludis::gems;
 
-template class WrappedForwardIterator<GemSpecifications::ConstIteratorTag,
-         const std::pair<const std::pair<QualifiedPackageName, VersionSpec>, std::tr1::shared_ptr<const GemSpecification> > >;
-
 typedef std::tr1::unordered_map<std::pair<QualifiedPackageName, VersionSpec>, std::tr1::shared_ptr<const GemSpecification>,
         Hash<std::pair<QualifiedPackageName, VersionSpec> > > Specs;
 
@@ -45,6 +42,12 @@ namespace paludis
     struct Implementation<GemSpecifications>
     {
         Specs specs;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<GemSpecifications::ConstIteratorTag>
+    {
+        typedef Specs::const_iterator UnderlyingIterator;
     };
 }
 
@@ -215,4 +218,8 @@ GemSpecifications::end() const
 {
     return ConstIterator(_imp->specs.end());
 }
+
+template class WrappedForwardIterator<GemSpecifications::ConstIteratorTag,
+         const std::pair<const std::pair<QualifiedPackageName, VersionSpec>, std::tr1::shared_ptr<const GemSpecification> > >;
+
 

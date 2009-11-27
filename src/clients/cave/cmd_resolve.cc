@@ -31,6 +31,8 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/enum_iterator.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/args/escape.hh>
 #include <paludis/resolver/resolver.hh>

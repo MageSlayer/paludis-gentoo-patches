@@ -19,15 +19,17 @@
 
 #include <paludis/dep_label.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/util/stringify.hh>
+
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/stringify.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_output_iterator-impl.hh>
+
 #include <ostream>
 #include <algorithm>
 
 using namespace paludis;
-
-template class Sequence<std::tr1::shared_ptr<const DependenciesLabel> >;
 
 std::ostream &
 paludis::operator<< (std::ostream & s, const URILabel & l)
@@ -115,4 +117,11 @@ template class ConcreteDependenciesLabel<DependenciesInstallLabelTag>;
 template class ConcreteDependenciesLabel<DependenciesSuggestionLabelTag>;
 template class ConcreteDependenciesLabel<DependenciesRecommendationLabelTag>;
 template class ConcreteDependenciesLabel<DependenciesTestLabelTag>;
+
+template class Sequence<std::tr1::shared_ptr<const DependenciesLabel> >;
+template class WrappedForwardIterator<Sequence<std::tr1::shared_ptr<const DependenciesLabel> >::ConstIteratorTag,
+         const std::tr1::shared_ptr<const DependenciesLabel> >;
+template class WrappedOutputIterator<Sequence<std::tr1::shared_ptr<const DependenciesLabel> >::InserterTag,
+         std::tr1::shared_ptr<const DependenciesLabel> >;
+
 

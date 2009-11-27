@@ -17,16 +17,21 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "args.hh"
-#include "args_dumper.hh"
+#include <paludis/args/args_handler.hh>
+#include <paludis/args/args_dumper.hh>
+#include <paludis/args/args_visitor.hh>
+#include <paludis/args/bad_argument.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/accept_visitor.hh>
+
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/accept_visitor.hh>
+#include <paludis/util/sequence-impl.hh>
+
 #include <tr1/memory>
 #include <algorithm>
 #include <sstream>
@@ -35,16 +40,6 @@
 
 using namespace paludis;
 using namespace paludis::args;
-
-template class WrappedForwardIterator<ArgsHandler::ParametersConstIteratorTag, const std::string>;
-template class WrappedForwardIterator<ArgsHandler::UsageLineConstIteratorTag, const std::string>;
-template class WrappedForwardIterator<ArgsHandler::EnvironmentLineConstIteratorTag,
-         const std::pair<std::string, std::string> >;
-template class WrappedForwardIterator<ArgsHandler::ExamplesConstIteratorTag,
-         const std::pair<std::string, std::string> >;
-template class WrappedForwardIterator<ArgsHandler::ArgsSectionsConstIteratorTag, const ArgsSection>;
-template class WrappedForwardIterator<ArgsHandler::NotesIteratorTag, const std::string>;
-template class WrappedForwardIterator<ArgsHandler::DescriptionLineConstIterator, const std::string>;
 
 namespace paludis
 {
@@ -68,6 +63,54 @@ namespace paludis
         std::map<char, ArgsOption *> shortopts;
 
         std::tr1::shared_ptr<ArgsSection> main_options_section;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<ArgsHandler::ArgsSectionsConstIteratorTag>
+    {
+        typedef IndirectIterator<std::list<ArgsSection *>::const_iterator> UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<ArgsHandler::ParametersConstIteratorTag>
+    {
+        typedef std::list<std::string>::const_iterator UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<ArgsHandler::NotesIteratorTag>
+    {
+        typedef std::list<std::string>::const_iterator UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<ArgsHandler::DescriptionLineConstIteratorTag>
+    {
+        typedef std::list<std::string>::const_iterator UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<ArgsHandler::ExamplesConstIteratorTag>
+    {
+        typedef std::list<std::pair<std::string, std::string> >::const_iterator UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<ArgsHandler::EnvironmentLineConstIteratorTag>
+    {
+        typedef std::list<std::pair<std::string, std::string> >::const_iterator UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<ArgsHandler::UsageLineConstIteratorTag>
+    {
+        typedef std::list<std::string>::const_iterator UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<ArgsHandler::ArgsIteratorTag>
+    {
+        typedef std::list<std::string>::iterator UnderlyingIterator;
     };
 }
 
@@ -137,7 +180,7 @@ ArgsHandler::run(
 
     args.insert(args.end(), argseq->begin(), argseq->end());
 
-    ArgsVisitor::ArgsIterator argit(args.begin()), arge(args.end());
+    ArgsIterator argit(args.begin()), arge(args.end());
     ArgsVisitor visitor(&argit, arge, env_prefix);
 
     for ( ; argit != arge; ++argit )
@@ -190,7 +233,7 @@ ArgsHandler::run(
         }
     }
 
-    _imp->parameters.insert(_imp->parameters.end(), argit, ArgsVisitor::ArgsIterator(args.end()));
+    _imp->parameters.insert(_imp->parameters.end(), argit, ArgsIterator(args.end()));
 
     if (! env_prefix.empty())
         setenv((env_prefix + "_PARAMS").c_str(), join(_imp->parameters.begin(),
@@ -364,4 +407,15 @@ ArgsHandler::add_description_line(const std::string & e)
 {
     _imp->descriptions.push_back(e);
 }
+
+template class WrappedForwardIterator<ArgsHandler::ParametersConstIteratorTag, const std::string>;
+template class WrappedForwardIterator<ArgsHandler::UsageLineConstIteratorTag, const std::string>;
+template class WrappedForwardIterator<ArgsHandler::EnvironmentLineConstIteratorTag,
+         const std::pair<std::string, std::string> >;
+template class WrappedForwardIterator<ArgsHandler::ExamplesConstIteratorTag,
+         const std::pair<std::string, std::string> >;
+template class WrappedForwardIterator<ArgsHandler::ArgsSectionsConstIteratorTag, const ArgsSection>;
+template class WrappedForwardIterator<ArgsHandler::NotesIteratorTag, const std::string>;
+template class WrappedForwardIterator<ArgsHandler::DescriptionLineConstIteratorTag, const std::string>;
+template class WrappedForwardIterator<args::ArgsHandler::ArgsIteratorTag, std::string>;
 

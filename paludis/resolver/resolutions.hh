@@ -24,7 +24,7 @@
 #include <paludis/resolver/resolution-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/named_value.hh>
 #include <tr1/memory>
 
@@ -66,6 +66,8 @@ namespace paludis
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<resolver::Resolutions>;
+    extern template class WrappedForwardIterator<resolver::Resolutions::ConstIteratorTag,
+           const std::tr1::shared_ptr<resolver::Resolution> >;
 #endif
 }
 

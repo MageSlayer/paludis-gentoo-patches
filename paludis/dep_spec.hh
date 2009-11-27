@@ -24,7 +24,7 @@
 #include <paludis/util/clone.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/named_value.hh>
 
@@ -994,6 +994,12 @@ namespace paludis
     extern template class PrivateImplementationPattern<DependenciesLabelsDepSpec>;
     extern template class PrivateImplementationPattern<URILabelsDepSpec>;
     extern template class PrivateImplementationPattern<PlainTextLabelDepSpec>;
+
+    extern template class WrappedForwardIterator<DependenciesLabelsDepSpec::ConstIteratorTag,
+           const std::tr1::shared_ptr<const DependenciesLabel> >;
+    extern template class WrappedForwardIterator<URILabelsDepSpec::ConstIteratorTag,
+           const std::tr1::shared_ptr<const URILabel> >;
+
 #endif
 }
 

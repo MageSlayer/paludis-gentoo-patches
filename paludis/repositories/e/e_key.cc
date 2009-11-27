@@ -41,6 +41,8 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/destringify.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 
 #include <paludis/contents.hh>
 #include <paludis/repository.hh>

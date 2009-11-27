@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2007 Piotr Jaroszyński
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -26,7 +26,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/graph-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <tr1/memory>
@@ -149,6 +149,10 @@ namespace paludis
             AllowedOutputValues operator() (const std::string & v) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
+
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
+    extern template class WrappedForwardIterator<Hook::ConstIteratorTag, const std::pair<const std::string, std::string> >;
+#endif
 }
 
 extern "C" paludis::HookResult PALUDIS_VISIBLE paludis_hook_run(

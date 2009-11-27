@@ -51,6 +51,12 @@ namespace paludis
         {
         }
     };
+
+    template <>
+    struct WrappedForwardIteratorTraits<Constraints::ConstIteratorTag>
+    {
+        typedef Sequence<std::tr1::shared_ptr<const Constraint> >::ConstIterator UnderlyingIterator;
+    };
 }
 
 Constraints::Constraints() :
@@ -188,4 +194,7 @@ Constraint::deserialise(Deserialisation & d)
 
 template class PrivateImplementationPattern<Constraints>;
 template class WrappedForwardIterator<Constraints::ConstIteratorTag, const std::tr1::shared_ptr<const Constraint> >;
+
+template class Sequence<std::tr1::shared_ptr<const Constraint> >;
+template class WrappedForwardIterator<ConstraintSequence::ConstIteratorTag, const std::tr1::shared_ptr<const Constraint> >;
 

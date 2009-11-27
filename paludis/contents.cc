@@ -25,6 +25,8 @@
 
 using namespace paludis;
 
+typedef std::list<std::tr1::shared_ptr<const ContentsEntry> > Entries;
+
 namespace paludis
 {
     template <>
@@ -113,7 +115,13 @@ namespace paludis
     template<>
     struct Implementation<Contents>
     {
-        std::list<std::tr1::shared_ptr<const ContentsEntry> > c;
+        Entries c;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<Contents::ConstIteratorTag>
+    {
+        typedef Entries::const_iterator UnderlyingIterator;
     };
 }
 

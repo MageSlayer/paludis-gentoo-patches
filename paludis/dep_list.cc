@@ -49,15 +49,17 @@
 #include <paludis/util/save.hh>
 #include <paludis/util/member_iterator.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/sequence-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/simple_visitor_cast.hh>
-#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
+
+#include <paludis/util/sequence-impl.hh>
+#include <paludis/util/set-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 
 #include <algorithm>
 #include <functional>
@@ -70,14 +72,6 @@
 using namespace paludis;
 
 typedef std::list<std::tr1::shared_ptr<DependenciesLabelSequence> > LabelsStack;
-
-template class Sequence<std::tr1::function<bool (const PackageID &, const Mask &)> >;
-template class WrappedForwardIterator<DepListOverrideMasksFunctions::ConstIterator,
-         const std::tr1::function<bool (const PackageID &, const Mask &)> >;
-template class WrappedForwardIterator<DepList::IteratorTag, DepListEntry>;
-template class WrappedForwardIterator<DepList::ConstIteratorTag, const DepListEntry>;
-
-template class PrivateImplementationPattern<DepList>;
 
 DepListOptions::DepListOptions() :
     blocks(dl_blocks_accumulate),
@@ -147,6 +141,20 @@ namespace paludis
         {
             labels.push_front(make_shared_ptr(new DependenciesLabelSequence));
         }
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<DepList::IteratorTag>
+    {
+        typedef MergeList::iterator UnderlyingIterator;
+    };
+
+    template <>
+    struct WrappedForwardIteratorTraits<DepList::ConstIteratorTag>
+    {
+        typedef MergeList::const_iterator UnderlyingIterator;
+
+        typedef DepList::Iterator EquivalentNonConstIterator;
     };
 }
 
@@ -1738,4 +1746,12 @@ paludis::is_viable_any_child(const DependencySpecTree::BasicNode & i)
     else
         return true;
 }
+
+template class Sequence<std::tr1::function<bool (const PackageID &, const Mask &)> >;
+template class WrappedForwardIterator<DepList::IteratorTag, DepListEntry>;
+template class WrappedForwardIterator<DepList::ConstIteratorTag, const DepListEntry>;
+
+template WrappedForwardIterator<DepList::ConstIteratorTag, const DepListEntry>::WrappedForwardIterator(const DepList::Iterator &);
+
+template class PrivateImplementationPattern<DepList>;
 

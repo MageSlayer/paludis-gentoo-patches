@@ -19,6 +19,7 @@
 
 #include <paludis/repositories/cran/dep_spec_pretty_printer.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/options.hh>
