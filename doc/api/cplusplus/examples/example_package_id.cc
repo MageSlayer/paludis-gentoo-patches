@@ -50,7 +50,7 @@ int main(int argc, char * argv[])
                     generator::Package(QualifiedPackageName("sys-apps/paludis")))]);
 
         /* For each ID: */
-        for (PackageIDSet::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
         {
             /* IDs can be written to an ostream. */

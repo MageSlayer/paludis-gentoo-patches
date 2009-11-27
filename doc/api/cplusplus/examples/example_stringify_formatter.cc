@@ -43,7 +43,7 @@ int main(int argc, char * argv[])
                     filter::SupportsAction<InstallAction>())]);
 
         /* For each ID: */
-        for (PackageIDSet::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
         {
             cout << stringify(**i) << ":" << endl;

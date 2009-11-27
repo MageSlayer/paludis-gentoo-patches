@@ -75,7 +75,7 @@ int main(int argc, char * argv[])
                     filter::InstalledAtRoot(FSEntry("/")))]);
 
         /* For each ID: */
-        for (PackageIDSet::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
         {
             /* Do we have a contents key? PackageID _key() methods can return

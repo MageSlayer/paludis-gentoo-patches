@@ -160,7 +160,7 @@ int main(int argc, char * argv[])
         ResultsMap results;
 
         /* For each ID: */
-        for (PackageIDSet::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
         {
             /* If we don't have a fetches key, skip this package. All PackageID

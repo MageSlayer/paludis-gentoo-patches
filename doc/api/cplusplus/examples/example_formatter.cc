@@ -181,7 +181,7 @@ int main(int argc, char * argv[])
         cout << "<body>" << endl;
 
         /* For each ID: */
-        for (PackageIDSet::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
         {
             cout << "<h1>" << escape_html(stringify(**i)) << "</h1>" << endl;
