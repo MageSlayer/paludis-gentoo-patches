@@ -56,6 +56,8 @@ namespace paludis
             using PrivateImplementationPattern<Set<T_, C_> >::_imp;
 
         public:
+            typedef T_ Tag;
+
             ///\name Standard library typedefs
             ///\{
 
@@ -82,7 +84,7 @@ namespace paludis
             ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator find(const T_ &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            struct InserterTag;
+            typedef SetInsertIteratorTag<T_, C_> InserterTag;
             typedef WrappedOutputIterator<InserterTag, T_> Inserter;
             Inserter inserter();
 

@@ -36,6 +36,9 @@ namespace paludis
 
     template <typename K_, typename V_, typename C_ = DefaultMapComparator<K_> >
     struct MapConstIteratorTag;
+
+    template <typename K_, typename V_, typename C_ = DefaultMapComparator<K_> >
+    struct MapInserterTag;
 }
 
 #endif

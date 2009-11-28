@@ -61,6 +61,12 @@ namespace paludis
     {
         typedef typename std::list<T_>::const_reverse_iterator UnderlyingIterator;
     };
+
+    template <typename T_>
+    struct WrappedOutputIteratorTraits<SequenceInserterTag<T_> >
+    {
+        typedef std::back_insert_iterator<std::list<T_> > UnderlyingIterator;
+    };
 }
 
 template <typename T_>
@@ -114,13 +120,6 @@ typename paludis::Sequence<T_>::Inserter
 paludis::Sequence<T_>::back_inserter()
 {
     return Inserter(std::back_inserter(_imp->list));
-}
-
-template <typename T_>
-typename paludis::Sequence<T_>::Inserter
-paludis::Sequence<T_>::front_inserter()
-{
-    return Inserter(std::front_inserter(_imp->list));
 }
 
 template <typename T_>

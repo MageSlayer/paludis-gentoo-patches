@@ -36,6 +36,9 @@ namespace paludis
 
     template <typename T_>
     struct SequenceReverseConstIteratorTag;
+
+    template <typename T_>
+    struct SequenceInserterTag;
 }
 
 #endif

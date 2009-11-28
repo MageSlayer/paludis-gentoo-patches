@@ -67,6 +67,12 @@ namespace paludis
     {
         typedef typename std::map<K_, V_, C_>::const_iterator UnderlyingIterator;
     };
+
+    template <typename K_, typename V_, typename C_>
+    struct WrappedOutputIteratorTraits<MapInserterTag<K_, V_, C_> >
+    {
+        typedef std::insert_iterator<std::map<K_, V_, C_> > UnderlyingIterator;
+    };
 }
 
 template <typename K_, typename V_, typename C_>

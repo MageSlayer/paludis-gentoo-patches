@@ -69,6 +69,12 @@ namespace paludis
     {
         typedef typename std::set<T_, C_>::const_iterator UnderlyingIterator;
     };
+
+    template <typename T_, typename C_>
+    struct WrappedOutputIteratorTraits<SetInsertIteratorTag<T_, C_> >
+    {
+        typedef std::insert_iterator<std::set<T_, C_> > UnderlyingIterator;
+    };
 }
 
 template <typename T_, typename C_>

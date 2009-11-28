@@ -86,10 +86,9 @@ namespace paludis
             ReverseConstIterator rbegin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ReverseConstIterator rend() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            struct InserterTag;
+            typedef SequenceInserterTag<T_> InserterTag;
             typedef WrappedOutputIterator<InserterTag, T_> Inserter;
             Inserter back_inserter();
-            Inserter front_inserter();
 
             ///\}
 

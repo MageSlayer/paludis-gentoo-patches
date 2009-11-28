@@ -37,16 +37,14 @@ namespace paludis
     class PALUDIS_VISIBLE WrappedOutputIterator
     {
         private:
-            struct Base;
-            template <typename T_> struct BaseImpl;
-
-            Base * _base;
+            WrappedOutputIteratorUnderlyingIteratorHolder * _iter;
 
         public:
+            typedef Tag_ Tag;
+
             ///\name Basic operations
             ///\{
 
-            WrappedOutputIterator();
             ~WrappedOutputIterator();
             WrappedOutputIterator(const WrappedOutputIterator &);
 
@@ -80,8 +78,15 @@ namespace paludis
             ///\name Dereference
             ///\{
 
-            pointer operator-> ();
             reference operator* ();
+
+            ///\}
+
+            ///\name Underlying iterator
+            ///\{
+
+            template <typename T_> T_ & underlying_iterator();
+            template <typename T_> const T_ & underlying_iterator() const;
 
             ///\}
     };

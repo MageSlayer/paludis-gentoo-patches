@@ -75,7 +75,7 @@ namespace paludis
             ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator find(const K_ &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            struct InserterTag;
+            typedef MapInserterTag<K_, V_, C_> InserterTag;
             typedef WrappedOutputIterator<InserterTag, std::pair<const K_, V_> > Inserter;
             Inserter inserter() PALUDIS_ATTRIBUTE((warn_unused_result));
 

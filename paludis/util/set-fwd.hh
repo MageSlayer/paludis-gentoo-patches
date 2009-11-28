@@ -36,6 +36,9 @@ namespace paludis
 
     template <typename T_, typename C_>
     struct SetConstIteratorTag;
+
+    template <typename T_, typename C_>
+    struct SetInsertIteratorTag;
 }
 
 #endif

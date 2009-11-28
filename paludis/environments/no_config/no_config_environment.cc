@@ -22,14 +22,14 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/map.hh>
+#include <paludis/util/map-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/config_file.hh>
-#include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/graph-impl.hh>
