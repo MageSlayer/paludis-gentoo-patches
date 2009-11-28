@@ -22,6 +22,7 @@
 
 has_version()
 {
+    illegal_in_global_scope
     [[ "${#@}" -ne 1 ]] && die "$0 should take exactly one arg"
     local r=$(paludis_pipe_command HAS_VERSION "$EAPI" "$1" )
     return ${r%%;*}
@@ -34,6 +35,7 @@ portageq()
 
 best_version()
 {
+    illegal_in_global_scope
     [[ "${#@}" -ne 1 ]] && die "$0 should take exactly one arg"
     local r=$(paludis_pipe_command BEST_VERSION "$EAPI" "$1" )
     echo ${r#*;}
