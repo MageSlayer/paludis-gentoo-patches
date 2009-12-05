@@ -26,6 +26,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/serialise-impl.hh>
+#include <tr1/unordered_map>
 #include <list>
 #include <map>
 
@@ -34,6 +35,7 @@ using namespace paludis::resolver;
 
 typedef std::list<std::tr1::shared_ptr<Job> > JobsList;
 typedef std::multimap<Resolvent, JobsList::const_iterator> JobsListByResolventIndex;
+typedef std::tr1::unordered_map<JobID, JobsList::const_iterator, Hash<JobID> > JobsListByJobIDIndex;
 
 namespace paludis
 {
@@ -42,6 +44,7 @@ namespace paludis
     {
         JobsList jobs;
         JobsListByResolventIndex jobs_list_by_resolvent_index;
+        JobsListByJobIDIndex jobs_list_by_job_id_index;
     };
 }
 
@@ -104,6 +107,7 @@ Jobs::add(const std::tr1::shared_ptr<Job> & j)
     JobsList::const_iterator i(_imp->jobs.insert(_imp->jobs.end(), j));
     Indexer x(_imp->jobs_list_by_resolvent_index, i);
     j->accept(x);
+    _imp->jobs_list_by_job_id_index.insert(std::make_pair(j->id(), i));
 }
 
 namespace
@@ -238,12 +242,10 @@ Jobs::have_job_for_usable(const Resolvent & r) const
 const std::tr1::shared_ptr<Job>
 Jobs::fetch(const JobID & id)
 {
-    for (JobsList::const_iterator j(_imp->jobs.begin()), j_end(_imp->jobs.end()) ;
-            j != j_end ; ++j)
-        if ((*j)->id() == id)
-            return *j;
-
-    throw InternalError(PALUDIS_HERE, "no job for id");
+    JobsListByJobIDIndex::const_iterator i(_imp->jobs_list_by_job_id_index.find(id));
+    if (i == _imp->jobs_list_by_job_id_index.end())
+        throw InternalError(PALUDIS_HERE, "no job for id");
+    return *i->second;
 }
 
 const std::tr1::shared_ptr<const Job>
