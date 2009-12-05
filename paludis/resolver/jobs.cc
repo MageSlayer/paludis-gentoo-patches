@@ -213,7 +213,7 @@ Jobs::have_job_for_installed(const Resolvent & r) const
 
     for ( ; candidates.first != candidates.second ; ++candidates.first)
     {
-        if ((*candidates.first->second)->accept_returning<bool>(UsableJobChecker()))
+        if ((*candidates.first->second)->accept_returning<bool>(InstalledJobChecker()))
             return true;
     }
 
