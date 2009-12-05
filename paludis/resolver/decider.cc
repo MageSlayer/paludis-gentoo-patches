@@ -1317,7 +1317,9 @@ Decider::add_target_with_reason(const PackageDepSpec & spec, const std::tr1::sha
 void
 Decider::resolve()
 {
+    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Deciding"));
     _resolve_decide_with_dependencies();
+    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Finding Destinations"));
     _resolve_destinations();
 }
 

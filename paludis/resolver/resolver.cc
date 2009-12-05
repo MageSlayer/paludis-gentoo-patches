@@ -111,9 +111,7 @@ Resolver::add_target(const SetName & set_name)
 void
 Resolver::resolve()
 {
-    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Deciding"));
     _imp->decider->resolve();
-    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Ordering"));
     _imp->orderer->resolve();
 }
 

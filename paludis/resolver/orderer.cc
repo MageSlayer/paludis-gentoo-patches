@@ -90,8 +90,11 @@ Orderer::~Orderer()
 void
 Orderer::resolve()
 {
+    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Building Jobs"));
     _resolve_jobs();
+    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Building Arrows"));
     _resolve_jobs_dep_arrows();
+    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Ordering"));
     _resolve_order();
 }
 
@@ -569,7 +572,7 @@ Orderer::_resolve_order()
             any = true;
             _mark_already_ordered(*i);
 
-            if (pass >= 3)
+            if (pass >= 2)
             {
                 std::stringstream s;
                 const std::tr1::shared_ptr<const Job> job(_imp->lists->jobs()->fetch(*i));
@@ -581,14 +584,15 @@ Orderer::_resolve_order()
                 Log::get_instance()->message("resolver.orderer.job.broke_cycle", ll_warning, lc_context)
                     << "Had to use cycle breaking to order " << i->string_id() << " (pass " << pass
                     << ", remaining arrows are" << s.str() << ")";
-            }
 
-            pass = 1;
+                pass = 1;
+                continue;
+            }
         }
 
         if (remaining && ! any)
         {
-            if (++pass < 4)
+            if (++pass < 3)
                 continue;
 
             std::stringstream s;
@@ -685,7 +689,7 @@ Orderer::_can_order(const JobID & i, const int pass) const
         {
             bool skippable(false);
 
-            if ((! skippable) && (pass >= 2))
+            if ((! skippable) && (pass >= 1))
             {
                 /* if our job is a NoChangeJob or a UsableJob, and we're
                  * supposed to come after a NoChangeJob or a UsableJob, ignore
@@ -696,7 +700,7 @@ Orderer::_can_order(const JobID & i, const int pass) const
                     skippable = true;
             }
 
-            if ((! skippable) && (pass >= 3))
+            if ((! skippable) && (pass >= 2))
             {
                 /* we can also ignore any arrows that are already met (e.g a
                  * dep b, b dep a, a is already installed */
