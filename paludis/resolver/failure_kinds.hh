@@ -17,38 +17,16 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_ARROW_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_ARROW_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_FAILURE_KINDS_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_FAILURE_KINDS_HH 1
 
-#include <paludis/resolver/arrow-fwd.hh>
-#include <paludis/resolver/resolvent.hh>
-#include <paludis/resolver/reason-fwd.hh>
-#include <paludis/resolver/job_id.hh>
 #include <paludis/resolver/failure_kinds-fwd.hh>
-#include <paludis/serialise-fwd.hh>
-#include <paludis/util/named_value.hh>
 
 namespace paludis
 {
-    namespace n
-    {
-        struct comes_after;
-        struct failure_kinds;
-        struct maybe_reason;
-    }
-
     namespace resolver
     {
-        struct Arrow
-        {
-            NamedValue<n::comes_after, JobID> comes_after;
-            NamedValue<n::failure_kinds, FailureKinds> failure_kinds;
-            NamedValue<n::maybe_reason, std::tr1::shared_ptr<const Reason> > maybe_reason;
 
-            void serialise(Serialiser &) const;
-
-            static const Arrow deserialise(Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
-        };
     }
 }
 

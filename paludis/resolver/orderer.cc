@@ -143,6 +143,7 @@ namespace
                  * not at pretend time */
                 usable_job->arrows()->push_back(make_named_values<Arrow>(
                             value_for<n::comes_after>(common_jobs.done_pretends()->id()),
+                            value_for<n::failure_kinds>(FailureKinds()),
                             value_for<n::maybe_reason>(make_null_shared_ptr())
                             ));
             }
@@ -168,6 +169,7 @@ namespace
                  * not at pretend time */
                 usable_job->arrows()->push_back(make_named_values<Arrow>(
                             value_for<n::comes_after>(common_jobs.done_pretends()->id()),
+                            value_for<n::failure_kinds>(FailureKinds()),
                             value_for<n::maybe_reason>(make_null_shared_ptr())
                             ));
             }
@@ -207,17 +209,20 @@ namespace
                 /* we can't do any fetches or installs until all pretends have passed */
                 fetch_job->arrows()->push_back(make_named_values<Arrow>(
                             value_for<n::comes_after>(common_jobs.done_pretends()->id()),
+                            value_for<n::failure_kinds>(FailureKinds()),
                             value_for<n::maybe_reason>(make_null_shared_ptr())
                             ));
 
                 install_job->arrows()->push_back(make_named_values<Arrow>(
                             value_for<n::comes_after>(common_jobs.done_pretends()->id()),
+                            value_for<n::failure_kinds>(FailureKinds()),
                             value_for<n::maybe_reason>(make_null_shared_ptr())
                             ));
 
                 /* we haven't done all our pretends until we've done our pretend */
                 common_jobs.done_pretends()->arrows()->push_back(make_named_values<Arrow>(
                             value_for<n::comes_after>(pretend_job->id()),
+                            value_for<n::failure_kinds>(FailureKinds()),
                             value_for<n::maybe_reason>(make_null_shared_ptr())
                             ));
 
@@ -226,18 +231,21 @@ namespace
                  * but the stronger requirement doesn't seem to hurt */
                 common_jobs.done_installs()->arrows()->push_back(make_named_values<Arrow>(
                             value_for<n::comes_after>(usable_job->id()),
+                            value_for<n::failure_kinds>(FailureKinds()),
                             value_for<n::maybe_reason>(make_null_shared_ptr())
                             ));
 
                 /* we can't install until we've fetched */
                 install_job->arrows()->push_back(make_named_values<Arrow>(
                             value_for<n::comes_after>(fetch_job->id()),
+                            value_for<n::failure_kinds>(FailureKinds()),
                             value_for<n::maybe_reason>(make_null_shared_ptr())
                             ));
 
                 /* we aren't usable until we've been installed */
                 usable_job->arrows()->push_back(make_named_values<Arrow>(
                             value_for<n::comes_after>(install_job->id()),
+                            value_for<n::failure_kinds>(FailureKinds()),
                             value_for<n::maybe_reason>(make_null_shared_ptr())
                             ));
             }
@@ -391,6 +399,10 @@ namespace
                     + "' with reason '" + stringify(r.sanitised_dependency().spec())
                     + "' from '" + stringify(r.from_resolvent()) + "':");
 
+            FailureKinds failure_kinds;
+            if (r.already_met())
+                failure_kinds += fk_ignorable_if_satisfied;
+
             if (r.sanitised_dependency().spec().if_block())
             {
                 /* only strong blockers impose arrows. todo: maybe weak
@@ -413,6 +425,7 @@ namespace
                     jobs->fetch(jobs->find_id_for_installed(r.from_resolvent()))->arrows()->push_back(
                             make_named_values<Arrow>(
                                 value_for<n::comes_after>(our_identifier),
+                                value_for<n::failure_kinds>(failure_kinds),
                                 value_for<n::maybe_reason>(reason)
                                 ));
                 }
@@ -444,6 +457,7 @@ namespace
                             jobs->fetch(jobs->find_id_for_installed(r.from_resolvent()))->arrows()->push_back(
                                     make_named_values<Arrow>(
                                         value_for<n::comes_after>(our_identifier),
+                                        value_for<n::failure_kinds>(failure_kinds),
                                         value_for<n::maybe_reason>(reason)
                                         ));
                     }
@@ -455,6 +469,7 @@ namespace
                             jobs->fetch(jobs->find_id_for_usable(r.from_resolvent()))->arrows()->push_back(
                                     make_named_values<Arrow>(
                                         value_for<n::comes_after>(our_identifier),
+                                        value_for<n::failure_kinds>(failure_kinds),
                                         value_for<n::maybe_reason>(reason)
                                         ));
                     }

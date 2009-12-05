@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_FailureKind()
+{
+    prefix fk
+    namespace paludis::resolver
+
+    key fk_ignorable_always         "We can always ignore this failure"
+    key fk_ignorable_if_satisfied   "We can ignore this failure if we're if-satisfied"
+
+    want_destringify
+}
+

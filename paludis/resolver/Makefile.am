@@ -2,16 +2,19 @@ include $(top_srcdir)/misc/common-makefile.am
 
 DISTCLEANFILES = \
 	destination_types-se.hh destination_types-se.cc \
+	failure_kinds-se.hh failure_kinds-se.cc \
 	sync_point-se.hh sync_point-se.cc \
 	use_existing-se.hh use_existing-se.cc
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 EXTRA_DIST = \
 	destination_types-se.hh destination_types-se.cc destination_types.se \
+	failure_kinds-se.hh failure_kinds-se.cc failure_kinds.se \
 	sync_point-se.hh sync_point-se.cc sync_point.se \
 	use_existing-se.hh use_existing-se.cc use_existing.se \
 	$(check_SCRIPTS)
 BUILT_SOURCES = \
 	destination_types-se.hh destination_types-se.cc \
+	failure_kinds-se.hh failure_kinds-se.cc \
 	sync_point-se.hh sync_point-se.cc \
 	use_existing-se.hh use_existing-se.cc
 
@@ -25,6 +28,7 @@ noinst_HEADERS = \
 	decision.hh decision-fwd.hh \
 	destination.hh destination-fwd.hh \
 	destination_types.hh destination_types-fwd.hh destination_types-se.hh \
+	failure_kinds.hh failure_kinds-fwd.hh failure_kinds-se.hh \
 	orderer.hh orderer-fwd.hh \
 	reason.hh reason-fwd.hh \
 	resolution.hh resolution-fwd.hh \
@@ -47,6 +51,7 @@ libpaludisresolver_a_SOURCES = \
 	decision.cc \
 	destination.cc \
 	destination_types.cc \
+	failure_kinds.cc \
 	job.cc \
 	job_id.cc \
 	jobs.cc \
@@ -184,6 +189,12 @@ sync_point-se.hh : sync_point.se $(top_srcdir)/misc/make_se.bash
 
 sync_point-se.cc : sync_point.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/sync_point.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+failure_kinds-se.hh : failure_kinds.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/failure_kinds.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+failure_kinds-se.cc : failure_kinds.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/failure_kinds.se > $@ ; then rm -f $@ ; exit 1 ; fi
 
 destination_types-se.hh : destination_types.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/destination_types.se > $@ ; then rm -f $@ ; exit 1 ; fi

@@ -32,6 +32,7 @@ Arrow::serialise(Serialiser & s) const
 {
     s.object("Arrow")
         .member(SerialiserFlags<>(), "comes_after", comes_after())
+        .member(SerialiserFlags<>(), "failure_kinds", failure_kinds())
         .member(SerialiserFlags<serialise::might_be_null>(), "maybe_reason", maybe_reason())
         ;
 }
@@ -42,6 +43,7 @@ Arrow::deserialise(Deserialisation & d)
     Deserialisator v(d, "Arrow");
     return make_named_values<Arrow>(
             value_for<n::comes_after>(v.member<JobID>("comes_after")),
+            value_for<n::failure_kinds>(v.member<FailureKinds>("failure_kinds")),
             value_for<n::maybe_reason>(v.member<std::tr1::shared_ptr<const Reason> >("maybe_reason"))
             );
 }
