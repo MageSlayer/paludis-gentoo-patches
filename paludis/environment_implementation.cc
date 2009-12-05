@@ -36,8 +36,10 @@
 #include <paludis/hook.hh>
 #include <paludis/distribution.hh>
 #include <paludis/selection.hh>
+#include <paludis/selection_cache.hh>
 #include <algorithm>
 #include <map>
+#include <list>
 #include "config.h"
 
 using namespace paludis;
@@ -108,6 +110,7 @@ namespace paludis
     struct Implementation<EnvironmentImplementation>
     {
         std::map<unsigned, NotifierCallbackFunction> notifier_callbacks;
+        std::list<std::tr1::shared_ptr<const SelectionCache> > selection_caches;
 
         mutable Mutex sets_mutex;
         mutable bool loaded_sets;
@@ -193,7 +196,10 @@ EnvironmentImplementation::is_paludis_package(const QualifiedPackageName & n) co
 std::tr1::shared_ptr<PackageIDSequence>
 EnvironmentImplementation::operator[] (const Selection & selection) const
 {
-    return selection.perform_select(this);
+    if (_imp->selection_caches.empty())
+        return selection.perform_select(this);
+    else
+        return _imp->selection_caches.back()->perform_select(this, selection);
 }
 
 NotifierCallbackID
@@ -220,6 +226,18 @@ EnvironmentImplementation::trigger_notifier_callback(const NotifierCallbackEvent
             i_end(_imp->notifier_callbacks.end()) ;
             i != i_end ; ++i)
         (i->second)(e);
+}
+
+void
+EnvironmentImplementation::add_selection_cache(const std::tr1::shared_ptr<const SelectionCache> & c)
+{
+    _imp->selection_caches.push_back(c);
+}
+
+void
+EnvironmentImplementation::remove_selection_cache(const std::tr1::shared_ptr<const SelectionCache> & c)
+{
+    _imp->selection_caches.remove(c);
 }
 
 void

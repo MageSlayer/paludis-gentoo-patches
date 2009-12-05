@@ -58,6 +58,7 @@
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/serialise-impl.hh>
+#include <paludis/selection_cache.hh>
 
 #include <algorithm>
 #include <iostream>
@@ -1129,6 +1130,8 @@ ResolveCommand::run(
                         std::tr1::cref(cmdline), std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3))
 
                 ));
+
+    ScopedSelectionCache selection_cache(env.get());
     std::tr1::shared_ptr<Resolver> resolver(new Resolver(env.get(), resolver_functions));
     bool is_set(false);
     std::list<SuggestRestart> restarts;
