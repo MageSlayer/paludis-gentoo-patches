@@ -82,7 +82,7 @@ namespace
             {
                 MakeAnyOfStringVisitor v;
                 std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(v));
-                result.append(" " + stringify(*node.spec()) + " ( " + v.result + ")");
+                result.append(" " + stringify(*node.spec()) + " (" + v.result + " )");
             }
         }
 
@@ -90,14 +90,14 @@ namespace
         {
             MakeAnyOfStringVisitor v;
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(v));
-            result.append(" || ( " + v.result + ")");
+            result.append(" || (" + v.result + " )");
         }
 
         void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
         {
             MakeAnyOfStringVisitor v;
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(v));
-            result.append(" ( " + v.result + ")");
+            result.append(" (" + v.result + " )");
         }
     };
 
