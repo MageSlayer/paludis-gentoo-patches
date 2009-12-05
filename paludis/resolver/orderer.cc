@@ -644,7 +644,7 @@ namespace
         }
     };
 
-    struct Pass2Ignorable
+    struct Pass1Ignorable
     {
         bool visit(const UsableJob &) const
         {
@@ -695,8 +695,8 @@ Orderer::_can_order(const JobID & i, const int pass) const
                  * supposed to come after a NoChangeJob or a UsableJob, ignore
                  * the arrow. */
                 const std::tr1::shared_ptr<const Job> other_job(_imp->lists->jobs()->fetch(a->comes_after()));
-                if (job->accept_returning<bool>(Pass2Ignorable()) &&
-                        other_job->accept_returning<bool>(Pass2Ignorable()))
+                if (job->accept_returning<bool>(Pass1Ignorable()) &&
+                        other_job->accept_returning<bool>(Pass1Ignorable()))
                     skippable = true;
             }
 
