@@ -547,74 +547,181 @@ Orderer::_resolve_jobs_dep_arrows()
 void
 Orderer::_resolve_order()
 {
-    bool remaining(true);
-    int pass(1);
-    while (remaining)
+    while (true)
     {
-        remaining = false;
-        bool any(false);
+        _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Ordering"));
 
-        _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
+        /* anything left? */
+        if (! _anything_left_to_order())
+            break;
 
-        for (JobIDSequence::ConstIterator i(_imp->lists->unordered_job_ids()->begin()),
-                i_end(_imp->lists->unordered_job_ids()->end()) ;
+        /* first attempt: nothing fancy */
+        if (_order_some(false, false))
+            continue;
+
+        _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Ordering Usable Cycles"));
+
+        /* second attempt: remove cycles containing only usable jobs */
+        if (_remove_usable_cycles())
+            continue;
+
+        _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Ordering Using Existing"));
+
+        /* third attempt: remove an install job whose deps are already met */
+        if (_order_some(true, true))
+            continue;
+
+        _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Ordering Using Any Existing"));
+
+        if (_order_some(true, false))
+            continue;
+
+        _cycle_error();
+    }
+}
+
+bool
+Orderer::_anything_left_to_order() const
+{
+    for (JobIDSequence::ConstIterator i(_imp->lists->unordered_job_ids()->begin()),
+            i_end(_imp->lists->unordered_job_ids()->end()) ;
+            i != i_end ; ++i)
+    {
+        if (_already_ordered(*i))
+            continue;
+
+        return true;
+    }
+
+    return false;
+}
+
+bool
+Orderer::_order_some(const bool desperate, const bool installs_only)
+{
+    bool result(false);
+
+    for (JobIDSequence::ConstIterator i(_imp->lists->unordered_job_ids()->begin()),
+            i_end(_imp->lists->unordered_job_ids()->end()) ;
+            i != i_end ; ++i)
+    {
+        if (_already_ordered(*i))
+            continue;
+
+        if (installs_only)
+        {
+            const std::tr1::shared_ptr<const Job> job(_imp->lists->jobs()->fetch(*i));
+            if (! simple_visitor_cast<const SimpleInstallJob>(*job))
+                continue;
+        }
+
+        if (! _can_order(*i, desperate))
+            continue;
+
+        if (desperate)
+        {
+            const std::tr1::shared_ptr<const Job> job(_imp->lists->jobs()->fetch(*i));
+            std::stringstream s;
+            for (ArrowSequence::ConstIterator a(job->arrows()->begin()), a_end(job->arrows()->end()) ;
+                    a != a_end ; ++a)
+                if (! _already_ordered(a->comes_after()))
+                {
+                    if (! s.str().empty())
+                        s << ", ";
+                    s << a->comes_after().string_id();
+                }
+
+            Log::get_instance()->message("resolver.orderer.cycle_breaking.already_met", ll_warning, lc_context)
+                << "Had to use existing packages to order " << i->string_id() << " (unmet deps are " << s.str() << ")";
+        }
+
+        _imp->lists->ordered_job_ids()->push_back(*i);
+        _mark_already_ordered(*i);
+        result = true;
+    }
+
+    return result;
+}
+
+bool
+Orderer::_remove_usable_cycles()
+{
+    /* we only want to remove usable jobs... */
+    std::tr1::unordered_set<JobID, Hash<JobID> > removable;
+    for (JobIDSequence::ConstIterator i(_imp->lists->unordered_job_ids()->begin()),
+            i_end(_imp->lists->unordered_job_ids()->end()) ;
+            i != i_end ; ++i)
+    {
+        if (_already_ordered(*i))
+            continue;
+
+        const std::tr1::shared_ptr<const Job> job(_imp->lists->jobs()->fetch(*i));
+        if (simple_visitor_cast<const UsableJob>(*job))
+            removable.insert(job->id());
+    }
+
+    /* but we don't want to remove any job unless it only requires other jobs that
+     * we're going to remove. */
+    while (true)
+    {
+        bool need_another_pass(false);
+        /* hashes have annoying invalidation rules */
+        std::list<JobID> removable_copy(removable.begin(), removable.end());
+        for (std::list<JobID>::iterator i(removable_copy.begin()), i_end(removable_copy.end()) ;
                 i != i_end ; ++i)
         {
-            if (_already_ordered(*i))
-                continue;
+            bool ok(true);
+            const std::tr1::shared_ptr<const Job> job(_imp->lists->jobs()->fetch(*i));
+            for (ArrowSequence::ConstIterator a(job->arrows()->begin()), a_end(job->arrows()->end()) ;
+                    a != a_end ; ++a)
+                if (! _already_ordered(a->comes_after()))
+                    if (removable.end() == removable.find(a->comes_after()))
+                    {
+                        need_another_pass = true;
+                        ok = false;
+                        break;
+                    }
 
-            remaining = true;
-
-            if (! _can_order(*i, pass))
-                continue;
-
-            _imp->lists->ordered_job_ids()->push_back(*i);
-            any = true;
-            _mark_already_ordered(*i);
-
-            if (pass >= 2)
-            {
-                std::stringstream s;
-                const std::tr1::shared_ptr<const Job> job(_imp->lists->jobs()->fetch(*i));
-                for (ArrowSequence::ConstIterator a(job->arrows()->begin()), a_end(job->arrows()->end()) ;
-                        a != a_end ; ++a)
-                    if (! _already_ordered(a->comes_after()))
-                        s << " " << a->comes_after().string_id();
-
-                Log::get_instance()->message("resolver.orderer.job.broke_cycle", ll_warning, lc_context)
-                    << "Had to use cycle breaking to order " << i->string_id() << " (pass " << pass
-                    << ", remaining arrows are" << s.str() << ")";
-
-                pass = 1;
-                continue;
-            }
+            if (! ok)
+                removable.erase(*i);
         }
 
-        if (remaining && ! any)
-        {
-            if (++pass < 3)
-                continue;
-
-            std::stringstream s;
-            for (JobIDSequence::ConstIterator i(_imp->lists->unordered_job_ids()->begin()),
-                    i_end(_imp->lists->unordered_job_ids()->end()) ;
-                    i != i_end ; ++i)
-            {
-                if (_already_ordered(*i))
-                    continue;
-
-                s << " {{{" << i->string_id() << " missing";
-                const std::tr1::shared_ptr<const Job> job(_imp->lists->jobs()->fetch(*i));
-                for (ArrowSequence::ConstIterator a(job->arrows()->begin()), a_end(job->arrows()->end()) ;
-                        a != a_end ; ++a)
-                    if (! _already_ordered(a->comes_after()))
-                        s << " [" << a->comes_after().string_id() << "]";
-                s << " }}}";
-            }
-
-            throw InternalError(PALUDIS_HERE, "unbreakable cycle, remaining" + s.str());
-        }
+        if (! need_another_pass)
+            break;
     }
+
+    for (std::tr1::unordered_set<JobID, Hash<JobID> >::iterator i(removable.begin()),
+            i_end(removable.end()) ;
+            i != i_end ; ++i)
+    {
+        _imp->lists->ordered_job_ids()->push_back(*i);
+        _mark_already_ordered(*i);
+    }
+
+    return ! removable.empty();
+}
+
+void
+Orderer::_cycle_error()
+{
+    std::stringstream s;
+    for (JobIDSequence::ConstIterator i(_imp->lists->unordered_job_ids()->begin()),
+            i_end(_imp->lists->unordered_job_ids()->end()) ;
+            i != i_end ; ++i)
+    {
+        if (_already_ordered(*i))
+            continue;
+
+        s << " {{{" << i->string_id() << " missing";
+        const std::tr1::shared_ptr<const Job> job(_imp->lists->jobs()->fetch(*i));
+        for (ArrowSequence::ConstIterator a(job->arrows()->begin()), a_end(job->arrows()->end()) ;
+                a != a_end ; ++a)
+            if (! _already_ordered(a->comes_after()))
+                s << " [" << a->comes_after().string_id() << "]";
+        s << " }}}";
+    }
+
+    throw InternalError(PALUDIS_HERE, "can't order any of " + s.str());
 }
 
 namespace
@@ -643,43 +750,10 @@ namespace
             return r.already_met();
         }
     };
-
-    struct Pass1Ignorable
-    {
-        bool visit(const UsableJob &) const
-        {
-            return true;
-        }
-
-        bool visit(const PretendJob &) const
-        {
-            return false;
-        }
-
-        bool visit(const SyncPointJob &) const
-        {
-            return false;
-        }
-
-        bool visit(const FetchJob &) const
-        {
-            return false;
-        }
-
-        bool visit(const UntakenInstallJob &) const
-        {
-            return false;
-        }
-
-        bool visit(const SimpleInstallJob &) const
-        {
-            return false;
-        }
-    };
 }
 
 bool
-Orderer::_can_order(const JobID & i, const int pass) const
+Orderer::_can_order(const JobID & i, const bool desperate) const
 {
     const std::tr1::shared_ptr<const Job> job(_imp->lists->jobs()->fetch(i));
     for (ArrowSequence::ConstIterator a(job->arrows()->begin()), a_end(job->arrows()->end()) ;
@@ -689,18 +763,7 @@ Orderer::_can_order(const JobID & i, const int pass) const
         {
             bool skippable(false);
 
-            if ((! skippable) && (pass >= 1))
-            {
-                /* if our job is a NoChangeJob or a UsableJob, and we're
-                 * supposed to come after a NoChangeJob or a UsableJob, ignore
-                 * the arrow. */
-                const std::tr1::shared_ptr<const Job> other_job(_imp->lists->jobs()->fetch(a->comes_after()));
-                if (job->accept_returning<bool>(Pass1Ignorable()) &&
-                        other_job->accept_returning<bool>(Pass1Ignorable()))
-                    skippable = true;
-            }
-
-            if ((! skippable) && (pass >= 2))
+            if ((! skippable) && desperate)
             {
                 /* we can also ignore any arrows that are already met (e.g a
                  * dep b, b dep a, a is already installed */
@@ -727,5 +790,7 @@ Orderer::_mark_already_ordered(const JobID & i)
 {
     if (! _imp->already_ordered.insert(i).second)
         throw InternalError(PALUDIS_HERE, "already already ordered");
+
+    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 }
 

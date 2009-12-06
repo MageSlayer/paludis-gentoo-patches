@@ -49,8 +49,13 @@ namespace paludis
                 void _resolve_order();
 
                 bool _already_ordered(const JobID &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-                bool _can_order(const JobID &, const int pass) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool _can_order(const JobID &, const bool desperate) const PALUDIS_ATTRIBUTE((warn_unused_result));
                 void _mark_already_ordered(const JobID &);
+
+                bool _anything_left_to_order() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool _order_some(const bool desperate, const bool installs_only) PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool _remove_usable_cycles() PALUDIS_ATTRIBUTE((warn_unused_result));
+                void _cycle_error() PALUDIS_ATTRIBUTE((noreturn));
 
             public:
                 Orderer(
