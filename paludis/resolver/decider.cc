@@ -744,6 +744,9 @@ Decider::find_any_score(const Resolvent & our_resolvent, const SanitisedDependen
 
     const PackageDepSpec & spec(*dep.spec().if_package());
 
+    // note: make sure the worst_score declaration in
+    // AnyDepSpecChildHandler::commit in satitised_dependencies.cc
+    // matches this logic
     int operator_bias(0);
     if (spec.version_requirements_ptr() && ! spec.version_requirements_ptr()->empty())
     {

@@ -318,6 +318,7 @@ paludis-*.*.*.tar.bz2
 /paludis/repositories/virtuals/installed_virtuals_repository_TEST
 /paludis/repositories/virtuals/virtuals_repository_TEST
 /paludis/repository_name_cache_TEST
+/paludis/resolver/resolver_TEST_any
 /paludis/resolver/resolver_TEST_blockers
 /paludis/resolver/resolver_TEST_cycles
 /paludis/resolver/resolver_TEST_serialisation

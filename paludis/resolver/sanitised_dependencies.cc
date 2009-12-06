@@ -259,10 +259,10 @@ namespace
                         g_end(child_groups.end()) ;
                         g != g_end ; ++g)
                 {
-                    int worst_score(-1);
-
-                    if (g->empty())
-                        throw InternalError(PALUDIS_HERE, "why did that happen?");
+                    // should match Decider::find_any_score logic:
+                    // equivalent to an already installed spec with no
+                    // version operator
+                    int worst_score(59);
 
                     /* score of a group is the score of the worst child. */
                     for (std::list<PackageOrBlockDepSpec>::const_iterator h(g->begin()), h_end(g->end()) ;
