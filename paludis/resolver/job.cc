@@ -224,7 +224,7 @@ const JobID
 UsableJob::id() const
 {
     return make_named_values<JobID>(
-            value_for<n::string_id>("o:" + stringify(resolution()->resolvent()))
+            value_for<n::string_id>("usable:" + stringify(resolution()->resolvent()))
             );
 }
 
@@ -269,7 +269,7 @@ const JobID
 PretendJob::id() const
 {
     return make_named_values<JobID>(
-            value_for<n::string_id>("p:" + stringify(resolution()->resolvent()))
+            value_for<n::string_id>("pretend:" + stringify(resolution()->resolvent()))
             );
 }
 
@@ -315,7 +315,7 @@ const JobID
 FetchJob::id() const
 {
     return make_named_values<JobID>(
-            value_for<n::string_id>("f:" + stringify(resolution()->resolvent()))
+            value_for<n::string_id>("fetch:" + stringify(resolution()->resolvent()))
             );
 }
 
@@ -361,7 +361,7 @@ const JobID
 SimpleInstallJob::id() const
 {
     return make_named_values<JobID>(
-            value_for<n::string_id>("i:" + stringify(resolution()->resolvent()))
+            value_for<n::string_id>("install:" + stringify(resolution()->resolvent()))
             );
 }
 
@@ -400,7 +400,7 @@ const JobID
 UntakenInstallJob::id() const
 {
     return make_named_values<JobID>(
-            value_for<n::string_id>("u:" + stringify(resolution()->resolvent()))
+            value_for<n::string_id>("untaken:" + stringify(resolution()->resolvent()))
             );
 }
 
@@ -438,7 +438,7 @@ const JobID
 SyncPointJob::id() const
 {
     return make_named_values<JobID>(
-            value_for<n::string_id>("s:" + stringify(sync_point()))
+            value_for<n::string_id>("sync:" + stringify(sync_point()))
             );
 }
 
