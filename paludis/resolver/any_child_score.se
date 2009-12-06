@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_AnyChildScore()
+{
+    prefix acs
+    namespace paludis::resolver
+
+    key acs_worse_than_worst         "Worse than the worst option"
+    key acs_hate_hate_hate           "Doesn't even exist"
+    key acs_exists                   "Exists"
+    key acs_could_install            "Could install"
+    key acs_will_be_installing       "Will be installing"
+    key acs_wrong_options_installed  "Already installed, wrong options"
+    key acs_already_installed        "Already installed"
+
+    want_destringify
+}
+
+make_enum_OperatorScore()
+{
+    prefix os
+    namespace paludis::resolver
+
+    key os_worse_than_worst        "Worse than any option"
+    key os_less                    "<, <= etc"
+    key os_equal                   "=, =* etc"
+    key os_greater_or_none         ">, >= etc, or no operator"
+
+    want_destringify
+}
+

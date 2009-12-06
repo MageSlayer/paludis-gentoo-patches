@@ -1,24 +1,28 @@
 include $(top_srcdir)/misc/common-makefile.am
 
 DISTCLEANFILES = \
+	any_child_score-se.hh any_child_score-se.cc \
 	destination_types-se.hh destination_types-se.cc \
 	failure_kinds-se.hh failure_kinds-se.cc \
 	sync_point-se.hh sync_point-se.cc \
 	use_existing-se.hh use_existing-se.cc
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 EXTRA_DIST = \
+	any_child_score-se.hh any_child_score-se.cc any_child_score.se \
 	destination_types-se.hh destination_types-se.cc destination_types.se \
 	failure_kinds-se.hh failure_kinds-se.cc failure_kinds.se \
 	sync_point-se.hh sync_point-se.cc sync_point.se \
 	use_existing-se.hh use_existing-se.cc use_existing.se \
 	$(check_SCRIPTS)
 BUILT_SOURCES = \
+	any_child_score-se.hh any_child_score-se.cc \
 	destination_types-se.hh destination_types-se.cc \
 	failure_kinds-se.hh failure_kinds-se.cc \
 	sync_point-se.hh sync_point-se.cc \
 	use_existing-se.hh use_existing-se.cc
 
 noinst_HEADERS = \
+	any_child_score.hh any_child_score-fwd.hh any_child_score-se.hh \
 	arrow.hh arrow-fwd.hh \
 	constraint.hh constraint-fwd.hh \
 	job.hh job-fwd.hh \
@@ -45,6 +49,7 @@ noinst_HEADERS = \
 	use_existing.hh use_existing-fwd.hh use_existing-se.hh
 
 libpaludisresolver_a_SOURCES = \
+	any_child_score.cc \
 	arrow.cc \
 	constraint.cc \
 	decider.cc \
@@ -216,4 +221,10 @@ destination_types-se.hh : destination_types.se $(top_srcdir)/misc/make_se.bash
 
 destination_types-se.cc : destination_types.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/destination_types.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+any_child_score-se.hh : any_child_score.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/any_child_score.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+any_child_score-se.cc : any_child_score.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/any_child_score.se > $@ ; then rm -f $@ ; exit 1 ; fi
 

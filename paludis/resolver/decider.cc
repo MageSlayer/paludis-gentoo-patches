@@ -733,7 +733,7 @@ Decider::_initial_constraints_for(const Resolvent & r) const
     return _imp->fns.get_initial_constraints_for_fn()(r);
 }
 
-int
+std::pair<AnyChildScore, OperatorScore>
 Decider::find_any_score(const Resolvent & our_resolvent, const SanitisedDependency & dep) const
 {
     Context context("When working out whether we'd like '" + stringify(dep.spec()) + "' because of '"
@@ -747,21 +747,21 @@ Decider::find_any_score(const Resolvent & our_resolvent, const SanitisedDependen
     // note: make sure the worst_score declaration in
     // AnyDepSpecChildHandler::commit in satitised_dependencies.cc
     // matches this logic
-    int operator_bias(0);
+    OperatorScore operator_bias(os_worse_than_worst);
     if (spec.version_requirements_ptr() && ! spec.version_requirements_ptr()->empty())
     {
-        int score(-1);
+        OperatorScore score(os_worse_than_worst);
         for (VersionRequirements::ConstIterator v(spec.version_requirements_ptr()->begin()),
                 v_end(spec.version_requirements_ptr()->end()) ;
                 v != v_end ; ++v)
         {
-            int local_score(0);
+            OperatorScore local_score(os_worse_than_worst);
 
             switch (v->version_operator().value())
             {
                 case vo_greater:
                 case vo_greater_equal:
-                    local_score = 9;
+                    local_score = os_greater_or_none;
                     break;
 
                 case vo_equal:
@@ -769,20 +769,20 @@ Decider::find_any_score(const Resolvent & our_resolvent, const SanitisedDependen
                 case vo_nice_equal_star:
                 case vo_stupid_equal_star:
                 case vo_tilde_greater:
-                    local_score = 2;
+                    local_score = os_equal;
                     break;
 
                 case vo_less_equal:
                 case vo_less:
-                    local_score = 1;
+                    local_score = os_less;
                     break;
 
                 case last_vo:
-                    local_score = 1;
+                    local_score = os_less;
                     break;
             }
 
-            if (score == -1)
+            if (score == os_worse_than_worst)
                 score = local_score;
             else
                 switch (spec.version_requirements_mode())
@@ -805,7 +805,7 @@ Decider::find_any_score(const Resolvent & our_resolvent, const SanitisedDependen
     {
         /* don't bias no operator over a >= operator, so || ( >=foo-2 bar )
          * still likes foo. */
-        operator_bias = 9;
+        operator_bias = os_greater_or_none;
     }
 
     /* best: already installed */
@@ -814,7 +814,7 @@ Decider::find_any_score(const Resolvent & our_resolvent, const SanitisedDependen
                     generator::Matches(spec, MatchPackageOptions()) |
                     filter::InstalledAtRoot(FSEntry("/")))]);
         if (! installed_ids->empty())
-            return 50 + operator_bias;
+            return std::make_pair(acs_already_installed, operator_bias);
     }
 
     /* next: already installed, except with the wrong options */
@@ -824,7 +824,7 @@ Decider::find_any_score(const Resolvent & our_resolvent, const SanitisedDependen
                     generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements) |
                     filter::InstalledAtRoot(FSEntry("/")))]);
         if (! installed_ids->empty())
-            return 40 + operator_bias;
+            return std::make_pair(acs_wrong_options_installed, operator_bias);
     }
 
     const std::tr1::shared_ptr<const PackageID> id(resolution_for_resolvent(
@@ -843,7 +843,7 @@ Decider::find_any_score(const Resolvent & our_resolvent, const SanitisedDependen
         {
             ResolutionsByResolventMap::const_iterator i(_imp->resolutions_by_resolvent.find(*r));
             if (i != _imp->resolutions_by_resolvent.end())
-                return 30 + operator_bias;
+                return std::make_pair(acs_will_be_installing, operator_bias);
         }
     }
 
@@ -859,7 +859,7 @@ Decider::find_any_score(const Resolvent & our_resolvent, const SanitisedDependen
                 resolution->constraints()->add(*c);
             const std::tr1::shared_ptr<Decision> decision(_try_to_find_decision_for(*r, resolution));
             if (decision)
-                return 20 + operator_bias;
+                return std::make_pair(acs_could_install, operator_bias);
         }
     }
 
@@ -869,11 +869,11 @@ Decider::find_any_score(const Resolvent & our_resolvent, const SanitisedDependen
                     generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements)
                     )]);
         if (! ids->empty())
-            return 10 + operator_bias;
+            return std::make_pair(acs_exists, operator_bias);
     }
 
     /* yay, people are depping upon packages that don't exist again. I SMELL A LESSPIPE. */
-    return 0;
+    return std::make_pair(acs_hate_hate_hate, operator_bias);
 }
 
 namespace

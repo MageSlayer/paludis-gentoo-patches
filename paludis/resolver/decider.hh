@@ -34,6 +34,7 @@
 #include <paludis/resolver/resolutions-fwd.hh>
 #include <paludis/resolver/resolver_functions-fwd.hh>
 #include <paludis/resolver/resolver-fwd.hh>
+#include <paludis/resolver/any_child_score-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/dep_spec-fwd.hh>
@@ -179,7 +180,7 @@ namespace paludis
 
                 void add_target_with_reason(const PackageDepSpec &, const std::tr1::shared_ptr<const Reason> &);
 
-                int find_any_score(const Resolvent &, const SanitisedDependency &) const;
+                std::pair<AnyChildScore, OperatorScore> find_any_score(const Resolvent &, const SanitisedDependency &) const;
 
                 const std::tr1::shared_ptr<const RewrittenSpec> rewrite_if_special(const PackageOrBlockDepSpec &,
                         const std::tr1::shared_ptr<const Resolvent> & maybe_from) const;

@@ -253,27 +253,26 @@ namespace
             {
                 /* we've got a choice of groups of packages. pick the best score, left to right. */
                 std::list<std::list<PackageOrBlockDepSpec> >::const_iterator g_best(child_groups.end());
-                int best_score(-1);
+                std::pair<AnyChildScore, OperatorScore> best_score(acs_worse_than_worst, os_worse_than_worst);
 
                 for (std::list<std::list<PackageOrBlockDepSpec> >::const_iterator g(child_groups.begin()),
                         g_end(child_groups.end()) ;
                         g != g_end ; ++g)
                 {
-                    // should match Decider::find_any_score logic:
-                    // equivalent to an already installed spec with no
-                    // version operator
-                    int worst_score(59);
+                    /* best possible, to get ( ) right */
+                    std::pair<AnyChildScore, OperatorScore> worst_score(acs_already_installed, os_greater_or_none);
 
                     /* score of a group is the score of the worst child. */
                     for (std::list<PackageOrBlockDepSpec>::const_iterator h(g->begin()), h_end(g->end()) ;
                             h != h_end ; ++h)
                     {
-                        int score(decider.find_any_score(our_resolvent, make_sanitised(PackageOrBlockDepSpec(*h))));
-                        if ((-1 == worst_score) || (score < worst_score))
+                        std::pair<AnyChildScore, OperatorScore> score(
+                                decider.find_any_score(our_resolvent, make_sanitised(PackageOrBlockDepSpec(*h))));
+                        if (score < worst_score)
                             worst_score = score;
                     }
 
-                    if ((best_score == -1) || (worst_score > best_score))
+                    if (worst_score > best_score)
                     {
                         best_score = worst_score;
                         g_best = g;
