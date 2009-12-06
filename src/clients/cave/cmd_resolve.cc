@@ -33,6 +33,8 @@
 #include <paludis/util/enum_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/string_list_stream.hh>
+#include <paludis/util/thread.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/args/escape.hh>
 #include <paludis/resolver/resolver.hh>
@@ -853,6 +855,13 @@ namespace
         throw InternalError(PALUDIS_HERE, "unhandled dt");
     }
 
+    void ser_thread_func(StringListStream & ser_stream, const ResolverLists & resolution_lists)
+    {
+        Serialiser ser(ser_stream);
+        resolution_lists.serialise(ser);
+        ser_stream.nothing_more_to_write();
+    }
+
     int display_resolution(
             const std::tr1::shared_ptr<Environment> &,
             const ResolverLists & resolution_lists,
@@ -860,9 +869,10 @@ namespace
     {
         Context context("When displaying chosen resolution:");
 
-        std::stringstream ser_stream;
-        Serialiser ser(ser_stream);
-        resolution_lists.serialise(ser);
+        StringListStream ser_stream;
+        Thread ser_thread(std::tr1::bind(&ser_thread_func,
+                    std::tr1::ref(ser_stream),
+                    std::tr1::cref(resolution_lists)));
 
         std::string command(cmdline.program_options.a_display_resolution_program.argument());
         if (command.empty())
@@ -902,9 +912,14 @@ namespace
     {
         Context context("When performing chosen resolution:");
 
-        std::stringstream ser_stream;
+        StringListStream ser_stream;
         Serialiser ser(ser_stream);
         resolution_lists.serialise(ser);
+
+        /* backgrounding this barfs with become_command. working out why could
+         * be a fun exercise for someone with way too much time on their hands.
+         * */
+        ser_thread_func(ser_stream, resolution_lists);
 
         std::string command(cmdline.program_options.a_execute_resolution_program.argument());
         if (command.empty())

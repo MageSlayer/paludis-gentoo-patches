@@ -411,6 +411,7 @@ paludis-*.*.*.tar.bz2
 /paludis/util/sha256_TEST
 /paludis/util/simple_parser_TEST
 /paludis/util/stringify_TEST
+/paludis/util/string_list_stream_TEST
 /paludis/util/strip_TEST
 /paludis/util/system_TEST
 /paludis/util/system_TEST_become_child

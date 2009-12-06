@@ -35,6 +35,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/string_list_stream.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/package_database.hh>
@@ -76,11 +77,13 @@ namespace test_cases
             std::tr1::shared_ptr<const ResolverLists> resolutions;
             {
                 std::tr1::shared_ptr<const ResolverLists> orig_resolutions(get_resolutions("serialisation/target"));
-                std::stringstream str;
+                StringListStream str;
                 Serialiser ser(str);
                 orig_resolutions->serialise(ser);
+                str.nothing_more_to_write();
 
-                Deserialiser deser(&env, str.str());
+                std::string strstr((std::istreambuf_iterator<char>(str)), std::istreambuf_iterator<char>());
+                Deserialiser deser(&env, strstr);
                 Deserialisation desern("ResolverLists", deser);
                 resolutions = make_shared_ptr(new ResolverLists(ResolverLists::deserialise(desern)));
             }
