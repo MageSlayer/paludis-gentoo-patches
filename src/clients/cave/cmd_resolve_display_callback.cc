@@ -23,6 +23,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <iostream>
 #include <map>
+#include <unistd.h>
 
 using namespace paludis;
 using namespace cave;
@@ -37,9 +38,12 @@ namespace paludis
         mutable std::string stage;
         mutable unsigned width;
 
+        bool output;
+
         Implementation() :
             stage("Resolving: "),
-            width(stage.length())
+            width(stage.length()),
+            output(::isatty(1))
         {
         }
     };
@@ -49,23 +53,31 @@ namespace paludis
 DisplayCallback::DisplayCallback() :
     PrivateImplementationPattern<DisplayCallback>(new Implementation<DisplayCallback>)
 {
-    std::cout << _imp->stage << std::flush;
+    if (_imp->output)
+        std::cout << _imp->stage << std::flush;
 }
 
 DisplayCallback::~DisplayCallback()
 {
-    std::cout << std::endl << std::endl;
+    if (_imp->output)
+        std::cout << std::endl << std::endl;
 }
 
 void
 DisplayCallback::operator() (const NotifierCallbackEvent & event) const
 {
+    if (! _imp->output)
+        return;
+
     event.accept(*this);
 }
 
 void
 DisplayCallback::operator() (const ResolverRestart &) const
 {
+    if (! _imp->output)
+        return;
+
     Lock lock(_imp->mutex);
     ++_imp->steps.insert(std::make_pair("restarts", 0)).first->second;
     update();
@@ -74,6 +86,9 @@ DisplayCallback::operator() (const ResolverRestart &) const
 void
 DisplayCallback::visit(const NotifierCallbackGeneratingMetadataEvent & e) const
 {
+    if (! _imp->output)
+        return;
+
     Lock lock(_imp->mutex);
     ++_imp->metadata.insert(std::make_pair(stringify(e.repository()), 0)).first->second;
     update();
@@ -82,6 +97,9 @@ DisplayCallback::visit(const NotifierCallbackGeneratingMetadataEvent & e) const
 void
 DisplayCallback::visit(const NotifierCallbackResolverStageEvent & e) const
 {
+    if (! _imp->output)
+        return;
+
     Lock lock(_imp->mutex);
     _imp->stage = e.stage() + ": ";
     update();
@@ -90,6 +108,9 @@ DisplayCallback::visit(const NotifierCallbackResolverStageEvent & e) const
 void
 DisplayCallback::visit(const NotifierCallbackResolverStepEvent &) const
 {
+    if (! _imp->output)
+        return;
+
     Lock lock(_imp->mutex);
     ++_imp->steps.insert(std::make_pair("steps", 0)).first->second;
     update();
@@ -98,6 +119,9 @@ DisplayCallback::visit(const NotifierCallbackResolverStepEvent &) const
 void
 DisplayCallback::update() const
 {
+    if (! _imp->output)
+        return;
+
     std::string s(_imp->stage);
     bool first(true);
 
