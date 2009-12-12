@@ -38,6 +38,7 @@ namespace paludis
 {
     namespace n
     {
+        struct allow_locking;
         struct environment;
         struct make_config_file;
     }
@@ -63,6 +64,7 @@ namespace paludis
      */
     struct PaludisLikeOptionsConfParams
     {
+        NamedValue<n::allow_locking, bool> allow_locking;
         NamedValue<n::environment, const Environment *> environment;
         NamedValue<n::make_config_file, PaludisLikeOptionsConfMakeConfigFileFunction> make_config_file;
     };
@@ -84,7 +86,7 @@ namespace paludis
 
             void add_file(const FSEntry &);
 
-            const Tribool want_choice_enabled(
+            const std::pair<Tribool, bool> want_choice_enabled_locked(
                     const std::tr1::shared_ptr<const PackageID> &,
                     const std::tr1::shared_ptr<const Choice> &,
                     const UnprefixedChoiceName &

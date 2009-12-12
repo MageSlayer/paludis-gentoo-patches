@@ -40,6 +40,7 @@ namespace paludis
         Implementation(const PaludisEnvironment * const e) :
             env(e),
             handler(new PaludisLikeOptionsConf(make_named_values<PaludisLikeOptionsConfParams>(
+                            value_for<n::allow_locking>(false),
                             value_for<n::environment>(e),
                             value_for<n::make_config_file>(&make_bashable_conf)
                             )))
@@ -75,7 +76,7 @@ UseConf::want_choice_enabled(
     Context context("When checking state of flag prefix '" + stringify(choice->prefix()) +
             "' name '" + stringify(f) + "' for '" + stringify(*id) + "':");
 
-    return _imp->handler->want_choice_enabled(id, choice, f);
+    return _imp->handler->want_choice_enabled_locked(id, choice, f).first;
 }
 
 const std::string

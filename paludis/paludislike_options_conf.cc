@@ -52,8 +52,8 @@ using namespace paludis;
 /*
  * Syntax:
  *
- *     spec|set        foo -bar -* baz=value
- *     spec|set        blah: foo -bar -* baz=value
+ *     spec|set        foo -bar -* baz=value (forced) (-masked)
+ *     spec|set        blah: foo -bar -* baz=value (forced) (-masked)
  *
  * Lines in the form 'spec foo blah: baz' are treated as two lines, 'spec foo'
  * and 'spec blah: baz'.
@@ -67,6 +67,7 @@ namespace paludis
     namespace n
     {
         struct equals_value;
+        struct locked;
         struct minus;
         struct minus_star;
         struct prefix;
@@ -84,6 +85,7 @@ namespace
     struct Value
     {
         NamedValue<n::equals_value, std::string> equals_value;
+        NamedValue<n::locked, bool> locked;
         NamedValue<n::minus, bool> minus;
         NamedValue<n::unprefixed_name, UnprefixedChoiceName> unprefixed_name;
 
@@ -243,7 +245,7 @@ PaludisLikeOptionsConf::add_file(const FSEntry & f)
 
         ValuesGroup * values_group(0);
 
-        for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
+        for (std::vector<std::string>::iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                 t != t_end ; ++t)
         {
             if (t->empty())
@@ -276,35 +278,52 @@ PaludisLikeOptionsConf::add_file(const FSEntry & f)
                     /* -* */
                     values_group->minus_star() = true;
                 }
-                else if ('-' == t->at(0))
-                {
-                    /* -bar */
-                    values_group->values().insert(make_named_values<Value>(
-                                value_for<n::equals_value>(""),
-                                value_for<n::minus>(true),
-                                value_for<n::unprefixed_name>(UnprefixedChoiceName(t->substr(1)))
-                                ));
-                }
                 else
                 {
-                    std::string::size_type equals_p(t->find('='));
-                    if (std::string::npos == equals_p)
+                    /* (something) is legal */
+                    bool locked(false);
+                    if ('(' == t->at(0) && ')' == t->at(t->length() - 1))
                     {
-                        /* foo */
+                        if (! _imp->params.allow_locking())
+                            throw ConfigurationError("Locking on '" + *t + "' not allowed in '" + stringify(f) + "'");
+
+                        locked = true;
+                        *t = t->substr(1, t->length() - 2);
+                    }
+
+                    else if ('-' == t->at(0))
+                    {
+                        /* -bar */
                         values_group->values().insert(make_named_values<Value>(
                                     value_for<n::equals_value>(""),
-                                    value_for<n::minus>(false),
-                                    value_for<n::unprefixed_name>(UnprefixedChoiceName(*t))
+                                    value_for<n::locked>(locked),
+                                    value_for<n::minus>(true),
+                                    value_for<n::unprefixed_name>(UnprefixedChoiceName(t->substr(1)))
                                     ));
                     }
                     else
                     {
-                        /* foo=blah */
-                        values_group->values().insert(make_named_values<Value>(
-                                    value_for<n::equals_value>(t->substr(equals_p + 1)),
-                                    value_for<n::minus>(false),
-                                    value_for<n::unprefixed_name>(UnprefixedChoiceName(t->substr(0, equals_p)))
-                                    ));
+                        std::string::size_type equals_p(t->find('='));
+                        if (std::string::npos == equals_p)
+                        {
+                            /* foo */
+                            values_group->values().insert(make_named_values<Value>(
+                                        value_for<n::equals_value>(""),
+                                        value_for<n::locked>(locked),
+                                        value_for<n::minus>(false),
+                                        value_for<n::unprefixed_name>(UnprefixedChoiceName(*t))
+                                        ));
+                        }
+                        else
+                        {
+                            /* foo=blah */
+                            values_group->values().insert(make_named_values<Value>(
+                                        value_for<n::equals_value>(t->substr(equals_p + 1)),
+                                        value_for<n::locked>(locked),
+                                        value_for<n::minus>(false),
+                                        value_for<n::unprefixed_name>(UnprefixedChoiceName(t->substr(0, equals_p)))
+                                        ));
+                        }
                     }
                 }
             }
@@ -321,7 +340,7 @@ namespace
             const UnprefixedChoiceName & unprefixed_name,
             const ValuesGroups & values_groups,
             bool & seen_minus_star,
-            Tribool & result_state,
+            std::pair<Tribool, bool> & result_state,
             std::string & result_value)
     {
 
@@ -336,15 +355,16 @@ namespace
             std::pair<Values::const_iterator, Values::const_iterator> range(i->values().equal_range(
                         make_named_values<Value>(
                             value_for<n::equals_value>(""),
+                            value_for<n::locked>(false),
                             value_for<n::minus>(false),
                             value_for<n::unprefixed_name>(unprefixed_name)
                             )));
             for ( ; range.first != range.second ; ++range.first)
             {
                 if (range.first->minus())
-                    result_state = false;
+                    result_state = std::make_pair(Tribool(false), range.first->locked());
                 else
-                    result_state = true;
+                    result_state = std::make_pair(Tribool(true), range.first->locked());
 
                 if (! (range.first->equals_value().empty()))
                     result_value = range.first->equals_value();
@@ -379,7 +399,7 @@ namespace
             const UnprefixedChoiceName & unprefixed_name,
             const SpecsWithValuesGroups & specs_with_values_groups,
             bool & seen_minus_star,
-            Tribool & result_state,
+            std::pair<Tribool, bool> & result_state,
             std::string & result_value)
     {
         for (SpecsWithValuesGroups::const_iterator i(specs_with_values_groups.begin()),
@@ -413,8 +433,8 @@ namespace
     }
 }
 
-const Tribool
-PaludisLikeOptionsConf::want_choice_enabled(
+const std::pair<Tribool, bool>
+PaludisLikeOptionsConf::want_choice_enabled_locked(
         const std::tr1::shared_ptr<const PackageID> & id,
         const std::tr1::shared_ptr<const Choice> & choice,
         const UnprefixedChoiceName & unprefixed_name
@@ -424,7 +444,7 @@ PaludisLikeOptionsConf::want_choice_enabled(
             "' name '" + stringify(unprefixed_name) + "' for '" + stringify(*id) + "':");
 
     bool seen_minus_star(false);
-    Tribool result(indeterminate);
+    std::pair<Tribool, bool> result(indeterminate, false);
     std::string dummy;
 
     /* Any specific matches? */
@@ -434,10 +454,8 @@ PaludisLikeOptionsConf::want_choice_enabled(
         {
             check_specs_with_values_groups(_imp->params.environment(), id, choice, unprefixed_name, i->second,
                     seen_minus_star, result, dummy);
-            if (result.is_true())
-                return true;
-            else if (result.is_false())
-                return false;
+            if (! result.first.is_indeterminate())
+                return result;
         }
     }
 
@@ -453,10 +471,8 @@ PaludisLikeOptionsConf::want_choice_enabled(
                     seen_minus_star, result, dummy);
         }
 
-        if (result.is_true())
-            return true;
-        else if (result.is_false())
-            return false;
+        if (! result.first.is_indeterminate())
+            return result;
     }
 
     /* Wildcards? */
@@ -464,16 +480,14 @@ PaludisLikeOptionsConf::want_choice_enabled(
         check_specs_with_values_groups(_imp->params.environment(), id, choice, unprefixed_name, _imp->wildcard_specs,
                 seen_minus_star, result, dummy);
 
-        if (result.is_true())
-            return true;
-        else if (result.is_false())
-            return false;
+        if (! result.first.is_indeterminate())
+            return result;
     }
 
     if (seen_minus_star)
-        return Tribool(false);
+        return std::make_pair(Tribool(false), false);
     else
-        return indeterminate;
+        return std::make_pair(Tribool(indeterminate), false);
 }
 
 const std::string
@@ -487,7 +501,7 @@ PaludisLikeOptionsConf::value_for_choice_parameter(
             "' name '" + stringify(unprefixed_name) + "' for '" + stringify(*id) + "':");
 
     bool dummy_seen_minus_star(false);
-    Tribool dummy_result;
+    std::pair<Tribool, bool> dummy_result;
     std::string equals_value;
 
     /* Any specific matches? */
