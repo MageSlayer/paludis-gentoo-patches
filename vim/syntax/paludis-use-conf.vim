@@ -23,7 +23,7 @@ syn match  PaludisUseConfPDS /^[^ \t#\/]\+\/[^ \t#\/]\+\s*/
 syn match  PaludisUseConfWildcard contained /\(\*\/\@=\|\/\@<=\*\)/
 syn match  PaludisUseConfSet /^[^ \t#\/]\+\S\@!/
 	    \ nextgroup=PaludisUseConfFlag,PaludisUseConfPrefix,PaludisUseConfContinuation skipwhite
-syn match  PaludisUseConfFlag contained /\S\@<![a-zA-Z0-9\-_*+]\+\(\S\@!\|=\@=\)/
+syn match  PaludisUseConfFlag contained /\S\@<!(\?[a-zA-Z0-9\-_*+]\+)\?\(\S\@!\|=\@=\)/
 	    \ nextgroup=PaludisUseConfFlag,PaludisUseConfFlagValue,PaludisUseConfPrefix,PaludisUseConfContinuation skipwhite
 syn match  PaludisUseConfFlagValue contained /=\S*/
 	    \ nextgroup=PaludisUseConfFlag,PaludisUseConfPrefix,PaludisUseConfContinuation skipwhite

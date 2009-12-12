@@ -425,11 +425,12 @@ namespace paludis
         else
             main_profile_path.reset(new FSEntry(*params.profiles()->begin()));
 
-        profile_ptr.reset(new TraditionalProfile(
-                    params.environment(), repo, repo->name(), *profiles,
-                    EAPIData::get_instance()->eapi_from_string(
-                        params.eapi_when_unknown())->supported()->ebuild_environment_variables()->env_arch(),
-                    params.profiles_explicitly_set()));
+        profile_ptr = ProfileFactory::get_instance()->create(
+                params.profile_layout(),
+                params.environment(), repo, repo->name(), *profiles,
+                EAPIData::get_instance()->eapi_from_string(
+                    params.eapi_when_unknown())->supported()->ebuild_environment_variables()->env_arch(),
+                params.profiles_explicitly_set());
     }
 }
 
@@ -1426,6 +1427,16 @@ ERepository::repository_factory_create(
                         env->distribution()))->default_layout();
     }
 
+    std::string profile_layout(f("profile_layout"));
+    if (profile_layout.empty())
+    {
+        if (! layout_conf
+                || (profile_layout = layout_conf->get("profile_layout")).empty())
+            profile_layout = EExtraDistributionData::get_instance()->data_from_distribution(
+                    *DistributionData::get_instance()->distribution_from_string(
+                        env->distribution()))->default_profile_layout();
+    }
+
     UseManifest use_manifest(manifest_use);
     if (! f("use_manifest").empty())
     {
@@ -1474,6 +1485,7 @@ ERepository::repository_factory_create(
                     value_for<n::names_cache>(FSEntry(names_cache).realpath_if_exists()),
                     value_for<n::newsdir>(FSEntry(newsdir).realpath_if_exists()),
                     value_for<n::profile_eapi_when_unspecified>(profile_eapi),
+                    value_for<n::profile_layout>(profile_layout),
                     value_for<n::profiles>(profiles),
                     value_for<n::profiles_explicitly_set>(profiles_explicitly_set),
                     value_for<n::securitydir>(FSEntry(securitydir).realpath_if_exists()),

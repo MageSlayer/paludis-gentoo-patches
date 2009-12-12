@@ -60,6 +60,7 @@ namespace paludis
         struct names_cache;
         struct newsdir;
         struct profile_eapi_when_unspecified;
+        struct profile_layout;
         struct profiles;
         struct profiles_explicitly_set;
         struct securitydir;
@@ -98,6 +99,7 @@ namespace paludis
             NamedValue<n::names_cache, FSEntry> names_cache;
             NamedValue<n::newsdir, FSEntry> newsdir;
             NamedValue<n::profile_eapi_when_unspecified, std::string> profile_eapi_when_unspecified;
+            NamedValue<n::profile_layout, std::string> profile_layout;
             NamedValue<n::profiles, std::tr1::shared_ptr<const FSEntrySequence> > profiles;
             NamedValue<n::profiles_explicitly_set, bool> profiles_explicitly_set;
             NamedValue<n::securitydir, FSEntry> securitydir;

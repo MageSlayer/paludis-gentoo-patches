@@ -18,6 +18,8 @@
  */
 
 #include <paludis/repositories/e/profile.hh>
+#include <paludis/repositories/e/traditional_profile.hh>
+#include <paludis/repositories/e/exheres_profile.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 
@@ -29,6 +31,43 @@ using namespace paludis::erepository;
 
 Profile::~Profile()
 {
+}
+
+namespace
+{
+    template <typename T_>
+    std::tr1::shared_ptr<Profile>
+    make_profile(
+        const Environment * const env,
+        const ERepository * const repo,
+        const RepositoryName & name,
+        const FSEntrySequence & locations,
+        const std::string & a,
+        const bool x)
+    {
+        return std::tr1::shared_ptr<Profile>(new T_(env, repo, name, locations, a, x));
+    }
+}
+
+ProfileFactory::ProfileFactory()
+{
+}
+
+const std::tr1::shared_ptr<Profile>
+ProfileFactory::create(
+        const std::string & s,
+        const Environment * const env,
+        const ERepository * const repo,
+        const RepositoryName & name,
+        const FSEntrySequence & locations,
+        const std::string & a,
+        const bool x) const
+{
+    if (s == "traditional")
+        return make_profile<TraditionalProfile>(env, repo, name, locations, a, x);
+    if (s == "exheres")
+        return make_profile<ExheresProfile>(env, repo, name, locations, a, x);
+    throw ConfigurationError("Unrecognised profile '" + s + "'");
 }
 
 template class Map<QualifiedPackageName, PackageDepSpec>;
