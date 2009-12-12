@@ -41,6 +41,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/environment.hh>
 #include <paludis/spec_tree.hh>
+#include <paludis/package_dep_spec_properties.hh>
 #include <tr1/unordered_map>
 #include <tr1/unordered_set>
 #include <list>
@@ -333,10 +334,28 @@ PaludisLikeOptionsConf::add_file(const FSEntry & f)
 
 namespace
 {
+    bool match_anything(const PackageDepSpec & spec)
+    {
+        return package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
+                    value_for<n::has_additional_requirements>(false),
+                    value_for<n::has_category_name_part>(false),
+                    value_for<n::has_from_repository>(false),
+                    value_for<n::has_in_repository>(false),
+                    value_for<n::has_installable_to_path>(false),
+                    value_for<n::has_installable_to_repository>(false),
+                    value_for<n::has_installed_at_path>(false),
+                    value_for<n::has_package>(false),
+                    value_for<n::has_package_name_part>(false),
+                    value_for<n::has_slot_requirement>(false),
+                    value_for<n::has_tag>(false),
+                    value_for<n::has_version_requirements>(false)
+                    ));
+    }
+
     void check_values_groups(
             const Environment * const,
             const std::tr1::shared_ptr<const PackageID> &,
-            const std::tr1::shared_ptr<const Choice> & choice,
+            const ChoicePrefixName & prefix,
             const UnprefixedChoiceName & unprefixed_name,
             const ValuesGroups & values_groups,
             bool & seen_minus_star,
@@ -347,7 +366,7 @@ namespace
         for (ValuesGroups::const_iterator i(values_groups.begin()), i_end(values_groups.end()) ;
                 i != i_end ; ++i)
         {
-            if (i->prefix() != choice->prefix())
+            if (i->prefix() != prefix)
                 continue;
 
             seen_minus_star = seen_minus_star || i->minus_star();
@@ -375,7 +394,7 @@ namespace
     void collect_known_from_values_groups(
             const Environment * const,
             const std::tr1::shared_ptr<const PackageID> &,
-            const std::tr1::shared_ptr<const Choice> & choice,
+            const ChoicePrefixName & prefix,
             const ValuesGroups & values_groups,
             const std::tr1::shared_ptr<Set<UnprefixedChoiceName> > & known)
     {
@@ -383,7 +402,7 @@ namespace
         for (ValuesGroups::const_iterator i(values_groups.begin()), i_end(values_groups.end()) ;
                 i != i_end ; ++i)
         {
-            if (i->prefix() != choice->prefix())
+            if (i->prefix() != prefix)
                 continue;
 
             for (Values::const_iterator v(i->values().begin()), v_end(i->values().end()) ;
@@ -394,8 +413,8 @@ namespace
 
     void check_specs_with_values_groups(
             const Environment * const env,
-            const std::tr1::shared_ptr<const PackageID> & id,
-            const std::tr1::shared_ptr<const Choice> & choice,
+            const std::tr1::shared_ptr<const PackageID> & maybe_id,
+            const ChoicePrefixName & prefix,
             const UnprefixedChoiceName & unprefixed_name,
             const SpecsWithValuesGroups & specs_with_values_groups,
             bool & seen_minus_star,
@@ -406,18 +425,26 @@ namespace
                 i_end(specs_with_values_groups.end()) ;
                 i != i_end ; ++i)
         {
-            if (! match_package(*env, i->spec(), *id, MatchPackageOptions()))
-                continue;
+            if (maybe_id)
+            {
+                if (! match_package(*env, i->spec(), *maybe_id, MatchPackageOptions()))
+                    continue;
+            }
+            else
+            {
+                if (! match_anything(i->spec()))
+                    continue;
+            }
 
-            check_values_groups(env, id, choice, unprefixed_name, i->values_groups(),
+            check_values_groups(env, maybe_id, prefix, unprefixed_name, i->values_groups(),
                     seen_minus_star, result_state, result_value);
         }
     }
 
     void collect_known_from_specs_with_values_groups(
             const Environment * const env,
-            const std::tr1::shared_ptr<const PackageID> & id,
-            const std::tr1::shared_ptr<const Choice> & choice,
+            const std::tr1::shared_ptr<const PackageID> & maybe_id,
+            const ChoicePrefixName & prefix,
             const SpecsWithValuesGroups & specs_with_values_groups,
             const std::tr1::shared_ptr<Set<UnprefixedChoiceName> > & known)
     {
@@ -425,34 +452,44 @@ namespace
                 i_end(specs_with_values_groups.end()) ;
                 i != i_end ; ++i)
         {
-            if (! match_package(*env, i->spec(), *id, MatchPackageOptions()))
-                continue;
+            if (maybe_id)
+            {
+                if (! match_package(*env, i->spec(), *maybe_id, MatchPackageOptions()))
+                    continue;
+            }
+            else
+            {
+                if (! match_anything(i->spec()))
+                    continue;
+            }
 
-            collect_known_from_values_groups(env, id, choice, i->values_groups(), known);
+            collect_known_from_values_groups(env, maybe_id, prefix, i->values_groups(), known);
         }
     }
 }
 
 const std::pair<Tribool, bool>
 PaludisLikeOptionsConf::want_choice_enabled_locked(
-        const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const Choice> & choice,
+        const std::tr1::shared_ptr<const PackageID> & maybe_id,
+        const ChoicePrefixName & prefix,
         const UnprefixedChoiceName & unprefixed_name
         ) const
 {
-    Context context("When checking state of flag prefix '" + stringify(choice->prefix()) +
-            "' name '" + stringify(unprefixed_name) + "' for '" + stringify(*id) + "':");
+    Context context("When checking state of flag prefix '" + stringify(prefix) +
+            "' name '" + stringify(unprefixed_name) + "' for '" +
+            (maybe_id ? stringify(*maybe_id) : "*/*") + "':");
 
     bool seen_minus_star(false);
     std::pair<Tribool, bool> result(indeterminate, false);
     std::string dummy;
 
     /* Any specific matches? */
+    if (maybe_id)
     {
-        SpecificSpecs::const_iterator i(_imp->specific_specs.find(id->name()));
+        SpecificSpecs::const_iterator i(_imp->specific_specs.find(maybe_id->name()));
         if (i != _imp->specific_specs.end())
         {
-            check_specs_with_values_groups(_imp->params.environment(), id, choice, unprefixed_name, i->second,
+            check_specs_with_values_groups(_imp->params.environment(), maybe_id, prefix, unprefixed_name, i->second,
                     seen_minus_star, result, dummy);
             if (! result.first.is_indeterminate())
                 return result;
@@ -460,14 +497,16 @@ PaludisLikeOptionsConf::want_choice_enabled_locked(
     }
 
     /* Any set matches? */
+    if (maybe_id)
     {
         for (SetNamesWithValuesGroups::const_iterator r(_imp->set_specs.begin()), r_end(_imp->set_specs.end()) ;
                 r != r_end ; ++r)
         {
-            if (! match_package_in_set(*_imp->params.environment(), *r->set_value().value().value(), *id, MatchPackageOptions()))
+            if (! match_package_in_set(*_imp->params.environment(), *r->set_value().value().value(),
+                        *maybe_id, MatchPackageOptions()))
                 continue;
 
-            check_values_groups(_imp->params.environment(), id, choice, unprefixed_name, r->values_groups(),
+            check_values_groups(_imp->params.environment(), maybe_id, prefix, unprefixed_name, r->values_groups(),
                     seen_minus_star, result, dummy);
         }
 
@@ -477,8 +516,8 @@ PaludisLikeOptionsConf::want_choice_enabled_locked(
 
     /* Wildcards? */
     {
-        check_specs_with_values_groups(_imp->params.environment(), id, choice, unprefixed_name, _imp->wildcard_specs,
-                seen_minus_star, result, dummy);
+        check_specs_with_values_groups(_imp->params.environment(), maybe_id, prefix, unprefixed_name,
+                _imp->wildcard_specs, seen_minus_star, result, dummy);
 
         if (! result.first.is_indeterminate())
             return result;
@@ -493,11 +532,11 @@ PaludisLikeOptionsConf::want_choice_enabled_locked(
 const std::string
 PaludisLikeOptionsConf::value_for_choice_parameter(
         const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const Choice> & choice,
+        const ChoicePrefixName & prefix,
         const UnprefixedChoiceName & unprefixed_name
         ) const
 {
-    Context context("When checking value for flag prefix '" + stringify(choice->prefix()) +
+    Context context("When checking value for flag prefix '" + stringify(prefix) +
             "' name '" + stringify(unprefixed_name) + "' for '" + stringify(*id) + "':");
 
     bool dummy_seen_minus_star(false);
@@ -509,7 +548,7 @@ PaludisLikeOptionsConf::value_for_choice_parameter(
         SpecificSpecs::const_iterator i(_imp->specific_specs.find(id->name()));
         if (i != _imp->specific_specs.end())
         {
-            check_specs_with_values_groups(_imp->params.environment(), id, choice, unprefixed_name, i->second,
+            check_specs_with_values_groups(_imp->params.environment(), id, prefix, unprefixed_name, i->second,
                     dummy_seen_minus_star, dummy_result, equals_value);
 
             if (! equals_value.empty())
@@ -525,7 +564,7 @@ PaludisLikeOptionsConf::value_for_choice_parameter(
             if (! match_package_in_set(*_imp->params.environment(), *r->set_value().value().value(), *id, MatchPackageOptions()))
                 continue;
 
-            check_values_groups(_imp->params.environment(), id, choice, unprefixed_name, r->values_groups(),
+            check_values_groups(_imp->params.environment(), id, prefix, unprefixed_name, r->values_groups(),
                     dummy_seen_minus_star, dummy_result, equals_value);
         }
 
@@ -535,7 +574,7 @@ PaludisLikeOptionsConf::value_for_choice_parameter(
 
     /* Wildcards? */
     {
-        check_specs_with_values_groups(_imp->params.environment(), id, choice, unprefixed_name, _imp->wildcard_specs,
+        check_specs_with_values_groups(_imp->params.environment(), id, prefix, unprefixed_name, _imp->wildcard_specs,
                 dummy_seen_minus_star, dummy_result, equals_value);
 
         if (! equals_value.empty())
@@ -547,34 +586,38 @@ PaludisLikeOptionsConf::value_for_choice_parameter(
 
 const std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
 PaludisLikeOptionsConf::known_choice_value_names(
-        const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const Choice> & choice
+        const std::tr1::shared_ptr<const PackageID> & maybe_id,
+        const ChoicePrefixName & prefix
         ) const
 {
     const std::tr1::shared_ptr<Set<UnprefixedChoiceName> > result(new Set<UnprefixedChoiceName>);
 
     /* Any specific matches? */
+    if (maybe_id)
     {
-        SpecificSpecs::const_iterator i(_imp->specific_specs.find(id->name()));
+        SpecificSpecs::const_iterator i(_imp->specific_specs.find(maybe_id->name()));
         if (i != _imp->specific_specs.end())
-            collect_known_from_specs_with_values_groups(_imp->params.environment(), id, choice, i->second, result);
+            collect_known_from_specs_with_values_groups(_imp->params.environment(), maybe_id, prefix, i->second, result);
     }
 
     /* Any set matches? */
+    if (maybe_id)
     {
         for (SetNamesWithValuesGroups::const_iterator r(_imp->set_specs.begin()), r_end(_imp->set_specs.end()) ;
                 r != r_end ; ++r)
         {
-            if (! match_package_in_set(*_imp->params.environment(), *r->set_value().value().value(), *id, MatchPackageOptions()))
+            if (! match_package_in_set(*_imp->params.environment(), *r->set_value().value().value(),
+                        *maybe_id, MatchPackageOptions()))
                 continue;
 
-            collect_known_from_values_groups(_imp->params.environment(), id, choice, r->values_groups(), result);
+            collect_known_from_values_groups(_imp->params.environment(), maybe_id, prefix, r->values_groups(), result);
         }
     }
 
     /* Wildcards? */
     {
-        collect_known_from_specs_with_values_groups(_imp->params.environment(), id, choice, _imp->wildcard_specs, result);
+        collect_known_from_specs_with_values_groups(_imp->params.environment(), maybe_id, prefix,
+                _imp->wildcard_specs, result);
     }
 
     return result;

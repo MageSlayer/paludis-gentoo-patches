@@ -76,7 +76,7 @@ UseConf::want_choice_enabled(
     Context context("When checking state of flag prefix '" + stringify(choice->prefix()) +
             "' name '" + stringify(f) + "' for '" + stringify(*id) + "':");
 
-    return _imp->handler->want_choice_enabled_locked(id, choice, f).first;
+    return _imp->handler->want_choice_enabled_locked(id, choice->prefix(), f).first;
 }
 
 const std::string
@@ -89,7 +89,7 @@ UseConf::value_for_choice_parameter(
     Context context("When checking parameter of flag prefix '" + stringify(choice->prefix()) +
             "' name '" + stringify(f) + "' for '" + stringify(*id) + "':");
 
-    return _imp->handler->value_for_choice_parameter(id, choice, f);
+    return _imp->handler->value_for_choice_parameter(id, choice->prefix(), f);
 }
 
 
@@ -101,6 +101,6 @@ UseConf::known_choice_value_names(
 {
     Context context("When loading known use expand names for prefix '" + stringify(choice->prefix()) + "':");
 
-    return _imp->handler->known_choice_value_names(id, choice);
+    return _imp->handler->known_choice_value_names(id, choice->prefix());
 }
 

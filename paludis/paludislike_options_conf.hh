@@ -88,21 +88,21 @@ namespace paludis
 
             const std::pair<Tribool, bool> want_choice_enabled_locked(
                     const std::tr1::shared_ptr<const PackageID> &,
-                    const std::tr1::shared_ptr<const Choice> &,
+                    const ChoicePrefixName &,
                     const UnprefixedChoiceName &
                     ) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             const std::string value_for_choice_parameter(
                     const std::tr1::shared_ptr<const PackageID> &,
-                    const std::tr1::shared_ptr<const Choice> &,
+                    const ChoicePrefixName &,
                     const UnprefixedChoiceName &
                     ) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             const std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
                     const std::tr1::shared_ptr<const PackageID> &,
-                    const std::tr1::shared_ptr<const Choice> &
+                    const ChoicePrefixName &
                     ) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
