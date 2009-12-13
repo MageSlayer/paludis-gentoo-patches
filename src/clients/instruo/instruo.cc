@@ -42,6 +42,7 @@
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/pretty_print.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
@@ -87,7 +88,7 @@ namespace
 
         void visit(const MetadataTimeKey & k)
         {
-            time_t PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            Timestamp PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > & k)

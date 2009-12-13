@@ -30,6 +30,7 @@
 #include <paludis/util/pretty_print.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
@@ -135,7 +136,7 @@ namespace
         void visit(const MetadataTimeKey & k)
         {
             cout << std::setw(30) << (indent + k.human_name() + ":") << " "
-                << pretty_print_time(k.value()) << endl;
+                << pretty_print_time(k.value().seconds()) << endl;
         }
 
         void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)

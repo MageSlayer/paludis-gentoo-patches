@@ -28,6 +28,7 @@
 #include <paludis/util/sha1.hh>
 #include <paludis/util/sha256.hh>
 #include <paludis/util/md5.hh>
+#include <paludis/util/timestamp.hh>
 
 #include <map>
 
@@ -36,7 +37,7 @@ using namespace paludis::erepository;
 
 namespace paludis
 {
-    typedef std::map<std::pair<std::string, int>, std::pair<time_t, std::string> > HashesMap;
+    typedef std::map<std::pair<std::string, int>, std::pair<Timestamp, std::string> > HashesMap;
 
     template <>
     struct Implementation<MemoisedHashes>
@@ -98,7 +99,7 @@ const std::string
 MemoisedHashes::get(const FSEntry & file, SafeIFStream & stream) const
 {
     std::pair<std::string, int> key(stringify(file), HashIDs<H_>::id);
-    time_t mtime = file.mtime();
+    Timestamp mtime(file.mtim());
 
     Lock l(_imp->mutex);
 
@@ -107,7 +108,7 @@ MemoisedHashes::get(const FSEntry & file, SafeIFStream & stream) const
     if (i == _imp->hashes.end() || i->second.first != mtime)
     {
         H_ hash(stream);
-        std::pair<time_t, std::string> value = std::make_pair(mtime, hash.hexsum());
+        std::pair<Timestamp, std::string> value(std::make_pair(mtime, hash.hexsum()));
         stream.clear();
         stream.seekg(0, std::ios::beg);
 

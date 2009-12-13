@@ -26,6 +26,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/timestamp.hh>
 #include <ruby.h>
 
 using namespace paludis;
@@ -368,7 +369,7 @@ namespace
         {
             std::tr1::shared_ptr<const MetadataKey> * self_ptr;
             Data_Get_Struct(self, std::tr1::shared_ptr<const MetadataKey>, self_ptr);
-            return rb_time_new((std::tr1::static_pointer_cast<const MetadataTimeKey>(*self_ptr))->value(), 0);
+            return rb_time_new((std::tr1::static_pointer_cast<const MetadataTimeKey>(*self_ptr))->value().seconds(), 0);
         }
         catch (const std::exception & e)
         {

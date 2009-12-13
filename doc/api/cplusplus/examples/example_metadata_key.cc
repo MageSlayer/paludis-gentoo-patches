@@ -92,7 +92,7 @@ namespace
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataTimeKey" << endl;
 
-                cout << indent << left << setw(30) << "    Value:" << " " << pretty_print_time(key.value()) << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << pretty_print_time(key.value().seconds()) << endl;
             }
 
             void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > &)

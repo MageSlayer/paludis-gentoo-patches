@@ -41,6 +41,7 @@ using namespace paludis;
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
 
@@ -222,7 +223,7 @@ VDBUnmerger::check_file(const std::tr1::shared_ptr<const ContentsEntry> & e) con
         display("--- [gone ] " + stringify(f));
     else if (! (_imp->options.root() / f).is_regular_file())
         display("--- [!type] " + stringify(f));
-    else if ((_imp->options.root() / f).mtime() != require_key<MetadataTimeKey>(*e, "mtime").value())
+    else if ((_imp->options.root() / f).mtim().seconds() != require_key<MetadataTimeKey>(*e, "mtime").value().seconds())
         display("--- [!time] " + stringify(f));
     else
     {
@@ -256,7 +257,7 @@ VDBUnmerger::check_sym(const std::tr1::shared_ptr<const ContentsEntry> & e) cons
         display("--- [gone ] " + stringify(f));
     else if (! (_imp->options.root() / f).is_symbolic_link())
         display("--- [!type] " + stringify(f));
-    else if ((_imp->options.root() / f).mtime() != require_key<MetadataTimeKey>(*e, "mtime").value())
+    else if ((_imp->options.root() / f).mtim().seconds() != require_key<MetadataTimeKey>(*e, "mtime").value().seconds())
         display("--- [!time] " + stringify(f));
     else if ((_imp->options.root() / f).readlink() != require_key<MetadataValueKey<std::string> >(*e, "target").value())
         display("--- [!dest] " + stringify(f));

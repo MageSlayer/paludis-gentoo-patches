@@ -32,6 +32,7 @@
 #include <paludis/output_manager.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/hook.hh>
 #include <paludis/package_id.hh>
 #include <paludis/util/md5.hh>
@@ -151,7 +152,7 @@ NDBAMMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, c
 {
     std::string tidy(stringify((dst_dir / dst_name).strip_leading(_imp->realroot))),
             tidy_real(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
-    time_t timestamp((dst_dir / dst_name).mtime());
+    time_t timestamp((dst_dir / dst_name).mtim().seconds());
 
     SafeIFStream infile(FSEntry(dst_dir / dst_name));
     if (! infile)
@@ -194,13 +195,13 @@ NDBAMMerger::record_install_sym(const FSEntry & src, const FSEntry & dst_dir, co
 {
     std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
     std::string target((dst_dir / src.basename()).readlink());
-    time_t timestamp((dst_dir / src.basename()).mtime());
+    Timestamp timestamp((dst_dir / src.basename()).mtim());
 
     display_override(make_arrows(flags) + " [sym] " + tidy);
 
     *_imp->contents_file << "type=sym path=" << escape(tidy);
     *_imp->contents_file << " target=" << escape(target);
-    *_imp->contents_file << " mtime=" << timestamp << std::endl;
+    *_imp->contents_file << " mtime=" << timestamp.seconds() << std::endl;
 }
 
 void

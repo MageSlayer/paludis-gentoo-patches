@@ -27,6 +27,7 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/selinux/security_context.hh>
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
@@ -812,8 +813,7 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
         {
             /* futimens is POSIX, futimes isn't */
             struct timespec ts[2];
-            ts[0].tv_sec = ts[1].tv_sec = src.mtime();
-            ts[0].tv_nsec = ts[1].tv_nsec = 0;
+            ts[0] = ts[1] = src.mtim().as_timespec();
             if (0 != ::futimens(output_fd, ts))
                 throw MergerError("Cannot futimens '" + stringify(dst) + "': " + stringify(::strerror(errno)));
         }

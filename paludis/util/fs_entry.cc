@@ -27,6 +27,7 @@
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/set-impl.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
@@ -510,26 +511,26 @@ paludis::operator<< (std::ostream & s, const FSEntry & f)
     return s;
 }
 
-time_t
-FSEntry::ctime() const
+Timestamp
+FSEntry::ctim() const
 {
     _stat();
 
     if (! _imp->exists)
         throw FSError("Filesystem entry '" + _imp->path + "' does not exist");
 
-    return (*_imp->stat_info).st_ctime;
+    return Timestamp((*_imp->stat_info).st_ctim);
 }
 
-time_t
-FSEntry::mtime() const
+Timestamp
+FSEntry::mtim() const
 {
     _stat();
 
     if (! _imp->exists)
         throw FSError("Filesystem entry '" + _imp->path + "' does not exist");
 
-    return (*_imp->stat_info).st_mtime;
+    return Timestamp((*_imp->stat_info).st_mtim);
 }
 
 off_t

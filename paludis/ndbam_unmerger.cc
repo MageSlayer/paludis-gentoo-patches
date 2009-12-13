@@ -40,6 +40,7 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/metadata_key.hh>
 #include <tr1/functional>
@@ -209,7 +210,7 @@ NDBAMUnmerger::check_file(const std::tr1::shared_ptr<const ContentsEntry> & e) c
         display("--- [gone ] " + stringify(f));
     else if (! (_imp->options.root() / f).is_regular_file())
         display("--- [!type] " + stringify(f));
-    else if ((_imp->options.root() / f).mtime() != require_key<MetadataTimeKey>(*e, "mtime").value())
+    else if ((_imp->options.root() / f).mtim().seconds() != require_key<MetadataTimeKey>(*e, "mtime").value().seconds())
         display("--- [!time] " + stringify(f));
     else
     {
@@ -240,7 +241,7 @@ NDBAMUnmerger::check_sym(const std::tr1::shared_ptr<const ContentsEntry> & e) co
         display("--- [gone ] " + stringify(f));
     else if (! (_imp->options.root() / f).is_symbolic_link())
         display("--- [!type] " + stringify(f));
-    else if ((_imp->options.root() / f).mtime() != require_key<MetadataTimeKey>(*e, "mtime").value())
+    else if ((_imp->options.root() / f).mtim().seconds() != require_key<MetadataTimeKey>(*e, "mtime").value().seconds())
         display("--- [!time] " + stringify(f));
     else if ((_imp->options.root() / f).readlink() != require_key<MetadataValueKey<std::string> >(*e, "target").value())
         display("--- [!dest] " + stringify(f));

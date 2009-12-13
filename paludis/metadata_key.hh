@@ -37,6 +37,7 @@
 #include <paludis/util/remove_shared_ptr.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
+#include <paludis/util/timestamp-fwd.hh>
 #include <tr1/type_traits>
 #include <string>
 
@@ -249,10 +250,11 @@ namespace paludis
     };
 
     /**
-     * A MetadataTimeKey is a MetadataKey that has a time_t as its value.
+     * A MetadataTimeKey is a MetadataKey that has a Timestamp as its value.
      *
      * \ingroup g_metadata_key
      * \since 0.26
+     * \since 0.44 Timestamp instead of time_t
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE MetadataTimeKey :
@@ -264,8 +266,10 @@ namespace paludis
 
             /**
              * Fetch our value.
+             *
+             * \since 0.44 Timestamp instead of time_t
              */
-            virtual time_t value() const
+            virtual Timestamp value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 

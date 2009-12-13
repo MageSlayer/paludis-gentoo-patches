@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2006 Mark Loeser
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -25,6 +25,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/operators.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/timestamp-fwd.hh>
 #include <string>
 #include <tr1/memory>
 #include <iosfwd>
@@ -254,16 +255,20 @@ namespace paludis
 
             /**
              * Return the time the inode for the filesystem entry was last modified
+             *
              * \exception FSError if there was a problem accessing the filesystem entry
+             * \since 0.43
              */
-            time_t ctime() const
+            Timestamp ctim() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Return the time the filesystem entry was last modified
+             *
              * \exception FSError if there was a problem accessing the filesystem entry
+             * \since 0.43
              */
-            time_t mtime() const
+            Timestamp mtim() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**

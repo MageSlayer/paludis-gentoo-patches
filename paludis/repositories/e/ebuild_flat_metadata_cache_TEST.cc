@@ -33,6 +33,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/timestamp.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <iterator>
@@ -1221,7 +1222,7 @@ namespace test_cases
 
             TEST_CHECK(id->short_description_key());
             TEST_CHECK_EQUAL(contents("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-1"), contents("ebuild_flat_metadata_cache_TEST_dir/cache/expected/cat/write-1"));
-            TEST_CHECK_EQUAL(FSEntry("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-1").mtime(), 60);
+            TEST_CHECK_EQUAL(FSEntry("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-1").mtim().seconds(), 60);
         }
     } test_metadata_write;
 
@@ -1257,7 +1258,7 @@ namespace test_cases
 
             TEST_CHECK(id->short_description_key());
             TEST_CHECK_EQUAL(contents("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-eapi1-1"), contents("ebuild_flat_metadata_cache_TEST_dir/cache/expected/cat/write-eapi1-1"));
-            TEST_CHECK_EQUAL(FSEntry("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-eapi1-1").mtime(), 60);
+            TEST_CHECK_EQUAL(FSEntry("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-eapi1-1").mtim().seconds(), 60);
         }
     } test_metadata_write_eapi1;
 
@@ -1295,7 +1296,7 @@ namespace test_cases
 
             TEST_CHECK(id->short_description_key());
             TEST_CHECK_EQUAL(contents("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-eclasses-1"), contents("ebuild_flat_metadata_cache_TEST_dir/cache/expected/cat/write-eclasses-1"));
-            TEST_CHECK_EQUAL(FSEntry("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-eclasses-1").mtime(), 60);
+            TEST_CHECK_EQUAL(FSEntry("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-eclasses-1").mtim().seconds(), 60);
         }
     } test_metadata_write_eclasses;
 
@@ -1332,7 +1333,7 @@ namespace test_cases
 
             TEST_CHECK(id->short_description_key());
             TEST_CHECK_EQUAL(contents("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-exlibs-1"), contents("ebuild_flat_metadata_cache_TEST_dir/cache/expected/cat/write-exlibs-1"));
-            TEST_CHECK_EQUAL(FSEntry("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-exlibs-1").mtime(), 60);
+            TEST_CHECK_EQUAL(FSEntry("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-exlibs-1").mtim().seconds(), 60);
         }
     } test_metadata_write_exlibs;
 }

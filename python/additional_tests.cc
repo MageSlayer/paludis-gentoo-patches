@@ -37,6 +37,7 @@
 #include <paludis/formatter.hh>
 #include <paludis/stringify_formatter-impl.hh>
 #include <paludis/util/clone-impl.hh>
+#include <paludis/util/timestamp.hh>
 #include <tr1/memory>
 
 using namespace paludis;
@@ -169,7 +170,7 @@ namespace metadata_key
     void test_metadata_time_key(const MetadataTimeKey & m)
     {
         test_metadata_key(m);
-        time_t PALUDIS_ATTRIBUTE((unused)) t(m.value());
+        Timestamp PALUDIS_ATTRIBUTE((unused)) t(m.value());
     }
 
     void test_metadata_contents_key(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > & m)

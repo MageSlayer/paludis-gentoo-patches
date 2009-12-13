@@ -43,6 +43,7 @@
 #include <paludis/util/destringify.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/timestamp.hh>
 
 #include <paludis/contents.hh>
 #include <paludis/repository.hh>
@@ -1011,7 +1012,8 @@ EContentsKey::value() const
         if ("obj" == tokens.at(0))
         {
             std::tr1::shared_ptr<ContentsEntry> e(new ContentsFileEntry(tokens.at(1)));
-            e->add_metadata_key(make_shared_ptr(new LiteralMetadataTimeKey("mtime", "mtime", mkt_normal, destringify<time_t>(tokens.at(3)))));
+            e->add_metadata_key(make_shared_ptr(new LiteralMetadataTimeKey("mtime", "mtime", mkt_normal,
+                            Timestamp(destringify<time_t>(tokens.at(3)), 0))));
             e->add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("md5", "md5", mkt_normal, tokens.at(2))));
             _imp->value->add(e);
         }
@@ -1023,7 +1025,8 @@ EContentsKey::value() const
         else if ("sym" == tokens.at(0))
         {
             std::tr1::shared_ptr<ContentsEntry> e(new ContentsSymEntry(tokens.at(1), tokens.at(2)));
-            e->add_metadata_key(make_shared_ptr(new LiteralMetadataTimeKey("mtime", "mtime", mkt_normal, destringify<time_t>(tokens.at(3)))));
+            e->add_metadata_key(make_shared_ptr(new LiteralMetadataTimeKey("mtime", "mtime", mkt_normal,
+                            Timestamp(destringify<time_t>(tokens.at(3)), 0))));
             _imp->value->add(e);
         }
         else if ("misc" == tokens.at(0) || "fif" == tokens.at(0) || "dev" == tokens.at(0))
@@ -1059,7 +1062,7 @@ namespace paludis
         const std::tr1::shared_ptr<const ERepositoryID> id;
         const FSEntry filename;
         mutable Mutex value_mutex;
-        mutable std::tr1::shared_ptr<time_t> value;
+        mutable std::tr1::shared_ptr<Timestamp> value;
 
         const std::string raw_name;
         const std::string human_name;
@@ -1087,7 +1090,7 @@ EMTimeKey::~EMTimeKey()
 {
 }
 
-time_t
+Timestamp
 EMTimeKey::value() const
 {
     Lock l(_imp->value_mutex);
@@ -1095,11 +1098,11 @@ EMTimeKey::value() const
     if (_imp->value)
         return *_imp->value;
 
-    _imp->value.reset(new time_t(0));
+    _imp->value.reset(new Timestamp(Timestamp::now()));
 
     try
     {
-        *_imp->value = _imp->filename.mtime();
+        *_imp->value = _imp->filename.mtim();
     }
     catch (const FSError & e)
     {

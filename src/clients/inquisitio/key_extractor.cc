@@ -26,6 +26,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/stringify_formatter.hh>
@@ -227,7 +228,7 @@ namespace
 
             void visit(const MetadataTimeKey & s)
             {
-                result = _m(stringify(s.value()));
+                result = _m(stringify(s.value().seconds()));
             }
 
             void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > &)

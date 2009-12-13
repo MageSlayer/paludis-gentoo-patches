@@ -76,6 +76,7 @@
 #include <paludis/output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/safe_ofstream.hh>
+#include <paludis/util/timestamp.hh>
 
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/create_iterator-impl.hh>
@@ -1292,7 +1293,7 @@ VDBRepository::perform_updates()
     FSEntry cache_dir(_imp->params.location() / ".cache");
     FSEntry cache_file(cache_dir / "updates_time_cache");
     if (cache_file.is_regular_file_or_symlink_to_regular_file())
-        ignore_updates_before = cache_file.mtime();
+        ignore_updates_before = cache_file.mtim().seconds();
 
     std::cout << std::endl << "Checking for updates (package moves etc):" << std::endl;
 
@@ -1336,7 +1337,7 @@ VDBRepository::perform_updates()
                 if (! d->is_regular_file_or_symlink_to_regular_file())
                     continue;
 
-                if (d->mtime() <= ignore_updates_before)
+                if (d->mtim().seconds() <= ignore_updates_before)
                 {
                     Log::get_instance()->message("e.vdb.updates.ignoring", ll_debug, lc_context) <<
                         "Ignoring " << *d << " because it hasn't changed";

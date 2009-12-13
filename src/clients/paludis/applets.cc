@@ -27,6 +27,7 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/repository_factory.hh>
 #include <string>
 #include <set>
@@ -172,7 +173,7 @@ namespace
 
         void visit(const MetadataTimeKey & k)
         {
-            std::cout << k.value() << std::endl;
+            std::cout << k.value().seconds() << std::endl;
         }
     };
 }

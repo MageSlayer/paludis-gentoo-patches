@@ -29,6 +29,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/timestamp.hh>
 
 using namespace paludis;
 using namespace paludis::python;
@@ -391,13 +392,13 @@ struct MetadataTimeKeyWrapper :
     MetadataTimeKey,
     bp::wrapper<MetadataTimeKey>
 {
-    virtual time_t value() const
+    virtual Timestamp value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
 
         if (bp::override f = get_override("value"))
-            return f();
+            return Timestamp(f(), 0);
         else
             throw PythonMethodNotImplemented("MetadataTimeKey", "value");
     }

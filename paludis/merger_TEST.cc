@@ -26,6 +26,7 @@
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/hook.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -539,14 +540,14 @@ namespace test_cases
 
         void run()
         {
-            time_t m_new((image_dir / "new_file").mtime());
-            time_t m_existing((image_dir / "existing_file").mtime());
+            Timestamp m_new((image_dir / "new_file").mtim());
+            Timestamp m_existing((image_dir / "existing_file").mtim());
 
             TEST_CHECK(merger.check());
             merger.merge();
 
-            TEST_CHECK_EQUAL((root_dir / "new_file").mtime(), m_new);
-            TEST_CHECK_EQUAL((root_dir / "existing_file").mtime(), m_existing);
+            TEST_CHECK((root_dir / "new_file").mtim() == m_new);
+            TEST_CHECK((root_dir / "existing_file").mtim() == m_existing);
         }
     } test_merger_mtimes;
 }

@@ -30,6 +30,7 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/safe_ofstream.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/ndbam.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
@@ -556,7 +557,7 @@ NDBAM::parse_contents(const PackageID & id,
 
             std::tr1::shared_ptr<ContentsFileEntry> entry(make_shared_ptr(new ContentsFileEntry(path)));
             entry->add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("md5", "md5", mkt_normal, md5)));
-            entry->add_metadata_key(make_shared_ptr(new LiteralMetadataTimeKey("mtime", "mtime", mkt_normal, mtime)));
+            entry->add_metadata_key(make_shared_ptr(new LiteralMetadataTimeKey("mtime", "mtime", mkt_normal, Timestamp(mtime, 0))));
             on_file(entry);
         }
         else if ("dir" == type)
@@ -583,7 +584,7 @@ NDBAM::parse_contents(const PackageID & id,
             time_t mtime(destringify<time_t>(tokens.find("mtime")->second));
 
             std::tr1::shared_ptr<ContentsSymEntry> entry(make_shared_ptr(new ContentsSymEntry(path, target)));
-            entry->add_metadata_key(make_shared_ptr(new LiteralMetadataTimeKey("mtime", "mtime", mkt_normal, mtime)));
+            entry->add_metadata_key(make_shared_ptr(new LiteralMetadataTimeKey("mtime", "mtime", mkt_normal, Timestamp(mtime, 0))));
             on_sym(entry);
         }
         else

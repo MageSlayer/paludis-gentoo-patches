@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
  * Copyright (c) 2006 Mark Loeser
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -18,15 +18,16 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <ctime>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/timestamp.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <pwd.h>
+#include <ctime>
 
 using namespace paludis;
 using namespace test;
@@ -62,26 +63,20 @@ namespace test_cases
             FSEntry c("fs_entry_TEST_dir/no_such_file");
             FSEntry d("fs_entry_TEST_dir/dir_a/dir_in_a");
 
-            paludis::Log::get_instance()->message("util.fs_entry_TEST.cmtime", ll_debug, lc_context)
-                << "a.ctime() : " << a.ctime() << " :: a.mtime() : " << a.mtime() << " :: std::time(0) : " << std::time(0);
-            paludis::Log::get_instance()->message("util.fs_entry_TEST.cmtime", ll_debug, lc_context)
-                << "b.ctime() : " << b.ctime() << " :: b.mtime() : " << b.mtime() << " :: std::time(0) : " << std::time(0);
-            paludis::Log::get_instance()->message("util.fs_entry_TEST.cmtime", ll_debug, lc_context)
-                << "d.ctime() : " << d.ctime() << " :: d.mtime() : " << d.mtime() << " :: std::time(0) : " << std::time(0);
 #if !defined(__FreeBSD__)
-            TEST_CHECK(a.ctime() < std::time(0));
-            TEST_CHECK(a.mtime() < std::time(0));
+            TEST_CHECK(a.ctim() < Timestamp::now());
+            TEST_CHECK(a.mtim() < Timestamp::now());
 #endif
-            TEST_CHECK(b.ctime() < std::time(0));
-            TEST_CHECK(b.mtime() < std::time(0));
-            TEST_CHECK(d.ctime() < std::time(0));
-            TEST_CHECK(d.mtime() < std::time(0));
+            TEST_CHECK(b.ctim() < Timestamp::now());
+            TEST_CHECK(b.mtim() < Timestamp::now());
+            TEST_CHECK(d.ctim() < Timestamp::now());
+            TEST_CHECK(d.mtim() < Timestamp::now());
 
-            TEST_CHECK(b.mtime() < b.ctime());
-            TEST_CHECK(d.mtime() == d.ctime());
+            TEST_CHECK(b.mtim() < b.ctim());
+            TEST_CHECK(d.mtim() == d.ctim());
 
-            TEST_CHECK_THROWS(time_t PALUDIS_ATTRIBUTE((unused)) x = c.ctime(), FSError);
-            TEST_CHECK_THROWS(time_t PALUDIS_ATTRIBUTE((unused)) x = c.mtime(), FSError);
+            TEST_CHECK_THROWS(Timestamp PALUDIS_ATTRIBUTE((unused)) x = c.ctim(), FSError);
+            TEST_CHECK_THROWS(Timestamp PALUDIS_ATTRIBUTE((unused)) x = c.mtim(), FSError);
         }
     } test_fs_entry_time;
 

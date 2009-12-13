@@ -27,6 +27,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/dependencies_rewriter.hh>
@@ -107,11 +108,11 @@ namespace
             }
 
             {
-                std::time_t cache_time(std::max(_imp->master_mtime, _imp->filename.mtime()));
-                bool ok(_imp->ebuild.mtime() <= cache_time);
+                std::time_t cache_time(std::max(_imp->master_mtime, _imp->filename.mtim().seconds()));
+                bool ok(_imp->ebuild.mtim().seconds() <= cache_time);
                 if (! ok)
                     Log::get_instance()->message("e.cache.flat_list.mtime", ll_debug, lc_context)
-                        << "ebuild has mtime " << _imp->ebuild.mtime() << ", but expected at most " << cache_time;
+                        << "ebuild has mtime " << _imp->ebuild.mtim().seconds() << ", but expected at most " << cache_time;
 
                 if (ok && "0" != id->guessed_eapi_name())
                 {
@@ -148,11 +149,11 @@ namespace
                             ok = false;
                         }
 
-                        else if (eclass->mtime() > cache_time)
+                        else if (eclass->mtim().seconds() > cache_time)
                         {
                             Log::get_instance()->message("e.cache.flat_list.eclass.wrong_mtime", ll_debug, lc_context)
                                 << "Cache-requested eclass '" << *it << "' has mtime "
-                                << eclass->mtime() << ", but expected at most " << cache_time;
+                                << eclass->mtim().seconds() << ", but expected at most " << cache_time;
                             ok = false;
                         }
 
@@ -361,11 +362,11 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id, c
 
             {
                 std::map<std::string, std::string>::const_iterator mtime_it(keys.find("_mtime_"));
-                std::time_t cache_time(keys.end() == mtime_it ? _imp->filename.mtime() : destringify<std::time_t>(mtime_it->second));
-                bool ok(_imp->ebuild.mtime() == cache_time);
+                std::time_t cache_time(keys.end() == mtime_it ? _imp->filename.mtim().seconds() : destringify<std::time_t>(mtime_it->second));
+                bool ok(_imp->ebuild.mtim().seconds() == cache_time);
                 if (! ok)
                     Log::get_instance()->message("e.cache.flat_hash.mtime", ll_debug, lc_context)
-                        << "ebuild has mtime " << _imp->ebuild.mtime() << ", but expected " << cache_time;
+                        << "ebuild has mtime " << _imp->ebuild.mtim().seconds() << ", but expected " << cache_time;
 
                 if (ok) {
                     std::string cache_guessed(keys["_guessed_eapi_"]);
@@ -424,11 +425,11 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id, c
                             ok = false;
                         }
 
-                        else if (eclass->mtime() != eclass_mtime)
+                        else if (eclass->mtim().seconds() != eclass_mtime)
                         {
                             Log::get_instance()->message("e.cache.flat_hash.eclass.wrong_mtime", ll_debug, lc_context)
                                 << "Cache-requested eclass '" << eclass_name << "' has mtime "
-                                << eclass->mtime() << ", but expected " << eclass_mtime;
+                                << eclass->mtim().seconds() << ", but expected " << eclass_mtime;
                             ok = false;
                         }
 
@@ -481,11 +482,11 @@ EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id, c
                             ok = false;
                         }
 
-                        else if (exlib->mtime() != exlib_mtime)
+                        else if (exlib->mtim().seconds() != exlib_mtime)
                         {
                             Log::get_instance()->message("e.cache.flat_hash.exlib.wrong_mtime", ll_debug, lc_context)
                                 << "Cache-requested exlib '" << exlib_name << "' has mtime "
-                                << exlib->mtime() << ", but expected " << exlib_mtime;
+                                << exlib->mtim().seconds() << ", but expected " << exlib_mtime;
                             ok = false;
                         }
 
@@ -681,7 +682,7 @@ EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
     }
 
     std::ostringstream cache;
-    write_kv(cache, "_mtime_", _imp->ebuild.mtime());
+    write_kv(cache, "_mtime_", _imp->ebuild.mtim().seconds());
     write_kv(cache, "_guessed_eapi_", id->guessed_eapi_name());
 
     if (id->eapi()->supported()->ebuild_options()->support_eclasses() && id->inherited_key())
@@ -695,7 +696,7 @@ EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
                 throw InternalError(PALUDIS_HERE, "eclass '" + *it + "' disappeared?");
             eclasses.push_back(*it);
             eclasses.push_back(stringify(eclass->dirname()));
-            eclasses.push_back(stringify(eclass->mtime()));
+            eclasses.push_back(stringify(eclass->mtim().seconds()));
         }
         write_kv(cache, "_eclasses_", join(eclasses.begin(), eclasses.end(), "\t"));
     }
@@ -711,7 +712,7 @@ EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
                 throw InternalError(PALUDIS_HERE, "exlib '" + *it + "' for '" + stringify(id->name()) + "' disappeared?");
             exlibs.push_back(*it);
             exlibs.push_back(stringify(exlib->dirname()));
-            exlibs.push_back(stringify(exlib->mtime()));
+            exlibs.push_back(stringify(exlib->mtim().seconds()));
         }
         write_kv(cache, "_exlibs_", join(exlibs.begin(), exlibs.end(), "\t"));
     }
@@ -825,7 +826,7 @@ EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
             SafeOFStream cache_file(_imp->filename);
             cache_file << cache.str();
         }
-        struct ::utimbuf times = { _imp->ebuild.mtime(), _imp->ebuild.mtime() };
+        struct ::utimbuf times = { _imp->ebuild.mtim().seconds(), _imp->ebuild.mtim().seconds() };
         _imp->filename.utime(&times);
     }
     catch (const SafeOFStreamError & e)

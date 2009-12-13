@@ -247,6 +247,7 @@ namespace paludis
      *
      * \ingroup g_literal_metadata_key
      * \since 0.36
+     * \since 0.44 Timestamp instead of time_t
      */
     class PALUDIS_VISIBLE LiteralMetadataTimeKey :
         public MetadataTimeKey,
@@ -259,12 +260,12 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            LiteralMetadataTimeKey(const std::string &, const std::string &, const MetadataKeyType, const time_t);
+            LiteralMetadataTimeKey(const std::string &, const std::string &, const MetadataKeyType, const Timestamp);
             ~LiteralMetadataTimeKey();
 
             ///\}
 
-            virtual time_t value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual Timestamp value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));

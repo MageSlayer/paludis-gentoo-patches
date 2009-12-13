@@ -23,6 +23,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/formatter.hh>
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>
@@ -350,9 +351,9 @@ namespace paludis
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
-        const time_t value;
+        const Timestamp value;
 
-        Implementation(const std::string & r, const std::string & h, const MetadataKeyType t, const time_t v) :
+        Implementation(const std::string & r, const std::string & h, const MetadataKeyType t, const Timestamp v) :
             raw_name(r),
             human_name(h),
             type(t),
@@ -363,7 +364,7 @@ namespace paludis
 }
 
 LiteralMetadataTimeKey::LiteralMetadataTimeKey(
-        const std::string & r, const std::string & h, const MetadataKeyType k, const time_t v) :
+        const std::string & r, const std::string & h, const MetadataKeyType k, const Timestamp v) :
     PrivateImplementationPattern<LiteralMetadataTimeKey>(new Implementation<LiteralMetadataTimeKey>(r, h, k, v)),
     _imp(PrivateImplementationPattern<LiteralMetadataTimeKey>::_imp)
 {
@@ -391,7 +392,7 @@ LiteralMetadataTimeKey::type() const
     return _imp->type;
 }
 
-time_t
+Timestamp
 LiteralMetadataTimeKey::value() const
 {
     return _imp->value;

@@ -309,7 +309,7 @@ namespace paludis
                         const std::string &, const std::string &, const FSEntry &, const MetadataKeyType);
                 ~EMTimeKey();
 
-                time_t value() const
+                Timestamp value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));

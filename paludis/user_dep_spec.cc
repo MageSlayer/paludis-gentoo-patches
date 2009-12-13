@@ -36,6 +36,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/timestamp.hh>
 
 using namespace paludis;
 
@@ -386,7 +387,7 @@ namespace
 
         bool visit(const MetadataTimeKey & k) const
         {
-            return pattern == stringify(k.value());
+            return pattern == stringify(k.value().seconds());
         }
 
         bool visit(const MetadataValueKey<std::string> & k) const

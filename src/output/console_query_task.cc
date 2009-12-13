@@ -32,6 +32,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/pretty_print.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/package_dep_spec_properties.hh>
 #include <paludis/mask.hh>
 #include <paludis/metadata_key.hh>
@@ -645,10 +646,10 @@ namespace
 
             void visit(const MetadataTimeKey & k)
             {
-                if (0 == k.value())
+                if (0 == k.value().seconds())
                     return;
 
-                std::string pretty_time(pretty_print_time(k.value()));
+                std::string pretty_time(pretty_print_time(k.value().seconds()));
 
                 if (k.type() == type)
                 {

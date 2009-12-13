@@ -24,6 +24,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/map.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/mask.hh>
@@ -40,7 +41,7 @@ namespace
 
         void visit(const MetadataTimeKey & k)
         {
-            s << k.value();
+            s << k.value().seconds();
         }
 
         void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > & k)

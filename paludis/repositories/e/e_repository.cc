@@ -94,6 +94,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
@@ -366,7 +367,7 @@ namespace paludis
 
         FSEntry mtf(params.location() / "metadata" / "timestamp");
         if (mtf.exists())
-            master_mtime = mtf.mtime();
+            master_mtime = mtf.mtim().seconds();
     }
 
     Implementation<ERepository>::~Implementation()
@@ -793,7 +794,7 @@ ERepository::purge_invalid_cache() const
     time_t master_mtime(0);
     FSEntry master_mtime_file(_imp->params.location() / "metadata" / "timestamp");
     if (master_mtime_file.exists())
-        master_mtime = master_mtime_file.mtime();
+        master_mtime = master_mtime_file.mtim().seconds();
 
     for (DirIterator dc(write_cache, DirIteratorOptions() + dio_inode_sort), dc_end ; dc != dc_end ; ++dc)
     {

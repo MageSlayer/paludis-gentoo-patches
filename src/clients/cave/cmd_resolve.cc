@@ -35,6 +35,7 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/string_list_stream.hh>
 #include <paludis/util/thread.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/args/escape.hh>
 #include <paludis/resolver/resolver.hh>
@@ -500,12 +501,12 @@ namespace
     {
         if (id->version().is_scm() || is_scm_name(id->name()))
         {
-            static time_t current_time(time(0)); /* static to avoid weirdness */
-            time_t installed_time(current_time);
+            static Timestamp current_time(Timestamp::now()); /* static to avoid weirdness */
+            time_t installed_time(current_time.seconds());
             if (id->installed_time_key())
-                installed_time = id->installed_time_key()->value();
+                installed_time = id->installed_time_key()->value().seconds();
 
-            return (current_time - installed_time) > (24 * 60 * 60 * n);
+            return (current_time.seconds() - installed_time) > (24 * 60 * 60 * n);
         }
         else
             return false;

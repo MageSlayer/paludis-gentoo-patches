@@ -30,6 +30,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/enum_iterator.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/safe_ifstream.hh>
@@ -138,7 +139,7 @@ VDBMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, con
 {
     std::string tidy(stringify((dst_dir / dst_name).strip_leading(_imp->realroot))),
             tidy_real(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
-    time_t timestamp((dst_dir / dst_name).mtime());
+    Timestamp timestamp((dst_dir / dst_name).mtim());
 
     SafeIFStream infile(FSEntry(dst_dir / dst_name));
     if (! infile)
@@ -151,7 +152,7 @@ VDBMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, con
         line.append(" (" + FSEntry(tidy).basename() + ")");
     display_override(line);
 
-    *_imp->contents_file << "obj " << tidy_real << " " << md5.hexsum() << " " << timestamp << std::endl;
+    *_imp->contents_file << "obj " << tidy_real << " " << md5.hexsum() << " " << timestamp.seconds() << std::endl;
 }
 
 void
@@ -177,11 +178,11 @@ VDBMerger::record_install_sym(const FSEntry & src, const FSEntry & dst_dir, cons
 {
     std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
     std::string target((dst_dir / src.basename()).readlink());
-    time_t timestamp((dst_dir / src.basename()).mtime());
+    Timestamp timestamp((dst_dir / src.basename()).mtim());
 
     display_override(make_arrows(flags) + " [sym] " + tidy);
 
-    *_imp->contents_file << "sym " << tidy << " -> " << target << " " << timestamp << std::endl;
+    *_imp->contents_file << "sym " << tidy << " -> " << target << " " << timestamp.seconds() << std::endl;
 }
 
 void

@@ -26,6 +26,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/pretty_print.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/name.hh>
 #include <paludis/metadata_key.hh>
 #include <sstream>
@@ -107,7 +108,7 @@ namespace
 
         void visit(const MetadataTimeKey & k)
         {
-            s << pretty_print_time(k.value());
+            s << pretty_print_time(k.value().seconds());
         }
 
         void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > &)

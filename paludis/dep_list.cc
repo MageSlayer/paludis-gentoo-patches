@@ -55,6 +55,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/timestamp.hh>
 
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/set-impl.hh>
@@ -1520,8 +1521,8 @@ DepList::prefer_installed_over_uninstalled(const PackageID & installed,
         if (uninstalled.version() == installed.version() &&
                 (installed.version().is_scm() || is_scm(installed.name())))
         {
-            static time_t current_time(time(0)); /* static to avoid weirdness */
-            time_t installed_time(current_time);
+            static Timestamp current_time(Timestamp::now()); /* static to avoid weirdness */
+            Timestamp installed_time(current_time);
             if (installed.installed_time_key())
                 installed_time = installed.installed_time_key()->value();
 
@@ -1533,12 +1534,12 @@ DepList::prefer_installed_over_uninstalled(const PackageID & installed,
                         return false;
 
                     case dl_reinstall_scm_daily:
-                        if (current_time - installed_time > (24 * 60 * 60))
+                        if (current_time.seconds() - installed_time.seconds() > (24 * 60 * 60))
                             return false;
                         continue;
 
                     case dl_reinstall_scm_weekly:
-                        if (current_time - installed_time > (24 * 60 * 60 * 7))
+                        if (current_time.seconds() - installed_time.seconds() > (24 * 60 * 60 * 7))
                             return false;
                         continue;
 

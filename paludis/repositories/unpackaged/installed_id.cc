@@ -35,6 +35,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/return_literal_function.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -157,15 +158,15 @@ namespace
         public MetadataTimeKey
     {
         private:
-            const time_t _time;
+            const Timestamp _time;
 
         public:
             InstalledUnpackagedTimeKey(const FSEntry & f) :
-                _time(f.mtime())
+                _time(f.mtim())
             {
             }
 
-            time_t value() const
+            Timestamp value() const
             {
                 return _time;
             }
