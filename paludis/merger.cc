@@ -799,6 +799,14 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
             throw MergerError("Cannot fchmod '" + stringify(dst) + "': " + stringify(::strerror(errno)));
         try_to_copy_xattrs(src, output_fd, result);
 
+        char buf[4096];
+        ssize_t count;
+        while ((count = read(input_fd, buf, 4096)) > 0)
+            if (-1 == write(output_fd, buf, count))
+                throw MergerError("write failed: " + stringify(::strerror(errno)));
+        if (-1 == count)
+            throw MergerError("read failed: " + stringify(::strerror(errno)));
+
         /* might need to copy mtime */
         if (_imp->params.options()[mo_preserve_mtimes])
         {
@@ -809,14 +817,6 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
             if (0 != ::futimens(output_fd, ts))
                 throw MergerError("Cannot futimens '" + stringify(dst) + "': " + stringify(::strerror(errno)));
         }
-
-        char buf[4096];
-        ssize_t count;
-        while ((count = read(input_fd, buf, 4096)) > 0)
-            if (-1 == write(output_fd, buf, count))
-                throw MergerError("write failed: " + stringify(::strerror(errno)));
-        if (-1 == count)
-            throw MergerError("read failed: " + stringify(::strerror(errno)));
 
         if (0 != std::rename(stringify(dst).c_str(), stringify(dst_real).c_str()))
             throw MergerError(
