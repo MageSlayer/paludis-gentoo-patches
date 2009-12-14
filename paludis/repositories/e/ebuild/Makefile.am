@@ -1,6 +1,6 @@
 include $(top_srcdir)/misc/common-makefile.am
 
-SUBDIRS = . 0 1 2 3 4 exheres-0 kdebuild-1 paludis-1 pbin-1 utils
+SUBDIRS = . 0 1 2 3 4 exheres-0 paludis-1 pbin-1 utils
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 

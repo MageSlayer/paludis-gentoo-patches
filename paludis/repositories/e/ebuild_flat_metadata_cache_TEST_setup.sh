@@ -325,20 +325,6 @@ LICENCES="GPL-2"
 PLATOFORMS="test"
 DEPENDENCIES=""
 END
-cat <<END > metadata/cache/cat/flat_hash-guessed-eapi-extension-1 || exit 1
-_mtime_=60
-_guessed_eapi_=kdebuild-1
-DEPENDENCIES=the/dependencies
-SLOT=the-slot
-DOWNLOADS=the-downloads
-RESTRICT=the-restrict
-HOMEPAGE=the-homepage
-LICENCES=the-licences
-SUMMARY=The Stale Description
-PLATFORMS=the-platforms
-MYOPTIONS=the-myoptions
-EAPI=kdebuild-1
-END
 TZ=UTC touch -t 197001010001 cat/flat_hash-guessed-eapi-extension/flat_hash-guessed-eapi-extension-1.exheres-0 || exit 2
 
 mkdir cat/flat_hash-no-guessed-eapi

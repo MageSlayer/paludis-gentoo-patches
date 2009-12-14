@@ -453,9 +453,9 @@ namespace test_cases
         }
     } test_dep_spec_parser_labels;
 
-    struct DepParserKDEBuildURILabelsTest : TestCase
+    struct DepParserExheres0URILabelsTest : TestCase
     {
-        DepParserKDEBuildURILabelsTest() : TestCase("kdebuild uri label handling") { }
+        DepParserExheres0URILabelsTest() : TestCase("exheres-0 uri label handling") { }
 
         void run()
         {
@@ -470,12 +470,12 @@ namespace test_cases
 
             DepSpecPrettyPrinter d(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
             parse_fetchable_uri("http://foo/bar manual: two",
-                    &env, id, *EAPIData::get_instance()->eapi_from_string("kdebuild-1"))->root()->accept(d);
+                    &env, id, *EAPIData::get_instance()->eapi_from_string("exheres-0"))->root()->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "http://foo/bar manual: two");
             TEST_CHECK_THROWS(parse_fetchable_uri("http://foo/bar monkey: two",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("kdebuild-1"))->root()->accept(d), EDepParseError);
+                        &env, id, *EAPIData::get_instance()->eapi_from_string("exheres-0"))->root()->accept(d), EDepParseError);
         }
-    } test_dep_spec_parser_kdebuild_uri_labels;
+    } test_dep_spec_parser_exheres_0_uri_labels;
 
     struct AnnotationsTest : TestCase
     {

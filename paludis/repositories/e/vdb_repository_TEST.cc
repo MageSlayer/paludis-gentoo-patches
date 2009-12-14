@@ -428,7 +428,7 @@ namespace test_cases
             }
         }
     } test_phases_eapi_0("0"), test_phases_eapi_1("1"), test_phases_eapi_2("2"), test_phases_eapi_3("3"),
-                        test_phases_eapi_exheres_0("exheres-0"), test_phases_eapi_kdebuild_1("kdebuild-1");
+                        test_phases_eapi_exheres_0("exheres-0");
 
     struct VarsTest : TestCase
     {
@@ -558,7 +558,7 @@ namespace test_cases
             }
         }
     } test_vdb_vars_eapi_0("0"), test_vdb_vars_eapi_1("1"), test_vdb_vars_eapi_2("2"),
-                      test_vdb_vars_eapi_exheres_0("exheres-0"), test_vdb_vars_eapi_kdebuild_1("kdebuild-1");
+                      test_vdb_vars_eapi_exheres_0("exheres-0");
 
     struct NamesCacheIncrementalTest : TestCase
     {
@@ -1327,6 +1327,7 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("install eapi 1", true);
 
+                ::setenv("VDB_REPOSITORY_TEST_RMDIR", "x-install-eapi-1", 1);
                 install(env, vdb_repo, "=cat/pkg-0::postinsttest", "");
                 vdb_repo->invalidate();
 
@@ -1337,6 +1338,7 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("reinstall eapi 1", true);
 
+                ::setenv("VDB_REPOSITORY_TEST_RMDIR", "0", 1);
                 install(env, vdb_repo, "=cat/pkg-0::postinsttest", "");
                 vdb_repo->invalidate();
 
@@ -1347,6 +1349,7 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("upgrade eapi 1 -> 1", true);
 
+                ::setenv("VDB_REPOSITORY_TEST_RMDIR", "x-upgrade-eapi-1-1", 1);
                 install(env, vdb_repo, "=cat/pkg-0.1::postinsttest", "=cat/pkg-0::installed");
                 vdb_repo->invalidate();
 
@@ -1357,6 +1360,7 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("upgrade eapi 1 -> paludis-1", true);
 
+                ::setenv("VDB_REPOSITORY_TEST_RMDIR", "x-upgrade-eapi-1-paludis-1", 1);
                 install(env, vdb_repo, "=cat/pkg-1::postinsttest", "=cat/pkg-0.1::installed");
                 vdb_repo->invalidate();
 
@@ -1368,6 +1372,7 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("reinstall eapi paludis-1", true);
 
+                ::setenv("VDB_REPOSITORY_TEST_RMDIR", "x-reinstall-eapi-paludis-1", 1);
                 install(env, vdb_repo, "=cat/pkg-1::postinsttest", "");
                 vdb_repo->invalidate();
 
@@ -1378,6 +1383,7 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("upgrade eapi paludis-1 -> paludis-1", true);
 
+                ::setenv("VDB_REPOSITORY_TEST_RMDIR", "1.1", 1);
                 install(env, vdb_repo, "=cat/pkg-1.1::postinsttest", "=cat/pkg-1::installed");
                 vdb_repo->invalidate();
 
@@ -1388,6 +1394,7 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("new slot", true);
 
+                ::setenv("VDB_REPOSITORY_TEST_RMDIR", "x-new-slot", 1);
                 install(env, vdb_repo, "=cat/pkg-2::postinsttest", "");
                 vdb_repo->invalidate();
 
@@ -1399,6 +1406,7 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("downgrade eapi paludis-1 -> 1", true);
 
+                ::setenv("VDB_REPOSITORY_TEST_RMDIR", "x-downgrade-eapi-paludis-1-1", 1);
                 install(env, vdb_repo, "=cat/pkg-0::postinsttest", "=cat/pkg-1.1::installed");
                 vdb_repo->invalidate();
 

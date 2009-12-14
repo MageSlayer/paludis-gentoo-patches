@@ -84,7 +84,7 @@ echo "cat/pkg1 build: cat/pkg2 build+run: cat/pkg3 suggestion: cat/pkg4 post: ca
 
 mkdir -p repo3
 
-mkdir -p srcrepo/{profiles/profile,cat/{target,vars}{,-exheres,-kdebuild},eclass}
+mkdir -p srcrepo/{profiles/profile,cat/{target,vars}{,-exheres},eclass}
 cat <<END > srcrepo/profiles/profile/make.defaults
 ARCH=test
 USERLAND="GNU"
@@ -215,30 +215,6 @@ pkg_config() {
 }
 END
 
-cat <<'END' > srcrepo/cat/target-kdebuild/target-kdebuild-1.ebuild
-EAPI="exheres-0"
-DESCRIPTION="The Description"
-HOMEPAGE="http://example.com/"
-DOWNLOADS=""
-SLOT="0"
-MYOPTIONS=""
-LICENCES="GPL-2"
-PLATFORMS="test"
-DEPENDENCIES=""
-
-src_install() {
-    echo MONKEY > ${IMAGE}/monkey
-}
-
-pkg_info() {
-    echo "This is pkg_info"
-}
-
-pkg_config() {
-    echo "This is pkg_config"
-}
-END
-
 cat <<'END' > srcrepo/cat/vars/vars-0.ebuild
 EAPI="0"
 DESCRIPTION="The Description"
@@ -324,48 +300,6 @@ pkg_config() {
 END
 
 cat <<'END' > srcrepo/cat/vars-exheres/vars-exheres-0.ebuild
-EAPI="exheres-0"
-DESCRIPTION="The Description"
-HOMEPAGE="http://example.com/"
-DOWNLOADS=""
-SLOT="0"
-MYOPTIONS=""
-LICENCES="GPL-2"
-PLATFORMS="test"
-DEPENDENCIES="foo/bar"
-
-pkg_setup() {
-    einfo "${EBUILD_PHASE}: TEMP=${TEMP}"
-    [[ -d "${TEMP}" ]] || die "TEMP not a dir"
-}
-
-src_compile() {
-    einfo "${EBUILD_PHASE}: TEMP=${TEMP}"
-    [[ -d "${TEMP}" ]] || die "TEMP not a dir"
-}
-
-pkg_preinst() {
-    einfo "${EBUILD_PHASE}: TEMP=${TEMP}"
-    [[ -d "${TEMP}" ]] || die "TEMP not a dir"
-}
-
-pkg_prerm() {
-    einfo "${EBUILD_PHASE}: TEMP=${TEMP}"
-    [[ -d "${TEMP}" ]] || die "TEMP not a dir"
-}
-
-pkg_info() {
-    einfo "${EBUILD_PHASE}: TEMP=${TEMP}"
-    [[ -d "${TEMP}" ]] || die "TEMP not a dir"
-}
-
-pkg_config() {
-    einfo "${EBUILD_PHASE}: TEMP=${TEMP}"
-    [[ -d "${TEMP}" ]] || die "TEMP not a dir"
-}
-END
-
-cat <<'END' > srcrepo/cat/vars-kdebuild/vars-kdebuild-1.ebuild
 EAPI="exheres-0"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
@@ -536,7 +470,7 @@ echo cat >postinsttest_src1/profiles/categories
 
 cat <<END >postinsttest_src1/cat/pkg/pkg-0.ebuild
 if [[ \${PV} == 0* ]]; then
-    EAPI=kdebuild-1
+    EAPI=1
 else
     EAPI=paludis-1
 fi
@@ -562,10 +496,10 @@ pkg_postinst() {
     \${COMMAND} "\${ROOT}"/\${OTHER##*/} || die
 }
 pkg_postrm() {
-    if has_version "\${CATEGORY}/\${PN}:\${SLOT}[<\${PVR}&=0*]" || has_version "\${CATEGORY}/\${PN}:\${SLOT}[>\${PVR}&=0*]"; then
-        rmdir "\${ROOT}"/\${PF} || die
+    if [[ \$VDB_REPOSITORY_TEST_RMDIR == \${PV} ]] ; then
+        rmdir "\${ROOT}"/\${PF} || die "rmdir failed, pv is \${PV}, comparing to \$VDB_REPOSITORY_TEST_RMDIR"
     else
-        mkdir "\${ROOT}"/\${PF} || die
+        mkdir "\${ROOT}"/\${PF} || die "mkdir failed, pv is \${PV}, comparing to \$VDB_REPOSITORY_TEST_RMDIR"
     fi
 }
 END

@@ -232,7 +232,6 @@ paludis-*.*.*.tar.bz2
 /paludis/repositories/e/e_repository_TEST_ever
 /paludis/repositories/e/e_repository_TEST_exheres_0
 /paludis/repositories/e/e_repository_TEST_exlibs
-/paludis/repositories/e/e_repository_TEST_kdebuild_1
 /paludis/repositories/e/e_repository_TEST_phases
 /paludis/repositories/e/e_repository_TEST_replacing
 /paludis/repositories/e/e_repository_TEST_symlink_rewriting

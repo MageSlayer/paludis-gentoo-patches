@@ -11,7 +11,6 @@ eapis = \
 	3.conf \
 	4.conf \
 	exheres-0.conf \
-	kdebuild-1.conf \
 	paludis-1.conf \
 	pbin-1+0.conf \
 	pbin-1+1.conf \
