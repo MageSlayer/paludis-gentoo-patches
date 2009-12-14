@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # vim: set ft=sh sw=4 sts=4 et :
 
-mkdir e_repository_TEST_3_dir || exit 1
-cd e_repository_TEST_3_dir || exit 1
+mkdir e_repository_TEST_4_dir || exit 1
+cd e_repository_TEST_4_dir || exit 1
 
 mkdir -p root/etc
 
@@ -675,7 +675,7 @@ pkg_setup() {
 }
 END
 mkdir -p "cat/pkg_pretend"
-cat <<"END" > cat/pkg_pretend/pkg_pretend-3.ebuild || exit 1
+cat <<"END" > cat/pkg_pretend/pkg_pretend-4.ebuild || exit 1
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -683,14 +683,14 @@ SLOT="0"
 IUSE="enabled-weasel broccoli"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
+EAPI="4"
 
 pkg_pretend() {
     einfo "This is my pkg_pretend. There are many like it, but this one is mine."
 }
 END
 mkdir -p "cat/pkg_pretend-failure"
-cat <<"END" > cat/pkg_pretend-failure/pkg_pretend-failure-3.ebuild || exit 1
+cat <<"END" > cat/pkg_pretend-failure/pkg_pretend-failure-4.ebuild || exit 1
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -698,14 +698,14 @@ SLOT="0"
 IUSE="enabled-weasel broccoli"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
+EAPI="4"
 
 pkg_pretend() {
     die "This is my pkg_pretend. There are many like it, but this one is mine."
 }
 END
 mkdir -p "cat/default_src_install" || exit 1
-cat << 'END' > cat/default_src_install/default_src_install-3.ebuild || exit 1
+cat << 'END' > cat/default_src_install/default_src_install-4.ebuild || exit 1
 EAPI="${PV}"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
@@ -714,7 +714,7 @@ SLOT="0"
 IUSE="spork"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
+EAPI="4"
 
 S="${WORKDIR}"
 
@@ -741,7 +741,7 @@ pkg_preinst() {
 }
 END
 mkdir -p "cat/docompress" || exit 1
-cat << 'END' > cat/docompress/docompress-3.ebuild || exit 1
+cat << 'END' > cat/docompress/docompress-4.ebuild || exit 1
 EAPI="${PV}"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
@@ -750,7 +750,7 @@ SLOT="0"
 IUSE="spork"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
+EAPI="4"
 
 S="${WORKDIR}"
 
@@ -760,7 +760,7 @@ src_install() {
 }
 END
 mkdir -p "cat/dodoc-r" || exit 1
-cat << 'END' > cat/dodoc-r/dodoc-r-3.ebuild || exit 1
+cat << 'END' > cat/dodoc-r/dodoc-r-4.ebuild || exit 1
 EAPI="${PV}"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
@@ -769,7 +769,7 @@ SLOT="0"
 IUSE="spork"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
+EAPI="4"
 
 S="${WORKDIR}"
 
@@ -800,7 +800,7 @@ pkg_preinst() {
 }
 END
 mkdir -p "cat/doins-symlink" || exit 1
-cat << 'END' > cat/doins-symlink/doins-symlink-3.ebuild || exit 1
+cat << 'END' > cat/doins-symlink/doins-symlink-4.ebuild || exit 1
 EAPI="${PV}"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
@@ -809,7 +809,7 @@ SLOT="0"
 IUSE="spork"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
+EAPI="4"
 
 S="${WORKDIR}"
 
@@ -853,7 +853,7 @@ pkg_preinst() {
 }
 END
 mkdir -p "cat/banned-functions"
-cat <<END > cat/banned-functions/banned-functions-3.ebuild || exit 1
+cat <<END > cat/banned-functions/banned-functions-4.ebuild || exit 1
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -861,7 +861,7 @@ SLOT="0"
 IUSE="spork"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
+EAPI="4"
 
 S="\${WORKDIR}"
 
@@ -901,7 +901,7 @@ EOF
     chmod +x configure
 }
 END
-cat << 'END' > cat/econf-disable-dependency-tracking/econf-disable-dependency-tracking-3.ebuild || exit 1
+cat << 'END' > cat/econf-disable-dependency-tracking/econf-disable-dependency-tracking-4.ebuild || exit 1
 EAPI="${PV}"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
@@ -910,7 +910,7 @@ SLOT="0"
 IUSE="spork"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
+EAPI="4"
 
 S="${WORKDIR}"
 
@@ -932,7 +932,7 @@ EOF
 }
 END
 mkdir -p "cat/strict-use" || exit 1
-cat << 'END' > cat/strict-use/strict-use-3.ebuild || exit 1
+cat << 'END' > cat/strict-use/strict-use-4.ebuild || exit 1
 EAPI="${PV}"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
@@ -941,7 +941,7 @@ SLOT="0"
 IUSE="spork enabled"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
+EAPI="4"
 
 S="${WORKDIR}"
 
@@ -951,7 +951,7 @@ pkg_setup() {
 }
 END
 mkdir -p "cat/strict-use-fail" || exit 1
-cat << 'END' > cat/strict-use-fail/strict-use-fail-3.ebuild || exit 1
+cat << 'END' > cat/strict-use-fail/strict-use-fail-4.ebuild || exit 1
 EAPI="${PV}"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
@@ -960,7 +960,7 @@ SLOT="0"
 IUSE="spork enabled"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
+EAPI="4"
 
 S="${WORKDIR}"
 
@@ -969,7 +969,7 @@ pkg_setup() {
 }
 END
 mkdir -p "cat/strict-use-injection" || exit 1
-cat << 'END' > cat/strict-use-injection/strict-use-injection-3.ebuild || exit 1
+cat << 'END' > cat/strict-use-injection/strict-use-injection-4.ebuild || exit 1
 EAPI="${PV}"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
@@ -978,7 +978,7 @@ SLOT="0"
 IUSE="spork enabled"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
+EAPI="4"
 
 S="${WORKDIR}"
 
@@ -990,7 +990,7 @@ pkg_setup() {
 }
 END
 mkdir -p "cat/global-scope-use" || exit 1
-cat << 'END' > cat/global-scope-use/global-scope-use-3.ebuild || exit 1
+cat << 'END' > cat/global-scope-use/global-scope-use-4.ebuild || exit 1
 use spork
 
 EAPI="${PV}"
@@ -1001,7 +1001,7 @@ SLOT="0"
 IUSE="spork enabled"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
+EAPI="4"
 
 S="${WORKDIR}"
 END

@@ -28,7 +28,7 @@ LIBC="glibc"
 CHOST="i286-badger-linux-gnu"
 END
 
-for e in 0 1 2 3 ; do
+for e in 0 1 2 3 4 ; do
 
     mkdir -p "cat/eapi${e}donly"
     cat <<END > cat/eapi${e}donly/eapi${e}donly-1.ebuild || exit 1

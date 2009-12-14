@@ -24,7 +24,7 @@ ebuild_notice()
 
 ebuild_section()
 {
-    echo -ne "${COLOUR_DARK_BLUE}>>>${COLOUR_NORMAL} "
+    echo -ne "${COLOUR_PURPLE}>>>${COLOUR_NORMAL} "
     echo "$@"
 }
 

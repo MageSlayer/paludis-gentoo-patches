@@ -227,6 +227,7 @@ namespace test_cases
     DependRdependTest eapi_0("0", true);
     DependRdependTest eapi_1("1", true);
     DependRdependTest eapi_2("2", true);
-    DependRdependTest eapi_3("3", false);
+    DependRdependTest eapi_3("3", true);
+    DependRdependTest eapi_4("4", false);
 }
 

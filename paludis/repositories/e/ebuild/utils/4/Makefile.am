@@ -2,22 +2,22 @@ include $(top_srcdir)/misc/common-makefile.am
 
 SUBDIRS = .
 
-libexecprog3dir = $(libexecdir)/paludis/utils/3/
+libexecprog4dir = $(libexecdir)/paludis/utils/4/
 
-libexecprog3_SCRIPTS = \
+libexecprog4_SCRIPTS = \
 	docompress \
 	dohard \
 	dosed \
-	banned_in_eapi_3
+	banned_in_eapi_4
 
 TESTS =
 EXTRA_DIST = \
-	$(libexecprog3_SCRIPTS) \
+	$(libexecprog4_SCRIPTS) \
 	$(TESTS)
 
 bannedscripts = dohard dosed
 
-$(bannedscripts) : banned_in_eapi_3
+$(bannedscripts) : banned_in_eapi_4
 	cat $? > $@
 	chmod +x $@
 

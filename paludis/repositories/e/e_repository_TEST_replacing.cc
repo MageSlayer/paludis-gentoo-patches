@@ -171,8 +171,8 @@ namespace test_cases
     ReplacingTest test_exheres_0_replace_one("exheres-0", "repo1", "replace-one", "=cat/pkg-1", "pkg");
     ReplacingTest test_exheres_0_replace_many("exheres-0", "repo1", "replace-many", "cat/pkg", "pkg");
 
-    ReplacingTest test_3_replace_none("0", "repo2", "replace-none", "cat/none", "replace-none");
-    ReplacingTest test_3_replace_one("0", "repo2", "replace-one", "=cat/replace-one-1", "replace-one");
-    ReplacingTest test_3_replace_many("0", "repo2", "replace-many", "cat/replace-many", "replace-many");
+    ReplacingTest test_4_replace_none("0", "repo2", "replace-none", "cat/none", "replace-none");
+    ReplacingTest test_4_replace_one("0", "repo2", "replace-one", "=cat/replace-one-1", "replace-one");
+    ReplacingTest test_4_replace_many("0", "repo2", "replace-many", "cat/replace-many", "replace-many");
 }
 

@@ -77,7 +77,7 @@ cat <<'END' > packages/cat/replace-none/replace-none-1.ebuild || exit 1
 S="${WORKDIR}"
 KEYWORDS="test"
 SLOT="0"
-EAPI="3"
+EAPI="4"
 
 pkg_setup() {
     [[ -z "${REPLACING_VERSIONS}" ]] || die "REPLACING_VERSIONS is ${REPLACING_VERSIONS}"
@@ -88,7 +88,7 @@ cat <<'END' > packages/cat/replace-one/replace-one-1.ebuild || exit 1
 S="${WORKDIR}"
 KEYWORDS="test"
 SLOT="0"
-EAPI="3"
+EAPI="4"
 
 pkg_setup() {
     [[ "${REPLACING_VERSIONS}" == "1" ]] || die "REPLACING_VERSIONS is ${REPLACING_VERSIONS}"
@@ -99,7 +99,7 @@ cat <<'END' > packages/cat/replace-many/replace-many-1.ebuild || exit 1
 S="${WORKDIR}"
 KEYWORDS="test"
 SLOT="0"
-EAPI="3"
+EAPI="4"
 
 pkg_setup() {
     [[ "${REPLACING_VERSIONS}" == "1 2 3" ]] || die "REPLACING_VERSIONS is ${REPLACING_VERSIONS}"

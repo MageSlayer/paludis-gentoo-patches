@@ -8,6 +8,8 @@ eapis = \
 	0.conf \
 	1.conf \
 	2.conf \
+	3.conf \
+	4.conf \
 	exheres-0.conf \
 	kdebuild-1.conf \
 	paludis-1.conf \
@@ -17,7 +19,8 @@ eapis = \
 	pbin-1+exheres-0.conf
 
 future_eapis = \
-	3.conf
+	3.conf \
+	4.conf
 
 eapidir = $(datadir)/paludis/eapis/
 

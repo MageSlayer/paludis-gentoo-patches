@@ -1,6 +1,6 @@
 include $(top_srcdir)/misc/common-makefile.am
 
-SUBDIRS = . 3 exheres-0 kdebuild-1
+SUBDIRS = . 4 exheres-0 kdebuild-1
 
 libexecprogdir = $(libexecdir)/paludis/utils
 
