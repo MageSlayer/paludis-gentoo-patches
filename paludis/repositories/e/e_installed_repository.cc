@@ -243,14 +243,14 @@ EInstalledRepository::perform_config(
                     value_for<n::package_builddir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-config")),
                     value_for<n::package_id>(id),
                     value_for<n::portdir>(ver_dir),
+                    value_for<n::root>(stringify(_imp->params.root())),
                     value_for<n::sandbox>(phase->option("sandbox")),
                     value_for<n::sydbox>(phase->option("sydbox")),
                     value_for<n::userpriv>(phase->option("userpriv"))
                 ),
 
                 make_named_values<EbuildConfigCommandParams>(
-                    value_for<n::load_environment>(load_env.get()),
-                    value_for<n::root>(stringify(_imp->params.root()))
+                    value_for<n::load_environment>(load_env.get())
                 ));
 
         config_cmd();
@@ -350,6 +350,7 @@ EInstalledRepository::perform_info(
                     value_for<n::package_builddir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-info")),
                     value_for<n::package_id>(id),
                     value_for<n::portdir>(ver_dir),
+                    value_for<n::root>(stringify(_imp->params.root())),
                     value_for<n::sandbox>(phase->option("sandbox")),
                     value_for<n::sydbox>(phase->option("sydbox")),
                     value_for<n::userpriv>(phase->option("userpriv"))
@@ -360,7 +361,6 @@ EInstalledRepository::perform_info(
                     value_for<n::info_vars>(i ? i : make_shared_ptr(new const Set<std::string>)),
                     value_for<n::load_environment>(load_env.get()),
                     value_for<n::profiles>(make_shared_ptr(new FSEntrySequence)),
-                    value_for<n::root>(stringify(_imp->params.root())),
                     value_for<n::use>(""),
                     value_for<n::use_ebuild_file>(false),
                     value_for<n::use_expand>(""),

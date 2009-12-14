@@ -2017,6 +2017,7 @@ ERepository::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                         value_for<n::portdir>(
                             (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
                             (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
+                        value_for<n::root>("/"),
                         value_for<n::sandbox>(phase->option("sandbox")),
                         value_for<n::sydbox>(phase->option("sydbox")),
                         value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
@@ -2029,7 +2030,6 @@ ERepository::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                         value_for<n::expand_vars>(expand_vars),
                         value_for<n::loadsaveenv_dir>(package_builddir / "temp"),
                         value_for<n::profiles>(_imp->params.profiles()),
-                        value_for<n::root>("/"),
                         value_for<n::slot>(id->slot_key() ? stringify(id->slot_key()->value()) : ""),
                         value_for<n::use>(use),
                         value_for<n::use_expand>(join(profile()->use_expand()->begin(), profile()->use_expand()->end(), " ")),
@@ -2064,6 +2064,7 @@ ERepository::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                         value_for<n::portdir>(
                             (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
                             (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
+                        value_for<n::root>("/"),
                         value_for<n::sandbox>(phase->option("sandbox")),
                         value_for<n::sydbox>(phase->option("sydbox")),
                         value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
@@ -2075,7 +2076,6 @@ ERepository::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                         value_for<n::aa>(all_archives),
                         value_for<n::expand_vars>(expand_vars),
                         value_for<n::profiles>(_imp->params.profiles()),
-                        value_for<n::root>("/"),
                         value_for<n::use>(use),
                         value_for<n::use_expand>(join(profile()->use_expand()->begin(), profile()->use_expand()->end(), " ")),
                         value_for<n::use_expand_hidden>(join(profile()->use_expand_hidden()->begin(), profile()->use_expand_hidden()->end(), " "))
@@ -2392,6 +2392,9 @@ ERepository::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                     value_for<n::portdir>(
                         (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
                         (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
+                    value_for<n::root>(install_action.options.destination()->installed_root_key() ?
+                        stringify(install_action.options.destination()->installed_root_key()->value()) :
+                        "/"),
                     value_for<n::sandbox>(phase->option("sandbox")),
                     value_for<n::sydbox>(phase->option("sydbox")),
                     value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
@@ -2407,9 +2410,6 @@ ERepository::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                             value_for<n::loadsaveenv_dir>(package_builddir / "temp"),
                             value_for<n::profiles>(_imp->params.profiles()),
                             value_for<n::replacing_ids>(install_action.options.replacing()),
-                            value_for<n::root>(install_action.options.destination()->installed_root_key() ?
-                                stringify(install_action.options.destination()->installed_root_key()->value()) :
-                                "/"),
                             value_for<n::slot>(id->slot_key() ? stringify(id->slot_key()->value()) : ""),
                             value_for<n::use>(use),
                             value_for<n::use_expand>(join(profile()->use_expand()->begin(), profile()->use_expand()->end(), " ")),
@@ -2505,6 +2505,7 @@ ERepository::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
                 value_for<n::portdir>(
                     (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
                     (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
+                value_for<n::root>(stringify(_imp->params.environment()->root())),
                 value_for<n::sandbox>(phase->option("sandbox")),
                 value_for<n::sydbox>(phase->option("sydbox")),
                 value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
@@ -2517,7 +2518,6 @@ ERepository::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
                     info_vars_key()->value() : make_shared_ptr(new const Set<std::string>)),
                 value_for<n::load_environment>(static_cast<const FSEntry *>(0)),
                 value_for<n::profiles>(_imp->params.profiles()),
-                value_for<n::root>(stringify(_imp->params.environment()->root())),
                 value_for<n::use>(use),
                 value_for<n::use_ebuild_file>(true),
                 value_for<n::use_expand>(join(profile()->use_expand()->begin(), profile()->use_expand()->end(), " ")),
@@ -2579,6 +2579,7 @@ ERepository::get_environment_variable(
             value_for<n::portdir>(
                 (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
                 (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
+            value_for<n::root>("/"),
             value_for<n::sandbox>(phases.begin_phases()->option("sandbox")),
             value_for<n::sydbox>(phases.begin_phases()->option("sydbox")),
             value_for<n::userpriv>(phases.begin_phases()->option("userpriv") && userpriv_ok)
@@ -2729,6 +2730,7 @@ ERepository::pretend(
                             value_for<n::portdir>(
                                 (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
                                 (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
+                            value_for<n::root>(stringify(_imp->params.environment()->root())),
                             value_for<n::sandbox>(phase->option("sandbox")),
                             value_for<n::sydbox>(phase->option("sydbox")),
                             value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
@@ -2738,7 +2740,6 @@ ERepository::pretend(
                         make_named_values<EbuildBadOptionsCommandParams>(
                             value_for<n::expand_vars>(expand_vars),
                             value_for<n::profiles>(_imp->params.profiles()),
-                            value_for<n::root>(stringify(_imp->params.environment()->root())),
                             value_for<n::unmet_requirements>(verifier.unmet_requirements()),
                             value_for<n::use>(use),
                             value_for<n::use_expand>(join(profile()->use_expand()->begin(), profile()->use_expand()->end(), " ")),
@@ -2783,6 +2784,7 @@ ERepository::pretend(
                 value_for<n::portdir>(
                     (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
                     (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
+                value_for<n::root>(stringify(_imp->params.environment()->root())),
                 value_for<n::sandbox>(phase->option("sandbox")),
                 value_for<n::sydbox>(phase->option("sydbox")),
                 value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
@@ -2792,7 +2794,6 @@ ERepository::pretend(
                 make_named_values<EbuildPretendCommandParams>(
                 value_for<n::expand_vars>(expand_vars),
                 value_for<n::profiles>(_imp->params.profiles()),
-                value_for<n::root>(stringify(_imp->params.environment()->root())),
                 value_for<n::use>(use),
                 value_for<n::use_expand>(join(profile()->use_expand()->begin(), profile()->use_expand()->end(), " ")),
                 value_for<n::use_expand_hidden>(join(profile()->use_expand_hidden()->begin(), profile()->use_expand_hidden()->end(), " "))

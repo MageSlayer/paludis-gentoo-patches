@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -68,6 +68,8 @@ builtin_init()
     export D="${D//+(\/)//}"
     mkdir -p "${D}" || die "Couldn't create \$D (\"${D}\")"
     declare -r D="${D}"
+
+    [[ -n "${PALUDIS_PREFIX_IMAGE_VAR}" ]] && export $PALUDIS_PREFIX_IMAGE_VAR=${D}
 
     IMAGE="${D}"
     declare -r IMAGE="${IMAGE}"

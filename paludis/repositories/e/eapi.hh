@@ -88,6 +88,9 @@ namespace paludis
         struct env_d;
         struct env_distdir;
         struct env_ebuild_phase;
+        struct env_ed;
+        struct env_eprefix;
+        struct env_eroot;
         struct env_filesdir;
         struct env_iuse_implicit;
         struct env_jobs;
@@ -294,6 +297,9 @@ namespace paludis
             NamedValue<n::env_d, std::string> env_d;
             NamedValue<n::env_distdir, std::string> env_distdir;
             NamedValue<n::env_ebuild_phase, std::string> env_ebuild_phase;
+            NamedValue<n::env_ed, std::string> env_ed;
+            NamedValue<n::env_eprefix, std::string> env_eprefix;
+            NamedValue<n::env_eroot, std::string> env_eroot;
             NamedValue<n::env_filesdir, std::string> env_filesdir;
             NamedValue<n::env_iuse_implicit, std::string> env_iuse_implicit;
             NamedValue<n::env_jobs, std::string> env_jobs;

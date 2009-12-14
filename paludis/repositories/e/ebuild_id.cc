@@ -266,6 +266,7 @@ EbuildID::need_keys_added() const
                     value_for<n::portdir>(
                         (_imp->repository->params().master_repositories() && ! _imp->repository->params().master_repositories()->empty()) ?
                         (*_imp->repository->params().master_repositories()->begin())->params().location() : _imp->repository->params().location()),
+                    value_for<n::root>("/"),
                     value_for<n::sandbox>(phases.begin_phases()->option("sandbox")),
                     value_for<n::sydbox>(phases.begin_phases()->option("sydbox")),
                     value_for<n::userpriv>(phases.begin_phases()->option("userpriv"))

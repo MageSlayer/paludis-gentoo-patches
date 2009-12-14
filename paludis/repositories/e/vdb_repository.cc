@@ -490,6 +490,7 @@ VDBRepository::perform_uninstall(
                     value_for<n::package_builddir>(package_builddir),
                     value_for<n::package_id>(id),
                     value_for<n::portdir>(_imp->params.location()),
+                    value_for<n::root>(stringify(_imp->params.root())),
                     value_for<n::sandbox>(phase->option("sandbox")),
                     value_for<n::sydbox>(phase->option("sydbox")),
                     value_for<n::userpriv>(phase->option("userpriv"))
@@ -499,7 +500,6 @@ VDBRepository::perform_uninstall(
                         value_for<n::load_environment>(load_env.get()),
                         value_for<n::loadsaveenv_dir>(package_builddir / "temp"),
                         value_for<n::replaced_by>(a.options.if_for_install_id()),
-                        value_for<n::root>(stringify(_imp->params.root())),
                         value_for<n::unmerge_only>(false)
                     ));
 
