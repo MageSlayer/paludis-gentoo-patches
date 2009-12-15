@@ -29,6 +29,7 @@
 #include "cmd_display_resolution.hh"
 #include "cmd_execute_resolution.hh"
 #include "cmd_help.hh"
+#include "cmd_import.hh"
 #include "cmd_perform.hh"
 #include "cmd_print_categories.hh"
 #include "cmd_print_commands.hh"
@@ -83,6 +84,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("display-resolution", std::tr1::bind(&make_command<DisplayResolutionCommand>)));
     _imp->handlers.insert(std::make_pair("execute-resolution", std::tr1::bind(&make_command<ExecuteResolutionCommand>)));
     _imp->handlers.insert(std::make_pair("help", std::tr1::bind(&make_command<HelpCommand>)));
+    _imp->handlers.insert(std::make_pair("import", std::tr1::bind(&make_command<ImportCommand>)));
     _imp->handlers.insert(std::make_pair("perform", std::tr1::bind(&make_command<PerformCommand>)));
     _imp->handlers.insert(std::make_pair("print-categories", std::tr1::bind(&make_command<PrintCategoriesCommand>)));
     _imp->handlers.insert(std::make_pair("print-commands", std::tr1::bind(&make_command<PrintCommandsCommand>)));

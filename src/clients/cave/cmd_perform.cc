@@ -18,6 +18,7 @@
  */
 
 #include "cmd_perform.hh"
+#include "cmd_resolve_cmdline.hh"
 #include "exceptions.hh"
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
@@ -95,6 +96,8 @@ namespace
         args::ArgsGroup g_uninstall_action_options;
         args::StringArg a_config_protect;
 
+        ResolveCommandLineImportOptions import_options;
+
         PerformCommandLine() :
             g_general_options(main_options_section(), "General Options",
                     "General options for all actions"),
@@ -138,7 +141,9 @@ namespace
             g_uninstall_action_options(main_options_section(), "Uninstall Action Options",
                     "Options for if the action is 'uninstall'"),
             a_config_protect(&g_uninstall_action_options, "config-protect", '\0',
-                    "Specify additional items to include in the config protection list")
+                    "Specify additional items to include in the config protection list"),
+
+            import_options(this)
         {
             add_usage_line("config spec");
             add_usage_line("fetch | pretend-fetch [ --exclude-unmirrorable ] [ --fetch-unneeded ]"
@@ -302,6 +307,8 @@ PerformCommand::run(
 
     if (2 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
         throw args::DoHelp("perform takes exactly two parameters");
+
+    cmdline.import_options.apply(env);
 
     std::string action(*cmdline.begin_parameters());
 

@@ -21,6 +21,8 @@
 #define PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_RESOLVE_CMDLINE_HH 1
 
 #include "command_command_line.hh"
+#include <paludis/environment-fwd.hh>
+#include <tr1/memory>
 
 namespace paludis
 {
@@ -99,6 +101,9 @@ namespace paludis
             args::ArgsGroup g_dump_options;
             args::SwitchArg a_dump;
             args::SwitchArg a_dump_restarts;
+
+            void apply_shortcuts();
+            void verify(const std::tr1::shared_ptr<const Environment> & env);
         };
 
         struct ResolveCommandLineExecutionOptions :
@@ -143,6 +148,17 @@ namespace paludis
             args::StringArg a_execute_resolution_program;
             args::StringArg a_perform_program;
             args::StringArg a_update_world_program;
+        };
+
+        struct ResolveCommandLineImportOptions :
+            args::ArgsSection
+        {
+            ResolveCommandLineImportOptions(args::ArgsHandler * const);
+
+            args::ArgsGroup g_import_options;
+            args::StringSetArg a_unpackaged_repository_params;
+
+            void apply(const std::tr1::shared_ptr<Environment> & env) const;
         };
 
         struct ResolveCommandLine :

@@ -84,6 +84,7 @@ libcave_a_SOURCES = \
 	cmd_display_resolution.cc cmd_display_resolution.hh \
 	cmd_execute_resolution.cc cmd_execute_resolution.hh \
 	cmd_help.cc cmd_help.hh \
+	cmd_import.cc cmd_import.hh \
 	cmd_perform.cc cmd_perform.hh \
 	cmd_print_categories.cc cmd_print_categories.hh \
 	cmd_print_commands.cc cmd_print_commands.hh \
@@ -112,7 +113,8 @@ libcave_a_SOURCES = \
 	format_string.cc format_string.hh \
 	formats.cc formats.hh \
 	select_format_for_spec.cc select_format_for_spec.hh \
-	match_qpns.cc match_qpns.hh
+	match_qpns.cc match_qpns.hh \
+	resolve_common.cc resolve_common.hh
 
 #	cmd_config.cc \
 #	cmd_contents.cc \

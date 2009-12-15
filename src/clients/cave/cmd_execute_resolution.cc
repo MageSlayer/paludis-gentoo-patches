@@ -83,13 +83,15 @@ namespace
 
         ResolveCommandLineExecutionOptions execution_options;
         ResolveCommandLineProgramOptions program_options;
+        ResolveCommandLineImportOptions import_options;
 
         ExecuteResolutionCommandLine() :
             g_general_options(main_options_section(), "General Options", "General options."),
             a_pretend(&g_general_options, "pretend", '\0', "Only carry out the pretend action", false),
             a_set(&g_general_options, "set", '\0', "Our target is a set rather than package specs", false),
             execution_options(this),
-            program_options(this)
+            program_options(this),
+            import_options(this)
         {
             add_environment_variable("PALUDIS_SERIALISED_RESOLUTION_FD",
                     "The file descriptor on which the serialised resolution can be found.");
@@ -131,6 +133,14 @@ namespace
         command.append(" pretend --hooks --if-supported ");
         command.append(stringify(decision.origin_id()->uniquely_identifying_spec()));
         command.append(" --x-of-y '" + stringify(x) + " of " + stringify(y) + "'");
+
+        if (cmdline.import_options.a_unpackaged_repository_params.specified())
+        {
+            for (args::StringSetArg::ConstIterator p(cmdline.import_options.a_unpackaged_repository_params.begin_args()),
+                    p_end(cmdline.import_options.a_unpackaged_repository_params.end_args()) ;
+                    p != p_end ; ++p)
+                command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " '" + *p + "'");
+        }
 
         paludis::Command cmd(command);
         return run_command(cmd);
@@ -183,6 +193,14 @@ namespace
 
         if (normal_only)
             command.append(" --regulars-only");
+
+        if (cmdline.import_options.a_unpackaged_repository_params.specified())
+        {
+            for (args::StringSetArg::ConstIterator p(cmdline.import_options.a_unpackaged_repository_params.begin_args()),
+                    p_end(cmdline.import_options.a_unpackaged_repository_params.end_args()) ;
+                    p != p_end ; ++p)
+                command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " '" + *p + "'");
+        }
 
         paludis::Command cmd(command);
         int retcode(run_command(cmd));
@@ -262,6 +280,14 @@ namespace
                 if (cmdline.execution_options.a_skip_until_phase.specified())
                     command.append(" " + cmdline.execution_options.a_skip_until_phase.forwardable_string());
             }
+        }
+
+        if (cmdline.import_options.a_unpackaged_repository_params.specified())
+        {
+            for (args::StringSetArg::ConstIterator p(cmdline.import_options.a_unpackaged_repository_params.begin_args()),
+                    p_end(cmdline.import_options.a_unpackaged_repository_params.end_args()) ;
+                    p != p_end ; ++p)
+                command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " '" + *p + "'");
         }
 
         paludis::Command cmd(command);
@@ -589,6 +615,8 @@ ExecuteResolutionCommand::run(
 
     if (getenv_with_default("PALUDIS_SERIALISED_RESOLUTION_FD", "").empty())
         throw args::DoHelp("PALUDIS_SERIALISED_RESOLUTION_FD must be provided");
+
+    cmdline.import_options.apply(env);
 
     int fd(destringify<int>(getenv_with_default("PALUDIS_SERIALISED_RESOLUTION_FD", "")));
     SafeIFStream deser_stream(fd);

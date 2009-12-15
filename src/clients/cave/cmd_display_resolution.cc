@@ -86,9 +86,11 @@ namespace
         CaveCommandCommandLine
     {
         ResolveCommandLineDisplayOptions display_options;
+        ResolveCommandLineImportOptions import_options;
 
         DisplayResolutionCommandLine() :
-            display_options(this)
+            display_options(this),
+            import_options(this)
         {
             add_environment_variable("PALUDIS_SERIALISED_RESOLUTION_FD",
                     "The file descriptor on which the serialised resolution can be found.");
@@ -901,6 +903,8 @@ DisplayResolutionCommand::run(
 
     if (getenv_with_default("PALUDIS_SERIALISED_RESOLUTION_FD", "").empty())
         throw args::DoHelp("PALUDIS_SERIALISED_RESOLUTION_FD must be provided");
+
+    cmdline.import_options.apply(env);
 
     int fd(destringify<int>(getenv_with_default("PALUDIS_SERIALISED_RESOLUTION_FD", "")));
     SafeIFStream deser_stream(fd);

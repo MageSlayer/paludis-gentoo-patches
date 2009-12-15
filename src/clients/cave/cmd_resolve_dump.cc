@@ -222,7 +222,7 @@ namespace
     void dump(
             const std::tr1::shared_ptr<Environment> &,
             const std::tr1::shared_ptr<Resolver> & resolver,
-            const ResolveCommandLine &)
+            const ResolveCommandLineResolutionOptions &)
     {
         std::cout << "Dumping resolutions by QPN:S:" << std::endl << std::endl;
 
@@ -242,13 +242,13 @@ void
 paludis::cave::dump_if_requested(
         const std::tr1::shared_ptr<Environment> & env,
         const std::tr1::shared_ptr<Resolver> & resolver,
-        const ResolveCommandLine & cmdline)
+        const ResolveCommandLineResolutionOptions & resolution_options)
 {
     Context context("When dumping the resolver:");
 
-    if (! cmdline.resolution_options.a_dump.specified())
+    if (! resolution_options.a_dump.specified())
         return;
 
-    dump(env, resolver, cmdline);
+    dump(env, resolver, resolution_options);
 }
 

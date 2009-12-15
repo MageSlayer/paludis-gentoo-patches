@@ -17,21 +17,26 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_RESOLVE_DUMP_HH
-#define PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_RESOLVE_DUMP_HH 1
+#ifndef PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_IMPORT_HH
+#define PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_IMPORT_HH 1
 
-#include <paludis/environment-fwd.hh>
-#include <paludis/resolver/resolver-fwd.hh>
-#include "cmd_resolve_cmdline.hh"
+#include "command.hh"
 
 namespace paludis
 {
     namespace cave
     {
-        void dump_if_requested(
-                const std::tr1::shared_ptr<Environment> &,
-                const std::tr1::shared_ptr<resolver::Resolver> & resolver,
-                const ResolveCommandLineResolutionOptions & resolution_options);
+        class PALUDIS_VISIBLE ImportCommand :
+            public Command
+        {
+            public:
+                int run(
+                        const std::tr1::shared_ptr<Environment> &,
+                        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+                        );
+
+                std::tr1::shared_ptr<args::ArgsHandler> make_doc_cmdline();
+        };
     }
 }
 

@@ -18,9 +18,29 @@
  */
 
 #include "cmd_resolve_cmdline.hh"
+#include <paludis/args/do_help.hh>
+#include <paludis/repository.hh>
+#include <paludis/environment.hh>
+#include <paludis/package_database.hh>
+#include <paludis/util/map.hh>
+#include <paludis/repository_factory.hh>
+#include <tr1/memory>
 
 using namespace paludis;
 using namespace cave;
+
+namespace
+{
+    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+            const std::string & k)
+    {
+        Map<std::string, std::string>::ConstIterator mm(m->find(k));
+        if (m->end() == mm)
+            return "";
+        else
+            return mm->second;
+    }
+}
 
 ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::ArgsHandler * const h) :
     ArgsSection(h, "Resolution Options"),
@@ -259,6 +279,37 @@ ResolveCommandLineProgramOptions::ResolveCommandLineProgramOptions(args::ArgsHan
 {
 }
 
+ResolveCommandLineImportOptions::ResolveCommandLineImportOptions(args::ArgsHandler * const h) :
+    ArgsSection(h, "Import Options"),
+    g_import_options(this, "Import Options", "Options controlling additional imported packages. These options "
+            "should not be specified manually; they are for use by 'cave import'."),
+    a_unpackaged_repository_params(&g_import_options, "unpackaged-repository-params", '\0', "Specifies "
+            "the parameters used to construct an unpackaged repository, for use by 'cave import'.")
+{
+}
+
+void
+ResolveCommandLineImportOptions::apply(const std::tr1::shared_ptr<Environment> & env) const
+{
+    if (! a_unpackaged_repository_params.specified())
+        return;
+
+    std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+    for (args::StringSetArg::ConstIterator a(a_unpackaged_repository_params.begin_args()),
+            a_end(a_unpackaged_repository_params.end_args()) ;
+            a != a_end ; ++a)
+    {
+        std::string::size_type p(a->find('='));
+        if (std::string::npos == p)
+            throw InternalError(PALUDIS_HERE, "no = in '" + stringify(*a));
+        keys->insert(a->substr(0, p), a->substr(p + 1));
+    }
+
+    std::tr1::shared_ptr<Repository> repo(RepositoryFactory::get_instance()->create(env.get(),
+                std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+    env->package_database()->add_repository(10, repo);
+}
+
 ResolveCommandLine::ResolveCommandLine() :
     resolution_options(this),
     execution_options(this),
@@ -288,5 +339,69 @@ ResolveCommandLine::app_description() const
     return "Displays how to resolve one or more targets. If instructed, then "
         "executes the relevant install and uninstall actions to perform that "
         "resolution.";
+}
+
+void
+ResolveCommandLineResolutionOptions::apply_shortcuts()
+{
+    if (a_lazy.specified() +
+            a_complete.specified() +
+            a_everything.specified() > 1)
+        throw args::DoHelp("At most one of '--" + a_lazy.long_name() + "', '--" + a_complete.long_name()
+                + "' or '--" + a_everything.long_name() + "' may be specified");
+
+    if (a_lazy.specified())
+    {
+        if (! a_target_slots.specified())
+            a_target_slots.set_argument("best");
+        if (! a_slots.specified())
+            a_slots.set_argument("best");
+        if (! a_ignore_installed_dependencies.specified())
+            a_ignore_installed_dependencies.set_specified(true);
+    }
+
+    if (a_complete.specified())
+    {
+        if (! a_keep.specified())
+            a_keep.set_argument("if-same");
+        if (! a_target_slots.specified())
+            a_target_slots.set_argument("all");
+        if (! a_slots.specified())
+            a_slots.set_argument("all");
+        if (! a_follow_installed_build_dependencies.specified())
+            a_follow_installed_build_dependencies.set_specified(true);
+        if (! a_reinstall_scm.specified())
+            a_reinstall_scm.set_argument("weekly");
+    }
+
+    if (a_everything.specified())
+    {
+        if (! a_keep.specified())
+            a_keep.set_argument("if-transient");
+        if (! a_keep_targets.specified())
+            a_keep_targets.set_argument("if-transient");
+        if (! a_target_slots.specified())
+            a_target_slots.set_argument("all");
+        if (! a_slots.specified())
+            a_slots.set_argument("all");
+        if (! a_follow_installed_build_dependencies.specified())
+            a_follow_installed_build_dependencies.set_specified(true);
+    }
+}
+
+void
+ResolveCommandLineResolutionOptions::verify(const std::tr1::shared_ptr<const Environment> & env)
+{
+    if (a_create_binaries.specified())
+    {
+        for (args::StringSetArg::ConstIterator a(a_create_binaries.begin_args()),
+                a_end(a_create_binaries.end_args()) ;
+                a != a_end ; ++a)
+        {
+            std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(RepositoryName(*a)));
+            if (repo->installed_root_key() || ! repo->destination_interface())
+                throw args::DoHelp("Repository '" + *a + "' not suitable for --" + a_create_binaries.long_name());
+        }
+    }
 }
 

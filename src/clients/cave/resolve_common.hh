@@ -17,21 +17,28 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_RESOLVE_DUMP_HH
-#define PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_RESOLVE_DUMP_HH 1
+#ifndef PALUDIS_GUARD_SRC_CLIENTS_CAVE_RESOLVE_COMMON_HH
+#define PALUDIS_GUARD_SRC_CLIENTS_CAVE_RESOLVE_COMMON_HH 1
 
 #include <paludis/environment-fwd.hh>
-#include <paludis/resolver/resolver-fwd.hh>
+#include <paludis/util/sequence-fwd.hh>
+#include <paludis/util/map-fwd.hh>
+#include <tr1/memory>
 #include "cmd_resolve_cmdline.hh"
 
 namespace paludis
 {
     namespace cave
     {
-        void dump_if_requested(
-                const std::tr1::shared_ptr<Environment> &,
-                const std::tr1::shared_ptr<resolver::Resolver> & resolver,
-                const ResolveCommandLineResolutionOptions & resolution_options);
+        int resolve_common(
+                const std::tr1::shared_ptr<Environment> & env,
+                const ResolveCommandLineResolutionOptions & resolution_options,
+                const ResolveCommandLineExecutionOptions & execution_options,
+                const ResolveCommandLineDisplayOptions & display_options,
+                const ResolveCommandLineProgramOptions & program_options,
+                const std::tr1::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
+                const std::tr1::shared_ptr<const Sequence<std::string> > & targets
+                ) PALUDIS_ATTRIBUTE((warn_unused_result));
     }
 }
 
