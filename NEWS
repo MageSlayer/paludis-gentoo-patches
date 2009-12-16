@@ -4,6 +4,44 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.44.0:
+
+    * The 'everything' set is now called 'installed-packages'. A new set named
+      'installed-slots' has been added, which is similar but includes slot
+      restrictions matching installed slots.
+
+    * kdebuild-1 support has been removed, following the Gentoo Council's
+      decision to remove all mention of it from the Package Manager
+      Specification. Users with installed kdebuild-1 packages must remove them
+      before upgrading.
+
+    * Support for EAPI 4 (formerly known as EAPI 3) is present but not
+      installed, since the specification has yet to be approved.
+
+    * Support for the new EAPI 3 is present but not installed, since the
+      specification has yet to be approved.
+
+    * Various large code cleanups and build system cleanups.
+
+0.42.2:
+
+    * An obscure resolver bug that results in 'evolution' trying to downgrade
+      'gnupg' on Gentoo has been fixed.
+
+    * paludis -i foo::installed now gives an explanation of why it doesn't do
+      what some people seem to expect.
+
+    * Assorted documentation tweaks.
+
+0.42.1:
+
+    * Various improvements to error handling.
+
+    * Syncing svn repositories no longer breaks when using weird locales.
+
+    * GNU info handling will now work even if Paludis is run via sudo with
+      env_reset enabled.
+
 0.42.0:
 
     * Qualudis has been removed.
