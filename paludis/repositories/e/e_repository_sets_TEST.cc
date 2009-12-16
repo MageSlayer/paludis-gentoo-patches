@@ -66,8 +66,12 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             std::tr1::shared_ptr<const SetNameSet> sets_list(env.set_names());
-            TEST_CHECK_EQUAL(join(sets_list->begin(), sets_list->end(), " "), "everything everything::default insecurity "
-                    "insecurity::test-repo-1 security security::test-repo-1 set1 set1* set1::test-repo-1 set1::test-repo-1* "
+            TEST_CHECK_EQUAL(join(sets_list->begin(), sets_list->end(), " "), "everything insecurity "
+                    "insecurity::test-repo-1 "
+                    "installed-packages installed-packages::default "
+                    "installed-slots installed-slots::default "
+                    "security security::test-repo-1 set1 set1* "
+                    "set1::test-repo-1 set1::test-repo-1* "
                     "system system::test-repo-1 world world::default");
         }
     } test_e_repository_sets_sets_list;

@@ -519,7 +519,8 @@ namespace
                             a != a_end ; ++a)
                     {
                         if (*a == "world" || *a == "system" || *a == "security"
-                                || *a == "everything" || *a == "insecurity")
+                                || *a == "everything" || *a == "insecurity"
+                                || *a == "installed-packages" || *a == "installed-slots")
                             cout << "* Special set '" << *a << "' does not belong in world" << endl;
                         else
                         {

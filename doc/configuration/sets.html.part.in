@@ -16,8 +16,11 @@
     <dd>Consists of the system set, plus all packages that have been installed as targets (as opposed to merely pulled
     in as dependencies of a target).</dd>
 
-    <dt><code>everything</code></dt>
-    <dd>All installed packages.</dd>
+    <dt><code>installed-packages</code></dt>
+    <dd>The names of all installed packages.</dd>
+
+    <dt><code>installed-slots</code></dt>
+    <dd>The names plus slots of all installed packages.</dd>
 
     <dt><code>security</code></dt>
     <dd>The set of upgrades which must be performed to resolve security holes.</dd>

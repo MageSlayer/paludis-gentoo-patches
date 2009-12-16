@@ -892,7 +892,8 @@ DepTagSummaryDisplayer::visit(const GeneralSetDepTag & tag)
     std::string desc;
     if (tag.short_text() == "world")
         desc = ":           Packages that have been explicitly installed";
-    else if (tag.short_text() == "everything")
+    else if (tag.short_text() == "everything" || tag.short_text() == "installed-packages"
+            || tag.short_text() == "installed-slotted")
         desc = ":      All installed packages";
     else if (tag.short_text() == "system")
         desc = ":          Packages that are part of the base system";

@@ -313,18 +313,38 @@ EnvironmentImplementation::_need_sets() const
     _imp->loaded_sets = true;
 }
 
+namespace
+{
+    std::tr1::shared_ptr<const SetSpecTree> make_everything_set()
+    {
+        Log::get_instance()->message("environment_implementation.everything_deprecated", ll_warning, lc_context)
+            << "The 'everything' set is deprecated. Use either 'installed-packages' or 'installed-slots' instead";
+
+        std::tr1::shared_ptr<SetSpecTree> result(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+        result->root()->append(make_shared_ptr(new NamedSetDepSpec(SetName("installed-packages"))));
+        return result;
+    }
+}
+
 void
 EnvironmentImplementation::populate_standard_sets() const
 {
     set_always_exists(SetName("system"));
     set_always_exists(SetName("world"));
-    set_always_exists(SetName("everything"));
+
+    set_always_exists(SetName("installed-packages"));
+    set_always_exists(SetName("installed-slots"));
 
     SetsStore::iterator i(_imp->sets.find(SetName("world")));
     /* some test cases build world through evil haxx. don't inject system in
      * then. */
     if (i->second.second)
         i->second.second(SetName("system"));
+
+    /* nothing should define 'everything' any more */
+    if (_imp->sets.end() != _imp->sets.find(SetName("everything")))
+        throw InternalError(PALUDIS_HERE, "something's still defining the 'everything' set");
+    add_set(SetName("everything"), SetName("everything"), make_everything_set, false);
 }
 
 namespace

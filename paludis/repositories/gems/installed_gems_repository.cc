@@ -46,6 +46,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/hook.hh>
+#include <paludis/common_sets.hh>
 #include <tr1/unordered_map>
 
 using namespace paludis;
@@ -412,37 +413,10 @@ InstalledGemsRepository::repository_factory_create(
                 )));
 }
 
-namespace
-{
-    std::tr1::shared_ptr<SetSpecTree> get_everything_set(
-            const Environment * const env,
-            const Repository * const repo)
-    {
-        Context context("When making 'everything' set from '" + stringify(repo->name()) + "':");
-
-        std::tr1::shared_ptr<SetSpecTree> result(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
-
-        std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
-                    generator::InRepository(repo->name()))]);
-        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                i != i_end ; ++i)
-            result->root()->append(make_shared_ptr(new PackageDepSpec(
-                            make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
-                            .package((*i)->name())
-                            )));
-
-        return result;
-    }
-}
-
 void
 InstalledGemsRepository::populate_sets() const
 {
-    _imp->params.environment()->add_set(
-            SetName("everything"),
-            SetName("everything::" + stringify(name())),
-            std::tr1::bind(get_everything_set, _imp->params.environment(), this),
-            true);
+    add_common_sets_for_installed_repo(_imp->params.environment(), *this);
 }
 
 HookResult
