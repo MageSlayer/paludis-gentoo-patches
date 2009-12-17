@@ -37,6 +37,8 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/destringify.hh>
+#include <algorithm>
 
 using namespace paludis;
 
@@ -347,15 +349,17 @@ namespace paludis
     {
         std::string key;
         std::string value;
+        char op;
 
         Implementation(const std::string & s)
         {
-            std::string::size_type p(s.find('='));
+            std::string::size_type p(s.find_first_of("=<"));
             if (std::string::npos == p)
-                throw PackageDepSpecError("Expected an = inside '[." + s + "]'");
+                throw PackageDepSpecError("Expected an = or a < inside '[." + s + "]'");
 
             key = s.substr(0, p);
             value = s.substr(p + 1);
+            op = s.at(p);
         }
     };
 }
@@ -371,12 +375,40 @@ UserKeyRequirement::~UserKeyRequirement()
 
 namespace
 {
-    struct KeyComparator
+    std::string stringify_contents_entry(const ContentsEntry & e)
+    {
+        return stringify(e.location_key()->value());
+    }
+
+    struct StringifyEqual
     {
         const std::string pattern;
 
-        KeyComparator(const std::string & p) :
+        StringifyEqual(const std::string & p) :
             pattern(p)
+        {
+        }
+
+        template <typename T_>
+        bool operator() (const T_ & t) const
+        {
+            return stringify(t) == pattern;
+        }
+
+        bool operator() (const ContentsEntry & e) const
+        {
+            return stringify_contents_entry(e) == pattern;
+        }
+    };
+
+    struct KeyComparator
+    {
+        const std::string pattern;
+        const char op;
+
+        KeyComparator(const std::string & p, const char o) :
+            pattern(p),
+            op(o)
         {
         }
 
@@ -387,7 +419,15 @@ namespace
 
         bool visit(const MetadataTimeKey & k) const
         {
-            return pattern == stringify(k.value().seconds());
+            switch (op)
+            {
+                case '=':
+                    return pattern == stringify(k.value().seconds());
+                case '<':
+                    return k.value().seconds() < destringify<time_t>(pattern);
+            }
+
+            return false;
         }
 
         bool visit(const MetadataValueKey<std::string> & k) const
@@ -412,7 +452,15 @@ namespace
 
         bool visit(const MetadataValueKey<long> & k) const
         {
-            return pattern == stringify(k.value());
+            switch (op)
+            {
+                case '=':
+                    return pattern == stringify(k.value());
+                case '<':
+                    return k.value() < destringify<long>(pattern);
+            }
+
+            return false;
         }
 
         bool visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > &) const
@@ -425,8 +473,20 @@ namespace
             return false;
         }
 
-        bool visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > &) const
+        bool visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > & s) const
         {
+            switch (op)
+            {
+                case '=':
+                    return pattern == join(indirect_iterator(s.value()->begin()), indirect_iterator(s.value()->end()), " ",
+                            stringify_contents_entry);
+                case '<':
+                    return indirect_iterator(s.value()->end()) != std::find_if(
+                            indirect_iterator(s.value()->begin()),
+                            indirect_iterator(s.value()->end()),
+                            StringifyEqual(pattern));
+            }
+
             return false;
         }
 
@@ -472,27 +532,74 @@ namespace
 
         bool visit(const MetadataCollectionKey<FSEntrySequence> & s) const
         {
-            return pattern == join(s.value()->begin(), s.value()->end(), " ");
+            switch (op)
+            {
+                case '=':
+                    return pattern == join(s.value()->begin(), s.value()->end(), " ");
+                case '<':
+                    return s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
+                            StringifyEqual(pattern));
+            }
+
+            return false;
         }
 
         bool visit(const MetadataCollectionKey<PackageIDSequence> & s) const
         {
-            return pattern == join(indirect_iterator(s.value()->begin()), indirect_iterator(s.value()->end()), " ");
+            switch (op)
+            {
+                case '=':
+                    return pattern == join(indirect_iterator(s.value()->begin()), indirect_iterator(s.value()->end()), " ");
+                case '<':
+                    return indirect_iterator(s.value()->end()) != std::find_if(
+                            indirect_iterator(s.value()->begin()),
+                            indirect_iterator(s.value()->end()),
+                            StringifyEqual(pattern));
+            }
+
+            return false;
         }
 
         bool visit(const MetadataCollectionKey<Sequence<std::string> > & s) const
         {
-            return pattern == join(s.value()->begin(), s.value()->end(), " ");
+            switch (op)
+            {
+                case '=':
+                    return pattern == join(s.value()->begin(), s.value()->end(), " ");
+                case '<':
+                    return s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
+                            StringifyEqual(pattern));
+            }
+
+            return false;
         }
 
         bool visit(const MetadataCollectionKey<Set<std::string> > & s) const
         {
-            return pattern == join(s.value()->begin(), s.value()->end(), " ");
+            switch (op)
+            {
+                case '=':
+                    return pattern == join(s.value()->begin(), s.value()->end(), " ");
+                case '<':
+                    return s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
+                            StringifyEqual(pattern));
+            }
+
+            return false;
         }
 
         bool visit(const MetadataCollectionKey<KeywordNameSet> & s) const
         {
-            return pattern == join(s.value()->begin(), s.value()->end(), " ");
+            switch (op)
+            {
+                case '=':
+                    return pattern == join(s.value()->begin(), s.value()->end(), " ");
+                case '<':
+                    return s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
+                            StringifyEqual(pattern));
+            }
+
+            return false;
         }
     };
 }
@@ -506,7 +613,7 @@ UserKeyRequirement::requirement_met(const Environment * const, const PackageID &
     if (m == id.end_metadata())
         return false;
 
-    KeyComparator c(_imp->value);
+    KeyComparator c(_imp->value, _imp->op);
     return (*m)->accept_returning<bool>(c);
 }
 

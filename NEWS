@@ -21,6 +21,11 @@ of every change, see the ChangeLog.
     * Support for the new EAPI 3 is present but not installed, since the
       specification has yet to be approved.
 
+    * The [.key=value] syntax for user dep specs now works with sets and
+      sequences. If < is used instead of =, a less than comparison is used for
+      numeric values, and for sets and sequences, a match succeeds if any item
+      of the key is equal to the specified value.
+
     * Various large code cleanups and build system cleanups.
 
 0.42.2:
