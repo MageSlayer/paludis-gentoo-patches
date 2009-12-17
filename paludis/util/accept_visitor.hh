@@ -57,6 +57,38 @@ namespace paludis
     };
 
     /**
+     * Used by accept_visitor.
+     *
+     * \nosubgrouping
+     * \ingroup g_visitors
+     */
+    template <typename Visitor_, typename Returning_>
+    class PALUDIS_VISIBLE AcceptVisitorReturning
+    {
+        private:
+            Visitor_ & _v;
+
+        public:
+            typedef Returning_ result_type;
+
+            ///\name Visitor operations
+            ///\{
+
+            AcceptVisitorReturning(Visitor_ & v) :
+                _v(v)
+            {
+            }
+
+            template <typename T_>
+            Returning_ operator() (T_ & t) const
+            {
+                return t.template accept_returning<Returning_>(_v);
+            }
+
+            ///\}
+    };
+
+    /**
      * Convenience function for using a visitor with a standard algorithm.
      *
      * \ingroup g_visitors
@@ -65,6 +97,17 @@ namespace paludis
     AcceptVisitor<Visitor_> PALUDIS_VISIBLE accept_visitor(Visitor_ & v)
     {
         return AcceptVisitor<Visitor_>(v);
+    }
+
+    /**
+     * Convenience function for using a visitor with a standard algorithm.
+     *
+     * \ingroup g_visitors
+     */
+    template <typename Returning_, typename Visitor_>
+    AcceptVisitorReturning<Visitor_, Returning_> PALUDIS_VISIBLE accept_visitor_returning(Visitor_ & v)
+    {
+        return AcceptVisitorReturning<Visitor_, Returning_>(v);
     }
 }
 

@@ -28,6 +28,7 @@
 #include <paludis/filter.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/dep_label.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
@@ -401,6 +402,89 @@ namespace
         }
     };
 
+    struct SpecTreeSearcher
+    {
+        const std::string pattern;
+
+        SpecTreeSearcher(const std::string & p) :
+            pattern(p)
+        {
+        }
+
+        bool visit(const GenericSpecTree::NodeType<AllDepSpec>::Type & n) const
+        {
+            return indirect_iterator(n.end()) != std::find_if(indirect_iterator(n.begin()), indirect_iterator(n.end()),
+                    accept_visitor_returning<bool>(*this));
+        }
+
+        bool visit(const GenericSpecTree::NodeType<AnyDepSpec>::Type & n) const
+        {
+            return indirect_iterator(n.end()) != std::find_if(indirect_iterator(n.begin()), indirect_iterator(n.end()),
+                    accept_visitor_returning<bool>(*this));
+        }
+
+        bool visit(const GenericSpecTree::NodeType<ConditionalDepSpec>::Type & n) const
+        {
+            if (n.spec()->condition_met())
+                return indirect_iterator(n.end()) != std::find_if(indirect_iterator(n.begin()), indirect_iterator(n.end()),
+                        accept_visitor_returning<bool>(*this));
+            else
+                return false;
+        }
+
+        bool visit(const GenericSpecTree::NodeType<NamedSetDepSpec>::Type & n) const
+        {
+            return stringify(*n.spec()) == pattern;
+        }
+
+        bool visit(const GenericSpecTree::NodeType<PlainTextDepSpec>::Type & n) const
+        {
+            return stringify(*n.spec()) == pattern;
+        }
+
+        bool visit(const GenericSpecTree::NodeType<PackageDepSpec>::Type & n) const
+        {
+            return stringify(*n.spec()) == pattern;
+        }
+
+        bool visit(const GenericSpecTree::NodeType<BlockDepSpec>::Type & n) const
+        {
+            return stringify(*n.spec()) == pattern;
+        }
+
+        bool visit(const GenericSpecTree::NodeType<LicenseDepSpec>::Type & n) const
+        {
+            return stringify(*n.spec()) == pattern;
+        }
+
+        bool visit(const GenericSpecTree::NodeType<SimpleURIDepSpec>::Type & n) const
+        {
+            return stringify(*n.spec()) == pattern;
+        }
+
+        bool visit(const GenericSpecTree::NodeType<FetchableURIDepSpec>::Type & n) const
+        {
+            return stringify(*n.spec()) == pattern;
+        }
+
+        bool visit(const GenericSpecTree::NodeType<DependenciesLabelsDepSpec>::Type & n) const
+        {
+            return indirect_iterator(n.spec()->end()) != std::find_if(indirect_iterator(n.spec()->begin()),
+                    indirect_iterator(n.spec()->end()), StringifyEqual(pattern));
+        }
+
+        bool visit(const GenericSpecTree::NodeType<URILabelsDepSpec>::Type & n) const
+        {
+            return indirect_iterator(n.spec()->end()) != std::find_if(indirect_iterator(n.spec()->begin()),
+                    indirect_iterator(n.spec()->end()), StringifyEqual(pattern));
+        }
+
+        bool visit(const GenericSpecTree::NodeType<PlainTextLabelDepSpec>::Type & n) const
+        {
+            return stringify(*n.spec()) == pattern;
+        }
+    };
+
     struct KeyComparator
     {
         const std::string pattern;
@@ -495,38 +579,94 @@ namespace
             return pattern == stringify(*k.value());
         }
 
-        bool visit(const MetadataSpecTreeKey<DependencySpecTree> &) const
+        bool visit(const MetadataSpecTreeKey<DependencySpecTree> & s) const
         {
+            switch (op)
+            {
+                case '=':
+                    return false;
+                case '<':
+                    return s.value()->root()->accept_returning<bool>(SpecTreeSearcher(pattern));
+            }
+
             return false;
         }
 
-        bool visit(const MetadataSpecTreeKey<SetSpecTree> &) const
+        bool visit(const MetadataSpecTreeKey<SetSpecTree> & s) const
         {
+            switch (op)
+            {
+                case '=':
+                    return false;
+                case '<':
+                    return s.value()->root()->accept_returning<bool>(SpecTreeSearcher(pattern));
+            }
+
             return false;
         }
 
-        bool visit(const MetadataSpecTreeKey<PlainTextSpecTree> &) const
+        bool visit(const MetadataSpecTreeKey<PlainTextSpecTree> & s) const
         {
+            switch (op)
+            {
+                case '=':
+                    return false;
+                case '<':
+                    return s.value()->root()->accept_returning<bool>(SpecTreeSearcher(pattern));
+            }
+
             return false;
         }
 
-        bool visit(const MetadataSpecTreeKey<ProvideSpecTree> &) const
+        bool visit(const MetadataSpecTreeKey<ProvideSpecTree> & s) const
         {
+            switch (op)
+            {
+                case '=':
+                    return false;
+                case '<':
+                    return s.value()->root()->accept_returning<bool>(SpecTreeSearcher(pattern));
+            }
+
             return false;
         }
 
-        bool visit(const MetadataSpecTreeKey<SimpleURISpecTree> &) const
+        bool visit(const MetadataSpecTreeKey<SimpleURISpecTree> & s) const
         {
+            switch (op)
+            {
+                case '=':
+                    return false;
+                case '<':
+                    return s.value()->root()->accept_returning<bool>(SpecTreeSearcher(pattern));
+            }
+
             return false;
         }
 
-        bool visit(const MetadataSpecTreeKey<FetchableURISpecTree> &) const
+        bool visit(const MetadataSpecTreeKey<FetchableURISpecTree> & s) const
         {
+            switch (op)
+            {
+                case '=':
+                    return false;
+                case '<':
+                    return s.value()->root()->accept_returning<bool>(SpecTreeSearcher(pattern));
+            }
+
             return false;
         }
 
-        bool visit(const MetadataSpecTreeKey<LicenseSpecTree> &) const
+        bool visit(const MetadataSpecTreeKey<LicenseSpecTree> & s) const
         {
+            switch (op)
+            {
+                case '=':
+                    return false;
+                case '<':
+                    return s.value()->root()->accept_returning<bool>(SpecTreeSearcher(pattern));
+            }
+
             return false;
         }
 

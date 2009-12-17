@@ -33,9 +33,9 @@ the following order:</p>
     can be used. May be extended to ranged dependencies, using either <code>[=1.23|=1.24|=1.25]</code> for an or
     dependency or <code>[&gt;=1.2&amp;&lt;2]</code> for an and dependency.</li>
     <li><code>[.key=value]</code>: Match only if the specified metadata key has a particular exact value. Only works for
-    simple values, sets and sequences, not complex compound keys. If <code>&lt;</code> is used in place of
-    <code>=</code>, for numeric values a less-than comparison is used, and for sets and sequences, a match occurs if any
-    member of the set or sequence is equal to the value.</li>
+    simple values, sets, sequences and spec trees, not other complex compound keys. If <code>&lt;</code> is used in
+    place of <code>=</code>, for numeric values a less-than comparison is used, and for sets, sequences and spec trees,
+    a match occurs if any member of the set or sequence is equal to the value.</li>
 </ul>
 
 <p>Repository requirements are in the form <code>to</code>, <code>from-&gt;</code> or <code>::from-&gt;to</code>. The
