@@ -91,6 +91,7 @@ namespace
 
         args::ArgsGroup g_display_options;
         args::SwitchArg a_flat;
+        args::SwitchArg a_raw_names;
 
         ShowCommandLine() :
             g_object_options(main_options_section(), "Object Options", "Alter how objects are interpreted."),
@@ -109,7 +110,9 @@ namespace
                     "Show keys regardless of importance, including internal-only values", true),
             g_display_options(main_options_section(), "Display Options", "Controls the output format."),
             a_flat(&g_display_options, "flat", 'f',
-                    "Do not spread key values over multiple lines", true)
+                    "Do not spread key values over multiple lines", true),
+            a_raw_names(&g_display_options, "raw-names", 'r',
+                    "Display raw rather than human readable key names", true)
         {
             add_usage_line("spec ...");
         }
@@ -253,7 +256,9 @@ namespace
 
         void visit(const MetadataSectionKey & k)
         {
-            cout << format_general_rhvib(f::show_metadata_subsection(), k.raw_name(), k.human_name(), "",
+            cout << format_general_rhvib(
+                    (cmdline.a_raw_names.specified() ? f::show_metadata_subsection_raw() : f::show_metadata_subsection_human()),
+                    k.raw_name(), k.human_name(), "",
                     indent, important);
             std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(k.begin_metadata(), k.end_metadata());
             for (std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
@@ -268,41 +273,53 @@ namespace
         void visit(const MetadataCollectionKey<KeywordNameSet> & k)
         {
             ColourFormatter f(indent);
-            cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+            cout << format_general_rhvib(
+                    (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                    k.raw_name(), k.human_name(),
                     k.pretty_print_flat(f), indent, important);
         }
 
         void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
             ColourFormatter f(indent);
-            cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+            cout << format_general_rhvib(
+                    (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                    k.raw_name(), k.human_name(),
                     k.pretty_print_flat(f), indent, important);
         }
 
         void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
         {
             ColourFormatter f(indent);
-            cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+            cout << format_general_rhvib(
+                    (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                    k.raw_name(), k.human_name(),
                     k.pretty_print_flat(f), indent, important);
         }
 
         void visit(const MetadataCollectionKey<PackageIDSequence> & k)
         {
             ColourFormatter f(indent);
-            cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+            cout << format_general_rhvib(
+                    (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                    k.raw_name(), k.human_name(),
                     k.pretty_print_flat(f), indent, important);
         }
 
         void visit(const MetadataCollectionKey<FSEntrySequence> & k)
         {
-            cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+            cout << format_general_rhvib(
+                    (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                    k.raw_name(), k.human_name(),
                     join(k.value()->begin(), k.value()->end(), ", "), indent, important);
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
             ColourFormatter f(indent);
-            cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+            cout << format_general_rhvib(
+                    (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                    k.raw_name(), k.human_name(),
                     k.pretty_print_flat(f), indent, important);
         }
 
@@ -311,7 +328,9 @@ namespace
             if (cmdline.a_complex_keys.specified() || important)
             {
                 ColourFormatter f(indent);
-                cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+                cout << format_general_rhvib(
+                        (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                        k.raw_name(), k.human_name(),
                         k.pretty_print_flat(f), indent, important);
             }
         }
@@ -322,11 +341,15 @@ namespace
             {
                 ColourFormatter f(indent);
                 if (cmdline.a_flat.specified())
-                    cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+                    cout << format_general_rhvib(
+                            (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                            k.raw_name(), k.human_name(),
                             k.pretty_print_flat(f), indent, important);
                 else
                 {
-                    cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+                    cout << format_general_rhvib(
+                            (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                            k.raw_name(), k.human_name(),
                             "", indent, important);
                     cout << k.pretty_print(f);
                 }
@@ -339,11 +362,15 @@ namespace
             {
                 ColourFormatter f(indent);
                 if (cmdline.a_flat.specified())
-                    cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+                    cout << format_general_rhvib(
+                            (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                            k.raw_name(), k.human_name(),
                             k.pretty_print_flat(f), indent, important);
                 else
                 {
-                    cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+                    cout << format_general_rhvib(
+                            (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                            k.raw_name(), k.human_name(),
                             "", indent, important);
                     cout << k.pretty_print(f);
                 }
@@ -355,7 +382,9 @@ namespace
             if (cmdline.a_complex_keys.specified() || important)
             {
                 ColourFormatter f(indent);
-                cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+                cout << format_general_rhvib(
+                        (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                        k.raw_name(), k.human_name(),
                         k.pretty_print_flat(f), indent, important);
             }
         }
@@ -366,11 +395,15 @@ namespace
             {
                 ColourFormatter f(indent);
                 if (cmdline.a_flat.specified())
-                    cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+                    cout << format_general_rhvib(
+                            (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                            k.raw_name(), k.human_name(),
                             k.pretty_print_flat(f), indent, important);
                 else
                 {
-                    cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+                    cout << format_general_rhvib(
+                            (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                            k.raw_name(), k.human_name(),
                             "", indent, important);
                     cout << k.pretty_print(f);
                 }
@@ -379,37 +412,49 @@ namespace
 
         void visit(const MetadataValueKey<std::string> & k)
         {
-            cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+            cout << format_general_rhvib(
+                    (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                    k.raw_name(), k.human_name(),
                     stringify(k.value()), indent, important);
         }
 
         void visit(const MetadataValueKey<SlotName> & k)
         {
-            cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+            cout << format_general_rhvib(
+                    (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                    k.raw_name(), k.human_name(),
                     stringify(k.value()), indent, important);
         }
 
         void visit(const MetadataValueKey<long> & k)
         {
-            cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+            cout << format_general_rhvib(
+                    (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                    k.raw_name(), k.human_name(),
                     stringify(k.value()), indent, important);
         }
 
         void visit(const MetadataValueKey<bool> & k)
         {
-            cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+            cout << format_general_rhvib(
+                    (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                    k.raw_name(), k.human_name(),
                     stringify(k.value() ? "true" : "false"), indent, important);
         }
 
         void visit(const MetadataValueKey<FSEntry> & k)
         {
-            cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+            cout << format_general_rhvib(
+                    (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                    k.raw_name(), k.human_name(),
                     stringify(k.value()), indent, important);
         }
 
         void visit(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & k)
         {
-            cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+            cout << format_general_rhvib(
+                    (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                    k.raw_name(), k.human_name(),
                     stringify(*k.value()), indent, important);
         }
 
@@ -422,7 +467,9 @@ namespace
                     ContentsDisplayer d(0);
                     std::for_each(indirect_iterator(k.value()->begin()),
                             indirect_iterator(k.value()->end()), accept_visitor(d));
-                    cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+                    cout << format_general_rhvib(
+                            (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                            k.raw_name(), k.human_name(),
                             d.s.str(), indent, important);
                 }
                 else
@@ -430,7 +477,9 @@ namespace
                     ContentsDisplayer d(indent);
                     std::for_each(indirect_iterator(k.value()->begin()),
                             indirect_iterator(k.value()->end()), accept_visitor(d));
-                    cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+                    cout << format_general_rhvib(
+                            (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                            k.raw_name(), k.human_name(),
                             "", indent, important);
                     cout << d.s.str();
                 }
@@ -495,12 +544,16 @@ namespace
                         }
                     }
                 }
-                cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+                cout << format_general_rhvib(
+                        (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                        k.raw_name(), k.human_name(),
                         s.str(), indent, important);
             }
             else
             {
-                cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+                cout << format_general_rhvib(
+                        (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                        k.raw_name(), k.human_name(),
                         "", indent, important);
                 for (Choices::ConstIterator c(k.value()->begin()), c_end(k.value()->end()) ;
                         c != c_end ; ++c)
@@ -525,7 +578,9 @@ namespace
                             continue;
                     }
 
-                    cout << format_general_rhvib(f::show_metadata_key_value(), (*c)->raw_name(), (*c)->human_name(),
+                    cout << format_general_rhvib(
+                            (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                            (*c)->raw_name(), (*c)->human_name(),
                             "", indent + 1, important);
 
                     for (Choice::ConstIterator v((*c)->begin()), v_end((*c)->end()) ;
@@ -539,14 +594,16 @@ namespace
                         {
                             if ((*v)->locked())
                             {
-                                cout << format_general_rhvib(f::show_metadata_key_value(),
+                                cout << format_general_rhvib(
+                                        (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
                                         format_general_s(f::show_choice_forced_enabled(), stringify((*v)->name_with_prefix())),
                                         format_general_s(f::show_choice_forced_enabled(), stringify((*v)->unprefixed_name())),
                                         (*v)->description(), indent + 2, important);
                             }
                             else
                             {
-                                cout << format_general_rhvib(f::show_metadata_key_value(),
+                                cout << format_general_rhvib(
+                                        (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
                                         format_general_s(f::show_choice_enabled(), stringify((*v)->name_with_prefix())),
                                         format_general_s(f::show_choice_enabled(), stringify((*v)->unprefixed_name())),
                                         (*v)->description(), indent + 2, important);
@@ -556,14 +613,16 @@ namespace
                         {
                             if ((*v)->locked())
                             {
-                                cout << format_general_rhvib(f::show_metadata_key_value(),
+                                cout << format_general_rhvib(
+                                        (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
                                         format_general_s(f::show_choice_forced_disabled(), stringify((*v)->name_with_prefix())),
                                         format_general_s(f::show_choice_forced_disabled(), stringify((*v)->unprefixed_name())),
                                         (*v)->description(), indent + 2, important);
                             }
                             else
                             {
-                                cout << format_general_rhvib(f::show_metadata_key_value(),
+                                cout << format_general_rhvib(
+                                        (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
                                         format_general_s(f::show_choice_disabled(), stringify((*v)->name_with_prefix())),
                                         format_general_s(f::show_choice_disabled(), stringify((*v)->unprefixed_name())),
                                         (*v)->description(), indent + 2, important);
@@ -578,7 +637,9 @@ namespace
         {
             if (k.value())
             {
-                cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+                cout << format_general_rhvib(
+                        (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                        k.raw_name(), k.human_name(),
                         stringify(k.value()->mask_file()), indent, important);
                 for (Sequence<std::string>::ConstIterator i(k.value()->comment()->begin()), i_end(k.value()->comment()->end()) ;
                         i != i_end ; ++i)
@@ -589,7 +650,9 @@ namespace
 
         void visit(const MetadataTimeKey & k)
         {
-            cout << format_general_rhvib(f::show_metadata_key_value(), k.raw_name(), k.human_name(),
+            cout << format_general_rhvib(
+                    (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                    k.raw_name(), k.human_name(),
                     pretty_print_time(k.value().seconds()), indent, important);
         }
     };
@@ -614,26 +677,34 @@ namespace
             }
             else
             {
-                cout << format_general_rhvib(f::show_metadata_key_value(), "Masked", "Masked",
+                cout << format_general_rhvib(
+                        (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                        "Masked", "Masked",
                         "by " + m.description(), indent, false);
             }
         }
 
         void visit(const UnsupportedMask & m)
         {
-            cout << format_general_rhvib(f::show_metadata_key_value(), stringify(m.key()),
+            cout << format_general_rhvib(
+                    (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                    stringify(m.key()),
                     m.description(), m.explanation(), indent, false);
         }
 
         void visit(const AssociationMask & m)
         {
-            cout << format_general_rhvib(f::show_metadata_key_value(), stringify(m.key()),
+            cout << format_general_rhvib(
+                    (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                    stringify(m.key()),
                     "by " + m.description(), stringify(*m.associated_package()), indent, false);
         }
 
         void visit(const UserMask & m)
         {
-            cout << format_general_rhvib(f::show_metadata_key_value(), stringify(m.key()),
+            cout << format_general_rhvib(
+                    (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                    stringify(m.key()),
                     "by " + m.description(), "", indent, false);
         }
 
@@ -646,7 +717,9 @@ namespace
             }
             else
             {
-                cout << format_general_rhvib(f::show_metadata_key_value(), stringify(m.key()),
+                cout << format_general_rhvib(
+                        (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
+                        stringify(m.key()),
                         "by " + m.description(), "", indent, false);
             }
         }

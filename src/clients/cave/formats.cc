@@ -143,7 +143,13 @@ paludis::cave::f::show_repository_heading()
 }
 
 const std::string
-paludis::cave::f::show_metadata_key_value()
+paludis::cave::f::show_metadata_key_value_raw()
+{
+    return "    %i%i%i%i%{if b}" + c::bold_normal() + "%{endif}" + "%r" + c::normal() + "%{column 30}%v\\n";
+}
+
+const std::string
+paludis::cave::f::show_metadata_key_value_human()
 {
     return "    %i%i%i%i%{if b}" + c::bold_normal() + "%{endif}" + "%h" + c::normal() + "%{column 30}%v\\n";
 }
@@ -155,9 +161,15 @@ paludis::cave::f::show_metadata_continued_value()
 }
 
 const std::string
-paludis::cave::f::show_metadata_subsection()
+paludis::cave::f::show_metadata_subsection_human()
 {
     return "    %i%i%i%i" + c::bold_blue() + "%h" + c::normal() + "\\n";
+}
+
+const std::string
+paludis::cave::f::show_metadata_subsection_raw()
+{
+    return "    %i%i%i%i" + c::bold_blue() + "%r" + c::normal() + "\\n";
 }
 
 const std::string
