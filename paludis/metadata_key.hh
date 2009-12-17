@@ -38,6 +38,7 @@
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/util/timestamp-fwd.hh>
+#include <paludis/util/set.hh>
 #include <tr1/type_traits>
 #include <string>
 
