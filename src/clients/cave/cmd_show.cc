@@ -95,7 +95,7 @@ namespace
 
         ShowCommandLine() :
             g_object_options(main_options_section(), "Object Options", "Alter how objects are interpreted."),
-            a_type(&g_object_options, "type", '\0', "Specify the type of the specified objects.",
+            a_type(&g_object_options, "type", 't', "Specify the type of the specified objects.",
                     args::EnumArg::EnumArgOptions
                     ("auto",               "Automatically determine the type")
                     ("repository",         "Treat the objects as repository names")
