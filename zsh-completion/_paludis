@@ -82,8 +82,8 @@ _paludis() {
         "(: -)--environment-variable[Display the value of an environment variable for a particular package]:package:_paludis_packages available"
         "(: -)--configuration-variable[Display the value of a configuration variable for a particular repository]:repository:_paludis_packages repositories"
         "(: -)--update-news[Regenerate news.unread files]"
-        "(: -)--regenerate-installed-cache[Regenerate (non-metadata) cache for installed repositories]"
-        "(: -)--regenerate-installable-cache[Regenerate (non-metadata) cache for installable repositories]"
+        "(: -)--regenerate-installed-cache[Regenerate (non-metadata) cache for installed repositories]:repository:_paludis_packages repositories"
+        "(: -)--regenerate-installable-cache[Regenerate (non-metadata) cache for installable repositories]:repository:_paludis_packages repositories"
         "(: -)--config[Run post-install configuration for a package]:package:_paludis_packages installed"
     )
     owner_args=(
