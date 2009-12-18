@@ -119,26 +119,27 @@ _paludis() {
     #dispatch
     if (( $words[(I)(--(uninstall|config)|-[[:alpha:]]#u[[:alpha:]]#)] )) ; then
         _arguments -s \
-                $general_args[@] $deplist_args[@] $install_uninstall_args[@] $uninstall_args[@] \
+            $general_args[@] $deplist_args[@] $install_uninstall_args[@] $uninstall_args[@] \
             "*:installed package:_paludis_packages installed" && return 0
     elif (( $words[(I)--uninstall-unused] )) ; then
-            _arguments -s \
-                $deplist_args[@] $install_uninstall_args[@] && return 0
-    elif (( $words[(I)(--owner|-[[:alpha:]]#o[[:alpha:]]#)] )) ;then
         _arguments -s \
-                $general_args[@] $owner_args[@]\
-                "*:Files:_files" && return 0
-    elif (( $words[(I)(--install|-[[:alpha:]]#i[[:alpha:]]#)] )) ;then
+            $deplist_args[@] $install_uninstall_args[@] && return 0
+    elif (( $words[(I)(--owner|-[[:alpha:]]#o[[:alpha:]]#)] )) ; then
         _arguments -s \
-                $general_args[@] $deplist_args[@] $install_uninstall_args[@] \
+            $general_args[@] $owner_args[@] \
+            "*:Files:_files" && return 0
+    elif (( $words[(I)(--install|-[[:alpha:]]#i[[:alpha:]]#)] )) ; then
+        _arguments -s \
+            $general_args[@] $deplist_args[@] $install_uninstall_args[@] \
             "*:available packages:_paludis_packages available" && return 0
-    elif (( $words[(I)(--query|-[[:alpha:]]#q[[:alpha:]]#)] )) ;then
+    elif (( $words[(I)(--query|-[[:alpha:]]#q[[:alpha:]]#)] )) ; then
         _arguments -s \
-                $general_args[@] $query_args[@]\
+            $general_args[@] $query_args[@]\
             "*:available packages:_paludis_packages available" && return 0
     else
         _arguments -s \
-            $general_args[@] $deplist_args[@] $list_args[@] $lists[@] $install_uninstall_args[@] $uninstall_args[@] $owner_args[@] $query_args[@] "$action_args[@]" "*:available packages:_paludis_packages available" && return 0
+            $general_args[@] $deplist_args[@] $list_args[@] $lists[@] $install_uninstall_args[@] $uninstall_args[@] $owner_args[@] $query_args[@] "$action_args[@]" \
+            "*:available packages:_paludis_packages available" && return 0
     fi
 }
 
