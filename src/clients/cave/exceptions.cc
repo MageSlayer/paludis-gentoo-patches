@@ -34,6 +34,11 @@ NothingMatching::NothingMatching(const PackageDepSpec & spec) throw () :
 {
 }
 
+NothingMatching::NothingMatching(const std::string & name) throw () :
+    Exception("Found nothing suitable matching '" + name + "'")
+{
+}
+
 BeMoreSpecific::BeMoreSpecific(const PackageDepSpec & spec, const std::tr1::shared_ptr<const PackageIDSequence> & s) throw () :
     Exception("Found multiple suitable IDs matching '" + stringify(spec) + "': { '" + join(indirect_iterator(s->begin()),
                 indirect_iterator(s->end()), "', '") + "' }")

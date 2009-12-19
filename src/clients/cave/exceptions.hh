@@ -35,6 +35,7 @@ namespace paludis
         {
             public:
                 NothingMatching(const PackageDepSpec &) throw ();
+                NothingMatching(const std::string &) throw ();
         };
 
         class PALUDIS_VISIBLE BeMoreSpecific :

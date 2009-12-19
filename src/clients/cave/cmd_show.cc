@@ -911,32 +911,36 @@ ShowCommand::run(
         {
             try
             {
-                RepositoryName repo_name(*p);
-                if (env->package_database()->has_repository_named(repo_name))
-                {
-                    do_one_repository(cmdline, env, repo_name);
-                    continue;
-                }
-            }
-            catch (const RepositoryNameError &)
-            {
-            }
-
-            try
-            {
                 PackageDepSpec spec(parse_user_package_dep_spec(*p, env.get(), UserPackageDepSpecOptions() +
                             updso_throw_if_set + updso_allow_wildcards));
                 if ((! spec.package_ptr()))
                     do_one_wildcard(env, spec);
                 else
                     do_one_package(cmdline, env, spec);
+                continue;
             }
             catch (const GotASetNotAPackageDepSpec &)
             {
                 do_one_set(env, SetName(*p));
+                continue;
+            }
+            catch (const NoSuchPackageError &)
+            {
+                try
+                {
+                    RepositoryName repo_name(*p);
+                    if (env->package_database()->has_repository_named(repo_name))
+                    {
+                        do_one_repository(cmdline, env, repo_name);
+                        continue;
+                    }
+                }
+                catch (const RepositoryNameError &)
+                {
+                }
             }
 
-            continue;
+            throw NothingMatching(*p);
         }
         else
             throw args::DoHelp("bad value '" + cmdline.a_type.argument() + "' for --" + cmdline.a_type.long_name());
