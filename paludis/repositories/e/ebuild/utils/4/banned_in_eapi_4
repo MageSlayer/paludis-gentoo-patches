@@ -20,7 +20,7 @@
 COLOUR_RED=$'\e[31;01m'
 COLOUR_NORMAL=$'\e[0m'
 
-echo "${COLOUR_RED}!!! Ebuild bug: '$(basename ${0} )' banned in EAPI 3${COLOUR_NORMAL}"
+echo "${COLOUR_RED}!!! Ebuild bug: '$(basename ${0} )' banned in EAPI 4${COLOUR_NORMAL}"
 echo "$(basename ${0} ): making ebuild PID ${EBUILD_KILL_PID} exit with error" 1>&2
 kill -s SIGUSR1 "${EBUILD_KILL_PID}"
 
