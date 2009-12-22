@@ -42,7 +42,13 @@ namespace
 
         for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
                 t != t_end ; ++t)
-            id->choices_key()->add("", *t);
+        {
+            std::string::size_type p(t->find(':'));
+            if (std::string::npos == p)
+                id->choices_key()->add("", *t);
+            else
+                id->choices_key()->add(t->substr(0, p), t->substr(p + 1));
+        }
     }
 }
 
@@ -881,5 +887,34 @@ namespace test_cases
             TEST_CHECK(req4->requirement_met(&env, *id));
         }
     } test_use_requirements_with_defaults;
+
+    struct PrefixStarUseRequirementsTest : TestCase
+    {
+        PrefixStarUseRequirementsTest() : TestCase("prefix:*") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            const std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("fake"))
+                            )));
+            env.package_database()->add_repository(1, fake);
+            std::tr1::shared_ptr<FakePackageID> id(fake->add_version("cat", "pkg1", "1"));
+            set_conditionals(id, "foo:enabled foo:disabled");
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
+                parse_elike_use_requirement("foo:*", id,
+                    ELikeUseRequirementOptions() + euro_allow_default_values + euro_allow_self_deps));
+            TEST_CHECK_EQUAL(req1->as_raw_string(), "[foo:*]");
+            TEST_CHECK(! req1->requirement_met(&env, *id));
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
+                parse_elike_use_requirement("foo:*=", id,
+                    ELikeUseRequirementOptions() + euro_allow_default_values + euro_allow_self_deps));
+            TEST_CHECK_EQUAL(req2->as_raw_string(), "[foo:*=]");
+            TEST_CHECK(req2->requirement_met(&env, *id));
+        }
+    } test_prefix_star_use_requirements;
 }
 

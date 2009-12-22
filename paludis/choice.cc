@@ -182,6 +182,16 @@ Choices::end() const
     return ConstIterator(_imp->choices.end());
 }
 
+Choices::ConstIterator
+Choices::find(const ChoicePrefixName & p) const
+{
+    for (ConstIterator i(begin()), i_end(end()) ;
+            i != i_end ; ++i)
+        if ((*i)->prefix() == p)
+            return i;
+    return end();
+}
+
 const std::tr1::shared_ptr<const ChoiceValue>
 Choices::find_by_name_with_prefix(const ChoiceNameWithPrefix & f) const
 {

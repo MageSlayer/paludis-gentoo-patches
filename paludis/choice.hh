@@ -180,6 +180,9 @@ namespace paludis
             ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            ///\since 0.44
+            ConstIterator find(const ChoicePrefixName &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
             ///\}
 
             /**
