@@ -2256,6 +2256,10 @@ ERepository::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
     std::string used_config_protect;
     std::tr1::shared_ptr<FSEntrySet> merged_entries(new FSEntrySet);
 
+    std::tr1::shared_ptr<const ChoiceValue> preserve_work_choice(
+            id->choices_key()->value()->find_by_name_with_prefix(
+                ELikePreserveWorkChoiceValue::canonical_name_with_prefix()));
+
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_install());
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
@@ -2291,6 +2295,13 @@ ERepository::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
             continue;
         }
 
+        if (phase->option("tidyup") && preserve_work_choice && preserve_work_choice->enabled())
+        {
+            output_manager->stdout_stream() << "--- Skipping " << phase->equal_option("skipname")
+                << " phase to preserve work" << std::endl;
+            continue;
+        }
+
         if (phase->option("merge"))
         {
             if (! (*install_action.options.destination()).destination_interface())
@@ -2298,18 +2309,22 @@ ERepository::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                         + "' to destination '" + stringify(install_action.options.destination()->name())
                         + "' because destination does not provide destination_interface");
 
-                (*install_action.options.destination()).destination_interface()->merge(
-                        make_named_values<MergeParams>(
-                            value_for<n::environment_file>(package_builddir / "temp" / "loadsaveenv"),
-                            value_for<n::image_dir>(package_builddir / "image"),
-                            value_for<n::merged_entries>(merged_entries),
-                            value_for<n::options>(id->eapi()->supported()->merger_options()),
-                            value_for<n::output_manager>(output_manager),
-                            value_for<n::package_id>(id),
-                            value_for<n::perform_uninstall>(install_action.options.perform_uninstall()),
-                            value_for<n::used_this_for_config_protect>(std::tr1::bind(
-                                    &used_this_for_config_protect, std::tr1::ref(used_config_protect), std::tr1::placeholders::_1))
-                            ));
+            MergerOptions extra_merger_options;
+            if (preserve_work_choice && preserve_work_choice->enabled())
+                extra_merger_options += mo_nondestructive;
+
+            (*install_action.options.destination()).destination_interface()->merge(
+                    make_named_values<MergeParams>(
+                        value_for<n::environment_file>(package_builddir / "temp" / "loadsaveenv"),
+                        value_for<n::image_dir>(package_builddir / "image"),
+                        value_for<n::merged_entries>(merged_entries),
+                        value_for<n::options>(id->eapi()->supported()->merger_options() | extra_merger_options),
+                        value_for<n::output_manager>(output_manager),
+                        value_for<n::package_id>(id),
+                        value_for<n::perform_uninstall>(install_action.options.perform_uninstall()),
+                        value_for<n::used_this_for_config_protect>(std::tr1::bind(
+                                &used_this_for_config_protect, std::tr1::ref(used_config_protect), std::tr1::placeholders::_1))
+                        ));
         }
         else if (phase->option("strip"))
         {

@@ -531,3 +531,70 @@ ELikeTraceChoiceValue::parameter() const
     return "";
 }
 
+const UnprefixedChoiceName
+ELikePreserveWorkChoiceValue::canonical_unprefixed_name()
+{
+    return UnprefixedChoiceName("preserve_work");
+}
+
+const ChoiceNameWithPrefix
+ELikePreserveWorkChoiceValue::canonical_name_with_prefix()
+{
+    return ChoiceNameWithPrefix(stringify(canonical_build_options_prefix()) + ":" +
+            stringify(canonical_unprefixed_name()));
+}
+
+ELikePreserveWorkChoiceValue::ELikePreserveWorkChoiceValue(const std::tr1::shared_ptr<const PackageID> & id,
+        const Environment * const env, const std::tr1::shared_ptr<const Choice> & choice) :
+    _enabled(env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_true())
+{
+}
+
+const UnprefixedChoiceName
+ELikePreserveWorkChoiceValue::unprefixed_name() const
+{
+    return canonical_unprefixed_name();
+}
+
+const ChoiceNameWithPrefix
+ELikePreserveWorkChoiceValue::name_with_prefix() const
+{
+    return canonical_name_with_prefix();
+}
+
+bool
+ELikePreserveWorkChoiceValue::enabled() const
+{
+    return _enabled;
+}
+
+bool
+ELikePreserveWorkChoiceValue::enabled_by_default() const
+{
+    return false;
+}
+
+bool
+ELikePreserveWorkChoiceValue::locked() const
+{
+    return false;
+}
+
+const std::string
+ELikePreserveWorkChoiceValue::description() const
+{
+    return "Do not remove build directories, and do not modify the image when merging";
+}
+
+bool
+ELikePreserveWorkChoiceValue::explicitly_listed() const
+{
+    return true;
+}
+
+const std::string
+ELikePreserveWorkChoiceValue::parameter() const
+{
+    return "";
+}
+

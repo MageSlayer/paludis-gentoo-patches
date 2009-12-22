@@ -744,7 +744,8 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
 
     bool do_copy(false);
 
-    if (0 == std::rename(stringify(src).c_str(), stringify(dst_real).c_str()))
+    if ((! _imp->params.options()[mo_nondestructive]) &&
+            0 == std::rename(stringify(src).c_str(), stringify(dst_real).c_str()))
     {
         result += msi_rename;
 
@@ -957,7 +958,8 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
     if (is_selinux_enabled())
         relabel_dir_recursive(src, dst);
 
-    if (0 == std::rename(stringify(src).c_str(), stringify(dst).c_str()))
+    if ((! _imp->params.options()[mo_nondestructive]) &&
+            0 == std::rename(stringify(src).c_str(), stringify(dst).c_str()))
     {
         result += msi_rename;
         track_renamed_dir_recursive(dst);

@@ -26,6 +26,9 @@ of every change, see the ChangeLog.
       for numeric values, and for compound values, a match succeeds if any item
       of the key is equal to the specified pattern.
 
+    * build_options: preserve_work can be used to avoid removing temporary
+      working directories, and to force a non-destructive merge.
+
     * Various large code cleanups and build system cleanups.
 
 0.42.2:

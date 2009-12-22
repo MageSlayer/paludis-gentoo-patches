@@ -363,6 +363,8 @@ UnpackagedID::perform_action(Action & action) const
                 ELikeStripChoiceValue::canonical_name_with_prefix()));
     std::tr1::shared_ptr<const ChoiceValue> split_choice(choices_key()->value()->find_by_name_with_prefix(
                 ELikeSplitChoiceValue::canonical_name_with_prefix()));
+    std::tr1::shared_ptr<const ChoiceValue> preserve_work_choice(choices_key()->value()->find_by_name_with_prefix(
+                ELikePreserveWorkChoiceValue::canonical_name_with_prefix()));
 
     std::string used_config_protect;
 
@@ -397,12 +399,16 @@ UnpackagedID::perform_action(Action & action) const
     {
         case wp_yes:
             {
+                MergerOptions extra_merger_options;
+                if (preserve_work_choice && preserve_work_choice->enabled())
+                    extra_merger_options += mo_nondestructive;
                 (*install_action->options.destination()).destination_interface()->merge(
                         make_named_values<MergeParams>(
                             value_for<n::environment_file>(FSEntry("/dev/null")),
                             value_for<n::image_dir>(fs_location_key()->value()),
                             value_for<n::merged_entries>(make_shared_ptr(new FSEntrySet)),
-                            value_for<n::options>(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs),
+                            value_for<n::options>((MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs)
+                                | extra_merger_options),
                             value_for<n::output_manager>(output_manager),
                             value_for<n::package_id>(shared_from_this()),
                             value_for<n::perform_uninstall>(install_action->options.perform_uninstall()),
