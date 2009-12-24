@@ -31,6 +31,12 @@ of every change, see the ChangeLog.
 
     * Various large code cleanups and build system cleanups.
 
+0.42.3:
+
+    * Updated environment filtering code for bash 4.1.
+
+    * Fixed symlink handling under SELinux.
+
 0.42.2:
 
     * An obscure resolver bug that results in 'evolution' trying to downgrade
