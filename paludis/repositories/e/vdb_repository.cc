@@ -1451,7 +1451,13 @@ VDBRepository::perform_updates()
                         failed = true;
                     }
                     else
+                    {
                         from_dir.rename(to_dir);
+                        SafeOFStream pf(to_dir / "PF");
+                        pf << m->second.package() << "-" << m->first->version() << std::endl;
+                        SafeOFStream category(to_dir / "CATEGORY");
+                        category << m->second.category() << std::endl;
+                    }
                 }
             }
             else
