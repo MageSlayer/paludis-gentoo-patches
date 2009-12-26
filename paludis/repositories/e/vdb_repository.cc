@@ -1156,6 +1156,12 @@ VDBRepository::installed_root_key() const
     return _imp->root_key;
 }
 
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+VDBRepository::sync_host_key() const
+{
+    return make_null_shared_ptr();
+}
+
 namespace
 {
     typedef std::map<QualifiedPackageName, QualifiedPackageName> DepRewrites;

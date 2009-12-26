@@ -27,6 +27,7 @@ add(`dir_iterator',                      `hh', `cc', `fwd', `se', `test', `tests
 add(`discard_output_stream',             `hh', `cc')
 add(`enum_iterator',                     `hh', `cc', `fwd', `test')
 add(`exception',                         `hh', `cc')
+add(`extract_host_from_url',             `hh', `cc', `fwd', `test')
 add(`fast_unique_copy',                  `hh', `test')
 add(`forward_parallel_for_each',         `hh', `test')
 add(`fs_entry',                          `hh', `cc', `fwd', `test', `testscript')

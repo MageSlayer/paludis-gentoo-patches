@@ -25,6 +25,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/extract_host_from_url.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/syncer.hh>
@@ -54,6 +55,7 @@ namespace paludis
         const std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > location_key;
         const std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > sync_key;
         const std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > sync_options_key;
+        const std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > sync_host_key;
 
         const ActiveObjectPtr<DeferredConstructionPtr<
             std::tr1::shared_ptr<UnavailableRepositoryStore> > > store;
@@ -68,6 +70,7 @@ namespace paludis
                         "sync", "sync", mkt_normal, params.sync())),
             sync_options_key(new LiteralMetadataValueKey<std::string> (
                         "sync_options", "sync_options", mkt_normal, params.sync_options())),
+            sync_host_key(new LiteralMetadataValueKey<std::string> ("sync_host", "sync_host", mkt_internal, extract_host_from_url(params.sync()))),
             store(DeferredConstructionPtr<std::tr1::shared_ptr<UnavailableRepositoryStore> > (
                         std::tr1::bind(&make_store, repo, std::tr1::cref(params))))
         {
@@ -116,6 +119,7 @@ UnavailableRepository::_add_metadata_keys()
     add_metadata_key(_imp->location_key);
     add_metadata_key(_imp->sync_key);
     add_metadata_key(_imp->sync_options_key);
+    add_metadata_key(_imp->sync_host_key);
 }
 
 void
@@ -350,6 +354,12 @@ const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 UnavailableRepository::accept_keywords_key() const
 {
     return make_null_shared_ptr();
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+UnavailableRepository::sync_host_key() const
+{
+    return _imp->sync_host_key;
 }
 
 template class PrivateImplementationPattern<unavailable_repository::UnavailableRepository>;

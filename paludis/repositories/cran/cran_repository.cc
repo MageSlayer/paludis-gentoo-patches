@@ -46,6 +46,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/extract_host_from_url.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/syncer.hh>
 #include <paludis/hook.hh>
@@ -82,6 +83,7 @@ namespace paludis
         std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
         std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > library_key;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > sync_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > sync_host_key;
     };
 }
 
@@ -94,7 +96,8 @@ Implementation<CRANRepository>::Implementation(const CRANRepositoryParams & p, c
     format_key(new LiteralMetadataValueKey<std::string> ("format", "format", mkt_significant, "cran")),
     builddir_key(new LiteralMetadataValueKey<FSEntry> ("builddir", "builddir", mkt_normal, params.builddir())),
     library_key(new LiteralMetadataValueKey<FSEntry> ("library", "library", mkt_normal, params.library())),
-    sync_key(new LiteralMetadataValueKey<std::string> ("sync", "sync", mkt_normal, params.sync()))
+    sync_key(new LiteralMetadataValueKey<std::string> ("sync", "sync", mkt_normal, params.sync())),
+    sync_host_key(new LiteralMetadataValueKey<std::string> ("sync_host", "sync_host", mkt_internal, extract_host_from_url(params.sync())))
 {
 }
 
@@ -135,6 +138,7 @@ CRANRepository::_add_metadata_keys() const
     add_metadata_key(_imp->builddir_key);
     add_metadata_key(_imp->library_key);
     add_metadata_key(_imp->sync_key);
+    add_metadata_key(_imp->sync_host_key);
 }
 
 bool
@@ -534,6 +538,12 @@ const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
 CRANRepository::installed_root_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+CRANRepository::sync_host_key() const
+{
+    return _imp->sync_host_key;
 }
 
 void

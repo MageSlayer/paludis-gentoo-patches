@@ -69,6 +69,7 @@
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/dir_iterator.hh>
+#include <paludis/util/extract_host_from_url.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -252,6 +253,7 @@ namespace paludis
         std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > accounts_repository_data_location_key;
         std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > e_updates_location_key;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > sync_host_key;
         std::list<std::tr1::shared_ptr<const MetadataKey> > about_keys;
 
         std::tr1::shared_ptr<EclassMtimes> eclass_mtimes;
@@ -339,6 +341,7 @@ namespace paludis
                     "binary_keywords", "binary_keywords", mkt_normal, params.binary_keywords())),
         accounts_repository_data_location_key(layout->accounts_repository_data_location_key()),
         e_updates_location_key(layout->e_updates_location_key()),
+        sync_host_key(new LiteralMetadataValueKey<std::string> ("sync_host", "sync_host", mkt_internal, extract_host_from_url(params.sync()))),
         eclass_mtimes(new EclassMtimes(r, params.eclassdirs())),
 
         master_mtime(0)
@@ -544,6 +547,7 @@ ERepository::_add_metadata_keys() const
         add_metadata_key(_imp->e_updates_location_key);
     if (_imp->accept_keywords_key)
         add_metadata_key(_imp->accept_keywords_key);
+    add_metadata_key(_imp->sync_host_key);
 
     std::for_each(_imp->about_keys.begin(), _imp->about_keys.end(), std::tr1::bind(
                 std::tr1::mem_fn(&ERepository::add_metadata_key), this, std::tr1::placeholders::_1));
@@ -1625,6 +1629,12 @@ ERepository::accept_keywords_key() const
 {
     need_keys_added();
     return _imp->accept_keywords_key;
+}
+
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+ERepository::sync_host_key() const
+{
+    return _imp->sync_host_key;
 }
 
 namespace

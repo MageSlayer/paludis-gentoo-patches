@@ -164,3 +164,9 @@ FakeRepository::accept_keywords_key() const
     return make_null_shared_ptr();
 }
 
+const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+FakeRepository::sync_host_key() const
+{
+    return make_null_shared_ptr();
+}
+

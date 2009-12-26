@@ -77,6 +77,7 @@ namespace paludis
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const;
+                virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const;
 
                 virtual bool has_category_named(const CategoryNamePart & c) const;
                 virtual bool has_package_named(const QualifiedPackageName & q) const;

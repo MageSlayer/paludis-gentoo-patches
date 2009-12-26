@@ -303,6 +303,17 @@ namespace paludis
              */
             virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const = 0;
 
+            /**
+             * The sync_host_key, if present, should have a value containing
+             * the host against which a sync will be performed.
+             *
+             * This is used to avoid starting multiple parallel syncs against
+             * the same host.
+             *
+             * \since 0.44
+             */
+            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const = 0;
+
             ///\}
 
             ///\name Repository content queries
