@@ -1467,7 +1467,7 @@ VDBRepository::perform_updates()
                         {
                             Log::get_instance()->message("e.vdb.updates.eapi", ll_warning, lc_context)
                                 << "Unsupported EAPI '" << eapi->name() << "' for '" << *m->first
-                                << ", cannot update PF-equivalent VDB key for move";
+                                << "', cannot update PF-equivalent VDB key for move";
                         }
 
                         SafeOFStream category(to_dir / "CATEGORY");
