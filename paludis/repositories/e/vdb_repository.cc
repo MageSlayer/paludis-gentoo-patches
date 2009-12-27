@@ -1457,8 +1457,19 @@ VDBRepository::perform_updates()
 
                         from_dir.rename(to_dir);
 
-                        SafeOFStream pf(to_dir / "PF");
-                        pf << newpf << std::endl;
+                        std::tr1::shared_ptr<const EAPI> eapi(std::tr1::static_pointer_cast<const VDBID>(m->first)->eapi());
+                        if (eapi->supported())
+                        {
+                            SafeOFStream pf(to_dir / eapi->supported()->ebuild_environment_variables()->env_pf());
+                            pf << newpf << std::endl;
+                        }
+                        else
+                        {
+                            Log::get_instance()->message("e.vdb.updates.eapi", ll_warning, lc_context)
+                                << "Unsupported EAPI '" << eapi->name() << "' for '" << *m->first
+                                << ", cannot update PF-equivalent VDB key for move";
+                        }
+
                         SafeOFStream category(to_dir / "CATEGORY");
                         category << m->second.category() << std::endl;
 
