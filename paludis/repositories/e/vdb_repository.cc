@@ -1452,11 +1452,26 @@ VDBRepository::perform_updates()
                     }
                     else
                     {
+                        std::string oldpf(stringify(m->first->name().package()) + "-" + stringify(m->first->version()));
+                        std::string newpf(stringify(m->second.package()) + "-" + stringify(m->first->version()));
+
                         from_dir.rename(to_dir);
+
                         SafeOFStream pf(to_dir / "PF");
-                        pf << m->second.package() << "-" << m->first->version() << std::endl;
+                        pf << newpf << std::endl;
                         SafeOFStream category(to_dir / "CATEGORY");
                         category << m->second.category() << std::endl;
+
+                        if (newpf != oldpf)
+                        {
+                            for (DirIterator it(to_dir, DirIteratorOptions() + dio_inode_sort),
+                                     it_end; it_end != it; ++it)
+                            {
+                                std::string::size_type lastdot(it->basename().rfind('.'));
+                                if (std::string::npos != lastdot && 0 == it->basename().compare(0, lastdot, oldpf, 0, oldpf.length()))
+                                    FSEntry(*it).rename(to_dir / (newpf + it->basename().substr(lastdot)));
+                            }
+                        }
                     }
                 }
             }
