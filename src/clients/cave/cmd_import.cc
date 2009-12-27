@@ -228,7 +228,7 @@ ImportCommand::run(
     cmdline.resolution_options.verify(env);
 
     std::tr1::shared_ptr<Sequence<std::string> > targets(new Sequence<std::string>);
-    targets->push_back(stringify((*ids->begin())->uniquely_identifying_spec()));
+    targets->push_back(stringify((*ids->begin())->name()));
 
     return resolve_common(env, cmdline.resolution_options, cmdline.execution_options, cmdline.display_options,
             cmdline.program_options, keys, targets);
