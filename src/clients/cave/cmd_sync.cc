@@ -118,6 +118,10 @@ namespace
 
         virtual std::string queue_name() const
         {
+            /* if we're sequential, there's just one queue */
+            if (cmdline.a_sequential.specified())
+                return "";
+
             const std::tr1::shared_ptr<const Repository> r(env->package_database()->fetch_repository(name));
             if (r->sync_host_key())
                 return r->sync_host_key()->value();
