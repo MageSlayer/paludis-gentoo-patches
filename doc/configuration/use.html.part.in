@@ -75,7 +75,8 @@ default <code>VIDEO_CARDS</code> from your profile, you will need to use <code>*
 
     <dt>preserve_work</dt>
     <dd>If set, Paludis will not delete temporary working directories used during the build, and will perform a
-    non-destructive merge that leaves the image directory intact.</dd>
+    non-destructive merge that leaves the image directory intact. This will result in the 'tidyup' phase being
+    skipped, but not the 'killold' phase.</dd>
 
     <dt>jobs</dt>
     <dd>If set to an unsigned integer, specifies the number of jobs to run in parallel when build systems
