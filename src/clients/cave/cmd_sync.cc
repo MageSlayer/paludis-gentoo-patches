@@ -30,6 +30,7 @@
 #include <paludis/util/condition_variable.hh>
 #include <paludis/util/thread.hh>
 #include <paludis/util/return_literal_function.hh>
+#include <paludis/util/executor.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/repository.hh>
 #include <paludis/environment.hh>
@@ -83,126 +84,6 @@ namespace
         {
             add_usage_line("[ --sequential ] [repository ...]");
         }
-    };
-
-    std::string get_queue_name_func(
-            const std::tr1::shared_ptr<const Environment> & env,
-            const RepositoryName & r)
-    {
-        const std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(r));
-        if (repo->sync_host_key())
-            return repo->sync_host_key()->value();
-        else
-            return "(no host)";
-    }
-
-    struct Executive
-    {
-        virtual std::string queue_name() const = 0;
-        virtual std::string unique_id() const = 0;
-        virtual bool can_run() const = 0;
-
-        virtual void pre_execute_exclusive() = 0;
-        virtual void execute_threaded() = 0;
-        virtual void post_execute_exclusive() = 0;
-    };
-
-    class Executor
-    {
-        private:
-            int _pending;
-            int _active;
-            int _done;
-
-            typedef std::multimap<std::string, std::tr1::shared_ptr<Executive> > Queues;
-            typedef std::list<std::tr1::shared_ptr<Executive> > ReadyForPost;
-            Queues _queues;
-            ReadyForPost _ready_for_post;
-            Mutex _mutex;
-            ConditionVariable _condition;
-
-            void _one(const std::tr1::shared_ptr<Executive> executive)
-            {
-                executive->execute_threaded();
-
-                Lock lock(_mutex);
-                _ready_for_post.push_back(executive);
-                _condition.signal();
-            }
-
-        public:
-            Executor() :
-                _pending(0),
-                _active(0),
-                _done(0)
-            {
-            }
-
-            int pending() const
-            {
-                return _pending;
-            }
-
-            int active() const
-            {
-                return _active;
-            }
-
-            int done() const
-            {
-                return _done;
-            }
-
-            void add(const std::tr1::shared_ptr<Executive> & x)
-            {
-                ++_pending;
-                _queues.insert(std::make_pair(x->queue_name(), x));
-            }
-
-            void execute()
-            {
-                typedef std::map<std::string, std::tr1::shared_ptr<Thread> > Running;
-                Running running;
-
-                Lock lock(_mutex);
-                while (true)
-                {
-                    bool any(false);
-                    for (Queues::iterator q(_queues.begin()), q_end(_queues.end()) ;
-                            q != q_end ; )
-                    {
-                        if ((running.end() != running.find(q->first)) || ! q->second->can_run())
-                        {
-                            ++q;
-                            continue;
-                        }
-
-                        ++_active;
-                        --_pending;
-                        q->second->pre_execute_exclusive();
-                        running.insert(std::make_pair(q->first, make_shared_ptr(new Thread(
-                                            std::tr1::bind(&Executor::_one, this, q->second)))));
-                        _queues.erase(q++);
-                        any = true;
-                    }
-
-                    if ((! any) && running.empty())
-                        break;
-
-                    _condition.wait(_mutex);
-
-                    for (ReadyForPost::iterator p(_ready_for_post.begin()), p_end(_ready_for_post.end()) ;
-                            p != p_end ; ++p)
-                    {
-                        --_active;
-                        ++_done;
-                        running.erase((*p)->queue_name());
-                        (*p)->post_execute_exclusive();
-                    }
-
-                    _ready_for_post.clear();
-                }
-            }
     };
 
     struct SyncExecutive :
