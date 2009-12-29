@@ -86,15 +86,8 @@ If it's an installed package, <em>spec</em> can usually just be the qualified pa
 
 <p>Gentoo includes support for repositories specifying that a package has moved (e.g. <code>app-misc/foo</code> is now
 called <code>app-admin/foo</code>) or changed slot (e.g. <code>app-misc/foo:0</code> is now
-<code>app-misc/foo:2</code>). Paludis has experimental support for performing these updates after a sync, but by default
-updates are not carried out.</p>
-
-<p><strong>Carrying out updates is not guaranteed to work. Before allowing Paludis to carry out updates, you should back
-    up your VDB. If you don't know what this means, wait until updates have received wider testing. If you don't have a
-    backup of your VDB and things do go wrong, you will have to do a full system reinstall to fix things.</strong></p>
-
-<p>If you fully understand the above paragraph, you can set the <code>PALUDIS_CARRY_OUT_UPDATES</code> environment
-variable to <code>yes</code> and then sync to perform updates.</p>
+<code>app-misc/foo:2</code>). These are known as 'profiles updates'. Paludis will perform profiles updates after a
+sync.</p>
 
 <p>Sometimes it is possible for renames to cause collisions. For example, if <code>foo</code> is being renamed to
 <code>bar</code>, and you have both <code>foo</code> and <code>bar</code> installed, Paludis will be unable to perform

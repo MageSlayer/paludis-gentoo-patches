@@ -1268,14 +1268,9 @@ namespace
         key->value()->root()->accept(v);
         if (v.changed)
         {
-            if ("yes" == getenv_with_default("PALUDIS_CARRY_OUT_UPDATES", ""))
-            {
-                std::cout << "    Rewriting " << f << std::endl;
-                SafeOFStream ff(f);
-                ff << v.str.str() << std::endl;
-            }
-            else
-                std::cout << "    Would rewrite " << f << std::endl;
+            std::cout << "    Rewriting " << f << std::endl;
+            SafeOFStream ff(f);
+            ff << v.str.str() << std::endl;
         }
 
         return v.changed;
@@ -1434,125 +1429,90 @@ VDBRepository::perform_updates()
 
         if (! moves.empty())
         {
-            if ("yes" == getenv_with_default("PALUDIS_CARRY_OUT_UPDATES", ""))
+            std::cout << std::endl << "Performing moves:" << std::endl;
+            for (Moves::const_iterator m(moves.begin()), m_end(moves.end()) ;
+                    m != m_end ; ++m)
             {
-                std::cout << std::endl << "Performing moves:" << std::endl;
-                for (Moves::const_iterator m(moves.begin()), m_end(moves.end()) ;
-                        m != m_end ; ++m)
+                std::cout << "    " << *m->first << " to " << m->second << std::endl;
+
+                FSEntry target_cat_dir(_imp->params.location() / stringify(m->second.category()));
+                target_cat_dir.mkdir();
+
+                FSEntry from_dir(m->first->fs_location_key()->value());
+                FSEntry to_dir(target_cat_dir / ((stringify(m->second.package()) + "-" + stringify(m->first->version()))));
+
+                if (to_dir.exists())
                 {
-                    std::cout << "    " << *m->first << " to " << m->second << std::endl;
+                    /* Uh oh. It's possible to install both a package and its renamed version. */
+                    Log::get_instance()->message("e.vdb.updates.collision", ll_warning, lc_context) <<
+                        "I wanted to rename '" << from_dir << "' to '" << to_dir << "' for a package move, but the "
+                        "latter already exists. Consult the Paludis FAQ for how to proceed.";
+                    failed = true;
+                }
+                else
+                {
+                    std::string oldpf(stringify(m->first->name().package()) + "-" + stringify(m->first->version()));
+                    std::string newpf(stringify(m->second.package()) + "-" + stringify(m->first->version()));
 
-                    FSEntry target_cat_dir(_imp->params.location() / stringify(m->second.category()));
-                    target_cat_dir.mkdir();
+                    from_dir.rename(to_dir);
 
-                    FSEntry from_dir(m->first->fs_location_key()->value());
-                    FSEntry to_dir(target_cat_dir / ((stringify(m->second.package()) + "-" + stringify(m->first->version()))));
-
-                    if (to_dir.exists())
+                    std::tr1::shared_ptr<const EAPI> eapi(std::tr1::static_pointer_cast<const VDBID>(m->first)->eapi());
+                    if (eapi->supported())
                     {
-                        /* Uh oh. It's possible to install both a package and its renamed version. */
-                        Log::get_instance()->message("e.vdb.updates.collision", ll_warning, lc_context) <<
-                            "I wanted to rename '" << from_dir << "' to '" << to_dir << "' for a package move, but the "
-                            "latter already exists. Consult the Paludis FAQ for how to proceed.";
-                        failed = true;
+                        SafeOFStream pf(to_dir / eapi->supported()->ebuild_environment_variables()->env_pf());
+                        pf << newpf << std::endl;
                     }
                     else
                     {
-                        std::string oldpf(stringify(m->first->name().package()) + "-" + stringify(m->first->version()));
-                        std::string newpf(stringify(m->second.package()) + "-" + stringify(m->first->version()));
+                        Log::get_instance()->message("e.vdb.updates.eapi", ll_warning, lc_context)
+                            << "Unsupported EAPI '" << eapi->name() << "' for '" << *m->first
+                            << "', cannot update PF-equivalent VDB key for move";
+                    }
 
-                        from_dir.rename(to_dir);
+                    SafeOFStream category(to_dir / "CATEGORY");
+                    category << m->second.category() << std::endl;
 
-                        std::tr1::shared_ptr<const EAPI> eapi(std::tr1::static_pointer_cast<const VDBID>(m->first)->eapi());
-                        if (eapi->supported())
+                    if (newpf != oldpf)
+                    {
+                        for (DirIterator it(to_dir, DirIteratorOptions() + dio_inode_sort),
+                                 it_end; it_end != it; ++it)
                         {
-                            SafeOFStream pf(to_dir / eapi->supported()->ebuild_environment_variables()->env_pf());
-                            pf << newpf << std::endl;
-                        }
-                        else
-                        {
-                            Log::get_instance()->message("e.vdb.updates.eapi", ll_warning, lc_context)
-                                << "Unsupported EAPI '" << eapi->name() << "' for '" << *m->first
-                                << "', cannot update PF-equivalent VDB key for move";
-                        }
-
-                        SafeOFStream category(to_dir / "CATEGORY");
-                        category << m->second.category() << std::endl;
-
-                        if (newpf != oldpf)
-                        {
-                            for (DirIterator it(to_dir, DirIteratorOptions() + dio_inode_sort),
-                                     it_end; it_end != it; ++it)
-                            {
-                                std::string::size_type lastdot(it->basename().rfind('.'));
-                                if (std::string::npos != lastdot && 0 == it->basename().compare(0, lastdot, oldpf, 0, oldpf.length()))
-                                    FSEntry(*it).rename(to_dir / (newpf + it->basename().substr(lastdot)));
-                            }
+                            std::string::size_type lastdot(it->basename().rfind('.'));
+                            if (std::string::npos != lastdot && 0 == it->basename().compare(0, lastdot, oldpf, 0, oldpf.length()))
+                                FSEntry(*it).rename(to_dir / (newpf + it->basename().substr(lastdot)));
                         }
                     }
                 }
-            }
-            else
-            {
-                std::cout << std::endl << "The following package moves need to be performed:" << std::endl;
-                for (Moves::const_iterator m(moves.begin()), m_end(moves.end()) ;
-                        m != m_end ; ++m)
-                    std::cout << "    " << *m->first << " to " << m->second << std::endl;
-                std::cout << std::endl;
             }
         }
 
         if (! slot_moves.empty())
         {
-            if ("yes" == getenv_with_default("PALUDIS_CARRY_OUT_UPDATES", ""))
+            std::cout << std::endl << "Performing slot moves:" << std::endl;
+            for (SlotMoves::const_iterator m(slot_moves.begin()), m_end(slot_moves.end()) ;
+                    m != m_end ; ++m)
             {
-                std::cout << std::endl << "Performing slot moves:" << std::endl;
-                for (SlotMoves::const_iterator m(slot_moves.begin()), m_end(slot_moves.end()) ;
-                        m != m_end ; ++m)
-                {
-                    std::cout << "    " << *m->first << " to " << m->second << std::endl;
+                std::cout << "    " << *m->first << " to " << m->second << std::endl;
 
-                    SafeOFStream f(m->first->fs_location_key()->value() / "SLOT");
-                    f << m->second << std::endl;
-                }
-            }
-            else
-            {
-                std::cout << std::endl << "The following slot moves need to be performed:" << std::endl;
-                for (SlotMoves::const_iterator m(slot_moves.begin()), m_end(slot_moves.end()) ;
-                        m != m_end ; ++m)
-                    std::cout << "    " << *m->first << " to " << m->second << std::endl;
-                std::cout << std::endl;
+                SafeOFStream f(m->first->fs_location_key()->value() / "SLOT");
+                f << m->second << std::endl;
             }
         }
 
         if ((! moves.empty()) || (! slot_moves.empty()))
+        {
             invalidate();
 
-        if ("yes" != getenv_with_default("PALUDIS_CARRY_OUT_UPDATES", ""))
-        {
-            if ((! moves.empty()) || (! slot_moves.empty()))
-            {
-                std::cout << "Profile updates support is currently considered experimental. See the Paludis" << std::endl;
-                std::cout << "FAQ for how to proceed." << std::endl;
-                std::cout << std::endl;
-            }
-        }
-        else
-        {
-            if ((! moves.empty()) || (! slot_moves.empty()))
-            {
-                if (_imp->params.provides_cache() != FSEntry("/var/empty"))
-                    if (_imp->params.provides_cache().is_regular_file_or_symlink_to_regular_file())
-                    {
-                        std::cout << std::endl << "Invalidating provides cache following updates" << std::endl;
-                        FSEntry(_imp->params.provides_cache()).unlink();
-                        regenerate_provides_cache();
-                    }
+            if (_imp->params.provides_cache() != FSEntry("/var/empty"))
+                if (_imp->params.provides_cache().is_regular_file_or_symlink_to_regular_file())
+                {
+                    std::cout << std::endl << "Invalidating provides cache following updates" << std::endl;
+                    FSEntry(_imp->params.provides_cache()).unlink();
+                    regenerate_provides_cache();
+                }
 
-                std::cout << std::endl << "Invalidating names cache following updates" << std::endl;
-                _imp->names_cache->regenerate_cache();
-            }
+            std::cout << std::endl << "Invalidating names cache following updates" << std::endl;
+            _imp->names_cache->regenerate_cache();
         }
 
         if (! dep_rewrites.empty())
@@ -1578,16 +1538,9 @@ VDBRepository::perform_updates()
                     rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->value() / (*i)->suggested_dependencies_key()->raw_name(),
                             (*i)->suggested_dependencies_key(), dep_rewrites);
             }
-
-            if ((rewrite_done) && ("yes" != getenv_with_default("PALUDIS_CARRY_OUT_UPDATES", "")))
-            {
-                std::cout << "Some installed packages have dependencies that need rewriting for package" << std::endl;
-                std::cout << "moves. See the Paludis FAQ for how to proceed." << std::endl;
-                std::cout << std::endl;
-            }
         }
 
-        if ((! failed) && ("yes" == getenv_with_default("PALUDIS_CARRY_OUT_UPDATES", "")))
+        if (! failed)
         {
             cache_dir.mkdir();
             SafeOFStream cache_file_f(cache_file);
