@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -153,6 +153,11 @@ namespace
                             ("NUMBER_PENDING", stringify(executor->pending()))
                             ).max_exit_status())
                     throw SyncFailedError("Sync aborted by hook");
+
+                const std::tr1::shared_ptr<Repository> repo(env->package_database()->fetch_repository(name));
+                output_manager = env->create_output_manager(
+                        CreateOutputManagerForRepositorySyncInfo(*repo,
+                            cmdline.a_sequential.specified() ? oe_exclusive : oe_with_others));
             }
             catch (const Exception & e)
             {
@@ -174,9 +179,6 @@ namespace
             try
             {
                 const std::tr1::shared_ptr<Repository> repo(env->package_database()->fetch_repository(name));
-                output_manager = env->create_output_manager(
-                        CreateOutputManagerForRepositorySyncInfo(*repo,
-                            cmdline.a_sequential.specified() ? oe_exclusive : oe_with_others));
 
                 if (! repo->sync(output_manager))
                     skipped = true;
@@ -206,13 +208,16 @@ namespace
 
             try
             {
-                if (0 != env->perform_hook(Hook(success ? "sync_post" : "sync_fail")
-                            ("TARGET", stringify(name))
-                            ("NUMBER_DONE", stringify(executor->done()))
-                            ("NUMBER_ACTIVE", stringify(executor->active()))
-                            ("NUMBER_PENDING", stringify(executor->pending()))
-                            ).max_exit_status())
-                    throw SyncFailedError("Sync aborted by hook");
+                if (! abort)
+                {
+                    if (0 != env->perform_hook(Hook(success ? "sync_post" : "sync_fail")
+                                ("TARGET", stringify(name))
+                                ("NUMBER_DONE", stringify(executor->done()))
+                                ("NUMBER_ACTIVE", stringify(executor->active()))
+                                ("NUMBER_PENDING", stringify(executor->pending()))
+                                ).max_exit_status())
+                        throw SyncFailedError("Sync aborted by hook");
+                }
 
                 if (skipped)
                     cout << format_general_spad(f::sync_repo_done_no_syncing_required(), stringify(name),
@@ -273,10 +278,14 @@ namespace
                 cout << format_general_kv(f::sync_message_failure(), stringify((*x)->name), "failed");
                 cout << format_general_kv(f::sync_message_failure_message(), "error", (*x)->error);
             }
-            else if ((*x)->skipped)
-                cout << format_general_kv(f::sync_message_success(), stringify((*x)->name), "no syncing required");
             else
-                cout << format_general_kv(f::sync_message_success(), stringify((*x)->name), "success");
+            {
+                (*x)->output_manager->succeeded();
+                if ((*x)->skipped)
+                    cout << format_general_kv(f::sync_message_success(), stringify((*x)->name), "no syncing required");
+                else
+                    cout << format_general_kv(f::sync_message_success(), stringify((*x)->name), "success");
+            }
 
             (*x)->output_manager.reset();
         }
