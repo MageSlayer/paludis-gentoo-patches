@@ -104,7 +104,7 @@ namespace
         static const uint32_t k = 0xCA62C1D6U;
     };
 
-    template <int t_, int u_>
+    template <int t_, int u_, int i_ = t_>
     struct ProcessChunk : ChunkParams<t_, u_>
     {
         using ChunkParams<t_, u_>::f;
@@ -112,15 +112,21 @@ namespace
 
         static void process(uint32_t * w, uint32_t & a, uint32_t & b, uint32_t & c, uint32_t & d, uint32_t & e)
         {
-            for (int t = t_; t < u_; ++t)
-            {
-                uint32_t temp(s<5>(a) + f(b, c, d) + e + w[t] + k);
-                e = d;
-                d = c;
-                c = s<30>(b);
-                b = a;
-                a = temp;
-            }
+            uint32_t temp(s<5>(a) + f(b, c, d) + e + w[i_] + k);
+            e = d;
+            d = c;
+            c = s<30>(b);
+            b = a;
+            a = temp;
+            ProcessChunk<t_, u_, i_ + 1>::process(w, a, b, c, d, e);
+        }
+    };
+
+    template <int t_, int u_>
+    struct ProcessChunk<t_, u_, u_>
+    {
+        static void process(uint32_t *, uint32_t &, uint32_t &, uint32_t &, uint32_t &, uint32_t &)
+        {
         }
     };
 }
