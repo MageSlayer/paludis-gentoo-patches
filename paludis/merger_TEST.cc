@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -167,6 +167,7 @@ namespace
                 env(FSEntry("merger_TEST_dir/hooks")),
                 merger(make_named_values<MergerParams>(
                             value_for<n::environment>(&env),
+                            value_for<n::fix_mtimes_before>(Timestamp(0, 0)),
                             value_for<n::get_new_ids_or_minus_one>(&get_new_ids_or_minus_one),
                             value_for<n::image>(image_dir),
                             value_for<n::install_under>(FSEntry("/")),
@@ -178,13 +179,16 @@ namespace
             {
             }
 
-            MergerTest(const std::string & custom_test, const MergerOptions & o = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs) :
+            MergerTest(const std::string & custom_test,
+                    const MergerOptions & o = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
+                    const bool fix = false) :
                 TestCase("merge " + custom_test + " test"),
                 image_dir("merger_TEST_dir/" + custom_test + "/image"),
                 root_dir("merger_TEST_dir/" + custom_test + "/root"),
                 env(FSEntry("merger_TEST_dir/hooks")),
                 merger(make_named_values<MergerParams>(
                         value_for<n::environment>(&env),
+                        value_for<n::fix_mtimes_before>(fix ? FSEntry("merger_TEST_dir/reference").mtim() : Timestamp(0, 0)),
                         value_for<n::get_new_ids_or_minus_one>(&get_new_ids_or_minus_one),
                         value_for<n::image>(image_dir),
                         value_for<n::install_under>(FSEntry("/")),
@@ -548,7 +552,32 @@ namespace test_cases
 
             TEST_CHECK((root_dir / "new_file").mtim() == m_new);
             TEST_CHECK((root_dir / "existing_file").mtim() == m_existing);
+            TEST_CHECK(Timestamp::now().seconds() - (root_dir / "dodgy_file").mtim().seconds() >= (60 * 60 * 24 * 365 * 3) - 1);
+
+            TEST_CHECK((root_dir / "dir" / "new_file").mtim() == m_new);
+            TEST_CHECK(Timestamp::now().seconds() - (root_dir / "dir" / "dodgy_file").mtim().seconds() >= (60 * 60 * 24 * 365 * 3) - 1);
         }
     } test_merger_mtimes;
+
+    struct MergerMtimesFixTest : MergerTest
+    {
+        MergerMtimesFixTest() : MergerTest("mtimes_fix", MergerOptions() + mo_preserve_mtimes, true) { }
+
+        void run()
+        {
+            Timestamp m_new((image_dir / "new_file").mtim());
+            Timestamp m_existing((image_dir / "existing_file").mtim());
+
+            TEST_CHECK(merger.check());
+            merger.merge();
+
+            TEST_CHECK((root_dir / "new_file").mtim() == m_new);
+            TEST_CHECK((root_dir / "existing_file").mtim() == m_existing);
+            TEST_CHECK((root_dir / "dodgy_file").mtim() == FSEntry("merger_TEST_dir/reference").mtim());
+
+            TEST_CHECK((root_dir / "dir" / "new_file").mtim() == m_new);
+            TEST_CHECK((root_dir / "dir" / "dodgy_file").mtim() == FSEntry("merger_TEST_dir/reference").mtim());
+        }
+    } test_merger_mtimes_fix;
 }
 

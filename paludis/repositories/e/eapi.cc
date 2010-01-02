@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -169,6 +169,7 @@ namespace
                         value_for<n::ebuild_must_not_set_variables>(check_get(k, "ebuild_must_not_set_variables")),
                         value_for<n::eclass_must_not_set_variables>(check_get(k, "eclass_must_not_set_variables")),
                         value_for<n::f_function_prefix>(check_get(k, "f_function_prefix")),
+                        value_for<n::fix_mtimes>(destringify_key<bool>(k, "fix_mtimes")),
                         value_for<n::ignore_pivot_env_functions>(check_get(k, "ignore_pivot_env_functions")),
                         value_for<n::ignore_pivot_env_variables>(check_get(k, "ignore_pivot_env_variables")),
                         value_for<n::load_modules>(check_get(k, "load_modules")),

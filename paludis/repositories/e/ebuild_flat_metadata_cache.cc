@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  * Copyright (c) 2008 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -826,8 +826,7 @@ EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
             SafeOFStream cache_file(_imp->filename);
             cache_file << cache.str();
         }
-        struct ::utimbuf times = { _imp->ebuild.mtim().seconds(), _imp->ebuild.mtim().seconds() };
-        _imp->filename.utime(&times);
+        _imp->filename.utime(Timestamp(_imp->ebuild.mtim().seconds(), 0));
     }
     catch (const SafeOFStreamError & e)
     {

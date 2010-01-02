@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  * Copyright (c) 2008 Fernando J. Pereda
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -752,8 +752,20 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
         bool touch(_imp->merged_ids.end() == _imp->merged_ids.find(src.lowlevel_id()));
         _imp->merged_ids.insert(make_pair(src.lowlevel_id(), stringify(dst_real)));
 
-        if ((! _imp->params.options()[mo_preserve_mtimes]) && touch && ! dst_real.utime())
-            throw MergerError("utime(" + stringify(dst_real) + ", 0) failed: " + stringify(::strerror(errno)));
+        FSEntry d(stringify(dst_real));
+        if (touch && (
+                    (! _imp->params.options()[mo_preserve_mtimes]) ||
+                    (d.mtim() < _imp->params.fix_mtimes_before())
+                    ))
+        {
+            bool ok(false);
+            if (d.mtim() < _imp->params.fix_mtimes_before())
+                ok = d.utime(_imp->params.fix_mtimes_before());
+            else
+                ok = d.utime(Timestamp::now());
+            if (! ok)
+                throw MergerError("utime(" + stringify(dst_real) + ", 0) failed: " + stringify(::strerror(errno)));
+        }
 
         /* set*id bits get partially clobbered on a rename on linux */
         dst_real.chmod(src_perms);
@@ -812,9 +824,12 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
         /* might need to copy mtime */
         if (_imp->params.options()[mo_preserve_mtimes])
         {
-            /* futimens is POSIX, futimes isn't */
+            Timestamp timestamp(src.mtim());
+            if (timestamp < _imp->params.fix_mtimes_before())
+                timestamp = _imp->params.fix_mtimes_before();
+
             struct timespec ts[2];
-            ts[0] = ts[1] = src.mtim().as_timespec();
+            ts[0] = ts[1] = timestamp.as_timespec();
             if (0 != ::futimens(output_fd, ts))
                 throw MergerError("Cannot futimens '" + stringify(dst) + "': " + stringify(::strerror(errno)));
         }
@@ -890,8 +905,20 @@ Merger::track_renamed_dir_recursive(const FSEntry & dst)
                 {
                     bool touch(_imp->merged_ids.end() == _imp->merged_ids.find(d->lowlevel_id()));
                     _imp->merged_ids.insert(make_pair(d->lowlevel_id(), stringify(*d)));
-                    if ((! _imp->params.options()[mo_preserve_mtimes]) && touch && ! FSEntry(*d).utime())
-                        throw MergerError("utime(" + stringify(*d) + ", 0) failed: " + stringify(::strerror(errno)));
+
+                    if (touch && (
+                                (! _imp->params.options()[mo_preserve_mtimes]) ||
+                                (d->mtim() < _imp->params.fix_mtimes_before())
+                                ))
+                    {
+                        bool ok(false);
+                        if (d->mtim() < _imp->params.fix_mtimes_before())
+                            ok = FSEntry(*d).utime(_imp->params.fix_mtimes_before());
+                        else
+                            ok = FSEntry(*d).utime(Timestamp::now());
+                        if (! ok)
+                            throw MergerError("utime(" + stringify(*d) + ", 0) failed: " + stringify(::strerror(errno)));
+                    }
                     track_install_file(*d, dst, stringify(d->basename()), merged_how + msi_parent_rename);
                 }
                 continue;

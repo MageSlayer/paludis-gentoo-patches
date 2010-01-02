@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -58,6 +58,7 @@ namespace paludis
         NamedValue<n::config_protect_mask, std::string> config_protect_mask;
         NamedValue<n::contents_file, FSEntry> contents_file;
         NamedValue<n::environment, Environment *> environment;
+        NamedValue<n::fix_mtimes_before, Timestamp> fix_mtimes_before;
         NamedValue<n::image, FSEntry> image;
         NamedValue<n::merged_entries, std::tr1::shared_ptr<FSEntrySet> > merged_entries;
         NamedValue<n::options, MergerOptions> options;

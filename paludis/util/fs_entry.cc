@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  * Copyright (c) 2006 Mark Loeser
  * Copyright (c) 2008 Fernando J. Pereda
  *
@@ -40,6 +40,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <limits.h>
+#include <fcntl.h>
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
@@ -517,7 +518,10 @@ FSEntry::ctim() const
     _stat();
 
     if (! _imp->exists)
+    {
+        Context context("When fetching ctime of '" + stringify(_imp->path) + "':");
         throw FSError("Filesystem entry '" + _imp->path + "' does not exist");
+    }
 
     return Timestamp((*_imp->stat_info).st_ctim);
 }
@@ -528,7 +532,10 @@ FSEntry::mtim() const
     _stat();
 
     if (! _imp->exists)
+    {
+        Context context("When fetching mtime of '" + stringify(_imp->path) + "':");
         throw FSError("Filesystem entry '" + _imp->path + "' does not exist");
+    }
 
     return Timestamp((*_imp->stat_info).st_mtim);
 }
@@ -617,16 +624,20 @@ FSEntry::rmdir()
 }
 
 bool
-FSEntry::utime(const struct ::utimbuf * buf)
+FSEntry::utime(const Timestamp & t)
 {
-    if (0 == ::utime(_imp->path.c_str(), buf))
+    struct timespec ts[2] = { t.as_timespec(), t.as_timespec() };
+    if (0 == ::utimensat(AT_FDCWD, _imp->path.c_str(), ts, 0))
         return true;
 
     int e(errno);
     if (e == ENOENT)
         return false;
     else
+    {
+        Context context("When setting utime for '" + stringify(_imp->path) + "':");
         throw FSError("utime '" + _imp->path + "' failed: " + ::strerror(e));
+    }
 }
 
 std::string

@@ -4,6 +4,9 @@
 mkdir merger_TEST_dir || exit 2
 cd merger_TEST_dir || exit 3
 
+# must be before anything else, since timestamps before this are treated as
+# dodgy
+touch reference
 
 mkdir -p sym_over_nothing_dir/{image,root}
 ln -s image_dst sym_over_nothing_dir/image/sym
@@ -91,10 +94,21 @@ for d in *_dir; do
     ln -s ${d} ${d%_dir}
 done
 
-mkdir -p mtimes/{image,root}
+mkdir -p mtimes/{image/dir,root}
 > mtimes/image/new_file
 > mtimes/image/existing_file
+touch -d '3 years ago' mtimes/image/dodgy_file
+> mtimes/image/dir/new_file
+touch -d '3 years ago' mtimes/image/dir/dodgy_file
 > mtimes/root/existing_file
+
+mkdir -p mtimes_fix/{image/dir,root}
+> mtimes_fix/image/new_file
+> mtimes_fix/image/existing_file
+touch -d '3 years ago' mtimes_fix/image/dodgy_file
+> mtimes_fix/image/dir/new_file
+touch -d '3 years ago' mtimes_fix/image/dir/dodgy_file
+> mtimes_fix/root/existing_file
 
 mkdir hooks
 cd hooks

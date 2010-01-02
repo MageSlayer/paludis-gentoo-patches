@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -915,6 +915,8 @@ VDBRepository::merge(const MergeParams & m)
     vdb_dir /= stringify(m.package_id()->name().category());
     vdb_dir /= (stringify(m.package_id()->name().package()) + "-" + stringify(m.package_id()->version()));
 
+    bool fix_mtimes(std::tr1::static_pointer_cast<const ERepositoryID>(
+                m.package_id())->eapi()->supported()->ebuild_options()->fix_mtimes());
 
     VDBMerger merger(
             make_named_values<VDBMergerParams>(
@@ -922,6 +924,7 @@ VDBRepository::merge(const MergeParams & m)
                 value_for<n::config_protect_mask>(config_protect_mask),
                 value_for<n::contents_file>(vdb_dir / "CONTENTS"),
                 value_for<n::environment>(_imp->params.environment()),
+                value_for<n::fix_mtimes_before>(fix_mtimes ?  m.build_start_time() : Timestamp(0, 0)),
                 value_for<n::image>(m.image_dir()),
                 value_for<n::merged_entries>(m.merged_entries()),
                 value_for<n::options>(m.options()),

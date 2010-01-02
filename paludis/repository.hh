@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,6 +32,7 @@
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/named_value.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key-fwd.hh>
@@ -56,6 +57,7 @@ namespace paludis
     namespace n
     {
         struct arch;
+        struct build_start_time;
         struct destination_interface;
         struct environment_file;
         struct environment_variable_interface;
@@ -132,6 +134,14 @@ namespace paludis
      */
     struct MergeParams
     {
+        /**
+         * The start of the build time (for binaries, should really be when the
+         * binary was originally built).
+         *
+         * \since 0.44
+         */
+        NamedValue<n::build_start_time, Timestamp> build_start_time;
+
         NamedValue<n::environment_file, FSEntry> environment_file;
         NamedValue<n::image_dir, FSEntry> image_dir;
 

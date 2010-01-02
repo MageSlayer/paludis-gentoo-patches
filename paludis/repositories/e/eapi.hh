@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -113,6 +113,7 @@ namespace paludis
         struct f_function_prefix;
         struct failure_is_fatal;
         struct fancy_test_flag;
+        struct fix_mtimes;
         struct flat_list_index;
         struct has_expensive_tests;
         struct has_optional_tests;
@@ -373,6 +374,7 @@ namespace paludis
             NamedValue<n::ebuild_must_not_set_variables, std::string> ebuild_must_not_set_variables;
             NamedValue<n::eclass_must_not_set_variables, std::string> eclass_must_not_set_variables;
             NamedValue<n::f_function_prefix, std::string> f_function_prefix;
+            NamedValue<n::fix_mtimes, bool> fix_mtimes;
             NamedValue<n::ignore_pivot_env_functions, std::string> ignore_pivot_env_functions;
             NamedValue<n::ignore_pivot_env_variables, std::string> ignore_pivot_env_variables;
             NamedValue<n::load_modules, std::string> load_modules;

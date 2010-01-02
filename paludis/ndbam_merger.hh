@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -34,6 +34,7 @@ namespace paludis
         struct config_protect_mask;
         struct contents_file;
         struct environment;
+        struct fix_mtimes_before;
         struct get_new_ids_or_minus_one;
         struct image;
         struct install_under;
@@ -50,6 +51,7 @@ namespace paludis
         NamedValue<n::config_protect_mask, std::string> config_protect_mask;
         NamedValue<n::contents_file, FSEntry> contents_file;
         NamedValue<n::environment, Environment *> environment;
+        NamedValue<n::fix_mtimes_before, Timestamp> fix_mtimes_before;
         NamedValue<n::get_new_ids_or_minus_one, std::tr1::function<std::pair<uid_t, gid_t> (const FSEntry &)> > get_new_ids_or_minus_one;
         NamedValue<n::image, FSEntry> image;
         NamedValue<n::install_under, FSEntry> install_under;

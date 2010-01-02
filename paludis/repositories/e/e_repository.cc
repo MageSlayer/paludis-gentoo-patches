@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  * Copyright (c) 2006 Danny van Dyk
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -2183,6 +2183,8 @@ ERepository::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
              + join(indirect_iterator(install_action.options.replacing()->begin()),
                  indirect_iterator(install_action.options.replacing()->end()), "', '") + "' }") + ":");
 
+    Timestamp build_start_time(Timestamp::now());
+
     std::tr1::shared_ptr<OutputManager> output_manager(install_action.options.make_output_manager()(install_action));
 
     bool userpriv_restrict, test_restrict, strip_restrict;
@@ -2337,6 +2339,7 @@ ERepository::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
 
             (*install_action.options.destination()).destination_interface()->merge(
                     make_named_values<MergeParams>(
+                        value_for<n::build_start_time>(build_start_time),
                         value_for<n::environment_file>(package_builddir / "temp" / "loadsaveenv"),
                         value_for<n::image_dir>(package_builddir / "image"),
                         value_for<n::merged_entries>(merged_entries),

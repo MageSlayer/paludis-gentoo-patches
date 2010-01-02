@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -463,6 +463,8 @@ namespace
 void
 AccountsID::perform_action(Action & action) const
 {
+    Timestamp build_start_time(Timestamp::now());
+
     const InstallAction * const install_action(simple_visitor_cast<const InstallAction>(action));
     if (! install_action)
         throw ActionFailedError("Unsupported action: " + stringify(action));
@@ -483,6 +485,7 @@ AccountsID::perform_action(Action & action) const
             {
                 (*install_action->options.destination()).destination_interface()->merge(
                         make_named_values<MergeParams>(
+                            value_for<n::build_start_time>(build_start_time),
                             value_for<n::environment_file>(FSEntry("/dev/null")),
                             value_for<n::image_dir>(fs_location_key()->value()),
                             value_for<n::merged_entries>(make_shared_ptr(new FSEntrySet)),

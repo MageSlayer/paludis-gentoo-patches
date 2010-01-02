@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,6 +25,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/named_value.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/merger_entry_type.hh>
 #include <iosfwd>
 #include <sys/stat.h>
@@ -49,6 +50,7 @@ namespace paludis
     namespace n
     {
         struct environment;
+        struct fix_mtimes_before;
         struct get_new_ids_or_minus_one;
         struct image;
         struct install_under;
@@ -69,6 +71,15 @@ namespace paludis
     struct MergerParams
     {
         NamedValue<n::environment, Environment *> environment;
+
+        /**
+         * Rewrite any mtimes that are before this time to this time, even if
+         * preserving mtimes.
+         *
+         * \since 0.44
+         */
+        NamedValue<n::fix_mtimes_before, Timestamp> fix_mtimes_before;
+
         NamedValue<n::get_new_ids_or_minus_one, std::tr1::function<std::pair<uid_t, gid_t> (const FSEntry &)> > get_new_ids_or_minus_one;
         NamedValue<n::image, FSEntry> image;
         NamedValue<n::install_under, FSEntry> install_under;

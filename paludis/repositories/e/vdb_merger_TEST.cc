@@ -84,6 +84,7 @@ namespace
                             value_for<n::config_protect_mask>("/protected_dir/unprotected_file /protected_dir/unprotected_dir"),
                             value_for<n::contents_file>(FSEntry::cwd() / "vdb_merger_TEST_dir/CONTENTS" / what),
                             value_for<n::environment>(&env),
+                            value_for<n::fix_mtimes_before>(Timestamp(0, 0)),
                             value_for<n::image>(FSEntry::cwd() / "vdb_merger_TEST_dir" / what / "image"),
                             value_for<n::merged_entries>(make_shared_ptr(new FSEntrySet)),
                             value_for<n::options>(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs),

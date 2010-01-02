@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -347,6 +347,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
                 value_for<n::config_protect_mask>(getenv_with_default("CONFIG_PROTECT_MASK", "")),
                 value_for<n::contents_file>(target_ver_dir / "contents"),
                 value_for<n::environment>(_imp->params.environment()),
+                value_for<n::fix_mtimes_before>(m.build_start_time()),
                 value_for<n::get_new_ids_or_minus_one>(std::tr1::bind(&get_new_ids_or_minus_one,
                         _imp->params.environment(), rewrite_ids_over_to_root, _1)),
                 value_for<n::image>(m.image_dir()),
