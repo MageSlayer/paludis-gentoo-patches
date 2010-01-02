@@ -373,6 +373,7 @@ paludis-*.*.*.tar.bz2
 /paludis/util/Makefile.am
 /paludis/util/action_queue_TEST
 /paludis/util/active_object_ptr_TEST
+/paludis/util/buffer_output_stream_TEST
 /paludis/util/byte_swap_TEST
 /paludis/util/condition_variable_TEST
 /paludis/util/config_file_TEST

@@ -17,40 +17,34 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_MESSAGES_TO_STDOUT_OUTPUT_HANDLER_HH
-#define PALUDIS_GUARD_PALUDIS_MESSAGES_TO_STDOUT_OUTPUT_HANDLER_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_BUFFER_OUTPUT_MANAGER_HH
+#define PALUDIS_GUARD_PALUDIS_BUFFER_OUTPUT_MANAGER_HH 1
 
-#include <paludis/messages_to_stdout_output_handler-fwd.hh>
+#include <paludis/tee_output_manager-fwd.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/output_manager_factory.hh>
-#include <paludis/util/set-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/fs_entry-fwd.hh>
 #include <tr1/memory>
 #include <tr1/functional>
 
 namespace paludis
 {
-    class PALUDIS_VISIBLE MessagesToStdoutOutputManager :
-        private PrivateImplementationPattern<MessagesToStdoutOutputManager>,
+    class PALUDIS_VISIBLE BufferOutputManager :
+        private PrivateImplementationPattern<BufferOutputManager>,
         public OutputManager
     {
         public:
-            MessagesToStdoutOutputManager(
-                    const std::tr1::shared_ptr<OutputManager> &,
-                    const OutputManagerFactory::ReplaceVarsFunc &,
-                    const std::string & f_debug,
-                    const std::string & f_info,
-                    const std::string & f_warn,
-                    const std::string & f_error,
-                    const std::string & f_log);
-
-            ~MessagesToStdoutOutputManager();
+            BufferOutputManager(
+                    const std::tr1::shared_ptr<OutputManager> &
+                    );
+            ~BufferOutputManager();
 
             virtual std::ostream & stdout_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual std::ostream & stderr_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void succeeded();
+            virtual void flush();
+            virtual void nothing_more_to_come();
             virtual void message(const MessageType, const std::string &);
 
             static const std::tr1::shared_ptr<const Set<std::string> > factory_managers()
@@ -64,8 +58,9 @@ namespace paludis
     };
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
-    extern template class PrivateImplementationPattern<MessagesToStdoutOutputManager>;
+    extern template class PrivateImplementationPattern<BufferOutputManager>;
 #endif
 }
+
 
 #endif

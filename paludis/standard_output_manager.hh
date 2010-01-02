@@ -40,7 +40,9 @@ namespace paludis
             virtual std::ostream & stderr_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void succeeded();
+            virtual void flush();
             virtual void message(const MessageType, const std::string &);
+            virtual void nothing_more_to_come();
 
             static const std::tr1::shared_ptr<const Set<std::string> > factory_managers()
                 PALUDIS_ATTRIBUTE((warn_unused_result));

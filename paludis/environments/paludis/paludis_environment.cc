@@ -25,7 +25,6 @@
 #include <paludis/environments/paludis/licenses_conf.hh>
 #include <paludis/environments/paludis/mirrors_conf.hh>
 #include <paludis/environments/paludis/output_conf.hh>
-#include <paludis/environments/paludis/output_managers.hh>
 #include <paludis/environments/paludis/world.hh>
 
 #include <paludis/util/config_file.hh>
@@ -487,12 +486,6 @@ const std::tr1::shared_ptr<OutputManager>
 PaludisEnvironment::create_output_manager(const CreateOutputManagerInfo & i) const
 {
     return _imp->config->output_conf()->create_output_manager(i);
-}
-
-const std::tr1::shared_ptr<OutputManager>
-PaludisEnvironment::create_named_output_manager(const std::string & s, const CreateOutputManagerInfo & i) const
-{
-    return _imp->config->output_managers()->create_named_output_manager(s, i);
 }
 
 namespace

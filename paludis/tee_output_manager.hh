@@ -36,13 +36,17 @@ namespace paludis
         public OutputManager
     {
         public:
-            TeeOutputManager(const std::tr1::shared_ptr<const OutputManagerSequence> &);
+            TeeOutputManager(
+                    const std::tr1::shared_ptr<const OutputManagerSequence> &,
+                    const std::tr1::shared_ptr<const OutputManagerSequence> &);
             ~TeeOutputManager();
 
             virtual std::ostream & stdout_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual std::ostream & stderr_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void succeeded();
+            virtual void flush();
+            virtual void nothing_more_to_come();
             virtual void message(const MessageType, const std::string &);
 
             static const std::tr1::shared_ptr<const Set<std::string> > factory_managers()

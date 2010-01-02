@@ -106,7 +106,7 @@ Executor::add(const std::tr1::shared_ptr<Executive> & x)
 void
 Executor::execute()
 {
-    typedef std::map<std::string, std::tr1::shared_ptr<Thread> > Running;
+    typedef std::map<std::string, std::pair<std::tr1::shared_ptr<Thread>, std::tr1::shared_ptr<Executive> > > Running;
     Running running;
 
     Lock lock(_imp->mutex);
@@ -125,8 +125,8 @@ Executor::execute()
             ++_imp->active;
             --_imp->pending;
             q->second->pre_execute_exclusive();
-            running.insert(std::make_pair(q->first, make_shared_ptr(new Thread(
-                                std::tr1::bind(&Executor::_one, this, q->second)))));
+            running.insert(std::make_pair(q->first, std::make_pair(make_shared_ptr(new Thread(
+                                std::tr1::bind(&Executor::_one, this, q->second))), q->second)));
             _imp->queues.erase(q++);
             any = true;
         }
@@ -134,7 +134,11 @@ Executor::execute()
         if ((! any) && running.empty())
             break;
 
-        _imp->condition.wait(_imp->mutex);
+        _imp->condition.timed_wait(_imp->mutex, 1);
+
+        for (Running::iterator r(running.begin()), r_end(running.end()) ;
+                r != r_end ; ++r)
+            r->second.second->flush_threaded();
 
         for (ReadyForPost::iterator p(_imp->ready_for_post.begin()), p_end(_imp->ready_for_post.end()) ;
                 p != p_end ; ++p)

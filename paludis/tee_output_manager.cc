@@ -35,22 +35,27 @@ namespace paludis
     struct Implementation<TeeOutputManager>
     {
         const std::tr1::shared_ptr<const Sequence<std::tr1::shared_ptr<OutputManager> > > streams;
+        const std::tr1::shared_ptr<const Sequence<std::tr1::shared_ptr<OutputManager> > > messages_streams;
+
         TeeOutputStream stdout_stream;
         TeeOutputStream stderr_stream;
 
         Implementation(
-                const std::tr1::shared_ptr<const Sequence<std::tr1::shared_ptr<OutputManager> > > & s) :
-            streams(s)
+                const std::tr1::shared_ptr<const Sequence<std::tr1::shared_ptr<OutputManager> > > & s,
+                const std::tr1::shared_ptr<const Sequence<std::tr1::shared_ptr<OutputManager> > > & ss) :
+            streams(s),
+            messages_streams(ss)
         {
         }
     };
 }
 
 TeeOutputManager::TeeOutputManager(
-        const std::tr1::shared_ptr<const OutputManagerSequence> & s) :
-    PrivateImplementationPattern<TeeOutputManager>(new Implementation<TeeOutputManager>(s))
+        const std::tr1::shared_ptr<const OutputManagerSequence> & s,
+        const std::tr1::shared_ptr<const OutputManagerSequence> & ss) :
+    PrivateImplementationPattern<TeeOutputManager>(new Implementation<TeeOutputManager>(s, ss))
 {
-    for (OutputManagerSequence::ConstIterator i(s->begin()), i_end(s->end()) ;
+    for (OutputManagerSequence::ConstIterator i(_imp->streams->begin()), i_end(_imp->streams->end()) ;
             i != i_end ; ++i)
     {
         _imp->stdout_stream.add_stream(&(*i)->stdout_stream());
@@ -75,19 +80,47 @@ TeeOutputManager::stderr_stream()
 }
 
 void
+TeeOutputManager::message(const MessageType t, const std::string & m)
+{
+    for (OutputManagerSequence::ConstIterator i(_imp->messages_streams->begin()), i_end(_imp->messages_streams->end()) ;
+            i != i_end ; ++i)
+        (*i)->message(t, m);
+}
+
+void
 TeeOutputManager::succeeded()
 {
     for (OutputManagerSequence::ConstIterator i(_imp->streams->begin()), i_end(_imp->streams->end()) ;
             i != i_end ; ++i)
         (*i)->succeeded();
+
+    for (OutputManagerSequence::ConstIterator i(_imp->messages_streams->begin()), i_end(_imp->messages_streams->end()) ;
+            i != i_end ; ++i)
+        (*i)->succeeded();
 }
 
 void
-TeeOutputManager::message(const MessageType t, const std::string & s)
+TeeOutputManager::flush()
 {
     for (OutputManagerSequence::ConstIterator i(_imp->streams->begin()), i_end(_imp->streams->end()) ;
             i != i_end ; ++i)
-        (*i)->message(t, s);
+        (*i)->flush();
+
+    for (OutputManagerSequence::ConstIterator i(_imp->messages_streams->begin()), i_end(_imp->messages_streams->end()) ;
+            i != i_end ; ++i)
+        (*i)->flush();
+}
+
+void
+TeeOutputManager::nothing_more_to_come()
+{
+    for (OutputManagerSequence::ConstIterator i(_imp->streams->begin()), i_end(_imp->streams->end()) ;
+            i != i_end ; ++i)
+        (*i)->nothing_more_to_come();
+
+    for (OutputManagerSequence::ConstIterator i(_imp->messages_streams->begin()), i_end(_imp->messages_streams->end()) ;
+            i != i_end ; ++i)
+        (*i)->nothing_more_to_come();
 }
 
 const std::tr1::shared_ptr<const Set<std::string> >
@@ -105,17 +138,25 @@ TeeOutputManager::factory_create(
         const OutputManagerFactory::ReplaceVarsFunc &)
 {
     std::tr1::shared_ptr<OutputManagerSequence> children(new OutputManagerSequence);
+    std::tr1::shared_ptr<OutputManagerSequence> messages_children(new OutputManagerSequence);
 
     std::vector<std::string> children_keys;
     tokenise_whitespace(key_func("children"), std::back_inserter(children_keys));
     if (children_keys.empty())
         throw ConfigurationError("No children specified for TeeOutputManager");
 
+    std::vector<std::string> messages_children_keys;
+    tokenise_whitespace(key_func("messages_children"), std::back_inserter(messages_children_keys));
+
     for (std::vector<std::string>::const_iterator c(children_keys.begin()), c_end(children_keys.end()) ;
             c != c_end ; ++c)
         children->push_back(create_child(*c));
 
-    return make_shared_ptr(new TeeOutputManager(children));
+    for (std::vector<std::string>::const_iterator c(messages_children_keys.begin()), c_end(messages_children_keys.end()) ;
+            c != c_end ; ++c)
+        messages_children->push_back(create_child(*c));
+
+    return make_shared_ptr(new TeeOutputManager(children, messages_children));
 }
 
 template class PrivateImplementationPattern<TeeOutputManager>;

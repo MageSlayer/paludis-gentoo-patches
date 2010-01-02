@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -34,9 +34,9 @@
 #include <tr1/unordered_map>
 #include <list>
 
+#include <paludis/buffer_output_manager.hh>
 #include <paludis/file_output_manager.hh>
-#include <paludis/forward_on_failure_output_manager.hh>
-#include <paludis/messages_to_stdout_output_handler.hh>
+#include <paludis/format_messages_output_manager.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/tee_output_manager.hh>
 
@@ -67,7 +67,7 @@ namespace
         Keys::const_iterator i(keys.find(key));
         if (i == keys.end())
             throw ConfigurationError("Format '" + key + "' not supported when creating an output manager (known formats are { "
-                    + join(first_iterator(keys.begin()), first_iterator(keys.end()), ", ") + "})");
+                    + join(first_iterator(keys.begin()), first_iterator(keys.end()), ", ") + " })");
 
         return i->second;
     }
@@ -93,9 +93,9 @@ OutputManagerFactory::OutputManagerFactory() :
     PrivateImplementationPattern<OutputManagerFactory>(new Implementation<OutputManagerFactory>)
 {
     /* we might want to make this plugin loadable at some point */
+    add_manager(BufferOutputManager::factory_managers(), BufferOutputManager::factory_create);
     add_manager(FileOutputManager::factory_managers(), FileOutputManager::factory_create);
-    add_manager(ForwardOnFailureOutputManager::factory_managers(), ForwardOnFailureOutputManager::factory_create);
-    add_manager(MessagesToStdoutOutputManager::factory_managers(), MessagesToStdoutOutputManager::factory_create);
+    add_manager(FormatMessagesOutputManager::factory_managers(), FormatMessagesOutputManager::factory_create);
     add_manager(StandardOutputManager::factory_managers(), StandardOutputManager::factory_create);
     add_manager(TeeOutputManager::factory_managers(), TeeOutputManager::factory_create);
 }

@@ -50,6 +50,16 @@ StandardOutputManager::succeeded()
 }
 
 void
+StandardOutputManager::flush()
+{
+}
+
+void
+StandardOutputManager::nothing_more_to_come()
+{
+}
+
+void
 StandardOutputManager::message(const MessageType, const std::string &)
 {
 }

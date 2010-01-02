@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -34,13 +34,19 @@
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/map.hh>
+#include <paludis/util/simple_parser.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/create_output_manager_info.hh>
 #include <paludis/package_id.hh>
 #include <paludis/match_package.hh>
 #include <paludis/action.hh>
+#include <paludis/output_manager_factory.hh>
+#include <paludis/metadata_key.hh>
 #include <list>
 #include <vector>
+#include <map>
+#include <algorithm>
 
 using namespace paludis;
 using namespace paludis::paludis_environment;
@@ -73,6 +79,17 @@ namespace
     };
 
     typedef std::list<Rule> RuleList;
+    typedef std::map<std::string, std::tr1::shared_ptr<Map<std::string, std::string> > > Managers;
+
+    std::string from_keys(
+            const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+            const std::string & k)
+    {
+        if (m->end() == m->find(k))
+            return "";
+        else
+            return m->find(k)->second;
+    }
 }
 
 namespace paludis
@@ -82,6 +99,8 @@ namespace paludis
     {
         const PaludisEnvironment * const env;
         RuleList rules;
+        Managers managers;
+        std::map<std::string, std::string> misc_vars;
 
         Implementation(const PaludisEnvironment * const e) :
             env(e)
@@ -116,6 +135,8 @@ namespace
             rule.action_requirement() = v;
         else if (k == "ignore_unfetched")
             rule.ignore_unfetched_requirement() = destringify<Tribool>(v);
+        else if (k == "manager")
+            rule.manager() = v;
         else
             throw PaludisConfigError("Unknown rule '" + k + "'");
     }
@@ -192,6 +213,100 @@ namespace
         MatchRuleVisitor v(e, rule);
         return i.accept_returning<bool>(v);
     }
+
+    std::string escape(const std::string & s)
+    {
+        std::string result(s);
+        std::replace(result.begin(), result.end(), ' ', '_');
+        std::replace(result.begin(), result.end(), '/', '_');
+        return result;
+    }
+
+    struct CreateVarsFromInfo
+    {
+        std::tr1::shared_ptr<Map<std::string, std::string> > m;
+
+        CreateVarsFromInfo(std::tr1::shared_ptr<Map<std::string, std::string> > & mm) :
+            m(mm)
+        {
+            /* convenience, for everyone */
+            m->insert("newline", "\n");
+            m->insert("red", "\033[1;31m");
+            m->insert("yellow", "\033[1;33m");
+            m->insert("green", "\033[1;32m");
+            m->insert("blue", "\033[1;34m");
+            m->insert("normal", "\033[0;0m");
+            m->insert("time", stringify(time(0)));
+            m->insert("pid", stringify(getpid()));
+        }
+
+        void visit(const CreateOutputManagerForRepositorySyncInfo & i)
+        {
+            m->insert("type", "repository");
+            m->insert("action", "sync");
+            m->insert("name", stringify(i.repository().name()));
+            m->insert("full_name", stringify(i.repository().name()));
+        }
+
+        void visit(const CreateOutputManagerForPackageIDActionInfo & i)
+        {
+            m->insert("type", "package");
+            m->insert("action", action_to_string(i.action()));
+            m->insert("name", stringify(i.package_id()->name()));
+            m->insert("id", escape(stringify(*i.package_id())));
+            m->insert("full_name", escape(stringify(*i.package_id())));
+            if (i.package_id()->slot_key())
+                m->insert("slot", stringify(i.package_id()->slot_key()->value()));
+            m->insert("version", stringify(i.package_id()->version()));
+            m->insert("repository", stringify(i.package_id()->repository()->name()));
+            m->insert("category", stringify(i.package_id()->name().category()));
+            m->insert("package", stringify(i.package_id()->name().package()));
+        }
+    };
+
+    const std::tr1::shared_ptr<Map<std::string, std::string> >
+    vars_from_create_output_manager_info(const CreateOutputManagerInfo & i)
+    {
+        std::tr1::shared_ptr<Map<std::string, std::string> > result(new Map<std::string, std::string>);
+        CreateVarsFromInfo v(result);
+        i.accept(v);
+        return result;
+    }
+
+    const std::string replace_percent_vars(
+        const std::string & s,
+        const std::tr1::shared_ptr<const Map<std::string, std::string> > & vars,
+        const std::tr1::shared_ptr<const Map<std::string, std::string> > & override_vars,
+        const std::tr1::shared_ptr<const Map<std::string, std::string> > & file_vars)
+    {
+        std::string result, token;
+        SimpleParser parser(s);
+        while (! parser.eof())
+        {
+            if (parser.consume((+simple_parser::any_except("%")) >> token))
+                result.append(token);
+            else if (parser.consume(simple_parser::exact("%%")))
+                result.append("%");
+            else if (parser.consume(simple_parser::exact("%{") &
+                        ((+simple_parser::any_except("} \t\r\n%")) >> token) &
+                        simple_parser::exact("}")))
+            {
+                Map<std::string, std::string>::ConstIterator v(override_vars->find(token));
+                if (v == override_vars->end())
+                    v = vars->find(token);
+                if (v == vars->end())
+                    v = file_vars->find(token);
+                if (v == file_vars->end())
+                    throw PaludisConfigError("No variable named '" + token + "' in var string '" + s + "'");
+
+                result.append(v->second);
+            }
+            else
+                throw PaludisConfigError("Invalid var string '" + s + "'");
+        }
+
+        return result;
+    }
 }
 
 void
@@ -199,28 +314,55 @@ OutputConf::add(const FSEntry & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as an output file:");
 
-    std::tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename, LineConfigFileOptions()));
+    std::tr1::shared_ptr<KeyValueConfigFile> f(make_bashable_kv_conf(filename,
+                make_shared_ptr(new Map<std::string, std::string>),
+                KeyValueConfigFileOptions() + kvcfo_allow_sections));
     if (! f)
         return;
 
-    for (LineConfigFile::ConstIterator line(f->begin()), line_end(f->end()) ;
-            line != line_end ; ++line)
+    Managers local_managers, local_rules;
+
+    for (KeyValueConfigFile::ConstIterator k(f->begin()), k_end(f->end()) ;
+            k != k_end ; ++k)
     {
-        std::vector<std::string> tokens;
-        tokenise_whitespace_quoted(*line, std::back_inserter(tokens));
-
-        if (tokens.empty())
-            continue;
-
-        if ("source" == tokens.at(0))
+        std::string remainder(k->first);
+        std::string::size_type p(remainder.find('/'));
+        if (std::string::npos == p)
         {
-            if (tokens.size() != 2)
-                throw PaludisConfigError("Invalid source line '" + *line + "'");
-
-            add(FSEntry(tokens.at(1)));
+            _imp->misc_vars[k->first] = k->second;
             continue;
         }
 
+        std::string section_kind(remainder.substr(0, p));
+        remainder.erase(0, p + 1);
+
+        p = remainder.find('/');
+        if (std::string::npos == p)
+            throw PaludisConfigError("Section '" + section_kind + "' has no name");
+        std::string section_name(remainder.substr(0, p));
+        remainder.erase(0, p + 1);
+
+        if (section_kind == "rule")
+        {
+            local_rules.insert(
+                    std::make_pair(section_name,
+                        make_shared_ptr(new Map<std::string, std::string>))).first->second->insert(
+                    remainder, k->second);
+        }
+        else if (section_kind == "manager")
+        {
+            local_managers.insert(
+                    std::make_pair(section_name,
+                        make_shared_ptr(new Map<std::string, std::string>))).first->second->insert(
+                    remainder, k->second);
+        }
+        else
+            throw PaludisConfigError("Section kind '" + section_kind + "' unknown");
+    }
+
+    for (Managers::const_iterator r(local_rules.begin()), r_end(local_rules.end()) ;
+            r != r_end ; ++r)
+    {
         Rule rule(make_named_values<Rule>(
                     value_for<n::action_requirement>("*"),
                     value_for<n::ignore_unfetched_requirement>(indeterminate),
@@ -230,45 +372,16 @@ OutputConf::add(const FSEntry & filename)
                     value_for<n::output_exclusivity_requirement>(static_cast<OutputExclusivity>(-1)),
                     value_for<n::type_requirement>("*")
                     ));
+        for (Map<std::string, std::string>::ConstIterator m(r->second->begin()), m_end(r->second->end()) ;
+                m != m_end ; ++m)
+            set_rule(_imp->env, rule, m->first, m->second);
 
-        std::vector<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end());
-
-        for ( ; t != t_end ; ++t)
-        {
-            if (*t == ":")
-                break;
-
-            std::string::size_type p(t->find("="));
-            if (std::string::npos != p)
-                set_rule(_imp->env, rule, t->substr(0, p), t->substr(p + 1));
-            else
-            {
-                std::string r(*t);
-                if (++t == t_end)
-                    throw PaludisConfigError("Expected '=' but found end of line for line '" + *line + "'");
-
-                if (*t != "=")
-                    throw PaludisConfigError("Expected '=' but found '" + *t + "' for line '" + *line + "'");
-
-                if (++t == t_end)
-                    throw PaludisConfigError("Expected value but found end of for line '" + *line + "'");
-
-                set_rule(_imp->env, rule, r, *t);
-            }
-        }
-
-        if (t == t_end)
-            throw PaludisConfigError("Found no ':' for line '" + *line + "'");
-
-        if (++t == t_end)
-            throw PaludisConfigError("Found no manager after ':' for line '" + *line + "'");
-
-        rule.manager() = *t;
         _imp->rules.push_back(rule);
-
-        if (++t != t_end)
-            throw PaludisConfigError("Trailing text after manager on line '" + *line + "'");
     }
+
+    for (Managers::const_iterator m(local_managers.begin()), m_end(local_managers.end()) ;
+            m != m_end ; ++m)
+        _imp->managers[m->first] = m->second;
 }
 
 const std::tr1::shared_ptr<OutputManager>
@@ -279,9 +392,68 @@ OutputConf::create_output_manager(const CreateOutputManagerInfo & i) const
     for (RuleList::const_reverse_iterator r(_imp->rules.rbegin()), r_end(_imp->rules.rend()) ;
             r != r_end ; ++r)
         if (match_rule(_imp->env, *r, i))
-            return _imp->env->create_named_output_manager(r->manager(), i);
+            return create_named_output_manager(r->manager(), i);
 
     throw PaludisConfigError("No matching output manager rule specified");
+}
+
+const std::tr1::shared_ptr<OutputManager>
+OutputConf::create_named_output_manager(const std::string & s, const CreateOutputManagerInfo & n) const
+{
+    Context context("When creating output manager named '" + s + "':");
+
+    Managers::const_iterator i(_imp->managers.find(s));
+    if (i == _imp->managers.end())
+        throw PaludisConfigError("No output manager named '" + s + "' exists");
+
+    std::tr1::shared_ptr<Map<std::string, std::string> > vars(vars_from_create_output_manager_info(n));
+
+    std::string handler;
+    if (i->second->end() != i->second->find("handler"))
+        handler = i->second->find("handler")->second;
+
+    if (handler == "conditional_alias")
+    {
+        /* easier to handle this specially here */
+        std::string condition_variable;
+        if (i->second->end() != i->second->find("condition_variable"))
+            condition_variable = i->second->find("condition_variable")->second;
+
+        if (condition_variable.empty())
+            throw PaludisConfigError("No condition_variable specified for manager '" + s + "'");
+
+        std::string value;
+        if (_imp->misc_vars.end() != _imp->misc_vars.find(condition_variable))
+            value = _imp->misc_vars.find(condition_variable)->second;
+
+        std::string alias_var;
+        if (value.empty())
+            alias_var = "if_unset";
+        else if (value == "true")
+            alias_var = "if_true";
+        else if (value == "false")
+            alias_var = "if_false";
+        else
+            throw PaludisConfigError("For manager '" + s + "', condition_variable '" + condition_variable
+                    + "' should be either 'true', 'false' or unset, but is instead '" + alias_var + "'");
+
+        std::string alias;
+        if (i->second->end() != i->second->find(alias_var))
+            alias = i->second->find(alias_var)->second;
+
+        if (alias.empty())
+            throw PaludisConfigError("For manager '" + s + "', no alias is defined");
+
+        return create_named_output_manager(alias, n);
+    }
+    else
+        return OutputManagerFactory::get_instance()->create(
+                std::tr1::bind(&from_keys, i->second, std::tr1::placeholders::_1),
+                std::tr1::bind(&OutputConf::create_named_output_manager, this,
+                    std::tr1::placeholders::_1, std::tr1::cref(n)),
+                std::tr1::bind(replace_percent_vars, std::tr1::placeholders::_1, vars, std::tr1::placeholders::_2,
+                    i->second)
+                );
 }
 
 template class PrivateImplementationPattern<paludis_environment::OutputConf>;

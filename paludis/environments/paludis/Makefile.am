@@ -1,6 +1,6 @@
 include $(top_srcdir)/misc/common-makefile.am
 
-SUBDIRS = output_managers .
+SUBDIRS = .
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
@@ -18,7 +18,6 @@ libpaludispaludisenvironment_la_SOURCES = \
 	use_conf.cc            use_conf.hh \
 	mirrors_conf.cc        mirrors_conf.hh \
 	output_conf.cc         output_conf.hh \
-	output_managers.cc     output_managers.hh \
 	world.cc               world.hh \
 	paludis_config.cc      paludis_config.hh \
 	paludis_environment.cc paludis_environment.hh \

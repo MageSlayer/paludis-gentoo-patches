@@ -46,6 +46,15 @@ namespace paludis
             virtual void message(const MessageType, const std::string &) = 0;
 
             /**
+             * Clients may call this method every few seconds when running
+             * multiple processes.
+             *
+             * This is used to display ongoing buffered messages without mixing
+             * output from multiple processes.
+             */
+            virtual void flush() = 0;
+
+            /**
              * Called if an action succeeds. This can be used to, for example,
              * unlink the files behind a to-disk logged output manager.
              *
@@ -60,6 +69,18 @@ namespace paludis
              * carries out the action in question.
              */
             virtual void succeeded() = 0;
+
+            /**
+             * May be called to indicate that no further output or messages
+             * will occur, allowing for files to be closed off etc.
+             *
+             * Summary messages are shown when the output manager is
+             * destructed, not when this method is called.
+             *
+             * If this method and succeeded are both to be called, succeeded
+             * must be called first.
+             */
+            virtual void nothing_more_to_come() = 0;
     };
 }
 

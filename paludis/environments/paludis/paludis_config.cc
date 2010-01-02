@@ -25,7 +25,6 @@
 #include <paludis/environments/paludis/licenses_conf.hh>
 #include <paludis/environments/paludis/package_mask_conf.hh>
 #include <paludis/environments/paludis/output_conf.hh>
-#include <paludis/environments/paludis/output_managers.hh>
 #include <paludis/environments/paludis/world.hh>
 #include <paludis/environments/paludis/extra_distribution_data.hh>
 
@@ -183,7 +182,6 @@ namespace paludis
         std::tr1::shared_ptr<PackageMaskConf> package_unmask_conf;
         std::tr1::shared_ptr<MirrorsConf> mirrors_conf;
         std::tr1::shared_ptr<OutputConf> output_conf;
-        std::tr1::shared_ptr<OutputManagers> output_managers;
         mutable std::tr1::shared_ptr<World> world;
 
         mutable Mutex reduced_mutex;
@@ -215,7 +213,6 @@ namespace paludis
         package_unmask_conf(new PackageMaskConf(e)),
         mirrors_conf(new MirrorsConf(e)),
         output_conf(new OutputConf(e)),
-        output_managers(new OutputManagers(e)),
         has_environment_conf(false),
         accept_all_breaks_portage(false),
         reduced_username(getenv_with_default("PALUDIS_REDUCED_USERNAME", "paludisbuild")),
@@ -706,46 +703,6 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             throw PaludisConfigError("No output confs found");
     }
 
-    /* output managers */
-    {
-        std::list<FSEntry> dirs, files;
-        dirs.push_back(getenv_with_default("PALUDIS_OUTPUT_MANAGERS_DIR",
-                    SHAREDIR "/paludis/environments/paludis/output_managers/"));
-        dirs.push_back(local_config_dir / dist->output_managers_directory());
-
-        for (std::list<FSEntry>::const_iterator dir(dirs.begin()), dir_end(dirs.end()) ;
-                dir != dir_end ; ++dir)
-        {
-            if (! dir->exists())
-                continue;
-
-            std::remove_copy_if(DirIterator(*dir), DirIterator(), std::back_inserter(files),
-                    std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
-            std::remove_copy_if(DirIterator(*dir), DirIterator(), std::back_inserter(files),
-                    std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
-        }
-
-        bool any(false);
-        for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
-                file != file_end ; ++file)
-        {
-            Context local_context("When reading output manager file '" + stringify(*file) + "':");
-
-            if (! file->exists())
-                continue;
-
-            std::tr1::shared_ptr<Map<std::string, std::string> > predefined_variables(
-                    new Map<std::string, std::string>);
-            predefined_variables->insert("root", _imp->root);
-            predefined_variables->insert("ROOT", _imp->root);
-            _imp->output_managers->add(*file, predefined_variables);
-            any = true;
-        }
-
-        if (! any)
-            throw PaludisConfigError("No output managers found");
-    }
-
     /* use */
     {
         std::list<FSEntry> files;
@@ -1031,12 +988,6 @@ std::tr1::shared_ptr<const PackageMaskConf>
 PaludisConfig::package_unmask_conf() const
 {
     return _imp->package_unmask_conf;
-}
-
-std::tr1::shared_ptr<const OutputManagers>
-PaludisConfig::output_managers() const
-{
-    return _imp->output_managers;
 }
 
 std::tr1::shared_ptr<const MirrorsConf>

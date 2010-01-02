@@ -36,16 +36,19 @@ namespace paludis
         public OutputManager
     {
         public:
-            FileOutputManager(const FSEntry &, const FSEntry &, const bool keep_on_success,
-                    const bool keep_on_empty, const std::tr1::shared_ptr<OutputManager> & summary_output_manager,
-                    const std::string & summary_output_stdout_message,
-                    const std::string & summary_output_stderr_message);
+            FileOutputManager(const FSEntry &,
+                    const bool keep_on_success,
+                    const bool keep_on_empty,
+                    const std::tr1::shared_ptr<OutputManager> & summary_output_manager,
+                    const std::string & summary_output_message);
             ~FileOutputManager();
 
             virtual std::ostream & stdout_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual std::ostream & stderr_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void succeeded();
+            virtual void flush();
+            virtual void nothing_more_to_come();
             virtual void message(const MessageType, const std::string &);
 
             static const std::tr1::shared_ptr<const Set<std::string> > factory_managers()

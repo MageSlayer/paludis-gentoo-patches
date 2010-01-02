@@ -31,6 +31,7 @@
 #include <paludis/util/thread.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/executor.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/repository.hh>
 #include <paludis/environment.hh>
@@ -99,6 +100,8 @@ namespace
         const Executor * const executor;
         const RepositoryName name;
 
+        Timestamp last_flushed;
+
         std::tr1::shared_ptr<OutputManager> output_manager;
 
         SyncExecutive(
@@ -112,7 +115,8 @@ namespace
             env(e),
             cmdline(c),
             executor(x),
-            name(n)
+            name(n),
+            last_flushed(0, 0)
         {
         }
 
@@ -201,15 +205,34 @@ namespace
             }
         }
 
+        void display_active()
+        {
+            if (output_manager)
+            {
+                cout << format_general_spad(f::sync_repo_active(), stringify(name), executor->pending(),
+                        executor->active(), executor->done());
+                output_manager->flush();
+            }
+        }
+
+        virtual void flush_threaded()
+        {
+            Timestamp now(Timestamp::now());
+            if (last_flushed.seconds() + 5 < now.seconds())
+                return;
+            last_flushed = now;
+
+            display_active();
+        }
+
         virtual void post_execute_exclusive()
         {
-            if (abort)
-                return;
-
             try
             {
                 if (! abort)
                 {
+                    display_active();
+
                     if (0 != env->perform_hook(Hook(success ? "sync_post" : "sync_fail")
                                 ("TARGET", stringify(name))
                                 ("NUMBER_DONE", stringify(executor->done()))
@@ -276,7 +299,7 @@ namespace
             {
                 retcode |= 1;
                 cout << format_general_kv(f::sync_message_failure(), stringify((*x)->name), "failed");
-                cout << format_general_kv(f::sync_message_failure_message(), "error", (*x)->error);
+                cout << format_general_s(f::sync_message_failure_message(), (*x)->error);
             }
             else
             {

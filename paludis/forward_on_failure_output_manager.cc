@@ -90,6 +90,16 @@ ForwardOnFailureOutputManager::message(const MessageType, const std::string &)
 {
 }
 
+void
+ForwardOnFailureOutputManager::flush()
+{
+}
+
+void
+ForwardOnFailureOutputManager::nothing_more_to_come()
+{
+}
+
 const std::tr1::shared_ptr<const Set<std::string> >
 ForwardOnFailureOutputManager::factory_managers()
 {

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,49 +35,39 @@ namespace paludis
     template <>
     struct Implementation<FileOutputManager>
     {
-        FSEntry stdout_file;
-        FSEntry stderr_file;
+        FSEntry filename;
         std::tr1::shared_ptr<SafeOFStream> stdout_stream;
         std::tr1::shared_ptr<SafeOFStream> stderr_stream;
         const bool keep_on_success, keep_on_empty;
         const std::tr1::shared_ptr<OutputManager> summary_output_manager;
-        const std::string summary_output_stdout_message;
-        const std::string summary_output_stderr_message;
+        const std::string summary_output_message;
 
-        bool succeeded, unlinked_stdout, unlinked_stderr;
+        bool succeeded, unlinked;
 
         Implementation(
                 const FSEntry & o,
-                const FSEntry & e,
                 const bool k,
                 const bool l,
                 const std::tr1::shared_ptr<OutputManager> & m,
-                const std::string & s,
-                const std::string & t
+                const std::string & s
                 ) :
-            stdout_file(o),
-            stderr_file(e),
-            stdout_stream(new SafeOFStream(o)),
+            filename(o),
+            stdout_stream(new SafeOFStream(filename)),
+            stderr_stream(new SafeOFStream(filename)),
             keep_on_success(k),
             keep_on_empty(l),
             summary_output_manager(m),
-            summary_output_stdout_message(s),
-            summary_output_stderr_message(t),
+            summary_output_message(s),
             succeeded(false),
-            unlinked_stdout(false),
-            unlinked_stderr(false)
+            unlinked(false)
         {
-            if (o == e)
-                stderr_stream = stdout_stream;
-            else
-                stderr_stream.reset(new SafeOFStream(e));
         }
     };
 }
 
-FileOutputManager::FileOutputManager(const FSEntry & o, const FSEntry & e, const bool k, const bool l,
-        const std::tr1::shared_ptr<OutputManager> & m, const std::string & s, const std::string & t) :
-    PrivateImplementationPattern<FileOutputManager>(new Implementation<FileOutputManager>(o, e, k, l, m, s, t))
+FileOutputManager::FileOutputManager(const FSEntry & o, const bool k, const bool l,
+        const std::tr1::shared_ptr<OutputManager> & m, const std::string & s) :
+    PrivateImplementationPattern<FileOutputManager>(new Implementation<FileOutputManager>(o, k, l, m, s))
 {
 }
 
@@ -88,39 +78,19 @@ FileOutputManager::~FileOutputManager()
         *_imp->stdout_stream << std::flush;
         *_imp->stderr_stream << std::flush;
 
-        FSEntry stdout_file_now(stringify(_imp->stdout_file)), stderr_file_now(stringify(_imp->stderr_file));
-        if (stdout_file_now.exists() && 0 == stdout_file_now.file_size())
+        FSEntry filename_now(stringify(_imp->filename));
+        if (filename_now.exists() && 0 == filename_now.file_size())
         {
-            _imp->stdout_file.unlink();
-            _imp->unlinked_stdout = true;
-        }
-
-        if (stdout_file_now != stderr_file_now)
-        {
-            if (stderr_file_now.exists() && 0 == stderr_file_now.file_size())
-            {
-                _imp->stderr_file.unlink();
-                _imp->unlinked_stderr = true;
-            }
+            filename_now.unlink();
+            _imp->unlinked = true;
         }
     }
 
     if (_imp->summary_output_manager)
     {
-        if ((! _imp->unlinked_stdout) && (! _imp->summary_output_stdout_message.empty()))
-        {
-            _imp->summary_output_manager->stdout_stream()
-                << _imp->summary_output_stdout_message
-                << std::endl;
-        }
-
-        if (_imp->stdout_file != _imp->stderr_file)
-        {
-            if ((! _imp->unlinked_stderr) && (! _imp->summary_output_stderr_message.empty()))
-                _imp->summary_output_manager->stdout_stream()
-                    << _imp->summary_output_stderr_message
-                    << std::endl;
-        }
+        if ((! _imp->unlinked) && (! _imp->summary_output_message.empty()))
+            _imp->summary_output_manager->message(_imp->succeeded ? mt_info : mt_error,
+                    _imp->summary_output_message);
     }
 }
 
@@ -137,21 +107,29 @@ FileOutputManager::stderr_stream()
 }
 
 void
+FileOutputManager::message(const MessageType, const std::string &)
+{
+}
+
+void
 FileOutputManager::succeeded()
 {
     _imp->succeeded = true;
 
     if (! _imp->keep_on_success)
     {
-        _imp->stdout_file.unlink();
-        _imp->stderr_file.unlink();
-        _imp->unlinked_stdout = true;
-        _imp->unlinked_stderr = true;
+        _imp->filename.unlink();
+        _imp->unlinked = true;
     }
 }
 
 void
-FileOutputManager::message(const MessageType, const std::string &)
+FileOutputManager::flush()
+{
+}
+
+void
+FileOutputManager::nothing_more_to_come()
 {
 }
 
@@ -169,19 +147,15 @@ FileOutputManager::factory_create(
         const OutputManagerFactory::CreateChildFunction & create_child_function,
         const OutputManagerFactory::ReplaceVarsFunc & replace_vars_func)
 {
-    std::string stdout_s(key_func("stdout")), stderr_s(key_func("stderr")),
-        keep_on_success_s(key_func("keep_on_success")), keep_on_empty_s(key_func("keep_on_empty")),
+    std::string filename_s(key_func("filename")),
+        keep_on_success_s(key_func("keep_on_success")),
+        keep_on_empty_s(key_func("keep_on_empty")),
         summary_output_manager_s(key_func("summary_output_manager")),
-        summary_output_stdout_message_s(key_func("summary_output_stdout_message")),
-        summary_output_stderr_message_s(key_func("summary_output_stderr_message"));
+        summary_output_message_s(key_func("summary_output_message"));
 
-    if (stdout_s.empty())
-        throw ConfigurationError("Key 'stdout' not specified when creating a file output manager");
-    stdout_s = replace_vars_func(stdout_s, make_shared_ptr(new Map<std::string, std::string>));
-
-    if (stderr_s.empty())
-        throw ConfigurationError("Key 'stderr' not specified when creating a file output manager");
-    stderr_s = replace_vars_func(stderr_s, make_shared_ptr(new Map<std::string, std::string>));
+    if (filename_s.empty())
+        throw ConfigurationError("Key 'filename' not specified when creating a file output manager");
+    filename_s = replace_vars_func(filename_s, make_shared_ptr(new Map<std::string, std::string>));
 
     if (keep_on_success_s.empty())
         keep_on_success_s = "true";
@@ -193,13 +167,11 @@ FileOutputManager::factory_create(
     if (! summary_output_manager_s.empty())
         summary_output_manager = create_child_function(summary_output_manager_s);
 
-    summary_output_stdout_message_s = replace_vars_func(summary_output_stdout_message_s, make_shared_ptr(new Map<std::string, std::string>));
-    summary_output_stderr_message_s = replace_vars_func(summary_output_stderr_message_s, make_shared_ptr(new Map<std::string, std::string>));
+    summary_output_message_s = replace_vars_func(summary_output_message_s, make_shared_ptr(new Map<std::string, std::string>));
 
-    return make_shared_ptr(new FileOutputManager(FSEntry(stdout_s), FSEntry(stderr_s),
+    return make_shared_ptr(new FileOutputManager(FSEntry(filename_s),
                 destringify<bool>(keep_on_success_s), destringify<bool>(keep_on_empty_s),
-                summary_output_manager, summary_output_stdout_message_s,
-                summary_output_stderr_message_s));
+                summary_output_manager, summary_output_message_s));
 }
 
 template class PrivateImplementationPattern<FileOutputManager>;

@@ -166,10 +166,6 @@ namespace paludis
 
             virtual const std::tr1::shared_ptr<OutputManager> create_output_manager(
                     const CreateOutputManagerInfo &) const;
-
-            const std::tr1::shared_ptr<OutputManager> create_named_output_manager(
-                    const std::string &,
-                    const CreateOutputManagerInfo &) const;
     };
 }
 #endif

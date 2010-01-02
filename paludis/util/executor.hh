@@ -38,6 +38,7 @@ namespace paludis
 
             virtual void pre_execute_exclusive() = 0;
             virtual void execute_threaded() = 0;
+            virtual void flush_threaded() = 0;
             virtual void post_execute_exclusive() = 0;
     };
 
