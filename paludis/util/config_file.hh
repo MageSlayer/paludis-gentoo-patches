@@ -192,6 +192,8 @@ namespace paludis
      * - Unless kvcfo_disallow_variables, variables using $foo and ${foo} are expanded.
      * - Unless kvcfo_disallow_source, source path is legal.
      * - Unless kvcfo_preserve_whitespace, leading and trailing whitespace on values is stripped.
+     * - If kvcfo_allow_sections, sections in the form "[foo]" and "[foo bar]" are allowed. A key
+     *       'baz' in section "[foo]" will be treated as "foo/baz", and "[foo bar]" as "foo/bar/baz".
      *
      * \ingroup g_config_file
      * \nosubgrouping

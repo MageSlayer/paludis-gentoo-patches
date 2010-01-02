@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -479,5 +479,34 @@ namespace test_cases
             TEST_CHECK_EQUAL(ff.get("five"), "five");
         }
     } test_key_value_config_file_multiple_assigns;
+
+    struct KeyValueConfigFileSectionsTest : TestCase
+    {
+        KeyValueConfigFileSectionsTest() : TestCase("key value config sections") { }
+
+        void run()
+        {
+            std::stringstream d_s;
+            d_s << "a = b" << std::endl;
+            d_s << "c = d" << std::endl;
+            d_s << "[foo]" << std::endl;
+            d_s << "a = c" << std::endl;
+            d_s << "[bar bar]" << std::endl;
+            d_s << "a = d" << std::endl;
+            d_s << "[var]" << std::endl;
+            d_s << "b = x" << std::endl;
+            d_s << "a = ${a} ${b} ${c}" << std::endl;
+            KeyValueConfigFile ff(d_s, KeyValueConfigFileOptions() + kvcfo_allow_sections,
+                    &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
+
+            TEST_CHECK_EQUAL(std::distance(ff.begin(), ff.end()), 6);
+            TEST_CHECK_EQUAL(ff.get("a"), "b");
+            TEST_CHECK_EQUAL(ff.get("c"), "d");
+            TEST_CHECK_EQUAL(ff.get("foo/a"), "c");
+            TEST_CHECK_EQUAL(ff.get("bar/bar/a"), "d");
+            TEST_CHECK_EQUAL(ff.get("var/b"), "x");
+            TEST_CHECK_EQUAL(ff.get("var/a"), "b x d");
+        }
+    } test_key_value_config_file_sections;
 }
 

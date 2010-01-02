@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  * Copyright (c) 2006 Danny van Dyk
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -334,6 +334,8 @@ namespace paludis
 
         KeyValueConfigFileValues values;
 
+        std::string active_key_prefix;
+
         Implementation(
                 const KeyValueConfigFileOptions & o,
                 const KeyValueConfigFile::DefaultFunction & d,
@@ -635,6 +637,48 @@ KeyValueConfigFile::KeyValueConfigFile(
             continue;
         }
 
+        /* is it a section? */
+        if (_imp->options[kvcfo_allow_sections] && parser.consume(simple_parser::exact("[")))
+        {
+            std::string sec_t, sec_s;
+            if (! parser.consume(+simple_parser::any_except(" \t\n$#\"'=\\]") >> sec_t))
+                throw ConfigFileError(sr.filename(), "Expected section name on line " + stringify(parser.current_line_number()));
+
+            if (! parser.consume(*simple_parser::any_of(" \t")))
+                throw InternalError(PALUDIS_HERE, "failed to consume a zero width match");
+
+            if (! parser.consume(simple_parser::exact("]")))
+            {
+                if (! parser.consume(+simple_parser::any_except(" \t\n$#\"\\]") >> sec_s))
+                    throw ConfigFileError(sr.filename(), "Expected section name value on line "
+                            + stringify(parser.current_line_number()));
+                if (! parser.consume(*simple_parser::any_of(" \t")))
+                    throw InternalError(PALUDIS_HERE, "failed to consume a zero width match");
+                if (! parser.consume(simple_parser::exact("]")))
+                    throw ConfigFileError(sr.filename(), "Expected ] on line "
+                            + stringify(parser.current_line_number()));
+            }
+
+            if (! parser.consume(*simple_parser::any_of(" \t")))
+                throw InternalError(PALUDIS_HERE, "failed to consume a zero width match");
+            if (! parser.consume(*simple_parser::exact("\n")))
+            {
+                if (parser.eof())
+                    Log::get_instance()->message("key_value_config_file.no_trailing_newline", ll_debug, lc_context)
+                        << "No newline at end of file";
+                else
+                    throw ConfigFileError(sr.filename(), "Expected newline after ']' at line "
+                            + stringify(parser.current_line_number() + "'"));
+            }
+
+            if (sec_s.empty())
+                _imp->active_key_prefix = sec_t + "/";
+            else
+                _imp->active_key_prefix = sec_t + "/" + sec_s + "/";
+
+            continue;
+        }
+
         /* ignore export, if appropriate */
         if (_imp->options[kvcfo_ignore_export] && parser.consume(simple_parser::exact("export") &
                     +simple_parser::any_of(" \t")))
@@ -711,8 +755,11 @@ KeyValueConfigFile::KeyValueConfigFile(
                 break;
         }
 
+        key = _imp->active_key_prefix + key;
         _imp->values[key] = transformation_function()(*this, key, get(key), value);
     }
+
+    _imp->active_key_prefix = "";
 }
 
 KeyValueConfigFile::~KeyValueConfigFile()
@@ -734,7 +781,10 @@ KeyValueConfigFile::end() const
 std::string
 KeyValueConfigFile::get(const std::string & s) const
 {
-    std::map<std::string, std::string>::const_iterator f(_imp->values.find(s));
+    std::map<std::string, std::string>::const_iterator f(_imp->values.find(_imp->active_key_prefix + s));
+    if (_imp->values.end() == f)
+        f = _imp->values.find(s);
+
     if (_imp->values.end() == f)
         return _imp->default_function(*this, s);
     else
