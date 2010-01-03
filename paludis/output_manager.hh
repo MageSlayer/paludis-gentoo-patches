@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -53,6 +53,14 @@ namespace paludis
              * output from multiple processes.
              */
             virtual void flush() = 0;
+
+            /**
+             * Do we want to flush?
+             *
+             * Provides a way for clients to avoid having to call flush() with
+             * a prefixed header when there's no output waiting.
+             */
+            virtual bool want_to_flush() const = 0;
 
             /**
              * Called if an action succeeds. This can be used to, for example,

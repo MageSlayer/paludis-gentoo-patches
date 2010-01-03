@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,12 +20,14 @@
 #include <paludis/tee_output_manager.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tee_output_stream.hh>
-#include <paludis/util/sequence-impl.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <vector>
+#include <algorithm>
 
 using namespace paludis;
 
@@ -109,6 +111,17 @@ TeeOutputManager::flush()
     for (OutputManagerSequence::ConstIterator i(_imp->messages_streams->begin()), i_end(_imp->messages_streams->end()) ;
             i != i_end ; ++i)
         (*i)->flush();
+}
+
+bool
+TeeOutputManager::want_to_flush() const
+{
+    return indirect_iterator(_imp->streams->end()) != std::find_if(
+                indirect_iterator(_imp->streams->begin()), indirect_iterator(_imp->streams->end()),
+                std::tr1::bind(&OutputManager::want_to_flush, std::tr1::placeholders::_1)) ||
+        indirect_iterator(_imp->messages_streams->end()) != std::find_if(
+                indirect_iterator(_imp->messages_streams->begin()), indirect_iterator(_imp->messages_streams->end()),
+                std::tr1::bind(&OutputManager::want_to_flush, std::tr1::placeholders::_1));
 }
 
 void

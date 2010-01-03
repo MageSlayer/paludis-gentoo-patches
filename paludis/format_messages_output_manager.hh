@@ -55,6 +55,7 @@ namespace paludis
 
             virtual void succeeded();
             virtual void flush();
+            virtual bool want_to_flush() const;
             virtual void nothing_more_to_come();
             virtual void message(const MessageType, const std::string &);
 

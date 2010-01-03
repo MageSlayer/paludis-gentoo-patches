@@ -139,6 +139,12 @@ FormatMessagesOutputManager::flush()
     _imp->child->flush();
 }
 
+bool
+FormatMessagesOutputManager::want_to_flush() const
+{
+    return _imp->child->want_to_flush();
+}
+
 void
 FormatMessagesOutputManager::nothing_more_to_come()
 {

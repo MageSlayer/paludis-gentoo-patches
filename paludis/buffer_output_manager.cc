@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -84,6 +84,12 @@ BufferOutputManager::flush()
     _imp->stdout_stream.unbuffer(_imp->child->stdout_stream());
     _imp->stderr_stream.unbuffer(_imp->child->stderr_stream());
     _imp->child->flush();
+}
+
+bool
+BufferOutputManager::want_to_flush() const
+{
+    return _imp->stdout_stream.anything_to_unbuffer() || _imp->stderr_stream.anything_to_unbuffer();
 }
 
 void

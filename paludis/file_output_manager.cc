@@ -128,6 +128,12 @@ FileOutputManager::flush()
 {
 }
 
+bool
+FileOutputManager::want_to_flush() const
+{
+    return false;
+}
+
 void
 FileOutputManager::nothing_more_to_come()
 {
