@@ -546,6 +546,7 @@ namespace test_cases
         {
             Timestamp m_new((image_dir / "new_file").mtim());
             Timestamp m_existing((image_dir / "existing_file").mtim());
+            Timestamp m_dir_new((image_dir / "dir" / "new_file").mtim());
 
             TEST_CHECK(merger.check());
             merger.merge();
@@ -554,7 +555,7 @@ namespace test_cases
             TEST_CHECK((root_dir / "existing_file").mtim() == m_existing);
             TEST_CHECK(Timestamp::now().seconds() - (root_dir / "dodgy_file").mtim().seconds() >= (60 * 60 * 24 * 365 * 3) - 1);
 
-            TEST_CHECK((root_dir / "dir" / "new_file").mtim() == m_new);
+            TEST_CHECK((root_dir / "dir" / "new_file").mtim() == m_dir_new);
             TEST_CHECK(Timestamp::now().seconds() - (root_dir / "dir" / "dodgy_file").mtim().seconds() >= (60 * 60 * 24 * 365 * 3) - 1);
         }
     } test_merger_mtimes;
@@ -567,6 +568,7 @@ namespace test_cases
         {
             Timestamp m_new((image_dir / "new_file").mtim());
             Timestamp m_existing((image_dir / "existing_file").mtim());
+            Timestamp m_dir_new((image_dir / "dir" / "new_file").mtim());
 
             TEST_CHECK(merger.check());
             merger.merge();
@@ -575,7 +577,7 @@ namespace test_cases
             TEST_CHECK((root_dir / "existing_file").mtim() == m_existing);
             TEST_CHECK((root_dir / "dodgy_file").mtim() == FSEntry("merger_TEST_dir/reference").mtim());
 
-            TEST_CHECK((root_dir / "dir" / "new_file").mtim() == m_new);
+            TEST_CHECK((root_dir / "dir" / "new_file").mtim() == m_dir_new);
             TEST_CHECK((root_dir / "dir" / "dodgy_file").mtim() == FSEntry("merger_TEST_dir/reference").mtim());
         }
     } test_merger_mtimes_fix;
