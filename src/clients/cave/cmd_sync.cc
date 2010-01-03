@@ -100,7 +100,7 @@ namespace
         const Executor * const executor;
         const RepositoryName name;
 
-        Timestamp last_flushed;
+        Timestamp last_flushed, last_output;
 
         std::tr1::shared_ptr<OutputManager> output_manager;
 
@@ -116,7 +116,8 @@ namespace
             cmdline(c),
             executor(x),
             name(n),
-            last_flushed(0, 0)
+            last_flushed(Timestamp::now()),
+            last_output(last_flushed)
         {
         }
 
@@ -211,28 +212,43 @@ namespace
             {
                 cout << format_general_spad(f::sync_repo_active(), stringify(name), executor->pending(),
                         executor->active(), executor->done());
-                output_manager->flush();
+                if (output_manager->want_to_flush())
+                {
+                    cout << endl;
+                    output_manager->flush();
+                    cout << endl;
+                    last_output = Timestamp::now();
+                }
+                else
+                    cout << format_general_s(f::sync_repo_active_quiet(),
+                            stringify(Timestamp::now().seconds() - last_output.seconds()));
+
+                last_flushed = Timestamp::now();
             }
         }
 
         virtual void flush_threaded()
         {
-            Timestamp now(Timestamp::now());
-            if (last_flushed.seconds() + 5 < now.seconds())
-                return;
-            last_flushed = now;
+            if (output_manager->want_to_flush())
+                display_active();
+            else
+            {
 
-            display_active();
+                Timestamp now(Timestamp::now());
+                if (now.seconds() - last_flushed.seconds() >= 10)
+                    display_active();
+            }
         }
 
         virtual void post_execute_exclusive()
         {
             try
             {
-                if (! abort)
-                {
+                if (output_manager->want_to_flush())
                     display_active();
 
+                if (! abort)
+                {
                     if (0 != env->perform_hook(Hook(success ? "sync_post" : "sync_fail")
                                 ("TARGET", stringify(name))
                                 ("NUMBER_DONE", stringify(executor->done()))

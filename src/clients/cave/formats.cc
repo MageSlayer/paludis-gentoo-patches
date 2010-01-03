@@ -517,7 +517,13 @@ paludis::cave::f::sync_repo_done_failure()
 const std::string
 paludis::cave::f::sync_repo_active()
 {
-    return "-> %s%{column 30}active%{column 52}%p%{column 60}%a%{column 68}%d\\n";
+    return "-> " + c::bold_yellow() + "%s" + c::normal() + "%{column 30}active%{column 52}%p%{column 60}%a%{column 68}%d\\n";
+}
+
+const std::string
+paludis::cave::f::sync_repo_active_quiet()
+{
+    return "-> (no output for %s seconds)\\n";
 }
 
 const std::string
