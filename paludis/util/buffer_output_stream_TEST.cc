@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -34,6 +34,8 @@ namespace test_cases
         void run()
         {
             BufferOutputStream s;
+            TEST_CHECK(! s.anything_to_unbuffer());
+
             std::stringstream t;
 
             for (int n(0), n_end(1000) ; n != n_end ; ++n)
@@ -43,13 +45,17 @@ namespace test_cases
             }
 
             std::stringstream ss;
+            TEST_CHECK(s.anything_to_unbuffer());
             s.unbuffer(ss);
+            TEST_CHECK(! s.anything_to_unbuffer());
 
             TEST_CHECK_EQUAL(ss.str(), t.str());
 
             s << "foo" << std::endl;
             std::stringstream sss;
+            TEST_CHECK(s.anything_to_unbuffer());
             s.unbuffer(sss);
+            TEST_CHECK(! s.anything_to_unbuffer());
             TEST_CHECK_EQUAL(sss.str(), "foo\n");
         }
     } test_buffer_output_stream;

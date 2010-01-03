@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,7 +31,7 @@ namespace paludis
     template <>
     struct Implementation<BufferOutputStreamBuf>
     {
-        Mutex mutex;
+        mutable Mutex mutex;
 
         std::list<std::string> complete_strings;
         std::string active_string;
@@ -102,6 +102,13 @@ BufferOutputStreamBuf::unbuffer(std::ostream & stream)
     stream << std::flush;
 }
 
+bool
+BufferOutputStreamBuf::anything_to_unbuffer() const
+{
+    Lock lock(_imp->mutex);
+    return ! _imp->complete_strings.empty();
+}
+
 BufferOutputStreamBase::BufferOutputStreamBase()
 {
 }
@@ -124,6 +131,12 @@ BufferOutputStream::unbuffer(std::ostream & s)
 {
     flush();
     buf.unbuffer(s);
+}
+
+bool
+BufferOutputStream::anything_to_unbuffer() const
+{
+    return buf.anything_to_unbuffer();
 }
 
 template class PrivateImplementationPattern<BufferOutputStreamBuf>;

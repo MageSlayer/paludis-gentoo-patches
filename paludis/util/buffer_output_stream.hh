@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -39,6 +39,7 @@ namespace paludis
             ~BufferOutputStreamBuf();
 
             void unbuffer(std::ostream &);
+            bool anything_to_unbuffer() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE BufferOutputStreamBase
@@ -60,6 +61,7 @@ namespace paludis
             ~BufferOutputStream();
 
             void unbuffer(std::ostream &);
+            bool anything_to_unbuffer() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
