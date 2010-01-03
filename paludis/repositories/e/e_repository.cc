@@ -2183,8 +2183,6 @@ ERepository::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
              + join(indirect_iterator(install_action.options.replacing()->begin()),
                  indirect_iterator(install_action.options.replacing()->end()), "', '") + "' }") + ":");
 
-    Timestamp build_start_time(Timestamp::now());
-
     std::tr1::shared_ptr<OutputManager> output_manager(install_action.options.make_output_manager()(install_action));
 
     bool userpriv_restrict, test_restrict, strip_restrict;
@@ -2337,6 +2335,7 @@ ERepository::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
             if (preserve_work_choice && preserve_work_choice->enabled())
                 extra_merger_options += mo_nondestructive;
 
+            Timestamp build_start_time(FSEntry(package_builddir / "temp" / "build_start_time").mtim());
             (*install_action.options.destination()).destination_interface()->merge(
                     make_named_values<MergeParams>(
                         value_for<n::build_start_time>(build_start_time),

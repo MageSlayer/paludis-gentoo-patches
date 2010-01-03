@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -63,6 +63,7 @@ builtin_init()
     declare -r TEMP="${TEMP}"
     export HOME="${TEMP}"
     export TMPDIR="${TEMP}"
+    touch ${TMPDIR}/build_start_time
 
     export IMAGE="${PALUDIS_PACKAGE_BUILDDIR}/image/"
     export IMAGE="${IMAGE//+(\/)//}"
