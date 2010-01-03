@@ -219,7 +219,7 @@ namespace
                     cout << endl;
                     last_output = Timestamp::now();
                 }
-                else
+                else if (! cmdline.a_sequential.specified())
                     cout << format_general_s(f::sync_repo_active_quiet(),
                             stringify(Timestamp::now().seconds() - last_output.seconds()));
 
