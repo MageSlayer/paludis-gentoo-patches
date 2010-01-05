@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,9 +25,11 @@
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/type_list.hh>
-#include <paludis/action-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/repository-fwd.hh>
+#include <paludis/serialise-fwd.hh>
+#include <paludis/action-fwd.hh>
+#include <paludis/name-fwd.hh>
 
 namespace paludis
 {
@@ -44,6 +46,11 @@ namespace paludis
             CreateOutputManagerForRepositorySyncInfo
         >::Type>
     {
+        public:
+            static const std::tr1::shared_ptr<CreateOutputManagerInfo> deserialise(
+                    Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual void serialise(Serialiser &) const = 0;
     };
 
     /**
@@ -60,16 +67,40 @@ namespace paludis
         public ImplementAcceptMethods<CreateOutputManagerInfo, CreateOutputManagerForPackageIDActionInfo>
     {
         public:
+            /**
+             * \since 0.44
+             */
             CreateOutputManagerForPackageIDActionInfo(
                     const std::tr1::shared_ptr<const PackageID> & id,
-                    const Action & action,
+                    const std::string & action_name,
+                    const std::tr1::shared_ptr<const Set<std::string> > & action_flags,
+                    const OutputExclusivity output_exclusivity);
+
+            CreateOutputManagerForPackageIDActionInfo(
+                    const std::tr1::shared_ptr<const PackageID> & id,
+                    const Action &,
                     const OutputExclusivity output_exclusivity);
 
             ~CreateOutputManagerForPackageIDActionInfo();
 
             const std::tr1::shared_ptr<const PackageID> package_id() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            const Action & action() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * \since 0.44
+             */
+            const std::string action_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * \since 0.44
+             */
+            const std::tr1::shared_ptr<const Set<std::string> > action_flags() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
             OutputExclusivity output_exclusivity() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual void serialise(Serialiser &) const;
+
+            static const std::tr1::shared_ptr<CreateOutputManagerForPackageIDActionInfo> deserialise(
+                    Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -87,13 +118,22 @@ namespace paludis
     {
         public:
             CreateOutputManagerForRepositorySyncInfo(
-                    const Repository & repo,
+                    const RepositoryName & repo_name,
                     const OutputExclusivity);
 
             ~CreateOutputManagerForRepositorySyncInfo();
 
-            const Repository & repository() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            /**
+             * \since 0.44
+             */
+            const RepositoryName repository_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
             OutputExclusivity output_exclusivity() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual void serialise(Serialiser &) const;
+
+            static const std::tr1::shared_ptr<CreateOutputManagerForRepositorySyncInfo> deserialise(
+                    Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

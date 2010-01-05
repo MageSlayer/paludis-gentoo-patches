@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -119,7 +119,7 @@ namespace
                 }
 
                 std::tr1::shared_ptr<const Repository> rr(env->package_database()->fetch_repository(r));
-                CreateOutputManagerForRepositorySyncInfo info(*rr, oe_exclusive);
+                CreateOutputManagerForRepositorySyncInfo info(rr->name(), oe_exclusive);
                 std::tr1::shared_ptr<OutputManager> output_manager(env->create_output_manager(info));
                 if (rr->sync(output_manager))
                 {

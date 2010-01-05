@@ -21,7 +21,6 @@
 #include <paludis/environments/paludis/bashable_conf.hh>
 #include <paludis/environments/paludis/paludis_config.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>
-#include <paludis/environments/paludis/action_to_string.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tokeniser.hh>
@@ -157,7 +156,7 @@ namespace
             if (rule.type_requirement() != "*" && rule.type_requirement() != "repository")
                 return false;
 
-            if (rule.name_requirement() != "*" && rule.name_requirement() != stringify(i.repository().name()))
+            if (rule.name_requirement() != "*" && rule.name_requirement() != stringify(i.repository_name()))
                 return false;
 
             if (rule.action_requirement() != "*" && rule.action_requirement() != "sync")
@@ -184,7 +183,7 @@ namespace
             if (rule.name_requirement() != "*" && rule.name_requirement() != stringify(i.package_id()->name()))
                 return false;
 
-            if (rule.action_requirement() != "*" && rule.action_requirement() != action_to_string(i.action()))
+            if (rule.action_requirement() != "*" && rule.action_requirement() != i.action_name())
                 return false;
 
             if (-1 != rule.output_exclusivity_requirement() &&
@@ -197,10 +196,10 @@ namespace
 
             if (! rule.ignore_unfetched_requirement().is_indeterminate())
             {
-                const FetchAction * const fetch_action(simple_visitor_cast<const FetchAction>(i.action()));
-                if (! fetch_action)
+                if (i.action_name() != FetchAction::class_simple_name())
                     return false;
-                if (fetch_action->options.ignore_unfetched() != rule.ignore_unfetched_requirement().is_true())
+                if ((i.action_flags()->end() != i.action_flags()->find(FetchAction::ignore_unfetched_flag_name())) !=
+                        rule.ignore_unfetched_requirement().is_true())
                     return false;
             }
 
@@ -244,14 +243,14 @@ namespace
         {
             m->insert("type", "repository");
             m->insert("action", "sync");
-            m->insert("name", stringify(i.repository().name()));
-            m->insert("full_name", stringify(i.repository().name()));
+            m->insert("name", stringify(i.repository_name()));
+            m->insert("full_name", stringify(i.repository_name()));
         }
 
         void visit(const CreateOutputManagerForPackageIDActionInfo & i)
         {
             m->insert("type", "package");
-            m->insert("action", action_to_string(i.action()));
+            m->insert("action", i.action_name());
             m->insert("name", stringify(i.package_id()->name()));
             m->insert("id", escape(stringify(*i.package_id())));
             m->insert("full_name", escape(stringify(*i.package_id())));

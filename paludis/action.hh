@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -242,6 +242,13 @@ namespace paludis
             virtual ~Action() = 0;
 
             ///\}
+
+            /**
+             * A simple string name (install, uninstall, pretend-fetch etc).
+             *
+             * \since 0.44
+             */
+            virtual const std::string simple_name() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
     /**
@@ -268,6 +275,10 @@ namespace paludis
 
             /// Options for the action.
             const InstallActionOptions & options;
+
+            virtual const std::string simple_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            static const std::string class_simple_name() PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -294,6 +305,11 @@ namespace paludis
 
             /// Options for the action.
             const FetchActionOptions & options;
+
+            virtual const std::string simple_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            static const std::string class_simple_name() PALUDIS_ATTRIBUTE((warn_unused_result));
+            static const std::string ignore_unfetched_flag_name() PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -319,6 +335,10 @@ namespace paludis
 
             /// Options for the action.
             const UninstallActionOptions & options;
+
+            virtual const std::string simple_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            static const std::string class_simple_name() PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -375,6 +395,10 @@ namespace paludis
              * \since 0.36
              */
             const PretendActionOptions & options;
+
+            virtual const std::string simple_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            static const std::string class_simple_name() PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -404,6 +428,10 @@ namespace paludis
 
             /// Signal that we will fetch a particular file.
             virtual void will_fetch(const FSEntry & destination, const unsigned long size_in_bytes) = 0;
+
+            virtual const std::string simple_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            static const std::string class_simple_name() PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -455,6 +483,10 @@ namespace paludis
              * \since 0.36
              */
             const ConfigActionOptions & options;
+
+            virtual const std::string simple_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            static const std::string class_simple_name() PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -511,6 +543,10 @@ namespace paludis
              * \since 0.36
              */
             const InfoActionOptions & options;
+
+            virtual const std::string simple_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            static const std::string class_simple_name() PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -552,15 +588,6 @@ namespace paludis
         public ImplementAcceptMethods<SupportsActionTestBase, SupportsActionTest<A_> >
     {
     };
-
-    /**
-     * An Action can be written to a std::ostream.
-     *
-     * \since 0.26
-     * \ingroup g_actions
-     * \nosubgrouping
-     */
-    std::ostream & operator<< (std::ostream &, const Action &) PALUDIS_VISIBLE;
 
     /**
      * Thrown if an action fails.

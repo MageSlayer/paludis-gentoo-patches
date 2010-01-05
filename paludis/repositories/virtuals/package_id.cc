@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -392,49 +392,49 @@ namespace
         {
             SupportsActionTest<InstallAction> t;
             if (! id->repository()->some_ids_might_support_action(t))
-                throw ActionFailedError("Unsupported action: " + stringify(a));
+                throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
 
         void visit(const UninstallAction & a)
         {
             SupportsActionTest<UninstallAction> t;
             if (! id->repository()->some_ids_might_support_action(t))
-                throw ActionFailedError("Unsupported action: " + stringify(a));
+                throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
 
         void visit(const ConfigAction & a)
         {
             SupportsActionTest<ConfigAction> t;
             if (! id->repository()->some_ids_might_support_action(t))
-                throw ActionFailedError("Unsupported action: " + stringify(a));
+                throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
 
         void visit(const FetchAction & a)
         {
             SupportsActionTest<FetchAction> t;
             if (! id->repository()->some_ids_might_support_action(t))
-                throw ActionFailedError("Unsupported action: " + stringify(a));
+                throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
 
         void visit(const InfoAction & a)
         {
             SupportsActionTest<InfoAction> t;
             if (! id->repository()->some_ids_might_support_action(t))
-                throw ActionFailedError("Unsupported action: " + stringify(a));
+                throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
 
         void visit(const PretendAction & a)
         {
             SupportsActionTest<PretendAction> t;
             if (! id->repository()->some_ids_might_support_action(t))
-                throw ActionFailedError("Unsupported action: " + stringify(a));
+                throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
 
         void visit(const PretendFetchAction & a)
         {
             SupportsActionTest<PretendFetchAction> t;
             if (! id->repository()->some_ids_might_support_action(t))
-                throw ActionFailedError("Unsupported action: " + stringify(a));
+                throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
     };
 }

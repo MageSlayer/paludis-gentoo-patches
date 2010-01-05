@@ -10,7 +10,6 @@ DEFS= \
 	-DSHAREDIR=\"$(datarootdir)\"
 
 libpaludispaludisenvironment_la_SOURCES = \
-	action_to_string.cc    action_to_string.hh \
 	bashable_conf.cc       bashable_conf.hh \
 	keywords_conf.cc       keywords_conf.hh \
 	licenses_conf.cc       licenses_conf.hh \

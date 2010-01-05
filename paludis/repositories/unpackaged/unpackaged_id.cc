@@ -340,7 +340,7 @@ UnpackagedID::perform_action(Action & action) const
 
     const InstallAction * const install_action(simple_visitor_cast<const InstallAction>(action));
     if (! install_action)
-        throw ActionFailedError("Unsupported action: " + stringify(action));
+        throw ActionFailedError("Unsupported action: " + action.simple_name());
 
     if (! (*install_action->options.destination()).destination_interface())
         throw ActionFailedError("Can't install '" + stringify(*this)

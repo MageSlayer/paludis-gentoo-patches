@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -168,7 +168,7 @@ UnwrittenID::supports_action(const SupportsActionTestBase & a) const
 void
 UnwrittenID::perform_action(Action & a) const
 {
-    throw ActionFailedError("Unsupported action: " + stringify(a));
+    throw ActionFailedError("Unsupported action: " + a.simple_name());
 }
 
 std::tr1::shared_ptr<const Set<std::string> >

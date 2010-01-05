@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -744,32 +744,32 @@ namespace
 
         void visit(InstallAction & a) PALUDIS_ATTRIBUTE((noreturn))
         {
-            throw ActionFailedError("Unsupported action: " + stringify(a));
+            throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
 
         void visit(FetchAction & a) PALUDIS_ATTRIBUTE((noreturn))
         {
-            throw ActionFailedError("Unsupported action: " + stringify(a));
+            throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
 
         void visit(ConfigAction & a) PALUDIS_ATTRIBUTE((noreturn))
         {
-            throw ActionFailedError("Unsupported action: " + stringify(a));
+            throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
 
         void visit(PretendAction & a) PALUDIS_ATTRIBUTE((noreturn))
         {
-            throw ActionFailedError("Unsupported action: " + stringify(a));
+            throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
 
         void visit(PretendFetchAction & a) PALUDIS_ATTRIBUTE((noreturn))
         {
-            throw ActionFailedError("Unsupported action: " + stringify(a));
+            throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
 
         void visit(InfoAction & a) PALUDIS_ATTRIBUTE((noreturn))
         {
-            throw ActionFailedError("Unsupported action: " + stringify(a));
+            throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
 
         void visit(UninstallAction & a)

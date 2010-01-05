@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -222,59 +222,6 @@ SupportsActionTestBase::~SupportsActionTestBase()
 {
 }
 
-namespace
-{
-    struct ActionStringifier
-    {
-        std::string visit(const InstallAction & a)
-        {
-            std::string s("install to ");
-            if (a.options.destination())
-                s.append(stringify(a.options.destination()->name()));
-            else
-                s.append("nowhere");
-            return s;
-        }
-
-        std::string visit(const UninstallAction &)
-        {
-            return "uninstall";
-        }
-
-        std::string visit(const PretendAction &)
-        {
-            return "pretend";
-        }
-
-        std::string visit(const ConfigAction &)
-        {
-            return "config";
-        }
-
-        std::string visit(const InfoAction &)
-        {
-            return "info";
-        }
-
-        std::string visit(const FetchAction &)
-        {
-            return "fetch";
-        }
-
-        std::string visit(const PretendFetchAction &)
-        {
-            return "pretend fetch";
-        }
-    };
-}
-
-std::ostream &
-paludis::operator<< (std::ostream & s, const Action & a)
-{
-    ActionStringifier t;
-    return s << a.accept_returning<std::string>(t);
-}
-
 ActionFailedError::ActionFailedError(const std::string & msg) throw () :
     Exception(msg)
 {
@@ -283,6 +230,96 @@ ActionFailedError::ActionFailedError(const std::string & msg) throw () :
 ActionAbortedError::ActionAbortedError(const std::string & msg) throw () :
     Exception(msg)
 {
+}
+
+const std::string
+FetchAction::simple_name() const
+{
+    return FetchAction::class_simple_name();
+}
+
+const std::string
+InstallAction::simple_name() const
+{
+    return InstallAction::class_simple_name();
+}
+
+const std::string
+UninstallAction::simple_name() const
+{
+    return UninstallAction::class_simple_name();
+}
+
+const std::string
+PretendAction::simple_name() const
+{
+    return PretendAction::class_simple_name();
+}
+
+const std::string
+PretendFetchAction::simple_name() const
+{
+    return PretendFetchAction::class_simple_name();
+}
+
+const std::string
+ConfigAction::simple_name() const
+{
+    return ConfigAction::class_simple_name();
+}
+
+const std::string
+InfoAction::simple_name() const
+{
+    return InfoAction::class_simple_name();
+}
+
+const std::string
+FetchAction::class_simple_name()
+{
+    return "fetch";
+}
+
+const std::string
+FetchAction::ignore_unfetched_flag_name()
+{
+    return "ignore_unfetched";
+}
+
+const std::string
+InstallAction::class_simple_name()
+{
+    return "install";
+}
+
+const std::string
+UninstallAction::class_simple_name()
+{
+    return "uninstall";
+}
+
+const std::string
+PretendAction::class_simple_name()
+{
+    return "pretend";
+}
+
+const std::string
+PretendFetchAction::class_simple_name()
+{
+    return "pretend-fetch";
+}
+
+const std::string
+InfoAction::class_simple_name()
+{
+    return "info";
+}
+
+const std::string
+ConfigAction::class_simple_name()
+{
+    return "config";
 }
 
 template class PrivateImplementationPattern<FetchAction>;
