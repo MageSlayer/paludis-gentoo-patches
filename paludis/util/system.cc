@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -172,6 +172,7 @@ namespace paludis
         std::string stderr_prefix;
         bool prefix_discard_blank_output;
         bool prefix_blank_lines;
+        std::string pipe_command_env_var_prefix;
         std::tr1::function<std::string (const std::string &)> pipe_command_handler;
         std::ostream * captured_stdout_stream;
         std::ostream * captured_stderr_stream;
@@ -187,6 +188,7 @@ namespace paludis
                 std::tr1::shared_ptr<gid_t> g = std::tr1::shared_ptr<gid_t>(),
                 const std::string & p = "", const std::string & q = "",
                 const bool b = false, const bool bb = false,
+                const std::string & ep = "",
                 const std::tr1::function<std::string (const std::string &)> & h = std::tr1::function<std::string (const std::string &)>(),
                 std::ostream * cs = 0,
                 std::ostream * ds = 0,
@@ -205,6 +207,7 @@ namespace paludis
             stderr_prefix(q),
             prefix_discard_blank_output(b),
             prefix_blank_lines(bb),
+            pipe_command_env_var_prefix(ep),
             pipe_command_handler(h),
             captured_stdout_stream(cs),
             captured_stderr_stream(ds),
@@ -232,7 +235,8 @@ Command::Command(const Command & other) :
                 other._imp->clearenv, other._imp->setenv_values, other._imp->chdir, other._imp->echo_to_stderr,
                 other._imp->uid, other._imp->gid, other._imp->stdout_prefix, other._imp->stderr_prefix,
                 other._imp->prefix_discard_blank_output,
-                other._imp->prefix_blank_lines, other._imp->pipe_command_handler, other._imp->captured_stdout_stream,
+                other._imp->prefix_blank_lines, other._imp->pipe_command_env_var_prefix,
+                other._imp->pipe_command_handler, other._imp->captured_stdout_stream,
                 other._imp->captured_stderr_stream, other._imp->input_stream, other._imp->input_fd,
                 other._imp->input_fd_env_var, other._imp->ptys))
 {
@@ -251,7 +255,9 @@ Command::operator= (const Command & other)
                     other._imp->stderr_prefix,
                     other._imp->prefix_discard_blank_output,
                     other._imp->prefix_blank_lines,
-                    other._imp->pipe_command_handler, other._imp->captured_stdout_stream,
+                    other._imp->pipe_command_env_var_prefix,
+                    other._imp->pipe_command_handler,
+                    other._imp->captured_stdout_stream,
                     other._imp->captured_stderr_stream,
                     other._imp->input_stream,
                     other._imp->input_fd,
@@ -595,8 +601,10 @@ paludis::run_command(const Command & cmd)
 
                 if (cmd.pipe_command_handler())
                 {
-                    setenv("PALUDIS_PIPE_COMMAND_WRITE_FD", stringify(pipe_command_reader->write_fd()).c_str(), 1);
-                    setenv("PALUDIS_PIPE_COMMAND_READ_FD", stringify(pipe_command_response->read_fd()).c_str(), 1);
+                    setenv((cmd.pipe_command_env_var_prefix() + "_WRITE_FD").c_str(),
+                            stringify(pipe_command_reader->write_fd()).c_str(), 1);
+                    setenv((cmd.pipe_command_env_var_prefix() + "_READ_FD").c_str(),
+                            stringify(pipe_command_response->read_fd()).c_str(), 1);
                 }
 
                 if (cmd.captured_stdout_stream())
@@ -1229,8 +1237,11 @@ Command::with_stderr_prefix(const std::string & s)
 }
 
 Command &
-Command::with_pipe_command_handler(const std::tr1::function<std::string (const std::string &)> & f)
+Command::with_pipe_command_handler(
+        const std::string & p,
+        const std::tr1::function<std::string (const std::string &)> & f)
 {
+    _imp->pipe_command_env_var_prefix = p;
     _imp->pipe_command_handler = f;
     return *this;
 }
@@ -1257,6 +1268,12 @@ bool
 Command::prefix_blank_lines() const
 {
     return _imp->prefix_blank_lines;
+}
+
+const std::string
+Command::pipe_command_env_var_prefix() const
+{
+    return _imp->pipe_command_env_var_prefix;
 }
 
 const std::tr1::function<std::string (const std::string &)> &

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -147,7 +147,7 @@ EbuildCommand::operator() ()
 
     using namespace std::tr1::placeholders;
 
-    cmd.with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params.environment(),
+    cmd.with_pipe_command_handler("PALUDIS_PIPE_COMMAND", std::tr1::bind(&pipe_command_handler, params.environment(),
                 params.package_id(), _1, params.maybe_output_manager()));
 
     std::tr1::shared_ptr<const FSEntrySequence> syncers_dirs(params.environment()->syncers_dirs());
@@ -993,7 +993,7 @@ WriteVDBEntryCommand::operator() ()
                     params.package_id()->eapi()->supported()->ebuild_options()->ebuild_module_suffixes())
             .with_setenv("PALUDIS_EBUILD_PHASE_VAR",
                     params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_ebuild_phase())
-            .with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params.environment(),
+            .with_pipe_command_handler("PALUDIS_PIPE_COMMAND", std::tr1::bind(&pipe_command_handler, params.environment(),
                         params.package_id(), _1, params.maybe_output_manager()))
             );
 
@@ -1223,7 +1223,7 @@ WriteBinaryEbuildCommand::operator() ()
                     params.package_id()->eapi()->supported()->ebuild_options()->ebuild_module_suffixes())
             .with_setenv("PALUDIS_EBUILD_PHASE_VAR",
                     params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_ebuild_phase())
-            .with_pipe_command_handler(std::tr1::bind(&pipe_command_handler, params.environment(),
+            .with_pipe_command_handler("PALUDIS_PIPE_COMMAND", std::tr1::bind(&pipe_command_handler, params.environment(),
                         params.package_id(), _1, params.maybe_output_manager()))
             );
 

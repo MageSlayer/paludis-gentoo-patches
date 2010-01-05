@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -188,8 +188,13 @@ namespace paludis
 
             /**
              * Specify a pipe command handler.
+             *
+             * \param env_var_prefix has _READ_FD and _WRITE_FD appended to it.
+             *     \since 0.44, previously was always PALUDIS_PIPE_COMMAND.
              */
-            Command & with_pipe_command_handler(const std::tr1::function<std::string (const std::string &)> &);
+            Command & with_pipe_command_handler(
+                    const std::string & env_var_prefix,
+                    const std::tr1::function<std::string (const std::string &)> &);
 
             /**
              * Specify a stream to which stdout is captured and written.
@@ -280,6 +285,13 @@ namespace paludis
              * The pipe command handler.
              */
             const std::tr1::function<std::string (const std::string &)> & pipe_command_handler() const;
+
+            /**
+             * The pipe command env var prefix.
+             *
+             * \since 0.44
+             */
+            const std::string pipe_command_env_var_prefix() const;
 
             /**
              * The captured stdout stream, or null.
