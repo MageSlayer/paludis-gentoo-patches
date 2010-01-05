@@ -73,18 +73,7 @@ FileOutputManager::FileOutputManager(const FSEntry & o, const bool k, const bool
 
 FileOutputManager::~FileOutputManager()
 {
-    if (! _imp->keep_on_empty)
-    {
-        *_imp->stdout_stream << std::flush;
-        *_imp->stderr_stream << std::flush;
-
-        FSEntry filename_now(stringify(_imp->filename));
-        if (filename_now.exists() && 0 == filename_now.file_size())
-        {
-            filename_now.unlink();
-            _imp->unlinked = true;
-        }
-    }
+    nothing_more_to_come();
 
     if (_imp->summary_output_manager)
     {
@@ -137,6 +126,24 @@ FileOutputManager::want_to_flush() const
 void
 FileOutputManager::nothing_more_to_come()
 {
+    if (! _imp->stdout_stream)
+        return;
+
+    *_imp->stdout_stream << std::flush;
+    _imp->stdout_stream.reset();
+
+    *_imp->stderr_stream << std::flush;
+    _imp->stderr_stream.reset();
+
+    if (! _imp->keep_on_empty)
+    {
+        FSEntry filename_now(stringify(_imp->filename));
+        if (filename_now.exists() && 0 == filename_now.file_size())
+        {
+            filename_now.unlink();
+            _imp->unlinked = true;
+        }
+    }
 }
 
 const std::tr1::shared_ptr<const Set<std::string> >

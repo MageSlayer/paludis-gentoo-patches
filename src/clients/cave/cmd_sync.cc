@@ -258,6 +258,8 @@ namespace
                         throw SyncFailedError("Sync aborted by hook");
                 }
 
+                output_manager->nothing_more_to_come();
+
                 if (skipped)
                     cout << format_general_spad(f::sync_repo_done_no_syncing_required(), stringify(name),
                             executor->pending(), executor->active(), executor->done());

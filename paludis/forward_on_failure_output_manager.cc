@@ -104,6 +104,11 @@ ForwardOnFailureOutputManager::want_to_flush() const
 void
 ForwardOnFailureOutputManager::nothing_more_to_come()
 {
+    if (_imp->success)
+    {
+        _imp->stdout_stream.clear();
+        _imp->stderr_stream.clear();
+    }
 }
 
 const std::tr1::shared_ptr<const Set<std::string> >
