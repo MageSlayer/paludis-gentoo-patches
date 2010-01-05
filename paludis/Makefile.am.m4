@@ -64,7 +64,7 @@ ifelse(`$2', `testscript', `addtestscript(`$1')', `')')dnl
 define(`add', `addthis(`$1',`$2')addthis(`$1',`$3')addthis(`$1',`$4')dnl
 addthis(`$1',`$5')addthis(`$1',`$6')addthis(`$1',`$7')addthis(`$1',`$8')')dnl
 
-AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
+AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@ @PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST@
 
 include(`paludis/files.m4')
 

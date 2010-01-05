@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -36,6 +36,7 @@
 #include <paludis/hook.hh>
 #include <paludis/output_manager_from_environment.hh>
 #include <paludis/output_manager.hh>
+#include <paludis/ipc_output_manager.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>
@@ -78,7 +79,7 @@ namespace
         args::SwitchArg a_if_supported;
         args::SwitchArg a_hooks;
         args::StringArg a_x_of_y;
-        args::SwitchArg a_background;
+        args::SwitchArg a_managed_output;
 
         args::ArgsGroup g_fetch_action_options;
         args::SwitchArg a_exclude_unmirrorable;
@@ -107,8 +108,9 @@ namespace
                     "Also execute the appropriate hooks for the action.", true),
             a_x_of_y(&g_general_options, "x-of-y", '\0',
                     "Specify the value of the X_OF_Y variable that is passed to hooks."),
-            a_background(&g_general_options, "background", '\0',
-                    "Indicate that we are being run in the background", true),
+            a_managed_output(&g_general_options, "managed-output", '\0',
+                    "Specify that our output is being managed by another process. Used by "
+                    "'cave execute-resolution'; not for end user use.", false),
 
             g_fetch_action_options(main_options_section(), "Fetch Action Options",
                     "Options for if the action is 'fetch' or 'pretend-fetch'"),
@@ -156,6 +158,47 @@ namespace
         }
     };
 
+    struct OutputManagerFromIPCOrEnvironment
+    {
+        std::tr1::shared_ptr<OutputManagerFromIPC> manager_if_ipc;
+        std::tr1::shared_ptr<OutputManagerFromEnvironment> manager_if_env;
+
+        OutputManagerFromIPCOrEnvironment(
+                const Environment * const e,
+                const PerformCommandLine & cmdline,
+                const std::tr1::shared_ptr<const PackageID> & id)
+        {
+            if (cmdline.a_managed_output.specified())
+                manager_if_ipc.reset(new OutputManagerFromIPC(e, id, oe_exclusive));
+            else
+                manager_if_env.reset(new OutputManagerFromEnvironment(e, id, oe_exclusive));
+        }
+
+        const std::tr1::shared_ptr<OutputManager> operator() (const Action & a)
+        {
+            if (manager_if_env)
+                return (*manager_if_env)(a);
+            else
+                return (*manager_if_ipc)(a);
+        }
+
+        const std::tr1::shared_ptr<OutputManager> output_manager_if_constructed()
+        {
+            if (manager_if_env)
+                return manager_if_env->output_manager_if_constructed();
+            else
+                return manager_if_ipc->output_manager_if_constructed();
+        }
+
+        void construct_standard_if_unconstructed()
+        {
+            if (manager_if_env)
+                manager_if_env->construct_standard_if_unconstructed();
+            else
+                manager_if_ipc->construct_standard_if_unconstructed();
+        }
+    };
+
     void execute(
             const std::tr1::shared_ptr<Environment> & env,
             const PerformCommandLine & cmdline,
@@ -163,7 +206,7 @@ namespace
             const std::string & action_name,
             Action & action)
     {
-        if (cmdline.a_x_of_y.specified() && ! cmdline.a_background.specified())
+        if (cmdline.a_x_of_y.specified())
             std::cout << "\x1b]2;" << cmdline.a_x_of_y.argument() << " " << action_name << " "
                 << stringify(*id) << "\x07" << std::flush;
 
@@ -183,7 +226,7 @@ namespace
                         ).max_exit_status())
                 throw ActionAbortedError("Aborted by hook");
 
-        if (cmdline.a_x_of_y.specified() && ! cmdline.a_background.specified())
+        if (cmdline.a_x_of_y.specified())
             std::cout << "\x1b]2;Completed " << cmdline.a_x_of_y.argument() << " " << action_name << " "
                 << stringify(*id) << "\x07" << std::flush;
     }
@@ -203,7 +246,7 @@ namespace
         UninstallAction uninstall_action(options);
         execute(env, cmdline, id, "clean", uninstall_action);
 
-        if (cmdline.a_x_of_y.specified() && ! cmdline.a_background.specified())
+        if (cmdline.a_x_of_y.specified())
             std::cout << "\x1b]2;" << cmdline.a_x_of_y.argument() << " " << action_name << " "
                 << stringify(*id) << "\x07" << std::flush;
     }
@@ -211,10 +254,10 @@ namespace
     struct WantInstallPhase
     {
         const PerformCommandLine & cmdline;
-        OutputManagerFromEnvironment & output_manager_holder;
+        OutputManagerFromIPCOrEnvironment & output_manager_holder;
         bool done_any;
 
-        WantInstallPhase(const PerformCommandLine & c, OutputManagerFromEnvironment & o) :
+        WantInstallPhase(const PerformCommandLine & c, OutputManagerFromIPCOrEnvironment & o) :
             cmdline(c),
             output_manager_holder(o),
             done_any(false)
@@ -322,10 +365,6 @@ PerformCommand::run(
         throw BeMoreSpecific(spec, ids);
     const std::tr1::shared_ptr<const PackageID> id(*ids->begin());
 
-    OutputExclusivity exclusivity(oe_exclusive);
-    if (cmdline.a_background.specified())
-        exclusivity = oe_background;
-
     FetchParts parts;
     parts += fp_regulars;
     if (! cmdline.a_regulars_only.specified())
@@ -338,7 +377,7 @@ PerformCommand::run(
         if (cmdline.a_if_supported.specified() && ! id->supports_action(SupportsActionTest<ConfigAction>()))
             return EXIT_SUCCESS;
 
-        OutputManagerFromEnvironment output_manager_holder(env.get(), id, exclusivity);
+        OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         ConfigActionOptions options(make_named_values<ConfigActionOptions>(
                     value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
                     ));
@@ -350,7 +389,7 @@ PerformCommand::run(
         if (cmdline.a_if_supported.specified() && ! id->supports_action(SupportsActionTest<FetchAction>()))
             return EXIT_SUCCESS;
 
-        OutputManagerFromEnvironment output_manager_holder(env.get(), id, exclusivity);
+        OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         FetchActionOptions options(make_named_values<FetchActionOptions>(
                     value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                     value_for<n::exclude_unmirrorable>(cmdline.a_exclude_unmirrorable.specified()),
@@ -367,7 +406,7 @@ PerformCommand::run(
         if (cmdline.a_if_supported.specified() && ! id->supports_action(SupportsActionTest<PretendFetchAction>()))
             return EXIT_SUCCESS;
 
-        OutputManagerFromEnvironment output_manager_holder(env.get(), id, exclusivity);
+        OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         FetchActionOptions options(make_named_values<FetchActionOptions>(
                     value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                     value_for<n::exclude_unmirrorable>(cmdline.a_exclude_unmirrorable.specified()),
@@ -394,7 +433,7 @@ PerformCommand::run(
         if (cmdline.a_if_supported.specified() && ! id->supports_action(SupportsActionTest<InfoAction>()))
             return EXIT_SUCCESS;
 
-        OutputManagerFromEnvironment output_manager_holder(env.get(), id, exclusivity);
+        OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         InfoActionOptions options(make_named_values<InfoActionOptions>(
                     value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
                     ));
@@ -428,7 +467,7 @@ PerformCommand::run(
                 replacing->push_back(*rids->begin());
         }
 
-        OutputManagerFromEnvironment output_manager_holder(env.get(), id, exclusivity);
+        OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         WantInstallPhase want_phase(cmdline, output_manager_holder);
         InstallActionOptions options(make_named_values<InstallActionOptions>(
                     value_for<n::destination>(destination),
@@ -448,7 +487,7 @@ PerformCommand::run(
         if (cmdline.a_if_supported.specified() && ! id->supports_action(SupportsActionTest<PretendAction>()))
             return EXIT_SUCCESS;
 
-        OutputManagerFromEnvironment output_manager_holder(env.get(), id, exclusivity);
+        OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         PretendActionOptions options(make_named_values<PretendActionOptions>(
                     value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
                     ));
@@ -462,7 +501,7 @@ PerformCommand::run(
         if (cmdline.a_if_supported.specified() && ! id->supports_action(SupportsActionTest<UninstallAction>()))
             return EXIT_SUCCESS;
 
-        OutputManagerFromEnvironment output_manager_holder(env.get(), id, exclusivity);
+        OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         UninstallActionOptions options(make_named_values<UninstallActionOptions>(
                     value_for<n::config_protect>(cmdline.a_config_protect.argument()),
                     value_for<n::if_for_install_id>(make_null_shared_ptr()),

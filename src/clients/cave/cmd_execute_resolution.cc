@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -58,6 +58,7 @@
 #include <paludis/action.hh>
 #include <paludis/package_dep_spec_properties.hh>
 #include <paludis/serialise.hh>
+#include <paludis/ipc_output_manager.hh>
 
 #include <set>
 #include <iterator>
@@ -115,7 +116,7 @@ namespace
     };
 
     int do_pretend(
-            const std::tr1::shared_ptr<Environment> &,
+            const std::tr1::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
             const ChangesToMakeDecision & decision,
             const int x, const int y)
@@ -130,7 +131,7 @@ namespace
         if (command.empty())
             command = "$CAVE perform";
 
-        command.append(" pretend --hooks --if-supported ");
+        command.append(" pretend --hooks --if-supported --managed-output ");
         command.append(stringify(decision.origin_id()->uniquely_identifying_spec()));
         command.append(" --x-of-y '" + stringify(x) + " of " + stringify(y) + "'");
 
@@ -142,7 +143,12 @@ namespace
                 command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " '" + *p + "'");
         }
 
+        IPCInputManager input_manager(env.get(), oe_exclusive);
         paludis::Command cmd(command);
+        cmd
+            .with_pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler())
+            ;
+
         return run_command(cmd);
     }
 
@@ -173,7 +179,7 @@ namespace
     }
 
     int do_fetch(
-            const std::tr1::shared_ptr<Environment> &,
+            const std::tr1::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
             const ChangesToMakeDecision & decision,
             const int x, const int y, bool normal_only)
@@ -187,7 +193,7 @@ namespace
         if (command.empty())
             command = "$CAVE perform";
 
-        command.append(" fetch --hooks --if-supported ");
+        command.append(" fetch --hooks --if-supported --managed-output ");
         command.append(stringify(id->uniquely_identifying_spec()));
         command.append(" --x-of-y '" + stringify(x) + " of " + stringify(y) + "'");
 
@@ -202,7 +208,11 @@ namespace
                 command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " '" + *p + "'");
         }
 
+        IPCInputManager input_manager(env.get(), oe_exclusive);
         paludis::Command cmd(command);
+        cmd
+            .with_pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler())
+            ;
         int retcode(run_command(cmd));
 
         done_action("fetch (" + std::string(normal_only ? "regular parts" : "extra parts") + ")", decision, 0 == retcode);
@@ -210,7 +220,7 @@ namespace
     }
 
     int do_install(
-            const std::tr1::shared_ptr<Environment> &,
+            const std::tr1::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
             const std::tr1::shared_ptr<const Resolution> & resolution,
             const ChangesToMakeDecision & decision,
@@ -245,7 +255,7 @@ namespace
         if (command.empty())
             command = "$CAVE perform";
 
-        command.append(" install --hooks ");
+        command.append(" install --hooks --managed-output ");
         command.append(stringify(id->uniquely_identifying_spec()));
         command.append(" --destination " + stringify(decision.destination()->repository()));
         for (PackageIDSequence::ConstIterator i(decision.destination()->replacing()->begin()),
@@ -290,7 +300,11 @@ namespace
                 command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " '" + *p + "'");
         }
 
+        IPCInputManager input_manager(env.get(), oe_exclusive);
         paludis::Command cmd(command);
+        cmd
+            .with_pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler())
+            ;
         int retcode(run_command(cmd));
 
         done_action(action_string, decision, 0 == retcode);
