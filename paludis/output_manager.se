@@ -11,6 +11,8 @@ make_enum_MessageType()
     key mt_error                        "An error message"
     key mt_log                          "A message explicitly marked for logging"
 
+    want_destringify
+
     doxygen_comment << "END"
         /**
          * Type of message for OutputManager.
