@@ -63,6 +63,7 @@
 #include <set>
 #include <iterator>
 #include <iostream>
+#include <list>
 #include <cstdlib>
 #include <algorithm>
 
@@ -115,11 +116,14 @@ namespace
         }
     };
 
+    typedef std::list<std::tr1::shared_ptr<OutputManager> > CompletedOutputManagers;
+
     int do_pretend(
             const std::tr1::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
             const ChangesToMakeDecision & decision,
-            const int x, const int y)
+            const int x, const int y,
+            CompletedOutputManagers & completed_output_managers)
     {
         Context context("When pretending for '" + stringify(*decision.origin_id()) + "':");
 
@@ -149,7 +153,15 @@ namespace
             .with_pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler())
             ;
 
-        return run_command(cmd);
+        int retcode(run_command(cmd));
+        const std::tr1::shared_ptr<OutputManager> output_manager(input_manager.underlying_output_manager_if_constructed());
+        if (output_manager)
+        {
+            output_manager->nothing_more_to_come();
+            completed_output_managers.push_back(output_manager);
+        }
+
+        return retcode;
     }
 
     void starting_action(
@@ -182,7 +194,8 @@ namespace
             const std::tr1::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
             const ChangesToMakeDecision & decision,
-            const int x, const int y, bool normal_only)
+            const int x, const int y, bool normal_only,
+            CompletedOutputManagers & completed_output_managers)
     {
         const std::tr1::shared_ptr<const PackageID> id(decision.origin_id());
         Context context("When fetching for '" + stringify(*id) + "':");
@@ -213,7 +226,14 @@ namespace
         cmd
             .with_pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler())
             ;
+
         int retcode(run_command(cmd));
+        const std::tr1::shared_ptr<OutputManager> output_manager(input_manager.underlying_output_manager_if_constructed());
+        if (output_manager)
+        {
+            output_manager->nothing_more_to_come();
+            completed_output_managers.push_back(output_manager);
+        }
 
         done_action("fetch (" + std::string(normal_only ? "regular parts" : "extra parts") + ")", decision, 0 == retcode);
         return retcode;
@@ -224,7 +244,8 @@ namespace
             const ExecuteResolutionCommandLine & cmdline,
             const std::tr1::shared_ptr<const Resolution> & resolution,
             const ChangesToMakeDecision & decision,
-            const int x, const int y)
+            const int x, const int y,
+            CompletedOutputManagers & completed_output_managers)
     {
         std::string destination_string, action_string;
         switch (resolution->resolvent().destination_type())
@@ -305,7 +326,14 @@ namespace
         cmd
             .with_pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler())
             ;
+
         int retcode(run_command(cmd));
+        const std::tr1::shared_ptr<OutputManager> output_manager(input_manager.underlying_output_manager_if_constructed());
+        if (output_manager)
+        {
+            output_manager->nothing_more_to_come();
+            completed_output_managers.push_back(output_manager);
+        }
 
         done_action(action_string, decision, 0 == retcode);
         return retcode;
@@ -358,6 +386,7 @@ namespace
         const std::tr1::shared_ptr<Environment> env;
         const ExecuteResolutionCommandLine & cmdline;
         JobCounts & counts;
+        CompletedOutputManagers & completed_output_managers;
 
         bool done_any_pretends;
         bool done_any_installs;
@@ -366,10 +395,12 @@ namespace
         PerformJobs(
                 const std::tr1::shared_ptr<Environment> & e,
                 const ExecuteResolutionCommandLine & c,
-                JobCounts & k) :
+                JobCounts & k,
+                CompletedOutputManagers & m) :
             env(e),
             cmdline(c),
             counts(k),
+            completed_output_managers(m),
             done_any_pretends(false),
             done_any_installs(false),
             retcode(0)
@@ -390,7 +421,8 @@ namespace
                 std::cout << "Executing pretend actions: " << std::flush;
             }
 
-            retcode |= do_pretend(env, cmdline, *job.decision(), ++counts.x_pretends, counts.y_pretends);
+            retcode |= do_pretend(env, cmdline, *job.decision(), ++counts.x_pretends, counts.y_pretends,
+                    completed_output_managers);
 
             /* a pretend failing doesn't abort us yet */
             return true;
@@ -414,12 +446,14 @@ namespace
             ++counts.x_installs;
 
             /* not all of the fetch is done in the background */
-            retcode |= do_fetch(env, cmdline, *job.decision(), counts.x_installs, counts.y_installs, false);
+            retcode |= do_fetch(env, cmdline, *job.decision(), counts.x_installs, counts.y_installs, false,
+                    completed_output_managers);
             if (0 != retcode)
                 return false;
 
             retcode |= do_install(env, cmdline, job.resolution(),
-                    *job.decision(), counts.x_installs, counts.y_installs);
+                    *job.decision(), counts.x_installs, counts.y_installs,
+                    completed_output_managers);
             if (0 != retcode)
                 return false;
 
@@ -431,7 +465,8 @@ namespace
             if (0 != retcode)
                 return false;
 
-            retcode |= do_fetch(env, cmdline, *job.decision(), ++counts.x_fetches, counts.y_fetches, true);
+            retcode |= do_fetch(env, cmdline, *job.decision(), ++counts.x_fetches, counts.y_fetches, true,
+                    completed_output_managers);
             if (0 != retcode)
                 return false;
 
@@ -500,17 +535,21 @@ namespace
         try
         {
             JobCounts counts;
+            CompletedOutputManagers completed_output_managers;
+
             for (JobIDSequence::ConstIterator c(lists.ordered_job_ids()->begin()),
                     c_end(lists.ordered_job_ids()->end()) ;
                     c != c_end ; ++c)
                 lists.jobs()->fetch(*c)->accept(counts);
 
-            PerformJobs perform_jobs(env, cmdline, counts);
+            PerformJobs perform_jobs(env, cmdline, counts, completed_output_managers);
             for (JobIDSequence::ConstIterator c(lists.ordered_job_ids()->begin()),
                     c_end(lists.ordered_job_ids()->end()) ;
                     c != c_end ; ++c)
                 if (! lists.jobs()->fetch(*c)->accept_returning<bool>(perform_jobs))
                     break;
+
+            completed_output_managers.clear();
 
             retcode |= perform_jobs.retcode;
             if ((0 != retcode) || (cmdline.a_pretend.specified()))
