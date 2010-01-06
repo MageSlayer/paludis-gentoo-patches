@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/forward_on_failure_output_manager.hh>
+#include <paludis/forward_at_finish_output_manager.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/map.hh>
@@ -32,16 +32,21 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<ForwardOnFailureOutputManager>
+    struct Implementation<ForwardAtFinishOutputManager>
     {
         std::stringstream stdout_stream;
         std::stringstream stderr_stream;
+        const bool if_success, if_failure;
         const std::tr1::shared_ptr<OutputManager> child;
         bool success;
 
         Implementation(
+                const bool s,
+                const bool f,
                 const std::tr1::shared_ptr<OutputManager> & m
                 ) :
+            if_success(s),
+            if_failure(f),
             child(m),
             success(false)
         {
@@ -49,14 +54,18 @@ namespace paludis
     };
 }
 
-ForwardOnFailureOutputManager::ForwardOnFailureOutputManager(const std::tr1::shared_ptr<OutputManager> & m) :
-    PrivateImplementationPattern<ForwardOnFailureOutputManager>(new Implementation<ForwardOnFailureOutputManager>(m))
+ForwardAtFinishOutputManager::ForwardAtFinishOutputManager(
+        const bool s,
+        const bool f,
+        const std::tr1::shared_ptr<OutputManager> & m) :
+    PrivateImplementationPattern<ForwardAtFinishOutputManager>(
+            new Implementation<ForwardAtFinishOutputManager>(s, f, m))
 {
 }
 
-ForwardOnFailureOutputManager::~ForwardOnFailureOutputManager()
+ForwardAtFinishOutputManager::~ForwardAtFinishOutputManager()
 {
-    if (! _imp->success)
+    if ((_imp->if_success && _imp->success) || (_imp->if_failure && ! _imp->success))
     {
         std::copy((std::istreambuf_iterator<char>(_imp->stdout_stream)),
                 std::istreambuf_iterator<char>(),
@@ -68,43 +77,43 @@ ForwardOnFailureOutputManager::~ForwardOnFailureOutputManager()
 }
 
 std::ostream &
-ForwardOnFailureOutputManager::stdout_stream()
+ForwardAtFinishOutputManager::stdout_stream()
 {
     return _imp->stdout_stream;
 }
 
 std::ostream &
-ForwardOnFailureOutputManager::stderr_stream()
+ForwardAtFinishOutputManager::stderr_stream()
 {
     return _imp->stderr_stream;
 }
 
 void
-ForwardOnFailureOutputManager::succeeded()
+ForwardAtFinishOutputManager::succeeded()
 {
     _imp->success = true;
 }
 
 void
-ForwardOnFailureOutputManager::message(const MessageType, const std::string &)
+ForwardAtFinishOutputManager::message(const MessageType, const std::string &)
 {
 }
 
 void
-ForwardOnFailureOutputManager::flush()
+ForwardAtFinishOutputManager::flush()
 {
 }
 
 bool
-ForwardOnFailureOutputManager::want_to_flush() const
+ForwardAtFinishOutputManager::want_to_flush() const
 {
     return false;
 }
 
 void
-ForwardOnFailureOutputManager::nothing_more_to_come()
+ForwardAtFinishOutputManager::nothing_more_to_come()
 {
-    if (_imp->success)
+    if (! ((_imp->if_success && _imp->success) || (_imp->if_failure && ! _imp->success)))
     {
         _imp->stdout_stream.clear();
         _imp->stderr_stream.clear();
@@ -112,29 +121,31 @@ ForwardOnFailureOutputManager::nothing_more_to_come()
 }
 
 const std::tr1::shared_ptr<const Set<std::string> >
-ForwardOnFailureOutputManager::factory_managers()
+ForwardAtFinishOutputManager::factory_managers()
 {
     std::tr1::shared_ptr<Set<std::string> > result(new Set<std::string>);
-    result->insert("forward_on_failure");
+    result->insert("forward_at_finish");
     return result;
 }
 
 const std::tr1::shared_ptr<OutputManager>
-ForwardOnFailureOutputManager::factory_create(
+ForwardAtFinishOutputManager::factory_create(
         const OutputManagerFactory::KeyFunction & key_func,
         const OutputManagerFactory::CreateChildFunction & create_child_function,
         const OutputManagerFactory::ReplaceVarsFunc &)
 {
-    std::string child_s(key_func("child"));
+    std::string child_s(key_func("child")), if_success_s(key_func("if_success")), if_failure_s(key_func("if_failure"));
 
     if (child_s.empty())
         throw ConfigurationError("Key 'child' not specified when creating a forward_on_failure output manager");
 
     std::tr1::shared_ptr<OutputManager> child(create_child_function(child_s));
 
-    return make_shared_ptr(new ForwardOnFailureOutputManager(child));
+    return make_shared_ptr(new ForwardAtFinishOutputManager(
+                destringify<bool>(if_success_s),
+                destringify<bool>(if_failure_s),
+                child));
 }
 
-template class PrivateImplementationPattern<ForwardOnFailureOutputManager>;
-
+template class PrivateImplementationPattern<ForwardAtFinishOutputManager>;
 

@@ -37,7 +37,7 @@
 #include <paludis/buffer_output_manager.hh>
 #include <paludis/file_output_manager.hh>
 #include <paludis/format_messages_output_manager.hh>
-#include <paludis/forward_on_failure_output_manager.hh>
+#include <paludis/forward_at_finish_output_manager.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/tee_output_manager.hh>
 
@@ -97,7 +97,7 @@ OutputManagerFactory::OutputManagerFactory() :
     add_manager(BufferOutputManager::factory_managers(), BufferOutputManager::factory_create);
     add_manager(FileOutputManager::factory_managers(), FileOutputManager::factory_create);
     add_manager(FormatMessagesOutputManager::factory_managers(), FormatMessagesOutputManager::factory_create);
-    add_manager(ForwardOnFailureOutputManager::factory_managers(), ForwardOnFailureOutputManager::factory_create);
+    add_manager(ForwardAtFinishOutputManager::factory_managers(), ForwardAtFinishOutputManager::factory_create);
     add_manager(StandardOutputManager::factory_managers(), StandardOutputManager::factory_create);
     add_manager(TeeOutputManager::factory_managers(), TeeOutputManager::factory_create);
 }

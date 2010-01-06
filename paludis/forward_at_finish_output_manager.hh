@@ -17,10 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_FORWARD_ON_FAILURE_OUTPUT_MANAGER_HH
-#define PALUDIS_GUARD_PALUDIS_FORWARD_ON_FAILURE_OUTPUT_MANAGER_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_FORWARD_AT_FINISH_OUTPUT_MANAGER_HH
+#define PALUDIS_GUARD_PALUDIS_FORWARD_AT_FINISH_OUTPUT_MANAGER_HH 1
 
-#include <paludis/file_output_manager-fwd.hh>
+#include <paludis/forward_at_finish_output_manager-fwd.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/output_manager_factory.hh>
 #include <paludis/util/set-fwd.hh>
@@ -30,13 +30,16 @@
 
 namespace paludis
 {
-    class PALUDIS_VISIBLE ForwardOnFailureOutputManager :
-        private PrivateImplementationPattern<ForwardOnFailureOutputManager>,
+    class PALUDIS_VISIBLE ForwardAtFinishOutputManager :
+        private PrivateImplementationPattern<ForwardAtFinishOutputManager>,
         public OutputManager
     {
         public:
-            ForwardOnFailureOutputManager(const std::tr1::shared_ptr<OutputManager> & child);
-            ~ForwardOnFailureOutputManager();
+            ForwardAtFinishOutputManager(
+                    const bool if_success,
+                    const bool if_failure,
+                    const std::tr1::shared_ptr<OutputManager> & child);
+            ~ForwardAtFinishOutputManager();
 
             virtual std::ostream & stdout_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual std::ostream & stderr_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -58,7 +61,7 @@ namespace paludis
     };
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
-    extern template class PrivateImplementationPattern<ForwardOnFailureOutputManager>;
+    extern template class PrivateImplementationPattern<ForwardAtFinishOutputManager>;
 #endif
 }
 
