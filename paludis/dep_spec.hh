@@ -301,8 +301,17 @@ namespace paludis
 
             /**
              * Is our requirement met for a given PackageID?
+             *
+             * The string in the return type might be a description of why the
+             * requirement was not met. Sometimes better messages can be given
+             * than simply the return value of as_human_string() when the ID to
+             * be matched is known. If the bool is false, the string is
+             * meaningless.
+             *
+             * \since 0.44 returns pair<bool, std::string>
              */
-            virtual bool requirement_met(const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            virtual const std::pair<bool, std::string> requirement_met(
+                    const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Return a human readable string representation of ourself.

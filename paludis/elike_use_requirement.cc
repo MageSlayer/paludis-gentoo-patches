@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -374,12 +374,14 @@ namespace
             {
             }
 
-            virtual bool requirement_met(const Environment * const env, const PackageID & id) const
+            virtual const std::pair<bool, std::string> requirement_met(const Environment * const env, const PackageID & id) const
             {
                 using namespace std::tr1::placeholders;
-                return _reqs.end() == std::find_if(_reqs.begin(), _reqs.end(), std::tr1::bind(
-                        std::logical_not<bool>(), std::tr1::bind(
-                             &UseRequirement::requirement_met, _1, env, std::tr1::cref(id))));
+                return std::make_pair(
+                        _reqs.end() == std::find_if(_reqs.begin(), _reqs.end(), std::tr1::bind(
+                                std::logical_not<bool>(), std::tr1::bind(
+                                    &UseRequirement::requirement_met, _1, env, std::tr1::cref(id)))),
+                        as_human_string());
             }
 
             virtual const std::string as_human_string() const
