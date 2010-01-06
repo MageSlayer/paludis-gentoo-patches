@@ -71,6 +71,20 @@ namespace paludis
 
             const std::tr1::function<std::string (const std::string &)> pipe_command_handler()
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * The underlying output manager.
+             *
+             * The underlying output manager is not constructed until the child
+             * process requests it, so a null pointer may be returned.
+             *
+             * Normally the output manager is destroyed when the
+             * IPCInputManager is destroyed, but keeping the shared pointer
+             * this method returns around for longer will also work, if, for
+             * example, any 'finished' messages are to be displayed later on.
+             */
+            const std::tr1::shared_ptr<OutputManager> underlying_output_manager_if_constructed() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE OutputManagerFromIPC :

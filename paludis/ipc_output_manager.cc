@@ -35,6 +35,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/thread.hh>
 #include <paludis/util/pipe.hh>
+#include <paludis/util/mutex.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/create_output_manager_info.hh>
 #include <paludis/serialise.hh>
@@ -181,6 +182,7 @@ namespace paludis
         const Environment * const env;
         const OutputExclusivity exclusivity;
 
+        mutable Mutex mutex;
         std::tr1::shared_ptr<OutputManager> output_manager;
         std::tr1::shared_ptr<Thread> copy_thread;
 
@@ -240,14 +242,18 @@ IPCInputManager::_pipe_command_handler(const std::string & s)
         if (tokens.size() != 3 || tokens[1] != "1")
             return "Ebad CREATE subcommand";
 
-        if (_imp->output_manager)
-            return "Ealready constructed";
-
         Deserialiser deserialiser(_imp->env, tokens[2]);
         Deserialisation deserialisation("CreateOutputManagerInfo", deserialiser);
         const std::tr1::shared_ptr<CreateOutputManagerInfo> i(CreateOutputManagerInfo::deserialise(deserialisation));
 
-        _imp->output_manager = _imp->env->create_output_manager(*i);
+        {
+            Lock lock(_imp->mutex);
+            if (_imp->output_manager)
+                return "Ealready constructed";
+
+            _imp->output_manager = _imp->env->create_output_manager(*i);
+        }
+
         _imp->copy_thread.reset(new Thread(std::tr1::bind(&IPCInputManager::_copy_thread, this)));
 
         return "O 1 " + stringify(_imp->stdout_pipe.write_fd()) + " " + stringify(_imp->stderr_pipe.write_fd());
@@ -346,6 +352,13 @@ IPCInputManager::_copy_thread()
                 done = true;
         }
     }
+}
+
+const std::tr1::shared_ptr<OutputManager>
+IPCInputManager::underlying_output_manager_if_constructed() const
+{
+    Lock lock(_imp->mutex);
+    return _imp->output_manager;
 }
 
 namespace paludis
