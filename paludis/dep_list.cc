@@ -583,13 +583,13 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::T
             if (! node.spec()->additional_requirements_ptr())
                 throw AllMaskedError(*node.spec());
 
-            std::tr1::shared_ptr<const PackageIDSequence> match_except_reqs((*d->_imp->env)[selection::AllVersionsUnsorted(
+            std::tr1::shared_ptr<const PackageIDSequence> match_except_reqs((*d->_imp->env)[selection::AllVersionsSorted(
                         generator::Matches(*node.spec(), d->_imp->opts->match_package_options() + mpo_ignore_additional_requirements))]);
 
-            for (PackageIDSequence::ConstIterator i(match_except_reqs->begin()),
-                    i_end(match_except_reqs->end()) ; i != i_end ; ++i)
+            for (PackageIDSequence::ReverseConstIterator i(match_except_reqs->rbegin()),
+                    i_end(match_except_reqs->rend()) ; i != i_end ; ++i)
                 if (! (*i)->masked())
-                    throw AdditionalRequirementsNotMetError(*node.spec());
+                    throw AdditionalRequirementsNotMetError(*node.spec(), *i);
 
             throw AllMaskedError(*node.spec());
         }
