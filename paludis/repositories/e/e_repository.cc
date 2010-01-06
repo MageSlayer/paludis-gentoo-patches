@@ -1440,9 +1440,14 @@ ERepository::repository_factory_create(
     {
         if (! layout_conf
                 || (profile_layout = layout_conf->get("profile_layout")).empty())
-            profile_layout = EExtraDistributionData::get_instance()->data_from_distribution(
-                    *DistributionData::get_instance()->distribution_from_string(
-                        env->distribution()))->default_profile_layout();
+        {
+            if (master_repositories)
+                profile_layout = (*master_repositories->begin())->params().profile_layout();
+            else
+                profile_layout = EExtraDistributionData::get_instance()->data_from_distribution(
+                        *DistributionData::get_instance()->distribution_from_string(
+                            env->distribution()))->default_profile_layout();
+        }
     }
 
     UseManifest use_manifest(manifest_use);
