@@ -175,7 +175,6 @@ namespace paludis
                 std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const;
                 std::tr1::shared_ptr<const DepTag> tag() const;
                 void set_tag(const std::tr1::shared_ptr<const DepTag> & s);
-                const std::tr1::shared_ptr<const PythonPackageDepSpec> without_additional_requirements() const;
 
                 std::string py_str() const;
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -152,11 +152,6 @@ namespace
             strings.push_back(stringify(spec));
             std::copy(spec.version_requirements_ptr()->begin(), spec.version_requirements_ptr()->end(),
                     version_requirements->back_inserter());
-        }
-
-        std::tr1::shared_ptr<const PackageDepSpecData> without_additional_requirements() const
-        {
-            return make_shared_ptr(new RangeRewrittenPackageDepSpecData(*this));
         }
 
         std::tr1::shared_ptr<const PackageDepSpecData> without_slot_requirements() const

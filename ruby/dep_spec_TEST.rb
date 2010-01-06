@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # vim: set sw=4 sts=4 et tw=80 :
 #
-# Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
 # Copyright (c) 2007 Richard Brown
 #
 # This file is part of the Paludis package manager. Paludis is free software;
@@ -233,14 +233,6 @@ module Paludis
 ###            assert_equal 'b', pda.use_requirements[1][:flag]
 ###            assert_equal false, pda.use_requirements[1][:state]
 ###        end
-
-        def test_without_additional_requirements
-            assert_equal ">=foo/bar-1:100::testrepo", pda.without_additional_requirements.to_s
-            assert_equal "*/bar", pdb.without_additional_requirements.to_s
-            assert_equal "foo/bar::installed?", pdc.without_additional_requirements.to_s
-            assert_equal "foo/*::/??", pdd.without_additional_requirements.to_s
-            assert_equal "foo/bar::testrepo->/mychroot", pde.without_additional_requirements.to_s
-        end
 
         def test_tag
             assert_nil pda.tag

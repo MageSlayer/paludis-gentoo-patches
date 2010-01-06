@@ -329,14 +329,6 @@ PythonPackageDepSpec::as_package_dep_spec() const
     return this;
 }
 
-const std::tr1::shared_ptr<const PythonPackageDepSpec>
-PythonPackageDepSpec::without_additional_requirements() const
-{
-    PackageDepSpec p(*this);
-
-    return make_shared_ptr(new PythonPackageDepSpec(*p.without_additional_requirements()));
-}
-
 std::tr1::shared_ptr<const QualifiedPackageName>
 PythonPackageDepSpec::package_ptr() const
 {
@@ -1262,11 +1254,6 @@ void expose_dep_spec()
                 "Use requirements (may be None)."
                 )
 #endif
-
-        .def("without_additional_requirements", &PythonPackageDepSpec::without_additional_requirements,
-                "without_additional_requirements() -> PackageDepSpec\n"
-                "Fetch a copy of ourself without additional requirements."
-            )
 
         .def("__str__", &PythonPackageDepSpec::py_str)
         ;
