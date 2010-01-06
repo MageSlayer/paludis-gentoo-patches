@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -63,7 +63,7 @@ namespace
         Context context("When opening '" + stringify(e) + "' for write:");
 
         if (-1 == open_flags)
-            open_flags = O_CREAT | O_TRUNC | O_WRONLY;
+            open_flags = O_CREAT | O_TRUNC | O_WRONLY | O_CLOEXEC;
 
         int result(open(stringify(e).c_str(), open_flags, 0644));
         if (-1 == result)
