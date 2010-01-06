@@ -44,6 +44,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <unistd.h>
+#include <fcntl.h>
 #include <errno.h>
 
 using namespace paludis;
@@ -92,8 +93,14 @@ IPCOutputManager::IPCOutputManager(const int r, const int w, const CreateOutputM
     if (tokens.size() != 4 || tokens[0] != "O" || tokens[1] != "1")
         throw InternalError(PALUDIS_HERE, "got response '" + response + "'");
 
-    _imp->stdout_stream.reset(new SafeOFStream(destringify<int>(tokens[2])));
-    _imp->stderr_stream.reset(new SafeOFStream(destringify<int>(tokens[3])));
+    int stdout_fd(destringify<int>(tokens[2])), stderr_fd(destringify<int>(tokens[3]));
+    _imp->stdout_stream.reset(new SafeOFStream(stdout_fd));
+    _imp->stderr_stream.reset(new SafeOFStream(stderr_fd));
+
+    if (0 != ::fcntl(stdout_fd, F_SETFD, FD_CLOEXEC))
+        throw InternalError(PALUDIS_HERE, "fcntl failed");
+    if (0 != ::fcntl(stderr_fd, F_SETFD, FD_CLOEXEC))
+        throw InternalError(PALUDIS_HERE, "fcntl failed");
 }
 
 IPCOutputManager::~IPCOutputManager()
@@ -183,6 +190,14 @@ namespace paludis
             env(e),
             exclusivity(x)
         {
+            if (0 != ::fcntl(finished_pipe.read_fd(), F_SETFD, FD_CLOEXEC))
+                throw InternalError(PALUDIS_HERE, "fcntl failed");
+            if (0 != ::fcntl(finished_pipe.write_fd(), F_SETFD, FD_CLOEXEC))
+                throw InternalError(PALUDIS_HERE, "fcntl failed");
+            if (0 != ::fcntl(stdout_pipe.read_fd(), F_SETFD, FD_CLOEXEC))
+                throw InternalError(PALUDIS_HERE, "fcntl failed");
+            if (0 != ::fcntl(stderr_pipe.read_fd(), F_SETFD, FD_CLOEXEC))
+                throw InternalError(PALUDIS_HERE, "fcntl failed");
         }
     };
 }
@@ -358,6 +373,11 @@ namespace paludis
                 throw InternalError(PALUDIS_HERE, "no pipe command handler available");
             unsetenv("PALUDIS_IPC_READ_FD");
             unsetenv("PALUDIS_IPC_WRITE_FD");
+
+            if (0 != ::fcntl(read_fd, F_SETFD, FD_CLOEXEC))
+                throw InternalError(PALUDIS_HERE, "fcntl failed");
+            if (0 != ::fcntl(write_fd, F_SETFD, FD_CLOEXEC))
+                throw InternalError(PALUDIS_HERE, "fcntl failed");
         }
     };
 }
