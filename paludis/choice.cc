@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -77,7 +77,7 @@ ChoicePrefixNameValidator::validate(const std::string & s)
         if (s[0] >= 'A' && s[0] <= 'Z')
             throw ChoicePrefixNameError(s);
 
-        if (std::string::npos != s.find(" \t\r\n"))
+        if (std::string::npos != s.find(" \t\r\n()"))
             throw ChoicePrefixNameError(s);
     }
 }
@@ -110,7 +110,7 @@ ChoiceNameWithPrefixValidator::validate(const std::string & s)
             break;
     };
 
-    if (std::string::npos != s.find(" \t\r\n"))
+    if (std::string::npos != s.find(" \t\r\n()"))
         throw ChoiceNameWithPrefixError(s);
 }
 
@@ -142,7 +142,7 @@ UnprefixedChoiceNameValidator::validate(const std::string & s)
             break;
     };
 
-    if (std::string::npos != s.find(" \t\r\n"))
+    if (std::string::npos != s.find(" \t\r\n()"))
         throw ChoiceNameWithPrefixError(s);
 }
 
