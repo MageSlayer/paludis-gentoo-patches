@@ -3,7 +3,7 @@
 
 @GENERATED_FILE@
 
-# Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -53,8 +53,9 @@ paludis_ecmd()
 {
     local cmd="$1" hook="$2" prefix="$3" message="$4" newline="$5"
 
-    echo -ne "${prefix}${message}"
-    [[ -z "${newline}" ]] && echo
+    # don't try to avoid a newline for einfon. it gets horrible when logging
+    # things, and einfon is abused more than it is used correctly.
+    echo -e "${prefix}${message}"
 
     if type perform_hook &>/dev/null ; then
         if [[ -n "${hook}" ]] ; then
@@ -74,8 +75,7 @@ einfon()
         "einfon" \
         "einfo" \
         "`echo -ne " ${COLOUR_GOOD}*${COLOUR_NORMAL} "`" \
-        "$*" \
-        "no"
+        "$*"
 }
 
 einfo()
