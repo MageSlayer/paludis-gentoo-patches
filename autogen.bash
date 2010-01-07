@@ -39,7 +39,7 @@ run mkdir -p config
 run $(get libtoolize 1.5 ) --copy --force --automake
 rm -f config.cache
 run $(get aclocal 1.11 )
-run $(get autoheader 2.61 2.60 2.59 )
-run $(get autoconf 2.61 2.60 2.59 )
+run $(get autoheader 2.65 2.64 2.63 2.62 2.61 2.60 2.59 )
+run $(get autoconf 2.65 2.64 2.63 2.62 2.61 2.60 2.59 )
 run $(get automake 1.11 ) -a --copy
 
