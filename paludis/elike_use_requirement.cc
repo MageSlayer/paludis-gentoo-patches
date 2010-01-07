@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -98,7 +98,7 @@ namespace
                 return _id;
             }
 
-            bool requirement_met(const Environment * const env, const PackageID & i) const
+            const std::pair<bool, std::string> requirement_met(const Environment * const env, const PackageID & i) const
             {
                 if (_flags.length() >= 2 && ":*" == _flags.substr(_flags.length() - 2))
                 {
@@ -120,17 +120,29 @@ namespace
                             "ID '" << *_id << "' uses requirement '" << _flags << "' but has no choice prefix '" << prefix << "'";
                     else
                     {
+                        std::pair<bool, std::string> result(true, "");
                         for (Choice::ConstIterator v((*cc)->begin()), v_end((*cc)->end()) ;
                                 v != v_end ; ++v)
                             if (! one_requirement_met(env, (*v)->name_with_prefix(), i))
-                                return false;
+                            {
+                                if (! result.first)
+                                    result.second.append(", ");
+                                result.second.append(stringify((*v)->name_with_prefix()));
+                                result.first = false;
+                            }
+
+                        if (! result.first)
+                        {
+                            result.second = as_human_string() + " (unmet: " + result.second + ")";
+                            return result;
+                        }
                     }
                 }
                 else
                     if (! one_requirement_met(env, ChoiceNameWithPrefix(_flags), i))
-                        return false;
+                        return std::make_pair(false, as_human_string());
 
-                return true;
+                return std::make_pair(true, as_human_string());
             }
 
             const Tribool default_value() const PALUDIS_ATTRIBUTE((warn_unused_result))
@@ -365,8 +377,10 @@ namespace
         public AdditionalPackageDepSpecRequirement
     {
         private:
+            typedef std::vector<std::tr1::shared_ptr<const UseRequirement> > Reqs;
+
             std::string _raw;
-            std::vector<std::tr1::shared_ptr<const UseRequirement> > _reqs;
+            Reqs _reqs;
 
         public:
             UseRequirements(const std::string & r) :
@@ -374,12 +388,25 @@ namespace
             {
             }
 
-            virtual bool requirement_met(const Environment * const env, const PackageID & id) const
+            virtual const std::pair<bool, std::string> requirement_met(const Environment * const env, const PackageID & id) const
             {
                 using namespace std::tr1::placeholders;
-                return _reqs.end() == std::find_if(_reqs.begin(), _reqs.end(), std::tr1::bind(
-                        std::logical_not<bool>(), std::tr1::bind(
-                             &UseRequirement::requirement_met, _1, env, std::tr1::cref(id))));
+
+                std::pair<bool, std::string> result(true, "");
+                for (Reqs::const_iterator r(_reqs.begin()), r_end(_reqs.end()) ;
+                        r != r_end ; ++r)
+                {
+                    std::pair<bool, std::string> r_result((*r)->requirement_met(env, id));
+                    if (! r_result.first)
+                    {
+                        if (! result.first)
+                            result.second.append("; ");
+                        result.second.append(r_result.second);
+                        result.first = false;
+                    }
+                }
+
+                return result;
             }
 
             virtual const std::string as_human_string() const

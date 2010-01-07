@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -34,9 +34,11 @@ AllMaskedError::AllMaskedError(const PackageDepSpec & q) throw () :
 {
 }
 
-AdditionalRequirementsNotMetError::AdditionalRequirementsNotMetError(const PackageDepSpec & q) throw () :
-    DepListError("Error searching for '" + stringify(q) + "': additional requirements are not met"),
-    _query(q)
+AdditionalRequirementsNotMetError::AdditionalRequirementsNotMetError(const PackageDepSpec & q,
+        const std::tr1::shared_ptr<const PackageID> & i) throw () :
+    DepListError("Error searching for '" + stringify(q) + "': additional requirements are not met on '" + stringify(*i) + "'"),
+    _query(q),
+    _id(i)
 {
 }
 

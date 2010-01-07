@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -744,17 +744,17 @@ namespace
     };
 }
 
-bool
+const std::pair<bool, std::string>
 UserKeyRequirement::requirement_met(const Environment * const, const PackageID & id) const
 {
     Context context("When working out whether '" + stringify(id) + "' matches " + as_raw_string() + ":");
 
     PackageID::MetadataConstIterator m(id.find_metadata(_imp->key));
     if (m == id.end_metadata())
-        return false;
+        return std::make_pair(false, as_human_string());
 
     KeyComparator c(_imp->value, _imp->op);
-    return (*m)->accept_returning<bool>(c);
+    return std::make_pair((*m)->accept_returning<bool>(c), as_human_string());
 }
 
 const std::string

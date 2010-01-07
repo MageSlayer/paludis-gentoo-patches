@@ -88,12 +88,6 @@ class TestCase_1_DepSpecs(unittest.TestCase):
 ###        ur = iter(spec.additional_requirements).next()
 ###        self.assert_(isinstance(ur, EnabledUseRequirement))
 
-    def test_10_without_additional_requirements(self):
-        spec = parse_user_package_dep_spec("foo/monkey[foo]", TestEnvironment(), UserPackageDepSpecOptions())
-        pds = spec.without_additional_requirements()
-###        self.assertEquals(pds.additional_requirements, None)
-###        self.assertEquals(str(pds), "foo/monkey")
-
     def test_11_name(self):
         self.get_depspecs()
         self.assertEqual(str(self.nds.text), "system")

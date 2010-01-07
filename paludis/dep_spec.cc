@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -733,52 +733,6 @@ std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements>
 PackageDepSpec::additional_requirements_ptr() const
 {
     return _imp->data->additional_requirements_ptr();
-}
-
-std::tr1::shared_ptr<PackageDepSpec>
-PackageDepSpec::without_additional_requirements() const
-{
-    using namespace std::tr1::placeholders;
-
-    PartiallyMadePackageDepSpec result(data()->options_for_partially_made_package_dep_spec());
-
-    if (package_ptr())
-        result.package(*package_ptr());
-
-    if (package_name_part_ptr())
-        result.package_name_part(*package_name_part_ptr());
-
-    if (category_name_part_ptr())
-        result.category_name_part(*category_name_part_ptr());
-
-    if (version_requirements_ptr())
-        std::for_each(version_requirements_ptr()->begin(), version_requirements_ptr()->end(),
-                std::tr1::bind(&PartiallyMadePackageDepSpec::version_requirement, &result, _1));
-
-    result.version_requirements_mode(version_requirements_mode());
-
-    if (slot_requirement_ptr())
-        result.slot_requirement(slot_requirement_ptr());
-
-    if (in_repository_ptr())
-        result.in_repository(*in_repository_ptr());
-
-    if (from_repository_ptr())
-        result.from_repository(*from_repository_ptr());
-
-    if (installed_at_path_ptr())
-        result.installed_at_path(*installed_at_path_ptr());
-
-    if (installable_to_path_ptr())
-        result.installable_to_path(*installable_to_path_ptr());
-
-    if (installable_to_repository_ptr())
-        result.installable_to_repository(*installable_to_repository_ptr());
-
-    if (annotations_key())
-        result.annotations(annotations_key());
-
-    return make_shared_ptr(new PackageDepSpec(result));
 }
 
 std::tr1::shared_ptr<const DepTag>

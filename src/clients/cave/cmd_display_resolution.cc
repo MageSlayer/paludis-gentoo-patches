@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -619,6 +619,7 @@ namespace
     }
 
     void display_unable_to_make_decision(
+            const std::tr1::shared_ptr<Environment> & env,
             const std::tr1::shared_ptr<const Resolution> & resolution,
             const UnableToMakeDecision & d)
     {
@@ -645,9 +646,26 @@ namespace
             {
                 cout << "        Did not meet ";
                 display_one_constraint(**c);
+
                 ReasonNameGetter g(false);
                 cout << " from " << (*c)->reason()->accept_returning<std::pair<std::string, bool> >(g).first;
                 cout << endl;
+
+                if ((*c)->spec().if_package() && (*c)->spec().if_package()->additional_requirements_ptr() &&
+                        (! match_package(*env, *(*c)->spec().if_package(), *u->package_id(), MatchPackageOptions())) &&
+                        match_package(*env, *(*c)->spec().if_package(), *u->package_id(), MatchPackageOptions() + mpo_ignore_additional_requirements))
+                {
+                    for (AdditionalPackageDepSpecRequirements::ConstIterator a((*c)->spec().if_package()->additional_requirements_ptr()->begin()),
+                            a_end((*c)->spec().if_package()->additional_requirements_ptr()->end()) ;
+                            a != a_end ; ++a)
+                    {
+                        const std::pair<bool, std::string> p((*a)->requirement_met(env.get(), *u->package_id()));
+                        if (p.first)
+                            continue;
+
+                        cout << "            " << p.second << endl;
+                    }
+                }
             }
         }
     }
@@ -685,7 +703,7 @@ namespace
 
         bool visit(const UnableToMakeDecision & d) const
         {
-            display_unable_to_make_decision(resolution, d);
+            display_unable_to_make_decision(env, resolution, d);
             return true;
         }
     };
@@ -822,9 +840,13 @@ namespace
 
     struct DisplayOneDecisionVisitor
     {
+        const std::tr1::shared_ptr<Environment> env;
         const std::tr1::shared_ptr<const Resolution> resolution;
 
-        DisplayOneDecisionVisitor(const std::tr1::shared_ptr<const Resolution> & r) :
+        DisplayOneDecisionVisitor(
+                const std::tr1::shared_ptr<Environment> & e,
+                const std::tr1::shared_ptr<const Resolution> & r) :
+            env(e),
             resolution(r)
         {
         }
@@ -846,17 +868,17 @@ namespace
 
         void visit(const UnableToMakeDecision & d) const
         {
-            display_unable_to_make_decision(resolution, d);
+            display_unable_to_make_decision(env, resolution, d);
         }
     };
 
     void display_one_decision(
-            const std::tr1::shared_ptr<Environment> &,
+            const std::tr1::shared_ptr<Environment> & env,
             const DisplayResolutionCommandLine &,
             const std::tr1::shared_ptr<const Resolution> & resolution,
             const Decision & decision)
     {
-        decision.accept(DisplayOneDecisionVisitor(resolution));
+        decision.accept(DisplayOneDecisionVisitor(env, resolution));
     }
 
     void display_errors(

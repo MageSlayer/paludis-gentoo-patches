@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  * Copyright (c) 2006, 2007, 2008 Richard Brown
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -591,21 +591,6 @@ namespace
         Data_Get_Struct(self, std::tr1::shared_ptr<WrappedSpecBase>, ptr);
         (std::tr1::static_pointer_cast<WrappedSpec<PackageDepSpec> >(*ptr))->spec()->set_tag(value_to_dep_tag(dep_tag));
         return Qnil;
-    }
-
-    /*
-     * call-seq:
-     *     without_additional_requirements -> PackageDepSpec
-     *
-     * Fetch us without our use requirements.
-     */
-    VALUE
-    package_dep_spec_without_additional_requirements(VALUE self)
-    {
-        std::tr1::shared_ptr<WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, std::tr1::shared_ptr<WrappedSpecBase>, ptr);
-        return package_dep_spec_to_value(std::tr1::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(
-                    *ptr)->spec()->without_additional_requirements());
     }
 
     /*
@@ -1237,7 +1222,6 @@ namespace
 #endif
         rb_define_method(c_package_dep_spec, "tag", RUBY_FUNC_CAST(&package_dep_spec_tag), 0);
         rb_define_method(c_package_dep_spec, "tag=", RUBY_FUNC_CAST(&package_dep_spec_set_tag), 1);
-        rb_define_method(c_package_dep_spec, "without_additional_requirements", RUBY_FUNC_CAST(&package_dep_spec_without_additional_requirements), 0);
         VALUE (* package_dep_spec_to_s) (VALUE) = &dep_spec_to_s<PackageDepSpec>;
         rb_define_method(c_package_dep_spec, "to_s", RUBY_FUNC_CAST(package_dep_spec_to_s), 0);
 

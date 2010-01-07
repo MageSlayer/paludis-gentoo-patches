@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -99,12 +99,15 @@ namespace paludis
     {
         private:
             PackageDepSpec _query;
+            const std::tr1::shared_ptr<const PackageID> _id;
 
         public:
             ///\name Basic operations
             ///\{
 
-            AdditionalRequirementsNotMetError(const PackageDepSpec & query) throw ();
+            AdditionalRequirementsNotMetError(
+                    const PackageDepSpec & query,
+                    const std::tr1::shared_ptr<const PackageID> & id) throw ();
 
             virtual ~AdditionalRequirementsNotMetError() throw ();
 
@@ -116,6 +119,16 @@ namespace paludis
             const PackageDepSpec query() const
             {
                 return _query;
+            }
+
+            /**
+             * Our ID of choice.
+             *
+             * \since 0.44
+             */
+            const std::tr1::shared_ptr<const PackageID> package_id() const
+            {
+                return _id;
             }
     };
 

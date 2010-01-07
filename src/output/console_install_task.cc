@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -1758,11 +1758,16 @@ ConsoleInstallTask::on_additional_requirements_not_met_error(const AdditionalReq
     output_stream() << endl;
     if (e.query().additional_requirements_ptr())
     {
-        output_stream() << "Additional requirements are as follows:" << endl;
+        output_stream() << "Unmet additional requirements are as follows:" << endl;
         for (AdditionalPackageDepSpecRequirements::ConstIterator i(e.query().additional_requirements_ptr()->begin()),
                 i_end(e.query().additional_requirements_ptr()->end()) ;
                 i != i_end ; ++i)
-            output_stream() << "    * " << (*i)->as_human_string() << endl;
+        {
+            const std::pair<bool, std::string> r((*i)->requirement_met(environment(), *e.package_id()));
+            if (r.first)
+                continue;
+            output_stream() << "    * " << r.second << endl;
+        }
         output_stream() << endl;
     }
     output_stream() << "This error usually indicates that one of the packages you are trying to" << endl;

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -301,8 +301,17 @@ namespace paludis
 
             /**
              * Is our requirement met for a given PackageID?
+             *
+             * The string in the return type might be a description of why the
+             * requirement was not met. Sometimes better messages can be given
+             * than simply the return value of as_human_string() when the ID to
+             * be matched is known. If the bool is false, the string is
+             * meaningless.
+             *
+             * \since 0.44 returns pair<bool, std::string>
              */
-            virtual bool requirement_met(const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            virtual const std::pair<bool, std::string> requirement_met(
+                    const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Return a human readable string representation of ourself.
@@ -588,11 +597,6 @@ namespace paludis
              * Set our tag.
              */
             void set_tag(const std::tr1::shared_ptr<const DepTag> & s);
-
-            /**
-             * Fetch a copy of ourself without additional requirements.
-             */
-            std::tr1::shared_ptr<PackageDepSpec> without_additional_requirements() const;
 
             /**
              * Access to our data.
