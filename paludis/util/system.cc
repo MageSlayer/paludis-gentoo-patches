@@ -611,11 +611,13 @@ paludis::run_command(const Command & cmd)
                 {
                     if (-1 == dup2(captured_stdout->write_fd(), 1))
                         throw RunCommandError("captured stdout dup2 failed: " + stringify(strerror(errno)));
+                    close(captured_stdout->write_fd());
                 }
                 else if (-1 != stdout_write_fd)
                 {
                     if (-1 == dup2(stdout_write_fd, 1))
                         throw RunCommandError("stdout dup2 failed: " + stringify(strerror(errno)));
+                    close(stdout_write_fd);
 
                     if (-1 != stdout_close_fd)
                         close(stdout_close_fd);
@@ -625,11 +627,13 @@ paludis::run_command(const Command & cmd)
                 {
                     if (-1 == dup2(captured_stderr->write_fd(), 2))
                         throw RunCommandError("captured stderr dup2 failed: " + stringify(strerror(errno)));
+                    close(captured_stderr->write_fd());
                 }
                 else if (-1 != stderr_write_fd)
                 {
                     if (-1 == dup2(stderr_write_fd, 2))
                         throw RunCommandError("stderr dup2 failed: " + stringify(strerror(errno)));
+                    close(stderr_write_fd);
 
                     if (-1 != stderr_close_fd)
                         close(stderr_close_fd);
