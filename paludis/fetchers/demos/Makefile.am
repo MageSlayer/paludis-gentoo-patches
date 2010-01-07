@@ -3,7 +3,7 @@ SUBDIRS = .
 DEMOS = \
 	docurl
 
-AUTOMAKE_OPTIONS = parallel-tests
+AUTOMAKE_OPTIONS = 1.11 parallel-tests
 
 MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.o *.so *.epicfail

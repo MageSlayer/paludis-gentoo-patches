@@ -7,7 +7,7 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-AUTOMAKE_OPTIONS = parallel-tests
+AUTOMAKE_OPTIONS = 1.11 parallel-tests
 
 libpaludistestenvironment_la_SOURCES = \
 	test_environment.cc test_environment.hh \

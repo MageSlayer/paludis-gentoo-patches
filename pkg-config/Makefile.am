@@ -4,7 +4,7 @@ pkgconfig_DATA = paludis.pc
 EXTRA_DIST = paludis.pc.in
 CLEANFILES = paludis.pc *.epicfail
 
-AUTOMAKE_OPTIONS = parallel-tests
+AUTOMAKE_OPTIONS = 1.11 parallel-tests
 
 built-sources : $(BUILT_SOURCES)
 	for s in $(SUBDIRS) ; do $(MAKE) -C $$s built-sources || exit 1 ; done

@@ -6,7 +6,7 @@ DEMOS = \
 	new_packages.bash \
 	pretend_resume.hook
 
-AUTOMAKE_OPTIONS = parallel-tests
+AUTOMAKE_OPTIONS = 1.11 parallel-tests
 
 EXTRA_DIST = \
 	report.bash.in \

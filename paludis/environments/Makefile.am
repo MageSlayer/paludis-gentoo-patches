@@ -1,7 +1,7 @@
 SUBDIRS = . $(BUILD_ENVIRONMENTS)
 DIST_SUBDIRS = $(ALL_ENVIRONMENTS)
 
-AUTOMAKE_OPTIONS = parallel-tests
+AUTOMAKE_OPTIONS = 1.11 parallel-tests
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno  *.gcda *.loT *.epicfail
 MAINTAINERCLEANFILES = Makefile.in
