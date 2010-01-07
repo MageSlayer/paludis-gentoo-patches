@@ -225,6 +225,7 @@ namespace paludis
 
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
         std::tr1::shared_ptr<const MetadataValueKey<std::string> > layout_key;
+        std::tr1::shared_ptr<const MetadataValueKey<std::string> > profile_layout_key;
         std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
         std::tr1::shared_ptr<const MetadataCollectionKey<FSEntrySequence> > profiles_key;
         std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > cache_key;
@@ -275,6 +276,8 @@ namespace paludis
                     mkt_significant, params.entry_format())),
         layout_key(new LiteralMetadataValueKey<std::string> ("layout", "layout",
                     mkt_normal, params.layout())),
+        profile_layout_key(new LiteralMetadataValueKey<std::string> ("profile_layout", "profile_layout",
+                    mkt_normal, params.profile_layout())),
         location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
                     mkt_significant, params.location())),
         profiles_key(new LiteralMetadataFSEntrySequenceKey(
@@ -513,6 +516,7 @@ ERepository::_add_metadata_keys() const
     clear_metadata_keys();
     add_metadata_key(_imp->format_key);
     add_metadata_key(_imp->layout_key);
+    add_metadata_key(_imp->profile_layout_key);
     add_metadata_key(_imp->location_key);
     add_metadata_key(_imp->profiles_key);
     add_metadata_key(_imp->cache_key);
@@ -1436,9 +1440,14 @@ ERepository::repository_factory_create(
     {
         if (! layout_conf
                 || (profile_layout = layout_conf->get("profile_layout")).empty())
-            profile_layout = EExtraDistributionData::get_instance()->data_from_distribution(
-                    *DistributionData::get_instance()->distribution_from_string(
-                        env->distribution()))->default_profile_layout();
+        {
+            if (master_repositories)
+                profile_layout = (*master_repositories->begin())->params().profile_layout();
+            else
+                profile_layout = EExtraDistributionData::get_instance()->data_from_distribution(
+                        *DistributionData::get_instance()->distribution_from_string(
+                            env->distribution()))->default_profile_layout();
+        }
     }
 
     UseManifest use_manifest(manifest_use);

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -131,13 +131,19 @@ ExheresProfile::ExheresProfile(
 
     const std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > s(_imp->options_conf.known_choice_value_names(
                 make_null_shared_ptr(), ChoicePrefixName("suboptions")));
-    std::transform(s->begin(), s->end(), _imp->use_expand->inserter(),
-            paludis::stringify<UnprefixedChoiceName>);
+    for (Set<UnprefixedChoiceName>::ConstIterator f(s->begin()), f_end(s->end()) ;
+            f != f_end ; ++f)
+        if (_imp->options_conf.want_choice_enabled_locked(make_null_shared_ptr(),
+                    ChoicePrefixName("suboptions"), *f).first.is_true())
+            _imp->use_expand->insert(stringify(*f));
 
     const std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > sh(_imp->options_conf.known_choice_value_names(
                 make_null_shared_ptr(), ChoicePrefixName("hidden_suboptions")));
-    std::transform(sh->begin(), sh->end(), _imp->use_expand_hidden->inserter(),
-            paludis::stringify<UnprefixedChoiceName>);
+    for (Set<UnprefixedChoiceName>::ConstIterator f(sh->begin()), f_end(sh->end()) ;
+            f != f_end ; ++f)
+        if (_imp->options_conf.want_choice_enabled_locked(make_null_shared_ptr(),
+                    ChoicePrefixName("hidden_suboptions"), *f).first.is_true())
+            _imp->use_expand_hidden->insert(stringify(*f));
 
     if (! _imp->repository->params().master_repositories())
         for (ProfileFile<LineConfigFile>::ConstIterator i(_imp->packages_file.begin()),
@@ -172,6 +178,14 @@ ExheresProfile::_load_dir(const FSEntry & f)
         return;
     }
 
+    if ((f / "parents.conf").exists())
+    {
+        LineConfigFile file(f / "parents.conf", LineConfigFileOptions());
+        for (LineConfigFile::ConstIterator line(file.begin()), line_end(file.end()) ;
+                line != line_end ; ++line)
+            _load_dir((f / *line).realpath());
+    }
+
     if ((f / "options.conf").exists())
         _imp->options_conf.add_file(f / "options.conf");
 
@@ -198,14 +212,6 @@ ExheresProfile::_load_dir(const FSEntry & f)
                 k != k_end ; ++k)
             _imp->environment_variables[k->first] = k->second;
     }
-
-    if ((f / "parents.conf").exists())
-    {
-        LineConfigFile file(f / "parents.conf", LineConfigFileOptions());
-        for (LineConfigFile::ConstIterator line(file.begin()), line_end(file.end()) ;
-                line != line_end ; ++line)
-            _load_dir((f / *line).realpath());
-    }
 }
 
 bool
@@ -218,7 +224,7 @@ ExheresProfile::use_masked(
 {
     std::pair<Tribool, bool> enabled_locked(_imp->options_conf.want_choice_enabled_locked(
                 id, choice->prefix(), value_unprefixed));
-    return enabled_locked.first.is_true() && enabled_locked.second;
+    return enabled_locked.first.is_false() && enabled_locked.second;
 }
 
 bool
@@ -231,7 +237,7 @@ ExheresProfile::use_forced(
 {
     std::pair<Tribool, bool> enabled_locked(_imp->options_conf.want_choice_enabled_locked(
                 id, choice->prefix(), value_unprefixed));
-    return enabled_locked.first.is_false() && enabled_locked.second;
+    return enabled_locked.first.is_true() && enabled_locked.second;
 }
 
 Tribool
