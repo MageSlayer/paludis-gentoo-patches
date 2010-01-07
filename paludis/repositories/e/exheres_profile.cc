@@ -162,6 +162,39 @@ ExheresProfile::ExheresProfile(
             spec->set_tag(_imp->system_tag);
             _imp->system_packages->root()->append(spec);
         }
+
+    for (ProfileFile<MaskFile>::ConstIterator line(_imp->package_mask_file.begin()), line_end(_imp->package_mask_file.end()) ;
+            line != line_end ; ++line)
+    {
+        if (line->second.first.empty())
+            continue;
+
+        try
+        {
+            std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(
+                        parse_elike_package_dep_spec(line->second.first,
+                            line->first->supported()->package_dep_spec_parse_options(),
+                            line->first->supported()->version_spec_options(),
+                            std::tr1::shared_ptr<const PackageID>())));
+
+            if (a->package_ptr())
+                _imp->package_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second.second));
+            else
+                Log::get_instance()->message("e.profile.package_mask.bad_spec", ll_warning, lc_context)
+                    << "Loading package.mask spec '" << line->second.first << "' failed because specification does not restrict to a "
+                    "unique package";
+        }
+        catch (const InternalError &)
+        {
+            throw;
+        }
+        catch (const Exception & e)
+        {
+            Log::get_instance()->message("e.profile.package_mask.bad_spec", ll_warning, lc_context)
+                << "Loading package.mask spec '" << line->second.first << "' failed due to exception '" << e.message() << "' ("
+                << e.what() << ")";
+        }
+    }
 }
 
 ExheresProfile::~ExheresProfile()
