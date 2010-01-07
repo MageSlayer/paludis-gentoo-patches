@@ -587,10 +587,7 @@ paludis_datadir = $(datadir)/paludis
 dist_paludis_data_DATA = traditional.exclude ebuild_entries_suffixes.conf
 
 TESTS = \
-	aa_visitor_TEST \
-	dep_parser_TEST \
-	dep_spec_pretty_printer_TEST \
-	depend_rdepend_TEST \
+	vdb_repository_TEST \
 	e_repository_TEST \
 	e_repository_TEST_0 \
 	e_repository_TEST_1 \
@@ -604,14 +601,17 @@ TESTS = \
 	e_repository_TEST_phases \
 	e_repository_TEST_replacing \
 	e_repository_TEST_symlink_rewriting \
+	exndbam_repository_TEST \
+	aa_visitor_TEST \
+	dep_parser_TEST \
+	dep_spec_pretty_printer_TEST \
+	depend_rdepend_TEST \
 	e_repository_sets_TEST \
 	ebuild_flat_metadata_cache_TEST \
-	exndbam_repository_TEST \
 	fetch_visitor_TEST \
 	fix_locked_dependencies_TEST \
 	source_uri_finder_TEST \
 	vdb_merger_TEST \
-	vdb_repository_TEST \
 	vdb_unmerger_TEST \
 	$(GLSA_TESTS)
 

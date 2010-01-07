@@ -55,10 +55,15 @@ paludis_LDADD = \
 	$(top_builddir)/src/output/liboutput.a \
 	$(DYNAMIC_LD_LIBS)
 
-TESTS = version_TEST help_TEST \
+TESTS = \
+	upgrade_TEST \
+	install_TEST \
+	continue_on_failure_TEST \
+	version_TEST help_TEST \
 	list_repository_formats_TEST \
-	exception_TEST install_TEST pretend_TEST upgrade_TEST args_from_environment_TEST \
-	continue_on_failure_TEST
+	exception_TEST \
+	pretend_TEST \
+	args_from_environment_TEST
 
 EXTRA_DIST = \
 	$(man_MANS) \
