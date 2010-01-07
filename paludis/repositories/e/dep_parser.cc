@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,6 +38,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
+#include <paludis/choice.hh>
 #include <list>
 #include <set>
 #include <ostream>
@@ -214,10 +215,11 @@ namespace
     void dependency_label_handler(
             const typename ParseStackTypes<T_>::Stack & h,
             const typename ParseStackTypes<T_>::AnnotationsGoHere & annotations_go_here,
+            const std::tr1::shared_ptr<const PackageID> & id,
             const std::string & s,
             const EAPI & eapi)
     {
-        std::tr1::shared_ptr<DependenciesLabelsDepSpec> spec(parse_dependency_label(s, eapi));
+        std::tr1::shared_ptr<DependenciesLabelsDepSpec> spec(parse_dependency_label(id, s, eapi));
         h.begin()->item()->append(spec);
         annotations_go_here(spec);
     }
@@ -363,9 +365,11 @@ paludis::erepository::parse_depend(const std::string & s,
                 value_for<n::on_any>(std::tr1::bind(&any_all_handler<DependencySpecTree, AnyDepSpec>, std::tr1::ref(stack))),
                 value_for<n::on_arrow>(std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2)),
                 value_for<n::on_error>(std::tr1::bind(&error_handler, s, _1)),
-                value_for<n::on_label>(std::tr1::bind(&dependency_label_handler<DependencySpecTree>, std::tr1::ref(stack),
+                value_for<n::on_label>(std::tr1::bind(&dependency_label_handler<DependencySpecTree>,
+                        std::tr1::ref(stack),
                         ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::tr1::bind(
-                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), _1, eapi)),
+                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)),
+                        id, _1, eapi)),
                 value_for<n::on_pop>(std::tr1::bind(&pop_handler<DependencySpecTree>, std::tr1::ref(stack),
                         ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::tr1::bind(
                                 &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), s)),
@@ -669,8 +673,41 @@ paludis::erepository::parse_plain_text_label(const std::string & s)
     return make_shared_ptr(new PlainTextLabelDepSpec(s));
 }
 
+namespace
+{
+    bool enabled_if_option(
+            const std::tr1::shared_ptr<const PackageID> id,
+            const std::string label,
+            const ChoiceNameWithPrefix n)
+    {
+        if (id->repository()->installed_root_key())
+            return false;
+
+        if (! id->choices_key())
+        {
+            Log::get_instance()->message("e.dep_parser.label_enabled.no_choices", ll_warning, lc_context)
+                << "ID " << *id << " has no choices, so cannot tell whether label '" << label << "' is enabled";
+            return false;
+        }
+
+        const std::tr1::shared_ptr<const ChoiceValue> v(id->choices_key()->value()->find_by_name_with_prefix(n));
+        if (! v)
+        {
+            Log::get_instance()->message("e.dep_parser.label_enabled.no_choice", ll_warning, lc_context)
+                << "ID " << *id << " has no choice named '" << n << "', so cannot tell whether label '"
+                << label << "' is enabled";
+            return false;
+        }
+
+        return v->enabled();
+    }
+}
+
 std::tr1::shared_ptr<DependenciesLabelsDepSpec>
-paludis::erepository::parse_dependency_label(const std::string & s, const EAPI & e)
+paludis::erepository::parse_dependency_label(
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::string & s,
+        const EAPI & e)
 {
     Context context("When parsing label string '" + s + "' using EAPI '" + e.name() + "':");
 
@@ -693,9 +730,16 @@ paludis::erepository::parse_dependency_label(const std::string & s, const EAPI &
             continue;
         }
 
-        std::string c(e.supported()->dependency_labels()->class_for_label(*it));
+        std::string c(e.supported()->dependency_labels()->class_for_label(*it)), cc;
         if (c.empty())
             throw EDepParseError(s, "Unknown label '" + *it + "'");
+
+        std::string::size_type p(c.find('/'));
+        if (std::string::npos != p)
+        {
+            cc = c.substr(p + 1);
+            c.erase(p);
+        }
 
         if (c == "DependenciesBuildLabel")
             l->add_label(make_shared_ptr(new DependenciesBuildLabel(*it, return_literal_function(true))));
@@ -714,7 +758,13 @@ paludis::erepository::parse_dependency_label(const std::string & s, const EAPI &
         else if (c == "DependenciesRecommendationLabel")
             l->add_label(make_shared_ptr(new DependenciesRecommendationLabel(*it, return_literal_function(true))));
         else if (c == "DependenciesTestLabel")
-            l->add_label(make_shared_ptr(new DependenciesTestLabel(*it, return_literal_function(true))));
+        {
+            if (cc.empty())
+                l->add_label(make_shared_ptr(new DependenciesTestLabel(*it, return_literal_function(true))));
+            else
+                l->add_label(make_shared_ptr(new DependenciesTestLabel(*it, std::tr1::bind(
+                                    &enabled_if_option, id, *it, ChoiceNameWithPrefix(cc)))));
+        }
         else if (c == "WarnAndIgnore")
         {
             Log::get_instance()->message("e.dep_parser.obsolete_label", ll_warning, lc_context)
