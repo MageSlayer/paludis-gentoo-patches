@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -85,6 +85,7 @@ namespace
         bool seen_buildish_dep;
         bool seen_runish_dep;
         bool seen_compiled_against_dep;
+        bool seen_enabled_dep;
 
         LabelTypesVisitor() :
             is_suggestion(false),
@@ -92,63 +93,100 @@ namespace
             is_requirement(false),
             seen_buildish_dep(false),
             seen_runish_dep(false),
-            seen_compiled_against_dep(false)
+            seen_compiled_against_dep(false),
+            seen_enabled_dep(false)
         {
         }
 
-        void visit(const DependenciesBuildLabel &)
+        void visit(const DependenciesBuildLabel & l)
         {
-            is_requirement = true;
-            seen_buildish_dep = true;
+            if (l.enabled())
+            {
+                is_requirement = true;
+                seen_buildish_dep = true;
+                seen_enabled_dep = true;
+            }
         }
 
-        void visit(const DependenciesTestLabel &)
+        void visit(const DependenciesTestLabel & l)
         {
-            is_requirement = true;
-            seen_buildish_dep = true;
+            if (l.enabled())
+            {
+                is_requirement = true;
+                seen_buildish_dep = true;
+                seen_enabled_dep = true;
+            }
         }
 
-        void visit(const DependenciesFetchLabel &)
+        void visit(const DependenciesFetchLabel & l)
         {
-            is_requirement = true;
-            seen_buildish_dep = true;
+            if (l.enabled())
+            {
+                is_requirement = true;
+                seen_buildish_dep = true;
+                seen_enabled_dep = true;
+            }
         }
 
-        void visit(const DependenciesRunLabel &)
+        void visit(const DependenciesRunLabel & l)
         {
-            is_requirement = true;
-            seen_runish_dep = true;
+            if (l.enabled())
+            {
+                is_requirement = true;
+                seen_runish_dep = true;
+                seen_enabled_dep = true;
+            }
         }
 
-        void visit(const DependenciesPostLabel &)
+        void visit(const DependenciesPostLabel & l)
         {
-            is_requirement = true;
-            seen_runish_dep = true;
+            if (l.enabled())
+            {
+                is_requirement = true;
+                seen_runish_dep = true;
+                seen_enabled_dep = true;
+            }
         }
 
-        void visit(const DependenciesInstallLabel &)
+        void visit(const DependenciesInstallLabel & l)
         {
-            is_requirement = true;
-            seen_buildish_dep = true;
+            if (l.enabled())
+            {
+                is_requirement = true;
+                seen_buildish_dep = true;
+                seen_enabled_dep = true;
+            }
         }
 
-        void visit(const DependenciesCompileAgainstLabel &)
+        void visit(const DependenciesCompileAgainstLabel & l)
         {
-            is_requirement = true;
-            seen_runish_dep = true;
-            seen_buildish_dep = true;
+            if (l.enabled())
+            {
+                is_requirement = true;
+                seen_runish_dep = true;
+                seen_buildish_dep = true;
+                seen_enabled_dep = true;
+            }
         }
 
-        void visit(const DependenciesRecommendationLabel &)
+        void visit(const DependenciesRecommendationLabel & l)
         {
-            is_recommendation = true;
-            seen_runish_dep = true;
+            if (l.enabled())
+            {
+                is_recommendation = true;
+                seen_runish_dep = true;
+                seen_enabled_dep = true;
+            }
         }
 
-        void visit(const DependenciesSuggestionLabel &)
+        void visit(const DependenciesSuggestionLabel & l)
         {
-            is_suggestion = true;
-            seen_runish_dep = true;
+            if (l.enabled())
+            {
+                is_suggestion = true;
+                seen_runish_dep = true;
+                seen_enabled_dep = true;
+            }
         }
     };
 
@@ -222,6 +260,18 @@ namespace
                 indirect_iterator(dep.active_dependency_labels()->end()),
                 accept_visitor(v));
         return v.seen_runish_dep;
+    }
+
+    bool is_enabled_dep(const SanitisedDependency & dep)
+    {
+        if (dep.active_dependency_labels()->empty())
+            throw InternalError(PALUDIS_HERE, "not implemented");
+
+        LabelTypesVisitor v;
+        std::for_each(indirect_iterator(dep.active_dependency_labels()->begin()),
+                indirect_iterator(dep.active_dependency_labels()->end()),
+                accept_visitor(v));
+        return v.seen_enabled_dep;
     }
 
     struct DestinationTypesFinder
@@ -681,6 +731,9 @@ namespace
 
         bool visit(const ExistingNoChangeDecision &) const
         {
+            if (! is_enabled_dep(dep))
+                return false;
+
             if (! resolution_options.a_follow_installed_build_dependencies.specified())
                 if (is_just_build_dep(dep))
                     return false;
@@ -697,19 +750,22 @@ namespace
             return true;
         }
 
-        bool visit(const NothingNoChangeDecision &) const
+        bool visit(const NothingNoChangeDecision &) const PALUDIS_ATTRIBUTE((noreturn))
         {
-            return true;
+            throw InternalError(PALUDIS_HERE, "NothingNoChangeDecision shouldn't have deps");
         }
 
-        bool visit(const UnableToMakeDecision &) const
+        bool visit(const UnableToMakeDecision &) const PALUDIS_ATTRIBUTE((noreturn))
         {
-            return true;
+            throw InternalError(PALUDIS_HERE, "UnableToMakeDecision shouldn't have deps");
         }
 
         bool visit(const ChangesToMakeDecision &) const
         {
-            return true;
+            if (is_enabled_dep(dep))
+                return true;
+
+            return false;
         }
     };
 
