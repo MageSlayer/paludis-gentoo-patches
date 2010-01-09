@@ -32,7 +32,10 @@ exheres_internal_fetch_extra()
     local old_sandbox_write="${SANDBOX_WRITE}"
     if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
         SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${FETCHEDDIR}"
-        sydboxcheck >/dev/null 2>&1 && addwrite "${FETCHEDDIR}"
+        if sydboxcheck >/dev/null 2>&1; then
+            addwrite "${FETCHEDDIR}"
+            sydboxcmd sandunbox/net
+        fi
     fi
 
     if hasq "fetch_extra" ${SKIP_FUNCTIONS} ; then
@@ -45,7 +48,10 @@ exheres_internal_fetch_extra()
 
     if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
         SANDBOX_WRITE="${old_sandbox_write}"
-        sydboxcheck >/dev/null 2>&1 && rmwrite "${FETCHEDDIR}"
+        if sydboxcheck >/dev/null 2>&1; then
+            rmwrite "${FETCHEDDIR}"
+            sydboxcmd sandbox/net
+        fi
     fi
     true
 }
