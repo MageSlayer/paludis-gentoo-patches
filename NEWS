@@ -29,6 +29,11 @@ of every change, see the ChangeLog.
     * build_options: preserve_work can be used to avoid removing temporary
       working directories, and to force a non-destructive merge.
 
+    * Profile updates (package and slot moves) are now enabled by default.
+
+    * Workarounds for various interactivity abuses carried out by certain
+      ebuilds have been added.
+
     * Various large code cleanups and build system cleanups.
 
 0.42.3:
