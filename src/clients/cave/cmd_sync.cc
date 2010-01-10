@@ -374,6 +374,9 @@ SyncCommand::run(
                 p != p_end ; ++p)
             repos.insert((*p)->name());
 
+    if (1 == repos.size())
+        cmdline.a_sequential.set_specified(true);
+
     cout << format_general_s(f::sync_heading(), "Starting sync");
 
     if (0 != env->perform_hook(Hook("sync_all_pre")
