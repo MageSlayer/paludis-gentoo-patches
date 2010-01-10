@@ -518,6 +518,105 @@ namespace
         }
     };
 
+    int execute_resolution_main(
+            const std::tr1::shared_ptr<Environment> & env,
+            const ResolverLists & lists,
+            const ExecuteResolutionCommandLine & cmdline)
+    {
+        int retcode(0);
+
+        JobCounts counts;
+        CompletedOutputManagers completed_output_managers;
+
+        for (JobIDSequence::ConstIterator c(lists.ordered_job_ids()->begin()),
+                c_end(lists.ordered_job_ids()->end()) ;
+                c != c_end ; ++c)
+            lists.jobs()->fetch(*c)->accept(counts);
+
+        PerformJobs perform_jobs(env, cmdline, counts, completed_output_managers);
+        for (JobIDSequence::ConstIterator c(lists.ordered_job_ids()->begin()),
+                c_end(lists.ordered_job_ids()->end()) ;
+                c != c_end ; ++c)
+            if (! lists.jobs()->fetch(*c)->accept_returning<bool>(perform_jobs))
+                break;
+
+        completed_output_managers.clear();
+
+        retcode |= perform_jobs.retcode;
+        if ((0 != retcode) || (cmdline.a_pretend.specified()))
+            return retcode;
+
+        if (! cmdline.execution_options.a_preserve_world.specified())
+        {
+            cout << endl << c::bold_green() << "Updating world" << c::normal() << endl << endl;
+
+            std::string command(cmdline.program_options.a_update_world_program.argument());
+            if (command.empty())
+                command = "$CAVE update-world";
+
+            bool any(false);
+            if (cmdline.a_set.specified())
+            {
+                command.append(" --set");
+                for (args::ArgsHandler::ParametersConstIterator a(cmdline.begin_parameters()),
+                        a_end(cmdline.end_parameters()) ;
+                        a != a_end ; ++a)
+                {
+                    if (*a == "world" || *a == "system" || *a == "security"
+                            || *a == "everything" || *a == "insecurity"
+                            || *a == "installed-packages" || *a == "installed-slots")
+                        cout << "* Special set '" << *a << "' does not belong in world" << endl;
+                    else
+                    {
+                        any = true;
+                        cout << "* Adding '" << *a << "'" << endl;
+                        command.append(" " + *a);
+                    }
+                }
+            }
+            else
+            {
+                for (args::ArgsHandler::ParametersConstIterator a(cmdline.begin_parameters()),
+                        a_end(cmdline.end_parameters()) ;
+                        a != a_end ; ++a)
+                {
+                    PackageDepSpec spec(parse_user_package_dep_spec(*a, env.get(), UserPackageDepSpecOptions()));
+                    if (package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
+                                    value_for<n::has_additional_requirements>(false),
+                                    value_for<n::has_category_name_part>(false),
+                                    value_for<n::has_from_repository>(false),
+                                    value_for<n::has_in_repository>(false),
+                                    value_for<n::has_installable_to_path>(false),
+                                    value_for<n::has_installable_to_repository>(false),
+                                    value_for<n::has_installed_at_path>(false),
+                                    value_for<n::has_package>(true),
+                                    value_for<n::has_package_name_part>(false),
+                                    value_for<n::has_slot_requirement>(false),
+                                    value_for<n::has_tag>(indeterminate),
+                                    value_for<n::has_version_requirements>(false)
+                                    )))
+                    {
+                        any = true;
+                        cout << "* Adding '" << spec << "'" << endl;
+                        command.append(" " + stringify(spec));
+                    }
+                    else
+                    {
+                        cout << "* Not adding '" << spec << "'" << endl;
+                    }
+                }
+            }
+
+            if (any)
+            {
+                paludis::Command cmd(command);
+                if (0 != run_command(cmd))
+                    throw ActionAbortedError("Updating world failed");
+            }
+        }
+        return retcode;
+    }
+
     int execute_resolution(
             const std::tr1::shared_ptr<Environment> & env,
             const ResolverLists & lists,
@@ -534,95 +633,7 @@ namespace
 
         try
         {
-            JobCounts counts;
-            CompletedOutputManagers completed_output_managers;
-
-            for (JobIDSequence::ConstIterator c(lists.ordered_job_ids()->begin()),
-                    c_end(lists.ordered_job_ids()->end()) ;
-                    c != c_end ; ++c)
-                lists.jobs()->fetch(*c)->accept(counts);
-
-            PerformJobs perform_jobs(env, cmdline, counts, completed_output_managers);
-            for (JobIDSequence::ConstIterator c(lists.ordered_job_ids()->begin()),
-                    c_end(lists.ordered_job_ids()->end()) ;
-                    c != c_end ; ++c)
-                if (! lists.jobs()->fetch(*c)->accept_returning<bool>(perform_jobs))
-                    break;
-
-            completed_output_managers.clear();
-
-            retcode |= perform_jobs.retcode;
-            if ((0 != retcode) || (cmdline.a_pretend.specified()))
-                return retcode;
-
-            if (! cmdline.execution_options.a_preserve_world.specified())
-            {
-                cout << endl << c::bold_green() << "Updating world" << c::normal() << endl << endl;
-
-                std::string command(cmdline.program_options.a_update_world_program.argument());
-                if (command.empty())
-                    command = "$CAVE update-world";
-
-                bool any(false);
-                if (cmdline.a_set.specified())
-                {
-                    command.append(" --set");
-                    for (args::ArgsHandler::ParametersConstIterator a(cmdline.begin_parameters()),
-                            a_end(cmdline.end_parameters()) ;
-                            a != a_end ; ++a)
-                    {
-                        if (*a == "world" || *a == "system" || *a == "security"
-                                || *a == "everything" || *a == "insecurity"
-                                || *a == "installed-packages" || *a == "installed-slots")
-                            cout << "* Special set '" << *a << "' does not belong in world" << endl;
-                        else
-                        {
-                            any = true;
-                            cout << "* Adding '" << *a << "'" << endl;
-                            command.append(" " + *a);
-                        }
-                    }
-                }
-                else
-                {
-                    for (args::ArgsHandler::ParametersConstIterator a(cmdline.begin_parameters()),
-                            a_end(cmdline.end_parameters()) ;
-                            a != a_end ; ++a)
-                    {
-                        PackageDepSpec spec(parse_user_package_dep_spec(*a, env.get(), UserPackageDepSpecOptions()));
-                        if (package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
-                                        value_for<n::has_additional_requirements>(false),
-                                        value_for<n::has_category_name_part>(false),
-                                        value_for<n::has_from_repository>(false),
-                                        value_for<n::has_in_repository>(false),
-                                        value_for<n::has_installable_to_path>(false),
-                                        value_for<n::has_installable_to_repository>(false),
-                                        value_for<n::has_installed_at_path>(false),
-                                        value_for<n::has_package>(true),
-                                        value_for<n::has_package_name_part>(false),
-                                        value_for<n::has_slot_requirement>(false),
-                                        value_for<n::has_tag>(indeterminate),
-                                        value_for<n::has_version_requirements>(false)
-                                        )))
-                        {
-                            any = true;
-                            cout << "* Adding '" << spec << "'" << endl;
-                            command.append(" " + stringify(spec));
-                        }
-                        else
-                        {
-                            cout << "* Not adding '" << spec << "'" << endl;
-                        }
-                    }
-                }
-
-                if (any)
-                {
-                    paludis::Command cmd(command);
-                    if (0 != run_command(cmd))
-                        throw ActionAbortedError("Updating world failed");
-                }
-            }
+            retcode = execute_resolution_main(env, lists, cmdline);
         }
         catch (...)
         {
