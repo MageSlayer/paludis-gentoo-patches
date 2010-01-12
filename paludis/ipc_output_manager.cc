@@ -410,8 +410,10 @@ const std::tr1::shared_ptr<OutputManager>
 OutputManagerFromIPC::operator() (const Action & a)
 {
     if (! _imp->result)
-        _imp->result.reset(new IPCOutputManager(_imp->read_fd, _imp->write_fd,
-                    CreateOutputManagerForPackageIDActionInfo(_imp->id, a, _imp->exclusivity)));
+    {
+        CreateOutputManagerForPackageIDActionInfo info(_imp->id, a, _imp->exclusivity);
+        _imp->result.reset(new IPCOutputManager(_imp->read_fd, _imp->write_fd, info));
+    }
     return _imp->result;
 }
 
