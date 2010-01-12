@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -129,24 +129,40 @@ namespace
     struct SetDisplayer
     {
         const std::tr1::shared_ptr<const Environment> env;
+        int indent;
+        std::set<SetName> recursing_sets;
 
-        SetDisplayer(const std::tr1::shared_ptr<const Environment> & e) :
-            env(e)
+        SetDisplayer(const std::tr1::shared_ptr<const Environment> & e, const int i) :
+            env(e),
+            indent(i)
         {
         }
 
         void visit(const SetSpecTree::NodeType<PackageDepSpec>::Type & node)
         {
-            cout << format_general_s(select_format_for_spec(env, *node.spec(),
+            cout << format_general_si(select_format_for_spec(env, *node.spec(),
                         f::show_set_spec_installed(),
                         f::show_set_spec_installable(),
                         f::show_set_spec_unavailable()),
-                    stringify(*node.spec()));
+                    stringify(*node.spec()), indent);
         }
 
         void visit(const SetSpecTree::NodeType<NamedSetDepSpec>::Type & node)
         {
-            cout << format_general_s(f::show_set_set(), stringify(*node.spec()));
+            cout << format_general_si(f::show_set_set(), stringify(*node.spec()), indent);
+
+            const std::tr1::shared_ptr<const SetSpecTree> set(env->set(node.spec()->name()));
+            if (! set)
+                throw NoSuchSetError(stringify(node.spec()->name()));
+
+            if (! recursing_sets.insert(node.spec()->name()).second)
+                throw RecursivelyDefinedSetError(stringify(node.spec()->name()));
+            ++indent;
+
+            set->root()->accept(*this);
+
+            recursing_sets.erase(node.spec()->name());
+            --indent;
         }
 
         void visit(const SetSpecTree::NodeType<AllDepSpec>::Type & node)
@@ -163,7 +179,7 @@ namespace
         if (! set)
             throw NoSuchSetError(stringify(s));
 
-        SetDisplayer d(env);
+        SetDisplayer d(env, 1);
         set->root()->accept(d);
 
         cout << endl;

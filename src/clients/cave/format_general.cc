@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -30,6 +30,15 @@ paludis::cave::format_general_s(const std::string & f, const std::string & s)
 {
     std::tr1::shared_ptr<Map<char, std::string> > m(new Map<char, std::string>);
     m->insert('s', s);
+    return format_string(f, m);
+}
+
+std::string
+paludis::cave::format_general_si(const std::string & f, const std::string & s, const int i)
+{
+    std::tr1::shared_ptr<Map<char, std::string> > m(new Map<char, std::string>);
+    m->insert('s', s);
+    m->insert('i', std::string(i, ' '));
     return format_string(f, m);
 }
 

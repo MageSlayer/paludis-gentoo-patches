@@ -91,25 +91,25 @@ paludis::cave::f::show_set_heading()
 const std::string
 paludis::cave::f::show_set_set()
 {
-    return "    " + c::blue() + "%s" + c::normal() + "\\n";
+    return "%i%i%i%i" + c::blue() + "%s" + c::normal() + "\\n";
 }
 
 const std::string
 paludis::cave::f::show_set_spec_installed()
 {
-    return "    " + c::bold_green() + "%s" + c::normal() + "\\n";
+    return "%i%i%i%i" + c::bold_green() + "%s" + c::normal() + "\\n";
 }
 
 const std::string
 paludis::cave::f::show_set_spec_installable()
 {
-    return "    " + c::green() + "%s" + c::normal() + "\\n";
+    return "%i%i%i%i" + c::green() + "%s" + c::normal() + "\\n";
 }
 
 const std::string
 paludis::cave::f::show_set_spec_unavailable()
 {
-    return "    " + c::red() + "%s" + c::normal() + "\\n";
+    return "%i%i%i%i" + c::red() + "%s" + c::normal() + "\\n";
 }
 
 const std::string

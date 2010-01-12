@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,6 +28,9 @@ namespace paludis
     namespace cave
     {
         std::string format_general_s(const std::string & f, const std::string & s)
+            PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
+
+        std::string format_general_si(const std::string & f, const std::string & s, const int i)
             PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
 
         std::string format_general_sr(const std::string & f, const std::string & s, const std::string & r)
