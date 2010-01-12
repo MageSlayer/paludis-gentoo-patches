@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2009 Ali Polatel <polatel@gmail.com>
+# Copyright (c) 2009, 2010 Ali Polatel <alip@exherbo.org>
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -29,8 +29,16 @@ sydboxcmd()
 {
     if sydboxcheck; then
         if [[ -n "${2}" ]]; then
-            [[ "/" != "${2:0:1}" ]] && die "${FUNCNAME} ${1}: non-absolute path"
-            [[ -e /dev/sydbox/${1}/"${2}" ]]
+            case "${1}" in
+                net/*)
+                    # net/* commands don't take path arguments
+                    [[ -e /dev/sydbox/${1}/"${2}" ]]
+                    ;;
+                *)
+                    [[ "/" != "${2:0:1}" ]] && die "${FUNCNAME} ${1}: non-absolute path"
+                    [[ -e /dev/sydbox/${1}/"${2}" ]]
+                    ;;
+            esac
         else
             [[ -e /dev/sydbox/${1} ]]
         fi
