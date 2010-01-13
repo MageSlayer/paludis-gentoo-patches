@@ -57,7 +57,8 @@ _paludis() {
     )
     general_args=(
         '--log-level[Specify the log level]:log level:((debug\:"Show debug output (noisy)" qa\:"Show QA messages and warnings only (default)" warning\:"Show warnings only" silent\:"Suppress all log messages (UNSAFE)"))'
-        "(--no-colour --no-color)"{--no-colour,--no-color}"[Do not use colour]"
+        "(--no-colour)--force-colour[Force the use of colour]"
+        "(--force-colour)--no-colour[Do not use colour]"
         "--no-suggestions[Do not give suggestions if an unknown name is specified]"
         "(--environment -E)"{-E,--environment}"[Environment specification]"
         "--resume-command-template[Save the resume command to a file made using mkstemp(3)]:file:_files"
