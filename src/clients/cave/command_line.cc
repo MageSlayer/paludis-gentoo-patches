@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,5 +29,10 @@ CaveCommandLine::CaveCommandLine() :
     a_log_level(&g_global_options, "log-level", '\0')
 {
     add_usage_line("[ --environment class:suffix ] [ --log-level level ] COMMAND [ARGS...]");
+    add_description_line("For the COMMAND argument, see 'cave help' for a list of common commands, "
+            "or 'cave help --all' for all commands. To see documentation for a command named "
+            "'foo', use 'man cave-foo'.");
+    add_description_line("Arguments specified after the COMMAND are handled by the individual "
+            "commands. Arguments before the COMMAND are global arguments shared by all commands.");
 }
 
