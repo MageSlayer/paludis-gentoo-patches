@@ -68,12 +68,6 @@ namespace paludis
 
             public:
                 virtual ~PythonDepSpec();
-
-                virtual const PythonConditionalDepSpec * as_conditional_dep_spec() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual const PythonPackageDepSpec * as_package_dep_spec() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class PALUDIS_VISIBLE PythonCompositeDepSpec :
@@ -125,8 +119,6 @@ namespace paludis
             public:
                 PythonConditionalDepSpec(const ConditionalDepSpec &);
 
-                virtual const PythonConditionalDepSpec * as_conditional_dep_spec() const;
-
                 bool condition_met() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 bool condition_meetable() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -177,8 +169,6 @@ namespace paludis
                 void set_tag(const std::tr1::shared_ptr<const DepTag> & s);
 
                 std::string py_str() const;
-
-                virtual const PythonPackageDepSpec * as_package_dep_spec() const;
         };
 
         class PALUDIS_VISIBLE PythonPlainTextDepSpec :

@@ -89,18 +89,6 @@ DepSpec::set_annotations_key(const std::tr1::shared_ptr<const MetadataSectionKey
         add_metadata_key(_imp->annotations_key);
 }
 
-const ConditionalDepSpec *
-DepSpec::as_conditional_dep_spec() const
-{
-    return 0;
-}
-
-const PackageDepSpec *
-DepSpec::as_package_dep_spec() const
-{
-    return 0;
-}
-
 AnyDepSpec::AnyDepSpec()
 {
 }
@@ -222,12 +210,6 @@ ConditionalDepSpec::data() const
     return _imp->data;
 }
 
-const ConditionalDepSpec *
-ConditionalDepSpec::as_conditional_dep_spec() const
-{
-    return this;
-}
-
 std::string
 ConditionalDepSpec::_as_string() const
 {
@@ -267,12 +249,6 @@ NamedSetDepSpec::clone() const
 void
 NamedSetDepSpec::need_keys_added() const
 {
-}
-
-const PackageDepSpec *
-PackageDepSpec::as_package_dep_spec() const
-{
-    return this;
 }
 
 BlockDepSpec::BlockDepSpec(const std::string & s, const PackageDepSpec & p, const bool t) :

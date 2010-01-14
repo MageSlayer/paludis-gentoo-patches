@@ -54,18 +54,6 @@ PythonDepSpec::~PythonDepSpec()
 {
 }
 
-const PythonConditionalDepSpec *
-PythonDepSpec::as_conditional_dep_spec() const
-{
-    return 0;
-}
-
-const PythonPackageDepSpec *
-PythonDepSpec::as_package_dep_spec() const
-{
-    return 0;
-}
-
 namespace paludis
 {
     template<>
@@ -169,12 +157,6 @@ PythonAllDepSpec::PythonAllDepSpec(const AllDepSpec &)
 PythonConditionalDepSpec::PythonConditionalDepSpec(const ConditionalDepSpec & d) :
     _data(d.data())
 {
-}
-
-const PythonConditionalDepSpec *
-PythonConditionalDepSpec::as_conditional_dep_spec() const
-{
-    return this;
 }
 
 bool
@@ -321,12 +303,6 @@ PythonPackageDepSpec::operator PackageDepSpec() const
 PythonPackageDepSpec::operator std::tr1::shared_ptr<PackageDepSpec>() const
 {
     return make_shared_ptr(new PackageDepSpec(*this));
-}
-
-const PythonPackageDepSpec *
-PythonPackageDepSpec::as_package_dep_spec() const
-{
-    return this;
 }
 
 std::tr1::shared_ptr<const QualifiedPackageName>
@@ -1099,17 +1075,6 @@ void expose_dep_spec()
          "Base class for a dependency spec.",
          bp::no_init
         )
-        .def("as_conditional_dep_spec", &PythonDepSpec::as_conditional_dep_spec,
-                bp::return_value_policy<bp::reference_existing_object>(),
-                "as_conditional_dep_spec() -> ConditionalDepSpec\n"
-                "Return us as a ConditionalDepSpec, or None if we are not a ConditionalDepSpec."
-            )
-
-        .def("as_package_dep_spec", &PythonDepSpec::as_package_dep_spec,
-                bp::return_value_policy<bp::reference_existing_object>(),
-                "as_package_dep_spec() -> PackageDepSpec\n"
-                "Return us as a PackageDepSpec, or None if we are not a PackageDepSpec."
-            )
         ;
 
     /**

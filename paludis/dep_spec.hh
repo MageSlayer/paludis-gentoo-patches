@@ -87,20 +87,6 @@ namespace paludis
             ///\{
 
             /**
-             * Return us as a ConditionalDepSpec, or 0 if we are not a
-             * ConditionalDepSpec.
-             */
-            virtual const ConditionalDepSpec * as_conditional_dep_spec() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /**
-             * Return us as a PackageDepSpec, or 0 if we are not a
-             * ConditionalDepSpec.
-             */
-            virtual const PackageDepSpec * as_package_dep_spec() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /**
              * The annotations_key, if non-zero, contains any annotations.
              */
             const std::tr1::shared_ptr<const MetadataSectionKey> annotations_key() const
@@ -194,8 +180,6 @@ namespace paludis
             ~ConditionalDepSpec();
 
             ///\}
-
-            virtual const ConditionalDepSpec * as_conditional_dep_spec() const;
 
             /**
              * Is our condition met?
@@ -602,8 +586,6 @@ namespace paludis
              * Access to our data.
              */
             std::tr1::shared_ptr<const PackageDepSpecData> data() const;
-
-            virtual const PackageDepSpec * as_package_dep_spec() const;
     };
 
     /**
