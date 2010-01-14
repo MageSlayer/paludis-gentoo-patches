@@ -124,9 +124,9 @@ _cave_cmd_perform()
             _arguments -s : \
               '--destination[Repository to which the install should take place]:repository name:_cave_repositories' \
               '--replacing[Spec uniquely identifying the ID to be replaced]:package spec: ' \
-              '--skip-phase[Skip the named phase]:phase: ' \
-              '--abort-at-phase[Abort when a named phase is encountered]:phase: ' \
-              '--skip-until-phase[Skip every phase until a named phase is encountered]:phase: '
+              '--skip-phase[Skip the named phases]:phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
+              '--abort-at-phase[Abort when a named phase is encountered]:phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
+              '--skip-until-phase[Skip every phase until a named phase is encountered]:phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))'
             ;;
           uninstall)
             _arguments -s : \
@@ -265,9 +265,9 @@ _cave_cmd_resolve()
     '(--install-to-root -/ --no-install-to-root)'{--install-to-root,-/,--no-install-to-root}'[Install packages to /]' \
     '(--preserve-world -1 --no-preserve-world)'{--preserve-world,-1,--no-preserve-world}'[Do not modify the world set]' \
     '--continue-on-failure[Whether to continue after an error occurs]:When:((if-fetching never if-satisfied if-independent always))' \
-    '--skip-phase[Skip the named phases]:Phase: ' \
-    '--abort-at-phase[Abort when a named phase is encountered]:Phase: ' \
-    '--skip-until-phase[Skip every phase until a named phase is encountered]:Phase: ' \
+    '--skip-phase[Skip the named phases]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
+    '--abort-at-phase[Abort when a named phase is encountered]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
+    '--skip-until-phase[Skip every phase until a named phase is encountered]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
     '--change-phases-for[Control to which packages these phase options apply]:Which:((all first last))' \
     '--show-descriptions[Whether to display package descriptions]:When:((none new all))' \
     '*:package depspec:_cave_packages' && return 0
