@@ -112,13 +112,16 @@ _cave_cmd_perform()
 
         case ${line[1]} in
           config|info)
+            _arguments -s : \
+              '*:package depspec:_cave_packages' && ret=0
             ;;
           fetch|pretend-fetch)
             _arguments -s : \
               '(--exclude-unmirrorable --no-exclude-unmirrorable)'{--exclude-unmirrorable,--no-exclude-unmirrorable}'[Do not include unmirrorable components]' \
               '(--fetch-unneeded --no-fetch-unneeded)'{--fetch-unneeded,--no-fetch-unneeded}'[Fetch components that aren'\''t needed]' \
               '(--ignore-unfetched --no-ignore-unfetched)'{--ignore-unfetched,--no-ignore-unfetched}'[Only verify components that have already been downloaded]' \
-              '(--regulars-only --no-regulars-only)'{--regulars-only,--no-regulars-only}'[Only fetch regular components]' && ret=0
+              '(--regulars-only --no-regulars-only)'{--regulars-only,--no-regulars-only}'[Only fetch regular components]' \
+              '*:package depspec:_cave_packages' && ret=0
             ;;
           install|pretend)
             _arguments -s : \
@@ -126,11 +129,13 @@ _cave_cmd_perform()
               '--replacing[Spec uniquely identifying the ID to be replaced]:package spec: ' \
               '--skip-phase[Skip the named phases]:phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
               '--abort-at-phase[Abort when a named phase is encountered]:phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
-              '--skip-until-phase[Skip every phase until a named phase is encountered]:phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))'
+              '--skip-until-phase[Skip every phase until a named phase is encountered]:phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
+              '*:package depspec:_cave_packages' && ret=0
             ;;
           uninstall)
             _arguments -s : \
-              '--config-protect[Specify additional items to include in the config protection list]:file:_files'
+              '--config-protect[Specify additional items to include in the config protection list]:file:_files' \
+              '*:package depspec:_cave_packages' && ret=0
             ;;
         esac
         ;;
