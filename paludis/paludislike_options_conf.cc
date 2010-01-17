@@ -497,7 +497,7 @@ PaludisLikeOptionsConf::want_choice_enabled_locked(
     }
 
     /* Any set matches? */
-    if (maybe_id)
+    if (maybe_id && ! seen_minus_star)
     {
         for (SetNamesWithValuesGroups::const_iterator r(_imp->set_specs.begin()), r_end(_imp->set_specs.end()) ;
                 r != r_end ; ++r)
@@ -515,6 +515,7 @@ PaludisLikeOptionsConf::want_choice_enabled_locked(
     }
 
     /* Wildcards? */
+    if (! seen_minus_star)
     {
         check_specs_with_values_groups(_imp->params.environment(), maybe_id, prefix, unprefixed_name,
                 _imp->wildcard_specs, seen_minus_star, result, dummy);
