@@ -32,7 +32,7 @@ Log.instance.log_level = LogLevel::Warning
 Log.instance.program_name = $0
 
 version = "0.1.6"
-$laymanglobal_url = URI.parse('http://www.gentoo.org/proj/en/overlays/layman-global.txt')
+$laymanglobal_url = URI.parse('http://www.gentoo.org/proj/en/overlays/repositories.xml')
 $proxy_url = URI.parse(ENV['http_proxy']) if ENV['http_proxy']
 
 opts = GetoptLong.new(
@@ -160,86 +160,102 @@ begin
     }
     laymanxml = REXML::Document.new res.body
 rescue Exception => e
-    puts "Couldn't open layman-global.txt."
+    puts "Couldn't open repositories.xml."
     puts e.message
     puts e.backtrace.inspect
     exit 1
 end
 
-layman_srcs = Hash.new
-laymanxml.elements.each("layman/overlay") do | element |
-    name    = element.attribute("name").to_s
-    src     = element.attribute("src").to_s
-    type    = element.attribute("type").to_s
-    subpath = element.attribute("subpath").to_s
+def munge_url(type, src, subpath = "")
     case type
 
     when 'bzr'
         case src
         when %r{^bzr(?:\+ssh)?://}
-            #src = src
+            return src
         when %r{^[a-z+]+://}
-            src = "bzr+#{src}"
+            return "bzr+#{src}"
         else
-            src = "bzr+file://#{src}"
+            return "bzr+file://#{src}"
         end
 
     when 'cvs'
         case src
         when /^:ext:(.*)$/
-            src = "cvs+ext://#$1:#{subpath}"
+            return "cvs+ext://#$1:#{subpath}"
         when /^:pserver:(.*)$/
-            src = "cvs+pserver://#$1:#{subpath}"
+            return "cvs+pserver://#$1:#{subpath}"
         end
 
     when 'darcs'
         case src
         when %r{^[a-z+]+://}
-            src = "darcs+#{src}"
+            return "darcs+#{src}"
         when /..:/
-            src = "darcs+ssh://#{src}"
+            return "darcs+ssh://#{src}"
         else
-            src = "darcs+file://#{src}"
+            return "darcs+file://#{src}"
         end
 
     when 'git'
         case src
         when %r{^git(?:\+ssh)?://}
-            #src = src
+            return src
         when %r{^[a-z+]+://}
-            src = "git+#{src}"
+            return "git+#{src}"
         else
-            src = "git+file://#{src}"
+            return "git+file://#{src}"
         end
 
     when 'mercurial'
-        src = "hg+#{src}"
+        return "hg+#{src}"
 
     when 'rsync'
         case src
         when %r{^rsync://}
-            #src = src
+            return src
         when /..:/
-            src = "rsync+ssh://#{src}"
+            return "rsync+ssh://#{src}"
         else
-            src = "file://#{src}"
+            return "file://#{src}"
         end
 
     when 'svn'
         case src
         when %r{^svn(?:\+ssh)?://}
-            #src = src
+            return src
         when %r{^[a-z+]+://}
-            src = "svn+#{src}"
+            return "svn+#{src}"
         else
-            src = "svn+file://#{src}"
+            return "svn+file://#{src}"
         end
 
     when 'tar'
-        src = "tar+#{src}" if subpath == ""
+        return "tar+#{src}" if subpath == ""
 
     end
-    layman_srcs[name]=src
+
+    return src
+end
+
+layman_srcs = Hash.new
+laymanxml.elements.each("repositories/repo") do | element |
+    name    = element.elements["name"].text
+    sources = []
+    element.elements.each("source") do | source |
+        src     = source.text
+        type    = source.attribute("type").to_s
+        subpath = ""
+        sources << munge_url(type, src, subpath)
+    end
+    layman_srcs[name]=sources.join(" ");
+end
+laymanxml.elements.each("layman/overlay") do | element |
+    name    = element.attribute("name").to_s
+    src     = element.attribute("src").to_s
+    type    = element.attribute("type").to_s
+    subpath = element.attribute("subpath").to_s
+    layman_srcs[name]=munge_url(type, src, subpath)
 end
 
 case $mode
