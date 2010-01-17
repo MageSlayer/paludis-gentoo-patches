@@ -41,6 +41,8 @@ while [[ $# -gt 0 ]]; do
                 echo "    URL syntax: ${PROTO}://[USERNAME[:PASSWORD]@]SERVER/PATH"
             elif [[ "${PROTO}" == bzr+http || "${PROTO}" == bzr+https ]]; then
                 echo "    URL syntax: ${PROTO}://[USERNAME[:PASSWORD]@]SERVER[:PORT]/PATH"
+            elif [[ "${PROTO}" == bzr+lp ]]; then
+                echo "    URL syntax: ${PROTO}://PROJECT"
             else
                 ewarn "URL syntax for ${PROTO} is unknown.  This script will likely not work with the ${PROTO} protocol"
             fi
@@ -79,6 +81,7 @@ elif [[ -z "${REMOTE}" ]]; then
 fi
 
 [[ "${REMOTE}" != bzr+ssh://* ]] && REMOTE="${REMOTE#bzr+}"
+[[ "${REMOTE}" == lp://* ]] && REMOTE="lp:${REMOTE#lp://}"
 
 if [[ -d "${LOCAL}" && ! -d "${LOCAL}/.bzr" ]]; then
     eerror "'${LOCAL}' exists but it is not a Bzr repository"

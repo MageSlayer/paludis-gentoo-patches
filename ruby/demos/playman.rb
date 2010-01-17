@@ -175,6 +175,8 @@ def munge_url(type, src, subpath = "")
             return src
         when %r{^[a-z+]+://}
             return "bzr+#{src}"
+        when %r{^lp:(.*)}
+            return "bzr+lp://#$1"
         else
             return "bzr+file://#{src}"
         end

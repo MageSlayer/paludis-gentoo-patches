@@ -1,6 +1,6 @@
 include $(top_srcdir)/misc/common-makefile.am
 
-CLEANFILES += +*~ .keep dobzr dobzr+aftp dobzr+file dobzr+ftp dobzr+http dobzr+https dobzr+sftp \
+CLEANFILES += +*~ .keep dobzr dobzr+aftp dobzr+file dobzr+ftp dobzr+http dobzr+https dobzr+lp dobzr+sftp \
 	     dobzr+ssh docvs+ext docvs+pserver docvs+ssh dodarcs+file dodarcs+http dodarcs+https \
 	     dodarcs+ssh dofile dogit dogit+file dogit+http dogit+https dogit+rsync dogit+ssh \
 	     dohg+file dohg+http dohg+https dohg+ssh dohg+static-http dorsync dorsync+ssh dosvn \
@@ -19,6 +19,7 @@ libexecprog_SCRIPTS = \
 	dobzr+ftp \
 	dobzr+http \
 	dobzr+https \
+	dobzr+lp \
 	dobzr+sftp \
 	dobzr+ssh \
 	docvs+ext \
@@ -64,7 +65,7 @@ check_PROGRAMS = $(TESTS)
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 
-dobzr dobzr+aftp dobzr+file dobzr+ftp dobzr+http dobzr+https dobzr+sftp dobzr+ssh : dobzr.in
+dobzr dobzr+aftp dobzr+file dobzr+ftp dobzr+http dobzr+https dobzr+lp dobzr+sftp dobzr+ssh : dobzr.in
 	cat $? > $@
 docvs+ext docvs+pserver docvs+ssh : docvs.in
 	cat $? > $@
