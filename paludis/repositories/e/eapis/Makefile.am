@@ -18,7 +18,6 @@ eapis = \
 	pbin-1+exheres-0.conf
 
 future_eapis = \
-	3.conf \
 	4.conf
 
 eapidir = $(datadir)/paludis/eapis/
