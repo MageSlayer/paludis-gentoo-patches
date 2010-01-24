@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -126,7 +126,8 @@ namespace paludis
         class PALUDIS_VISIBLE UnableToMakeDecision :
             public Decision,
             public ImplementAcceptMethods<Decision, UnableToMakeDecision>,
-            private PrivateImplementationPattern<UnableToMakeDecision>
+            private PrivateImplementationPattern<UnableToMakeDecision>,
+            public std::tr1::enable_shared_from_this<UnableToMakeDecision>
         {
             public:
                 UnableToMakeDecision(
@@ -139,6 +140,9 @@ namespace paludis
                 virtual void serialise(Serialiser &) const;
 
                 const std::tr1::shared_ptr<const UnsuitableCandidates> unsuitable_candidates() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                static const std::tr1::shared_ptr<UnableToMakeDecision> deserialise(
+                        Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 
