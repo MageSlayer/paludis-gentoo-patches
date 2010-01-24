@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,10 +33,10 @@ namespace paludis
     namespace n
     {
         struct all_resolutions;
-        struct error_resolutions;
         struct jobs;
-        struct ordered_job_ids;
-        struct unordered_job_ids;
+        struct taken_error_job_ids;
+        struct taken_job_ids;
+        struct untaken_error_job_ids;
         struct untaken_job_ids;
     }
 
@@ -45,10 +45,10 @@ namespace paludis
         struct ResolverLists
         {
             NamedValue<n::all_resolutions, std::tr1::shared_ptr<Resolutions> > all_resolutions;
-            NamedValue<n::error_resolutions, std::tr1::shared_ptr<Resolutions> > error_resolutions;
             NamedValue<n::jobs, std::tr1::shared_ptr<Jobs> > jobs;
-            NamedValue<n::ordered_job_ids, std::tr1::shared_ptr<JobIDSequence> > ordered_job_ids;
-            NamedValue<n::unordered_job_ids, std::tr1::shared_ptr<JobIDSequence> > unordered_job_ids;
+            NamedValue<n::taken_error_job_ids, std::tr1::shared_ptr<JobIDSequence> > taken_error_job_ids;
+            NamedValue<n::taken_job_ids, std::tr1::shared_ptr<JobIDSequence> > taken_job_ids;
+            NamedValue<n::untaken_error_job_ids, std::tr1::shared_ptr<JobIDSequence> > untaken_error_job_ids;
             NamedValue<n::untaken_job_ids, std::tr1::shared_ptr<JobIDSequence> > untaken_job_ids;
 
             static const ResolverLists deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));

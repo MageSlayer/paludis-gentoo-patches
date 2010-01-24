@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -61,10 +61,10 @@ namespace paludis
             fns(f),
             lists(new ResolverLists(make_named_values<ResolverLists>(
                             value_for<n::all_resolutions>(make_shared_ptr(new Resolutions)),
-                            value_for<n::error_resolutions>(make_shared_ptr(new Resolutions)),
                             value_for<n::jobs>(make_shared_ptr(new Jobs)),
-                            value_for<n::ordered_job_ids>(make_shared_ptr(new JobIDSequence)),
-                            value_for<n::unordered_job_ids>(make_shared_ptr(new JobIDSequence)),
+                            value_for<n::taken_error_job_ids>(make_shared_ptr(new JobIDSequence)),
+                            value_for<n::taken_job_ids>(make_shared_ptr(new JobIDSequence)),
+                            value_for<n::untaken_error_job_ids>(make_shared_ptr(new JobIDSequence)),
                             value_for<n::untaken_job_ids>(make_shared_ptr(new JobIDSequence))
                             ))),
             decider(new Decider(e, f, lists)),

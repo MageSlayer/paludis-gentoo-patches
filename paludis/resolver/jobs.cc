@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,6 +25,7 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/serialise-impl.hh>
 #include <tr1/unordered_map>
 #include <list>
@@ -75,17 +76,16 @@ namespace
             jobs_list_by_resolvent_index.insert(std::make_pair(j.resolution()->resolvent(), i));
         }
 
+        void visit(const UsableGroupJob &)
+        {
+        }
+
         void visit(const SimpleInstallJob & j)
         {
             jobs_list_by_resolvent_index.insert(std::make_pair(j.resolution()->resolvent(), i));
         }
 
-        void visit(const UntakenInstallJob & j)
-        {
-            jobs_list_by_resolvent_index.insert(std::make_pair(j.resolution()->resolvent(), i));
-        }
-
-        void visit(const PretendJob & j)
+        void visit(const ErrorJob & j)
         {
             jobs_list_by_resolvent_index.insert(std::make_pair(j.resolution()->resolvent(), i));
         }
@@ -93,10 +93,6 @@ namespace
         void visit(const FetchJob & j)
         {
             jobs_list_by_resolvent_index.insert(std::make_pair(j.resolution()->resolvent(), i));
-        }
-
-        void visit(const SyncPointJob &)
-        {
         }
     };
 }
@@ -114,27 +110,22 @@ namespace
 {
     struct InstalledJobChecker
     {
-        bool visit(const PretendJob &) const
-        {
-            return false;
-        }
-
-        bool visit(const SyncPointJob &) const
-        {
-            return false;
-        }
-
         bool visit(const FetchJob &) const
         {
             return false;
         }
 
-        bool visit(const UntakenInstallJob &) const
+        bool visit(const ErrorJob &) const
         {
             return true;
         }
 
         bool visit(const UsableJob &) const
+        {
+            return false;
+        }
+
+        bool visit(const UsableGroupJob &) const
         {
             return false;
         }
@@ -147,24 +138,19 @@ namespace
 
     struct UsableJobChecker
     {
-        bool visit(const PretendJob &) const
-        {
-            return false;
-        }
-
-        bool visit(const SyncPointJob &) const
-        {
-            return false;
-        }
-
         bool visit(const FetchJob &) const
         {
             return false;
         }
 
-        bool visit(const UntakenInstallJob &) const
+        bool visit(const ErrorJob &) const
         {
             return true;
+        }
+
+        bool visit(const UsableGroupJob &) const
+        {
+            return false;
         }
 
         bool visit(const UsableJob &) const
@@ -251,12 +237,23 @@ Jobs::fetch(const JobID & id)
 const std::tr1::shared_ptr<const Job>
 Jobs::fetch(const JobID & id) const
 {
-    for (JobsList::const_iterator j(_imp->jobs.begin()), j_end(_imp->jobs.end()) ;
-            j != j_end ; ++j)
-        if ((*j)->id() == id)
-            return *j;
+    JobsListByJobIDIndex::const_iterator i(_imp->jobs_list_by_job_id_index.find(id));
+    if (i == _imp->jobs_list_by_job_id_index.end())
+        throw InternalError(PALUDIS_HERE, "no job for id");
+    return *i->second;
+}
 
-    throw InternalError(PALUDIS_HERE, "no job for id");
+template <typename J_>
+const std::tr1::shared_ptr<const J_>
+Jobs::fetch_as(const JobID & id) const
+{
+    JobsListByJobIDIndex::const_iterator i(_imp->jobs_list_by_job_id_index.find(id));
+    if (i == _imp->jobs_list_by_job_id_index.end())
+        throw InternalError(PALUDIS_HERE, "no job for id");
+    if (simple_visitor_cast<const J_>(**i->second))
+        return std::tr1::static_pointer_cast<const J_>(*i->second);
+    else
+        throw InternalError(PALUDIS_HERE, "wrong job type id");
 }
 
 void
@@ -279,4 +276,9 @@ Jobs::deserialise(Deserialisation & d)
 }
 
 template class PrivateImplementationPattern<resolver::Jobs>;
+
+template const std::tr1::shared_ptr<const SimpleInstallJob> Jobs::fetch_as<SimpleInstallJob>(const JobID &) const;
+template const std::tr1::shared_ptr<const ErrorJob> Jobs::fetch_as<ErrorJob>(const JobID &) const;
+template const std::tr1::shared_ptr<const FetchJob> Jobs::fetch_as<FetchJob>(const JobID &) const;
+template const std::tr1::shared_ptr<const UsableJob> Jobs::fetch_as<UsableJob>(const JobID &) const;
 

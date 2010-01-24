@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -39,6 +39,7 @@ namespace paludis
             NamedValue<n::string_id, std::string> string_id;
 
             std::size_t hash() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool operator< (const JobID &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             void serialise(Serialiser &) const;
             static const JobID deserialise(Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));

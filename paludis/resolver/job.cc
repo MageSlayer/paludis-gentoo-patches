@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,6 +26,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/join.hh>
 #include <paludis/serialise-impl.hh>
 
 using namespace paludis;
@@ -38,26 +39,27 @@ namespace paludis
     {
         const std::tr1::shared_ptr<const Resolution> resolution;
         const std::tr1::shared_ptr<ArrowSequence> arrows;
+        const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering;
 
         Implementation(const std::tr1::shared_ptr<const Resolution> & r) :
             resolution(r),
-            arrows(new ArrowSequence)
+            arrows(new ArrowSequence),
+            used_existing_packages_when_ordering(new JobIDSequence)
         {
         }
     };
 
     template <>
-    struct Implementation<PretendJob>
+    struct Implementation<UsableGroupJob>
     {
-        const std::tr1::shared_ptr<const Resolution> resolution;
-        const std::tr1::shared_ptr<const ChangesToMakeDecision> decision;
+        const std::tr1::shared_ptr<const JobIDSequence> ids;
         const std::tr1::shared_ptr<ArrowSequence> arrows;
+        const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering;
 
-        Implementation(const std::tr1::shared_ptr<const Resolution> & r,
-                const std::tr1::shared_ptr<const ChangesToMakeDecision> & d) :
-            resolution(r),
-            decision(d),
-            arrows(new ArrowSequence)
+        Implementation(const std::tr1::shared_ptr<const JobIDSequence> & i) :
+            ids(i),
+            arrows(new ArrowSequence),
+            used_existing_packages_when_ordering(new JobIDSequence)
         {
         }
     };
@@ -68,12 +70,14 @@ namespace paludis
         const std::tr1::shared_ptr<const Resolution> resolution;
         const std::tr1::shared_ptr<const ChangesToMakeDecision> decision;
         const std::tr1::shared_ptr<ArrowSequence> arrows;
+        const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering;
 
         Implementation(const std::tr1::shared_ptr<const Resolution> & r,
                 const std::tr1::shared_ptr<const ChangesToMakeDecision> & d) :
             resolution(r),
             decision(d),
-            arrows(new ArrowSequence)
+            arrows(new ArrowSequence),
+            used_existing_packages_when_ordering(new JobIDSequence)
         {
         }
     };
@@ -84,38 +88,32 @@ namespace paludis
         const std::tr1::shared_ptr<const Resolution> resolution;
         const std::tr1::shared_ptr<const ChangesToMakeDecision> decision;
         const std::tr1::shared_ptr<ArrowSequence> arrows;
+        const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering;
 
         Implementation(const std::tr1::shared_ptr<const Resolution> & r,
                 const std::tr1::shared_ptr<const ChangesToMakeDecision> & d) :
             resolution(r),
             decision(d),
-            arrows(new ArrowSequence)
+            arrows(new ArrowSequence),
+            used_existing_packages_when_ordering(new JobIDSequence)
         {
         }
     };
 
     template <>
-    struct Implementation<UntakenInstallJob>
+    struct Implementation<ErrorJob>
     {
         const std::tr1::shared_ptr<const Resolution> resolution;
+        const std::tr1::shared_ptr<const UnableToMakeDecision> decision;
         const std::tr1::shared_ptr<ArrowSequence> arrows;
+        const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering;
 
-        Implementation(const std::tr1::shared_ptr<const Resolution> & r) :
+        Implementation(const std::tr1::shared_ptr<const Resolution> & r,
+                const std::tr1::shared_ptr<const UnableToMakeDecision> & d) :
             resolution(r),
-            arrows(new ArrowSequence)
-        {
-        }
-    };
-
-    template <>
-    struct Implementation<SyncPointJob>
-    {
-        const SyncPoint sync_point;
-        const std::tr1::shared_ptr<ArrowSequence> arrows;
-
-        Implementation(const SyncPoint s) :
-            sync_point(s),
-            arrows(new ArrowSequence)
+            decision(d),
+            arrows(new ArrowSequence),
+            used_existing_packages_when_ordering(new JobIDSequence)
         {
         }
     };
@@ -135,6 +133,15 @@ namespace
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
             result->arrows()->push_back(vv.member<Arrow>(stringify(n)));
     }
+
+    void do_existing(
+            const std::tr1::shared_ptr<Job> & result,
+            Deserialisator & v)
+    {
+        Deserialisator vv(*v.find_remove_member("used_existing_packages_when_ordering"), "c");
+        for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
+            result->used_existing_packages_when_ordering()->push_back(vv.member<JobID>(stringify(n)));
+    }
 }
 
 const std::tr1::shared_ptr<Job>
@@ -149,6 +156,20 @@ Job::deserialise(Deserialisation & d)
                     v.member<std::tr1::shared_ptr<Resolution> >("resolution")
                     ));
         do_arrows(result, v);
+        do_existing(result, v);
+    }
+    else if (d.class_name() == "UsableGroupJob")
+    {
+        Deserialisator v(d, "UsableGroupJob");
+
+        Deserialisator vv(*v.find_remove_member("job_ids"), "c");
+        const std::tr1::shared_ptr<JobIDSequence> ids(new JobIDSequence);
+        for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
+            ids->push_back(vv.member<JobID>(stringify(n)));
+
+        result.reset(new UsableGroupJob(ids));
+        do_arrows(result, v);
+        do_existing(result, v);
     }
     else if (d.class_name() == "SimpleInstallJob")
     {
@@ -158,15 +179,7 @@ Job::deserialise(Deserialisation & d)
                     v.member<std::tr1::shared_ptr<ChangesToMakeDecision> >("decision")
                     ));
         do_arrows(result, v);
-    }
-    else if (d.class_name() == "PretendJob")
-    {
-        Deserialisator v(d, "PretendJob");
-        result.reset(new PretendJob(
-                    v.member<std::tr1::shared_ptr<Resolution> >("resolution"),
-                    v.member<std::tr1::shared_ptr<ChangesToMakeDecision> >("decision")
-                    ));
-        do_arrows(result, v);
+        do_existing(result, v);
     }
     else if (d.class_name() == "FetchJob")
     {
@@ -176,22 +189,17 @@ Job::deserialise(Deserialisation & d)
                     v.member<std::tr1::shared_ptr<ChangesToMakeDecision> >("decision")
                     ));
         do_arrows(result, v);
+        do_existing(result, v);
     }
-    else if (d.class_name() == "UntakenInstallJob")
+    else if (d.class_name() == "ErrorJob")
     {
-        Deserialisator v(d, "UntakenInstallJob");
-        result.reset(new UntakenInstallJob(
-                    v.member<std::tr1::shared_ptr<Resolution> >("resolution")
+        Deserialisator v(d, "ErrorJob");
+        result.reset(new ErrorJob(
+                    v.member<std::tr1::shared_ptr<Resolution> >("resolution"),
+                    v.member<std::tr1::shared_ptr<UnableToMakeDecision> >("decision")
                     ));
         do_arrows(result, v);
-    }
-    else if (d.class_name() == "SyncPointJob")
-    {
-        Deserialisator v(d, "SyncPointJob");
-        result.reset(new SyncPointJob(
-                    destringify<SyncPoint>(v.member<std::string>("sync_point"))
-                    ));
-        do_arrows(result, v);
+        do_existing(result, v);
     }
     else
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
@@ -214,10 +222,28 @@ UsableJob::resolution() const
     return _imp->resolution;
 }
 
-const std::tr1::shared_ptr<ArrowSequence>
+const std::tr1::shared_ptr<const ArrowSequence>
 UsableJob::arrows() const
 {
     return _imp->arrows;
+}
+
+const std::tr1::shared_ptr<ArrowSequence>
+UsableJob::arrows()
+{
+    return _imp->arrows;
+}
+
+const std::tr1::shared_ptr<const JobIDSequence>
+UsableJob::used_existing_packages_when_ordering() const
+{
+    return _imp->used_existing_packages_when_ordering;
+}
+
+const std::tr1::shared_ptr<JobIDSequence>
+UsableJob::used_existing_packages_when_ordering()
+{
+    return _imp->used_existing_packages_when_ordering;
 }
 
 const JobID
@@ -234,52 +260,74 @@ UsableJob::serialise(Serialiser & s) const
     s.object("UsableJob")
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "arrows", arrows())
         .member(SerialiserFlags<serialise::might_be_null>(), "resolution", resolution())
+        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(),
+                "used_existing_packages_when_ordering", used_existing_packages_when_ordering())
         ;
 }
 
-PretendJob::PretendJob(const std::tr1::shared_ptr<const Resolution> & r,
-        const std::tr1::shared_ptr<const ChangesToMakeDecision> & d) :
-    PrivateImplementationPattern<PretendJob>(new Implementation<PretendJob>(r, d))
+UsableGroupJob::UsableGroupJob(const std::tr1::shared_ptr<const JobIDSequence> & r) :
+    PrivateImplementationPattern<UsableGroupJob>(new Implementation<UsableGroupJob>(r))
 {
 }
 
-PretendJob::~PretendJob()
+UsableGroupJob::~UsableGroupJob()
 {
 }
 
-const std::tr1::shared_ptr<const Resolution>
-PretendJob::resolution() const
+const std::tr1::shared_ptr<const JobIDSequence>
+UsableGroupJob::job_ids() const
 {
-    return _imp->resolution;
+    return _imp->ids;
 }
 
-const std::tr1::shared_ptr<const ChangesToMakeDecision>
-PretendJob::decision() const
-{
-    return _imp->decision;
-}
-
-const std::tr1::shared_ptr<ArrowSequence>
-PretendJob::arrows() const
+const std::tr1::shared_ptr<const ArrowSequence>
+UsableGroupJob::arrows() const
 {
     return _imp->arrows;
 }
 
+const std::tr1::shared_ptr<ArrowSequence>
+UsableGroupJob::arrows()
+{
+    return _imp->arrows;
+}
+
+const std::tr1::shared_ptr<const JobIDSequence>
+UsableGroupJob::used_existing_packages_when_ordering() const
+{
+    return _imp->used_existing_packages_when_ordering;
+}
+
+const std::tr1::shared_ptr<JobIDSequence>
+UsableGroupJob::used_existing_packages_when_ordering()
+{
+    return _imp->used_existing_packages_when_ordering;
+}
+
+namespace
+{
+    std::string stringify_job_id(const JobID & i)
+    {
+        return i.string_id();
+    }
+}
+
 const JobID
-PretendJob::id() const
+UsableGroupJob::id() const
 {
     return make_named_values<JobID>(
-            value_for<n::string_id>("pretend:" + stringify(resolution()->resolvent()))
+            value_for<n::string_id>("usable_group:" + join(_imp->ids->begin(), _imp->ids->end(), "+", &stringify_job_id))
             );
 }
 
 void
-PretendJob::serialise(Serialiser & s) const
+UsableGroupJob::serialise(Serialiser & s) const
 {
-    s.object("PretendJob")
+    s.object("UsableGroupJob")
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "arrows", arrows())
-        .member(SerialiserFlags<serialise::might_be_null>(), "decision", decision())
-        .member(SerialiserFlags<serialise::might_be_null>(), "resolution", resolution())
+        .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "job_ids", job_ids())
+        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(),
+                "used_existing_packages_when_ordering", used_existing_packages_when_ordering())
         ;
 }
 
@@ -305,10 +353,28 @@ FetchJob::decision() const
     return _imp->decision;
 }
 
-const std::tr1::shared_ptr<ArrowSequence>
+const std::tr1::shared_ptr<const ArrowSequence>
 FetchJob::arrows() const
 {
     return _imp->arrows;
+}
+
+const std::tr1::shared_ptr<ArrowSequence>
+FetchJob::arrows()
+{
+    return _imp->arrows;
+}
+
+const std::tr1::shared_ptr<const JobIDSequence>
+FetchJob::used_existing_packages_when_ordering() const
+{
+    return _imp->used_existing_packages_when_ordering;
+}
+
+const std::tr1::shared_ptr<JobIDSequence>
+FetchJob::used_existing_packages_when_ordering()
+{
+    return _imp->used_existing_packages_when_ordering;
 }
 
 const JobID
@@ -326,6 +392,8 @@ FetchJob::serialise(Serialiser & s) const
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "arrows", arrows())
         .member(SerialiserFlags<serialise::might_be_null>(), "decision", decision())
         .member(SerialiserFlags<serialise::might_be_null>(), "resolution", resolution())
+        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(),
+                "used_existing_packages_when_ordering", used_existing_packages_when_ordering())
         ;
 }
 
@@ -351,10 +419,28 @@ SimpleInstallJob::decision() const
     return _imp->decision;
 }
 
-const std::tr1::shared_ptr<ArrowSequence>
+const std::tr1::shared_ptr<const ArrowSequence>
 SimpleInstallJob::arrows() const
 {
     return _imp->arrows;
+}
+
+const std::tr1::shared_ptr<ArrowSequence>
+SimpleInstallJob::arrows()
+{
+    return _imp->arrows;
+}
+
+const std::tr1::shared_ptr<const JobIDSequence>
+SimpleInstallJob::used_existing_packages_when_ordering() const
+{
+    return _imp->used_existing_packages_when_ordering;
+}
+
+const std::tr1::shared_ptr<JobIDSequence>
+SimpleInstallJob::used_existing_packages_when_ordering()
+{
+    return _imp->used_existing_packages_when_ordering;
 }
 
 const JobID
@@ -372,89 +458,78 @@ SimpleInstallJob::serialise(Serialiser & s) const
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "arrows", arrows())
         .member(SerialiserFlags<serialise::might_be_null>(), "decision", decision())
         .member(SerialiserFlags<serialise::might_be_null>(), "resolution", resolution())
+        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(),
+                "used_existing_packages_when_ordering", used_existing_packages_when_ordering())
         ;
 }
 
-UntakenInstallJob::UntakenInstallJob(const std::tr1::shared_ptr<const Resolution> & r) :
-    PrivateImplementationPattern<UntakenInstallJob>(new Implementation<UntakenInstallJob>(r))
+ErrorJob::ErrorJob(const std::tr1::shared_ptr<const Resolution> & r, const std::tr1::shared_ptr<const UnableToMakeDecision> & d) :
+    PrivateImplementationPattern<ErrorJob>(new Implementation<ErrorJob>(r, d))
 {
 }
 
-UntakenInstallJob::~UntakenInstallJob()
+ErrorJob::~ErrorJob()
 {
 }
 
 const std::tr1::shared_ptr<const Resolution>
-UntakenInstallJob::resolution() const
+ErrorJob::resolution() const
 {
     return _imp->resolution;
 }
 
-const std::tr1::shared_ptr<ArrowSequence>
-UntakenInstallJob::arrows() const
+const std::tr1::shared_ptr<const ArrowSequence>
+ErrorJob::arrows() const
 {
     return _imp->arrows;
 }
 
+const std::tr1::shared_ptr<ArrowSequence>
+ErrorJob::arrows()
+{
+    return _imp->arrows;
+}
+
+const std::tr1::shared_ptr<const JobIDSequence>
+ErrorJob::used_existing_packages_when_ordering() const
+{
+    return _imp->used_existing_packages_when_ordering;
+}
+
+const std::tr1::shared_ptr<JobIDSequence>
+ErrorJob::used_existing_packages_when_ordering()
+{
+    return _imp->used_existing_packages_when_ordering;
+}
+
 const JobID
-UntakenInstallJob::id() const
+ErrorJob::id() const
 {
     return make_named_values<JobID>(
-            value_for<n::string_id>("untaken:" + stringify(resolution()->resolvent()))
+            value_for<n::string_id>("error:" + stringify(resolution()->resolvent()))
             );
 }
 
 void
-UntakenInstallJob::serialise(Serialiser & s) const
+ErrorJob::serialise(Serialiser & s) const
 {
-    s.object("UntakenInstallJob")
+    s.object("ErrorJob")
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "arrows", arrows())
+        .member(SerialiserFlags<serialise::might_be_null>(), "decision", decision())
         .member(SerialiserFlags<serialise::might_be_null>(), "resolution", resolution())
+        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(),
+                "used_existing_packages_when_ordering", used_existing_packages_when_ordering())
         ;
 }
 
-SyncPointJob::SyncPointJob(const SyncPoint s) :
-    PrivateImplementationPattern<SyncPointJob>(new Implementation<SyncPointJob>(s))
+const std::tr1::shared_ptr<const UnableToMakeDecision>
+ErrorJob::decision() const
 {
+    return _imp->decision;
 }
-
-SyncPointJob::~SyncPointJob()
-{
-}
-
-SyncPoint
-SyncPointJob::sync_point() const
-{
-    return _imp->sync_point;
-}
-
-const std::tr1::shared_ptr<ArrowSequence>
-SyncPointJob::arrows() const
-{
-    return _imp->arrows;
-}
-
-const JobID
-SyncPointJob::id() const
-{
-    return make_named_values<JobID>(
-            value_for<n::string_id>("sync:" + stringify(sync_point()))
-            );
-}
-
-void
-SyncPointJob::serialise(Serialiser & s) const
-{
-    s.object("SyncPointJob")
-        .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "arrows", arrows())
-        .member(SerialiserFlags<>(), "sync_point", stringify(sync_point()))
-        ;
-}
-
 template class PrivateImplementationPattern<resolver::UsableJob>;
-template class PrivateImplementationPattern<resolver::PretendJob>;
+template class PrivateImplementationPattern<resolver::UsableGroupJob>;
 template class PrivateImplementationPattern<resolver::FetchJob>;
 template class PrivateImplementationPattern<resolver::SimpleInstallJob>;
-template class PrivateImplementationPattern<resolver::SyncPointJob>;
-template class PrivateImplementationPattern<resolver::UntakenInstallJob>;
+template class PrivateImplementationPattern<resolver::ErrorJob>;
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -48,11 +48,10 @@ namespace paludis
                 void _resolve_jobs_dep_arrows();
                 void _resolve_order();
 
-                bool _already_ordered(const JobID &) const PALUDIS_ATTRIBUTE((warn_unused_result));
                 bool _can_order(const JobID &, const bool desperate) const PALUDIS_ATTRIBUTE((warn_unused_result));
                 void _mark_already_ordered(const JobID &);
+                void _order_this(const JobID &, const bool inside_something_else);
 
-                bool _anything_left_to_order() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 bool _order_some(const bool desperate, const bool installs_only) PALUDIS_ATTRIBUTE((warn_unused_result));
                 bool _remove_usable_cycles() PALUDIS_ATTRIBUTE((warn_unused_result));
                 void _cycle_error() PALUDIS_ATTRIBUTE((noreturn));
