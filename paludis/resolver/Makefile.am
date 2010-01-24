@@ -27,6 +27,7 @@ noinst_HEADERS = \
 	constraint.hh constraint-fwd.hh \
 	job.hh job-fwd.hh \
 	job_id.hh job_id-fwd.hh \
+	job_state.hh job_state-fwd.hh \
 	jobs.hh jobs-fwd.hh \
 	decider.hh decider-fwd.hh \
 	decision.hh decision-fwd.hh \
@@ -59,6 +60,7 @@ libpaludisresolver_a_SOURCES = \
 	failure_kinds.cc \
 	job.cc \
 	job_id.cc \
+	job_state.cc \
 	jobs.cc \
 	orderer.cc \
 	reason.cc \

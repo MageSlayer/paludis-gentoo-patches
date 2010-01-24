@@ -50,6 +50,7 @@
 #include <paludis/resolver/jobs.hh>
 #include <paludis/resolver/job.hh>
 #include <paludis/resolver/job_id.hh>
+#include <paludis/resolver/job_state.hh>
 #include <paludis/resolver/arrow.hh>
 #include <paludis/package_id.hh>
 #include <paludis/version_spec.hh>
@@ -119,130 +120,6 @@ namespace
             return "Execute a dependency resolution created using 'cave resolve'. Mostly for "
                 "internal use; most users will not use this command directly.";
         }
-    };
-
-    struct JobPendingState;
-    struct JobSucceededState;
-    struct JobFailedState;
-    struct JobSkippedState;
-
-    class JobState :
-        public virtual DeclareAbstractAcceptMethods<JobState, MakeTypeList<
-            JobPendingState, JobSucceededState, JobFailedState, JobSkippedState>::Type >
-    {
-        private:
-            const std::tr1::shared_ptr<const Job> _job;
-
-        public:
-            JobState(const std::tr1::shared_ptr<const Job> & j) :
-                _job(j)
-            {
-            }
-
-            virtual ~JobState() = 0;
-
-            const std::tr1::shared_ptr<const Job> job() PALUDIS_ATTRIBUTE((warn_unused_result))
-            {
-                return _job;
-            }
-
-            virtual const std::string state() const = 0;
-    };
-
-    JobState::~JobState()
-    {
-    }
-
-    class JobPendingState :
-        public JobState,
-        public ImplementAcceptMethods<JobState, JobPendingState>
-    {
-        public:
-            JobPendingState(const std::tr1::shared_ptr<const Job> & j) :
-                JobState(j)
-            {
-            }
-
-            virtual const std::string state() const
-            {
-                return "pending";
-            }
-    };
-
-    class JobSucceededState :
-        public JobState,
-        public ImplementAcceptMethods<JobState, JobSucceededState>
-    {
-        private:
-            std::list<std::tr1::shared_ptr<OutputManager> > _output_managers;
-
-        public:
-            JobSucceededState(const std::tr1::shared_ptr<const Job> & j) :
-                JobState(j)
-            {
-            }
-
-            void add_output_manager(const std::tr1::shared_ptr<OutputManager> & o)
-            {
-                _output_managers.push_back(o);
-            }
-
-            virtual const std::string state() const
-            {
-                return "succeeded";
-            }
-    };
-
-    class JobFailedState :
-        public JobState,
-        public ImplementAcceptMethods<JobState, JobFailedState>
-    {
-        private:
-            std::list<std::tr1::shared_ptr<OutputManager> > _output_managers;
-
-        public:
-            JobFailedState(const std::tr1::shared_ptr<const Job> & j) :
-                JobState(j)
-            {
-            }
-
-            void add_output_manager(const std::tr1::shared_ptr<OutputManager> & o)
-            {
-                _output_managers.push_back(o);
-            }
-
-            virtual const std::string state() const
-            {
-                return "failed";
-            }
-    };
-
-    class JobSkippedState :
-        public JobState,
-        public ImplementAcceptMethods<JobState, JobSkippedState>
-    {
-        private:
-            const std::tr1::shared_ptr<OutputManager> _output_manager;
-            const JobID _because;
-
-        public:
-            JobSkippedState(
-                    const std::tr1::shared_ptr<const Job> & j,
-                    const JobID & b) :
-                JobState(j),
-                _because(b)
-            {
-            }
-
-            const JobID because()
-            {
-                return _because;
-            }
-
-            virtual const std::string state() const
-            {
-                return "skipped";
-            }
     };
 
     bool do_pretend(
@@ -797,13 +674,13 @@ namespace
                 {
                     if (! simple_visitor_cast<const JobPendingState>(*s->second))
                         throw InternalError(PALUDIS_HERE, "not pending: " + stringify((*p)->job()->id().string_id()) + " -> "
-                                + stringify(a->comes_after().string_id()) + " " + s->second->state());
+                                + stringify(a->comes_after().string_id()) + " " + s->second->state_name());
                 }
                 else
                 {
                     if (! simple_visitor_cast<const JobSucceededState>(*s->second))
                         throw InternalError(PALUDIS_HERE, "didn't succeed: " + stringify((*p)->job()->id().string_id()) + " -> "
-                                + stringify(a->comes_after().string_id()) + " " + s->second->state());
+                                + stringify(a->comes_after().string_id()) + " " + s->second->state_name());
                 }
             }
 
