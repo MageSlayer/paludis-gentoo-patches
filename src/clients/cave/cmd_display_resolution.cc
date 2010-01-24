@@ -210,26 +210,27 @@ namespace
         }
     }
 
-    void display_one_constraint(const Constraint & c)
+    const std::string constraint_as_string(const Constraint & c)
     {
-        cout << c.spec();
+        std::stringstream result;
+        result << c.spec();
 
         switch (c.use_existing())
         {
             case ue_if_same:
-                cout << ", use existing if same";
+                result << ", use existing if same";
                 break;
             case ue_never:
-                cout << ", never using existing";
+                result << ", never using existing";
                 break;
             case ue_only_if_transient:
-                cout << ", using existing only if transient";
+                result << ", using existing only if transient";
                 break;
             case ue_if_same_version:
-                cout << ", use existing if same version";
+                result << ", use existing if same version";
                 break;
             case ue_if_possible:
-                cout << ", use existing if possible";
+                result << ", use existing if possible";
                 break;
 
             case last_ue:
@@ -239,16 +240,18 @@ namespace
         switch (c.destination_type())
         {
             case dt_install_to_slash:
-                cout << ", installing to /";
+                result << ", installing to /";
                 break;
 
             case dt_create_binary:
-                cout << ", creating a binary";
+                result << ", creating a binary";
                 break;
 
             case last_dt:
                 break;
         }
+
+        return result.str();
     }
 
     void display_explanation_constraints(const Constraints & constraints)
@@ -257,9 +260,7 @@ namespace
         for (Constraints::ConstIterator c(constraints.begin()), c_end(constraints.end()) ;
                 c != c_end ; ++c)
         {
-            cout << "      * ";
-            display_one_constraint(**c);
-            cout << endl;
+            cout << "      * " << constraint_as_string(**c) << endl;
             cout << "        Because of ";
             ReasonNameGetter g(true);
             cout << (*c)->reason()->accept_returning<std::pair<std::string, bool> >(g).first;
@@ -640,16 +641,19 @@ namespace
                     m != m_end ; ++m)
                 cout << "        Masked by " << (*m)->description() << endl;
 
+            std::set<std::string> duplicates;
             for (Constraints::ConstIterator c(u->unmet_constraints()->begin()),
                     c_end(u->unmet_constraints()->end()) ;
                     c != c_end ; ++c)
             {
-                cout << "        Did not meet ";
-                display_one_constraint(**c);
-
                 ReasonNameGetter g(false);
-                cout << " from " << (*c)->reason()->accept_returning<std::pair<std::string, bool> >(g).first;
-                cout << endl;
+                std::string s(constraint_as_string(**c) + " from " +
+                        (*c)->reason()->accept_returning<std::pair<std::string, bool> >(g).first);
+
+                if (! duplicates.insert(s).second)
+                    continue;
+
+                cout << "        Did not meet " << s << endl;
 
                 if ((*c)->spec().if_package() && (*c)->spec().if_package()->additional_requirements_ptr() &&
                         (! match_package(*env, *(*c)->spec().if_package(), *u->package_id(), MatchPackageOptions())) &&
