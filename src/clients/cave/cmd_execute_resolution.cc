@@ -404,7 +404,7 @@ namespace
         {
         }
 
-        void visit(const SimpleInstallJob & job)
+        bool visit(const SimpleInstallJob & job)
         {
             std::tr1::shared_ptr<OutputManager> fetch_output_manager_goes_here, install_output_manager_goes_here;
 
@@ -418,7 +418,7 @@ namespace
                 if (fetch_output_manager_goes_here)
                     failed_state->add_output_manager(fetch_output_manager_goes_here);
                 state = failed_state;
-                return;
+                return false;
             }
 
             if (! do_install(env, cmdline, job.resolution(),
@@ -430,6 +430,7 @@ namespace
                 if (install_output_manager_goes_here)
                     failed_state->add_output_manager(install_output_manager_goes_here);
                 state = failed_state;
+                return false;
             }
             else
             {
@@ -439,10 +440,11 @@ namespace
                 if (install_output_manager_goes_here)
                     succeeded_state->add_output_manager(install_output_manager_goes_here);
                 state = succeeded_state;
+                return true;
             }
         }
 
-        void visit(const FetchJob & job)
+        bool visit(const FetchJob & job)
         {
             std::tr1::shared_ptr<OutputManager> output_manager_goes_here;
 
@@ -454,6 +456,7 @@ namespace
                 if (output_manager_goes_here)
                     failed_state->add_output_manager(output_manager_goes_here);
                 state = failed_state;
+                return false;
             }
             else
             {
@@ -461,17 +464,91 @@ namespace
                 if (output_manager_goes_here)
                     succeeded_state->add_output_manager(output_manager_goes_here);
                 state = succeeded_state;
+                return true;
             }
+        }
+
+        bool visit(const ErrorJob &)
+        {
+            state.reset(new JobFailedState(state->job()));
+            return false;
+        }
+
+        bool visit(const UsableJob &)
+        {
+            state.reset(new JobSucceededState(state->job()));
+            return true;
+        }
+
+        bool visit(const UsableGroupJob & job)
+        {
+            bool result(true);
+
+            for (JobIDSequence::ConstIterator i(job.job_ids()->begin()), i_end(job.job_ids()->end()) ;
+                    i != i_end ; ++i)
+            {
+                JobStateMap::iterator s(job_state_map.find(*i));
+                if (s == job_state_map.end())
+                    throw InternalError(PALUDIS_HERE, "missing state");
+
+                DoOneTakenVisitor v(env, cmdline, counts, s->second, job_state_map);
+                result = s->second->job()->accept_returning<bool>(v) && result;
+            }
+
+            state.reset(new JobSucceededState(state->job()));
+            return result;
+        }
+    };
+
+    struct DoOneSkippedVisitor
+    {
+        const std::tr1::shared_ptr<Environment> env;
+        const ExecuteResolutionCommandLine & cmdline;
+        JobCounts & counts;
+        std::tr1::shared_ptr<JobState> & state;
+        JobStateMap & job_state_map;
+
+        DoOneSkippedVisitor(
+                const std::tr1::shared_ptr<Environment> & e,
+                const ExecuteResolutionCommandLine & c,
+                JobCounts & k,
+                std::tr1::shared_ptr<JobState> & s,
+                JobStateMap & m) :
+            env(e),
+            cmdline(c),
+            counts(k),
+            state(s),
+            job_state_map(m)
+        {
+        }
+
+        void visit(const SimpleInstallJob & job)
+        {
+            ++counts.x_installs;
+
+            cout << endl;
+            cout << c::bold_blue() << counts.x_installs << " of " << counts.y_installs << ": Skipping install of "
+                << *job.decision()->origin_id() << c::normal() << endl;
+            cout << endl;
+
+            state.reset(new JobSkippedState(state->job()));
+        }
+
+        void visit(const FetchJob &)
+        {
+            ++counts.x_fetches;
+
+            state.reset(new JobSkippedState(state->job()));
         }
 
         void visit(const ErrorJob &)
         {
-            state.reset(new JobFailedState(state->job()));
+            state.reset(new JobSkippedState(state->job()));
         }
 
         void visit(const UsableJob &)
         {
-            state.reset(new JobSucceededState(state->job()));
+            state.reset(new JobSkippedState(state->job()));
         }
 
         void visit(const UsableGroupJob & job)
@@ -483,11 +560,11 @@ namespace
                 if (s == job_state_map.end())
                     throw InternalError(PALUDIS_HERE, "missing state");
 
-                DoOneTakenVisitor v(env, cmdline, counts, s->second, job_state_map);
+                DoOneSkippedVisitor v(env, cmdline, counts, s->second, job_state_map);
                 s->second->job()->accept(v);
             }
 
-            state.reset(new JobSucceededState(state->job()));
+            state.reset(new JobSkippedState(state->job()));
         }
     };
 
@@ -630,6 +707,29 @@ namespace
         }
     };
 
+    struct JobStateChecker
+    {
+        bool visit(const JobPendingState &) const PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "still pending");
+        }
+
+        bool visit(const JobFailedState &) const
+        {
+            return false;
+        }
+
+        bool visit(const JobSkippedState &) const
+        {
+            return false;
+        }
+
+        bool visit(const JobSucceededState &) const
+        {
+            return true;
+        }
+    };
+
     int execute_taken(
             const std::tr1::shared_ptr<Environment> & env,
             const ResolverLists & lists,
@@ -660,6 +760,7 @@ namespace
         {
             ++p_next;
 
+            std::tr1::shared_ptr<const Job> skipped_because_of;
             for (ArrowSequence::ConstIterator a((*p)->job()->arrows()->begin()), a_end((*p)->job()->arrows()->end()) ;
                     a != a_end ; ++a)
             {
@@ -679,9 +780,18 @@ namespace
                 }
                 else
                 {
-                    if (! simple_visitor_cast<const JobSucceededState>(*s->second))
-                        throw InternalError(PALUDIS_HERE, "didn't succeed: " + stringify((*p)->job()->id().string_id()) + " -> "
-                                + stringify(a->comes_after().string_id()) + " " + s->second->state_name());
+                    bool ignorable(false);
+
+                    if (cmdline.execution_options.a_continue_on_failure.argument() == "if-satisfied")
+                        ignorable = a->failure_kinds()[fk_ignorable_if_satisfied];
+                    else if (cmdline.execution_options.a_continue_on_failure.argument() == "always")
+                        ignorable = true;
+
+                    if ((! ignorable) && (! s->second->accept_returning<bool>(JobStateChecker())))
+                    {
+                        skipped_because_of = after_job;
+                        break;
+                    }
                 }
             }
 
@@ -690,13 +800,22 @@ namespace
                 throw InternalError(PALUDIS_HERE, "missing state");
             pending.erase(p);
 
-            DoOneTakenVisitor v(env, cmdline, counts, s->second, job_state_map);
-            s->second->job()->accept(v);
-
-            if (! simple_visitor_cast<const JobSucceededState>(*s->second))
+            if (skipped_because_of)
             {
+                DoOneSkippedVisitor v(env, cmdline, counts, s->second, job_state_map);
+                s->second->job()->accept(v);
                 retcode |= 1;
-                break;
+            }
+            else
+            {
+                DoOneTakenVisitor v(env, cmdline, counts, s->second, job_state_map);
+                if (! s->second->job()->accept_returning<bool>(v))
+                {
+                    retcode |= 1;
+
+                    if (cmdline.execution_options.a_continue_on_failure.argument() == "never")
+                        break;
+                }
             }
         }
 
