@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -62,27 +62,11 @@ Decision::deserialise(Deserialisation & d)
     }
     else if (d.class_name() == "ChangesToMakeDecision")
     {
-        Deserialisator v(d, "ChangesToMakeDecision");
-        return make_shared_ptr(new ChangesToMakeDecision(
-                    v.member<std::tr1::shared_ptr<const PackageID> >("origin_id"),
-                    v.member<bool>("best"),
-                    v.member<bool>("taken"),
-                    v.member<std::tr1::shared_ptr<const Destination> >("destination")
-                    ));
+        return ChangesToMakeDecision::deserialise(d);
     }
     else if (d.class_name() == "UnableToMakeDecision")
     {
-        Deserialisator v(d, "UnableToMakeDecision");
-
-        std::tr1::shared_ptr<UnsuitableCandidates> unsuitable_candidates(new UnsuitableCandidates);
-        Deserialisator vv(*v.find_remove_member("unsuitable_candidates"), "c");
-        for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
-            unsuitable_candidates->push_back(vv.member<UnsuitableCandidate>(stringify(n)));
-
-        return make_shared_ptr(new UnableToMakeDecision(
-                    unsuitable_candidates,
-                    v.member<bool>("taken")
-                    ));
+        return UnableToMakeDecision::deserialise(d);
     }
     else
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
@@ -97,6 +81,22 @@ ChangesToMakeDecision::deserialise(Deserialisation & d)
                 v.member<bool>("best"),
                 v.member<bool>("taken"),
                 v.member<std::tr1::shared_ptr<const Destination> >("destination")
+                ));
+}
+
+const std::tr1::shared_ptr<UnableToMakeDecision>
+UnableToMakeDecision::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "UnableToMakeDecision");
+
+    std::tr1::shared_ptr<UnsuitableCandidates> unsuitable_candidates(new UnsuitableCandidates);
+    Deserialisator vv(*v.find_remove_member("unsuitable_candidates"), "c");
+    for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
+        unsuitable_candidates->push_back(vv.member<UnsuitableCandidate>(stringify(n)));
+
+    return make_shared_ptr(new UnableToMakeDecision(
+                unsuitable_candidates,
+                v.member<bool>("taken")
                 ));
 }
 

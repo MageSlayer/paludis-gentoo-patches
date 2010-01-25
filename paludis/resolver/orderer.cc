@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -41,7 +41,6 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/simple_visitor_cast.hh>
-#include <paludis/util/hashes.hh>
 #include <paludis/match_package.hh>
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
@@ -49,10 +48,12 @@
 #include <paludis/selection.hh>
 #include <paludis/notifier_callback.hh>
 #include <algorithm>
-#include <tr1/unordered_set>
+#include <set>
 
 using namespace paludis;
 using namespace paludis::resolver;
+
+typedef std::set<JobID> ToOrder;
 
 namespace paludis
 {
@@ -64,7 +65,7 @@ namespace paludis
 
         const std::tr1::shared_ptr<ResolverLists> lists;
 
-        std::tr1::unordered_set<JobID, Hash<JobID> > already_ordered;
+        ToOrder to_order;
 
         Implementation(const Environment * const e,
                 const std::tr1::shared_ptr<const Decider> & d,
@@ -109,25 +110,19 @@ namespace paludis
 
 namespace
 {
-    struct CommonJobs
-    {
-        NamedValue<n::done_installs, std::tr1::shared_ptr<Job> > done_installs;
-        NamedValue<n::done_pretends, std::tr1::shared_ptr<Job> > done_pretends;
-    };
-
     struct DecisionHandler
     {
-        CommonJobs & common_jobs;
         const std::tr1::shared_ptr<Resolution> resolution;
         const std::tr1::shared_ptr<ResolverLists> lists;
+        ToOrder & to_order;
 
         DecisionHandler(
-                CommonJobs & c,
                 const std::tr1::shared_ptr<Resolution> & r,
-                const std::tr1::shared_ptr<ResolverLists> & l) :
-            common_jobs(c),
+                const std::tr1::shared_ptr<ResolverLists> & l,
+                ToOrder & o) :
             resolution(r),
-            lists(l)
+            lists(l),
+            to_order(o)
         {
         }
 
@@ -140,15 +135,7 @@ namespace
 
                 const std::tr1::shared_ptr<UsableJob> usable_job(new UsableJob(resolution));
                 lists->jobs()->add(usable_job);
-                lists->unordered_job_ids()->push_back(usable_job->id());
-
-                /* we want to do all of these as part of the main build process,
-                 * not at pretend time */
-                usable_job->arrows()->push_back(make_named_values<Arrow>(
-                            value_for<n::comes_after>(common_jobs.done_pretends()->id()),
-                            value_for<n::failure_kinds>(FailureKinds()),
-                            value_for<n::maybe_reason>(make_null_shared_ptr())
-                            ));
+                to_order.insert(usable_job->id());
             }
             else
             {
@@ -166,15 +153,7 @@ namespace
 
                 const std::tr1::shared_ptr<UsableJob> usable_job(new UsableJob(resolution));
                 lists->jobs()->add(usable_job);
-                lists->unordered_job_ids()->push_back(usable_job->id());
-
-                /* we want to do all of these as part of the main build process,
-                 * not at pretend time */
-                usable_job->arrows()->push_back(make_named_values<Arrow>(
-                            value_for<n::comes_after>(common_jobs.done_pretends()->id()),
-                            value_for<n::failure_kinds>(FailureKinds()),
-                            value_for<n::maybe_reason>(make_null_shared_ptr())
-                            ));
+                to_order.insert(usable_job->id());
             }
             else
             {
@@ -190,53 +169,19 @@ namespace
                 Log::get_instance()->message("resolver.orderer.job.changes_to_make", ll_debug, lc_no_context)
                     << "taken " << resolution->resolvent() << " changes to make";
 
-                const std::tr1::shared_ptr<PretendJob> pretend_job(new PretendJob(resolution,
-                            d.shared_from_this()));
-                lists->jobs()->add(pretend_job);
-                lists->unordered_job_ids()->push_back(pretend_job->id());
-
                 const std::tr1::shared_ptr<FetchJob> fetch_job(new FetchJob(resolution,
                             d.shared_from_this()));
                 lists->jobs()->add(fetch_job);
-                lists->unordered_job_ids()->push_back(fetch_job->id());
+                to_order.insert(fetch_job->id());
 
                 const std::tr1::shared_ptr<SimpleInstallJob> install_job(new SimpleInstallJob(resolution,
                             d.shared_from_this()));
                 lists->jobs()->add(install_job);
-                lists->unordered_job_ids()->push_back(install_job->id());
+                to_order.insert(install_job->id());
 
                 const std::tr1::shared_ptr<UsableJob> usable_job(new UsableJob(resolution));
                 lists->jobs()->add(usable_job);
-                lists->unordered_job_ids()->push_back(usable_job->id());
-
-                /* we can't do any fetches or installs until all pretends have passed */
-                fetch_job->arrows()->push_back(make_named_values<Arrow>(
-                            value_for<n::comes_after>(common_jobs.done_pretends()->id()),
-                            value_for<n::failure_kinds>(FailureKinds()),
-                            value_for<n::maybe_reason>(make_null_shared_ptr())
-                            ));
-
-                install_job->arrows()->push_back(make_named_values<Arrow>(
-                            value_for<n::comes_after>(common_jobs.done_pretends()->id()),
-                            value_for<n::failure_kinds>(FailureKinds()),
-                            value_for<n::maybe_reason>(make_null_shared_ptr())
-                            ));
-
-                /* we haven't done all our pretends until we've done our pretend */
-                common_jobs.done_pretends()->arrows()->push_back(make_named_values<Arrow>(
-                            value_for<n::comes_after>(pretend_job->id()),
-                            value_for<n::failure_kinds>(FailureKinds()),
-                            value_for<n::maybe_reason>(make_null_shared_ptr())
-                            ));
-
-                /* we haven't done all our installs until we're usable
-                 * (arguably this should just be install rather than usable,
-                 * but the stronger requirement doesn't seem to hurt */
-                common_jobs.done_installs()->arrows()->push_back(make_named_values<Arrow>(
-                            value_for<n::comes_after>(usable_job->id()),
-                            value_for<n::failure_kinds>(FailureKinds()),
-                            value_for<n::maybe_reason>(make_null_shared_ptr())
-                            ));
+                to_order.insert(usable_job->id());
 
                 /* we can't install until we've fetched */
                 install_job->arrows()->push_back(make_named_values<Arrow>(
@@ -257,7 +202,7 @@ namespace
                 Log::get_instance()->message("resolver.orderer.job.changes_to_make", ll_debug, lc_no_context)
                     << "untaken " << resolution->resolvent() << " changes to make";
 
-                const std::tr1::shared_ptr<UntakenInstallJob> install_job(new UntakenInstallJob(resolution));
+                const std::tr1::shared_ptr<SimpleInstallJob> install_job(new SimpleInstallJob(resolution, d.shared_from_this()));
                 lists->jobs()->add(install_job);
                 lists->untaken_job_ids()->push_back(install_job->id());
             }
@@ -270,16 +215,18 @@ namespace
                 Log::get_instance()->message("resolver.orderer.job.unable_to_make", ll_debug, lc_no_context)
                     << "taken " << resolution->resolvent() << " unable to make";
 
-                lists->error_resolutions()->append(resolution);
+                const std::tr1::shared_ptr<ErrorJob> error_job(new ErrorJob(resolution, d.shared_from_this()));
+                lists->jobs()->add(error_job);
+                lists->taken_error_job_ids()->push_back(error_job->id());
             }
             else
             {
                 Log::get_instance()->message("resolver.orderer.job.unable_to_make", ll_debug, lc_no_context)
                     << "untaken " << resolution->resolvent() << " unable to make";
 
-                const std::tr1::shared_ptr<UntakenInstallJob> install_job(new UntakenInstallJob(resolution));
-                lists->jobs()->add(install_job);
-                lists->untaken_job_ids()->push_back(install_job->id());
+                const std::tr1::shared_ptr<ErrorJob> error_job(new ErrorJob(resolution, d.shared_from_this()));
+                lists->jobs()->add(error_job);
+                lists->untaken_error_job_ids()->push_back(error_job->id());
             }
         }
     };
@@ -288,22 +235,11 @@ namespace
 void
 Orderer::_resolve_jobs()
 {
-    CommonJobs common_jobs(make_named_values<CommonJobs>(
-                value_for<n::done_installs>(make_shared_ptr(new SyncPointJob(sp_done_installs))),
-                value_for<n::done_pretends>(make_shared_ptr(new SyncPointJob(sp_done_pretends)))
-                ));
-
-    _imp->lists->jobs()->add(common_jobs.done_installs());
-    _imp->lists->unordered_job_ids()->push_back(common_jobs.done_installs()->id());
-
-    _imp->lists->jobs()->add(common_jobs.done_pretends());
-    _imp->lists->unordered_job_ids()->push_back(common_jobs.done_pretends()->id());
-
     for (Resolutions::ConstIterator i(_imp->lists->all_resolutions()->begin()),
             i_end(_imp->lists->all_resolutions()->end()) ;
             i != i_end ; ++i)
     {
-        DecisionHandler d(common_jobs, *i, _imp->lists);
+        DecisionHandler d(*i, _imp->lists, _imp->to_order);
         (*i)->decision()->accept(d);
     }
 }
@@ -512,19 +448,15 @@ namespace
             add_dep_arrows(true, c.resolution());
         }
 
+        void visit(const UsableGroupJob &)
+        {
+        }
+
         void visit(const FetchJob &)
         {
         }
 
-        void visit(const PretendJob &)
-        {
-        }
-
-        void visit(const UntakenInstallJob &)
-        {
-        }
-
-        void visit(const SyncPointJob &)
+        void visit(const ErrorJob &)
         {
         }
     };
@@ -535,8 +467,8 @@ Orderer::_resolve_jobs_dep_arrows()
 {
     Context context("When resolving dep arrows:");
 
-    for (JobIDSequence::ConstIterator i(_imp->lists->unordered_job_ids()->begin()),
-            i_end(_imp->lists->unordered_job_ids()->end()) ;
+    for (ToOrder::const_iterator i(_imp->to_order.begin()),
+            i_end(_imp->to_order.end()) ;
             i != i_end ; ++i)
     {
         DepArrowHandler d(_imp->lists->jobs(), *i);
@@ -552,7 +484,7 @@ Orderer::_resolve_order()
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Ordering"));
 
         /* anything left? */
-        if (! _anything_left_to_order())
+        if (_imp->to_order.empty())
             break;
 
         /* first attempt: nothing fancy */
@@ -581,32 +513,16 @@ Orderer::_resolve_order()
 }
 
 bool
-Orderer::_anything_left_to_order() const
-{
-    for (JobIDSequence::ConstIterator i(_imp->lists->unordered_job_ids()->begin()),
-            i_end(_imp->lists->unordered_job_ids()->end()) ;
-            i != i_end ; ++i)
-    {
-        if (_already_ordered(*i))
-            continue;
-
-        return true;
-    }
-
-    return false;
-}
-
-bool
 Orderer::_order_some(const bool desperate, const bool installs_only)
 {
     bool result(false);
 
-    for (JobIDSequence::ConstIterator i(_imp->lists->unordered_job_ids()->begin()),
-            i_end(_imp->lists->unordered_job_ids()->end()) ;
-            i != i_end ; ++i)
+    for (ToOrder::iterator i(_imp->to_order.begin()), i_next(i), i_end(_imp->to_order.end()) ;
+            i != i_end ; i = i_next)
     {
-        if (_already_ordered(*i))
-            continue;
+        /* i might end up invalidated by the time we're done */
+        JobID id(*i);
+        ++i_next;
 
         if (installs_only)
         {
@@ -615,46 +531,42 @@ Orderer::_order_some(const bool desperate, const bool installs_only)
                 continue;
         }
 
-        if (! _can_order(*i, desperate))
+        if (! _can_order(id, desperate))
             continue;
 
         if (desperate)
         {
-            const std::tr1::shared_ptr<const Job> job(_imp->lists->jobs()->fetch(*i));
-            std::stringstream s;
+            const std::tr1::shared_ptr<Job> job(_imp->lists->jobs()->fetch(id));
             for (ArrowSequence::ConstIterator a(job->arrows()->begin()), a_end(job->arrows()->end()) ;
                     a != a_end ; ++a)
-                if (! _already_ordered(a->comes_after()))
-                {
-                    if (! s.str().empty())
-                        s << ", ";
-                    s << a->comes_after().string_id();
-                }
-
-            Log::get_instance()->message("resolver.orderer.cycle_breaking.already_met", ll_warning, lc_context)
-                << "Had to use existing packages to order " << i->string_id() << " (unmet deps are " << s.str() << ")";
+                if (_imp->to_order.end() != _imp->to_order.find(a->comes_after()))
+                    job->used_existing_packages_when_ordering()->push_back(a->comes_after());
         }
 
-        _imp->lists->ordered_job_ids()->push_back(*i);
-        _mark_already_ordered(*i);
+        _order_this(id, false);
         result = true;
     }
 
     return result;
 }
 
+void
+Orderer::_order_this(const JobID & i, const bool inside_something_else)
+{
+    if (! inside_something_else)
+        _imp->lists->taken_job_ids()->push_back(i);
+    _mark_already_ordered(i);
+}
+
 bool
 Orderer::_remove_usable_cycles()
 {
     /* we only want to remove usable jobs... */
-    std::tr1::unordered_set<JobID, Hash<JobID> > removable;
-    for (JobIDSequence::ConstIterator i(_imp->lists->unordered_job_ids()->begin()),
-            i_end(_imp->lists->unordered_job_ids()->end()) ;
+    std::set<JobID> removable;
+    for (ToOrder::const_iterator i(_imp->to_order.begin()),
+            i_end(_imp->to_order.end()) ;
             i != i_end ; ++i)
     {
-        if (_already_ordered(*i))
-            continue;
-
         const std::tr1::shared_ptr<const Job> job(_imp->lists->jobs()->fetch(*i));
         if (simple_visitor_cast<const UsableJob>(*job))
             removable.insert(job->id());
@@ -674,7 +586,7 @@ Orderer::_remove_usable_cycles()
             const std::tr1::shared_ptr<const Job> job(_imp->lists->jobs()->fetch(*i));
             for (ArrowSequence::ConstIterator a(job->arrows()->begin()), a_end(job->arrows()->end()) ;
                     a != a_end ; ++a)
-                if (! _already_ordered(a->comes_after()))
+                if (_imp->to_order.end() != _imp->to_order.find(a->comes_after()))
                     if (removable.end() == removable.find(a->comes_after()))
                     {
                         need_another_pass = true;
@@ -690,12 +602,22 @@ Orderer::_remove_usable_cycles()
             break;
     }
 
-    for (std::tr1::unordered_set<JobID, Hash<JobID> >::iterator i(removable.begin()),
-            i_end(removable.end()) ;
-            i != i_end ; ++i)
+    if (! removable.empty())
     {
-        _imp->lists->ordered_job_ids()->push_back(*i);
-        _mark_already_ordered(*i);
+        const std::tr1::shared_ptr<JobIDSequence> ids(new JobIDSequence);
+        std::copy(removable.begin(), removable.end(), ids->back_inserter());
+
+        const std::tr1::shared_ptr<UsableGroupJob> usable_group_job(new UsableGroupJob(ids));
+        _imp->lists->jobs()->add(usable_group_job);
+        _order_this(usable_group_job->id(), false);
+
+        for (std::set<JobID>::iterator i(removable.begin()), i_next(i),
+                i_end(removable.end()) ;
+                i != i_end ; i = i_next)
+        {
+            ++i_next;
+            _order_this(*i, true);
+        }
     }
 
     return ! removable.empty();
@@ -705,18 +627,15 @@ void
 Orderer::_cycle_error()
 {
     std::stringstream s;
-    for (JobIDSequence::ConstIterator i(_imp->lists->unordered_job_ids()->begin()),
-            i_end(_imp->lists->unordered_job_ids()->end()) ;
+    for (ToOrder::const_iterator i(_imp->to_order.begin()),
+            i_end(_imp->to_order.end()) ;
             i != i_end ; ++i)
     {
-        if (_already_ordered(*i))
-            continue;
-
         s << " {{{" << i->string_id() << " missing";
         const std::tr1::shared_ptr<const Job> job(_imp->lists->jobs()->fetch(*i));
         for (ArrowSequence::ConstIterator a(job->arrows()->begin()), a_end(job->arrows()->end()) ;
                 a != a_end ; ++a)
-            if (! _already_ordered(a->comes_after()))
+            if (_imp->to_order.end() != _imp->to_order.find(a->comes_after()))
                 s << " [" << a->comes_after().string_id() << "]";
         s << " }}}";
     }
@@ -759,7 +678,7 @@ Orderer::_can_order(const JobID & i, const bool desperate) const
     for (ArrowSequence::ConstIterator a(job->arrows()->begin()), a_end(job->arrows()->end()) ;
             a != a_end ; ++a)
     {
-        if (! _already_ordered(a->comes_after()))
+        if (_imp->to_order.end() != _imp->to_order.find(a->comes_after()))
         {
             bool skippable(false);
 
@@ -779,18 +698,10 @@ Orderer::_can_order(const JobID & i, const bool desperate) const
     return true;
 }
 
-bool
-Orderer::_already_ordered(const JobID & i) const
-{
-    return _imp->already_ordered.end() != _imp->already_ordered.find(i);
-}
-
 void
 Orderer::_mark_already_ordered(const JobID & i)
 {
-    if (! _imp->already_ordered.insert(i).second)
-        throw InternalError(PALUDIS_HERE, "already already ordered");
-
+    _imp->to_order.erase(i);
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 }
 

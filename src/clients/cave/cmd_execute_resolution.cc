@@ -33,7 +33,11 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/simple_visitor-impl.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_shared_copy.hh>
+#include <paludis/util/hashes.hh>
+#include <paludis/util/type_list.hh>
 #include <paludis/resolver/resolutions.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
@@ -47,6 +51,8 @@
 #include <paludis/resolver/jobs.hh>
 #include <paludis/resolver/job.hh>
 #include <paludis/resolver/job_id.hh>
+#include <paludis/resolver/job_state.hh>
+#include <paludis/resolver/arrow.hh>
 #include <paludis/package_id.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -66,6 +72,7 @@
 #include <list>
 #include <cstdlib>
 #include <algorithm>
+#include <tr1/unordered_map>
 
 using namespace paludis;
 using namespace cave;
@@ -116,14 +123,12 @@ namespace
         }
     };
 
-    typedef std::list<std::tr1::shared_ptr<OutputManager> > CompletedOutputManagers;
-
-    int do_pretend(
+    bool do_pretend(
             const std::tr1::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
             const ChangesToMakeDecision & decision,
             const int x, const int y,
-            CompletedOutputManagers & completed_output_managers)
+            std::tr1::shared_ptr<OutputManager> & output_manager_goes_here)
     {
         Context context("When pretending for '" + stringify(*decision.origin_id()) + "':");
 
@@ -158,10 +163,10 @@ namespace
         if (output_manager)
         {
             output_manager->nothing_more_to_come();
-            completed_output_managers.push_back(output_manager);
+            output_manager_goes_here = output_manager;
         }
 
-        return retcode;
+        return 0 == retcode;
     }
 
     void starting_action(
@@ -190,12 +195,12 @@ namespace
         cout << endl;
     }
 
-    int do_fetch(
+    bool do_fetch(
             const std::tr1::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
             const ChangesToMakeDecision & decision,
             const int x, const int y, bool normal_only,
-            CompletedOutputManagers & completed_output_managers)
+            std::tr1::shared_ptr<OutputManager> & output_manager_goes_here)
     {
         const std::tr1::shared_ptr<const PackageID> id(decision.origin_id());
         Context context("When fetching for '" + stringify(*id) + "':");
@@ -232,20 +237,20 @@ namespace
         if (output_manager)
         {
             output_manager->nothing_more_to_come();
-            completed_output_managers.push_back(output_manager);
+            output_manager_goes_here = output_manager;
         }
 
         done_action("fetch (" + std::string(normal_only ? "regular parts" : "extra parts") + ")", decision, 0 == retcode);
-        return retcode;
+        return 0 == retcode;
     }
 
-    int do_install(
+    bool do_install(
             const std::tr1::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
             const std::tr1::shared_ptr<const Resolution> & resolution,
             const ChangesToMakeDecision & decision,
             const int x, const int y,
-            CompletedOutputManagers & completed_output_managers)
+            std::tr1::shared_ptr<OutputManager> & output_manager_goes_here)
     {
         std::string destination_string, action_string;
         switch (resolution->resolvent().destination_type())
@@ -332,30 +337,23 @@ namespace
         if (output_manager)
         {
             output_manager->nothing_more_to_come();
-            completed_output_managers.push_back(output_manager);
+            output_manager_goes_here = output_manager;
         }
 
         done_action(action_string, decision, 0 == retcode);
-        return retcode;
+        return 0 == retcode;
     }
 
     struct JobCounts
     {
-        int x_pretends, y_pretends, x_fetches, y_fetches, x_installs, y_installs;
+        int x_fetches, y_fetches, x_installs, y_installs;
 
         JobCounts() :
-            x_pretends(0),
-            y_pretends(0),
             x_fetches(0),
             y_fetches(0),
             x_installs(0),
             y_installs(0)
         {
-        }
-
-        void visit(const PretendJob &)
-        {
-            ++y_pretends;
         }
 
         void visit(const SimpleInstallJob &)
@@ -372,151 +370,541 @@ namespace
         {
         }
 
-        void visit(const SyncPointJob &)
+        void visit(const UsableGroupJob &)
         {
         }
 
-        void visit(const UntakenInstallJob &)
+        void visit(const ErrorJob &)
         {
         }
     };
 
-    struct PerformJobs
+    typedef std::tr1::unordered_map<JobID, std::tr1::shared_ptr<JobState>, Hash<JobID> > JobStateMap;
+    typedef std::list<std::tr1::shared_ptr<JobPendingState> > PendingJobsList;
+
+    struct DoOneTakenVisitor
     {
         const std::tr1::shared_ptr<Environment> env;
         const ExecuteResolutionCommandLine & cmdline;
         JobCounts & counts;
-        CompletedOutputManagers & completed_output_managers;
+        std::tr1::shared_ptr<JobState> & state;
+        JobStateMap & job_state_map;
 
-        bool done_any_pretends;
-        bool done_any_installs;
-        int retcode;
-
-        PerformJobs(
+        DoOneTakenVisitor(
                 const std::tr1::shared_ptr<Environment> & e,
                 const ExecuteResolutionCommandLine & c,
                 JobCounts & k,
-                CompletedOutputManagers & m) :
+                std::tr1::shared_ptr<JobState> & s,
+                JobStateMap & m) :
             env(e),
             cmdline(c),
             counts(k),
-            completed_output_managers(m),
-            done_any_pretends(false),
-            done_any_installs(false),
-            retcode(0)
+            state(s),
+            job_state_map(m)
         {
-        }
-
-        bool visit(const PretendJob & job)
-        {
-            if (! done_any_pretends)
-            {
-                done_any_pretends = true;
-
-                if (0 != env->perform_hook(Hook("pretend_all_pre")
-                            ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
-                            ).max_exit_status())
-                    throw ActionAbortedError("Aborted by hook");
-
-                std::cout << "Executing pretend actions: " << std::flush;
-            }
-
-            retcode |= do_pretend(env, cmdline, *job.decision(), ++counts.x_pretends, counts.y_pretends,
-                    completed_output_managers);
-
-            /* a pretend failing doesn't abort us yet */
-            return true;
         }
 
         bool visit(const SimpleInstallJob & job)
         {
-            if (0 != retcode)
-                return false;
-
-            if (! done_any_installs)
-            {
-                done_any_installs = true;
-
-                if (0 != env->perform_hook(Hook("install_all_pre")
-                            ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
-                            ).max_exit_status())
-                    throw ActionAbortedError("Aborted by hook");
-            }
+            std::tr1::shared_ptr<OutputManager> fetch_output_manager_goes_here, install_output_manager_goes_here;
 
             ++counts.x_installs;
 
             /* not all of the fetch is done in the background */
-            retcode |= do_fetch(env, cmdline, *job.decision(), counts.x_installs, counts.y_installs, false,
-                    completed_output_managers);
-            if (0 != retcode)
+            if (! do_fetch(env, cmdline, *job.decision(), counts.x_installs, counts.y_installs,
+                        false, fetch_output_manager_goes_here))
+            {
+                std::tr1::shared_ptr<JobFailedState> failed_state(new JobFailedState(state->job()));
+                if (fetch_output_manager_goes_here)
+                    failed_state->add_output_manager(fetch_output_manager_goes_here);
+                state = failed_state;
                 return false;
+            }
 
-            retcode |= do_install(env, cmdline, job.resolution(),
-                    *job.decision(), counts.x_installs, counts.y_installs,
-                    completed_output_managers);
-            if (0 != retcode)
+            if (! do_install(env, cmdline, job.resolution(),
+                        *job.decision(), counts.x_installs, counts.y_installs, install_output_manager_goes_here))
+            {
+                std::tr1::shared_ptr<JobFailedState> failed_state(new JobFailedState(state->job()));
+                if (fetch_output_manager_goes_here)
+                    failed_state->add_output_manager(fetch_output_manager_goes_here);
+                if (install_output_manager_goes_here)
+                    failed_state->add_output_manager(install_output_manager_goes_here);
+                state = failed_state;
                 return false;
-
-            return true;
+            }
+            else
+            {
+                std::tr1::shared_ptr<JobSucceededState> succeeded_state(new JobSucceededState(state->job()));
+                if (fetch_output_manager_goes_here)
+                    succeeded_state->add_output_manager(fetch_output_manager_goes_here);
+                if (install_output_manager_goes_here)
+                    succeeded_state->add_output_manager(install_output_manager_goes_here);
+                state = succeeded_state;
+                return true;
+            }
         }
 
         bool visit(const FetchJob & job)
         {
-            if (0 != retcode)
-                return false;
+            std::tr1::shared_ptr<OutputManager> output_manager_goes_here;
 
-            retcode |= do_fetch(env, cmdline, *job.decision(), ++counts.x_fetches, counts.y_fetches, true,
-                    completed_output_managers);
-            if (0 != retcode)
-                return false;
-
-            return true;
-        }
-
-        bool visit(const SyncPointJob & job)
-        {
-            switch (job.sync_point())
+            ++counts.x_fetches;
+            if (! do_fetch(env, cmdline, *job.decision(), counts.x_fetches, counts.y_fetches,
+                        true, output_manager_goes_here))
             {
-                case sp_done_installs:
-                    {
-                        if (0 != env->perform_hook(Hook("install_all_post")
-                                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
-                                    ).max_exit_status())
-                            throw ActionAbortedError("Aborted by hook");
-                    }
-                    break;
-
-                case sp_done_pretends:
-                    {
-                        std::cout << std::endl;
-
-                        if (0 != env->perform_hook(Hook("pretend_all_post")
-                                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
-                                    ).max_exit_status())
-                            throw ActionAbortedError("Aborted by hook");
-
-                        if ((0 != retcode) || (cmdline.a_pretend.specified()))
-                            return false;
-                    }
-                    break;
-
-                case last_sp:
-                    break;
+                std::tr1::shared_ptr<JobFailedState> failed_state(new JobFailedState(state->job()));
+                if (output_manager_goes_here)
+                    failed_state->add_output_manager(output_manager_goes_here);
+                state = failed_state;
+                return false;
             }
-
-            return true;
+            else
+            {
+                std::tr1::shared_ptr<JobSucceededState> succeeded_state(new JobSucceededState(state->job()));
+                if (output_manager_goes_here)
+                    succeeded_state->add_output_manager(output_manager_goes_here);
+                state = succeeded_state;
+                return true;
+            }
         }
 
-        bool visit(const UntakenInstallJob &)
+        bool visit(const ErrorJob &)
         {
-            return true;
+            state.reset(new JobFailedState(state->job()));
+            return false;
         }
 
         bool visit(const UsableJob &)
         {
+            state.reset(new JobSucceededState(state->job()));
+            return true;
+        }
+
+        bool visit(const UsableGroupJob & job)
+        {
+            bool result(true);
+
+            for (JobIDSequence::ConstIterator i(job.job_ids()->begin()), i_end(job.job_ids()->end()) ;
+                    i != i_end ; ++i)
+            {
+                JobStateMap::iterator s(job_state_map.find(*i));
+                if (s == job_state_map.end())
+                    throw InternalError(PALUDIS_HERE, "missing state");
+
+                DoOneTakenVisitor v(env, cmdline, counts, s->second, job_state_map);
+                result = s->second->job()->accept_returning<bool>(v) && result;
+            }
+
+            state.reset(new JobSucceededState(state->job()));
+            return result;
+        }
+    };
+
+    struct DoOneSkippedVisitor
+    {
+        const std::tr1::shared_ptr<Environment> env;
+        const ExecuteResolutionCommandLine & cmdline;
+        JobCounts & counts;
+        std::tr1::shared_ptr<JobState> & state;
+        JobStateMap & job_state_map;
+
+        DoOneSkippedVisitor(
+                const std::tr1::shared_ptr<Environment> & e,
+                const ExecuteResolutionCommandLine & c,
+                JobCounts & k,
+                std::tr1::shared_ptr<JobState> & s,
+                JobStateMap & m) :
+            env(e),
+            cmdline(c),
+            counts(k),
+            state(s),
+            job_state_map(m)
+        {
+        }
+
+        void visit(const SimpleInstallJob & job)
+        {
+            ++counts.x_installs;
+
+            cout << endl;
+            cout << c::bold_blue() << counts.x_installs << " of " << counts.y_installs << ": Skipping install of "
+                << *job.decision()->origin_id() << c::normal() << endl;
+            cout << endl;
+
+            state.reset(new JobSkippedState(state->job()));
+        }
+
+        void visit(const FetchJob &)
+        {
+            ++counts.x_fetches;
+
+            state.reset(new JobSkippedState(state->job()));
+        }
+
+        void visit(const ErrorJob &)
+        {
+            state.reset(new JobSkippedState(state->job()));
+        }
+
+        void visit(const UsableJob &)
+        {
+            state.reset(new JobSkippedState(state->job()));
+        }
+
+        void visit(const UsableGroupJob & job)
+        {
+            for (JobIDSequence::ConstIterator i(job.job_ids()->begin()), i_end(job.job_ids()->end()) ;
+                    i != i_end ; ++i)
+            {
+                JobStateMap::iterator s(job_state_map.find(*i));
+                if (s == job_state_map.end())
+                    throw InternalError(PALUDIS_HERE, "missing state");
+
+                DoOneSkippedVisitor v(env, cmdline, counts, s->second, job_state_map);
+                s->second->job()->accept(v);
+            }
+
+            state.reset(new JobSkippedState(state->job()));
+        }
+    };
+
+    int execute_update_world(
+            const std::tr1::shared_ptr<Environment> & env,
+            const ResolverLists &,
+            const ExecuteResolutionCommandLine & cmdline)
+    {
+        if (cmdline.execution_options.a_preserve_world.specified())
+            return 0;
+
+        cout << endl << c::bold_green() << "Updating world" << c::normal() << endl << endl;
+
+        std::string command(cmdline.program_options.a_update_world_program.argument());
+        if (command.empty())
+            command = "$CAVE update-world";
+
+        bool any(false);
+        if (cmdline.a_set.specified())
+        {
+            command.append(" --set");
+            for (args::ArgsHandler::ParametersConstIterator a(cmdline.begin_parameters()),
+                    a_end(cmdline.end_parameters()) ;
+                    a != a_end ; ++a)
+            {
+                if (*a == "world" || *a == "system" || *a == "security"
+                        || *a == "everything" || *a == "insecurity"
+                        || *a == "installed-packages" || *a == "installed-slots")
+                    cout << "* Special set '" << *a << "' does not belong in world" << endl;
+                else
+                {
+                    any = true;
+                    cout << "* Adding '" << *a << "'" << endl;
+                    command.append(" " + *a);
+                }
+            }
+        }
+        else
+        {
+            for (args::ArgsHandler::ParametersConstIterator a(cmdline.begin_parameters()),
+                    a_end(cmdline.end_parameters()) ;
+                    a != a_end ; ++a)
+            {
+                PackageDepSpec spec(parse_user_package_dep_spec(*a, env.get(), UserPackageDepSpecOptions()));
+                if (package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
+                                value_for<n::has_additional_requirements>(false),
+                                value_for<n::has_category_name_part>(false),
+                                value_for<n::has_from_repository>(false),
+                                value_for<n::has_in_repository>(false),
+                                value_for<n::has_installable_to_path>(false),
+                                value_for<n::has_installable_to_repository>(false),
+                                value_for<n::has_installed_at_path>(false),
+                                value_for<n::has_package>(true),
+                                value_for<n::has_package_name_part>(false),
+                                value_for<n::has_slot_requirement>(false),
+                                value_for<n::has_tag>(indeterminate),
+                                value_for<n::has_version_requirements>(false)
+                                )))
+                {
+                    any = true;
+                    cout << "* Adding '" << spec << "'" << endl;
+                    command.append(" " + stringify(spec));
+                }
+                else
+                {
+                    cout << "* Not adding '" << spec << "'" << endl;
+                }
+            }
+        }
+
+        if (any)
+        {
+            paludis::Command cmd(command);
+            if (0 != run_command(cmd))
+                throw ActionAbortedError("Updating world failed");
+        }
+
+        return 0;
+    }
+
+    struct Populator
+    {
+        const std::tr1::shared_ptr<const Job> job;
+        const ResolverLists & lists;
+        JobStateMap & job_state_map;
+        PendingJobsList * const pending;
+
+        Populator(
+                const std::tr1::shared_ptr<const Job> & j,
+                const ResolverLists & l,
+                JobStateMap & s,
+                PendingJobsList * const p) :
+            job(j),
+            lists(l),
+            job_state_map(s),
+            pending(p)
+        {
+        }
+
+        void common() const
+        {
+            const std::tr1::shared_ptr<JobPendingState> state(new JobPendingState(job));
+            if (! job_state_map.insert(std::make_pair(job->id(), state)).second)
+                throw InternalError(PALUDIS_HERE, "duplicate id");
+
+            if (pending)
+                pending->push_back(state);
+        }
+
+        void visit(const SimpleInstallJob &) const
+        {
+            common();
+        }
+
+        void visit(const UsableJob &) const
+        {
+            common();
+        }
+
+        void visit(const FetchJob &) const
+        {
+            common();
+        }
+
+        void visit(const ErrorJob &) const
+        {
+            common();
+        }
+
+        void visit(const UsableGroupJob & j) const
+        {
+            common();
+
+            for (JobIDSequence::ConstIterator i(j.job_ids()->begin()), i_end(j.job_ids()->end()) ;
+                    i != i_end ; ++i)
+            {
+                const std::tr1::shared_ptr<const Job> k(lists.jobs()->fetch(*i));
+                k->accept(Populator(k, lists, job_state_map, 0));
+            }
+        }
+    };
+
+    struct JobStateChecker
+    {
+        bool visit(const JobPendingState &) const PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "still pending");
+        }
+
+        bool visit(const JobFailedState &) const
+        {
+            return false;
+        }
+
+        bool visit(const JobSkippedState &) const
+        {
+            return false;
+        }
+
+        bool visit(const JobSucceededState &) const
+        {
             return true;
         }
     };
+
+    int execute_taken(
+            const std::tr1::shared_ptr<Environment> & env,
+            const ResolverLists & lists,
+            const ExecuteResolutionCommandLine & cmdline)
+    {
+        int retcode(0);
+
+        JobCounts counts;
+        JobStateMap job_state_map;
+        PendingJobsList pending;
+
+        for (JobIDSequence::ConstIterator c(lists.taken_job_ids()->begin()),
+                c_end(lists.taken_job_ids()->end()) ;
+                c != c_end ; ++c)
+        {
+            const std::tr1::shared_ptr<const Job> job(lists.jobs()->fetch(*c));
+            job->accept(counts);
+            job->accept(Populator(job, lists, job_state_map, &pending));
+        }
+
+        if (0 != env->perform_hook(Hook("install_all_pre")
+                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
+                    ).max_exit_status())
+            throw ActionAbortedError("Aborted by hook");
+
+        for (PendingJobsList::iterator p(pending.begin()), p_next(p), p_end(pending.end()) ;
+                p != p_end ; p = p_next)
+        {
+            ++p_next;
+
+            std::tr1::shared_ptr<const Job> skipped_because_of;
+            for (ArrowSequence::ConstIterator a((*p)->job()->arrows()->begin()), a_end((*p)->job()->arrows()->end()) ;
+                    a != a_end ; ++a)
+            {
+                const std::tr1::shared_ptr<const Job> after_job(lists.jobs()->fetch(a->comes_after()));
+                JobStateMap::const_iterator s(job_state_map.find(after_job->id()));
+                if (s == job_state_map.end())
+                    throw InternalError(PALUDIS_HERE, "missing arrow: " + stringify(after_job->id().string_id()));
+
+                if ((*p)->job()->used_existing_packages_when_ordering()->end() != std::find(
+                            (*p)->job()->used_existing_packages_when_ordering()->begin(),
+                            (*p)->job()->used_existing_packages_when_ordering()->end(),
+                            a->comes_after()))
+                {
+                    if (! simple_visitor_cast<const JobPendingState>(*s->second))
+                        throw InternalError(PALUDIS_HERE, "not pending: " + stringify((*p)->job()->id().string_id()) + " -> "
+                                + stringify(a->comes_after().string_id()) + " " + s->second->state_name());
+                }
+                else
+                {
+                    bool ignorable(false);
+
+                    if (cmdline.execution_options.a_continue_on_failure.argument() == "if-satisfied")
+                        ignorable = a->failure_kinds()[fk_ignorable_if_satisfied];
+                    else if (cmdline.execution_options.a_continue_on_failure.argument() == "always")
+                        ignorable = true;
+
+                    if ((! ignorable) && (! s->second->accept_returning<bool>(JobStateChecker())))
+                    {
+                        skipped_because_of = after_job;
+                        break;
+                    }
+                }
+            }
+
+            JobStateMap::iterator s(job_state_map.find((*p)->job()->id()));
+            if (s == job_state_map.end())
+                throw InternalError(PALUDIS_HERE, "missing state");
+            pending.erase(p);
+
+            if (skipped_because_of)
+            {
+                DoOneSkippedVisitor v(env, cmdline, counts, s->second, job_state_map);
+                s->second->job()->accept(v);
+                retcode |= 1;
+            }
+            else
+            {
+                DoOneTakenVisitor v(env, cmdline, counts, s->second, job_state_map);
+                if (! s->second->job()->accept_returning<bool>(v))
+                {
+                    retcode |= 1;
+
+                    if (cmdline.execution_options.a_continue_on_failure.argument() == "never")
+                        break;
+                }
+            }
+        }
+
+        if (0 != env->perform_hook(Hook("install_all_post")
+                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
+                    ).max_exit_status())
+            throw ActionAbortedError("Aborted by hook");
+
+        return retcode;
+    }
+
+    struct DoOnePretendVisitor
+    {
+        const std::tr1::shared_ptr<Environment> env;
+        const ExecuteResolutionCommandLine & cmdline;
+        JobCounts & counts;
+
+        DoOnePretendVisitor(
+                const std::tr1::shared_ptr<Environment> & e,
+                const ExecuteResolutionCommandLine & c,
+                JobCounts & k) :
+            env(e),
+            cmdline(c),
+            counts(k)
+        {
+        }
+
+        bool visit(const SimpleInstallJob & c) const
+        {
+            std::tr1::shared_ptr<OutputManager> output_manager_goes_here;
+            return do_pretend(env, cmdline, *c.decision(), ++counts.x_installs, counts.y_installs,
+                    output_manager_goes_here);
+        }
+
+        bool visit(const ErrorJob &) const
+        {
+            return true;
+        }
+
+        bool visit(const FetchJob &) const
+        {
+            return true;
+        }
+
+        bool visit(const UsableJob &) const
+        {
+            return true;
+        }
+
+        bool visit(const UsableGroupJob &) const
+        {
+            return true;
+        }
+    };
+
+    int execute_pretends(
+            const std::tr1::shared_ptr<Environment> & env,
+            const ResolverLists & lists,
+            const ExecuteResolutionCommandLine & cmdline)
+    {
+        bool failed(false);
+        JobCounts counts;
+
+        for (JobIDSequence::ConstIterator c(lists.taken_job_ids()->begin()),
+                c_end(lists.taken_job_ids()->end()) ;
+                c != c_end ; ++c)
+            lists.jobs()->fetch(*c)->accept(counts);
+
+        if (0 != env->perform_hook(Hook("pretend_all_pre")
+                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
+                    ).max_exit_status())
+            throw ActionAbortedError("Aborted by hook");
+
+        std::cout << "Executing pretend actions: " << std::flush;
+
+        for (JobIDSequence::ConstIterator c(lists.taken_job_ids()->begin()),
+                c_end(lists.taken_job_ids()->end()) ;
+                c != c_end ; ++c)
+            failed = failed || ! lists.jobs()->fetch(*c)->accept_returning<bool>(DoOnePretendVisitor(env, cmdline, counts));
+
+        cout << endl;
+
+        if (0 != env->perform_hook(Hook("pretend_all_post")
+                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
+                    ).max_exit_status())
+            throw ActionAbortedError("Aborted by hook");
+
+        return failed ? 1 : 0;
+    }
 
     int execute_resolution_main(
             const std::tr1::shared_ptr<Environment> & env,
@@ -525,95 +913,16 @@ namespace
     {
         int retcode(0);
 
-        JobCounts counts;
-        CompletedOutputManagers completed_output_managers;
-
-        for (JobIDSequence::ConstIterator c(lists.ordered_job_ids()->begin()),
-                c_end(lists.ordered_job_ids()->end()) ;
-                c != c_end ; ++c)
-            lists.jobs()->fetch(*c)->accept(counts);
-
-        PerformJobs perform_jobs(env, cmdline, counts, completed_output_managers);
-        for (JobIDSequence::ConstIterator c(lists.ordered_job_ids()->begin()),
-                c_end(lists.ordered_job_ids()->end()) ;
-                c != c_end ; ++c)
-            if (! lists.jobs()->fetch(*c)->accept_returning<bool>(perform_jobs))
-                break;
-
-        completed_output_managers.clear();
-
-        retcode |= perform_jobs.retcode;
-        if ((0 != retcode) || (cmdline.a_pretend.specified()))
+        retcode |= execute_pretends(env, lists, cmdline);
+        if (0 != retcode || cmdline.a_pretend.specified())
             return retcode;
 
-        if (! cmdline.execution_options.a_preserve_world.specified())
-        {
-            cout << endl << c::bold_green() << "Updating world" << c::normal() << endl << endl;
+        retcode |= execute_taken(env, lists, cmdline);
 
-            std::string command(cmdline.program_options.a_update_world_program.argument());
-            if (command.empty())
-                command = "$CAVE update-world";
+        if (0 != retcode)
+            return retcode;
 
-            bool any(false);
-            if (cmdline.a_set.specified())
-            {
-                command.append(" --set");
-                for (args::ArgsHandler::ParametersConstIterator a(cmdline.begin_parameters()),
-                        a_end(cmdline.end_parameters()) ;
-                        a != a_end ; ++a)
-                {
-                    if (*a == "world" || *a == "system" || *a == "security"
-                            || *a == "everything" || *a == "insecurity"
-                            || *a == "installed-packages" || *a == "installed-slots")
-                        cout << "* Special set '" << *a << "' does not belong in world" << endl;
-                    else
-                    {
-                        any = true;
-                        cout << "* Adding '" << *a << "'" << endl;
-                        command.append(" " + *a);
-                    }
-                }
-            }
-            else
-            {
-                for (args::ArgsHandler::ParametersConstIterator a(cmdline.begin_parameters()),
-                        a_end(cmdline.end_parameters()) ;
-                        a != a_end ; ++a)
-                {
-                    PackageDepSpec spec(parse_user_package_dep_spec(*a, env.get(), UserPackageDepSpecOptions()));
-                    if (package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
-                                    value_for<n::has_additional_requirements>(false),
-                                    value_for<n::has_category_name_part>(false),
-                                    value_for<n::has_from_repository>(false),
-                                    value_for<n::has_in_repository>(false),
-                                    value_for<n::has_installable_to_path>(false),
-                                    value_for<n::has_installable_to_repository>(false),
-                                    value_for<n::has_installed_at_path>(false),
-                                    value_for<n::has_package>(true),
-                                    value_for<n::has_package_name_part>(false),
-                                    value_for<n::has_slot_requirement>(false),
-                                    value_for<n::has_tag>(indeterminate),
-                                    value_for<n::has_version_requirements>(false)
-                                    )))
-                    {
-                        any = true;
-                        cout << "* Adding '" << spec << "'" << endl;
-                        command.append(" " + stringify(spec));
-                    }
-                    else
-                    {
-                        cout << "* Not adding '" << spec << "'" << endl;
-                    }
-                }
-            }
-
-            if (any)
-            {
-                paludis::Command cmd(command);
-                if (0 != run_command(cmd))
-                    throw ActionAbortedError("Updating world failed");
-            }
-        }
+        retcode |= execute_update_world(env, lists, cmdline);
         return retcode;
     }
 
@@ -625,7 +934,6 @@ namespace
         Context context("When executing chosen resolution:");
 
         int retcode(0);
-
         if (0 != env->perform_hook(Hook("install_task_execute_pre")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
                     ).max_exit_status())
@@ -683,14 +991,17 @@ ExecuteResolutionCommand::run(
 
     cmdline.import_options.apply(env);
 
-    int fd(destringify<int>(getenv_with_default("PALUDIS_SERIALISED_RESOLUTION_FD", "")));
-    SafeIFStream deser_stream(fd);
-    const std::string deser_str((std::istreambuf_iterator<char>(deser_stream)), std::istreambuf_iterator<char>());
-    Deserialiser deserialiser(env.get(), deser_str);
-    Deserialisation deserialisation("ResolverLists", deserialiser);
-    ResolverLists lists(ResolverLists::deserialise(deserialisation));
+    std::tr1::shared_ptr<ResolverLists> lists;
+    {
+        int fd(destringify<int>(getenv_with_default("PALUDIS_SERIALISED_RESOLUTION_FD", "")));
+        SafeIFStream deser_stream(fd);
+        const std::string deser_str((std::istreambuf_iterator<char>(deser_stream)), std::istreambuf_iterator<char>());
+        Deserialiser deserialiser(env.get(), deser_str);
+        Deserialisation deserialisation("ResolverLists", deserialiser);
+        lists = make_shared_copy(ResolverLists::deserialise(deserialisation));
+    }
 
-    return execute_resolution(env, lists, cmdline);
+    return execute_resolution(env, *lists, cmdline);
 }
 
 std::tr1::shared_ptr<args::ArgsHandler>
@@ -698,5 +1009,4 @@ ExecuteResolutionCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new ExecuteResolutionCommandLine);
 }
-
 

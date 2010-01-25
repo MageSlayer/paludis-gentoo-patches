@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -39,7 +39,7 @@ namespace paludis
     {
         class PALUDIS_VISIBLE Job :
             public virtual DeclareAbstractAcceptMethods<Job, MakeTypeList<
-                UsableJob, SimpleInstallJob, PretendJob, FetchJob, UntakenInstallJob, SyncPointJob>::Type>
+                UsableJob, UsableGroupJob, SimpleInstallJob, FetchJob, ErrorJob>::Type>
         {
             public:
                 virtual ~Job() = 0;
@@ -47,8 +47,17 @@ namespace paludis
                 virtual const JobID id()
                     const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual const std::tr1::shared_ptr<ArrowSequence> arrows()
+                virtual const std::tr1::shared_ptr<const ArrowSequence> arrows()
                     const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+                virtual const std::tr1::shared_ptr<ArrowSequence> arrows()
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+                virtual const std::tr1::shared_ptr<const JobIDSequence> used_existing_packages_when_ordering()
+                    const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+                virtual const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering()
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 virtual void serialise(Serialiser &) const = 0;
 
@@ -67,32 +76,47 @@ namespace paludis
 
                 virtual const JobID id() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::tr1::shared_ptr<ArrowSequence> arrows()
+                virtual const std::tr1::shared_ptr<const ArrowSequence> arrows()
                     const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<ArrowSequence> arrows()
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<const JobIDSequence> used_existing_packages_when_ordering()
+                    const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering()
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::tr1::shared_ptr<const Resolution> resolution() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;
         };
 
-        class PALUDIS_VISIBLE PretendJob :
+        class PALUDIS_VISIBLE UsableGroupJob :
             public Job,
-            public ImplementAcceptMethods<Job, PretendJob>,
-            private PrivateImplementationPattern<PretendJob>
+            public ImplementAcceptMethods<Job, UsableGroupJob>,
+            private PrivateImplementationPattern<UsableGroupJob>
         {
             public:
-                PretendJob(
-                        const std::tr1::shared_ptr<const Resolution> &,
-                        const std::tr1::shared_ptr<const ChangesToMakeDecision> &);
-                ~PretendJob();
+                UsableGroupJob(const std::tr1::shared_ptr<const JobIDSequence> &);
+                ~UsableGroupJob();
 
                 virtual const JobID id() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::tr1::shared_ptr<ArrowSequence> arrows()
+                virtual const std::tr1::shared_ptr<const ArrowSequence> arrows()
                     const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                const std::tr1::shared_ptr<const Resolution> resolution() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                const std::tr1::shared_ptr<const ChangesToMakeDecision> decision() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::tr1::shared_ptr<ArrowSequence> arrows()
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<const JobIDSequence> used_existing_packages_when_ordering()
+                    const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering()
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const std::tr1::shared_ptr<const JobIDSequence> job_ids() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;
         };
@@ -110,8 +134,17 @@ namespace paludis
 
                 virtual const JobID id() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::tr1::shared_ptr<ArrowSequence> arrows()
+                virtual const std::tr1::shared_ptr<const ArrowSequence> arrows()
                     const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<ArrowSequence> arrows()
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<const JobIDSequence> used_existing_packages_when_ordering()
+                    const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering()
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::tr1::shared_ptr<const Resolution> resolution() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 const std::tr1::shared_ptr<const ChangesToMakeDecision> decision() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -132,8 +165,17 @@ namespace paludis
 
                 virtual const JobID id() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::tr1::shared_ptr<ArrowSequence> arrows()
+                virtual const std::tr1::shared_ptr<const ArrowSequence> arrows()
                     const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<ArrowSequence> arrows()
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<const JobIDSequence> used_existing_packages_when_ordering()
+                    const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering()
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::tr1::shared_ptr<const Resolution> resolution() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 const std::tr1::shared_ptr<const ChangesToMakeDecision> decision() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -141,40 +183,33 @@ namespace paludis
                 virtual void serialise(Serialiser &) const;
         };
 
-        class PALUDIS_VISIBLE SyncPointJob :
+        class PALUDIS_VISIBLE ErrorJob :
             public Job,
-            public ImplementAcceptMethods<Job, SyncPointJob>,
-            private PrivateImplementationPattern<SyncPointJob>
+            public ImplementAcceptMethods<Job, ErrorJob>,
+            private PrivateImplementationPattern<ErrorJob>
         {
             public:
-                SyncPointJob(const SyncPoint);
-                ~SyncPointJob();
+                ErrorJob(
+                        const std::tr1::shared_ptr<const Resolution> &,
+                        const std::tr1::shared_ptr<const UnableToMakeDecision> &);
+                ~ErrorJob();
 
                 virtual const JobID id() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::tr1::shared_ptr<ArrowSequence> arrows()
+                virtual const std::tr1::shared_ptr<const ArrowSequence> arrows()
                     const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                SyncPoint sync_point() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual void serialise(Serialiser &) const;
-        };
-
-        class PALUDIS_VISIBLE UntakenInstallJob :
-            public Job,
-            public ImplementAcceptMethods<Job, UntakenInstallJob>,
-            private PrivateImplementationPattern<UntakenInstallJob>
-        {
-            public:
-                UntakenInstallJob(const std::tr1::shared_ptr<const Resolution> &);
-                ~UntakenInstallJob();
-
-                virtual const JobID id() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
                 virtual const std::tr1::shared_ptr<ArrowSequence> arrows()
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<const JobIDSequence> used_existing_packages_when_ordering()
                     const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering()
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::tr1::shared_ptr<const Resolution> resolution() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::tr1::shared_ptr<const UnableToMakeDecision> decision() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;
         };
@@ -182,11 +217,10 @@ namespace paludis
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<resolver::UsableJob>;
-    extern template class PrivateImplementationPattern<resolver::PretendJob>;
+    extern template class PrivateImplementationPattern<resolver::UsableGroupJob>;
     extern template class PrivateImplementationPattern<resolver::FetchJob>;
     extern template class PrivateImplementationPattern<resolver::SimpleInstallJob>;
-    extern template class PrivateImplementationPattern<resolver::SyncPointJob>;
-    extern template class PrivateImplementationPattern<resolver::UntakenInstallJob>;
+    extern template class PrivateImplementationPattern<resolver::ErrorJob>;
 #endif
 }
 

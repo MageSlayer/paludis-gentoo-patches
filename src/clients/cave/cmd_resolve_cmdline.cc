@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -88,12 +88,11 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             ("never",                 'n', "Never")
             ("if-transient",          't', "Only if the installed package is transient "
                                            "(e.g. from 'importare') (default if --everything)")
-            ("if-same",               's', "If it is the same as the proposed replacement "
-                                           "(default if --complete)")
+            ("if-same",               's', "If it is the same as the proposed replacement")
             ("if-same-version",       'v', "If it is the same version as the proposed replacement")
-            ("if-possible",           'p', "If possible"),
+            ("if-possible",           'p', "If possible (default if --lazy)"),
 
-            "if-possible"
+            "if-same"
             ),
     a_reinstall_scm(&g_keep_options, "reinstall-scm", 'R',
             "Select whether to reinstall SCM packages that would otherwise be kept",
@@ -240,12 +239,11 @@ ResolveCommandLineExecutionOptions::ResolveCommandLineExecutionOptions(args::Arg
     a_continue_on_failure(&g_failure_options, "continue-on-failure", '\0',
             "Whether to continue after an error occurs",
             args::EnumArg::EnumArgOptions
-            ("if-fetching",                "Only if we are just fetching packages")
             ("never",                      "Never")
             ("if-satisfied",               "If remaining packages' dependencies are satisfied")
             ("if-independent",             "If remaining packages do not depend upon any failing package")
             ("always",                     "Always (dangerous)"),
-            "if-fetching"),
+            "never"),
 
     g_phase_options(this, "Phase Options", "Options controlling which phases to execute. No sanity checking "
             "is done, allowing you to shoot as many feet off as you desire. Phase names do not have the "
@@ -352,6 +350,8 @@ ResolveCommandLineResolutionOptions::apply_shortcuts()
 
     if (a_lazy.specified())
     {
+        if (! a_keep.specified())
+            a_keep.set_argument("if-possible");
         if (! a_target_slots.specified())
             a_target_slots.set_argument("best");
         if (! a_slots.specified())
@@ -362,8 +362,6 @@ ResolveCommandLineResolutionOptions::apply_shortcuts()
 
     if (a_complete.specified())
     {
-        if (! a_keep.specified())
-            a_keep.set_argument("if-same");
         if (! a_target_slots.specified())
             a_target_slots.set_argument("all");
         if (! a_slots.specified())

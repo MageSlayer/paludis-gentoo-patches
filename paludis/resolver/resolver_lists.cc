@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -34,10 +34,10 @@ ResolverLists::serialise(Serialiser & s) const
 {
     s.object("ResolverLists")
         .member(SerialiserFlags<serialise::might_be_null>(), "all_resolutions", all_resolutions())
-        .member(SerialiserFlags<serialise::might_be_null>(), "error_resolutions", error_resolutions())
         .member(SerialiserFlags<serialise::might_be_null>(), "jobs", jobs())
-        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "ordered_job_ids", ordered_job_ids())
-        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "unordered_job_ids", unordered_job_ids())
+        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "taken_error_job_ids", taken_error_job_ids())
+        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "taken_job_ids", taken_job_ids())
+        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "untaken_error_job_ids", untaken_error_job_ids())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "untaken_job_ids", untaken_job_ids())
         ;
 }
@@ -47,18 +47,25 @@ ResolverLists::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "ResolverLists");
 
-    std::tr1::shared_ptr<JobIDSequence> ordered_job_ids(new JobIDSequence);
+    std::tr1::shared_ptr<JobIDSequence> taken_error_job_ids(new JobIDSequence);
     {
-        Deserialisator vv(*v.find_remove_member("ordered_job_ids"), "c");
+        Deserialisator vv(*v.find_remove_member("taken_error_job_ids"), "c");
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
-            ordered_job_ids->push_back(vv.member<JobID>(stringify(n)));
+            taken_error_job_ids->push_back(vv.member<JobID>(stringify(n)));
     }
 
-    std::tr1::shared_ptr<JobIDSequence> unordered_job_ids(new JobIDSequence);
+    std::tr1::shared_ptr<JobIDSequence> taken_job_ids(new JobIDSequence);
     {
-        Deserialisator vv(*v.find_remove_member("unordered_job_ids"), "c");
+        Deserialisator vv(*v.find_remove_member("taken_job_ids"), "c");
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
-            unordered_job_ids->push_back(vv.member<JobID>(stringify(n)));
+            taken_job_ids->push_back(vv.member<JobID>(stringify(n)));
+    }
+
+    std::tr1::shared_ptr<JobIDSequence> untaken_error_job_ids(new JobIDSequence);
+    {
+        Deserialisator vv(*v.find_remove_member("untaken_error_job_ids"), "c");
+        for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
+            untaken_error_job_ids->push_back(vv.member<JobID>(stringify(n)));
     }
 
     std::tr1::shared_ptr<JobIDSequence> untaken_job_ids(new JobIDSequence);
@@ -70,10 +77,10 @@ ResolverLists::deserialise(Deserialisation & d)
 
     return make_named_values<ResolverLists>(
             value_for<n::all_resolutions>(v.member<std::tr1::shared_ptr<Resolutions> >("all_resolutions")),
-            value_for<n::error_resolutions>(v.member<std::tr1::shared_ptr<Resolutions> >("error_resolutions")),
             value_for<n::jobs>(v.member<std::tr1::shared_ptr<Jobs> >("jobs")),
-            value_for<n::ordered_job_ids>(ordered_job_ids),
-            value_for<n::unordered_job_ids>(unordered_job_ids),
+            value_for<n::taken_error_job_ids>(taken_error_job_ids),
+            value_for<n::taken_job_ids>(taken_job_ids),
+            value_for<n::untaken_error_job_ids>(untaken_error_job_ids),
             value_for<n::untaken_job_ids>(untaken_job_ids)
             );
 }

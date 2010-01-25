@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -75,15 +75,23 @@ namespace test_cases
             std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("suggestion/target"));
 
             {
-                TestMessageSuffix s("errors");
-                check_resolution_list(resolutions->jobs(), resolutions->error_resolutions(), ResolutionListChecks()
+                TestMessageSuffix s("taken errors");
+                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
                         .finished()
                         );
             }
 
             {
+                TestMessageSuffix s("untaken errors");
+                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
+                        .finished()
+                        );
+            }
+
+
+            {
                 TestMessageSuffix s("ordered");
-                check_resolution_list(resolutions->jobs(), resolutions->ordered_job_ids(), ResolutionListChecks()
+                check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
                         .qpn(QualifiedPackageName("suggestion/target"))
                         .finished()
                         );
@@ -108,15 +116,23 @@ namespace test_cases
             std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("unmeetable-suggestion/target"));
 
             {
-                TestMessageSuffix s("errors");
-                check_resolution_list(resolutions->jobs(), resolutions->error_resolutions(), ResolutionListChecks()
+                TestMessageSuffix s("taken errors");
+                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
                         .finished()
                         );
             }
 
             {
+                TestMessageSuffix s("untaken errors");
+                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
+                        .finished()
+                        );
+            }
+
+
+            {
                 TestMessageSuffix s("ordered");
-                check_resolution_list(resolutions->jobs(), resolutions->ordered_job_ids(), ResolutionListChecks()
+                check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
                         .qpn(QualifiedPackageName("unmeetable-suggestion/target"))
                         .finished()
                         );
@@ -141,15 +157,23 @@ namespace test_cases
             std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("suggestion-then-dependency/target"));
 
             {
-                TestMessageSuffix s("errors");
-                check_resolution_list(resolutions->jobs(), resolutions->error_resolutions(), ResolutionListChecks()
+                TestMessageSuffix s("taken errors");
+                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
                         .finished()
                         );
             }
 
             {
+                TestMessageSuffix s("untaken errors");
+                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
+                        .finished()
+                        );
+            }
+
+
+            {
                 TestMessageSuffix s("ordered");
-                check_resolution_list(resolutions->jobs(), resolutions->ordered_job_ids(), ResolutionListChecks()
+                check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
                         .qpn(QualifiedPackageName("suggestion-then-dependency/a-suggested-dep"))
                         .qpn(QualifiedPackageName("suggestion-then-dependency/hard-dep"))
                         .qpn(QualifiedPackageName("suggestion-then-dependency/target"))

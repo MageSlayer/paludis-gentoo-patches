@@ -1199,7 +1199,7 @@ paludis::cave::resolve_common(
         retcode |= display_resolution(env, *resolver->lists(), resolution_options,
                 display_options, program_options, keys_if_import, targets);
 
-        if (! resolver->lists()->error_resolutions()->empty())
+        if (! resolver->lists()->taken_error_job_ids()->empty())
             retcode |= 1;
 
         if (0 == retcode)

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -513,22 +513,17 @@ namespace
             return make_null_shared_ptr();
         }
 
+        std::tr1::shared_ptr<const Resolution> visit(const UsableGroupJob &) const
+        {
+            return make_null_shared_ptr();
+        }
+
         std::tr1::shared_ptr<const Resolution> visit(const FetchJob &) const
         {
             return make_null_shared_ptr();
         }
 
-        std::tr1::shared_ptr<const Resolution> visit(const PretendJob &) const
-        {
-            return make_null_shared_ptr();
-        }
-
-        std::tr1::shared_ptr<const Resolution> visit(const SyncPointJob &) const
-        {
-            return make_null_shared_ptr();
-        }
-
-        std::tr1::shared_ptr<const Resolution> visit(const UntakenInstallJob & j) const
+        std::tr1::shared_ptr<const Resolution> visit(const ErrorJob & j) const
         {
             return j.resolution();
         }
