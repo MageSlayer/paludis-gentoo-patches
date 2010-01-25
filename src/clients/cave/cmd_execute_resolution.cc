@@ -35,6 +35,7 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/simple_visitor-impl.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/resolver/resolutions.hh>
@@ -871,14 +872,17 @@ ExecuteResolutionCommand::run(
 
     cmdline.import_options.apply(env);
 
-    int fd(destringify<int>(getenv_with_default("PALUDIS_SERIALISED_RESOLUTION_FD", "")));
-    SafeIFStream deser_stream(fd);
-    const std::string deser_str((std::istreambuf_iterator<char>(deser_stream)), std::istreambuf_iterator<char>());
-    Deserialiser deserialiser(env.get(), deser_str);
-    Deserialisation deserialisation("ResolverLists", deserialiser);
-    ResolverLists lists(ResolverLists::deserialise(deserialisation));
+    std::tr1::shared_ptr<ResolverLists> lists;
+    {
+        int fd(destringify<int>(getenv_with_default("PALUDIS_SERIALISED_RESOLUTION_FD", "")));
+        SafeIFStream deser_stream(fd);
+        const std::string deser_str((std::istreambuf_iterator<char>(deser_stream)), std::istreambuf_iterator<char>());
+        Deserialiser deserialiser(env.get(), deser_str);
+        Deserialisation deserialisation("ResolverLists", deserialiser);
+        lists = make_shared_copy(ResolverLists::deserialise(deserialisation));
+    }
 
-    return execute_resolution(env, lists, cmdline);
+    return execute_resolution(env, *lists, cmdline);
 }
 
 std::tr1::shared_ptr<args::ArgsHandler>
