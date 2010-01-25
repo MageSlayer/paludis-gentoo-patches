@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -240,12 +240,11 @@ ResolveCommandLineExecutionOptions::ResolveCommandLineExecutionOptions(args::Arg
     a_continue_on_failure(&g_failure_options, "continue-on-failure", '\0',
             "Whether to continue after an error occurs",
             args::EnumArg::EnumArgOptions
-            ("if-fetching",                "Only if we are just fetching packages")
             ("never",                      "Never")
             ("if-satisfied",               "If remaining packages' dependencies are satisfied")
             ("if-independent",             "If remaining packages do not depend upon any failing package")
             ("always",                     "Always (dangerous)"),
-            "if-fetching"),
+            "never"),
 
     g_phase_options(this, "Phase Options", "Options controlling which phases to execute. No sanity checking "
             "is done, allowing you to shoot as many feet off as you desire. Phase names do not have the "
