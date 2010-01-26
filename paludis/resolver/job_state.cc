@@ -19,7 +19,11 @@
 
 #include <paludis/resolver/job_state.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/output_manager.hh>
 #include <list>
+#include <algorithm>
+#include <tr1/functional>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -125,6 +129,15 @@ JobSucceededState::add_output_manager(const std::tr1::shared_ptr<OutputManager> 
     _imp->output_managers.push_back(o);
 }
 
+bool
+JobSucceededState::any_output_manager_wants_to_flush() const
+{
+    return indirect_iterator(_imp->output_managers.end()) != std::find_if(
+            indirect_iterator(_imp->output_managers.begin()),
+            indirect_iterator(_imp->output_managers.end()),
+            std::tr1::bind(&OutputManager::want_to_flush, std::tr1::placeholders::_1));
+}
+
 JobFailedState::JobFailedState(const std::tr1::shared_ptr<const Job> & j) :
     PrivateImplementationPattern<JobFailedState>(new Implementation<JobFailedState>(j))
 {
@@ -144,6 +157,15 @@ void
 JobFailedState::add_output_manager(const std::tr1::shared_ptr<OutputManager> & o)
 {
     _imp->output_managers.push_back(o);
+}
+
+bool
+JobFailedState::any_output_manager_wants_to_flush() const
+{
+    return indirect_iterator(_imp->output_managers.end()) != std::find_if(
+            indirect_iterator(_imp->output_managers.begin()),
+            indirect_iterator(_imp->output_managers.end()),
+            std::tr1::bind(&OutputManager::want_to_flush, std::tr1::placeholders::_1));
 }
 
 const std::string
