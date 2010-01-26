@@ -39,6 +39,7 @@ namespace paludis
         const bool if_success, if_failure;
         const std::tr1::shared_ptr<OutputManager> child;
         bool success;
+        bool nothing_more_to_come;
 
         Implementation(
                 const bool s,
@@ -48,7 +49,8 @@ namespace paludis
             if_success(s),
             if_failure(f),
             child(m),
-            success(false)
+            success(false),
+            nothing_more_to_come(false)
         {
         }
     };
@@ -107,6 +109,9 @@ ForwardAtFinishOutputManager::flush()
 bool
 ForwardAtFinishOutputManager::want_to_flush() const
 {
+    if (_imp->nothing_more_to_come && ((! _imp->stdout_stream.str().empty()) || (! _imp->stderr_stream.str().empty())))
+        return true;
+
     return false;
 }
 
@@ -118,6 +123,8 @@ ForwardAtFinishOutputManager::nothing_more_to_come()
         _imp->stdout_stream.clear();
         _imp->stderr_stream.clear();
     }
+
+    _imp->nothing_more_to_come = true;
 }
 
 const std::tr1::shared_ptr<const Set<std::string> >
