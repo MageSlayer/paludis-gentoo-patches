@@ -760,13 +760,21 @@ UserKeyRequirement::requirement_met(const Environment * const, const PackageID &
 const std::string
 UserKeyRequirement::as_human_string() const
 {
-    return "Key '" + _imp->key + "' has simple string value '" + _imp->value + "'";
+    switch (_imp->op)
+    {
+        case '=':
+            return "Key '" + _imp->key + "' has simple string value '" + _imp->value + "'";
+        case '<':
+            return "Key '" + _imp->key + "' contains or is less than '" + _imp->value + "'";
+    }
+
+    throw InternalError(PALUDIS_HERE, "unknown op");
 }
 
 const std::string
 UserKeyRequirement::as_raw_string() const
 {
-    return "[." + _imp->key + "=" + _imp->value + "]";
+    return "[." + _imp->key + std::string(1, _imp->op) + _imp->value + "]";
 }
 
 VersionSpecOptions
