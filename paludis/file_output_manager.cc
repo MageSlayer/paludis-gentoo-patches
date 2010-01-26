@@ -42,7 +42,7 @@ namespace paludis
         const std::tr1::shared_ptr<OutputManager> summary_output_manager;
         const std::string summary_output_message;
 
-        bool succeeded, unlinked;
+        bool succeeded, unlinked, nothing_more_to_come;
 
         Implementation(
                 const FSEntry & o,
@@ -59,7 +59,8 @@ namespace paludis
             summary_output_manager(m),
             summary_output_message(s),
             succeeded(false),
-            unlinked(false)
+            unlinked(false),
+            nothing_more_to_come(false)
         {
         }
     };
@@ -120,12 +121,16 @@ FileOutputManager::flush()
 bool
 FileOutputManager::want_to_flush() const
 {
-    return false;
+    return _imp->nothing_more_to_come &&
+        (! _imp->unlinked) &&
+        (! _imp->summary_output_message.empty());
 }
 
 void
 FileOutputManager::nothing_more_to_come()
 {
+    _imp->nothing_more_to_come = true;
+
     if (! _imp->stdout_stream)
         return;
 

@@ -72,6 +72,7 @@ namespace paludis
                 virtual const std::string state_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void add_output_manager(const std::tr1::shared_ptr<OutputManager> &);
+                bool any_output_manager_wants_to_flush() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class PALUDIS_VISIBLE JobFailedState :
@@ -87,6 +88,7 @@ namespace paludis
                 virtual const std::string state_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void add_output_manager(const std::tr1::shared_ptr<OutputManager> &);
+                bool any_output_manager_wants_to_flush() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class PALUDIS_VISIBLE JobSkippedState :

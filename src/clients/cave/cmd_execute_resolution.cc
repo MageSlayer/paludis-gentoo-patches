@@ -381,6 +381,7 @@ namespace
 
     typedef std::tr1::unordered_map<JobID, std::tr1::shared_ptr<JobState>, Hash<JobID> > JobStateMap;
     typedef std::list<std::tr1::shared_ptr<JobPendingState> > PendingJobsList;
+    typedef std::list<std::tr1::shared_ptr<JobState> > Summary;
 
     struct DoOneTakenVisitor
     {
@@ -733,7 +734,8 @@ namespace
     int execute_taken(
             const std::tr1::shared_ptr<Environment> & env,
             const ResolverLists & lists,
-            const ExecuteResolutionCommandLine & cmdline)
+            const ExecuteResolutionCommandLine & cmdline,
+            Summary & summary)
     {
         int retcode(0);
 
@@ -810,13 +812,13 @@ namespace
             {
                 DoOneTakenVisitor v(env, cmdline, counts, s->second, job_state_map);
                 if (! s->second->job()->accept_returning<bool>(v))
-                {
                     retcode |= 1;
-
-                    if (cmdline.execution_options.a_continue_on_failure.argument() == "never")
-                        break;
-                }
             }
+
+            summary.push_back(s->second);
+
+            if ((0 != retcode) && (cmdline.execution_options.a_continue_on_failure.argument() == "never"))
+                break;
         }
 
         if (0 != env->perform_hook(Hook("install_all_post")
@@ -909,7 +911,8 @@ namespace
     int execute_resolution_main(
             const std::tr1::shared_ptr<Environment> & env,
             const ResolverLists & lists,
-            const ExecuteResolutionCommandLine & cmdline)
+            const ExecuteResolutionCommandLine & cmdline,
+            Summary & summary)
     {
         int retcode(0);
 
@@ -917,13 +920,136 @@ namespace
         if (0 != retcode || cmdline.a_pretend.specified())
             return retcode;
 
-        retcode |= execute_taken(env, lists, cmdline);
+        retcode |= execute_taken(env, lists, cmdline, summary);
 
         if (0 != retcode)
             return retcode;
 
         retcode |= execute_update_world(env, lists, cmdline);
         return retcode;
+    }
+
+    struct SummaryJobNameDisplayer
+    {
+        const ResolverLists & lists;
+        const std::string colour;
+        const std::string state;
+        const bool want_to_flush;
+        const bool this_failed;
+        const bool something_failed;
+        bool & done_summary;
+
+        SummaryJobNameDisplayer(
+                const ResolverLists & l,
+                const std::string & c,
+                const std::string & s,
+                const bool w,
+                const bool t,
+                const bool f,
+                bool & d
+                ) :
+            lists(l),
+            colour(c),
+            state(s),
+            want_to_flush(w),
+            this_failed(t),
+            something_failed(f),
+            done_summary(d)
+        {
+        }
+
+        void summary() const
+        {
+            if (! done_summary)
+                cout << endl << c::bold_blue() << "Summary:" << c::normal() << endl << endl;
+            done_summary = true;
+        }
+
+        void visit(const SimpleInstallJob & job) const
+        {
+            if (want_to_flush || something_failed)
+            {
+                summary();
+                cout << colour << state << c::normal() << *job.decision()->origin_id()
+                    << " to " << job.decision()->destination()->repository() << endl;
+            }
+        }
+
+        void visit(const FetchJob & job) const
+        {
+            if (want_to_flush || this_failed)
+            {
+                summary();
+                cout << colour << state << c::normal() << "fetch " << *job.decision()->origin_id() << endl;
+            }
+        }
+
+        void visit(const ErrorJob &) const PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "ErrorJob?");
+        }
+
+        void visit(const UsableJob &) const
+        {
+        }
+
+        void visit(const UsableGroupJob &) const
+        {
+        }
+    };
+
+    struct SummaryStateDisplayer
+    {
+        const ResolverLists & lists;
+        const bool something_failed;
+        bool & done_summary;
+
+        SummaryStateDisplayer(const ResolverLists & l, const bool s, bool & d) :
+            lists(l),
+            something_failed(s),
+            done_summary(d)
+        {
+        }
+
+        void visit(const JobPendingState & state) const
+        {
+            state.job()->accept(SummaryJobNameDisplayer(lists, c::bold_normal(), "pending:    ",
+                        false, false, something_failed, done_summary));
+        }
+
+        void visit(const JobSucceededState & state) const
+        {
+            state.job()->accept(SummaryJobNameDisplayer(lists, c::bold_green(), "succeeded:  ",
+                        state.any_output_manager_wants_to_flush(), false, something_failed, done_summary));
+        }
+
+        void visit(const JobSkippedState & state) const
+        {
+            state.job()->accept(SummaryJobNameDisplayer(lists, c::bold_yellow(), "skipped:    ",
+                        false, false, something_failed, done_summary));
+        }
+
+        void visit(const JobFailedState & state) const
+        {
+            state.job()->accept(SummaryJobNameDisplayer(lists, c::bold_red(), "failed:     ",
+                        state.any_output_manager_wants_to_flush(), true, something_failed, done_summary));
+        }
+    };
+
+    void display_summary(
+            const ResolverLists & lists,
+            Summary & summary,
+            const bool something_failed)
+    {
+        bool done_summary(false);
+        for (Summary::iterator s(summary.begin()), s_end(summary.end()) ;
+                s != s_end ; )
+        {
+            const std::tr1::shared_ptr<JobState> state(*s);
+            summary.erase(s++);
+
+            state->accept(SummaryStateDisplayer(lists, something_failed, done_summary));
+        }
     }
 
     int execute_resolution(
@@ -939,12 +1065,16 @@ namespace
                     ).max_exit_status())
             throw ActionAbortedError("Aborted by hook");
 
+        Summary summary;
+
         try
         {
-            retcode = execute_resolution_main(env, lists, cmdline);
+            retcode = execute_resolution_main(env, lists, cmdline, summary);
         }
         catch (...)
         {
+            display_summary(lists, summary, 0 != retcode);
+
             if (0 != env->perform_hook(Hook("install_task_execute_post")
                         ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
                         ("PRETEND", stringify(cmdline.a_pretend.specified()))
@@ -953,6 +1083,8 @@ namespace
                 throw ActionAbortedError("Aborted by hook");
             throw;
         }
+
+        display_summary(lists, summary, 0 != retcode);
 
         if (0 != env->perform_hook(Hook("install_task_execute_post")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
