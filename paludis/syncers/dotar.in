@@ -139,10 +139,21 @@ if [[ -z "${FETCHER}" ]]; then
     exit 1
 fi
 
-TEMP="$( mktemp -d -p "${TMPDIR}" paludis-tarsync-XXXXXX )" || exit $?
+cleanup_and_exit()
+{
+    local ret=${1}
+
+    if [[ -d ${TEMP} ]] ; then
+        rm -rf "${TEMP}" || eerror "Couldn't remove temporary directory: ${TEMP}"
+    fi
+
+    exit ${ret}
+}
+
+TEMP="$( mktemp -d -p "${TMPDIR}" paludis-tarsync-XXXXXX )" || cleanup_and_exit $?
 TARFILE="${URL##*/}"
 
-"${FETCHER}" "${FETCHER_OPTIONS[@]}" "${URL}" "${TEMP}/${TARFILE}" || exit $?
+"${FETCHER}" "${FETCHER_OPTIONS[@]}" "${URL}" "${TEMP}/${TARFILE}" || cleanup_and_exit $?
 
 UNPACKDIR="${TEMP}/repository"
 mkdir "${UNPACKDIR}"
@@ -150,14 +161,13 @@ export PALUDIS_UNPACK_SUFFIXES="tar tar.gz,tgz,tar.Z tar.bz2,tbz2,tbz zip,ZIP,ja
 export PALUDIS_UNPACK_UNRECOGNISED_IS_FATAL=yes
 export PALUDIS_UNPACK_FIX_PERMISSIONS=
 ( cd "${UNPACKDIR}" && "${PALUDIS_EBUILD_DIR}/utils/unpack" \
-    "${UNPACK_OPTIONS[@]}" "${TEMP}/${TARFILE}" ) || exit $?
+    "${UNPACK_OPTIONS[@]}" "${TEMP}/${TARFILE}" ) || cleanup_and_exit $?
 
 rm "${TEMP}/${TARFILE}"
 
 if [[ -z "$( ls -A "${UNPACKDIR}" )" ]]; then
     eerror "No files were extracted (not an archive?)"
-    rm -rf "${TEMP}"
-    exit 1
+    cleanup_and_exit 1
 fi
 
 [[ -d "${LOCAL}" ]] || mkdir -p "${LOCAL}"
@@ -165,8 +175,5 @@ ${RSYNC_WRAPPER} rsync --recursive --links --safe-links --perms --times \
     --compress --force --whole-file --delete --delete-after --stats --timeout=180 \
     ${PALUDIS_SYNC_FILTER_FILE:+--filter "merge ${PALUDIS_SYNC_FILTER_FILE}"} \
     --exclude=/.cache --progress "${RSYNC_OPTIONS[@]}" "${UNPACKDIR}/" "${LOCAL}/"
-STATUS=${?}
-
-rm -rf "${TEMP}"
-exit ${STATUS}
+cleanup_and_exit ${?}
 
