@@ -36,8 +36,7 @@ namespace paludis
     struct Implementation<FileOutputManager>
     {
         FSEntry filename;
-        std::tr1::shared_ptr<SafeOFStream> stdout_stream;
-        std::tr1::shared_ptr<SafeOFStream> stderr_stream;
+        std::tr1::shared_ptr<SafeOFStream> stream;
         const bool keep_on_success, keep_on_empty;
         const std::tr1::shared_ptr<OutputManager> summary_output_manager;
         const std::string summary_output_message;
@@ -52,8 +51,7 @@ namespace paludis
                 const std::string & s
                 ) :
             filename(o),
-            stdout_stream(new SafeOFStream(filename)),
-            stderr_stream(new SafeOFStream(filename)),
+            stream(new SafeOFStream(filename)),
             keep_on_success(k),
             keep_on_empty(l),
             summary_output_manager(m),
@@ -87,13 +85,13 @@ FileOutputManager::~FileOutputManager()
 std::ostream &
 FileOutputManager::stdout_stream()
 {
-    return *_imp->stdout_stream;
+    return *_imp->stream;
 }
 
 std::ostream &
 FileOutputManager::stderr_stream()
 {
-    return *_imp->stderr_stream;
+    return *_imp->stream;
 }
 
 void
@@ -131,14 +129,11 @@ FileOutputManager::nothing_more_to_come()
 {
     _imp->nothing_more_to_come = true;
 
-    if (! _imp->stdout_stream)
+    if (! _imp->stream)
         return;
 
-    *_imp->stdout_stream << std::flush;
-    _imp->stdout_stream.reset();
-
-    *_imp->stderr_stream << std::flush;
-    _imp->stderr_stream.reset();
+    *_imp->stream << std::flush;
+    _imp->stream.reset();
 
     if (! _imp->keep_on_empty)
     {
