@@ -859,8 +859,11 @@ namespace
                 i_end(lists.untaken_job_ids()->end()) ;
                 i != i_end ; ++i)
         {
-            const std::tr1::shared_ptr<const SimpleInstallJob> job(lists.jobs()->fetch_as<SimpleInstallJob>(*i));
-            display_one_install(env, cmdline, *job);
+            const std::tr1::shared_ptr<const Job> job(lists.jobs()->fetch(*i));
+            ShowJobsDisplayer d(env, cmdline, lists, cmdline.display_options.a_show_all_jobs.specified() ||
+                    ! job->used_existing_packages_when_ordering()->empty());
+            if (! job->accept_returning<bool>(d))
+                throw InternalError(PALUDIS_HERE, "why didn't we get true?");
         }
 
         for (JobIDSequence::ConstIterator i(lists.untaken_error_job_ids()->begin()),
