@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,6 +27,7 @@
 #include <paludis/resolver/orderer-fwd.hh>
 #include <paludis/resolver/resolutions-fwd.hh>
 #include <paludis/resolver/resolver_lists-fwd.hh>
+#include <paludis/resolver/sanitised_dependencies-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
@@ -51,7 +52,7 @@ namespace paludis
                         const ResolverFunctions &);
                 ~Resolver();
 
-                void add_target(const PackageDepSpec &);
+                void add_target(const PackageOrBlockDepSpec &);
                 void add_target(const SetName &);
 
                 void resolve();

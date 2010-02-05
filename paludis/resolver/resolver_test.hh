@@ -104,7 +104,7 @@ namespace paludis
                 ResolverTestCase(const std::string & group, const std::string & test_name, const std::string & eapi,
                         const std::string & layout);
 
-                const std::tr1::shared_ptr<const ResolverLists> get_resolutions(const PackageDepSpec & target);
+                const std::tr1::shared_ptr<const ResolverLists> get_resolutions(const PackageOrBlockDepSpec & target);
 
                 const std::tr1::shared_ptr<const ResolverLists> get_resolutions(const std::string & target);
 

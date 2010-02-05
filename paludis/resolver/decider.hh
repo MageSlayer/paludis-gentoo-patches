@@ -73,12 +73,16 @@ namespace paludis
 
                 const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_from_target(
                         const Resolvent &,
-                        const PackageDepSpec &,
+                        const PackageOrBlockDepSpec &,
                         const std::tr1::shared_ptr<const Reason> &) const;
 
                 const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_from_dependency(
                         const Resolvent &, const SanitisedDependency &,
                         const std::tr1::shared_ptr<const Reason> &) const;
+
+                const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_from_blocker(
+                        const Resolvent & resolvent, const BlockDepSpec & dep,
+                        const std::tr1::shared_ptr<const Reason> & reason) const;
 
                 void _apply_resolution_constraint(const Resolvent &,
                         const std::tr1::shared_ptr<Resolution> &,
@@ -185,7 +189,7 @@ namespace paludis
 
                 void resolve();
 
-                void add_target_with_reason(const PackageDepSpec &, const std::tr1::shared_ptr<const Reason> &);
+                void add_target_with_reason(const PackageOrBlockDepSpec &, const std::tr1::shared_ptr<const Reason> &);
 
                 std::pair<AnyChildScore, OperatorScore> find_any_score(const Resolvent &, const SanitisedDependency &) const;
 

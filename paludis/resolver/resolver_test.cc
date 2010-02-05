@@ -320,7 +320,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
 }
 
 const std::tr1::shared_ptr<const ResolverLists>
-ResolverTestCase::get_resolutions(const PackageDepSpec & target)
+ResolverTestCase::get_resolutions(const PackageOrBlockDepSpec & target)
 {
     InitialConstraints initial_constraints;
 

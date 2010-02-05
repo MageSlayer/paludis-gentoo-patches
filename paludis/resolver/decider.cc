@@ -320,28 +320,35 @@ Decider::resolution_for_resolvent(const Resolvent & r) const
 const std::tr1::shared_ptr<ConstraintSequence>
 Decider::_make_constraints_from_target(
         const Resolvent & resolvent,
-        const PackageDepSpec & spec,
+        const PackageOrBlockDepSpec & spec,
         const std::tr1::shared_ptr<const Reason> & reason) const
 {
-    const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
-    result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                        value_for<n::destination_type>(resolvent.destination_type()),
-                        value_for<n::nothing_is_fine_too>(false),
-                        value_for<n::reason>(reason),
-                        value_for<n::spec>(spec),
-                        value_for<n::untaken>(false),
-                        value_for<n::use_existing>(_imp->fns.get_use_existing_fn()(resolvent, spec, reason))
-                        ))));
-    return result;
+    if (spec.if_package())
+    {
+        const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
+        result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                            value_for<n::destination_type>(resolvent.destination_type()),
+                            value_for<n::nothing_is_fine_too>(false),
+                            value_for<n::reason>(reason),
+                            value_for<n::spec>(spec),
+                            value_for<n::untaken>(false),
+                            value_for<n::use_existing>(_imp->fns.get_use_existing_fn()(resolvent, *spec.if_package(), reason))
+                            ))));
+        return result;
+    }
+    else if (spec.if_block())
+        return _make_constraints_from_blocker(resolvent, *spec.if_block(), reason);
+    else
+        throw InternalError(PALUDIS_HERE, "resolver bug: huh? it's not a block and it's not a package");
 }
 
 const std::tr1::shared_ptr<ConstraintSequence>
 Decider::_make_constraints_from_dependency(const Resolvent & resolvent, const SanitisedDependency & dep,
         const std::tr1::shared_ptr<const Reason> & reason) const
 {
-    const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
     if (dep.spec().if_package())
     {
+        const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
         result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
                             value_for<n::destination_type>(resolvent.destination_type()),
                             value_for<n::nothing_is_fine_too>(false),
@@ -352,28 +359,38 @@ Decider::_make_constraints_from_dependency(const Resolvent & resolvent, const Sa
                             value_for<n::use_existing>(_imp->fns.get_use_existing_fn()(
                                     resolvent, *dep.spec().if_package(), reason))
                             ))));
+        return result;
     }
     else if (dep.spec().if_block())
-    {
-        /* nothing is fine too if there's nothing installed matching the block. */
-        const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::SomeArbitraryVersion(
-                    generator::Matches(dep.spec().if_block()->blocking(), MatchPackageOptions()) |
-                    filter::InstalledAtRoot(FSEntry("/")))]);
-
-        DestinationTypes destination_types(_get_destination_types_for_blocker(*dep.spec().if_block()));
-        for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
-            if (destination_types[*t])
-                result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                                    value_for<n::destination_type>(*t),
-                                    value_for<n::nothing_is_fine_too>(ids->empty()),
-                                    value_for<n::reason>(reason),
-                                    value_for<n::spec>(dep.spec()),
-                                    value_for<n::untaken>(false),
-                                    value_for<n::use_existing>(ue_if_possible)
-                                    ))));
-    }
+        return _make_constraints_from_blocker(resolvent, *dep.spec().if_block(), reason);
     else
         throw InternalError(PALUDIS_HERE, "resolver bug: huh? it's not a block and it's not a package");
+}
+
+const std::tr1::shared_ptr<ConstraintSequence>
+Decider::_make_constraints_from_blocker(
+        const Resolvent &,
+        const BlockDepSpec & spec,
+        const std::tr1::shared_ptr<const Reason> & reason) const
+{
+    const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
+
+    /* nothing is fine too if there's nothing installed matching the block. */
+    const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::SomeArbitraryVersion(
+                generator::Matches(spec.blocking(), MatchPackageOptions()) |
+                filter::InstalledAtRoot(FSEntry("/")))]);
+
+    DestinationTypes destination_types(_get_destination_types_for_blocker(spec));
+    for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
+        if (destination_types[*t])
+            result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                                value_for<n::destination_type>(*t),
+                                value_for<n::nothing_is_fine_too>(ids->empty()),
+                                value_for<n::reason>(reason),
+                                value_for<n::spec>(spec),
+                                value_for<n::untaken>(false),
+                                value_for<n::use_existing>(ue_if_possible)
+                                ))));
 
     return result;
 }
@@ -1370,14 +1387,13 @@ Decider::rewrite_if_special(
 }
 
 void
-Decider::add_target_with_reason(const PackageDepSpec & spec, const std::tr1::shared_ptr<const Reason> & reason)
+Decider::add_target_with_reason(const PackageOrBlockDepSpec & spec, const std::tr1::shared_ptr<const Reason> & reason)
 {
     Context context("When adding target '" + stringify(spec) + "':");
 
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-    const std::tr1::shared_ptr<const RewrittenSpec> if_rewritten(
-            rewrite_if_special(PackageOrBlockDepSpec(spec), make_null_shared_ptr()));
+    const std::tr1::shared_ptr<const RewrittenSpec> if_rewritten(rewrite_if_special(spec, make_null_shared_ptr()));
     if (if_rewritten)
     {
         for (Sequence<PackageOrBlockDepSpec>::ConstIterator i(if_rewritten->specs()->begin()), i_end(if_rewritten->specs()->end()) ;
@@ -1389,9 +1405,17 @@ Decider::add_target_with_reason(const PackageDepSpec & spec, const std::tr1::sha
     }
     else
     {
-        std::tr1::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(spec, reason));
+        PackageDepSpec base_spec(spec.if_package() ? *spec.if_package() : spec.if_block()->blocking());
+        std::tr1::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(base_spec, reason));
         if (resolvents->empty())
-            resolvents = _get_error_resolvents_for(spec, reason);
+        {
+            if (spec.if_package())
+                resolvents = _get_error_resolvents_for(*spec.if_package(), reason);
+            else
+            {
+                /* blocking on something that doesn't exist is fine */
+            }
+        }
 
         for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
                 r != r_end ; ++r)

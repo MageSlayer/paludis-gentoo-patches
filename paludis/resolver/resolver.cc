@@ -84,7 +84,7 @@ Resolver::~Resolver()
 }
 
 void
-Resolver::add_target(const PackageDepSpec & spec)
+Resolver::add_target(const PackageOrBlockDepSpec & spec)
 {
     _imp->decider->add_target_with_reason(spec, make_shared_ptr(new TargetReason));
 }
