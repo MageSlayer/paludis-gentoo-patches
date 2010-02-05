@@ -127,7 +127,8 @@ namespace paludis
         class PALUDIS_VISIBLE RemoveDecision :
             public Decision,
             public ImplementAcceptMethods<Decision, RemoveDecision>,
-            private PrivateImplementationPattern<RemoveDecision>
+            private PrivateImplementationPattern<RemoveDecision>,
+            public std::tr1::enable_shared_from_this<RemoveDecision>
         {
             public:
                 RemoveDecision(const bool taken);
