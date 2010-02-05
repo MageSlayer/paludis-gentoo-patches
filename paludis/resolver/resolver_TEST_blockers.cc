@@ -68,7 +68,13 @@ namespace test_cases
 {
     struct TestHardBlocker : ResolverBlockersTestCase
     {
-        TestHardBlocker() : ResolverBlockersTestCase("hard") { }
+        const bool transient;
+
+        TestHardBlocker(const bool t) :
+            ResolverBlockersTestCase("hard" + std::string(t ? " transient" : "")),
+            transient(t)
+        {
+        }
 
         void run()
         {
@@ -101,15 +107,21 @@ namespace test_cases
                         );
             }
         }
-    } test_hard_blocker;
+    } test_hard_blocker(false), test_hard_blocker_transient(true);
 
     struct TestUnfixableBlocker : ResolverBlockersTestCase
     {
-        TestUnfixableBlocker() : ResolverBlockersTestCase("unfixable") { }
+        const bool transient;
+
+        TestUnfixableBlocker(const bool t) :
+            ResolverBlockersTestCase("unfixable" + std::string(t ? " transient" : "")),
+            transient(t)
+        {
+        }
 
         void run()
         {
-            install("unfixable", "a-pkg", "1");
+            install("unfixable", "a-pkg", "1")->transient_key()->set_value(transient);
 
             std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("unfixable/target"));
 
@@ -136,6 +148,6 @@ namespace test_cases
                         );
             }
         }
-    } test_unfixable_blocker;
+    } test_unfixable_blocker(false), test_unfixable_blocker_transient(true);
 }
 
