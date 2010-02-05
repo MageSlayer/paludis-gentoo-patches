@@ -230,9 +230,27 @@ namespace
             }
         }
 
-        void visit(const RemoveDecision &) PALUDIS_ATTRIBUTE((noreturn))
+        void visit(const RemoveDecision & d)
         {
-            throw InternalError(PALUDIS_HERE, "remove decision");
+            if (d.taken())
+            {
+                Log::get_instance()->message("resolver.orderer.job.remove_decision", ll_debug, lc_no_context)
+                    << "taken " << resolution->resolvent() << " remove decision";
+
+                const std::tr1::shared_ptr<UninstallJob> uninstall_job(new UninstallJob(resolution,
+                            d.shared_from_this()));
+                lists->jobs()->add(uninstall_job);
+                to_order.insert(uninstall_job->id());
+            }
+            else
+            {
+                Log::get_instance()->message("resolver.orderer.job.remove_decision", ll_debug, lc_no_context)
+                    << "untaken " << resolution->resolvent() << " remove decision";
+
+                const std::tr1::shared_ptr<UninstallJob> uninstall_job(new UninstallJob(resolution, d.shared_from_this()));
+                lists->jobs()->add(uninstall_job);
+                lists->untaken_job_ids()->push_back(uninstall_job->id());
+            }
         }
     };
 }
