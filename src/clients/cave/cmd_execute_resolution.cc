@@ -127,13 +127,13 @@ namespace
             const std::tr1::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
             const ChangesToMakeDecision & decision,
-            const int x, const int y,
+            const int x, const int y, const int last_x,
             std::tr1::shared_ptr<OutputManager> & output_manager_goes_here)
     {
         Context context("When pretending for '" + stringify(*decision.origin_id()) + "':");
 
-        if (x > 1)
-            std::cout << std::string(stringify(x - 1).length() + stringify(y).length() + 4, '\010');
+        if (0 != last_x)
+            std::cout << std::string(stringify(last_x).length() + stringify(y).length() + 4, '\010');
         std::cout << x << " of " << y << std::flush;
 
         std::string command(cmdline.program_options.a_perform_program.argument());
@@ -1015,29 +1015,33 @@ namespace
         const std::tr1::shared_ptr<Environment> env;
         const ExecuteResolutionCommandLine & cmdline;
         JobCounts & counts;
+        int & last_x;
 
         DoOnePretendVisitor(
                 const std::tr1::shared_ptr<Environment> & e,
                 const ExecuteResolutionCommandLine & c,
-                JobCounts & k) :
+                JobCounts & k,
+                int & l) :
             env(e),
             cmdline(c),
-            counts(k)
+            counts(k),
+            last_x(l)
         {
         }
 
         bool visit(const SimpleInstallJob & c) const
         {
-            if (0 == counts.x_installs)
+            if (0 == last_x)
                 std::cout << "Executing pretend actions: " << std::flush;
 
             std::tr1::shared_ptr<OutputManager> output_manager_goes_here;
             return do_pretend(env, cmdline, *c.changes_to_make_decision(), ++counts.x_installs, counts.y_installs,
-                    output_manager_goes_here);
+                    last_x++, output_manager_goes_here);
         }
 
         bool visit(const UninstallJob &) const
         {
+            ++counts.x_installs;
             return true;
         }
 
@@ -1069,6 +1073,7 @@ namespace
     {
         bool failed(false);
         JobCounts counts;
+        int last_x(0);
 
         for (JobIDSequence::ConstIterator c(lists.taken_job_ids()->begin()),
                 c_end(lists.taken_job_ids()->end()) ;
@@ -1083,9 +1088,10 @@ namespace
         for (JobIDSequence::ConstIterator c(lists.taken_job_ids()->begin()),
                 c_end(lists.taken_job_ids()->end()) ;
                 c != c_end ; ++c)
-            failed = failed || ! lists.jobs()->fetch(*c)->accept_returning<bool>(DoOnePretendVisitor(env, cmdline, counts));
+            failed = failed || ! lists.jobs()->fetch(*c)->accept_returning<bool>(DoOnePretendVisitor(
+                        env, cmdline, counts, last_x));
 
-        if (0 != counts.x_installs)
+        if (0 != last_x)
             cout << endl;
 
         if (0 != env->perform_hook(Hook("pretend_all_post")
