@@ -50,6 +50,7 @@
 #include <paludis/version_requirements.hh>
 #include <paludis/slot_requirement.hh>
 #include <paludis/choice.hh>
+#include <paludis/action.hh>
 
 #include <paludis/util/private_implementation_pattern-impl.hh>
 
@@ -1102,7 +1103,15 @@ Decider::_try_to_find_decision_for(
     }
     else if ((! existing_id) && (! installable_id))
     {
-        return make_null_shared_ptr();
+        /* we can't stick with our existing id, if there is one, and we can't
+         * fix it by installing things. this might be an error, or we might be
+         * able to remove things. */
+        if (_installed_but_allowed_to_remove(resolvent))
+            return make_shared_ptr(new RemoveDecision(
+                        ! resolution->constraints()->all_untaken()
+                        ));
+        else
+            return make_null_shared_ptr();
     }
     else if (existing_id && installable_id)
     {
