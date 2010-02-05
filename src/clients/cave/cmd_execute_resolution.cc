@@ -358,7 +358,7 @@ namespace
     {
         Context context("When removing '" + stringify(*id) + "':");
 
-        starting_action("removing", id, x, y);
+        starting_action("remove", id, x, y);
 
         std::string command(cmdline.program_options.a_perform_program.argument());
         if (command.empty())
