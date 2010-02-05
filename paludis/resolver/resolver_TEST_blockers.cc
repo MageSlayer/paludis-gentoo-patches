@@ -155,7 +155,7 @@ namespace test_cases
         const bool transient;
 
         TestRemoveBlocker(const bool t) :
-            ResolverBlockersTestCase("remove " + std::string(t ? " transient" : "")),
+            ResolverBlockersTestCase("remove" + std::string(t ? " transient" : "")),
             transient(t)
         {
             allowed_to_remove_names->insert(QualifiedPackageName("remove/a-pkg"));
