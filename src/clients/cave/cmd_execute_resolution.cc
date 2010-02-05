@@ -348,6 +348,80 @@ namespace
         return 0 == retcode;
     }
 
+    bool do_uninstall(
+            const std::tr1::shared_ptr<Environment> & env,
+            const ExecuteResolutionCommandLine & cmdline,
+            const std::tr1::shared_ptr<const Resolution> &,
+            const std::tr1::shared_ptr<const PackageID> & id,
+            const int x, const int y,
+            std::tr1::shared_ptr<OutputManager> & output_manager_goes_here)
+    {
+        Context context("When removing '" + stringify(*id) + "':");
+
+        starting_action("removing", id, x, y);
+
+        std::string command(cmdline.program_options.a_perform_program.argument());
+        if (command.empty())
+            command = "$CAVE perform";
+
+        command.append(" uninstall --hooks --managed-output ");
+        command.append(stringify(id->uniquely_identifying_spec()));
+
+        command.append(" --x-of-y '" + stringify(x) + " of " + stringify(y) + "'");
+
+        if (cmdline.execution_options.a_skip_phase.specified() || cmdline.execution_options.a_abort_at_phase.specified()
+                || cmdline.execution_options.a_skip_until_phase.specified())
+        {
+            bool apply(false);
+
+            if (cmdline.execution_options.a_change_phases_for.argument() == "all")
+                apply = true;
+            else if (cmdline.execution_options.a_change_phases_for.argument() == "first")
+                apply = (x == 1);
+            else if (cmdline.execution_options.a_change_phases_for.argument() == "last")
+                apply = (x == y);
+            else
+                throw args::DoHelp("Don't understand argument '"
+                        + cmdline.execution_options.a_change_phases_for.argument() + "' to '--"
+                        + cmdline.execution_options.a_change_phases_for.long_name() + "'");
+
+            if (apply)
+            {
+                if (cmdline.execution_options.a_skip_phase.specified())
+                    command.append(" " + cmdline.execution_options.a_skip_phase.forwardable_string());
+                if (cmdline.execution_options.a_abort_at_phase.specified())
+                    command.append(" " + cmdline.execution_options.a_abort_at_phase.forwardable_string());
+                if (cmdline.execution_options.a_skip_until_phase.specified())
+                    command.append(" " + cmdline.execution_options.a_skip_until_phase.forwardable_string());
+            }
+        }
+
+        if (cmdline.import_options.a_unpackaged_repository_params.specified())
+        {
+            for (args::StringSetArg::ConstIterator p(cmdline.import_options.a_unpackaged_repository_params.begin_args()),
+                    p_end(cmdline.import_options.a_unpackaged_repository_params.end_args()) ;
+                    p != p_end ; ++p)
+                command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " '" + *p + "'");
+        }
+
+        IPCInputManager input_manager(env.get(), oe_exclusive);
+        paludis::Command cmd(command);
+        cmd
+            .with_pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler())
+            ;
+
+        int retcode(run_command(cmd));
+        const std::tr1::shared_ptr<OutputManager> output_manager(input_manager.underlying_output_manager_if_constructed());
+        if (output_manager)
+        {
+            output_manager->nothing_more_to_come();
+            output_manager_goes_here = output_manager;
+        }
+
+        done_action("remove", id, 0 == retcode);
+        return 0 == retcode;
+    }
+
     struct JobCounts
     {
         int x_fetches, y_fetches, x_installs, y_installs;
@@ -457,16 +531,41 @@ namespace
             }
         }
 
-        bool visit(const UninstallJob &)
+        bool visit(const UninstallJob & job)
         {
-            std::tr1::shared_ptr<OutputManager> uninstall_output_manager_goes_here;
+            std::list<std::tr1::shared_ptr<OutputManager> > output_managers;
 
             ++counts.x_installs;
 
-            /* don't support uninstalls yet */
-            std::tr1::shared_ptr<JobFailedState> failed_state(new JobFailedState(state->job()));
-            state = failed_state;
-            return false;
+            bool failed(false);
+            for (PackageIDSequence::ConstIterator i(job.remove_decision()->ids()->begin()),
+                    i_end(job.remove_decision()->ids()->end()) ;
+                    i != i_end ; ++i)
+            {
+                std::tr1::shared_ptr<OutputManager> uninstall_output_manager_goes_here;
+                if (! do_uninstall(env, cmdline, job.resolution(),
+                            *i, counts.x_installs, counts.y_installs, uninstall_output_manager_goes_here))
+                    failed = true;
+                if (uninstall_output_manager_goes_here)
+                    output_managers.push_back(uninstall_output_manager_goes_here);
+            }
+
+            if (failed)
+            {
+                std::tr1::shared_ptr<JobFailedState> failed_state(new JobFailedState(state->job()));
+                std::for_each(output_managers.begin(), output_managers.end(),
+                        std::tr1::bind(&JobFailedState::add_output_manager, failed_state, std::tr1::placeholders::_1));
+                state = failed_state;
+                return false;
+            }
+            else
+            {
+                std::tr1::shared_ptr<JobSucceededState> succeeded_state(new JobSucceededState(state->job()));
+                std::for_each(output_managers.begin(), output_managers.end(),
+                        std::tr1::bind(&JobSucceededState::add_output_manager, succeeded_state, std::tr1::placeholders::_1));
+                state = succeeded_state;
+                return true;
+            }
         }
 
         bool visit(const FetchJob & job)
