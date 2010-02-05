@@ -176,7 +176,7 @@ Job::deserialise(Deserialisation & d)
         Deserialisator v(d, "SimpleInstallJob");
         result.reset(new SimpleInstallJob(
                     v.member<std::tr1::shared_ptr<Resolution> >("resolution"),
-                    v.member<std::tr1::shared_ptr<ChangesToMakeDecision> >("decision")
+                    v.member<std::tr1::shared_ptr<ChangesToMakeDecision> >("changes_to_make_decision")
                     ));
         do_arrows(result, v);
         do_existing(result, v);
@@ -186,7 +186,7 @@ Job::deserialise(Deserialisation & d)
         Deserialisator v(d, "FetchJob");
         result.reset(new FetchJob(
                     v.member<std::tr1::shared_ptr<Resolution> >("resolution"),
-                    v.member<std::tr1::shared_ptr<ChangesToMakeDecision> >("decision")
+                    v.member<std::tr1::shared_ptr<ChangesToMakeDecision> >("changes_to_make_decision")
                     ));
         do_arrows(result, v);
         do_existing(result, v);
@@ -196,7 +196,7 @@ Job::deserialise(Deserialisation & d)
         Deserialisator v(d, "ErrorJob");
         result.reset(new ErrorJob(
                     v.member<std::tr1::shared_ptr<Resolution> >("resolution"),
-                    v.member<std::tr1::shared_ptr<UnableToMakeDecision> >("decision")
+                    v.member<std::tr1::shared_ptr<UnableToMakeDecision> >("unable_to_make_decision")
                     ));
         do_arrows(result, v);
         do_existing(result, v);
@@ -348,7 +348,7 @@ FetchJob::resolution() const
 }
 
 const std::tr1::shared_ptr<const ChangesToMakeDecision>
-FetchJob::decision() const
+FetchJob::changes_to_make_decision() const
 {
     return _imp->decision;
 }
@@ -390,7 +390,7 @@ FetchJob::serialise(Serialiser & s) const
 {
     s.object("FetchJob")
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "arrows", arrows())
-        .member(SerialiserFlags<serialise::might_be_null>(), "decision", decision())
+        .member(SerialiserFlags<serialise::might_be_null>(), "changes_to_make_decision", changes_to_make_decision())
         .member(SerialiserFlags<serialise::might_be_null>(), "resolution", resolution())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(),
                 "used_existing_packages_when_ordering", used_existing_packages_when_ordering())
@@ -414,7 +414,7 @@ SimpleInstallJob::resolution() const
 }
 
 const std::tr1::shared_ptr<const ChangesToMakeDecision>
-SimpleInstallJob::decision() const
+SimpleInstallJob::changes_to_make_decision() const
 {
     return _imp->decision;
 }
@@ -456,7 +456,7 @@ SimpleInstallJob::serialise(Serialiser & s) const
 {
     s.object("SimpleInstallJob")
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "arrows", arrows())
-        .member(SerialiserFlags<serialise::might_be_null>(), "decision", decision())
+        .member(SerialiserFlags<serialise::might_be_null>(), "changes_to_make_decision", changes_to_make_decision())
         .member(SerialiserFlags<serialise::might_be_null>(), "resolution", resolution())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(),
                 "used_existing_packages_when_ordering", used_existing_packages_when_ordering())
@@ -515,7 +515,7 @@ ErrorJob::serialise(Serialiser & s) const
 {
     s.object("ErrorJob")
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "arrows", arrows())
-        .member(SerialiserFlags<serialise::might_be_null>(), "decision", decision())
+        .member(SerialiserFlags<serialise::might_be_null>(), "unable_to_make_decision", unable_to_make_decision())
         .member(SerialiserFlags<serialise::might_be_null>(), "resolution", resolution())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(),
                 "used_existing_packages_when_ordering", used_existing_packages_when_ordering())
@@ -523,7 +523,7 @@ ErrorJob::serialise(Serialiser & s) const
 }
 
 const std::tr1::shared_ptr<const UnableToMakeDecision>
-ErrorJob::decision() const
+ErrorJob::unable_to_make_decision() const
 {
     return _imp->decision;
 }

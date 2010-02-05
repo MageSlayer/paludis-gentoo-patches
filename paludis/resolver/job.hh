@@ -147,7 +147,7 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::tr1::shared_ptr<const Resolution> resolution() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                const std::tr1::shared_ptr<const ChangesToMakeDecision> decision() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::tr1::shared_ptr<const ChangesToMakeDecision> changes_to_make_decision() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;
         };
@@ -178,7 +178,7 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::tr1::shared_ptr<const Resolution> resolution() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                const std::tr1::shared_ptr<const ChangesToMakeDecision> decision() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::tr1::shared_ptr<const ChangesToMakeDecision> changes_to_make_decision() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;
         };
@@ -209,7 +209,7 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::tr1::shared_ptr<const Resolution> resolution() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                const std::tr1::shared_ptr<const UnableToMakeDecision> decision() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::tr1::shared_ptr<const UnableToMakeDecision> unable_to_make_decision() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;
         };

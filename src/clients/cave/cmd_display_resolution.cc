@@ -618,7 +618,7 @@ namespace
             const DisplayResolutionCommandLine & cmdline,
             const SimpleInstallJob & job)
     {
-        display_one_installish(env, cmdline, *job.decision(), job.resolution());
+        display_one_installish(env, cmdline, *job.changes_to_make_decision(), job.resolution());
     }
 
     void display_special_job_decision(
@@ -753,7 +753,7 @@ namespace
     {
         const std::string visit(const SimpleInstallJob & j) const
         {
-            return "install " + stringify(*j.decision()->origin_id());
+            return "install " + stringify(*j.changes_to_make_decision()->origin_id());
         }
 
         const std::string visit(const UsableJob & j) const
@@ -768,7 +768,7 @@ namespace
 
         const std::string visit(const FetchJob & j) const
         {
-            return "fetch " + stringify(*j.decision()->origin_id());
+            return "fetch " + stringify(*j.changes_to_make_decision()->origin_id());
         }
 
         const std::string visit(const UsableGroupJob & j) const
@@ -820,7 +820,7 @@ namespace
             const std::tr1::shared_ptr<const Resolution> & resolution,
             const ErrorJob & j)
     {
-        display_unable_to_make_decision(env, resolution, *j.decision());
+        display_unable_to_make_decision(env, resolution, *j.unable_to_make_decision());
     }
 
     void display_untaken(

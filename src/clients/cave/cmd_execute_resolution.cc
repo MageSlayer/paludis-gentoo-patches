@@ -412,7 +412,7 @@ namespace
             ++counts.x_installs;
 
             /* not all of the fetch is done in the background */
-            if (! do_fetch(env, cmdline, *job.decision(), counts.x_installs, counts.y_installs,
+            if (! do_fetch(env, cmdline, *job.changes_to_make_decision(), counts.x_installs, counts.y_installs,
                         false, fetch_output_manager_goes_here))
             {
                 std::tr1::shared_ptr<JobFailedState> failed_state(new JobFailedState(state->job()));
@@ -423,7 +423,7 @@ namespace
             }
 
             if (! do_install(env, cmdline, job.resolution(),
-                        *job.decision(), counts.x_installs, counts.y_installs, install_output_manager_goes_here))
+                        *job.changes_to_make_decision(), counts.x_installs, counts.y_installs, install_output_manager_goes_here))
             {
                 std::tr1::shared_ptr<JobFailedState> failed_state(new JobFailedState(state->job()));
                 if (fetch_output_manager_goes_here)
@@ -450,7 +450,7 @@ namespace
             std::tr1::shared_ptr<OutputManager> output_manager_goes_here;
 
             ++counts.x_fetches;
-            if (! do_fetch(env, cmdline, *job.decision(), counts.x_fetches, counts.y_fetches,
+            if (! do_fetch(env, cmdline, *job.changes_to_make_decision(), counts.x_fetches, counts.y_fetches,
                         true, output_manager_goes_here))
             {
                 std::tr1::shared_ptr<JobFailedState> failed_state(new JobFailedState(state->job()));
@@ -529,7 +529,7 @@ namespace
 
             cout << endl;
             cout << c::bold_blue() << counts.x_installs << " of " << counts.y_installs << ": Skipping install of "
-                << *job.decision()->origin_id() << c::normal() << endl;
+                << *job.changes_to_make_decision()->origin_id() << c::normal() << endl;
             cout << endl;
 
             state.reset(new JobSkippedState(state->job()));
@@ -848,7 +848,7 @@ namespace
         bool visit(const SimpleInstallJob & c) const
         {
             std::tr1::shared_ptr<OutputManager> output_manager_goes_here;
-            return do_pretend(env, cmdline, *c.decision(), ++counts.x_installs, counts.y_installs,
+            return do_pretend(env, cmdline, *c.changes_to_make_decision(), ++counts.x_installs, counts.y_installs,
                     output_manager_goes_here);
         }
 
@@ -970,8 +970,8 @@ namespace
             if (want_to_flush || something_failed)
             {
                 summary();
-                cout << colour << state << c::normal() << *job.decision()->origin_id()
-                    << " to " << job.decision()->destination()->repository() << endl;
+                cout << colour << state << c::normal() << *job.changes_to_make_decision()->origin_id()
+                    << " to " << job.changes_to_make_decision()->destination()->repository() << endl;
             }
         }
 
@@ -980,7 +980,7 @@ namespace
             if (want_to_flush || this_failed)
             {
                 summary();
-                cout << colour << state << c::normal() << "fetch " << *job.decision()->origin_id() << endl;
+                cout << colour << state << c::normal() << "fetch " << *job.changes_to_make_decision()->origin_id() << endl;
             }
         }
 
