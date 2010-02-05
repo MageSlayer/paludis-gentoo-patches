@@ -460,7 +460,7 @@ namespace
 
         bool visit(const RemoveDecision &) const
         {
-            return constraint.nothing_is_fine_too();
+            return constraint.nothing_is_fine_too() || constraint.spec().if_block();
         }
     };
 
