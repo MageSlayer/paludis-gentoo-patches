@@ -561,6 +561,14 @@ namespace
             else
             {
                 std::tr1::shared_ptr<JobSucceededState> succeeded_state(new JobSucceededState(state->job()));
+
+                /* uninstalls don't mark success themselves, to avoid confusing
+                 * things when called as part of an install. maybe we should
+                 * mark success individually rather than all together if we're
+                 * uninstalling multiple things. */
+                std::for_each(output_managers.begin(), output_managers.end(),
+                        std::tr1::bind(&OutputManager::succeeded, std::tr1::placeholders::_1));
+
                 std::for_each(output_managers.begin(), output_managers.end(),
                         std::tr1::bind(&JobSucceededState::add_output_manager, succeeded_state, std::tr1::placeholders::_1));
                 state = succeeded_state;
