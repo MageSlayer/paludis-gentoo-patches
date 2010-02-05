@@ -79,7 +79,8 @@ namespace
 
         const std::string visit(const RemoveDecision & d) const
         {
-            return "RemoveDecision(taken: " + stringify(d.taken()) + ")";
+            return "RemoveDecision(ids: " + join(indirect_iterator(d.ids()->begin()),
+                        indirect_iterator(d.ids()->end()), ", ") + " taken: " + stringify(d.taken()) + ")";
         }
 
         const std::string visit(const NothingNoChangeDecision & d) const

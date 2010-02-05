@@ -281,10 +281,13 @@ namespace
             cout << "        Use existing ID " << *d.existing_id() << endl;
         }
 
-        void visit(const RemoveDecision &) const
+        void visit(const RemoveDecision & d) const
         {
             cout << "    The decision made was:" << endl;
             cout << "        Remove existing IDs" << endl;
+            for (PackageIDSequence::ConstIterator i(d.ids()->begin()), i_end(d.ids()->end()) ;
+                    i != i_end ; ++i)
+                cout << "            Remove " << **i << endl;
         }
 
         void visit(const NothingNoChangeDecision &) const
@@ -626,7 +629,21 @@ namespace
             const DisplayResolutionCommandLine &,
             const UninstallJob & job)
     {
-        cout << "<   " << c::bold_green() << job.resolution()->resolvent() << c::normal() << endl;
+        cout << "<   " << c::bold_green() << job.resolution()->resolvent() << c::normal() << " ";
+
+        bool first(true);
+        for (PackageIDSequence::ConstIterator i(job.remove_decision()->ids()->begin()),
+                i_end(job.remove_decision()->ids()->end()) ;
+                i != i_end ; ++i)
+        {
+            if (! first)
+                cout << ", ";
+            first = false;
+
+            cout << (*i)->canonical_form(idcf_version);
+        }
+
+        cout << endl;
         display_reasons(job.resolution());
     }
 
