@@ -102,5 +102,40 @@ namespace test_cases
             }
         }
     } test_hard_blocker;
+
+    struct TestUnfixableBlocker : ResolverBlockersTestCase
+    {
+        TestUnfixableBlocker() : ResolverBlockersTestCase("unfixable") { }
+
+        void run()
+        {
+            install("unfixable", "a-pkg", "1");
+
+            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("unfixable/target"));
+
+            {
+                TestMessageSuffix s("taken errors");
+                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
+                        .kind("unable_to_make_decision", QualifiedPackageName("unfixable/a-pkg"))
+                        .finished()
+                        );
+            }
+
+            {
+                TestMessageSuffix s("untaken errors");
+                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
+                        .finished()
+                        );
+            }
+
+            {
+                TestMessageSuffix s("ordered");
+                check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
+                        .qpn(QualifiedPackageName("unfixable/target"))
+                        .finished()
+                        );
+            }
+        }
+    } test_unfixable_blocker;
 }
 

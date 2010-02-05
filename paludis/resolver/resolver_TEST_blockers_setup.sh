@@ -41,5 +41,25 @@ PLATFORMS="test"
 SLOT="0"
 END
 
+# unfixable
+echo 'unfixable' >> metadata/categories.conf
+
+mkdir -p 'packages/unfixable/target'
+cat <<END > packages/unfixable/target/target-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="
+    ( !unfixable/a-pkg )
+    "
+END
+
+mkdir -p 'packages/unfixable/a-pkg'
+cat <<END > packages/unfixable/a-pkg/a-pkg-2.exheres-0
+SUMMARY="dep"
+PLATFORMS="test"
+SLOT="0"
+END
+
 cd ..
 
