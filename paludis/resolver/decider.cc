@@ -1125,6 +1125,7 @@ Decider::_try_to_find_decision_for(
          * able to remove things. */
         if (_installed_but_allowed_to_remove(resolvent))
             return make_shared_ptr(new RemoveDecision(
+                        _installed_ids(resolvent),
                         ! resolution->constraints()->all_untaken()
                         ));
         else

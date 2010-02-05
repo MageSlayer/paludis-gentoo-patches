@@ -131,10 +131,15 @@ namespace paludis
             public std::tr1::enable_shared_from_this<RemoveDecision>
         {
             public:
-                RemoveDecision(const bool taken);
+                RemoveDecision(
+                        const std::tr1::shared_ptr<const PackageIDSequence> &,
+                        const bool taken);
                 ~RemoveDecision();
 
                 virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const std::tr1::shared_ptr<const PackageIDSequence> ids() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;
 

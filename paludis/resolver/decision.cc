@@ -109,7 +109,13 @@ RemoveDecision::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "RemoveDecision");
 
+    std::tr1::shared_ptr<PackageIDSequence> ids(new PackageIDSequence);
+    Deserialisator vv(*v.find_remove_member("ids"), "c");
+    for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
+        ids->push_back(vv.member<std::tr1::shared_ptr<const PackageID> >(stringify(n)));
+
     return make_shared_ptr(new RemoveDecision(
+                ids,
                 v.member<bool>("taken")
                 ));
 }
@@ -374,17 +380,19 @@ namespace paludis
     template <>
     struct Implementation<RemoveDecision>
     {
+        const std::tr1::shared_ptr<const PackageIDSequence> ids;
         const bool taken;
 
-        Implementation(const bool t) :
+        Implementation(const std::tr1::shared_ptr<const PackageIDSequence> & i, const bool t) :
+            ids(i),
             taken(t)
         {
         }
     };
 }
 
-RemoveDecision::RemoveDecision(const bool t) :
-    PrivateImplementationPattern<RemoveDecision>(new Implementation<RemoveDecision>(t))
+RemoveDecision::RemoveDecision(const std::tr1::shared_ptr<const PackageIDSequence> & i, const bool t) :
+    PrivateImplementationPattern<RemoveDecision>(new Implementation<RemoveDecision>(i, t))
 {
 }
 
@@ -402,11 +410,18 @@ RemoveDecision::taken() const
     return _imp->taken;
 }
 
+const std::tr1::shared_ptr<const PackageIDSequence>
+RemoveDecision::ids() const
+{
+    return _imp->ids;
+}
+
 void
 RemoveDecision::serialise(Serialiser & s) const
 {
     s.object("RemoveDecision")
         .member(SerialiserFlags<>(), "taken", taken())
+        .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "ids", ids())
         ;
 }
 
