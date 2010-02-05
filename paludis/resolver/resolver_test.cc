@@ -244,6 +244,12 @@ paludis::resolver::resolver_test::find_repository_for_fn(
     return env->package_database()->fetch_repository(RepositoryName("installed"));
 }
 
+bool
+paludis::resolver::resolver_test::allowed_to_remove_fn(const std::tr1::shared_ptr<const PackageID> &)
+{
+    return false;
+}
+
 ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s, const std::string & e,
         const std::string & l) :
     TestCase(s)
@@ -292,6 +298,7 @@ ResolverFunctions
 ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraints)
 {
     return make_named_values<ResolverFunctions>(
+            value_for<n::allowed_to_remove_fn>(&allowed_to_remove_fn),
             value_for<n::care_about_dep_fn>(&care_about_dep_fn),
             value_for<n::find_repository_for_fn>(std::tr1::bind(&find_repository_for_fn,
                     &env, std::tr1::placeholders::_1, std::tr1::placeholders::_2,

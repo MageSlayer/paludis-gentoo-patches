@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,6 +38,7 @@ namespace paludis
 {
     namespace n
     {
+        struct allowed_to_remove_fn;
         struct care_about_dep_fn;
         struct find_repository_for_fn;
         struct get_destination_types_for_fn;
@@ -50,6 +51,10 @@ namespace paludis
 
     namespace resolver
     {
+        typedef std::tr1::function<bool (
+                const std::tr1::shared_ptr<const PackageID> &
+                )> AllowedToRemoveFunction;
+
         typedef std::tr1::function<bool (
                 const Resolvent &,
                 const std::tr1::shared_ptr<const Resolution> &,
@@ -97,6 +102,7 @@ namespace paludis
 
         struct ResolverFunctions
         {
+            NamedValue<n::allowed_to_remove_fn, AllowedToRemoveFunction> allowed_to_remove_fn;
             NamedValue<n::care_about_dep_fn, CareAboutDepFunction> care_about_dep_fn;
             NamedValue<n::find_repository_for_fn, FindRepositoryForFunction> find_repository_for_fn;
             NamedValue<n::get_destination_types_for_fn, GetDestinationTypesForFunction> get_destination_types_for_fn;

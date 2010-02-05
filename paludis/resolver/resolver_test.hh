@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -89,6 +89,8 @@ namespace paludis
             DestinationTypes get_destination_types_for_fn(const PackageDepSpec &,
                     const std::tr1::shared_ptr<const PackageID> &,
                     const std::tr1::shared_ptr<const Reason> &);
+
+            bool allowed_to_remove_fn(const std::tr1::shared_ptr<const PackageID> &);
 
             struct ResolverTestCase : test::TestCase
             {

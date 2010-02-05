@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -169,6 +169,13 @@ namespace paludis
                         const std::tr1::shared_ptr<const PackageID> &) const;
 
                 bool _already_met(const SanitisedDependency &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                bool _installed_but_allowed_to_remove(const Resolvent &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const std::tr1::shared_ptr<const PackageIDSequence> _installed_ids(
+                        const Resolvent & resolvent) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                bool _allowed_to_remove(const std::tr1::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             public:
                 Decider(const Environment * const,

@@ -918,6 +918,11 @@ namespace
         throw InternalError(PALUDIS_HERE, "unhandled dt");
     }
 
+    bool allowed_to_remove_fn(const std::tr1::shared_ptr<const PackageID> &)
+    {
+        return false;
+    }
+
     void ser_thread_func(StringListStream & ser_stream, const ResolverLists & resolution_lists)
     {
         Serialiser ser(ser_stream);
@@ -1151,6 +1156,8 @@ paludis::cave::resolve_common(
     InitialConstraints initial_constraints;
 
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
+                value_for<n::allowed_to_remove_fn>(std::tr1::bind(&allowed_to_remove_fn,
+                        std::tr1::placeholders::_1)),
                 value_for<n::care_about_dep_fn>(std::tr1::bind(&care_about_dep_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::placeholders::_1,
                         std::tr1::placeholders::_2, std::tr1::placeholders::_3)),

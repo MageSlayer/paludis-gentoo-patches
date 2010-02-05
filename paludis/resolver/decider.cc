@@ -1247,12 +1247,34 @@ Decider::_make_unsuitable_candidate(
 const std::tr1::shared_ptr<const PackageID>
 Decider::_find_existing_id_for(const Resolvent & resolvent, const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
-    const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::AllVersionsSorted(
-                _make_destination_filtered_generator(generator::Package(resolvent.package()), resolvent) |
-                make_slot_filter(resolvent)
-                )]);
-
+    const std::tr1::shared_ptr<const PackageIDSequence> ids(_installed_ids(resolvent));
     return _find_id_for_from(resolvent, resolution, ids).first;
+}
+
+bool
+Decider::_installed_but_allowed_to_remove(const Resolvent & resolvent) const
+{
+    const std::tr1::shared_ptr<const PackageIDSequence> ids(_installed_ids(resolvent));
+    if (ids->empty())
+        return false;
+
+    return ids->end() == std::find_if(ids->begin(), ids->end(),
+            std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(&Decider::_allowed_to_remove, this, std::tr1::placeholders::_1)));
+}
+
+bool
+Decider::_allowed_to_remove(const std::tr1::shared_ptr<const PackageID> & id) const
+{
+    return id->supports_action(SupportsActionTest<UninstallAction>()) && _imp->fns.allowed_to_remove_fn()(id);
+}
+
+const std::tr1::shared_ptr<const PackageIDSequence>
+Decider::_installed_ids(const Resolvent & resolvent) const
+{
+    return (*_imp->env)[selection::AllVersionsSorted(
+            _make_destination_filtered_generator(generator::Package(resolvent.package()), resolvent) |
+            make_slot_filter(resolvent)
+            )];
 }
 
 const std::tr1::shared_ptr<const PackageIDSequence>
