@@ -171,27 +171,27 @@ namespace
 
     void starting_action(
             const std::string & action,
-            const ChangesToMakeDecision & decision,
+            const std::tr1::shared_ptr<const PackageID> & id,
             const int x, const int y)
     {
         cout << endl;
         cout << c::bold_blue() << x << " of " << y << ": Starting " << action << " for "
-            << *decision.origin_id() << "..." << c::normal() << endl;
+            << *id << "..." << c::normal() << endl;
         cout << endl;
     }
 
     void done_action(
             const std::string & action,
-            const ChangesToMakeDecision & decision,
+            const std::tr1::shared_ptr<const PackageID> & id,
             const bool success)
     {
         cout << endl;
         if (success)
             cout << c::bold_green() << "Done " << action << " for "
-                << *decision.origin_id() << c::normal() << endl;
+                << *id << c::normal() << endl;
         else
             cout << c::bold_red() << "Failed " << action << " for "
-                << *decision.origin_id() << c::normal() << endl;
+                << *id << c::normal() << endl;
         cout << endl;
     }
 
@@ -205,7 +205,8 @@ namespace
         const std::tr1::shared_ptr<const PackageID> id(decision.origin_id());
         Context context("When fetching for '" + stringify(*id) + "':");
 
-        starting_action("fetch (" + std::string(normal_only ? "regular parts" : "extra parts") + ")", decision, x, y);
+        starting_action("fetch (" + std::string(normal_only ? "regular parts" : "extra parts") + ")",
+                decision.origin_id(), x, y);
 
         std::string command(cmdline.program_options.a_perform_program.argument());
         if (command.empty())
@@ -240,7 +241,8 @@ namespace
             output_manager_goes_here = output_manager;
         }
 
-        done_action("fetch (" + std::string(normal_only ? "regular parts" : "extra parts") + ")", decision, 0 == retcode);
+        done_action("fetch (" + std::string(normal_only ? "regular parts" : "extra parts") + ")",
+                decision.origin_id(), 0 == retcode);
         return 0 == retcode;
     }
 
@@ -275,7 +277,7 @@ namespace
         const std::tr1::shared_ptr<const PackageID> id(decision.origin_id());
         Context context("When " + destination_string + " for '" + stringify(*id) + "':");
 
-        starting_action(action_string, decision, x, y);
+        starting_action(action_string, decision.origin_id(), x, y);
 
         std::string command(cmdline.program_options.a_perform_program.argument());
         if (command.empty())
@@ -340,7 +342,7 @@ namespace
             output_manager_goes_here = output_manager;
         }
 
-        done_action(action_string, decision, 0 == retcode);
+        done_action(action_string, decision.origin_id(), 0 == retcode);
         return 0 == retcode;
     }
 
