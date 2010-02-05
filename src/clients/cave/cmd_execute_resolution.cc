@@ -89,6 +89,7 @@ namespace
         args::ArgsGroup g_general_options;
         args::SwitchArg a_pretend;
         args::SwitchArg a_set;
+        args::SwitchArg a_block;
 
         ResolveCommandLineExecutionOptions execution_options;
         ResolveCommandLineProgramOptions program_options;
@@ -98,6 +99,7 @@ namespace
             g_general_options(main_options_section(), "General Options", "General options."),
             a_pretend(&g_general_options, "pretend", '\0', "Only carry out the pretend action", false),
             a_set(&g_general_options, "set", '\0', "Our target is a set rather than package specs", false),
+            a_block(&g_general_options, "block", '\0', "Our target contains block rather than package specs", false),
             execution_options(this),
             program_options(this),
             import_options(this)
@@ -639,11 +641,21 @@ namespace
         }
         else
         {
+            if (cmdline.a_block.specified())
+                command.append(" --remove");
+
             for (args::ArgsHandler::ParametersConstIterator a(cmdline.begin_parameters()),
                     a_end(cmdline.end_parameters()) ;
                     a != a_end ; ++a)
             {
-                PackageDepSpec spec(parse_user_package_dep_spec(*a, env.get(), UserPackageDepSpecOptions()));
+                std::string aa(*a);
+                if (aa.empty())
+                    continue;
+
+                if (cmdline.a_block.specified())
+                    aa.erase(0, 1);
+
+                PackageDepSpec spec(parse_user_package_dep_spec(aa, env.get(), UserPackageDepSpecOptions()));
                 if (package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
                                 value_for<n::has_additional_requirements>(false),
                                 value_for<n::has_category_name_part>(false),
@@ -660,12 +672,18 @@ namespace
                                 )))
                 {
                     any = true;
-                    cout << "* Adding '" << spec << "'" << endl;
+                    if (cmdline.a_block.specified())
+                        cout << "* Removing '" << spec << "'" << endl;
+                    else
+                        cout << "* Adding '" << spec << "'" << endl;
                     command.append(" " + stringify(spec));
                 }
                 else
                 {
-                    cout << "* Not adding '" << spec << "'" << endl;
+                    if (cmdline.a_block.specified())
+                        cout << "* Not removing '" << spec << "'" << endl;
+                    else
+                        cout << "* Not adding '" << spec << "'" << endl;
                 }
             }
         }
