@@ -89,7 +89,6 @@ namespace
         args::ArgsGroup g_general_options;
         args::SwitchArg a_pretend;
         args::SwitchArg a_set;
-        args::SwitchArg a_block;
 
         ResolveCommandLineExecutionOptions execution_options;
         ResolveCommandLineProgramOptions program_options;
@@ -99,7 +98,6 @@ namespace
             g_general_options(main_options_section(), "General Options", "General options."),
             a_pretend(&g_general_options, "pretend", '\0', "Only carry out the pretend action", false),
             a_set(&g_general_options, "set", '\0', "Our target is a set rather than package specs", false),
-            a_block(&g_general_options, "block", '\0', "Our target contains block rather than package specs", false),
             execution_options(this),
             program_options(this),
             import_options(this)
@@ -712,23 +710,24 @@ namespace
         }
     };
 
-    int execute_update_world(
+    void update_world(
             const std::tr1::shared_ptr<Environment> & env,
-            const ResolverLists &,
-            const ExecuteResolutionCommandLine & cmdline)
+            const ExecuteResolutionCommandLine & cmdline,
+            const bool removes)
     {
-        if (cmdline.execution_options.a_preserve_world.specified())
-            return 0;
-
-        cout << endl << c::bold_green() << "Updating world" << c::normal() << endl << endl;
-
         std::string command(cmdline.program_options.a_update_world_program.argument());
         if (command.empty())
             command = "$CAVE update-world";
 
+        if (removes)
+            command.append(" --remove");
+
         bool any(false);
         if (cmdline.a_set.specified())
         {
+            if (removes)
+                return;
+
             command.append(" --set");
             for (args::ArgsHandler::ParametersConstIterator a(cmdline.begin_parameters()),
                     a_end(cmdline.end_parameters()) ;
@@ -748,9 +747,6 @@ namespace
         }
         else
         {
-            if (cmdline.a_block.specified())
-                command.append(" --remove");
-
             for (args::ArgsHandler::ParametersConstIterator a(cmdline.begin_parameters()),
                     a_end(cmdline.end_parameters()) ;
                     a != a_end ; ++a)
@@ -759,8 +755,17 @@ namespace
                 if (aa.empty())
                     continue;
 
-                if (cmdline.a_block.specified())
+                if ('!' == aa.at(0))
+                {
+                    if (! removes)
+                        continue;
                     aa.erase(0, 1);
+                }
+                else
+                {
+                    if (removes)
+                        continue;
+                }
 
                 PackageDepSpec spec(parse_user_package_dep_spec(aa, env.get(), UserPackageDepSpecOptions()));
                 if (package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
@@ -779,7 +784,7 @@ namespace
                                 )))
                 {
                     any = true;
-                    if (cmdline.a_block.specified())
+                    if (removes)
                         cout << "* Removing '" << spec << "'" << endl;
                     else
                         cout << "* Adding '" << spec << "'" << endl;
@@ -787,7 +792,7 @@ namespace
                 }
                 else
                 {
-                    if (cmdline.a_block.specified())
+                    if (removes)
                         cout << "* Not removing '" << spec << "'" << endl;
                     else
                         cout << "* Not adding '" << spec << "'" << endl;
@@ -801,8 +806,20 @@ namespace
             if (0 != run_command(cmd))
                 throw ActionAbortedError("Updating world failed");
         }
+    }
 
-        return 0;
+    void execute_update_world(
+            const std::tr1::shared_ptr<Environment> & env,
+            const ResolverLists &,
+            const ExecuteResolutionCommandLine & cmdline)
+    {
+        if (cmdline.execution_options.a_preserve_world.specified())
+            return;
+
+        cout << endl << c::bold_green() << "Updating world" << c::normal() << endl << endl;
+
+        update_world(env, cmdline, true);
+        update_world(env, cmdline, false);
     }
 
     struct Populator
@@ -1096,7 +1113,7 @@ namespace
         if (0 != retcode)
             return retcode;
 
-        retcode |= execute_update_world(env, lists, cmdline);
+        execute_update_world(env, lists, cmdline);
         return retcode;
     }
 

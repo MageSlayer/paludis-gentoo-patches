@@ -415,8 +415,7 @@ namespace
             const ResolveCommandLineResolutionOptions &,
             const std::tr1::shared_ptr<const Sequence<std::string> > & targets,
             PackageDepSpecList & allowed_to_remove_specs,
-            bool & is_set,
-            bool & is_block)
+            bool & is_set)
     {
         Context context("When adding targets from commandline:");
 
@@ -461,8 +460,6 @@ namespace
 
         if (seen_sets)
             is_set = true;
-        if (seen_blockers)
-            is_block = true;
     }
 
     UseExisting use_existing_from_cmdline(const args::EnumArg & a, const bool is_set)
@@ -1010,8 +1007,7 @@ namespace
             const ResolveCommandLineProgramOptions & program_options,
             const std::tr1::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
             const std::tr1::shared_ptr<const Sequence<std::string> > & targets,
-            const bool is_set,
-            const bool is_block) PALUDIS_ATTRIBUTE((noreturn));
+            const bool is_set) PALUDIS_ATTRIBUTE((noreturn));
 
     void perform_resolution(
             const std::tr1::shared_ptr<Environment> &,
@@ -1021,8 +1017,7 @@ namespace
             const ResolveCommandLineProgramOptions & program_options,
             const std::tr1::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
             const std::tr1::shared_ptr<const Sequence<std::string> > & targets,
-            const bool is_set,
-            const bool is_block)
+            const bool is_set)
     {
         Context context("When performing chosen resolution:");
 
@@ -1050,9 +1045,6 @@ namespace
 
         if (is_set)
             command.append(" --set");
-
-        if (is_block)
-            command.append(" --block");
 
         for (args::ArgsSection::GroupsConstIterator g(program_options.begin()), g_end(program_options.end()) ;
                 g != g_end ; ++g)
@@ -1217,7 +1209,7 @@ paludis::cave::resolve_common(
 
     ScopedSelectionCache selection_cache(env.get());
     std::tr1::shared_ptr<Resolver> resolver(new Resolver(env.get(), resolver_functions));
-    bool is_set(false), is_block(false);
+    bool is_set(false);
     std::list<SuggestRestart> restarts;
 
     try
@@ -1232,7 +1224,7 @@ paludis::cave::resolve_common(
                 try
                 {
                     add_resolver_targets(env, resolver, resolution_options, targets,
-                            allowed_to_remove_specs, is_set, is_block);
+                            allowed_to_remove_specs, is_set);
                     resolver->resolve();
                     break;
                 }
@@ -1261,7 +1253,7 @@ paludis::cave::resolve_common(
 
         if (0 == retcode)
             perform_resolution(env, *resolver->lists(), resolution_options,
-                    execution_options, program_options, keys_if_import, targets, is_set, is_block);
+                    execution_options, program_options, keys_if_import, targets, is_set);
     }
     catch (...)
     {
