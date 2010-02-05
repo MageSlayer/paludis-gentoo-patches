@@ -1242,6 +1242,11 @@ paludis::cave::resolve_common(
                                     env.get(), resolution_options, e.resolvent()))).first->second->add(
                             e.suggested_preset());
                     resolver = make_shared_ptr(new Resolver(env.get(), resolver_functions));
+
+                    if (restarts.size() > 9000)
+                        throw InternalError(PALUDIS_HERE, "Restarted over nine thousand times. Something's "
+                                "probably gone horribly wrong. Consider using --dump-restarts and having "
+                                "a look.");
                 }
             }
         }
