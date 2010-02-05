@@ -422,7 +422,7 @@ namespace
         if (targets->empty())
             throw args::DoHelp("Must specify at least one target");
 
-        bool seen_sets(false), seen_packages(false), seen_blockers(false);
+        bool seen_sets(false), seen_packages(false);
         for (Sequence<std::string>::ConstIterator p(targets->begin()), p_end(targets->end()) ;
                 p != p_end ; ++p)
         {
@@ -433,7 +433,7 @@ namespace
             {
                 if ('!' == p->at(0))
                 {
-                    seen_blockers = true;
+                    seen_packages = true;
                     PackageDepSpec s(parse_user_package_dep_spec(p->substr(1), env.get(), UserPackageDepSpecOptions()));
                     resolver->add_target(BlockDepSpec(*p, s, false));
                     allowed_to_remove_specs.push_back(s);
@@ -455,8 +455,8 @@ namespace
             }
         }
 
-        if (seen_sets + seen_packages + seen_blockers > 1)
-            throw args::DoHelp("Targets must be either packages or blockers or a single set");
+        if (seen_sets + seen_packages > 1)
+            throw args::DoHelp("Cannot specify set and non-set targets simultaneously");
 
         if (seen_sets)
             is_set = true;
