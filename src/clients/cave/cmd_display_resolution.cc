@@ -621,6 +621,15 @@ namespace
         display_one_installish(env, cmdline, *job.changes_to_make_decision(), job.resolution());
     }
 
+    void display_one_uninstall(
+            const std::tr1::shared_ptr<Environment> &,
+            const DisplayResolutionCommandLine &,
+            const UninstallJob & job)
+    {
+        cout << "<   " << c::bold_green() << job.resolution()->resolvent() << c::normal() << endl;
+        display_reasons(job.resolution());
+    }
+
     void display_special_job_decision(
             const std::tr1::shared_ptr<Environment> &,
             const DisplayResolutionCommandLine &,
@@ -711,6 +720,12 @@ namespace
             return true;
         }
 
+        bool visit(const UninstallJob & job)
+        {
+            display_one_uninstall(env, cmdline, job);
+            return true;
+        }
+
         bool visit(const UsableJob & job, const bool indent = false)
         {
             if (! all)
@@ -754,6 +769,11 @@ namespace
         const std::string visit(const SimpleInstallJob & j) const
         {
             return "install " + stringify(*j.changes_to_make_decision()->origin_id());
+        }
+
+        const std::string visit(const UninstallJob & j) const
+        {
+            return "uninstall " + stringify(j.resolution()->resolvent());
         }
 
         const std::string visit(const UsableJob & j) const

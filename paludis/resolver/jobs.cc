@@ -76,6 +76,11 @@ namespace
             jobs_list_by_resolvent_index.insert(std::make_pair(j.resolution()->resolvent(), i));
         }
 
+        void visit(const UninstallJob & j)
+        {
+            jobs_list_by_resolvent_index.insert(std::make_pair(j.resolution()->resolvent(), i));
+        }
+
         void visit(const UsableGroupJob &)
         {
         }
@@ -120,6 +125,11 @@ namespace
             return true;
         }
 
+        bool visit(const UninstallJob &) const
+        {
+            return true;
+        }
+
         bool visit(const UsableJob &) const
         {
             return false;
@@ -141,6 +151,11 @@ namespace
         bool visit(const FetchJob &) const
         {
             return false;
+        }
+
+        bool visit(const UninstallJob &) const
+        {
+            return true;
         }
 
         bool visit(const ErrorJob &) const

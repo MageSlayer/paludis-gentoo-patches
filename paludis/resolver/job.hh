@@ -39,7 +39,7 @@ namespace paludis
     {
         class PALUDIS_VISIBLE Job :
             public virtual DeclareAbstractAcceptMethods<Job, MakeTypeList<
-                UsableJob, UsableGroupJob, SimpleInstallJob, FetchJob, ErrorJob>::Type>
+                UsableJob, UsableGroupJob, SimpleInstallJob, UninstallJob, FetchJob, ErrorJob>::Type>
         {
             public:
                 virtual ~Job() = 0;
@@ -183,6 +183,37 @@ namespace paludis
                 virtual void serialise(Serialiser &) const;
         };
 
+        class PALUDIS_VISIBLE UninstallJob :
+            public Job,
+            public ImplementAcceptMethods<Job, UninstallJob>,
+            private PrivateImplementationPattern<UninstallJob>
+        {
+            public:
+                UninstallJob(
+                        const std::tr1::shared_ptr<const Resolution> &,
+                        const std::tr1::shared_ptr<const RemoveDecision> &);
+                ~UninstallJob();
+
+                virtual const JobID id() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<const ArrowSequence> arrows()
+                    const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<ArrowSequence> arrows()
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<const JobIDSequence> used_existing_packages_when_ordering()
+                    const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering()
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const std::tr1::shared_ptr<const Resolution> resolution() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::tr1::shared_ptr<const RemoveDecision> remove_decision() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual void serialise(Serialiser &) const;
+        };
+
         class PALUDIS_VISIBLE ErrorJob :
             public Job,
             public ImplementAcceptMethods<Job, ErrorJob>,
@@ -220,6 +251,7 @@ namespace paludis
     extern template class PrivateImplementationPattern<resolver::UsableGroupJob>;
     extern template class PrivateImplementationPattern<resolver::FetchJob>;
     extern template class PrivateImplementationPattern<resolver::SimpleInstallJob>;
+    extern template class PrivateImplementationPattern<resolver::UninstallJob>;
     extern template class PrivateImplementationPattern<resolver::ErrorJob>;
 #endif
 }

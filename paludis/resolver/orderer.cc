@@ -453,6 +453,10 @@ namespace
             add_dep_arrows(true, c.resolution());
         }
 
+        void visit(const UninstallJob &)
+        {
+        }
+
         void visit(const UsableGroupJob &)
         {
         }

@@ -549,6 +549,11 @@ namespace
         {
             return j.resolution();
         }
+
+        std::tr1::shared_ptr<const Resolution> visit(const UninstallJob & j) const
+        {
+            return j.resolution();
+        }
     };
 
     template <>

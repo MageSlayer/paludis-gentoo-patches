@@ -361,6 +361,14 @@ namespace
             ++y_installs;
         }
 
+        void visit(const UninstallJob &)
+        {
+            /* we'll count uninstalls as installs for now. this might be
+             * confusing, or it might make most sense. if you're reading this,
+             * chances are you think it's the wrong thing to do. */
+            ++y_installs;
+        }
+
         void visit(const FetchJob &)
         {
             ++y_fetches;
@@ -443,6 +451,18 @@ namespace
                 state = succeeded_state;
                 return true;
             }
+        }
+
+        bool visit(const UninstallJob &)
+        {
+            std::tr1::shared_ptr<OutputManager> uninstall_output_manager_goes_here;
+
+            ++counts.x_installs;
+
+            /* don't support uninstalls yet */
+            std::tr1::shared_ptr<JobFailedState> failed_state(new JobFailedState(state->job()));
+            state = failed_state;
+            return false;
         }
 
         bool visit(const FetchJob & job)
@@ -530,6 +550,18 @@ namespace
             cout << endl;
             cout << c::bold_blue() << counts.x_installs << " of " << counts.y_installs << ": Skipping install of "
                 << *job.changes_to_make_decision()->origin_id() << c::normal() << endl;
+            cout << endl;
+
+            state.reset(new JobSkippedState(state->job()));
+        }
+
+        void visit(const UninstallJob & job)
+        {
+            ++counts.x_installs;
+
+            cout << endl;
+            cout << c::bold_blue() << counts.x_installs << " of " << counts.y_installs << ": Skipping uninstall of "
+                << job.resolution()->resolvent() << c::normal() << endl;
             cout << endl;
 
             state.reset(new JobSkippedState(state->job()));
@@ -676,6 +708,11 @@ namespace
         }
 
         void visit(const SimpleInstallJob &) const
+        {
+            common();
+        }
+
+        void visit(const UninstallJob &) const
         {
             common();
         }
@@ -852,6 +889,11 @@ namespace
                     output_manager_goes_here);
         }
 
+        bool visit(const UninstallJob &) const
+        {
+            return true;
+        }
+
         bool visit(const ErrorJob &) const
         {
             return true;
@@ -972,6 +1014,15 @@ namespace
                 summary();
                 cout << colour << state << c::normal() << *job.changes_to_make_decision()->origin_id()
                     << " to " << job.changes_to_make_decision()->destination()->repository() << endl;
+            }
+        }
+
+        void visit(const UninstallJob & job) const
+        {
+            if (want_to_flush || something_failed)
+            {
+                summary();
+                cout << colour << state << c::normal() << "uninstall " << job.resolution()->resolvent() << endl;
             }
         }
 

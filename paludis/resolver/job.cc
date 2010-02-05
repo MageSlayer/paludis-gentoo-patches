@@ -101,6 +101,24 @@ namespace paludis
     };
 
     template <>
+    struct Implementation<UninstallJob>
+    {
+        const std::tr1::shared_ptr<const Resolution> resolution;
+        const std::tr1::shared_ptr<const RemoveDecision> decision;
+        const std::tr1::shared_ptr<ArrowSequence> arrows;
+        const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering;
+
+        Implementation(const std::tr1::shared_ptr<const Resolution> & r,
+                const std::tr1::shared_ptr<const RemoveDecision> & d) :
+            resolution(r),
+            decision(d),
+            arrows(new ArrowSequence),
+            used_existing_packages_when_ordering(new JobIDSequence)
+        {
+        }
+    };
+
+    template <>
     struct Implementation<ErrorJob>
     {
         const std::tr1::shared_ptr<const Resolution> resolution;
@@ -177,6 +195,16 @@ Job::deserialise(Deserialisation & d)
         result.reset(new SimpleInstallJob(
                     v.member<std::tr1::shared_ptr<Resolution> >("resolution"),
                     v.member<std::tr1::shared_ptr<ChangesToMakeDecision> >("changes_to_make_decision")
+                    ));
+        do_arrows(result, v);
+        do_existing(result, v);
+    }
+    else if (d.class_name() == "UninstallJob")
+    {
+        Deserialisator v(d, "UninstallJob");
+        result.reset(new UninstallJob(
+                    v.member<std::tr1::shared_ptr<Resolution> >("resolution"),
+                    v.member<std::tr1::shared_ptr<RemoveDecision> >("remove_decision")
                     ));
         do_arrows(result, v);
         do_existing(result, v);
@@ -463,6 +491,72 @@ SimpleInstallJob::serialise(Serialiser & s) const
         ;
 }
 
+UninstallJob::UninstallJob(const std::tr1::shared_ptr<const Resolution> & r,
+        const std::tr1::shared_ptr<const RemoveDecision> & d) :
+    PrivateImplementationPattern<UninstallJob>(new Implementation<UninstallJob>(r, d))
+{
+}
+
+UninstallJob::~UninstallJob()
+{
+}
+
+const std::tr1::shared_ptr<const Resolution>
+UninstallJob::resolution() const
+{
+    return _imp->resolution;
+}
+
+const std::tr1::shared_ptr<const RemoveDecision>
+UninstallJob::remove_decision() const
+{
+    return _imp->decision;
+}
+
+const std::tr1::shared_ptr<const ArrowSequence>
+UninstallJob::arrows() const
+{
+    return _imp->arrows;
+}
+
+const std::tr1::shared_ptr<ArrowSequence>
+UninstallJob::arrows()
+{
+    return _imp->arrows;
+}
+
+const std::tr1::shared_ptr<const JobIDSequence>
+UninstallJob::used_existing_packages_when_ordering() const
+{
+    return _imp->used_existing_packages_when_ordering;
+}
+
+const std::tr1::shared_ptr<JobIDSequence>
+UninstallJob::used_existing_packages_when_ordering()
+{
+    return _imp->used_existing_packages_when_ordering;
+}
+
+const JobID
+UninstallJob::id() const
+{
+    return make_named_values<JobID>(
+            value_for<n::string_id>("install:" + stringify(resolution()->resolvent()))
+            );
+}
+
+void
+UninstallJob::serialise(Serialiser & s) const
+{
+    s.object("UninstallJob")
+        .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "arrows", arrows())
+        .member(SerialiserFlags<serialise::might_be_null>(), "remove_decision", remove_decision())
+        .member(SerialiserFlags<serialise::might_be_null>(), "resolution", resolution())
+        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(),
+                "used_existing_packages_when_ordering", used_existing_packages_when_ordering())
+        ;
+}
+
 ErrorJob::ErrorJob(const std::tr1::shared_ptr<const Resolution> & r, const std::tr1::shared_ptr<const UnableToMakeDecision> & d) :
     PrivateImplementationPattern<ErrorJob>(new Implementation<ErrorJob>(r, d))
 {
@@ -527,9 +621,11 @@ ErrorJob::unable_to_make_decision() const
 {
     return _imp->decision;
 }
+
 template class PrivateImplementationPattern<resolver::UsableJob>;
 template class PrivateImplementationPattern<resolver::UsableGroupJob>;
 template class PrivateImplementationPattern<resolver::FetchJob>;
 template class PrivateImplementationPattern<resolver::SimpleInstallJob>;
 template class PrivateImplementationPattern<resolver::ErrorJob>;
+template class PrivateImplementationPattern<resolver::UninstallJob>;
 
