@@ -55,6 +55,84 @@ namespace paludis
     template <>
 #endif
     template <typename C_>
+    struct Implementation<FakeMetadataValueKey<C_> >
+    {
+        const std::string raw_name;
+        const std::string human_name;
+        const MetadataKeyType type;
+        C_ value;
+
+        Implementation(const std::string & r, const std::string & h, const MetadataKeyType t, const C_ & c) :
+            raw_name(r),
+            human_name(h),
+            type(t),
+            value(c)
+        {
+        }
+    };
+}
+
+template <typename C_>
+FakeMetadataValueKey<C_>::FakeMetadataValueKey(
+        const std::string & r, const std::string & h, const MetadataKeyType t, const C_ & c) :
+    PrivateImplementationPattern<FakeMetadataValueKey<C_> >(new Implementation<FakeMetadataValueKey<C_> >(r, h, t, c)),
+    _imp(PrivateImplementationPattern<FakeMetadataValueKey<C_> >::_imp)
+{
+}
+
+template <typename C_>
+FakeMetadataValueKey<C_>::~FakeMetadataValueKey()
+{
+}
+
+template <typename C_>
+const C_
+FakeMetadataValueKey<C_>::value() const
+{
+    return this->_imp->value;
+}
+
+template <typename C_>
+const std::string
+FakeMetadataValueKey<C_>::raw_name() const
+{
+    return this->_imp->raw_name;
+}
+
+template <typename C_>
+const std::string
+FakeMetadataValueKey<C_>::human_name() const
+{
+    return this->_imp->human_name;
+}
+
+template <typename C_>
+MetadataKeyType
+FakeMetadataValueKey<C_>::type() const
+{
+    return this->_imp->type;
+}
+
+template <typename C_>
+std::string
+FakeMetadataValueKey<C_>::pretty_print() const
+{
+    return stringify(value());
+}
+
+template <typename C_>
+void
+FakeMetadataValueKey<C_>::set_value(const C_ & c)
+{
+    this->_imp->value = c;
+}
+
+namespace paludis
+{
+#ifndef PALUDIS_NO_DOUBLE_TEMPLATE
+    template <>
+#endif
+    template <typename C_>
     struct Implementation<FakeMetadataCollectionKey<C_> >
     {
         std::tr1::shared_ptr<C_> collection;
@@ -641,6 +719,7 @@ namespace paludis
         std::tr1::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> > src_uri;
         std::tr1::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> > homepage;
         std::tr1::shared_ptr<FakeMetadataChoicesKey> choices;
+        std::tr1::shared_ptr<FakeMetadataValueKey<bool> > transient;
 
         std::tr1::shared_ptr<Mask> unsupported_mask;
         mutable bool has_masks;
@@ -957,6 +1036,9 @@ FakePackageID::need_keys_added() const
 
         _imp->choices.reset(new FakeMetadataChoicesKey(_imp->env, shared_from_this()));
 
+        _imp->transient.reset(new FakeMetadataValueKey<bool>("TRANSIENT", "Transient",
+                    mkt_internal, false));
+
         add_metadata_key(_imp->slot);
         add_metadata_key(_imp->build_dependencies);
         add_metadata_key(_imp->run_dependencies);
@@ -967,6 +1049,7 @@ FakePackageID::need_keys_added() const
         add_metadata_key(_imp->provide);
         add_metadata_key(_imp->license);
         add_metadata_key(_imp->choices);
+        add_metadata_key(_imp->transient);
     }
 }
 
@@ -1216,7 +1299,15 @@ FakePackageID::size_of_all_distfiles_key() const
 const std::tr1::shared_ptr<const MetadataValueKey<bool> >
 FakePackageID::transient_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<bool> >();
+    need_keys_added();
+    return _imp->transient;
+}
+
+const std::tr1::shared_ptr<FakeMetadataValueKey<bool> >
+FakePackageID::transient_key()
+{
+    need_keys_added();
+    return _imp->transient;
 }
 
 char
@@ -1278,4 +1369,6 @@ template class FakeMetadataSpecTreeKey<DependencySpecTree>;
 template class FakeMetadataSpecTreeKey<SimpleURISpecTree>;
 
 template class FakeMetadataCollectionKey<KeywordNameSet>;
+
+template class FakeMetadataValueKey<bool>;
 

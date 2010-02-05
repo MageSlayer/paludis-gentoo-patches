@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,6 +29,31 @@
 namespace paludis
 {
     class FakeRepositoryBase;
+
+    template <typename C_>
+    class PALUDIS_VISIBLE FakeMetadataValueKey :
+        public MetadataValueKey<C_>,
+        private PrivateImplementationPattern<FakeMetadataValueKey<C_> >
+    {
+        protected:
+            typename PrivateImplementationPattern<FakeMetadataValueKey<C_> >::ImpPtr & _imp;
+
+        public:
+            FakeMetadataValueKey(const std::string &, const std::string &, const MetadataKeyType,
+                    const C_ &);
+
+            ~FakeMetadataValueKey();
+
+            virtual const C_ value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            void set_value(const C_ &);
+
+            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::string pretty_print() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
 
     template <typename C_>
     class PALUDIS_VISIBLE FakeMetadataCollectionKey :
@@ -282,6 +307,7 @@ namespace paludis
             const std::tr1::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> > fetches_key();
             const std::tr1::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> > homepage_key();
             const std::tr1::shared_ptr<FakeMetadataChoicesKey> choices_key();
+            const std::tr1::shared_ptr<FakeMetadataValueKey<bool> > transient_key();
 
             void set_slot(const SlotName &);
 
