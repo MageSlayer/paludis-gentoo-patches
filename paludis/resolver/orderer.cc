@@ -229,6 +229,11 @@ namespace
                 lists->untaken_error_job_ids()->push_back(error_job->id());
             }
         }
+
+        void visit(const RemoveDecision &) PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "remove decision");
+        }
     };
 }
 

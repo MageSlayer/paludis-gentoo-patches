@@ -35,7 +35,8 @@ namespace paludis
     {
         class PALUDIS_VISIBLE Decision :
             public virtual DeclareAbstractAcceptMethods<Decision, MakeTypeList<
-                NothingNoChangeDecision, ExistingNoChangeDecision, ChangesToMakeDecision, UnableToMakeDecision>::Type>
+                NothingNoChangeDecision, ExistingNoChangeDecision, ChangesToMakeDecision,
+                RemoveDecision, UnableToMakeDecision>::Type>
         {
             public:
                 virtual ~Decision() = 0;
@@ -123,6 +124,23 @@ namespace paludis
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
+        class PALUDIS_VISIBLE RemoveDecision :
+            public Decision,
+            public ImplementAcceptMethods<Decision, RemoveDecision>,
+            private PrivateImplementationPattern<RemoveDecision>
+        {
+            public:
+                RemoveDecision(const bool taken);
+                ~RemoveDecision();
+
+                virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual void serialise(Serialiser &) const;
+
+                static const std::tr1::shared_ptr<RemoveDecision> deserialise(
+                        Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+
         class PALUDIS_VISIBLE UnableToMakeDecision :
             public Decision,
             public ImplementAcceptMethods<Decision, UnableToMakeDecision>,
@@ -151,6 +169,7 @@ namespace paludis
     extern template class PrivateImplementationPattern<resolver::ExistingNoChangeDecision>;
     extern template class PrivateImplementationPattern<resolver::ChangesToMakeDecision>;
     extern template class PrivateImplementationPattern<resolver::UnableToMakeDecision>;
+    extern template class PrivateImplementationPattern<resolver::RemoveDecision>;
 #endif
 
 }

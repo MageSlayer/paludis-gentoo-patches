@@ -68,6 +68,10 @@ Decision::deserialise(Deserialisation & d)
     {
         return UnableToMakeDecision::deserialise(d);
     }
+    else if (d.class_name() == "RemoveDecision")
+    {
+        return RemoveDecision::deserialise(d);
+    }
     else
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 }
@@ -96,6 +100,16 @@ UnableToMakeDecision::deserialise(Deserialisation & d)
 
     return make_shared_ptr(new UnableToMakeDecision(
                 unsuitable_candidates,
+                v.member<bool>("taken")
+                ));
+}
+
+const std::tr1::shared_ptr<RemoveDecision>
+RemoveDecision::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "RemoveDecision");
+
+    return make_shared_ptr(new RemoveDecision(
                 v.member<bool>("taken")
                 ));
 }
@@ -355,8 +369,50 @@ UnableToMakeDecision::serialise(Serialiser & s) const
         ;
 }
 
+namespace paludis
+{
+    template <>
+    struct Implementation<RemoveDecision>
+    {
+        const bool taken;
+
+        Implementation(const bool t) :
+            taken(t)
+        {
+        }
+    };
+}
+
+RemoveDecision::RemoveDecision(const bool t) :
+    PrivateImplementationPattern<RemoveDecision>(new Implementation<RemoveDecision>(t))
+{
+}
+
+#ifdef PALUDIS_HAVE_DEFAULT_DELETED
+RemoveDecision::~RemoveDecision() = default;
+#else
+RemoveDecision::~RemoveDecision()
+{
+}
+#endif
+
+bool
+RemoveDecision::taken() const
+{
+    return _imp->taken;
+}
+
+void
+RemoveDecision::serialise(Serialiser & s) const
+{
+    s.object("RemoveDecision")
+        .member(SerialiserFlags<>(), "taken", taken())
+        ;
+}
+
 template class PrivateImplementationPattern<NothingNoChangeDecision>;
 template class PrivateImplementationPattern<ExistingNoChangeDecision>;
 template class PrivateImplementationPattern<ChangesToMakeDecision>;
 template class PrivateImplementationPattern<UnableToMakeDecision>;
+template class PrivateImplementationPattern<RemoveDecision>;
 

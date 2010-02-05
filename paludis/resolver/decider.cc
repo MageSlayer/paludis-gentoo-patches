@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -156,6 +156,10 @@ namespace
 
         DoDestinationIfNecessaryVisitor(const MakeDestinationFunc & f) :
             make_destination_for(f)
+        {
+        }
+
+        void visit(RemoveDecision &)
         {
         }
 
@@ -388,26 +392,57 @@ Decider::_apply_resolution_constraint(
 
 namespace
 {
-    struct ChosenIDVisitor
+    struct CheckConstraintVisitor
     {
-        const std::tr1::shared_ptr<const PackageID> visit(const ChangesToMakeDecision & decision) const
+        const Environment * const env;
+        const Constraint constraint;
+
+        CheckConstraintVisitor(const Environment * const e, const Constraint & c) :
+            env(e),
+            constraint(c)
         {
-            return decision.origin_id();
         }
 
-        const std::tr1::shared_ptr<const PackageID> visit(const ExistingNoChangeDecision & decision) const
+        bool ok(const std::tr1::shared_ptr<const PackageID> & chosen_id) const
         {
-            return decision.existing_id();
+            if (constraint.spec().if_package())
+            {
+                if (! match_package(*env, *constraint.spec().if_package(), *chosen_id, MatchPackageOptions()))
+                    return false;
+            }
+            else
+            {
+                if (match_package(*env, constraint.spec().if_block()->blocking(),
+                            *chosen_id, MatchPackageOptions()))
+                    return false;
+            }
+
+            return true;
         }
 
-        const std::tr1::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
+        bool visit(const ChangesToMakeDecision & decision) const
         {
-            return make_null_shared_ptr();
+            return ok(decision.origin_id());
         }
 
-        const std::tr1::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
+        bool visit(const ExistingNoChangeDecision & decision) const
         {
-            return make_null_shared_ptr();
+            return ok(decision.existing_id());
+        }
+
+        bool visit(const NothingNoChangeDecision &) const
+        {
+            return constraint.nothing_is_fine_too();
+        }
+
+        bool visit(const UnableToMakeDecision &) const
+        {
+            return constraint.nothing_is_fine_too();
+        }
+
+        bool visit(const RemoveDecision &) const
+        {
+            return constraint.nothing_is_fine_too();
         }
     };
 
@@ -464,6 +499,11 @@ namespace
         {
             return true;
         }
+
+        bool visit(const RemoveDecision &) const
+        {
+            return true;
+        }
     };
 }
 
@@ -472,28 +512,8 @@ Decider::_check_constraint(const Resolvent &,
         const std::tr1::shared_ptr<const Constraint> & constraint,
         const std::tr1::shared_ptr<const Decision> & decision) const
 {
-    const std::tr1::shared_ptr<const PackageID> chosen_id(decision->accept_returning<
-            std::tr1::shared_ptr<const PackageID> >(ChosenIDVisitor()));
-
-    if (chosen_id)
-    {
-        if (constraint->spec().if_package())
-        {
-            if (! match_package(*_imp->env, *constraint->spec().if_package(), *chosen_id, MatchPackageOptions()))
-                return false;
-        }
-        else
-        {
-            if (match_package(*_imp->env, constraint->spec().if_block()->blocking(),
-                        *chosen_id, MatchPackageOptions()))
-                return false;
-        }
-    }
-    else
-    {
-        if (! constraint->nothing_is_fine_too())
-            return false;
-    }
+    if (! decision->accept_returning<bool>(CheckConstraintVisitor(_imp->env, *constraint)))
+        return false;
 
     if (! decision->accept_returning<bool>(CheckUseExistingVisitor(constraint)))
         return false;
@@ -529,6 +549,11 @@ namespace
         void visit(const NothingNoChangeDecision &) const
         {
             /* going from nothing to something is fine */
+        }
+
+        void visit(const RemoveDecision &) const
+        {
+            restart();
         }
 
         void visit(const UnableToMakeDecision &) const
@@ -639,6 +664,11 @@ namespace
             return make_null_shared_ptr();
         }
 
+        const std::tr1::shared_ptr<const PackageID> visit(const RemoveDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+
         const std::tr1::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
         {
             return make_null_shared_ptr();
@@ -731,6 +761,37 @@ const std::tr1::shared_ptr<Constraints>
 Decider::_initial_constraints_for(const Resolvent & r) const
 {
     return _imp->fns.get_initial_constraints_for_fn()(r);
+}
+
+namespace
+{
+    struct ChosenIDVisitor
+    {
+        const std::tr1::shared_ptr<const PackageID> visit(const ChangesToMakeDecision & decision) const
+        {
+            return decision.origin_id();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const ExistingNoChangeDecision & decision) const
+        {
+            return decision.existing_id();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const RemoveDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+    };
 }
 
 std::pair<AnyChildScore, OperatorScore>

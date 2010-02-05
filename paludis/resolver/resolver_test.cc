@@ -349,6 +349,11 @@ namespace
             return decision.existing_id();
         }
 
+        const std::tr1::shared_ptr<const PackageID> visit(const RemoveDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+
         const std::tr1::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
         {
             return make_null_shared_ptr();
@@ -365,6 +370,11 @@ namespace
         const std::string visit(const UnableToMakeDecision &) const
         {
             return "unable_to_make_decision";
+        }
+
+        const std::string visit(const RemoveDecision &) const
+        {
+            return "remove_decision";
         }
 
         const std::string visit(const NothingNoChangeDecision &) const

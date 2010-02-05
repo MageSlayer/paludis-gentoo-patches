@@ -760,6 +760,11 @@ namespace
             throw InternalError(PALUDIS_HERE, "UnableToMakeDecision shouldn't have deps");
         }
 
+        bool visit(const RemoveDecision &) const PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "RemoveDecision shouldn't have deps");
+        }
+
         bool visit(const ChangesToMakeDecision &) const
         {
             if (is_enabled_dep(dep))
@@ -1059,6 +1064,11 @@ namespace
             return make_null_shared_ptr();
         }
 
+        const std::tr1::shared_ptr<const PackageID> visit(const RemoveDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+
         const std::tr1::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
         {
             return make_null_shared_ptr();
@@ -1067,6 +1077,11 @@ namespace
 
     struct KindNameVisitor
     {
+        const std::string visit(const RemoveDecision &) const
+        {
+            return "remove_decision";
+        }
+
         const std::string visit(const UnableToMakeDecision &) const
         {
             return "unable_to_make_decision";

@@ -183,6 +183,11 @@ namespace
             return make_null_shared_ptr();
         }
 
+        const std::tr1::shared_ptr<const PackageID> visit(const RemoveDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+
         const std::tr1::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
         {
             return make_null_shared_ptr();
@@ -274,6 +279,12 @@ namespace
         {
             cout << "    The decision made was:" << endl;
             cout << "        Use existing ID " << *d.existing_id() << endl;
+        }
+
+        void visit(const RemoveDecision &) const
+        {
+            cout << "    The decision made was:" << endl;
+            cout << "        Remove existing IDs" << endl;
         }
 
         void visit(const NothingNoChangeDecision &) const
