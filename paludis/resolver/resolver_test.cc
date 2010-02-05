@@ -38,6 +38,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_copy.hh>
+#include <paludis/util/set-impl.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/package_database.hh>
@@ -245,14 +246,17 @@ paludis::resolver::resolver_test::find_repository_for_fn(
 }
 
 bool
-paludis::resolver::resolver_test::allowed_to_remove_fn(const std::tr1::shared_ptr<const PackageID> &)
+paludis::resolver::resolver_test::allowed_to_remove_fn(
+        const std::tr1::shared_ptr<const QualifiedPackageNameSet> & s,
+        const std::tr1::shared_ptr<const PackageID> & i)
 {
-    return false;
+    return s->end() != s->find(i->name());
 }
 
 ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s, const std::string & e,
         const std::string & l) :
-    TestCase(s)
+    TestCase(s),
+    allowed_to_remove_names(new QualifiedPackageNameSet)
 {
     std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
     keys->insert("format", "exheres");
@@ -284,7 +288,7 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
                     value_for<n::environment>(&env),
                     value_for<n::name>(RepositoryName("fake-inst")),
                     value_for<n::suitable_destination>(true),
-                    value_for<n::supports_uninstall>(false)
+                    value_for<n::supports_uninstall>(true)
                     )));
     env.package_database()->add_repository(1, fake_inst_repo);
 
@@ -298,7 +302,8 @@ ResolverFunctions
 ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraints)
 {
     return make_named_values<ResolverFunctions>(
-            value_for<n::allowed_to_remove_fn>(&allowed_to_remove_fn),
+            value_for<n::allowed_to_remove_fn>(std::tr1::bind(&allowed_to_remove_fn,
+                    allowed_to_remove_names, std::tr1::placeholders::_1)),
             value_for<n::care_about_dep_fn>(&care_about_dep_fn),
             value_for<n::find_repository_for_fn>(std::tr1::bind(&find_repository_for_fn,
                     &env, std::tr1::placeholders::_1, std::tr1::placeholders::_2,

@@ -61,5 +61,25 @@ PLATFORMS="test"
 SLOT="0"
 END
 
+# remove
+echo 'remove' >> metadata/categories.conf
+
+mkdir -p 'packages/remove/target'
+cat <<END > packages/remove/target/target-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="
+    ( !remove/a-pkg )
+    "
+END
+
+mkdir -p 'packages/remove/a-pkg'
+cat <<END > packages/remove/a-pkg/a-pkg-2.exheres-0
+SUMMARY="dep"
+PLATFORMS="test"
+SLOT="0"
+END
+
 cd ..
 

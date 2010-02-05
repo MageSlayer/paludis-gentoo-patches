@@ -149,5 +149,47 @@ namespace test_cases
             }
         }
     } test_unfixable_blocker(false), test_unfixable_blocker_transient(true);
+
+    struct TestRemoveBlocker : ResolverBlockersTestCase
+    {
+        const bool transient;
+
+        TestRemoveBlocker(const bool t) :
+            ResolverBlockersTestCase("remove " + std::string(t ? " transient" : "")),
+            transient(t)
+        {
+            allowed_to_remove_names->insert(QualifiedPackageName("remove/a-pkg"));
+        }
+
+        void run()
+        {
+            install("remove", "a-pkg", "1")->transient_key()->set_value(transient);
+
+            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("remove/target"));
+
+            {
+                TestMessageSuffix s("taken errors");
+                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
+                        .finished()
+                        );
+            }
+
+            {
+                TestMessageSuffix s("untaken errors");
+                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
+                        .finished()
+                        );
+            }
+
+            {
+                TestMessageSuffix s("ordered");
+                check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
+                        .kind("remove_decision", QualifiedPackageName("remove/a-pkg"))
+                        .qpn(QualifiedPackageName("remove/target"))
+                        .finished()
+                        );
+            }
+        }
+    } test_remove_blocker(false), test_remove_blocker_transient(true);
 }
 
