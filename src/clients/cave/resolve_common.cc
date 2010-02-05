@@ -1179,6 +1179,12 @@ paludis::cave::resolve_common(
     InitialConstraints initial_constraints;
     PackageDepSpecList allowed_to_remove_specs;
 
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_uninstall.begin_args()),
+            i_end(resolution_options.a_permit_uninstall.end_args()) ;
+            i != i_end ; ++i)
+        allowed_to_remove_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
+                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
                 value_for<n::allowed_to_remove_fn>(std::tr1::bind(&allowed_to_remove_fn,
                         env.get(),

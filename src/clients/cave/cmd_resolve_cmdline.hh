@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -41,9 +41,9 @@ namespace paludis
             args::SwitchArg a_complete;
             args::SwitchArg a_everything;
 
-    //        args::ArgsGroup g_resolution_options;
-    //        args::SwitchArg a_permit_slot_uninstalls;
-    //        args::SwitchArg a_permit_uninstalls;
+            args::ArgsGroup g_resolution_options;
+    //        args::SwitchArg a_permit_older_slot_uninstalls;
+            args::StringSetArg a_permit_uninstall;
     //        args::SwitchArg a_permit_downgrades;
     //        args::SwitchArg a_permit_unsafe_uninstalls;
 

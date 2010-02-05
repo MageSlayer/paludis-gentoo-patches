@@ -52,11 +52,15 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
     a_complete(&g_convenience_options, "complete", 'c', "Do all optional work.", true),
     a_everything(&g_convenience_options, "everything", 'e', "Do all optional work, and also reinstall", true),
 
-//            g_resolution_options(this, "Resolution Options", "Resolution options."),
-//            a_permit_slot_uninstalls(&g_resolution_options, "permit-slot-uninstalls", '\0',
-//                    "Uninstall slots of packages if they are blocked by other slots of that package", true),
-//            a_permit_uninstalls(&g_resolution_options, "permit-uninstalls", '\0',
-//                    "Uninstall packages that are blocked", true),
+    g_resolution_options(this, "Resolution Options", "Resolution options."),
+//            a_permit_older_slot_uninstalls(&g_resolution_options, "permit-older-slot-uninstalls", '\0',
+//                    "Uninstall slots of packages if they are blocked by other slots of that package "
+//                    "with a newer version", true),
+    a_permit_uninstall(&g_resolution_options, "permit-uninstall", '\0',
+            "Permit uninstallation of packages matching the supplied specification, e.g. to resolve "
+            "blockers. May be specified multiple times. Use '*/*' to allow all uninstalls, but note "
+            "that the resolver will sometimes come up with extremely bad solutions to fixing blocks "
+            "and may suggest stupid and dangerous uninstalls."),
 //            a_permit_downgrades(&g_resolution_options, "permit-downgrades", '\0', "Permit downgrades", true),
 //            a_permit_unsafe_uninstalls(&g_resolution_options, "permit-unsafe-uninstalls", '\0',
 //                    "Permit uninstalls even if the uninstall isn't known to be safe", true),
