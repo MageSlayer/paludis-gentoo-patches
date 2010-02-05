@@ -191,5 +191,56 @@ namespace test_cases
             }
         }
     } test_remove_blocker(false), test_remove_blocker_transient(true);
+
+    struct TestTargetBlocker : ResolverBlockersTestCase
+    {
+        const bool exists;
+
+        TestTargetBlocker(const bool x) :
+            ResolverBlockersTestCase("target" + std::string(x ? " exists" : "")),
+            exists(x)
+        {
+            allowed_to_remove_names->insert(QualifiedPackageName("target/target"));
+        }
+
+        void run()
+        {
+            if (exists)
+                install("target", "target", "1");
+
+            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions(BlockDepSpec(
+                            "!target/target",
+                            parse_user_package_dep_spec("target/target", &env, UserPackageDepSpecOptions()),
+                            false)));
+
+            {
+                TestMessageSuffix s("taken errors");
+                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
+                        .finished()
+                        );
+            }
+
+            {
+                TestMessageSuffix s("untaken errors");
+                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
+                        .finished()
+                        );
+            }
+
+            {
+                TestMessageSuffix s("ordered");
+
+                if (exists)
+                    check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
+                            .kind("remove_decision", QualifiedPackageName("target/target"))
+                            .finished()
+                            );
+                else
+                    check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
+                            .finished()
+                            );
+            }
+        }
+    } test_target(false), test_target_exists(true);
 }
 
