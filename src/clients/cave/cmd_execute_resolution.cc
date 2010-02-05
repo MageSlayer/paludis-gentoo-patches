@@ -884,6 +884,9 @@ namespace
 
         bool visit(const SimpleInstallJob & c) const
         {
+            if (0 == counts.x_installs)
+                std::cout << "Executing pretend actions: " << std::flush;
+
             std::tr1::shared_ptr<OutputManager> output_manager_goes_here;
             return do_pretend(env, cmdline, *c.changes_to_make_decision(), ++counts.x_installs, counts.y_installs,
                     output_manager_goes_here);
@@ -933,14 +936,13 @@ namespace
                     ).max_exit_status())
             throw ActionAbortedError("Aborted by hook");
 
-        std::cout << "Executing pretend actions: " << std::flush;
-
         for (JobIDSequence::ConstIterator c(lists.taken_job_ids()->begin()),
                 c_end(lists.taken_job_ids()->end()) ;
                 c != c_end ; ++c)
             failed = failed || ! lists.jobs()->fetch(*c)->accept_returning<bool>(DoOnePretendVisitor(env, cmdline, counts));
 
-        cout << endl;
+        if (0 != counts.x_installs)
+            cout << endl;
 
         if (0 != env->perform_hook(Hook("pretend_all_post")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
