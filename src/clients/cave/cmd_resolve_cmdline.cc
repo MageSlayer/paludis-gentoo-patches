@@ -316,6 +316,7 @@ ResolveCommandLine::ResolveCommandLine() :
 {
     add_usage_line("[ -x|--execute ] [ -z|--lazy or -c|--complete or -e|--everything ] spec ...");
     add_usage_line("[ -x|--execute ] [ -z|--lazy or -c|--complete or -e|--everything ] set");
+    add_usage_line("[ -x|--execute ] !spec ...");
 }
 
 std::string

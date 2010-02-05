@@ -66,6 +66,7 @@
 #include <algorithm>
 #include <iostream>
 #include <cstdlib>
+#include <list>
 #include <map>
 
 using namespace paludis;
@@ -77,6 +78,9 @@ using std::endl;
 
 namespace
 {
+    typedef std::map<Resolvent, std::tr1::shared_ptr<Constraints> > InitialConstraints;
+    typedef std::list<PackageDepSpec> PackageDepSpecList;
+
     struct LabelTypesVisitor
     {
         bool is_suggestion;
@@ -410,29 +414,40 @@ namespace
             const std::tr1::shared_ptr<Resolver> & resolver,
             const ResolveCommandLineResolutionOptions &,
             const std::tr1::shared_ptr<const Sequence<std::string> > & targets,
-            bool & is_set)
+            PackageDepSpecList & allowed_to_remove_specs,
+            bool & is_set,
+            bool & is_block)
     {
         Context context("When adding targets from commandline:");
 
         if (targets->empty())
             throw args::DoHelp("Must specify at least one target");
 
-        bool seen_sets(false), seen_packages(false);
+        bool seen_sets(false), seen_packages(false), seen_blockers(false);
         for (Sequence<std::string>::ConstIterator p(targets->begin()), p_end(targets->end()) ;
                 p != p_end ; ++p)
         {
+            if (p->empty())
+                continue;
+
             try
             {
-                resolver->add_target(parse_user_package_dep_spec(*p, env.get(),
-                            UserPackageDepSpecOptions() + updso_throw_if_set));
-                if (seen_sets)
-                    throw args::DoHelp("Cannot specify both set and package targets");
-                seen_packages = true;
+                if ('!' == p->at(0))
+                {
+                    seen_blockers = true;
+                    PackageDepSpec s(parse_user_package_dep_spec(p->substr(1), env.get(), UserPackageDepSpecOptions()));
+                    resolver->add_target(BlockDepSpec(*p, s, false));
+                    allowed_to_remove_specs.push_back(s);
+                }
+                else
+                {
+                    resolver->add_target(parse_user_package_dep_spec(*p, env.get(),
+                                UserPackageDepSpecOptions() + updso_throw_if_set));
+                    seen_packages = true;
+                }
             }
             catch (const GotASetNotAPackageDepSpec &)
             {
-                if (seen_packages)
-                    throw args::DoHelp("Cannot specify both set and package targets");
                 if (seen_sets)
                     throw args::DoHelp("Cannot specify multiple set targets");
 
@@ -441,8 +456,13 @@ namespace
             }
         }
 
+        if (seen_sets + seen_packages + seen_blockers > 1)
+            throw args::DoHelp("Targets must be either packages or blockers or a single set");
+
         if (seen_sets)
             is_set = true;
+        if (seen_blockers)
+            is_block = true;
     }
 
     UseExisting use_existing_from_cmdline(const args::EnumArg & a, const bool is_set)
@@ -582,8 +602,6 @@ namespace
 
         return false;
     }
-
-    typedef std::map<Resolvent, std::tr1::shared_ptr<Constraints> > InitialConstraints;
 
     const std::tr1::shared_ptr<Constraints> make_initial_constraints_for(
             const Environment * const env,
@@ -918,8 +936,16 @@ namespace
         throw InternalError(PALUDIS_HERE, "unhandled dt");
     }
 
-    bool allowed_to_remove_fn(const std::tr1::shared_ptr<const PackageID> &)
+    bool allowed_to_remove_fn(
+            const Environment * const env,
+            const PackageDepSpecList & list,
+            const std::tr1::shared_ptr<const PackageID> & i)
     {
+        for (PackageDepSpecList::const_iterator l(list.begin()), l_end(list.end()) ;
+                l != l_end ; ++l)
+            if (match_package(*env, *l, *i, MatchPackageOptions()))
+                return true;
+
         return false;
     }
 
@@ -984,7 +1010,8 @@ namespace
             const ResolveCommandLineProgramOptions & program_options,
             const std::tr1::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
             const std::tr1::shared_ptr<const Sequence<std::string> > & targets,
-            const bool is_set) PALUDIS_ATTRIBUTE((noreturn));
+            const bool is_set,
+            const bool is_block) PALUDIS_ATTRIBUTE((noreturn));
 
     void perform_resolution(
             const std::tr1::shared_ptr<Environment> &,
@@ -994,7 +1021,8 @@ namespace
             const ResolveCommandLineProgramOptions & program_options,
             const std::tr1::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
             const std::tr1::shared_ptr<const Sequence<std::string> > & targets,
-            const bool is_set)
+            const bool is_set,
+            const bool is_block)
     {
         Context context("When performing chosen resolution:");
 
@@ -1022,6 +1050,9 @@ namespace
 
         if (is_set)
             command.append(" --set");
+
+        if (is_block)
+            command.append(" --block");
 
         for (args::ArgsSection::GroupsConstIterator g(program_options.begin()), g_end(program_options.end()) ;
                 g != g_end ; ++g)
@@ -1154,9 +1185,12 @@ paludis::cave::resolve_common(
     int retcode(0);
 
     InitialConstraints initial_constraints;
+    PackageDepSpecList allowed_to_remove_specs;
 
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
                 value_for<n::allowed_to_remove_fn>(std::tr1::bind(&allowed_to_remove_fn,
+                        env.get(),
+                        std::tr1::cref(allowed_to_remove_specs),
                         std::tr1::placeholders::_1)),
                 value_for<n::care_about_dep_fn>(std::tr1::bind(&care_about_dep_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::placeholders::_1,
@@ -1183,7 +1217,7 @@ paludis::cave::resolve_common(
 
     ScopedSelectionCache selection_cache(env.get());
     std::tr1::shared_ptr<Resolver> resolver(new Resolver(env.get(), resolver_functions));
-    bool is_set(false);
+    bool is_set(false), is_block(false);
     std::list<SuggestRestart> restarts;
 
     try
@@ -1197,7 +1231,8 @@ paludis::cave::resolve_common(
             {
                 try
                 {
-                    add_resolver_targets(env, resolver, resolution_options, targets, is_set);
+                    add_resolver_targets(env, resolver, resolution_options, targets,
+                            allowed_to_remove_specs, is_set, is_block);
                     resolver->resolve();
                     break;
                 }
@@ -1226,7 +1261,7 @@ paludis::cave::resolve_common(
 
         if (0 == retcode)
             perform_resolution(env, *resolver->lists(), resolution_options,
-                    execution_options, program_options, keys_if_import, targets, is_set);
+                    execution_options, program_options, keys_if_import, targets, is_set, is_block);
     }
     catch (...)
     {
