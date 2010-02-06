@@ -174,10 +174,11 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
 //    a_early(&g_ordering_options, "early", 'E', "Try to install the specified package name as early as possible"),
 //    a_late(&g_ordering_options, "late", 'L', "Try to install the specified package name as late as possible"),
 
-//    g_preset_options(this, "Preset Options", "Preset various constraints."),
-//    a_preset(&g_preset_options, "preset", 'p', "Preset a given constraint. For example, --preset cat/pkg::/ will tell "
-//            "the resolver to use the installed cat/pkg. Note that this may lead to errors, if the installed cat/pkg "
-//            "does not satisfy other constraints."),
+    g_preset_options(this, "Preset Options", "Preset various constraints."),
+    a_preset(&g_preset_options, "preset", 'p', "Preset a given constraint. For example, --preset =cat/pkg-2.1 will tell "
+            "the resolver to use that particular version. Note that this may lead to errors, if the specified version "
+            "does not satisfy other constraints. Also note that specifying a preset will not force a package to be "
+            "considered if it would otherwise not be part of the resolution set."),
 
     g_destination_options(this, "Destination Options", "Control to which destinations packages are installed. "
             "If no options from this group are selected, install only to /. Otherwise, install to all of the "

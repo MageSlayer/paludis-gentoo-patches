@@ -294,7 +294,7 @@ namespace
         {
         }
 
-        DestinationTypes visit(const TargetReason &) const
+        DestinationTypes common_target() const
         {
             DestinationTypes result;
 
@@ -329,6 +329,11 @@ namespace
             return result;
         }
 
+        DestinationTypes visit(const TargetReason &) const
+        {
+            return common_target();
+        }
+
         DestinationTypes visit(const DependencyReason & reason) const
         {
             DestinationTypes result;
@@ -350,9 +355,9 @@ namespace
             return result;
         }
 
-        DestinationTypes visit(const PresetReason &) const PALUDIS_ATTRIBUTE((noreturn))
+        DestinationTypes visit(const PresetReason &) const
         {
-            throw InternalError(PALUDIS_HERE, "not sure what to do here yet");
+            return common_target();
         }
 
         DestinationTypes visit(const SetReason & r) const
@@ -1184,6 +1189,35 @@ paludis::cave::resolve_common(
             i != i_end ; ++i)
         allowed_to_remove_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
                     UserPackageDepSpecOptions() + updso_allow_wildcards));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_preset.begin_args()),
+            i_end(resolution_options.a_preset.end_args()) ;
+            i != i_end ; ++i)
+    {
+        const std::tr1::shared_ptr<const Reason> reason(new PresetReason(make_shared_ptr(new TargetReason)));
+        PackageDepSpec spec(parse_user_package_dep_spec(*i, env.get(), UserPackageDepSpecOptions()));
+        const std::tr1::shared_ptr<const Resolvents> resolvents(get_resolvents_for_fn(
+                    env.get(), resolution_options, spec, make_null_shared_ptr(), reason));
+
+        if (resolvents->empty())
+            throw args::DoHelp("Preset '" + *i + "' has no resolvents");
+
+        for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
+                r != r_end ; ++r)
+        {
+            const std::tr1::shared_ptr<Constraint> constraint(new Constraint(make_named_values<Constraint>(
+                            value_for<n::destination_type>(r->destination_type()),
+                            value_for<n::nothing_is_fine_too>(true),
+                            value_for<n::reason>(reason),
+                            value_for<n::spec>(spec),
+                            value_for<n::untaken>(false),
+                            value_for<n::use_existing>(ue_if_possible)
+                            )));
+            initial_constraints.insert(std::make_pair(*r, make_initial_constraints_for(
+                            env.get(), resolution_options, *r))).first->second->add(
+                    constraint);
+        }
+    }
 
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
                 value_for<n::allowed_to_remove_fn>(std::tr1::bind(&allowed_to_remove_fn,

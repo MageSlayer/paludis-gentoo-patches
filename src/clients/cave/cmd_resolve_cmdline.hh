@@ -78,9 +78,9 @@ namespace paludis
 //            args::StringSetArg a_early;
 //            args::StringSetArg a_late;
 //
-//            args::ArgsGroup g_preset_options;
-//            args::StringSetArg a_preset;
-//
+            args::ArgsGroup g_preset_options;
+            args::StringSetArg a_preset;
+
             args::ArgsGroup g_destination_options;
 //            args::SwitchArg a_fetch;
             args::StringSetArg a_create_binaries;
