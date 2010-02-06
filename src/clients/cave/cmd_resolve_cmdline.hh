@@ -42,20 +42,17 @@ namespace paludis
             args::SwitchArg a_everything;
 
             args::ArgsGroup g_resolution_options;
-    //        args::SwitchArg a_permit_older_slot_uninstalls;
+//            args::SwitchArg a_permit_older_slot_uninstalls;
             args::StringSetArg a_permit_uninstall;
-    //        args::SwitchArg a_permit_downgrades;
-    //        args::SwitchArg a_permit_unsafe_uninstalls;
-
-    //        args::ArgsGroup g_cleanup_options;
-    //        args::SwitchArg a_purge_unused_slots;
-    //        args::SwitchArg a_purge_unused_packages;
+//            args::StringSetArg a_permit_downgrade;
+//            args::StringSetArg a_permit_unsafe_uninstall;
+//            args::StringSetArg a_purge;
 
             args::ArgsGroup g_keep_options;
             args::EnumArg a_keep_targets;
             args::EnumArg a_keep;
             args::EnumArg a_reinstall_scm;
-    //        args::SwitchArg a_reinstall_for_removals;
+//            args::SwitchArg a_reinstall_for_removals;
 
             args::ArgsGroup g_slot_options;
             args::EnumArg a_target_slots;
@@ -63,8 +60,8 @@ namespace paludis
 
             args::ArgsGroup g_dependency_options;
             args::SwitchArg a_follow_installed_build_dependencies;
-            args::SwitchArg a_ignore_installed_dependencies;
-
+            args::SwitchArg a_no_follow_installed_dependencies;
+//
             args::ArgsGroup g_suggestion_options;
             args::EnumArg a_suggestions;
             args::EnumArg a_recommendations;
@@ -72,31 +69,30 @@ namespace paludis
             args::StringSetArg a_take_from;
             args::StringSetArg a_ignore;
             args::StringSetArg a_ignore_from;
-
-    //        args::ArgsGroup g_package_options;
-    //        args::StringSetArg a_prefer;
-    //        args::StringSetArg a_avoid;
-
-    //        args::ArgsGroup g_ordering_options;
-    //        args::StringSetArg a_early;
-    //        args::StringSetArg a_late;
-
-    //        args::ArgsGroup g_preset_options;
-    //        args::StringSetArg a_soft_preset;
-    //        args::StringSetArg a_fixed_preset;
-
+//
+//            args::ArgsGroup g_package_options;
+//            args::StringSetArg a_favour;
+//            args::StringSetArg a_avoid;
+//
+//            args::ArgsGroup g_ordering_options;
+//            args::StringSetArg a_early;
+//            args::StringSetArg a_late;
+//
+//            args::ArgsGroup g_preset_options;
+//            args::StringSetArg a_preset;
+//
             args::ArgsGroup g_destination_options;
-    //        args::SwitchArg a_fetch;
+//            args::SwitchArg a_fetch;
             args::StringSetArg a_create_binaries;
             args::StringSetArg a_no_binaries_for;
-    //        args::SwitchArg a_install_to_chroot;
+//            args::SwitchArg a_install_to_chroot;
             args::SwitchArg a_install_to_root;
-
-    //        args::ArgsGroup g_interactivity_options;
-    //        args::SwitchArg a_interactive;
-    //        args::SwitchArg a_interactive_slots;
-    //        args::SwitchArg a_interactive_decisions;
-    //        args::SwitchArg a_interactive_ordering;
+//
+//            args::ArgsGroup g_query_options;
+//            args::SwitchArg a_query;
+//            args::SwitchArg a_query_slots;
+//            args::SwitchArg a_query_decisions;
+//            args::SwitchArg a_query_order;
 
             args::ArgsGroup g_dump_options;
             args::SwitchArg a_dump;

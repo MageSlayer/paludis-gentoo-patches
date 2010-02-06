@@ -752,7 +752,7 @@ namespace
             if (! resolution_options.a_follow_installed_build_dependencies.specified())
                 if (is_just_build_dep(dep))
                     return false;
-            if (resolution_options.a_ignore_installed_dependencies.specified())
+            if (resolution_options.a_no_follow_installed_dependencies.specified())
                 if (! is_compiled_against_dep(dep))
                     return false;
 

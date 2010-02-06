@@ -53,24 +53,23 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
     a_everything(&g_convenience_options, "everything", 'e', "Do all optional work, and also reinstall", true),
 
     g_resolution_options(this, "Resolution Options", "Resolution options."),
-//            a_permit_older_slot_uninstalls(&g_resolution_options, "permit-older-slot-uninstalls", '\0',
-//                    "Uninstall slots of packages if they are blocked by other slots of that package "
-//                    "with a newer version", true),
-    a_permit_uninstall(&g_resolution_options, "permit-uninstall", '\0',
+//    a_permit_older_slot_uninstalls(&g_resolution_options, "permit-older-slot-uninstalls", '\0',
+//            "Uninstall slots of packages if they are blocked by other slots of that package "
+//            "with a newer version", true),
+    a_permit_uninstall(&g_resolution_options, "permit-uninstall", 'U',
             "Permit uninstallation of packages matching the supplied specification, e.g. to resolve "
             "blockers. May be specified multiple times. Use '*/*' to allow all uninstalls, but note "
             "that the resolver will sometimes come up with extremely bad solutions to fixing blocks "
             "and may suggest stupid and dangerous uninstalls."),
-//            a_permit_downgrades(&g_resolution_options, "permit-downgrades", '\0', "Permit downgrades", true),
-//            a_permit_unsafe_uninstalls(&g_resolution_options, "permit-unsafe-uninstalls", '\0',
-//                    "Permit uninstalls even if the uninstall isn't known to be safe", true),
-//
-//            g_cleanup_options(this, "Cleanup Options", "Cleanup options."),
-//            a_purge_unused_slots(&g_cleanup_options, "purge-unused-slots", '\0',
-//                    "Purge slots that are no longer used after an uninstall or clean", true),
-//            a_purge_unused_packages(&g_cleanup_options, "purge-unused-packages", '\0',
-//                    "Purge packages that are no longer used after an uninstall or clean", true),
-//
+//    a_permit_downgrade(&g_resolution_options, "permit-downgrade", 'd', "Permit downgrades matching the supplied "
+//            "specification. Use '*/*' to allow all downgrades."),
+//    a_permit_unsafe_uninstall(&g_resolution_options, "permit-unsafe-uninstall", 'u',
+//            "Permit uninstalls matching the given specification even if the uninstall isn't known to be safe. Use "
+//            "'*/*' to allow all unsafe uninstalls. Note that this does not imply --permit-uninstall."),
+//    a_purge(&g_resolution_options, "purge", 'P',
+//            "Purge packages matching the given specification, if they will no longer be used after "
+//            "a resolution. Use '*/*' to accept all purges, but note that by doing so you are putting "
+//            "a great deal of trust in package authors to get dependencies right."),
 
     g_keep_options(this, "Reinstall Options", "Control whether installed packages are kept."),
     a_keep_targets(&g_keep_options, "keep-targets", 'K',
@@ -107,9 +106,9 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             ("never",                 'n', "Never"),
             "never"
             ),
-//            a_reinstall_for_removals(&g_reinstall_options, "reinstall-for-removals", '\0',
-//                    "Select whether to rebuild packages if rebuilding would avoid an unsafe removal", true),
-//
+//    a_reinstall_for_removals(&g_keep_options, "reinstall-for-removals", '\0',
+//            "Select whether to rebuild packages if rebuilding would avoid an unsafe removal", true),
+
     g_slot_options(this, "Slot Options", "Control which slots are considered."),
     a_target_slots(&g_slot_options, "target-slots", 'S',
             "Which slots to consider for targets",
@@ -141,10 +140,9 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
     g_dependency_options(this, "Dependency Options", "Control which dependencies are followed."),
     a_follow_installed_build_dependencies(&g_dependency_options, "follow-installed-build-dependencies", 'D',
             "Follow build dependencies for installed packages (default if --complete or --everything)", true),
-    a_ignore_installed_dependencies(&g_dependency_options, "ignore-installed-dependencies", 'd',
+    a_no_follow_installed_dependencies(&g_dependency_options, "no-follow-installed-dependencies", 'n',
             "Ignore dependencies (except compiled-against dependencies, which are always taken) "
             "for installed packages. (default if --lazy)", true),
-
 
     g_suggestion_options(this, "Suggestion Options", "Control whether suggestions are taken. Suggestions that are "
             "already installed are instead treated as hard dependencies."),
@@ -168,33 +166,39 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
     a_ignore_from(&g_suggestion_options, "ignore-from", 'I', "Discard all suggestions made by any package matching the "
             "supplied package specification"),
 
-//            g_package_options(this, "Package Selection Options", "Control which packages are selected."),
-//            a_prefer(&g_package_options, "prefer", '\0', "If there is a choice, prefer the specified package names"),
-//            a_avoid(&g_package_options, "avoid", '\0', "If there is a choice, avoid the specified package names"),
-//
-//            g_ordering_options(this, "Package Ordering Options", "Control the order in which packages are installed"),
-//            a_early(&g_ordering_options, "early", '\0', "Try to install the specified package name as early as possible"),
-//            a_late(&g_ordering_options, "late", '\0', "Try to install the specified package name as late as possible"),
-//
-//            g_preset_options(this, "Preset Options", "Preset various constraints."),
-//            a_soft_preset(&g_preset_options, "soft-preset", '\0', "Preset a given constraint, but allow the resolver to "
-//                    "override it. For example, --soft-preset cat/pkg::installed will tell the resolver to use the installed "
-//                    "cat/pkg if possible."),
-//            a_fixed_preset(&g_preset_options, "fixed-preset", '\0', "Preset a given constraint, and do not allow the resolver to "
-//                    "override it. For example, --fixed-preset cat/pkg::installed will force the resolver to use the installed "
-//                    "cat/pkg, generating an error if it cannot."),
-//
+//    g_package_options(this, "Package Selection Options", "Control which packages are selected."),
+//    a_favour(&g_package_options, "favour", 'F', "If there is a choice, favour the specified package names"),
+//    a_avoid(&g_package_options, "avoid", 'A', "If there is a choice, avoid the specified package names"),
+
+//    g_ordering_options(this, "Package Ordering Options", "Control the order in which packages are installed"),
+//    a_early(&g_ordering_options, "early", 'E', "Try to install the specified package name as early as possible"),
+//    a_late(&g_ordering_options, "late", 'L', "Try to install the specified package name as late as possible"),
+
+//    g_preset_options(this, "Preset Options", "Preset various constraints."),
+//    a_preset(&g_preset_options, "preset", 'p', "Preset a given constraint. For example, --preset cat/pkg::/ will tell "
+//            "the resolver to use the installed cat/pkg. Note that this may lead to errors, if the installed cat/pkg "
+//            "does not satisfy other constraints."),
+
     g_destination_options(this, "Destination Options", "Control to which destinations packages are installed. "
             "If no options from this group are selected, install only to /. Otherwise, install to all of the "
             "specified destinations, and install to / as necessary to satisfy build dependencies."),
-//            a_fetch(&g_destination_options, "fetch", 'f', "Only fetch packages, do not install anything", true),
+//    a_fetch(&g_destination_options, "fetch", 'f', "Only fetch packages, do not install anything", true),
     a_create_binaries(&g_destination_options, "create-binaries", 'b', "Create binary packages in the specified "
             "repository. Specify multiple times if different binary destination types are required."),
     a_no_binaries_for(&g_destination_options, "no-binaries-for", 'B', "Do not create binary packages from any "
             "origin ID matching this spec. May be specified multiple times. (e.g. --no-binaries-for '*/*::accounts' "
             "--no-binaries-for '*/*::virtuals')"),
-//            a_install_to_chroot(&g_destination_options, "install-to-chroot", '\0', "Install packages to the environment-configured chroot", true),
+//    a_install_to_chroot(&g_destination_options, "install-to-chroot", '~', "Install packages to the environment-configured chroot", true),
     a_install_to_root(&g_destination_options, "install-to-root", '/', "Install packages to /", true),
+
+//    g_query_options(this, "Query Options", "Query the user interactively when making decisions. "
+//            "If only --query is specified, prompt for everything. Otherwise, prompt only for the specified decisions."),
+//    a_query(&g_query_options, "query", 'q', "Query the user interactively when making decisions", true),
+//    a_query_slots(&g_query_options, "query-slots", '\0', "Prompt for which slots to consider when a spec that does "
+//            "not specify a particular slot is specified", true),
+//    a_query_decisions(&g_query_options, "query-decisions", '\0', "Prompt for which decision to make for every "
+//            "resolvent", true),
+//    a_query_order(&g_query_options, "query-order", '\0', "Prompt for which jobs to order", true),
 
     g_dump_options(this, "Dump Options", "Dump the resolver's state to stdout after completion, or when an "
             "error occurs. For debugging purposes; produces rather a lot of noise."),
@@ -225,7 +229,7 @@ ResolveCommandLineDisplayOptions::ResolveCommandLineDisplayOptions(args::ArgsHan
             ),
     g_explanations(this, "Explanations", "Options requesting the resolver explain a particular decision "
             "that it made"),
-    a_explain(&g_explanations, "explain", '\0', "Explain why the resolver made a particular decision. The "
+    a_explain(&g_explanations, "explain", 'X', "Explain why the resolver made a particular decision. The "
             "argument is a package dependency specification, so --explain dev-libs/boost or --explain qt:3"
             " or even --explain '*/*' (although --dump is a better way of getting highly noisy debug output)."),
     a_show_all_jobs(&g_explanations, "show-all-jobs", '\0', "Show all jobs that will be executed, rather than "
@@ -240,7 +244,7 @@ ResolveCommandLineExecutionOptions::ResolveCommandLineExecutionOptions(args::Arg
     a_preserve_world(&g_world_options, "preserve-world", '1', "Do not modify the 'world' set", true),
 
     g_failure_options(this, "Failure Options", "Failure handling options."),
-    a_continue_on_failure(&g_failure_options, "continue-on-failure", '\0',
+    a_continue_on_failure(&g_failure_options, "continue-on-failure", 'C',
             "Whether to continue after an error occurs",
             args::EnumArg::EnumArgOptions
             ("never",                      "Never")
@@ -361,8 +365,8 @@ ResolveCommandLineResolutionOptions::apply_shortcuts()
             a_target_slots.set_argument("best");
         if (! a_slots.specified())
             a_slots.set_argument("best");
-        if (! a_ignore_installed_dependencies.specified())
-            a_ignore_installed_dependencies.set_specified(true);
+        if (! a_no_follow_installed_dependencies.specified())
+            a_no_follow_installed_dependencies.set_specified(true);
     }
 
     if (a_complete.specified())
