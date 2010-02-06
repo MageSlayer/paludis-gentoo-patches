@@ -827,8 +827,8 @@ namespace
                     return true;
             }
 
-            for (args::StringSetArg::ConstIterator a(resolution_options.a_discard.begin_args()),
-                    a_end(resolution_options.a_discard.end_args()) ;
+            for (args::StringSetArg::ConstIterator a(resolution_options.a_ignore.begin_args()),
+                    a_end(resolution_options.a_ignore.end_args()) ;
                     a != a_end ; ++a)
             {
                 PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
@@ -837,8 +837,8 @@ namespace
                     return false;
             }
 
-            for (args::StringSetArg::ConstIterator a(resolution_options.a_discard_from.begin_args()),
-                    a_end(resolution_options.a_discard_from.end_args()) ;
+            for (args::StringSetArg::ConstIterator a(resolution_options.a_ignore_from.begin_args()),
+                    a_end(resolution_options.a_ignore_from.end_args()) ;
                     a != a_end ; ++a)
             {
                 PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
