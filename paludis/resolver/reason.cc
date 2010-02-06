@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -106,10 +106,40 @@ DependencyReason::serialise(Serialiser & s) const
         ;
 }
 
+namespace paludis
+{
+    template <>
+    struct Implementation<PresetReason>
+    {
+        const std::tr1::shared_ptr<const Reason> reason_for_preset;
+
+        Implementation(const std::tr1::shared_ptr<const Reason> & r) :
+            reason_for_preset(r)
+        {
+        }
+    };
+}
+
+PresetReason::PresetReason(const std::tr1::shared_ptr<const Reason> & r) :
+    PrivateImplementationPattern<PresetReason>(new Implementation<PresetReason>(r))
+{
+}
+
+PresetReason::~PresetReason()
+{
+}
+
+const std::tr1::shared_ptr<const Reason>
+PresetReason::reason_for_preset() const
+{
+    return _imp->reason_for_preset;
+}
+
 void
 PresetReason::serialise(Serialiser & s) const
 {
     s.object("PresetReason")
+        .member(SerialiserFlags<serialise::might_be_null>(), "reason_for_preset", reason_for_preset())
         ;
 }
 
@@ -170,7 +200,9 @@ Reason::deserialise(Deserialisation & d)
     else if (d.class_name() == "PresetReason")
     {
         Deserialisator v(d, "PresetReason");
-        return make_shared_ptr(new PresetReason);
+        return make_shared_ptr(new PresetReason(
+                    v.member<std::tr1::shared_ptr<Reason> >("reason_for_preset")
+                    ));
     }
     else if (d.class_name() == "SetReason")
     {
@@ -197,4 +229,5 @@ Reason::deserialise(Deserialisation & d)
 
 template class PrivateImplementationPattern<DependencyReason>;
 template class PrivateImplementationPattern<SetReason>;
+template class PrivateImplementationPattern<PresetReason>;
 

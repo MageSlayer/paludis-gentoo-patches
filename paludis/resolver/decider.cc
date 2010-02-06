@@ -629,7 +629,7 @@ Decider::_make_constraint_for_preloading(
 {
     const std::tr1::shared_ptr<Constraint> result(new Constraint(*c));
 
-    const std::tr1::shared_ptr<PresetReason> reason(new PresetReason);
+    const std::tr1::shared_ptr<PresetReason> reason(new PresetReason(c->reason()));
     result->reason() = reason;
 
     if (result->spec().if_package())

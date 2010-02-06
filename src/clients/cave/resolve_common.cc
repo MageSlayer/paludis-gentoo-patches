@@ -613,7 +613,7 @@ namespace
             result->add(make_shared_ptr(new Constraint(make_named_values<Constraint>(
                                 value_for<n::destination_type>(resolvent.destination_type()),
                                 value_for<n::nothing_is_fine_too>(false),
-                                value_for<n::reason>(make_shared_ptr(new PresetReason)),
+                                value_for<n::reason>(make_shared_ptr(new PresetReason(make_shared_ptr(new TargetReason)))),
                                 value_for<n::spec>(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(resolvent.package())),
                                 value_for<n::untaken>(false),
                                 value_for<n::use_existing>(ue_only_if_transient)

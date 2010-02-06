@@ -160,9 +160,10 @@ namespace
             return std::make_pair(rr.first + " (" + stringify(r.set_name()) + ")", rr.second);
         }
 
-        std::pair<std::string, bool> visit(const PresetReason &) const
+        std::pair<std::string, bool> visit(const PresetReason & r) const
         {
-            return std::make_pair("", false);
+            std::pair<std::string, bool> rr(r.reason_for_preset()->accept_returning<std::pair<std::string, bool> >(*this));
+            return std::make_pair("preset (" + rr.first + ")", rr.second);
         }
     };
 

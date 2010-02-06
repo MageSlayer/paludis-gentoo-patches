@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -79,10 +79,15 @@ namespace paludis
         };
 
         class PresetReason :
+            private PrivateImplementationPattern<PresetReason>,
             public Reason,
             public ImplementAcceptMethods<Reason, PresetReason>
         {
             public:
+                PresetReason(const std::tr1::shared_ptr<const Reason> &);
+                ~PresetReason();
+
+                const std::tr1::shared_ptr<const Reason> reason_for_preset() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void serialise(Serialiser &) const;
         };
 
