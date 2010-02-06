@@ -1246,12 +1246,12 @@ Decider::_cannot_decide_for(
 
     const std::tr1::shared_ptr<const PackageID> existing_id(_find_existing_id_for(resolvent, resolution));
     if (existing_id)
-        unsuitable_candidates->push_back(_make_unsuitable_candidate(resolvent, resolution, existing_id));
+        unsuitable_candidates->push_back(_make_unsuitable_candidate(resolvent, resolution, existing_id, true));
 
     const std::tr1::shared_ptr<const PackageIDSequence> installable_ids(_find_installable_id_candidates_for(resolvent, resolution, true));
     for (PackageIDSequence::ConstIterator i(installable_ids->begin()), i_end(installable_ids->end()) ;
             i != i_end ; ++i)
-        unsuitable_candidates->push_back(_make_unsuitable_candidate(resolvent, resolution, *i));
+        unsuitable_candidates->push_back(_make_unsuitable_candidate(resolvent, resolution, *i, false));
 
     return make_shared_ptr(new UnableToMakeDecision(
                 unsuitable_candidates,
@@ -1263,11 +1263,12 @@ UnsuitableCandidate
 Decider::_make_unsuitable_candidate(
         const Resolvent & resolvent,
         const std::tr1::shared_ptr<const Resolution> &,
-        const std::tr1::shared_ptr<const PackageID> & id) const
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const bool existing) const
 {
     return make_named_values<UnsuitableCandidate>(
             value_for<n::package_id>(id),
-            value_for<n::unmet_constraints>(_get_unmatching_constraints(resolvent, id))
+            value_for<n::unmet_constraints>(_get_unmatching_constraints(resolvent, id, existing))
             );
 }
 
@@ -1358,7 +1359,8 @@ Decider::_find_id_for_from(
 const std::tr1::shared_ptr<const Constraints>
 Decider::_get_unmatching_constraints(
         const Resolvent & resolvent,
-        const std::tr1::shared_ptr<const PackageID> & id) const
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const bool existing) const
 {
     const std::tr1::shared_ptr<const Resolution> resolution(resolution_for_resolvent(resolvent));
     const std::tr1::shared_ptr<Constraints> result(new Constraints);
@@ -1367,12 +1369,27 @@ Decider::_get_unmatching_constraints(
             c_end(resolution->constraints()->end()) ;
             c != c_end ; ++c)
     {
-        if (! _check_constraint(resolvent, *c, make_shared_ptr(new ChangesToMakeDecision(
-                            id,
-                            false,
-                            ! (*c)->untaken(),
-                            make_null_shared_ptr()
-                            ))))
+        std::tr1::shared_ptr<Decision> decision;
+
+        if (existing)
+        {
+            bool is_transient(id->transient_key() && id->transient_key()->value());
+            decision.reset(new ExistingNoChangeDecision(
+                    id,
+                    true,
+                    true,
+                    is_transient,
+                    ! (*c)->untaken()
+                    ));
+        }
+        else
+            decision.reset(new ChangesToMakeDecision(
+                        id,
+                        false,
+                        ! (*c)->untaken(),
+                        make_null_shared_ptr()
+                        ));
+        if (! _check_constraint(resolvent, *c, decision))
             result->add(*c);
     }
 

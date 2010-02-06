@@ -165,12 +165,15 @@ namespace paludis
                         const std::tr1::shared_ptr<const PackageIDSequence> &) const;
 
                 const std::tr1::shared_ptr<const Constraints> _get_unmatching_constraints(
-                        const Resolvent &, const std::tr1::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                        const Resolvent &,
+                        const std::tr1::shared_ptr<const PackageID> &,
+                        const bool existing) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 UnsuitableCandidate _make_unsuitable_candidate(
                         const Resolvent &,
                         const std::tr1::shared_ptr<const Resolution> &,
-                        const std::tr1::shared_ptr<const PackageID> &) const;
+                        const std::tr1::shared_ptr<const PackageID> &,
+                        const bool existing) const;
 
                 bool _already_met(const SanitisedDependency &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
