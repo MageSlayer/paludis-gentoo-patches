@@ -142,7 +142,7 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
     a_follow_installed_build_dependencies(&g_dependency_options, "follow-installed-build-dependencies", 'D',
             "Follow build dependencies for installed packages (default if --complete or --everything)", true),
     a_ignore_installed_dependencies(&g_dependency_options, "ignore-installed-dependencies", 'd',
-            "Ignore dependencies (except compiled-against dependencies, which are already taken) "
+            "Ignore dependencies (except compiled-against dependencies, which are always taken) "
             "for installed packages. (default if --lazy)", true),
 
 
