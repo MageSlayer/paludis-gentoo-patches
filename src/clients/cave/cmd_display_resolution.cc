@@ -571,20 +571,28 @@ namespace
         is_upgrade = is_upgrade && (! is_reinstall) && (! is_downgrade);
         is_reinstall = is_reinstall && (! is_downgrade);
 
+        std::string x("   ");
+        if (! decision.best())
+            x[0] = '-';
+
         if (is_new && ! other_slots)
-            cout << "n   " << c::bold_blue();
+            cout << "n" << x << c::bold_blue();
         else if (is_new && other_slots)
-            cout << "s   " << c::bold_blue();
+            cout << "s" << x << c::bold_blue();
         else if (is_upgrade)
-            cout << "u   " << c::blue();
+            cout << "u" << x << c::blue();
         else if (is_reinstall)
-            cout << "r   " << c::yellow();
+            cout << "r" << x << c::yellow();
         else if (is_downgrade)
-            cout << "d   " << c::bold_yellow();
+            cout << "d" << x << c::bold_yellow();
         else
             throw InternalError(PALUDIS_HERE, "not new, upgrade, reinstall or downgrade. huh?");
 
         cout << decision.origin_id()->canonical_form(idcf_no_version);
+
+        if (! decision.best())
+            cout << c::bold_yellow() << " (not the best version)" << c::normal();
+
         cout << c::normal() << " " << decision.origin_id()->canonical_form(idcf_version) <<
             " to " << decision.destination()->repository();
 
