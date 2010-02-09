@@ -166,9 +166,11 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
     a_ignore_from(&g_suggestion_options, "ignore-from", 'I', "Discard all suggestions made by any package matching the "
             "supplied package specification"),
 
-//    g_package_options(this, "Package Selection Options", "Control which packages are selected."),
-//    a_favour(&g_package_options, "favour", 'F', "If there is a choice, favour the specified package names"),
-//    a_avoid(&g_package_options, "avoid", 'A', "If there is a choice, avoid the specified package names"),
+    g_package_options(this, "Package Selection Options", "Control which packages are selected."),
+    a_favour(&g_package_options, "favour", 'F', "If there is a choice (e.g. || ( ) dependencies), favour the "
+            "specified package names"),
+    a_avoid(&g_package_options, "avoid", 'A', "If there is a choice (e.g. || ( ) dependencies), avoid the "
+            "specified package names"),
 
 //    g_ordering_options(this, "Package Ordering Options", "Control the order in which packages are installed"),
 //    a_early(&g_ordering_options, "early", 'E', "Try to install the specified package name as early as possible"),

@@ -62,6 +62,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/serialise-impl.hh>
 #include <paludis/selection_cache.hh>
+#include <paludis/package_dep_spec_properties.hh>
 
 #include <algorithm>
 #include <iostream>
@@ -951,10 +952,40 @@ namespace
         return false;
     }
 
-    Tribool prefer_or_avoid_fn(
-            const ResolveCommandLineResolutionOptions &,
-            const QualifiedPackageName &)
+    bool prefer_or_avoid_one(const Environment * const env, const QualifiedPackageName & q, const std::string & s)
     {
+        Context context("When working out whether we favour or avoid '" + stringify(q) + "' due to '" + s + "':");
+
+        PackageDepSpec spec(parse_user_package_dep_spec(s, env, UserPackageDepSpecOptions()));
+        if (! package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
+                        value_for<n::has_additional_requirements>(false),
+                        value_for<n::has_category_name_part>(false),
+                        value_for<n::has_from_repository>(false),
+                        value_for<n::has_in_repository>(false),
+                        value_for<n::has_installable_to_path>(false),
+                        value_for<n::has_installable_to_repository>(false),
+                        value_for<n::has_installed_at_path>(false),
+                        value_for<n::has_package>(true),
+                        value_for<n::has_package_name_part>(false),
+                        value_for<n::has_slot_requirement>(false),
+                        value_for<n::has_tag>(indeterminate),
+                        value_for<n::has_version_requirements>(false)
+                        )))
+            throw args::DoHelp("'" + stringify(s) + "' is not a simple cat/pkg");
+        return *spec.package_ptr() == q;
+    }
+
+    Tribool prefer_or_avoid_fn(
+            const Environment * const env,
+            const ResolveCommandLineResolutionOptions & resolution_options,
+            const QualifiedPackageName & q)
+    {
+        if (resolution_options.a_favour.end_args() != std::find_if(resolution_options.a_favour.begin_args(),
+                    resolution_options.a_favour.end_args(), std::tr1::bind(&prefer_or_avoid_one, env, q, std::tr1::placeholders::_1)))
+            return true;
+        if (resolution_options.a_avoid.end_args() != std::find_if(resolution_options.a_avoid.begin_args(),
+                    resolution_options.a_avoid.end_args(), std::tr1::bind(&prefer_or_avoid_one, env, q, std::tr1::placeholders::_1)))
+            return false;
         return indeterminate;
     }
 
@@ -1250,7 +1281,7 @@ paludis::cave::resolve_common(
                 value_for<n::make_destination_filtered_generator_fn>(std::tr1::bind(&make_destination_filtered_generator,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::placeholders::_1, std::tr1::placeholders::_2)),
                 value_for<n::prefer_or_avoid_fn>(std::tr1::bind(&prefer_or_avoid_fn,
-                        std::tr1::cref(resolution_options),
+                        env.get(), std::tr1::cref(resolution_options),
                         std::tr1::placeholders::_1)),
                 value_for<n::take_dependency_fn>(std::tr1::bind(&take_dependency_fn, env.get(),
                         std::tr1::cref(resolution_options), std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3))

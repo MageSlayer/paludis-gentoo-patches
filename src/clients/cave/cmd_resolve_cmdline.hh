@@ -69,11 +69,11 @@ namespace paludis
             args::StringSetArg a_take_from;
             args::StringSetArg a_ignore;
             args::StringSetArg a_ignore_from;
-//
-//            args::ArgsGroup g_package_options;
-//            args::StringSetArg a_favour;
-//            args::StringSetArg a_avoid;
-//
+
+            args::ArgsGroup g_package_options;
+            args::StringSetArg a_favour;
+            args::StringSetArg a_avoid;
+
 //            args::ArgsGroup g_ordering_options;
 //            args::StringSetArg a_early;
 //            args::StringSetArg a_late;
