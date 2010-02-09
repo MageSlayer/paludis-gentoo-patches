@@ -8,11 +8,13 @@ make_enum_AnyChildScore()
 
     key acs_worse_than_worst         "Worse than the worst option"
     key acs_hate_hate_hate           "Doesn't even exist"
+    key acs_avoid                    "Explicitly avoiding"
     key acs_exists                   "Exists"
     key acs_could_install            "Could install"
     key acs_will_be_installing       "Will be installing"
     key acs_wrong_options_installed  "Already installed, wrong options"
     key acs_already_installed        "Already installed"
+    key acs_prefer                   "Explicitly preferred"
 
     want_destringify
 }

@@ -33,7 +33,7 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/map.hh>
+#include <paludis/util/map-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/user_dep_spec.hh>
@@ -168,5 +168,75 @@ namespace test_cases
             }
         }
     } test_empty_alternative_with_untaken_upgrade;
+
+    struct TestEmptyPreferences : ResolverAnyTestCase
+    {
+        const Tribool a, b;
+
+        TestEmptyPreferences(const Tribool aa, const Tribool bb) :
+            ResolverAnyTestCase("empty preferences " + stringify(aa) + " " + stringify(bb)),
+            a(aa),
+            b(bb)
+        {
+            if (! a.is_indeterminate())
+                prefer_or_avoid_names->insert(QualifiedPackageName("preferences/dep-a"), a.is_true());
+            if (! b.is_indeterminate())
+                prefer_or_avoid_names->insert(QualifiedPackageName("preferences/dep-b"), b.is_true());
+        }
+
+        void run()
+        {
+            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("preferences/target"));
+
+            {
+                TestMessageSuffix s("taken errors");
+                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
+                        .finished()
+                        );
+            }
+
+            {
+                TestMessageSuffix s("untaken errors");
+                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
+                        .finished()
+                        );
+            }
+
+
+            {
+                if (a.is_true())
+                {
+                    TestMessageSuffix s("ordered");
+                    check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
+                            .qpn(QualifiedPackageName("preferences/dep-a"))
+                            .qpn(QualifiedPackageName("preferences/target"))
+                            .finished()
+                            );
+                }
+                else if (b.is_true())
+                {
+                    TestMessageSuffix s("ordered");
+                    check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
+                            .qpn(QualifiedPackageName("preferences/dep-b"))
+                            .qpn(QualifiedPackageName("preferences/target"))
+                            .finished()
+                            );
+                }
+                else if (a.is_false())
+                {
+                    TestMessageSuffix s("ordered");
+                    check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
+                            .qpn(QualifiedPackageName("preferences/dep-middle"))
+                            .qpn(QualifiedPackageName("preferences/target"))
+                            .finished()
+                            );
+                }
+            }
+        }
+    } test_empty_preferences_tt(true, true),
+           test_empty_preferences_ti(true, indeterminate), test_empty_preferences_tf(true, false),
+           test_empty_preferences_it(indeterminate, true), test_empty_preferences_ii(indeterminate, indeterminate),
+           test_empty_preferences_if(indeterminate, false), test_empty_preferences_ft(false, true),
+           test_empty_preferences_fi(false, indeterminate), test_empty_preferences_ff(false, false);
 }
 

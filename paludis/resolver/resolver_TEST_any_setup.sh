@@ -34,5 +34,39 @@ PLATFORMS="test"
 SLOT="0"
 END
 
+# preferences
+echo 'preferences' >> metadata/categories.conf
+
+mkdir -p 'packages/preferences/target'
+cat <<END > packages/preferences/target/target-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="
+    || ( preferences/dep-a preferences/dep-middle preferences/dep-b )
+    "
+END
+
+mkdir -p 'packages/preferences/dep-a'
+cat <<END > packages/preferences/dep-a/dep-a-1.exheres-0
+SUMMARY="dep"
+PLATFORMS="test"
+SLOT="0"
+END
+
+mkdir -p 'packages/preferences/dep-middle'
+cat <<END > packages/preferences/dep-middle/dep-middle-1.exheres-0
+SUMMARY="dep"
+PLATFORMS="test"
+SLOT="0"
+END
+
+mkdir -p 'packages/preferences/dep-b'
+cat <<END > packages/preferences/dep-b/dep-b-1.exheres-0
+SUMMARY="dep"
+PLATFORMS="test"
+SLOT="0"
+END
+
 cd ..
 

@@ -94,12 +94,17 @@ namespace paludis
                     const std::tr1::shared_ptr<const QualifiedPackageNameSet> &,
                     const std::tr1::shared_ptr<const PackageID> &);
 
+            Tribool prefer_or_avoid_fn(
+                        const std::tr1::shared_ptr<const Map<QualifiedPackageName, bool> > &,
+                        const QualifiedPackageName &);
+
             struct ResolverTestCase : test::TestCase
             {
                 TestEnvironment env;
                 std::tr1::shared_ptr<Repository> repo, inst_repo;
                 std::tr1::shared_ptr<FakeInstalledRepository> fake_inst_repo;
                 std::tr1::shared_ptr<QualifiedPackageNameSet> allowed_to_remove_names;
+                std::tr1::shared_ptr<Map<QualifiedPackageName, bool> > prefer_or_avoid_names;
 
                 ResolverTestCase(const std::string & group, const std::string & test_name, const std::string & eapi,
                         const std::string & layout);

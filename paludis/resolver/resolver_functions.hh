@@ -30,6 +30,7 @@
 #include <paludis/resolver/destination_types-fwd.hh>
 #include <paludis/resolver/constraint-fwd.hh>
 #include <paludis/util/named_value.hh>
+#include <paludis/util/tribool-fwd.hh>
 #include <paludis/filter-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <tr1/functional>
@@ -46,6 +47,7 @@ namespace paludis
         struct get_resolvents_for_fn;
         struct get_use_existing_fn;
         struct make_destination_filtered_generator_fn;
+        struct prefer_or_avoid_fn;
         struct take_dependency_fn;
     }
 
@@ -94,6 +96,10 @@ namespace paludis
                 const Resolvent &
                 )> MakeDestinationFilteredGeneratorFunction;
 
+        typedef std::tr1::function<Tribool (
+                const QualifiedPackageName &
+                )> PreferOrAvoidFunction;
+
         typedef std::tr1::function<bool (
                 const Resolvent &,
                 const SanitisedDependency &,
@@ -111,6 +117,7 @@ namespace paludis
             NamedValue<n::get_use_existing_fn, GetUseExistingFunction> get_use_existing_fn;
             NamedValue<n::make_destination_filtered_generator_fn,
                 MakeDestinationFilteredGeneratorFunction> make_destination_filtered_generator_fn;
+            NamedValue<n::prefer_or_avoid_fn, PreferOrAvoidFunction> prefer_or_avoid_fn;
             NamedValue<n::take_dependency_fn, TakeDependencyFunction> take_dependency_fn;
         };
     }

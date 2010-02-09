@@ -951,6 +951,13 @@ namespace
         return false;
     }
 
+    Tribool prefer_or_avoid_fn(
+            const ResolveCommandLineResolutionOptions &,
+            const QualifiedPackageName &)
+    {
+        return indeterminate;
+    }
+
     void ser_thread_func(StringListStream & ser_stream, const ResolverLists & resolution_lists)
     {
         Serialiser ser(ser_stream);
@@ -1242,6 +1249,9 @@ paludis::cave::resolve_common(
                         std::tr1::cref(resolution_options), std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3)),
                 value_for<n::make_destination_filtered_generator_fn>(std::tr1::bind(&make_destination_filtered_generator,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::placeholders::_1, std::tr1::placeholders::_2)),
+                value_for<n::prefer_or_avoid_fn>(std::tr1::bind(&prefer_or_avoid_fn,
+                        std::tr1::cref(resolution_options),
+                        std::tr1::placeholders::_1)),
                 value_for<n::take_dependency_fn>(std::tr1::bind(&take_dependency_fn, env.get(),
                         std::tr1::cref(resolution_options), std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3))
 

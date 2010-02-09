@@ -887,6 +887,16 @@ Decider::find_any_score(const Resolvent & our_resolvent, const SanitisedDependen
         operator_bias = os_greater_or_none;
     }
 
+    /* explicit preferences come first */
+    if (spec.package_ptr())
+    {
+        Tribool prefer_or_avoid(_imp->fns.prefer_or_avoid_fn()(*spec.package_ptr()));
+        if (prefer_or_avoid.is_true())
+            return std::make_pair(acs_prefer, operator_bias);
+        else if (prefer_or_avoid.is_false())
+            return std::make_pair(acs_avoid, operator_bias);
+    }
+
     /* best: already installed */
     {
         const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
