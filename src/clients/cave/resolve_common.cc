@@ -739,19 +739,45 @@ namespace
         return result;
     }
 
+    bool ignore_dep_from(
+            const Environment * const env,
+            const ResolveCommandLineResolutionOptions & resolution_options,
+            const std::tr1::shared_ptr<const PackageID> & id,
+            const bool is_block)
+    {
+        const args::StringSetArg & s(is_block ?
+                resolution_options.a_no_blockers_from :
+                resolution_options.a_no_dependencies_from);
+
+        for (args::StringSetArg::ConstIterator a(s.begin_args()), a_end(s.end_args()) ;
+                a != a_end ; ++a)
+            if (match_package(*env, parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards),
+                        *id, MatchPackageOptions()))
+                return true;
+
+        return false;
+    }
+
     struct CareAboutDepFnVisitor
     {
+        const Environment * const env;
         const ResolveCommandLineResolutionOptions & resolution_options;
         const SanitisedDependency dep;
 
-        CareAboutDepFnVisitor(const ResolveCommandLineResolutionOptions & c, const SanitisedDependency & d) :
+        CareAboutDepFnVisitor(const Environment * const e,
+                const ResolveCommandLineResolutionOptions & c,
+                const SanitisedDependency & d) :
+            env(e),
             resolution_options(c),
             dep(d)
         {
         }
 
-        bool visit(const ExistingNoChangeDecision &) const
+        bool visit(const ExistingNoChangeDecision & decision) const
         {
+            if (ignore_dep_from(env, resolution_options, decision.existing_id(), dep.spec().if_block()))
+                return false;
+
             if (! is_enabled_dep(dep))
                 return false;
 
@@ -786,8 +812,11 @@ namespace
             throw InternalError(PALUDIS_HERE, "RemoveDecision shouldn't have deps");
         }
 
-        bool visit(const ChangesToMakeDecision &) const
+        bool visit(const ChangesToMakeDecision & decision) const
         {
+            if (ignore_dep_from(env, resolution_options, decision.origin_id(), dep.spec().if_block()))
+                return false;
+
             if (is_enabled_dep(dep))
                 return true;
 
@@ -795,11 +824,11 @@ namespace
         }
     };
 
-    bool care_about_dep_fn(const Environment * const, const ResolveCommandLineResolutionOptions & resolution_options,
+    bool care_about_dep_fn(const Environment * const env, const ResolveCommandLineResolutionOptions & resolution_options,
             const Resolvent &, const std::tr1::shared_ptr<const Resolution> & resolution,
             const SanitisedDependency & dep)
     {
-        CareAboutDepFnVisitor v(resolution_options, dep);
+        CareAboutDepFnVisitor v(env, resolution_options, dep);
         return resolution->decision()->accept_returning<bool>(v);
     }
 

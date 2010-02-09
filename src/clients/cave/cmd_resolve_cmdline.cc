@@ -143,6 +143,14 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
     a_no_follow_installed_dependencies(&g_dependency_options, "no-follow-installed-dependencies", 'n',
             "Ignore dependencies (except compiled-against dependencies, which are always taken) "
             "for installed packages. (default if --lazy)", true),
+    a_no_dependencies_from(&g_dependency_options, "no-dependencies-from", '0',
+            "Ignore dependencies (not blockers) from packages matching the supplied specification. May be "
+            "specified multiple times. Use '*/*' to ignore all dependencies. Use of this option can lead to "
+            "horrible breakages."),
+    a_no_blockers_from(&g_dependency_options, "no-blockers-from", '!',
+            "Ignore blockers from packages matching the supplied specification. May be specified "
+            "multiple times. Use '*/*' to ignore all blockers. Use of this option can lead to "
+            "horrible breakages."),
 
     g_suggestion_options(this, "Suggestion Options", "Control whether suggestions are taken. Suggestions that are "
             "already installed are instead treated as hard dependencies."),

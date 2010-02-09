@@ -61,7 +61,9 @@ namespace paludis
             args::ArgsGroup g_dependency_options;
             args::SwitchArg a_follow_installed_build_dependencies;
             args::SwitchArg a_no_follow_installed_dependencies;
-//
+            args::StringSetArg a_no_dependencies_from;
+            args::StringSetArg a_no_blockers_from;
+
             args::ArgsGroup g_suggestion_options;
             args::EnumArg a_suggestions;
             args::EnumArg a_recommendations;
