@@ -81,6 +81,13 @@ Timestamp::as_timespec() const
     return result;
 }
 
+struct timeval
+Timestamp::as_timeval() const
+{
+    struct timeval result = { _s, _ns / 1000 };
+    return result;
+}
+
 Timestamp
 Timestamp::now()
 {

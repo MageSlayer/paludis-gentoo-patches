@@ -24,6 +24,7 @@
 #include <paludis/util/operators.hh>
 #include <paludis/util/attributes.hh>
 #include <sys/stat.h>
+#include <sys/time.h>
 
 namespace paludis
 {
@@ -57,6 +58,7 @@ namespace paludis
             long nanoseconds() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             struct timespec as_timespec() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            struct timeval as_timeval() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             static Timestamp now() PALUDIS_ATTRIBUTE((warn_unused_result));
     };

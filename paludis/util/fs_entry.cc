@@ -21,6 +21,7 @@
 
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/log.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/sequence.hh>
@@ -34,6 +35,7 @@
 #include <paludis/util/wrapped_output_iterator-impl.hh>
 
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <utime.h>
 #include <dirent.h>
@@ -626,18 +628,40 @@ FSEntry::rmdir()
 bool
 FSEntry::utime(const Timestamp & t)
 {
-    struct timespec ts[2] = { t.as_timespec(), t.as_timespec() };
-    if (0 == ::utimensat(AT_FDCWD, _imp->path.c_str(), ts, 0))
+    Context context("When setting utime for '" + stringify(_imp->path) + "':");
+
+#ifdef HAVE_UTIMENSAT
+    static bool utimensat_works(true);
+
+    if (utimensat_works)
+    {
+        struct timespec ts[2] = { t.as_timespec(), t.as_timespec() };
+        if (0 == ::utimensat(AT_FDCWD, _imp->path.c_str(), ts, 0))
+            return true;
+
+        int e(errno);
+        if (e == ENOENT)
+            return false;
+        else if (e == ENOSYS)
+        {
+            utimensat_works = false;
+            Log::get_instance()->message("util.fs_entry.utime.utimensat_unimplemented", ll_debug, lc_context)
+                << "utimensat(2) not implemented by this kernel, using utimes(2)";
+        }
+        else
+            throw FSError("utimensat '" + _imp->path + "' failed: " + ::strerror(e));
+    }
+#endif
+
+    struct timeval tv[2] = { t.as_timeval(), t.as_timeval() };
+    if (0 == ::utimes(_imp->path.c_str(), tv))
         return true;
 
     int e(errno);
     if (e == ENOENT)
         return false;
     else
-    {
-        Context context("When setting utime for '" + stringify(_imp->path) + "':");
-        throw FSError("utime '" + _imp->path + "' failed: " + ::strerror(e));
-    }
+        throw FSError("utimes '" + _imp->path + "' failed: " + ::strerror(e));
 }
 
 std::string

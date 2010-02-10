@@ -147,6 +147,10 @@ dnl {{{ check for lchflags function
 AC_CHECK_FUNCS([lchflags])
 dnl }}}
 
+dnl {{{ check for utimensat
+AC_CHECK_FUNCS([utimensat])
+dnl }}}
+
 dnl {{{ check for listxattrf etc
 AC_MSG_CHECKING([for f*xattr function family])
 AC_COMPILE_IFELSE([

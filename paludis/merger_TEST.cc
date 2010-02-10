@@ -43,6 +43,15 @@ namespace
     {
         return std::make_pair(-1, -1);
     }
+
+    bool
+    timestamps_nearly_equal(const Timestamp & i_set, const Timestamp & reference)
+    {
+        return i_set == reference ||
+            (i_set.seconds() == reference.seconds() &&
+             i_set.nanoseconds() % 1000 == 0 &&
+             i_set.nanoseconds() / 1000 == reference.nanoseconds() / 1000);
+    }
 }
 
 namespace paludis
@@ -551,11 +560,11 @@ namespace test_cases
             TEST_CHECK(merger.check());
             merger.merge();
 
-            TEST_CHECK((root_dir / "new_file").mtim() == m_new);
-            TEST_CHECK((root_dir / "existing_file").mtim() == m_existing);
+            TEST_CHECK(timestamps_nearly_equal((root_dir / "new_file").mtim(), m_new));
+            TEST_CHECK(timestamps_nearly_equal((root_dir / "existing_file").mtim(), m_existing));
             TEST_CHECK(Timestamp::now().seconds() - (root_dir / "dodgy_file").mtim().seconds() >= (60 * 60 * 24 * 365 * 3) - 1);
 
-            TEST_CHECK((root_dir / "dir" / "new_file").mtim() == m_dir_new);
+            TEST_CHECK(timestamps_nearly_equal((root_dir / "dir" / "new_file").mtim(), m_dir_new));
             TEST_CHECK(Timestamp::now().seconds() - (root_dir / "dir" / "dodgy_file").mtim().seconds() >= (60 * 60 * 24 * 365 * 3) - 1);
         }
     } test_merger_mtimes;
@@ -573,12 +582,12 @@ namespace test_cases
             TEST_CHECK(merger.check());
             merger.merge();
 
-            TEST_CHECK((root_dir / "new_file").mtim() == m_new);
-            TEST_CHECK((root_dir / "existing_file").mtim() == m_existing);
-            TEST_CHECK((root_dir / "dodgy_file").mtim() == FSEntry("merger_TEST_dir/reference").mtim());
+            TEST_CHECK(timestamps_nearly_equal((root_dir / "new_file").mtim(), m_new));
+            TEST_CHECK(timestamps_nearly_equal((root_dir / "existing_file").mtim(), m_existing));
+            TEST_CHECK(timestamps_nearly_equal((root_dir / "dodgy_file").mtim(), FSEntry("merger_TEST_dir/reference").mtim()));
 
-            TEST_CHECK((root_dir / "dir" / "new_file").mtim() == m_dir_new);
-            TEST_CHECK((root_dir / "dir" / "dodgy_file").mtim() == FSEntry("merger_TEST_dir/reference").mtim());
+            TEST_CHECK(timestamps_nearly_equal((root_dir / "dir" / "new_file").mtim(), m_dir_new));
+            TEST_CHECK(timestamps_nearly_equal((root_dir / "dir" / "dodgy_file").mtim(), FSEntry("merger_TEST_dir/reference").mtim()));
         }
     } test_merger_mtimes_fix;
 }
