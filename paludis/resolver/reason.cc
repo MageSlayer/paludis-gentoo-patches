@@ -111,17 +111,19 @@ namespace paludis
     template <>
     struct Implementation<PresetReason>
     {
+        const std::string explanation;
         const std::tr1::shared_ptr<const Reason> reason_for_preset;
 
-        Implementation(const std::tr1::shared_ptr<const Reason> & r) :
+        Implementation(const std::string & m, const std::tr1::shared_ptr<const Reason> & r) :
+            explanation(m),
             reason_for_preset(r)
         {
         }
     };
 }
 
-PresetReason::PresetReason(const std::tr1::shared_ptr<const Reason> & r) :
-    PrivateImplementationPattern<PresetReason>(new Implementation<PresetReason>(r))
+PresetReason::PresetReason(const std::string & m, const std::tr1::shared_ptr<const Reason> & r) :
+    PrivateImplementationPattern<PresetReason>(new Implementation<PresetReason>(m, r))
 {
 }
 
@@ -130,16 +132,23 @@ PresetReason::~PresetReason()
 }
 
 const std::tr1::shared_ptr<const Reason>
-PresetReason::reason_for_preset() const
+PresetReason::maybe_reason_for_preset() const
 {
     return _imp->reason_for_preset;
+}
+
+const std::string
+PresetReason::maybe_explanation() const
+{
+    return _imp->explanation;
 }
 
 void
 PresetReason::serialise(Serialiser & s) const
 {
     s.object("PresetReason")
-        .member(SerialiserFlags<serialise::might_be_null>(), "reason_for_preset", reason_for_preset())
+        .member(SerialiserFlags<>(), "maybe_explanation", maybe_explanation())
+        .member(SerialiserFlags<serialise::might_be_null>(), "maybe_reason_for_preset", maybe_reason_for_preset())
         ;
 }
 
@@ -201,7 +210,8 @@ Reason::deserialise(Deserialisation & d)
     {
         Deserialisator v(d, "PresetReason");
         return make_shared_ptr(new PresetReason(
-                    v.member<std::tr1::shared_ptr<Reason> >("reason_for_preset")
+                    v.member<std::string>("maybe_explanation"),
+                    v.member<std::tr1::shared_ptr<Reason> >("maybe_reason_for_preset")
                     ));
     }
     else if (d.class_name() == "SetReason")

@@ -84,10 +84,15 @@ namespace paludis
             public ImplementAcceptMethods<Reason, PresetReason>
         {
             public:
-                PresetReason(const std::tr1::shared_ptr<const Reason> &);
+                PresetReason(
+                        const std::string &,
+                        const std::tr1::shared_ptr<const Reason> &);
                 ~PresetReason();
 
-                const std::tr1::shared_ptr<const Reason> reason_for_preset() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::tr1::shared_ptr<const Reason> maybe_reason_for_preset() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const std::string maybe_explanation() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
                 virtual void serialise(Serialiser &) const;
         };
 

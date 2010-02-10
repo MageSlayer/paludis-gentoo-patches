@@ -619,7 +619,7 @@ namespace
             result->add(make_shared_ptr(new Constraint(make_named_values<Constraint>(
                                 value_for<n::destination_type>(resolvent.destination_type()),
                                 value_for<n::nothing_is_fine_too>(false),
-                                value_for<n::reason>(make_shared_ptr(new PresetReason(make_shared_ptr(new TargetReason)))),
+                                value_for<n::reason>(make_shared_ptr(new PresetReason("is scm", make_null_shared_ptr()))),
                                 value_for<n::spec>(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(resolvent.package())),
                                 value_for<n::untaken>(false),
                                 value_for<n::use_existing>(ue_only_if_transient)
@@ -1261,7 +1261,7 @@ paludis::cave::resolve_common(
             i_end(resolution_options.a_preset.end_args()) ;
             i != i_end ; ++i)
     {
-        const std::tr1::shared_ptr<const Reason> reason(new PresetReason(make_shared_ptr(new TargetReason)));
+        const std::tr1::shared_ptr<const Reason> reason(new PresetReason("preset", make_null_shared_ptr()));
         PackageDepSpec spec(parse_user_package_dep_spec(*i, env.get(), UserPackageDepSpecOptions()));
         const std::tr1::shared_ptr<const Resolvents> resolvents(get_resolvents_for_fn(
                     env.get(), resolution_options, spec, make_null_shared_ptr(), reason));

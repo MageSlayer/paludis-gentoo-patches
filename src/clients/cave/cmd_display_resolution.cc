@@ -162,8 +162,14 @@ namespace
 
         std::pair<std::string, bool> visit(const PresetReason & r) const
         {
-            std::pair<std::string, bool> rr(r.reason_for_preset()->accept_returning<std::pair<std::string, bool> >(*this));
-            return std::make_pair("preset (" + rr.first + ")", rr.second);
+            std::pair<std::string, bool> rr("", false);
+            if (r.maybe_reason_for_preset())
+                rr = r.maybe_reason_for_preset()->accept_returning<std::pair<std::string, bool> >(*this);
+
+            rr.first = r.maybe_explanation() + (r.maybe_explanation().empty() || rr.first.empty() ? "" : " ")
+                + rr.first;
+
+            return rr;
         }
     };
 
