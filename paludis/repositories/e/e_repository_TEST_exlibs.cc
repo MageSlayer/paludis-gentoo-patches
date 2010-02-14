@@ -201,6 +201,8 @@ namespace test_cases
     ExlibsTest test_noarray_bad("noarray-bad", unsupported);
     ExlibsTest test_scalar_required("scalar-required", unsupported);
     ExlibsTest test_array_required("array-required", unsupported);
+    ExlibsTest test_exlib_dot_with_exparam("exlib-dot-with-exparam", unsupported);
+    ExlibsTest test_exlib_plus_with_exparam("exlib-plus-with-exparam", unsupported);
     ExlibsTest test_illegal_in_global_scope("illegal-in-global-scope", unsupported);
     ExlibsTest test_illegal_in_global_scope_in_func("illegal-in-global-scope-in-func", success);
     ExlibsTest test_called_cross_phase("called-cross-phase", throws_InstallActionError);

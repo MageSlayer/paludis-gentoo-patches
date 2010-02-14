@@ -37,7 +37,10 @@ exparam()
 
 exparam_var_name()
 {
-    echo EXPARAMVAR_${1//-/__dash__}
+    local var=EXPARAMVAR_${1//-/__dash__}
+    var=${var//./__dot__}
+    var=${var//+/__plus__}
+    echo ${var}
 }
 
 exparam_print()

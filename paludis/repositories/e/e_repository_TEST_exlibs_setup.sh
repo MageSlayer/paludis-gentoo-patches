@@ -506,6 +506,20 @@ cat <<'END' > packages/cat/boolean-notreally/boolean-notreally-1.ebuild || exit 
 SLOT="0"
 require boolean-notreally [ t=monkey ]
 END
+mkdir -p "packages/cat/exlib-dot-with-exparam"
+cat <<'END' > packages/cat/exlib-dot-with-exparam/foo.bar.exlib
+myexparam foo
+END
+cat <<'END' > packages/cat/exlib-dot-with-exparam/exlib-dot-with-exparam-1.ebuild
+require foo.bar [ foo=bar ]
+END
+mkdir -p "packages/cat/exlib-plus-with-exparam"
+cat <<'END' > packages/cat/exlib-plus-with-exparam/foo+bar.exlib
+myexparam foo
+END
+cat <<'END' > packages/cat/exlib-plus-with-exparam/exlib-plus-with-exparam-1.ebuild
+require foo+bar [ foo=bar ]
+END
 mkdir -p "packages/cat/illegal-in-global-scope"
 cat <<'END' > packages/cat/illegal-in-global-scope/illegal-in-global-scope-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
