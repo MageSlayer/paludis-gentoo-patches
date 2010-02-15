@@ -25,17 +25,17 @@ ever()
     local r="1;"
     case "${1}" in
         split)
-            [[ "${#@}" != 2 ]] && die "$FUNCNAME $1 takes one extra argument"
+            [[ "${#@}" != 1 ]] && [[ "${#@}" != 2 ]] && die "$FUNCNAME $1 takes at most one extra argument"
             r=$(paludis_pipe_command EVER "$EAPI" SPLIT "${2:-${PV}}" )
         ;;
 
         split_all)
-            [[ "${#@}" != 2 ]] && die "$FUNCNAME $1 takes one extra argument"
+            [[ "${#@}" != 1 ]] && [[ "${#@}" != 2 ]] && die "$FUNCNAME $1 takes at most one extra argument"
             r=$(paludis_pipe_command EVER "$EAPI" SPLIT_ALL "${2:-${PV}}" )
         ;;
 
         major)
-            [[ "${#@}" != 1 ]] && [[ "${#@}" != 2 ]] && die "$FUNCNAME $1 takes zero or one extra arguments"
+            [[ "${#@}" != 1 ]] && [[ "${#@}" != 2 ]] && die "$FUNCNAME $1 takes at most one extra argument"
             r=$(paludis_pipe_command EVER "$EAPI" RANGE 1 "${2:-${PV}}" )
         ;;
 
@@ -77,7 +77,7 @@ ever()
         ;;
 
         is_scm)
-            [[ "${#@}" != 1 ]] && [[ "${#@}" != 2 ]] && die "$FUNCNAME $1 takes zero or one extra arguments"
+            [[ "${#@}" != 1 ]] && [[ "${#@}" != 2 ]] && die "$FUNCNAME $1 takes at most one extra argument"
             r=$(paludis_pipe_command EVER "$EAPI" IS_SCM "${2:-${PV}}" )
         ;;
 
