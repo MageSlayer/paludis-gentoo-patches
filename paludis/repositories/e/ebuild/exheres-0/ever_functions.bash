@@ -76,6 +76,11 @@ ever()
             r=$(paludis_pipe_command EVER "$EAPI" AT_LEAST "${2}" "${3:-${PVR}}" )
         ;;
 
+        is_scm)
+            [[ "${#@}" != 1 ]] && [[ "${#@}" != 2 ]] && die "$FUNCNAME $1 takes zero or one extra arguments"
+            r=$(paludis_pipe_command EVER "$EAPI" IS_SCM "${2:-${PV}}" )
+        ;;
+
         *)
             die "ever subcommand ${1} unrecognised"
         ;;

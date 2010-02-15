@@ -449,6 +449,18 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                             v2(tokens[4], eapi->supported()->version_spec_options());
                 return v2 >= v1 ? "O0;" : "O1;";
             }
+            else if (tokens[2] == "IS_SCM")
+            {
+                if (tokens.size() != 4)
+                {
+                    Log::get_instance()->message("e.pipe_commands.ever.is_scm.bad", ll_warning, lc_context) << "Got bad EVER IS_SCM pipe command";
+                    return "Ebad EVER " + tokens[2] + " command {'" + join(tokens.begin(), tokens.end(), "', '") + "'}";
+                }
+
+                VersionSpec v(tokens[3], eapi->supported()->version_spec_options());
+
+                return v.is_scm() ? "O0;" : "O1;";
+            }
             else if (tokens[2] == "SPLIT" || tokens[2] == "SPLIT_ALL")
             {
                 bool all(tokens[2] == "SPLIT_ALL");

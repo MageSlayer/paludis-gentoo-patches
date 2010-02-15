@@ -173,6 +173,7 @@ namespace test_cases
     EverTest test_split("ever-split");
     EverTest test_split_all("ever-split-all");
     EverTest test_at_least("ever-at-least");
+    EverTest test_is_scm("ever-is_scm");
     EverTest test_major("ever-major");
     EverTest test_range("ever-range");
     EverTest test_remainder("ever-remainder");

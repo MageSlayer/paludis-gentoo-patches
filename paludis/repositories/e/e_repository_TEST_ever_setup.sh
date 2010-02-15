@@ -59,6 +59,29 @@ pkg_setup() {
     ever at_least 1.4 1.2 && die "at_least 1.4 1.2"
 }
 END
+mkdir -p "packages/cat/ever-is_scm"
+cat <<'END' > packages/cat/ever-is_scm/ever-is_scm-1.ebuild || exit 1
+if ever is_scm ; then
+    DESCRIPTION="Not The Long Description"
+    SUMMARY="Not The Short Description"
+else
+    DESCRIPTION="The Long Description"
+    SUMMARY="The Short Description"
+fi
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+
+pkg_setup() {
+    ever is_scm scm || die "is_scm scm"
+    ever is_scm 1.0-scm || die "is_scm 1.0-scm"
+    ever is_scm 1 && die "is_scm 1"
+    ever is_scm && die "is_scm"
+}
+END
 mkdir -p "packages/cat/ever-split"
 cat <<'END' > packages/cat/ever-split/ever-split-1.ebuild || exit 1
 HOMEPAGE="http://example.com/"
