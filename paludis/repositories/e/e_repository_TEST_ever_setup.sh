@@ -83,7 +83,7 @@ pkg_setup() {
 }
 END
 mkdir -p "packages/cat/ever-split"
-cat <<'END' > packages/cat/ever-split/ever-split-1.ebuild || exit 1
+cat <<'END' > packages/cat/ever-split/ever-split-1.8.4.ebuild || exit 1
 HOMEPAGE="http://example.com/"
 DOWNLOADS=""
 SLOT="0"
@@ -102,10 +102,12 @@ pkg_setup() {
     check 3.0_p2 "3 0 p2"
     check 20040905 "20040905"
     check 3.0c-r1 "3 0 c r1"
+    b=$(ever split)
+    [[ "${b}" == "1 8 4" ]] || die "got $b wanted 1 8 4"
 }
 END
 mkdir -p "packages/cat/ever-split-all"
-cat <<'END' > packages/cat/ever-split-all/ever-split-all-1.ebuild || exit 1
+cat <<'END' > packages/cat/ever-split-all/ever-split-all-1.8.4.ebuild || exit 1
 HOMEPAGE="http://example.com/"
 DOWNLOADS=""
 SLOT="0"
@@ -124,6 +126,8 @@ pkg_setup() {
     check 3.0_p2 "3 . 0 _ p2"
     check 20040905 "20040905"
     check 3.0c-r1 "3 . 0 c - r1"
+    b=$(ever split_all)
+    [[ "${b}" == "1 . 8 . 4" ]] || die "got $b wanted 1 . 8 . 4"
 }
 END
 mkdir -p "packages/cat/ever-major"
