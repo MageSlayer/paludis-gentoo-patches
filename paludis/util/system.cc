@@ -815,6 +815,7 @@ paludis::run_command(const Command & cmd)
         internal_command_reader->clear_write_fd();
 
         std::string pipe_command_buffer, internal_command_buffer;
+        std::string input_stream_pending;
         while (true)
         {
             fd_set read_fds, write_fds;
@@ -906,27 +907,26 @@ paludis::run_command(const Command & cmd)
                 if (cmd.input_stream() && (-1 != input_stream->write_fd())
                         && FD_ISSET(input_stream->write_fd(), &write_fds))
                 {
-                    bool eof(! cmd.input_stream()->good());
-
-                    while (! eof)
+                    while ((! input_stream_pending.empty()) || cmd.input_stream()->good())
                     {
-                        char c;
-                        if (cmd.input_stream()->get(c).good())
+                        if (input_stream_pending.empty() && cmd.input_stream()->good())
                         {
-                            int w(write(input_stream->write_fd(), &c, 1));
-                            if (0 == w || (-1 == w && (errno == EAGAIN || errno == EWOULDBLOCK)))
-                            {
-                                cmd.input_stream()->unget();
-                                break;
-                            }
-                            else if (-1 == w)
-                                throw RunCommandError("write failed: " + stringify(strerror(errno)));
+                            cmd.input_stream()->read(buf, 1024);
+                            input_stream_pending.assign(buf, cmd.input_stream()->gcount());
                         }
+
+                        int w(write(input_stream->write_fd(), input_stream_pending.c_str(),
+                                    input_stream_pending.length()));
+
+                        if (0 == w || (-1 == w && (errno == EAGAIN || errno == EWOULDBLOCK)))
+                            break;
+                        else if (-1 == w)
+                            throw RunCommandError("write failed: " + stringify(strerror(errno)));
                         else
-                            eof = true;
+                            input_stream_pending.erase(0, w);
                     }
 
-                    if (eof)
+                    if (input_stream_pending.empty() && ! cmd.input_stream()->good())
                     {
                         if (0 != close(input_stream->write_fd()))
                             throw RunCommandError("close failed: " + stringify(strerror(errno)));
