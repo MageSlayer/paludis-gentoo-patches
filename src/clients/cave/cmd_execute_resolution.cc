@@ -19,11 +19,13 @@
 
 #include "cmd_execute_resolution.hh"
 #include "cmd_resolve_cmdline.hh"
+#include "cmd_perform.hh"
 #include "exceptions.hh"
 #include "command_command_line.hh"
 #include "formats.hh"
 #include "colour_formatter.hh"
 #include <paludis/args/do_help.hh>
+#include <paludis/args/escape.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/system.hh>
@@ -136,34 +138,55 @@ namespace
             std::cout << std::string(stringify(last_x).length() + stringify(y).length() + 4, '\010');
         std::cout << x << " of " << y << std::flush;
 
-        std::string command(cmdline.program_options.a_perform_program.argument());
-        if (command.empty())
-            command = "$CAVE perform";
+        std::tr1::shared_ptr<Sequence<std::string> > args(new Sequence<std::string>);
 
-        command.append(" pretend --hooks --if-supported --managed-output ");
-        command.append(stringify(decision.origin_id()->uniquely_identifying_spec()));
-        command.append(" --x-of-y '" + stringify(x) + " of " + stringify(y) + "'");
+        args->push_back("pretend");
+        args->push_back("--hooks");
+        args->push_back("--if-supported");
+        args->push_back("--x-of-y");
+        args->push_back(stringify(x) + " of " + stringify(y));
+        args->push_back(stringify(decision.origin_id()->uniquely_identifying_spec()));
 
-        if (cmdline.import_options.a_unpackaged_repository_params.specified())
+        int retcode;
+
+        if (cmdline.program_options.a_perform_program.specified())
         {
-            for (args::StringSetArg::ConstIterator p(cmdline.import_options.a_unpackaged_repository_params.begin_args()),
-                    p_end(cmdline.import_options.a_unpackaged_repository_params.end_args()) ;
-                    p != p_end ; ++p)
-                command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " '" + *p + "'");
+            args->push_back("--managed-output");
+
+            if (cmdline.import_options.a_unpackaged_repository_params.specified())
+            {
+                for (args::StringSetArg::ConstIterator p(cmdline.import_options.a_unpackaged_repository_params.begin_args()),
+                        p_end(cmdline.import_options.a_unpackaged_repository_params.end_args()) ;
+                        p != p_end ; ++p)
+                {
+                    args->push_back("--" + cmdline.import_options.a_unpackaged_repository_params.long_name());
+                    args->push_back(*p);
+                }
+            }
+
+            std::string command(cmdline.program_options.a_perform_program.argument());
+            for (Sequence<std::string>::ConstIterator a(args->begin()), a_end(args->end()) ;
+                    a != a_end ; ++a)
+                command = command + " " + args::escape(*a);
+
+            IPCInputManager input_manager(env.get(), oe_exclusive);
+            paludis::Command cmd(command);
+            cmd
+                .with_pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler())
+                ;
+
+            retcode = run_command(cmd);
+            const std::tr1::shared_ptr<OutputManager> output_manager(input_manager.underlying_output_manager_if_constructed());
+            if (output_manager)
+            {
+                output_manager->nothing_more_to_come();
+                output_manager_goes_here = output_manager;
+            }
         }
-
-        IPCInputManager input_manager(env.get(), oe_exclusive);
-        paludis::Command cmd(command);
-        cmd
-            .with_pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler())
-            ;
-
-        int retcode(run_command(cmd));
-        const std::tr1::shared_ptr<OutputManager> output_manager(input_manager.underlying_output_manager_if_constructed());
-        if (output_manager)
+        else
         {
-            output_manager->nothing_more_to_come();
-            output_manager_goes_here = output_manager;
+            PerformCommand command;
+            retcode = command.run(env, args);
         }
 
         return 0 == retcode;
