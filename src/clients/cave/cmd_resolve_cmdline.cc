@@ -284,7 +284,9 @@ ResolveCommandLineProgramOptions::ResolveCommandLineProgramOptions(args::ArgsHan
     ArgsSection(h, "Program Options"),
     g_program_options(this, "Program Options", "Options controlling which programs are used to carry out "
             "various tasks. Any replacement to the standard program must provide exactly the same interface. "
-            "In all cases, $CAVE can be used to get the path of the main 'cave' executable."),
+            "In all cases, $CAVE can be used to get the path of the main 'cave' executable. Note that unless "
+            "an option is explicitly specified, an internal implementation of the default command might be used "
+            "instead of spawning a new process."),
     a_display_resolution_program(&g_program_options, "display-resolution-program", '\0', "The program used to display "
             "the resolution. Defaults to '$CAVE display-resolution'."),
     a_execute_resolution_program(&g_program_options, "execute-resolution-program", '\0', "The program used to execute "
