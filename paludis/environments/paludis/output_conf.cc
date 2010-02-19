@@ -245,6 +245,7 @@ namespace
             m->insert("action", "sync");
             m->insert("name", stringify(i.repository_name()));
             m->insert("full_name", stringify(i.repository_name()));
+            m->insert("summaries_supported", stringify(i.client_output_features()[cof_summary_at_end]));
         }
 
         void visit(const CreateOutputManagerForPackageIDActionInfo & i)
@@ -260,6 +261,7 @@ namespace
             m->insert("repository", stringify(i.package_id()->repository()->name()));
             m->insert("category", stringify(i.package_id()->name().category()));
             m->insert("package", stringify(i.package_id()->name().package()));
+            m->insert("summaries_supported", stringify(i.client_output_features()[cof_summary_at_end]));
         }
     };
 
@@ -424,6 +426,8 @@ OutputConf::create_named_output_manager(const std::string & s, const CreateOutpu
         std::string value;
         if (_imp->misc_vars.end() != _imp->misc_vars.find(condition_variable))
             value = _imp->misc_vars.find(condition_variable)->second;
+        else if (vars->end() != vars->find(condition_variable))
+            value = vars->find(condition_variable)->second;
 
         std::string alias_var;
         if (value.empty())
