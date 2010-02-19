@@ -28,6 +28,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/log.hh>
+#include <paludis/elike_annotations.hh>
 #include <paludis/elike_dep_parser.hh>
 #include <paludis/elike_conditional_dep_spec.hh>
 #include <paludis/elike_package_dep_spec.hh>
@@ -301,39 +302,9 @@ namespace
     {
     }
 
-    struct AnnotationsKey :
-        MetadataSectionKey
-    {
-        AnnotationsKey(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m)
-        {
-            for (Map<std::string, std::string>::ConstIterator k(m->begin()), k_end(m->end()) ;
-                    k != k_end ; ++k)
-                add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>(k->first, k->first, mkt_normal, k->second)));
-        }
-
-        void need_keys_added() const
-        {
-        }
-
-        virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
-        {
-            return "Annotations";
-        }
-
-        virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
-        {
-            return "Annotations";
-        }
-
-        virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result))
-        {
-            return mkt_normal;
-        }
-    };
-
     void set_annotations(std::tr1::shared_ptr<DepSpec> & spec, const std::tr1::shared_ptr<const Map<std::string, std::string> > & m)
     {
-        std::tr1::shared_ptr<AnnotationsKey> key(new AnnotationsKey(m));
+        std::tr1::shared_ptr<ELikeAnnotations> key(new ELikeAnnotations(m));
         spec->set_annotations_key(key);
     }
 
