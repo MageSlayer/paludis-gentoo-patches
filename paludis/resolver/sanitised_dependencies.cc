@@ -552,9 +552,9 @@ PackageOrBlockDepSpec::serialise(Serialiser & s) const
                 continue;
             }
 
-            ++n;
             w.member(SerialiserFlags<>(), "annotations_k_" + stringify(n), k->human_name());
             w.member(SerialiserFlags<>(), "annotations_v_" + stringify(n), k->value());
+            ++n;
         }
 
         w.member(SerialiserFlags<>(), "annotations_count", stringify(n));
