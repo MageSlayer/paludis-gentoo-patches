@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  * Copyright (c) 2006 Stephen Bennett
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -26,6 +26,8 @@
 #include <paludis/util/type_list.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/simple_visitor.hh>
+#include <paludis/util/sequence-fwd.hh>
+#include <tr1/memory>
 
 /** \file
  * Declarations for ArgsOption.
@@ -163,6 +165,16 @@ namespace paludis
                  * \since 0.40
                  */
                 virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+                /**
+                 * Ourself as a sequence of strings.
+                 *
+                 * For example, { '--foo', 'bar' } or { '--foo', 'bar', '--foo', 'baz' }
+                 * if not specified, an empty sequence.
+                 *
+                 * \since 0.46
+                 */
+                virtual const std::tr1::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
         };
 
         /**
@@ -192,6 +204,7 @@ namespace paludis
                 virtual bool can_be_negated() const;
 
                 virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::tr1::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         /**
@@ -234,6 +247,7 @@ namespace paludis
                 virtual bool can_be_negated() const;
 
                 virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::tr1::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         /**
@@ -338,6 +352,7 @@ namespace paludis
                 virtual bool can_be_negated() const;
 
                 virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::tr1::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         /**
@@ -383,6 +398,7 @@ namespace paludis
                 virtual bool can_be_negated() const;
 
                 virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::tr1::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
 
@@ -436,6 +452,7 @@ namespace paludis
                 virtual bool can_be_negated() const;
 
                 virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::tr1::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         /**
@@ -469,6 +486,7 @@ namespace paludis
                 virtual bool can_be_negated() const;
 
                 virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::tr1::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         /**
@@ -598,6 +616,7 @@ namespace paludis
                 virtual bool can_be_negated() const;
 
                 virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::tr1::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 

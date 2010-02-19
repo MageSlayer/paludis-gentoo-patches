@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -101,6 +101,15 @@ SwitchArg::forwardable_string() const
         return "";
 }
 
+const std::tr1::shared_ptr<Sequence<std::string> >
+SwitchArg::forwardable_args() const
+{
+    std::tr1::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
+    if (specified())
+        result->push_back("--" + long_name());
+    return result;
+}
+
 AliasArg::AliasArg(ArgsOption * const o, const std::string & our_long_name, bool is_hidden) :
     ArgsOption(o->group(), our_long_name, '\0', "Alias for --" + o->long_name()),
     _other(o), _hidden(is_hidden)
@@ -112,6 +121,13 @@ const std::string
 AliasArg::forwardable_string() const
 {
     return "";
+}
+
+const std::tr1::shared_ptr<Sequence<std::string> >
+AliasArg::forwardable_args() const
+{
+    std::tr1::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
+    return result;
 }
 
 StringArg::StringArg(ArgsGroup * const g, const std::string & our_long_name,
@@ -136,6 +152,18 @@ StringArg::forwardable_string() const
         return "--" + long_name() + " " + escape(argument());
     else
         return "";
+}
+
+const std::tr1::shared_ptr<Sequence<std::string> >
+StringArg::forwardable_args() const
+{
+    std::tr1::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
+    if (specified())
+    {
+        result->push_back("--" + long_name());
+        result->push_back(argument());
+    }
+    return result;
 }
 
 namespace paludis
@@ -226,6 +254,22 @@ StringSetArg::forwardable_string() const
         return "";
 }
 
+const std::tr1::shared_ptr<Sequence<std::string> >
+StringSetArg::forwardable_args() const
+{
+    std::tr1::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
+    if (specified())
+    {
+        for (ConstIterator i(begin_args()), i_end(end_args()) ;
+                i != i_end ; ++i)
+        {
+            result->push_back("--" + long_name());
+            result->push_back(*i);
+        }
+    }
+    return result;
+}
+
 namespace paludis
 {
     template<>
@@ -281,6 +325,22 @@ StringSequenceArg::forwardable_string() const
         return "";
 }
 
+const std::tr1::shared_ptr<Sequence<std::string> >
+StringSequenceArg::forwardable_args() const
+{
+    std::tr1::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
+    if (specified())
+    {
+        for (ConstIterator i(begin_args()), i_end(end_args()) ;
+                i != i_end ; ++i)
+        {
+            result->push_back("--" + long_name());
+            result->push_back(*i);
+        }
+    }
+    return result;
+}
+
 IntegerArg::IntegerArg(ArgsGroup * const our_group, const std::string & our_long_name,
                 char our_short_name, const std::string & our_description) :
     ArgsOption(our_group, our_long_name, our_short_name, our_description)
@@ -294,6 +354,18 @@ IntegerArg::forwardable_string() const
         return "--" + long_name() + " " + stringify(argument());
     else
         return "";
+}
+
+const std::tr1::shared_ptr<Sequence<std::string> >
+IntegerArg::forwardable_args() const
+{
+    std::tr1::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
+    if (specified())
+    {
+        result->push_back("--" + long_name());
+        result->push_back(stringify(argument()));
+    }
+    return result;
 }
 
 namespace paludis
@@ -457,6 +529,18 @@ EnumArg::forwardable_string() const
         return "--" + long_name() + " " + escape(argument());
     else
         return "";
+}
+
+const std::tr1::shared_ptr<Sequence<std::string> >
+EnumArg::forwardable_args() const
+{
+    std::tr1::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
+    if (specified())
+    {
+        result->push_back("--" + long_name());
+        result->push_back(argument());
+    }
+    return result;
 }
 
 StringSetArg::~StringSetArg()
