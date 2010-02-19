@@ -942,7 +942,8 @@ DisplayResolutionCommand::important() const
 int
 DisplayResolutionCommand::run(
         const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::tr1::shared_ptr<const Sequence<std::string > > & args,
+        const std::tr1::shared_ptr<const ResolverLists> & maybe_lists
         )
 {
     DisplayResolutionCommandLine cmdline;
@@ -954,13 +955,14 @@ DisplayResolutionCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (getenv_with_default("PALUDIS_SERIALISED_RESOLUTION_FD", "").empty())
-        throw args::DoHelp("PALUDIS_SERIALISED_RESOLUTION_FD must be provided");
-
     cmdline.import_options.apply(env);
 
-    std::tr1::shared_ptr<ResolverLists> lists;
+    std::tr1::shared_ptr<const ResolverLists> lists(maybe_lists);
+    if (! lists)
     {
+        if (getenv_with_default("PALUDIS_SERIALISED_RESOLUTION_FD", "").empty())
+            throw args::DoHelp("PALUDIS_SERIALISED_RESOLUTION_FD must be provided");
+
         int fd(destringify<int>(getenv_with_default("PALUDIS_SERIALISED_RESOLUTION_FD", "")));
         SafeIFStream deser_stream(fd);
         const std::string deser_str((std::istreambuf_iterator<char>(deser_stream)), std::istreambuf_iterator<char>());
@@ -975,6 +977,14 @@ DisplayResolutionCommand::run(
     display_explanations(env, *lists, cmdline);
 
     return 0;
+}
+
+int
+DisplayResolutionCommand::run(
+        const std::tr1::shared_ptr<Environment> & env,
+        const std::tr1::shared_ptr<const Sequence<std::string > > & args)
+{
+    return run(env, args, make_null_shared_ptr());
 }
 
 std::tr1::shared_ptr<args::ArgsHandler>

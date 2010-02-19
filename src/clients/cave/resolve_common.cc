@@ -20,6 +20,7 @@
 #include "resolve_common.hh"
 #include "cmd_resolve_display_callback.hh"
 #include "cmd_resolve_dump.hh"
+#include "cmd_display_resolution.hh"
 #include "exceptions.hh"
 #include "command_command_line.hh"
 #include "match_qpns.hh"
@@ -1026,8 +1027,8 @@ namespace
     }
 
     int display_resolution(
-            const std::tr1::shared_ptr<Environment> &,
-            const ResolverLists & resolution_lists,
+            const std::tr1::shared_ptr<Environment> & env,
+            const std::tr1::shared_ptr<const ResolverLists> & resolution_lists,
             const ResolveCommandLineResolutionOptions &,
             const ResolveCommandLineDisplayOptions & display_options,
             const ResolveCommandLineProgramOptions & program_options,
@@ -1039,11 +1040,9 @@ namespace
         StringListStream ser_stream;
         Thread ser_thread(std::tr1::bind(&ser_thread_func,
                     std::tr1::ref(ser_stream),
-                    std::tr1::cref(resolution_lists)));
+                    std::tr1::cref(*resolution_lists)));
 
-        std::string command(program_options.a_display_resolution_program.argument());
-        if (command.empty())
-            command = "$CAVE display-resolution";
+        std::tr1::shared_ptr<Sequence<std::string> > args(new Sequence<std::string>);
 
         for (args::ArgsSection::GroupsConstIterator g(display_options.begin()), g_end(display_options.end()) ;
                 g != g_end ; ++g)
@@ -1051,24 +1050,41 @@ namespace
             for (args::ArgsGroup::ConstIterator o(g->begin()), o_end(g->end()) ;
                     o != o_end ; ++o)
                 if ((*o)->specified())
-                    command = command + " " + (*o)->forwardable_string();
+                {
+                    const std::tr1::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
+                    std::copy(f->begin(), f->end(), args->back_inserter());
+                }
         }
 
         for (Sequence<std::string>::ConstIterator p(targets->begin()), p_end(targets->end()) ;
                 p != p_end ; ++p)
-            command = command + " " + args::escape(*p);
+            args->push_back(*p);
 
-        if (keys_if_import)
-            for (Map<std::string, std::string>::ConstIterator k(keys_if_import->begin()),
-                    k_end(keys_if_import->end()) ;
-                    k != k_end ; ++k)
-                command = command + " --unpackaged-repository-params '" + k->first + "=" + k->second + "'";
+        if (program_options.a_display_resolution_program.specified())
+        {
+            std::string command(program_options.a_display_resolution_program.argument());
 
-        paludis::Command cmd(command);
-        cmd
-            .with_input_stream(&ser_stream, -1, "PALUDIS_SERIALISED_RESOLUTION_FD");
+            if (keys_if_import)
+                for (Map<std::string, std::string>::ConstIterator k(keys_if_import->begin()),
+                        k_end(keys_if_import->end()) ;
+                        k != k_end ; ++k)
+                {
+                    args->push_back("--unpackaged-repository-params");
+                    args->push_back(k->first + "=" + k->second);
+                }
 
-        return run_command(cmd);
+            for (Sequence<std::string>::ConstIterator a(args->begin()), a_end(args->end()) ;
+                    a != a_end ; ++a)
+                command = command + " " + args::escape(*a);
+
+            paludis::Command cmd(command);
+            cmd
+                .with_input_stream(&ser_stream, -1, "PALUDIS_SERIALISED_RESOLUTION_FD");
+
+            return run_command(cmd);
+        }
+        else
+            return DisplayResolutionCommand().run(env, args, resolution_lists);
     }
 
     void perform_resolution(
@@ -1360,7 +1376,7 @@ paludis::cave::resolve_common(
 
         dump_if_requested(env, resolver, resolution_options);
 
-        retcode |= display_resolution(env, *resolver->lists(), resolution_options,
+        retcode |= display_resolution(env, resolver->lists(), resolution_options,
                 display_options, program_options, keys_if_import, targets);
 
         if (! resolver->lists()->taken_error_job_ids()->empty())
