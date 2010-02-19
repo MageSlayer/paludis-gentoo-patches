@@ -155,8 +155,6 @@ TeeOutputManager::factory_create(
 
     std::vector<std::string> children_keys;
     tokenise_whitespace(key_func("children"), std::back_inserter(children_keys));
-    if (children_keys.empty())
-        throw ConfigurationError("No children specified for TeeOutputManager");
 
     std::vector<std::string> messages_children_keys;
     tokenise_whitespace(key_func("messages_children"), std::back_inserter(messages_children_keys));
