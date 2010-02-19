@@ -38,6 +38,7 @@
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/log.hh>
 #include <paludis/resolver/resolutions.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
@@ -113,21 +114,63 @@ namespace
         }
     };
 
+    std::string get_annotation(
+            const std::tr1::shared_ptr<const MetadataSectionKey> & section,
+            const std::string & name)
+    {
+        MetadataSectionKey::MetadataConstIterator i(section->find_metadata(name));
+        if (i == section->end_metadata())
+            return "";
+
+        const MetadataValueKey<std::string> * value(
+                simple_visitor_cast<const MetadataValueKey<std::string> >(**i));
+        if (! value)
+        {
+            Log::get_instance()->message("cave.get_annotation.not_a_string", ll_warning, lc_context)
+                << "Annotation '" << (*i)->raw_name() << "' not a string. This is probably a bug.";
+            return "";
+        }
+
+        return value->value();
+    }
+
     struct ReasonNameGetter
     {
         const bool verbose;
+        const bool more_annotations;
 
-        ReasonNameGetter(const bool v) :
-            verbose(v)
+        ReasonNameGetter(const bool v, const bool m) :
+            verbose(v),
+            more_annotations(m)
         {
+        }
+
+        std::pair<std::string, bool> annotate(
+                const std::tr1::shared_ptr<const MetadataSectionKey> & key,
+                const std::pair<std::string, bool> unannotated) const
+        {
+            if ((! key) || (! more_annotations))
+                return unannotated;
+
+            std::pair<std::string, bool> result(unannotated);
+
+            std::string description_annotation(get_annotation(key, "description"));
+            if (! description_annotation.empty())
+            {
+                result.first = result.first + ": \"" + description_annotation + "\"";
+                result.second = true;
+            }
+
+            return result;
         }
 
         std::pair<std::string, bool> visit(const DependencyReason & r) const
         {
             if (r.sanitised_dependency().spec().if_block())
-                return std::make_pair(stringify(*r.sanitised_dependency().spec().if_block())
-                        + " from " + (verbose ? stringify(*r.from_id()) : stringify(r.from_id()->name())),
-                        true);
+                return annotate(r.sanitised_dependency().spec().if_block()->annotations_key(),
+                        std::make_pair(stringify(*r.sanitised_dependency().spec().if_block())
+                            + " from " + (verbose ? stringify(*r.from_id()) : stringify(r.from_id()->name())),
+                            true));
             else
             {
                 if (verbose)
@@ -136,16 +179,18 @@ namespace
                     if (! r.sanitised_dependency().original_specs_as_string().empty())
                         as = " (originally " + r.sanitised_dependency().original_specs_as_string() + ")";
 
-                    return std::make_pair(stringify(*r.sanitised_dependency().spec().if_package())
-                            + " from " + stringify(*r.from_id()) + ", key '"
-                            + r.sanitised_dependency().metadata_key_human_name() + "'"
-                            + (r.sanitised_dependency().active_dependency_labels_as_string().empty() ? "" :
-                                ", labelled '" + r.sanitised_dependency().active_dependency_labels_as_string() + "'")
-                            + as,
-                            false);
+                    return annotate(r.sanitised_dependency().spec().if_package()->annotations_key(),
+                            std::make_pair(stringify(*r.sanitised_dependency().spec().if_package())
+                                + " from " + stringify(*r.from_id()) + ", key '"
+                                + r.sanitised_dependency().metadata_key_human_name() + "'"
+                                + (r.sanitised_dependency().active_dependency_labels_as_string().empty() ? "" :
+                                    ", labelled '" + r.sanitised_dependency().active_dependency_labels_as_string() + "'")
+                                + as,
+                                false));
                 }
                 else
-                    return std::make_pair(stringify(r.from_id()->name()), false);
+                    return annotate(r.sanitised_dependency().spec().if_package()->annotations_key(),
+                            std::make_pair(stringify(r.from_id()->name()), false));
             }
         }
 
@@ -274,7 +319,7 @@ namespace
         {
             cout << "      * " << constraint_as_string(**c) << endl;
             cout << "        Because of ";
-            ReasonNameGetter g(true);
+            ReasonNameGetter g(true, true);
             cout << (*c)->reason()->accept_returning<std::pair<std::string, bool> >(g).first;
             cout << endl;
         }
@@ -485,7 +530,8 @@ namespace
     }
 
     void display_reasons(
-            const std::tr1::shared_ptr<const Resolution> & resolution
+            const std::tr1::shared_ptr<const Resolution> & resolution,
+            const bool more_annotations
             )
     {
         std::set<std::string> reasons, special_reasons;
@@ -493,7 +539,7 @@ namespace
                 c_end(resolution->constraints()->end()) ;
                 c != c_end ; ++c)
         {
-            ReasonNameGetter g(false);
+            ReasonNameGetter g(false, more_annotations);
             std::pair<std::string, bool> r((*c)->reason()->accept_returning<std::pair<std::string, bool> >(g));
             if (r.first.empty())
                 continue;
@@ -545,7 +591,8 @@ namespace
             const std::tr1::shared_ptr<Environment> & env,
             const DisplayResolutionCommandLine & cmdline,
             const ChangesToMakeDecision & decision,
-            const std::tr1::shared_ptr<const Resolution> & resolution)
+            const std::tr1::shared_ptr<const Resolution> & resolution,
+            const bool more_annotations)
     {
         std::string x("   ");
         if (! decision.best())
@@ -611,21 +658,23 @@ namespace
 
         display_one_description(env, cmdline, decision.origin_id(), ! old_id);
         display_choices(env, cmdline, decision.origin_id(), old_id);
-        display_reasons(resolution);
+        display_reasons(resolution, more_annotations);
     }
 
     void display_one_install(
             const std::tr1::shared_ptr<Environment> & env,
             const DisplayResolutionCommandLine & cmdline,
-            const SimpleInstallJob & job)
+            const SimpleInstallJob & job,
+            const bool more_annotations)
     {
-        display_one_installish(env, cmdline, *job.changes_to_make_decision(), job.resolution());
+        display_one_installish(env, cmdline, *job.changes_to_make_decision(), job.resolution(), more_annotations);
     }
 
     void display_one_uninstall(
             const std::tr1::shared_ptr<Environment> &,
             const DisplayResolutionCommandLine &,
-            const UninstallJob & job)
+            const UninstallJob & job,
+            const bool more_annotations)
     {
         cout << "<   " << c::bold_green() << job.resolution()->resolvent() << c::normal() << " ";
 
@@ -642,7 +691,7 @@ namespace
         }
 
         cout << endl;
-        display_reasons(job.resolution());
+        display_reasons(job.resolution(), more_annotations);
     }
 
     void display_special_job_decision(
@@ -660,7 +709,7 @@ namespace
             const UnableToMakeDecision & d)
     {
         cout << "!   " << c::bold_red() << resolution->resolvent() << c::normal() << endl;
-        display_reasons(resolution);
+        display_reasons(resolution, true);
 
         if (d.unsuitable_candidates()->empty())
             return;
@@ -681,7 +730,7 @@ namespace
                     c_end(u->unmet_constraints()->end()) ;
                     c != c_end ; ++c)
             {
-                ReasonNameGetter g(false);
+                ReasonNameGetter g(false, true);
                 std::string s(constraint_as_string(**c) + " from " +
                         (*c)->reason()->accept_returning<std::pair<std::string, bool> >(g).first);
 
@@ -715,29 +764,32 @@ namespace
         const DisplayResolutionCommandLine & cmdline;
         const ResolverLists & lists;
         const bool all;
+        const bool more_annotations;
 
         ShowJobsDisplayer(
                 const std::tr1::shared_ptr<Environment> & e,
                 const DisplayResolutionCommandLine & c,
                 const ResolverLists & l,
-                const bool a
+                const bool a,
+                const bool n
                 ) :
             env(e),
             cmdline(c),
             lists(l),
-            all(a)
+            all(a),
+            more_annotations(n)
         {
         }
 
         bool visit(const SimpleInstallJob & job)
         {
-            display_one_install(env, cmdline, job);
+            display_one_install(env, cmdline, job, more_annotations);
             return true;
         }
 
         bool visit(const UninstallJob & job)
         {
-            display_one_uninstall(env, cmdline, job);
+            display_one_uninstall(env, cmdline, job, more_annotations);
             return true;
         }
 
@@ -828,7 +880,7 @@ namespace
         {
             const std::tr1::shared_ptr<const Job> job(lists.jobs()->fetch(*i));
             ShowJobsDisplayer d(env, cmdline, lists, cmdline.display_options.a_show_all_jobs.specified() ||
-                    ! job->used_existing_packages_when_ordering()->empty());
+                    ! job->used_existing_packages_when_ordering()->empty(), false);
             any |= job->accept_returning<bool>(d);
 
             if (! job->used_existing_packages_when_ordering()->empty())
@@ -876,7 +928,7 @@ namespace
         {
             const std::tr1::shared_ptr<const Job> job(lists.jobs()->fetch(*i));
             ShowJobsDisplayer d(env, cmdline, lists, cmdline.display_options.a_show_all_jobs.specified() ||
-                    ! job->used_existing_packages_when_ordering()->empty());
+                    ! job->used_existing_packages_when_ordering()->empty(), true);
             if (! job->accept_returning<bool>(d))
                 throw InternalError(PALUDIS_HERE, "why didn't we get true?");
         }
