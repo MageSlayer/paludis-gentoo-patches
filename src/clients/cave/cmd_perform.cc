@@ -169,9 +169,11 @@ namespace
                 const std::tr1::shared_ptr<const PackageID> & id)
         {
             if (cmdline.a_managed_output.specified())
-                manager_if_ipc.reset(new OutputManagerFromIPC(e, id, oe_exclusive));
+                manager_if_ipc.reset(new OutputManagerFromIPC(e, id, oe_exclusive,
+                            ClientOutputFeatures() + cof_summary_at_end));
             else
-                manager_if_env.reset(new OutputManagerFromEnvironment(e, id, oe_exclusive));
+                manager_if_env.reset(new OutputManagerFromEnvironment(e, id, oe_exclusive,
+                            ClientOutputFeatures() + cof_summary_at_end));
         }
 
         const std::tr1::shared_ptr<OutputManager> operator() (const Action & a)

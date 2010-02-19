@@ -36,6 +36,7 @@
 #include <paludis/util/thread.hh>
 #include <paludis/util/pipe.hh>
 #include <paludis/util/mutex.hh>
+#include <paludis/util/options.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/create_output_manager_info.hh>
 #include <paludis/serialise.hh>
@@ -369,16 +370,18 @@ namespace paludis
         const Environment * const env;
         const std::tr1::shared_ptr<const PackageID> id;
         const OutputExclusivity exclusivity;
+        const ClientOutputFeatures client_output_features;
 
         int read_fd, write_fd;
 
         std::tr1::shared_ptr<OutputManager> result;
 
         Implementation(const Environment * const e, const std::tr1::shared_ptr<const PackageID> & i,
-                const OutputExclusivity x) :
+                const OutputExclusivity x, const ClientOutputFeatures & c) :
             env(e),
             id(i),
             exclusivity(x),
+            client_output_features(c),
             read_fd(destringify<int>(getenv_with_default("PALUDIS_IPC_READ_FD", "-1"))),
             write_fd(destringify<int>(getenv_with_default("PALUDIS_IPC_WRITE_FD", "-1")))
         {
@@ -397,8 +400,9 @@ namespace paludis
 
 OutputManagerFromIPC::OutputManagerFromIPC(const Environment * const e,
         const std::tr1::shared_ptr<const PackageID> & i,
-        const OutputExclusivity x) :
-    PrivateImplementationPattern<OutputManagerFromIPC>(new Implementation<OutputManagerFromIPC>(e, i, x))
+        const OutputExclusivity x,
+        const ClientOutputFeatures & c) :
+    PrivateImplementationPattern<OutputManagerFromIPC>(new Implementation<OutputManagerFromIPC>(e, i, x, c))
 {
 }
 
@@ -411,7 +415,7 @@ OutputManagerFromIPC::operator() (const Action & a)
 {
     if (! _imp->result)
     {
-        CreateOutputManagerForPackageIDActionInfo info(_imp->id, a, _imp->exclusivity);
+        CreateOutputManagerForPackageIDActionInfo info(_imp->id, a, _imp->exclusivity, _imp->client_output_features);
         _imp->result.reset(new IPCOutputManager(_imp->read_fd, _imp->write_fd, info));
     }
     return _imp->result;

@@ -91,15 +91,18 @@ namespace paludis
         const std::string action_name;
         const std::tr1::shared_ptr<const Set<std::string> > action_flags;
         const OutputExclusivity output_exclusivity;
+        const ClientOutputFeatures client_output_features;
 
         Implementation(const std::tr1::shared_ptr<const PackageID> & i,
                 const std::string & a,
                 const std::tr1::shared_ptr<const Set<std::string> > & f,
-                const OutputExclusivity e) :
+                const OutputExclusivity e,
+                const ClientOutputFeatures & c) :
             id(i),
             action_name(a),
             action_flags(f),
-            output_exclusivity(e)
+            output_exclusivity(e),
+            client_output_features(c)
         {
         }
     };
@@ -109,10 +112,12 @@ namespace paludis
     {
         const RepositoryName repo_name;
         const OutputExclusivity output_exclusivity;
+        const ClientOutputFeatures client_output_features;
 
-        Implementation(const RepositoryName & r, const OutputExclusivity e) :
+        Implementation(const RepositoryName & r, const OutputExclusivity e, const ClientOutputFeatures & c) :
             repo_name(r),
-            output_exclusivity(e)
+            output_exclusivity(e),
+            client_output_features(c)
         {
         }
     };
@@ -132,10 +137,11 @@ CreateOutputManagerInfo::deserialise(Deserialisation & d)
 CreateOutputManagerForPackageIDActionInfo::CreateOutputManagerForPackageIDActionInfo(
         const std::tr1::shared_ptr<const PackageID> & i,
         const Action & a,
-        const OutputExclusivity e) :
+        const OutputExclusivity e,
+        const ClientOutputFeatures & c) :
     PrivateImplementationPattern<CreateOutputManagerForPackageIDActionInfo>(
             new Implementation<CreateOutputManagerForPackageIDActionInfo>(i, a.simple_name(),
-                get_flags(a), e))
+                get_flags(a), e, c))
 {
 }
 
@@ -143,9 +149,10 @@ CreateOutputManagerForPackageIDActionInfo::CreateOutputManagerForPackageIDAction
         const std::tr1::shared_ptr<const PackageID> & i,
         const std::string & a,
         const std::tr1::shared_ptr<const Set<std::string> > & f,
-        const OutputExclusivity e) :
+        const OutputExclusivity e,
+        const ClientOutputFeatures & c) :
     PrivateImplementationPattern<CreateOutputManagerForPackageIDActionInfo>(
-            new Implementation<CreateOutputManagerForPackageIDActionInfo>(i, a, f, e))
+            new Implementation<CreateOutputManagerForPackageIDActionInfo>(i, a, f, e, c))
 {
 }
 
@@ -177,6 +184,12 @@ CreateOutputManagerForPackageIDActionInfo::output_exclusivity() const
     return _imp->output_exclusivity;
 }
 
+const ClientOutputFeatures
+CreateOutputManagerForPackageIDActionInfo::client_output_features() const
+{
+    return _imp->client_output_features;
+}
+
 void
 CreateOutputManagerForPackageIDActionInfo::serialise(Serialiser & s) const
 {
@@ -185,6 +198,7 @@ CreateOutputManagerForPackageIDActionInfo::serialise(Serialiser & s) const
         .member(SerialiserFlags<>(), "action_name", action_name())
         .member(SerialiserFlags<>(), "output_exclusivity", stringify(output_exclusivity()))
         .member(SerialiserFlags<serialise::might_be_null>(), "package_id", package_id())
+        .member(SerialiserFlags<>(), "client_output_features", client_output_features())
         ;
 }
 
@@ -202,14 +216,15 @@ CreateOutputManagerForPackageIDActionInfo::deserialise(Deserialisation & d)
                 v.member<std::tr1::shared_ptr<const PackageID> >("package_id"),
                 v.member<std::string>("action_name"),
                 action_flags,
-                destringify<OutputExclusivity>(v.member<std::string>("output_exclusivity"))
+                destringify<OutputExclusivity>(v.member<std::string>("output_exclusivity")),
+                v.member<ClientOutputFeatures>("client_output_features")
                 ));
 }
 
 CreateOutputManagerForRepositorySyncInfo::CreateOutputManagerForRepositorySyncInfo(
-        const RepositoryName & r, const OutputExclusivity e) :
+        const RepositoryName & r, const OutputExclusivity e, const ClientOutputFeatures & c) :
     PrivateImplementationPattern<CreateOutputManagerForRepositorySyncInfo>(
-            new Implementation<CreateOutputManagerForRepositorySyncInfo>(r, e))
+            new Implementation<CreateOutputManagerForRepositorySyncInfo>(r, e, c))
 {
 }
 
@@ -229,12 +244,19 @@ CreateOutputManagerForRepositorySyncInfo::output_exclusivity() const
     return _imp->output_exclusivity;
 }
 
+const ClientOutputFeatures
+CreateOutputManagerForRepositorySyncInfo::client_output_features() const
+{
+    return _imp->client_output_features;
+}
+
 void
 CreateOutputManagerForRepositorySyncInfo::serialise(Serialiser & s) const
 {
     s.object("CreateOutputManagerForRepositorySyncInfo")
         .member(SerialiserFlags<>(), "repository_name", stringify(repository_name()))
         .member(SerialiserFlags<>(), "output_exclusivity", stringify(output_exclusivity()))
+        .member(SerialiserFlags<>(), "client_output_features", client_output_features())
         ;
 }
 
@@ -244,7 +266,8 @@ CreateOutputManagerForRepositorySyncInfo::deserialise(Deserialisation & d)
     Deserialisator v(d, "CreateOutputManagerForRepositorySyncInfo");
     return make_shared_ptr(new CreateOutputManagerForRepositorySyncInfo(
                 RepositoryName(v.member<std::string>("repo_name")),
-                destringify<OutputExclusivity>(v.member<std::string>("output_exclusivity"))
+                destringify<OutputExclusivity>(v.member<std::string>("output_exclusivity")),
+                v.member<ClientOutputFeatures>("client_output_features")
                 ));
 }
 

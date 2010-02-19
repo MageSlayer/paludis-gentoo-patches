@@ -68,18 +68,23 @@ namespace paludis
     {
         public:
             /**
-             * \since 0.44
+             * \since 0.46
              */
             CreateOutputManagerForPackageIDActionInfo(
                     const std::tr1::shared_ptr<const PackageID> & id,
                     const std::string & action_name,
                     const std::tr1::shared_ptr<const Set<std::string> > & action_flags,
-                    const OutputExclusivity output_exclusivity);
+                    const OutputExclusivity output_exclusivity,
+                    const ClientOutputFeatures & output_features);
 
+            /**
+             * \since 0.46
+             */
             CreateOutputManagerForPackageIDActionInfo(
                     const std::tr1::shared_ptr<const PackageID> & id,
                     const Action &,
-                    const OutputExclusivity output_exclusivity);
+                    const OutputExclusivity output_exclusivity,
+                    const ClientOutputFeatures & output_features);
 
             ~CreateOutputManagerForPackageIDActionInfo();
 
@@ -96,6 +101,11 @@ namespace paludis
             const std::tr1::shared_ptr<const Set<std::string> > action_flags() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             OutputExclusivity output_exclusivity() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * \since 0.46
+             */
+            const ClientOutputFeatures client_output_features() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void serialise(Serialiser &) const;
 
@@ -117,9 +127,13 @@ namespace paludis
         public ImplementAcceptMethods<CreateOutputManagerInfo, CreateOutputManagerForRepositorySyncInfo>
     {
         public:
+            /**
+             * \since 0.46
+             */
             CreateOutputManagerForRepositorySyncInfo(
                     const RepositoryName & repo_name,
-                    const OutputExclusivity);
+                    const OutputExclusivity,
+                    const ClientOutputFeatures &);
 
             ~CreateOutputManagerForRepositorySyncInfo();
 
@@ -129,6 +143,11 @@ namespace paludis
             const RepositoryName repository_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             OutputExclusivity output_exclusivity() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * \since 0.46
+             */
+            const ClientOutputFeatures client_output_features() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void serialise(Serialiser &) const;
 

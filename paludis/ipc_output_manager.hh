@@ -94,7 +94,8 @@ namespace paludis
             OutputManagerFromIPC(
                     const Environment * const,
                     const std::tr1::shared_ptr<const PackageID> &,
-                    const OutputExclusivity
+                    const OutputExclusivity,
+                    const ClientOutputFeatures &
                     );
 
             ~OutputManagerFromIPC();

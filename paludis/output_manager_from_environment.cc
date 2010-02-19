@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,6 +20,7 @@
 #include <paludis/output_manager_from_environment.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/options.hh>
 #include <paludis/environment.hh>
 #include <paludis/create_output_manager_info.hh>
 #include <paludis/standard_output_manager.hh>
@@ -34,14 +35,16 @@ namespace paludis
         const Environment * const env;
         const std::tr1::shared_ptr<const PackageID> id;
         const OutputExclusivity output_exclusivity;
+        const ClientOutputFeatures client_output_features;
 
         std::tr1::shared_ptr<OutputManager> result;
 
         Implementation(const Environment * const e, const std::tr1::shared_ptr<const PackageID> & i,
-                const OutputExclusivity x) :
+                const OutputExclusivity x, const ClientOutputFeatures & c) :
             env(e),
             id(i),
-            output_exclusivity(x)
+            output_exclusivity(x),
+            client_output_features(c)
         {
         }
     };
@@ -50,8 +53,10 @@ namespace paludis
 OutputManagerFromEnvironment::OutputManagerFromEnvironment(
         const Environment * const e,
         const std::tr1::shared_ptr<const PackageID> & i,
-        const OutputExclusivity x) :
-    PrivateImplementationPattern<OutputManagerFromEnvironment>(new Implementation<OutputManagerFromEnvironment>(e, i, x))
+        const OutputExclusivity x,
+        const ClientOutputFeatures & c) :
+    PrivateImplementationPattern<OutputManagerFromEnvironment>(new Implementation<OutputManagerFromEnvironment>(
+                e, i, x, c))
 {
 }
 
@@ -64,7 +69,8 @@ OutputManagerFromEnvironment::operator() (const Action & a)
 {
     if (! _imp->result)
     {
-        CreateOutputManagerForPackageIDActionInfo info(_imp->id, a, _imp->output_exclusivity);
+        CreateOutputManagerForPackageIDActionInfo info(_imp->id, a, _imp->output_exclusivity,
+                _imp->client_output_features);
         _imp->result = _imp->env->create_output_manager(info);
     }
     return _imp->result;

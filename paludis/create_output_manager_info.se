@@ -21,3 +21,23 @@ make_enum_OutputExclusivity()
 END
 }
 
+make_enum_ClientOutputFeature()
+{
+    prefix cof
+
+    key cof_summary_at_end      "Set if the client shows a summary at the end"
+
+    want_destringify
+
+    doxygen_comment << "END"
+        /**
+         * Options telling most CreateOutputManagerInfo subclasses what features our
+         * client supports, allowing environments to decide how to handle output
+         * managers.
+         *
+         * \see CreateOutputManagerInfo
+         * \see ClientOutputFeatures
+         */
+END
+}
+

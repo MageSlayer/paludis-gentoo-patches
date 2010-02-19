@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_CREATE_OUTPUT_MANAGER_INFO_FWD_HH 1
 
 #include <paludis/util/attributes.hh>
+#include <paludis/util/options-fwd.hh>
 #include <iosfwd>
 
 namespace paludis
@@ -30,6 +31,8 @@ namespace paludis
     class CreateOutputManagerForRepositorySyncInfo;
 
 #include <paludis/create_output_manager_info-se.hh>
+
+    typedef Options<ClientOutputFeature> ClientOutputFeatures;
 
 }
 

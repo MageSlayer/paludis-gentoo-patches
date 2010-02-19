@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -51,7 +51,7 @@ namespace
     {
         int return_code(0);
 
-        OutputManagerFromEnvironment output_manager_holder(env, p, oe_exclusive);
+        OutputManagerFromEnvironment output_manager_holder(env, p, oe_exclusive, ClientOutputFeatures());
         ConfigActionOptions options(make_named_values<ConfigActionOptions>(
                     value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
                     ));

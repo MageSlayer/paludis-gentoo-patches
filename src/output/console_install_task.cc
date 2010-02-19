@@ -1325,7 +1325,8 @@ ConsoleInstallTask::display_merge_list_entry_distsize(const DepListEntry & d,
     if (! d.package_id()->supports_action(action_test))
         return;
 
-    OutputManagerFromEnvironment output_manager_holder(environment(), d.package_id(), oe_exclusive);
+    OutputManagerFromEnvironment output_manager_holder(environment(), d.package_id(),
+            oe_exclusive, ClientOutputFeatures());
     FindDistfilesSize action(make_fetch_action_options(d, output_manager_holder), _already_downloaded);
     d.package_id()->perform_action(action);
     if (output_manager_holder.output_manager_if_constructed())

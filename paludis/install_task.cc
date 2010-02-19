@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -740,7 +740,8 @@ InstallTask::_pretend()
         {
             on_pretend_pre(*dep);
 
-            OutputManagerFromEnvironment output_manager_holder(_imp->env, dep->package_id(), oe_exclusive);
+            OutputManagerFromEnvironment output_manager_holder(_imp->env, dep->package_id(), oe_exclusive,
+                    ClientOutputFeatures());
 
             bool success(true);
             if (dep->package_id()->supports_action(pretend_action_query))
@@ -886,7 +887,8 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
         SupportsActionTest<FetchAction> test_fetch;
         if (dep->package_id()->supports_action(test_fetch))
         {
-            output_manager_holder.reset(new OutputManagerFromEnvironment(_imp->env, dep->package_id(), oe_exclusive));
+            output_manager_holder.reset(new OutputManagerFromEnvironment(_imp->env, dep->package_id(), oe_exclusive,
+                        ClientOutputFeatures()));
             FetchActionOptions fetch_options(make_fetch_action_options(*dep, *output_manager_holder));
             FetchAction fetch_action(fetch_options);
             dep->package_id()->perform_action(fetch_action);
@@ -898,7 +900,8 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
 
         if (! _imp->fetch_only)
         {
-            output_manager_holder.reset(new OutputManagerFromEnvironment(_imp->env, dep->package_id(), oe_exclusive));
+            output_manager_holder.reset(new OutputManagerFromEnvironment(_imp->env, dep->package_id(),
+                        oe_exclusive, ClientOutputFeatures()));
 
             std::tr1::shared_ptr<PackageIDSequence> replacing;
 
