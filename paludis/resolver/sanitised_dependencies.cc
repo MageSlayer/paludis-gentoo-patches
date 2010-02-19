@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,11 +32,15 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/sequence-impl.hh>
+#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/map.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/slot_requirement.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
 #include <paludis/elike_package_dep_spec.hh>
+#include <paludis/elike_annotations.hh>
 #include <paludis/serialise-impl.hh>
 #include <set>
 #include <list>
@@ -508,9 +512,13 @@ PackageOrBlockDepSpec::PackageOrBlockDepSpec(const PackageDepSpec & s) :
 void
 PackageOrBlockDepSpec::serialise(Serialiser & s) const
 {
+    SerialiserObjectWriter w(s.object("PackageOrBlockDepSpec"));
+
+    std::tr1::shared_ptr<DepSpec> spec;
     if (if_block())
     {
-        s.object("PackageOrBlockDepSpec")
+        spec = if_block();
+        w
             .member(SerialiserFlags<>(), "block", true)
             .member(SerialiserFlags<>(), "spec", stringify(if_block()->blocking()))
             .member(SerialiserFlags<>(), "strong", if_block()->strong())
@@ -519,10 +527,37 @@ PackageOrBlockDepSpec::serialise(Serialiser & s) const
     }
     else
     {
-        s.object("PackageOrBlockDepSpec")
+        spec = if_package();
+        w
             .member(SerialiserFlags<>(), "block", false)
             .member(SerialiserFlags<>(), "spec", stringify(*if_package()))
             ;
+    }
+
+    if (! spec->annotations_key())
+        w.member(SerialiserFlags<>(), "annotations_count", 0);
+    else
+    {
+        int n(0);
+        for (MetadataSectionKey::MetadataConstIterator m(spec->annotations_key()->begin_metadata()),
+                m_end(spec->annotations_key()->end_metadata()) ;
+                m != m_end ; ++m)
+        {
+            const MetadataValueKey<std::string> * k(
+                    simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
+            if (! k)
+            {
+                Log::get_instance()->message("resolver.sanitised_dependencies.not_a_string", ll_warning, lc_context)
+                    << "Annotation '" << (*m)->raw_name() << "' not a string. This is probably a bug.";
+                continue;
+            }
+
+            ++n;
+            w.member(SerialiserFlags<>(), "annotations_k_" + stringify(n), k->human_name());
+            w.member(SerialiserFlags<>(), "annotations_v_" + stringify(n), k->value());
+        }
+
+        w.member(SerialiserFlags<>(), "annotations_count", stringify(n));
     }
 }
 
@@ -543,14 +578,35 @@ PackageOrBlockDepSpec::deserialise(Deserialisation & d, const std::tr1::shared_p
                 vso_letters_anywhere + vso_dotted_suffixes,
                 for_id));
 
+    std::tr1::shared_ptr<MetadataSectionKey> annotations;
+
+    std::tr1::shared_ptr<Map<std::string, std::string> > m(new Map<std::string, std::string>);
+    for (int a(0), a_end(v.member<int>("annotations_count")) ;
+            a != a_end ; ++a)
+    {
+        std::string key(v.member<std::string>("annotations_k_" + stringify(a)));
+        std::string value(v.member<std::string>("annotations_v_" + stringify(a)));
+        m->insert(key, value);
+    }
+
+    if (! m->empty())
+        annotations.reset(new ELikeAnnotations(m));
+
     if (block)
     {
         bool strong(v.member<bool>("strong"));
         std::string text(v.member<std::string>("text"));
-        return PackageOrBlockDepSpec(BlockDepSpec(text, spec, strong));
+        BlockDepSpec b_spec(text, spec, strong);
+        if (annotations)
+            b_spec.set_annotations_key(annotations);
+        return PackageOrBlockDepSpec(b_spec);
     }
     else
+    {
+        if (annotations)
+            spec.set_annotations_key(annotations);
         return PackageOrBlockDepSpec(spec);
+    }
 }
 
 void
