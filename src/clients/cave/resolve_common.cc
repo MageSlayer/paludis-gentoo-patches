@@ -21,6 +21,7 @@
 #include "cmd_resolve_display_callback.hh"
 #include "cmd_resolve_dump.hh"
 #include "cmd_display_resolution.hh"
+#include "cmd_execute_resolution.hh"
 #include "exceptions.hh"
 #include "command_command_line.hh"
 #include "match_qpns.hh"
@@ -1087,19 +1088,9 @@ namespace
             return DisplayResolutionCommand().run(env, args, resolution_lists);
     }
 
-    void perform_resolution(
-            const std::tr1::shared_ptr<Environment> &,
-            const ResolverLists & resolution_lists,
-            const ResolveCommandLineResolutionOptions & resolution_options,
-            const ResolveCommandLineExecutionOptions & execution_options,
-            const ResolveCommandLineProgramOptions & program_options,
-            const std::tr1::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
-            const std::tr1::shared_ptr<const Sequence<std::string> > & targets,
-            const bool is_set) PALUDIS_ATTRIBUTE((noreturn));
-
-    void perform_resolution(
-            const std::tr1::shared_ptr<Environment> &,
-            const ResolverLists & resolution_lists,
+    int perform_resolution(
+            const std::tr1::shared_ptr<Environment> & env,
+            const std::tr1::shared_ptr<const ResolverLists> & resolution_lists,
             const ResolveCommandLineResolutionOptions & resolution_options,
             const ResolveCommandLineExecutionOptions & execution_options,
             const ResolveCommandLineProgramOptions & program_options,
@@ -1109,30 +1100,10 @@ namespace
     {
         Context context("When performing chosen resolution:");
 
-        StringListStream ser_stream;
-        Serialiser ser(ser_stream);
-        resolution_lists.serialise(ser);
-
-        /* backgrounding this barfs with become_command. working out why could
-         * be a fun exercise for someone with way too much time on their hands.
-         * */
-        ser_thread_func(ser_stream, resolution_lists);
-
-        std::string command(program_options.a_execute_resolution_program.argument());
-        if (command.empty())
-            command = "$CAVE execute-resolution";
-
-        for (args::ArgsSection::GroupsConstIterator g(execution_options.begin()), g_end(execution_options.end()) ;
-                g != g_end ; ++g)
-        {
-            for (args::ArgsGroup::ConstIterator o(g->begin()), o_end(g->end()) ;
-                    o != o_end ; ++o)
-                if ((*o)->specified())
-                    command = command + " " + (*o)->forwardable_string();
-        }
+        std::tr1::shared_ptr<Sequence<std::string> > args(new Sequence<std::string>);
 
         if (is_set)
-            command.append(" --set");
+            args->push_back("--set");
 
         for (args::ArgsSection::GroupsConstIterator g(program_options.begin()), g_end(program_options.end()) ;
                 g != g_end ; ++g)
@@ -1140,27 +1111,69 @@ namespace
             for (args::ArgsGroup::ConstIterator o(g->begin()), o_end(g->end()) ;
                     o != o_end ; ++o)
                 if ((*o)->specified())
-                    command = command + " " + (*o)->forwardable_string();
+                {
+                    const std::tr1::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
+                    std::copy(f->begin(), f->end(), args->back_inserter());
+                }
+        }
+
+        for (args::ArgsSection::GroupsConstIterator g(execution_options.begin()), g_end(execution_options.end()) ;
+                g != g_end ; ++g)
+        {
+            for (args::ArgsGroup::ConstIterator o(g->begin()), o_end(g->end()) ;
+                    o != o_end ; ++o)
+                if ((*o)->specified())
+                {
+                    const std::tr1::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
+                    std::copy(f->begin(), f->end(), args->back_inserter());
+                }
         }
 
         if (! resolution_options.a_execute.specified())
-            command = command + " --pretend";
+            args->push_back("--pretend");
 
         for (Sequence<std::string>::ConstIterator p(targets->begin()), p_end(targets->end()) ;
                 p != p_end ; ++p)
-            command = command + " " + args::escape(*p);
+            args->push_back(*p);
 
-        if (keys_if_import)
-            for (Map<std::string, std::string>::ConstIterator k(keys_if_import->begin()),
-                    k_end(keys_if_import->end()) ;
-                    k != k_end ; ++k)
-                command = command + " --unpackaged-repository-params '" + k->first + "=" + k->second + "'";
+        if (program_options.a_execute_resolution_program.specified() || resolution_options.a_execute.specified())
+        {
+            StringListStream ser_stream;
+            Serialiser ser(ser_stream);
+            resolution_lists->serialise(ser);
 
-        paludis::Command cmd(command);
-        cmd
-            .with_input_stream(&ser_stream, -1, "PALUDIS_SERIALISED_RESOLUTION_FD");
+            /* backgrounding this barfs with become_command. working out why could
+             * be a fun exercise for someone with way too much time on their hands.
+             * */
+            ser_thread_func(ser_stream, *resolution_lists);
 
-        become_command(cmd);
+            std::string command;
+            if (program_options.a_execute_resolution_program.specified())
+                command = program_options.a_execute_resolution_program.argument();
+            else
+                command = "$CAVE execute-resolution";
+
+            if (keys_if_import)
+                for (Map<std::string, std::string>::ConstIterator k(keys_if_import->begin()),
+                        k_end(keys_if_import->end()) ;
+                        k != k_end ; ++k)
+                {
+                    args->push_back("--unpackaged-repository-params");
+                    args->push_back(k->first + "=" + k->second);
+                }
+
+            for (Sequence<std::string>::ConstIterator a(args->begin()), a_end(args->end()) ;
+                    a != a_end ; ++a)
+                command = command + " " + args::escape(*a);
+
+            paludis::Command cmd(command);
+            cmd
+                .with_input_stream(&ser_stream, -1, "PALUDIS_SERIALISED_RESOLUTION_FD");
+
+            become_command(cmd);
+        }
+        else
+            return ExecuteResolutionCommand().run(env, args, resolution_lists);
     }
 
     struct ChosenIDVisitor
@@ -1383,7 +1396,7 @@ paludis::cave::resolve_common(
             retcode |= 1;
 
         if (0 == retcode)
-            perform_resolution(env, *resolver->lists(), resolution_options,
+            return perform_resolution(env, resolver->lists(), resolution_options,
                     execution_options, program_options, keys_if_import, targets, is_set);
     }
     catch (...)
