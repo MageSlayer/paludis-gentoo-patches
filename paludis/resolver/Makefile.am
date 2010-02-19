@@ -2,6 +2,7 @@ include $(top_srcdir)/misc/common-makefile.am
 
 DISTCLEANFILES = \
 	any_child_score-se.hh any_child_score-se.cc \
+	change_type-se.hh change_type-se.cc \
 	destination_types-se.hh destination_types-se.cc \
 	failure_kinds-se.hh failure_kinds-se.cc \
 	sync_point-se.hh sync_point-se.cc \
@@ -9,6 +10,7 @@ DISTCLEANFILES = \
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 EXTRA_DIST = \
 	any_child_score-se.hh any_child_score-se.cc any_child_score.se \
+	change_type-se.hh change_type-se.cc change_type.se \
 	destination_types-se.hh destination_types-se.cc destination_types.se \
 	failure_kinds-se.hh failure_kinds-se.cc failure_kinds.se \
 	sync_point-se.hh sync_point-se.cc sync_point.se \
@@ -16,6 +18,7 @@ EXTRA_DIST = \
 	$(check_SCRIPTS)
 BUILT_SOURCES = \
 	any_child_score-se.hh any_child_score-se.cc \
+	change_type-se.hh change_type-se.cc \
 	destination_types-se.hh destination_types-se.cc \
 	failure_kinds-se.hh failure_kinds-se.cc \
 	sync_point-se.hh sync_point-se.cc \
@@ -24,6 +27,7 @@ BUILT_SOURCES = \
 noinst_HEADERS = \
 	any_child_score.hh any_child_score-fwd.hh any_child_score-se.hh \
 	arrow.hh arrow-fwd.hh \
+	change_type.hh change_type-fwd.hh change_type-se.hh \
 	constraint.hh constraint-fwd.hh \
 	job.hh job-fwd.hh \
 	job_id.hh job_id-fwd.hh \
@@ -52,6 +56,7 @@ noinst_HEADERS = \
 libpaludisresolver_a_SOURCES = \
 	any_child_score.cc \
 	arrow.cc \
+	change_type.cc \
 	constraint.cc \
 	decider.cc \
 	decision.cc \
@@ -229,4 +234,10 @@ any_child_score-se.hh : any_child_score.se $(top_srcdir)/misc/make_se.bash
 
 any_child_score-se.cc : any_child_score.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/any_child_score.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+change_type-se.hh : change_type.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/change_type.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+change_type-se.cc : change_type.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/change_type.se > $@ ; then rm -f $@ ; exit 1 ; fi
 

@@ -152,11 +152,15 @@ namespace
     {
         typedef std::tr1::function<const std::tr1::shared_ptr<const Destination> (
                 const ChangesToMakeDecision &)> MakeDestinationFunc;
+        typedef std::tr1::function<ChangeType (
+                const ChangesToMakeDecision &)> MakeChangeTypeForFunc;
 
         MakeDestinationFunc make_destination_for;
+        MakeChangeTypeForFunc make_change_type_for;
 
-        DoDestinationIfNecessaryVisitor(const MakeDestinationFunc & f) :
-            make_destination_for(f)
+        DoDestinationIfNecessaryVisitor(const MakeDestinationFunc & f, const MakeChangeTypeForFunc & c) :
+            make_destination_for(f),
+            make_change_type_for(c)
         {
         }
 
@@ -179,7 +183,10 @@ namespace
         void visit(ChangesToMakeDecision & decision)
         {
             if (! decision.destination())
+            {
                 decision.set_destination(make_destination_for(decision));
+                decision.set_change_type(make_change_type_for(decision));
+            }
         }
     };
 }
@@ -189,8 +196,10 @@ Decider::_do_destination_if_necessary(
         const Resolvent & resolvent,
         const std::tr1::shared_ptr<Resolution> & resolution)
 {
-    DoDestinationIfNecessaryVisitor v(std::tr1::bind(&Decider::_make_destination_for,
-                this, resolvent, resolution, std::tr1::placeholders::_1));
+    DoDestinationIfNecessaryVisitor v(
+            std::tr1::bind(&Decider::_make_destination_for, this, resolvent, resolution, std::tr1::placeholders::_1),
+            std::tr1::bind(&Decider::_make_change_type_for, this, resolvent, resolution, std::tr1::placeholders::_1)
+            );
     resolution->decision()->accept(v);
 }
 
@@ -210,6 +219,44 @@ Decider::_make_destination_for(
                     value_for<n::replacing>(_find_replacing(decision.origin_id(), repo)),
                     value_for<n::repository>(repo->name())
                     )));
+}
+
+const ChangeType
+Decider::_make_change_type_for(
+        const Resolvent &,
+        const std::tr1::shared_ptr<const Resolution> &,
+        const ChangesToMakeDecision & decision) const
+{
+    if (decision.destination()->replacing()->empty())
+    {
+        const std::tr1::shared_ptr<const PackageIDSequence> others((*_imp->env)[selection::SomeArbitraryVersion(
+                    generator::Package(decision.origin_id()->name()) &
+                    generator::InRepository(decision.destination()->repository())
+                    )]);
+        if (others->empty())
+            return ct_new;
+        else
+            return ct_slot_new;
+    }
+    else
+    {
+        /* we pick the worst, so replacing 1 and 3 with 2 requires permission to
+         * downgrade */
+        ChangeType result(last_ct);
+        for (PackageIDSequence::ConstIterator i(decision.destination()->replacing()->begin()),
+                i_end(decision.destination()->replacing()->end()) ;
+                i != i_end ; ++i)
+        {
+            if ((*i)->version() == decision.origin_id()->version())
+                result = std::min(result, ct_reinstall);
+            else if ((*i)->version() < decision.origin_id()->version())
+                result = std::min(result, ct_upgrade);
+            else if ((*i)->version() > decision.origin_id()->version())
+                result = std::min(result, ct_downgrade);
+        }
+
+        return result;
+    }
 }
 
 const std::tr1::shared_ptr<const Repository>
@@ -1088,10 +1135,12 @@ Decider::_try_to_find_decision_for(
     }
     else if (installable_id && ! existing_id)
     {
-        /* there's nothing suitable existing. */
+        /* there's nothing suitable existing. we fix the last_ct when we do
+         * destinations. */
         return make_shared_ptr(new ChangesToMakeDecision(
                     installable_id,
                     best,
+                    last_ct,
                     ! resolution->constraints()->all_untaken(),
                     make_null_shared_ptr()
                     ));
@@ -1209,6 +1258,7 @@ Decider::_try_to_find_decision_for(
         const std::tr1::shared_ptr<Decision> changes_to_make(new ChangesToMakeDecision(
                     installable_id,
                     best,
+                    last_ct,
                     ! resolution->constraints()->all_untaken(),
                     make_null_shared_ptr()
                     ));
@@ -1220,6 +1270,7 @@ Decider::_try_to_find_decision_for(
                 return make_shared_ptr(new ChangesToMakeDecision(
                             installable_id,
                             best,
+                            last_ct,
                             ! resolution->constraints()->all_untaken(),
                             make_null_shared_ptr()
                             ));
@@ -1396,6 +1447,7 @@ Decider::_get_unmatching_constraints(
             decision.reset(new ChangesToMakeDecision(
                         id,
                         false,
+                        last_ct,
                         ! (*c)->untaken(),
                         make_null_shared_ptr()
                         ));

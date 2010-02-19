@@ -547,52 +547,35 @@ namespace
             const ChangesToMakeDecision & decision,
             const std::tr1::shared_ptr<const Resolution> & resolution)
     {
-        bool is_new(false), is_upgrade(false), is_downgrade(false), is_reinstall(false), other_slots(false);
-
-        if (decision.destination()->replacing()->empty())
-        {
-            is_new = true;
-            const std::tr1::shared_ptr<const PackageIDSequence> others((*env)[selection::SomeArbitraryVersion(
-                        generator::Package(decision.origin_id()->name()) &
-                        generator::InRepository(decision.destination()->repository())
-                        )]);
-            other_slots = ! others->empty();
-        }
-        else
-        {
-            for (PackageIDSequence::ConstIterator i(decision.destination()->replacing()->begin()),
-                    i_end(decision.destination()->replacing()->end()) ;
-                    i != i_end ; ++i)
-            {
-                if ((*i)->version() == decision.origin_id()->version())
-                    is_reinstall = true;
-                else if ((*i)->version() < decision.origin_id()->version())
-                    is_upgrade = true;
-                else if ((*i)->version() > decision.origin_id()->version())
-                    is_downgrade = true;
-            }
-        }
-
-        /* pick the worst, in case we're replacing multiple things */
-        is_upgrade = is_upgrade && (! is_reinstall) && (! is_downgrade);
-        is_reinstall = is_reinstall && (! is_downgrade);
-
         std::string x("   ");
         if (! decision.best())
             x[0] = '-';
 
-        if (is_new && ! other_slots)
-            cout << "n" << x << c::bold_blue();
-        else if (is_new && other_slots)
-            cout << "s" << x << c::bold_blue();
-        else if (is_upgrade)
-            cout << "u" << x << c::blue();
-        else if (is_reinstall)
-            cout << "r" << x << c::yellow();
-        else if (is_downgrade)
-            cout << "d" << x << c::bold_yellow();
-        else
-            throw InternalError(PALUDIS_HERE, "not new, upgrade, reinstall or downgrade. huh?");
+        do
+        {
+            switch (decision.change_type())
+            {
+                case ct_new:
+                    cout << "n" << x << c::bold_blue();
+                    continue;
+                case ct_slot_new:
+                    cout << "s" << x << c::bold_blue();
+                    continue;
+                case ct_upgrade:
+                    cout << "u" << x << c::blue();
+                    continue;
+                case ct_reinstall:
+                    cout << "r" << x << c::yellow();
+                    continue;
+                case ct_downgrade:
+                    cout << "d" << x << c::bold_yellow();
+                    continue;
+                case last_ct:
+                    break;
+            }
+            throw InternalError(PALUDIS_HERE, "bad change_type. huh?");
+        }
+        while (false);
 
         cout << decision.origin_id()->canonical_form(idcf_no_version);
 

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_ChangeType()
+{
+    prefix ct
+    namespace paludis::resolver
+
+    key ct_downgrade                 "It's a downgrade"
+    key ct_reinstall                 "It's a reinstall"
+    key ct_upgrade                   "It's an upgrade"
+    key ct_slot_new                  "It's a new slot, but other slots are installed"
+    key ct_new                       "It's new"
+
+    want_destringify
+}
+

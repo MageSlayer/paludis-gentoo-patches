@@ -83,6 +83,7 @@ ChangesToMakeDecision::deserialise(Deserialisation & d)
     return make_shared_ptr(new ChangesToMakeDecision(
                 v.member<std::tr1::shared_ptr<const PackageID> >("origin_id"),
                 v.member<bool>("best"),
+                destringify<ChangeType>(v.member<std::string>("change_type")),
                 v.member<bool>("taken"),
                 v.member<std::tr1::shared_ptr<const Destination> >("destination")
                 ));
@@ -248,16 +249,19 @@ namespace paludis
     {
         const std::tr1::shared_ptr<const PackageID> origin_id;
         const bool best;
+        ChangeType change_type;
         const bool taken;
         std::tr1::shared_ptr<const Destination> destination;
 
         Implementation(
                 const std::tr1::shared_ptr<const PackageID> & o,
                 const bool b,
+                const ChangeType c,
                 const bool t,
                 const std::tr1::shared_ptr<const Destination> & d) :
             origin_id(o),
             best(b),
+            change_type(c),
             taken(t),
             destination(d)
         {
@@ -268,9 +272,10 @@ namespace paludis
 ChangesToMakeDecision::ChangesToMakeDecision(
         const std::tr1::shared_ptr<const PackageID> & o,
         const bool b,
+        const ChangeType c,
         const bool t,
         const std::tr1::shared_ptr<const Destination> & d) :
-    PrivateImplementationPattern<ChangesToMakeDecision>(new Implementation<ChangesToMakeDecision>(o, b, t, d))
+    PrivateImplementationPattern<ChangesToMakeDecision>(new Implementation<ChangesToMakeDecision>(o, b, c, t, d))
 {
 }
 
@@ -300,6 +305,18 @@ ChangesToMakeDecision::origin_id() const
     return _imp->origin_id;
 }
 
+ChangeType
+ChangesToMakeDecision::change_type() const
+{
+    return _imp->change_type;
+}
+
+void
+ChangesToMakeDecision::set_change_type(const ChangeType t)
+{
+    _imp->change_type = t;
+}
+
 bool
 ChangesToMakeDecision::best() const
 {
@@ -318,6 +335,7 @@ ChangesToMakeDecision::serialise(Serialiser & s) const
     s.object("ChangesToMakeDecision")
         .member(SerialiserFlags<serialise::might_be_null>(), "origin_id", origin_id())
         .member(SerialiserFlags<>(), "best", best())
+        .member(SerialiserFlags<>(), "change_type", stringify(change_type()))
         .member(SerialiserFlags<serialise::might_be_null>(), "destination", destination())
         .member(SerialiserFlags<>(), "taken", taken())
         ;

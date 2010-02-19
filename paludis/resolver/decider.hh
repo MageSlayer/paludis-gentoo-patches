@@ -35,6 +35,7 @@
 #include <paludis/resolver/resolver_functions-fwd.hh>
 #include <paludis/resolver/resolver-fwd.hh>
 #include <paludis/resolver/any_child_score-fwd.hh>
+#include <paludis/resolver/change_type-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/dep_spec-fwd.hh>
@@ -125,6 +126,11 @@ namespace paludis
                 void _resolve_destinations();
 
                 const std::tr1::shared_ptr<Destination> _make_destination_for(
+                        const Resolvent & resolvent,
+                        const std::tr1::shared_ptr<const Resolution> & resolution,
+                        const ChangesToMakeDecision &) const;
+
+                const ChangeType _make_change_type_for(
                         const Resolvent & resolvent,
                         const std::tr1::shared_ptr<const Resolution> & resolution,
                         const ChangesToMakeDecision &) const;

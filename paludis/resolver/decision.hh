@@ -23,6 +23,7 @@
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/resolver/destination-fwd.hh>
 #include <paludis/resolver/unsuitable_candidates-fwd.hh>
+#include <paludis/resolver/change_type-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
@@ -100,6 +101,7 @@ namespace paludis
                 ChangesToMakeDecision(
                         const std::tr1::shared_ptr<const PackageID> &,
                         const bool best,
+                        const ChangeType,
                         const bool taken,
                         const std::tr1::shared_ptr<const Destination> &
                         );
@@ -115,6 +117,10 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual bool best() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual ChangeType change_type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                void set_change_type(ChangeType);
 
                 virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
