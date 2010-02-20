@@ -853,64 +853,71 @@ namespace
     {
         bool suggestion(is_suggestion(dep)), recommendation(is_recommendation(dep));
 
-        if (suggestion || recommendation)
+        if (! (suggestion || recommendation))
+            return true;
+
+        for (args::StringSetArg::ConstIterator a(resolution_options.a_take.begin_args()),
+                a_end(resolution_options.a_take.end_args()) ;
+                a != a_end ; ++a)
         {
-            for (args::StringSetArg::ConstIterator a(resolution_options.a_take.begin_args()),
-                    a_end(resolution_options.a_take.end_args()) ;
-                    a != a_end ; ++a)
-            {
-                PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
-                PackageDepSpec spec(*dep.spec().if_package());
-                if (match_qpns(*env, user_spec, *spec.package_ptr()))
-                    return true;
-            }
-
-            for (args::StringSetArg::ConstIterator a(resolution_options.a_take_from.begin_args()),
-                    a_end(resolution_options.a_take_from.end_args()) ;
-                    a != a_end ; ++a)
-            {
-                PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
-                if (match_qpns(*env, user_spec, resolvent.package()))
-                    return true;
-            }
-
-            for (args::StringSetArg::ConstIterator a(resolution_options.a_ignore.begin_args()),
-                    a_end(resolution_options.a_ignore.end_args()) ;
-                    a != a_end ; ++a)
-            {
-                PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
-                PackageDepSpec spec(*dep.spec().if_package());
-                if (match_qpns(*env, user_spec, *spec.package_ptr()))
-                    return false;
-            }
-
-            for (args::StringSetArg::ConstIterator a(resolution_options.a_ignore_from.begin_args()),
-                    a_end(resolution_options.a_ignore_from.end_args()) ;
-                    a != a_end ; ++a)
-            {
-                PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
-                if (match_qpns(*env, user_spec, resolvent.package()))
-                    return false;
-            }
+            PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+            PackageDepSpec spec(*dep.spec().if_package());
+            if (match_qpns(*env, user_spec, *spec.package_ptr()))
+                return true;
         }
+
+        for (args::StringSetArg::ConstIterator a(resolution_options.a_take_from.begin_args()),
+                a_end(resolution_options.a_take_from.end_args()) ;
+                a != a_end ; ++a)
+        {
+            PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+            if (match_qpns(*env, user_spec, resolvent.package()))
+                return true;
+        }
+
+        for (args::StringSetArg::ConstIterator a(resolution_options.a_ignore.begin_args()),
+                a_end(resolution_options.a_ignore.end_args()) ;
+                a != a_end ; ++a)
+        {
+            PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+            PackageDepSpec spec(*dep.spec().if_package());
+            if (match_qpns(*env, user_spec, *spec.package_ptr()))
+                return false;
+        }
+
+        for (args::StringSetArg::ConstIterator a(resolution_options.a_ignore_from.begin_args()),
+                a_end(resolution_options.a_ignore_from.end_args()) ;
+                a != a_end ; ++a)
+        {
+            PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+            if (match_qpns(*env, user_spec, resolvent.package()))
+                return false;
+        }
+
         if (suggestion)
         {
             if (resolution_options.a_suggestions.argument() == "take")
-            {
                 return true;
-            }
-            return false;
         }
+
         if (recommendation)
         {
             if (resolution_options.a_recommendations.argument() == "take")
-            {
                 return true;
-            }
-            return false;
         }
 
-        return true;
+        /* we also take suggestions and recommendations that have already been installed */
+        if (dep.spec().if_package())
+        {
+            const std::tr1::shared_ptr<const PackageIDSequence> installed_ids(
+                    (*env)[selection::SomeArbitraryVersion(
+                        generator::Matches(*dep.spec().if_package(), MatchPackageOptions()) |
+                        filter::InstalledAtRoot(FSEntry("/")))]);
+            if (! installed_ids->empty())
+                return true;
+        }
+
+        return false;
     }
 
     const std::tr1::shared_ptr<const Repository>
