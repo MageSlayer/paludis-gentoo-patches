@@ -13,6 +13,10 @@ to indicate a mirror that should be tried for all URLs (even those that are mark
 format repositories also treat mirrors whose name is equal to the repository name (or, if the repository has a
 master, the master's name) specially, checking them for all mirrorable files.</p>
 
+<p><strong>Usually you do not need a <code>mirrors.conf</code> at all.</strong> The repository-provided defaults are in
+most cases perfectly adequate. You generally only specify mirrors if your ISP has a local mirror of certain projects
+that provides better download speeds than the default random selection.</p>
+
 <h2>Example</h2>
 
 <pre>
