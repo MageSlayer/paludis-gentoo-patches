@@ -792,8 +792,18 @@ namespace
 
             if (is_suggestion(dep) || is_recommendation(dep))
             {
-                /* should only return false if the dep's not already installedish */
-                return false;
+                /* we only take a suggestion or recommendation for an existing
+                 * package if it's already met. for now, we ignore suggested
+                 * and recommended blocks no matter what. */
+                if (dep.spec().if_block())
+                    return false;
+
+                const std::tr1::shared_ptr<const PackageIDSequence> installed_ids(
+                        (*env)[selection::SomeArbitraryVersion(
+                            generator::Matches(*dep.spec().if_package(), MatchPackageOptions()) |
+                            filter::InstalledAtRoot(FSEntry("/")))]);
+                if (installed_ids->empty())
+                    return false;
             }
 
             return true;
