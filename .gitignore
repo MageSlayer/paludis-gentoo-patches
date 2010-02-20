@@ -245,6 +245,8 @@ paludis-*.*.*.tar.bz2
 /paludis/repositories/e/ebuild/utils/exheres-0/dosed
 /paludis/repositories/e/ebuild/utils/exheres-0/ecompress
 /paludis/repositories/e/ebuild/utils/exheres-0/ecompressdir
+/paludis/repositories/e/ebuild/utils/exheres-0/fperms
+/paludis/repositories/e/ebuild/utils/exheres-0/fowners
 /paludis/repositories/e/ebuild/utils/exheres-0/install
 /paludis/repositories/e/ebuild/utils/exheres-0/prepall
 /paludis/repositories/e/ebuild/utils/exheres-0/prepalldocs

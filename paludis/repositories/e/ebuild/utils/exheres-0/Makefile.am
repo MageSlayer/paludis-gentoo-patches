@@ -10,6 +10,8 @@ libexecprog_SCRIPTS = \
 	dolib \
 	dosed \
 	donewins \
+	fperms \
+	fowners \
 	herebin \
 	hereconfd \
 	hereenvd \
@@ -42,7 +44,7 @@ EXTRA_DIST = \
 
 bannedscripts = prepall prepallstrip prepstrip prepallman prepman prepallinfo \
 		prepinfo prepdocs prepalldocs dohard donewins dosed dohtml \
-		ecompress ecompressdir
+		ecompress ecompressdir fperms fowners
 
 CLEANFILES += $(bannedscripts)
 

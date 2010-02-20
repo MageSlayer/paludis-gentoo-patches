@@ -535,51 +535,6 @@ namespace test_cases
             }
 
             {
-                TestMessageSuffix suffix("fperms success", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/fperms-success",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-                TEST_CHECK(id);
-                id->perform_action(action);
-            }
-
-            {
-                TestMessageSuffix suffix("fperms fail", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/fperms-fail",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-                TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
-
-            {
-                TestMessageSuffix suffix("nonfatal fperms success", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-fperms-success",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-                TEST_CHECK(id);
-                id->perform_action(action);
-            }
-
-            {
-                TestMessageSuffix suffix("nonfatal fperms fail", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-fperms-fail",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-                TEST_CHECK(id);
-                id->perform_action(action);
-            }
-
-            {
-                TestMessageSuffix suffix("nonfatal fperms die", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-fperms-die",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-                TEST_CHECK(id);
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
-
-            {
                 TestMessageSuffix suffix("best version", true);
                 const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/best-version-0",
