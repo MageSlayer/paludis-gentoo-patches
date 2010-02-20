@@ -1469,6 +1469,6 @@ paludis::cave::resolve_common(
         throw;
     }
 
-    return EXIT_FAILURE;
+    return retcode | 1;
 }
 
