@@ -53,6 +53,8 @@ namespace paludis
             args::EnumArg a_keep;
             args::EnumArg a_reinstall_scm;
 //            args::SwitchArg a_reinstall_for_removals;
+            args::StringSetArg a_with;
+            args::StringSetArg a_without;
 
             args::ArgsGroup g_slot_options;
             args::EnumArg a_target_slots;

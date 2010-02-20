@@ -108,6 +108,12 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             ),
 //    a_reinstall_for_removals(&g_keep_options, "reinstall-for-removals", '\0',
 //            "Select whether to rebuild packages if rebuilding would avoid an unsafe removal", true),
+    a_with(&g_keep_options, "with", 'w',
+            "Never keep installed packages with the supplied package name. May be specified "
+            "multiple times."),
+    a_without(&g_keep_options, "without", 'W',
+            "Keep installed packages with the supplied package name if possible. May be specified "
+            "multiple times."),
 
     g_slot_options(this, "Slot Options", "Control which slots are considered."),
     a_target_slots(&g_slot_options, "target-slots", 'S',

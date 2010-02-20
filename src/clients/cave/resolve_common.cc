@@ -521,11 +521,53 @@ namespace
         }
     };
 
-    UseExisting use_existing_fn(const ResolveCommandLineResolutionOptions & resolution_options,
+    bool use_existing_from_withish(
+            const Environment * const env,
+            const QualifiedPackageName & name,
+            const args::StringSetArg & option)
+    {
+        for (args::StringSetArg::ConstIterator a(option.begin_args()), a_end(option.end_args()) ;
+                a != a_end ; ++a)
+        {
+            PackageDepSpec spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+            if (! package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
+                            value_for<n::has_additional_requirements>(false),
+                            value_for<n::has_category_name_part>(false),
+                            value_for<n::has_from_repository>(false),
+                            value_for<n::has_in_repository>(false),
+                            value_for<n::has_installable_to_path>(false),
+                            value_for<n::has_installable_to_repository>(false),
+                            value_for<n::has_installed_at_path>(false),
+                            value_for<n::has_package>(true),
+                            value_for<n::has_package_name_part>(false),
+                            value_for<n::has_slot_requirement>(false),
+                            value_for<n::has_tag>(indeterminate),
+                            value_for<n::has_version_requirements>(false)
+                            )))
+                throw args::DoHelp("'" + stringify(*a) + "' is not a simple cat/pkg");
+
+            if (name == *spec.package_ptr())
+                return true;
+        }
+
+        return false;
+    }
+
+    UseExisting use_existing_fn(
+            const Environment * const env,
+            const ResolveCommandLineResolutionOptions & resolution_options,
             const Resolvent &,
-            const PackageDepSpec &,
+            const PackageDepSpec & spec,
             const std::tr1::shared_ptr<const Reason> & reason)
     {
+        if (spec.package_ptr())
+        {
+            if (use_existing_from_withish(env, *spec.package_ptr(), resolution_options.a_without))
+                return ue_if_possible;
+            if (use_existing_from_withish(env, *spec.package_ptr(), resolution_options.a_with))
+                return ue_never;
+        }
+
         UseExistingVisitor v(resolution_options, false);
         return reason->accept_returning<UseExisting>(v);
     }
@@ -616,7 +658,8 @@ namespace
         const std::tr1::shared_ptr<Constraints> result(new Constraints);
 
         int n(reinstall_scm_days(resolution_options));
-        if ((-1 != n) && installed_is_scm_older_than(env, resolution_options, resolvent, n))
+        if ((-1 != n) && installed_is_scm_older_than(env, resolution_options, resolvent, n)
+                && ! use_existing_from_withish(env, resolvent.package(), resolution_options.a_without))
         {
             result->add(make_shared_ptr(new Constraint(make_named_values<Constraint>(
                                 value_for<n::destination_type>(resolvent.destination_type()),
@@ -1352,7 +1395,8 @@ paludis::cave::resolve_common(
                         env.get(), std::tr1::cref(resolution_options), std::tr1::placeholders::_1, std::tr1::placeholders::_2,
                         std::tr1::placeholders::_3)),
                 value_for<n::get_use_existing_fn>(std::tr1::bind(&use_existing_fn,
-                        std::tr1::cref(resolution_options), std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3)),
+                        env.get(), std::tr1::cref(resolution_options), std::tr1::placeholders::_1, std::tr1::placeholders::_2,
+                        std::tr1::placeholders::_3)),
                 value_for<n::make_destination_filtered_generator_fn>(std::tr1::bind(&make_destination_filtered_generator,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::placeholders::_1, std::tr1::placeholders::_2)),
                 value_for<n::prefer_or_avoid_fn>(std::tr1::bind(&prefer_or_avoid_fn,
