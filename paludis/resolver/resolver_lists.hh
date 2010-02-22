@@ -33,6 +33,7 @@ namespace paludis
     namespace n
     {
         struct all_resolutions;
+        struct job_ids_needing_confirmation;
         struct jobs;
         struct taken_error_job_ids;
         struct taken_job_ids;
@@ -45,6 +46,7 @@ namespace paludis
         struct ResolverLists
         {
             NamedValue<n::all_resolutions, std::tr1::shared_ptr<Resolutions> > all_resolutions;
+            NamedValue<n::job_ids_needing_confirmation, std::tr1::shared_ptr<JobIDSequence> > job_ids_needing_confirmation;
             NamedValue<n::jobs, std::tr1::shared_ptr<Jobs> > jobs;
             NamedValue<n::taken_error_job_ids, std::tr1::shared_ptr<JobIDSequence> > taken_error_job_ids;
             NamedValue<n::taken_job_ids, std::tr1::shared_ptr<JobIDSequence> > taken_job_ids;

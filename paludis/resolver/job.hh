@@ -26,6 +26,7 @@
 #include <paludis/resolver/resolution-fwd.hh>
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/resolver/sync_point-fwd.hh>
+#include <paludis/resolver/required_confirmations-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
@@ -59,6 +60,12 @@ namespace paludis
                 virtual const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering()
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
+                virtual const std::tr1::shared_ptr<const RequiredConfirmations> required_confirmations()
+                    const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+                virtual const std::tr1::shared_ptr<RequiredConfirmations> required_confirmations()
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
                 virtual void serialise(Serialiser &) const = 0;
 
                 static const std::tr1::shared_ptr<Job> deserialise(
@@ -86,6 +93,12 @@ namespace paludis
                     const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering()
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<const RequiredConfirmations> required_confirmations()
+                    const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<RequiredConfirmations> required_confirmations()
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::tr1::shared_ptr<const Resolution> resolution() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -116,6 +129,12 @@ namespace paludis
                 virtual const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering()
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
+                virtual const std::tr1::shared_ptr<const RequiredConfirmations> required_confirmations()
+                    const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<RequiredConfirmations> required_confirmations()
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
                 const std::tr1::shared_ptr<const JobIDSequence> job_ids() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;
@@ -144,6 +163,12 @@ namespace paludis
                     const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering()
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<const RequiredConfirmations> required_confirmations()
+                    const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<RequiredConfirmations> required_confirmations()
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::tr1::shared_ptr<const Resolution> resolution() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -177,6 +202,12 @@ namespace paludis
                 virtual const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering()
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
+                virtual const std::tr1::shared_ptr<const RequiredConfirmations> required_confirmations()
+                    const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<RequiredConfirmations> required_confirmations()
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
                 const std::tr1::shared_ptr<const Resolution> resolution() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 const std::tr1::shared_ptr<const ChangesToMakeDecision> changes_to_make_decision() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -208,6 +239,12 @@ namespace paludis
                 virtual const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering()
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
+                virtual const std::tr1::shared_ptr<const RequiredConfirmations> required_confirmations()
+                    const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<RequiredConfirmations> required_confirmations()
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
                 const std::tr1::shared_ptr<const Resolution> resolution() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 const std::tr1::shared_ptr<const RemoveDecision> remove_decision() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -237,6 +274,12 @@ namespace paludis
                     const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering()
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<const RequiredConfirmations> required_confirmations()
+                    const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<RequiredConfirmations> required_confirmations()
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::tr1::shared_ptr<const Resolution> resolution() const PALUDIS_ATTRIBUTE((warn_unused_result));

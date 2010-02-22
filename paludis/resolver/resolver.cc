@@ -61,6 +61,7 @@ namespace paludis
             fns(f),
             lists(new ResolverLists(make_named_values<ResolverLists>(
                             value_for<n::all_resolutions>(make_shared_ptr(new Resolutions)),
+                            value_for<n::job_ids_needing_confirmation>(make_shared_ptr(new JobIDSequence)),
                             value_for<n::jobs>(make_shared_ptr(new Jobs)),
                             value_for<n::taken_error_job_ids>(make_shared_ptr(new JobIDSequence)),
                             value_for<n::taken_job_ids>(make_shared_ptr(new JobIDSequence)),
@@ -68,7 +69,7 @@ namespace paludis
                             value_for<n::untaken_job_ids>(make_shared_ptr(new JobIDSequence))
                             ))),
             decider(new Decider(e, f, lists)),
-            orderer(new Orderer(e, decider, lists))
+            orderer(new Orderer(e, f, decider, lists))
         {
         }
     };

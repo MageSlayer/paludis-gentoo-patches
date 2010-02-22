@@ -31,6 +31,8 @@
 #include <paludis/resolver/decider-fwd.hh>
 #include <paludis/resolver/resolver-fwd.hh>
 #include <paludis/resolver/job_id-fwd.hh>
+#include <paludis/resolver/job-fwd.hh>
+#include <paludis/resolver/decision-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/environment.hh>
@@ -56,9 +58,15 @@ namespace paludis
                 bool _remove_usable_cycles() PALUDIS_ATTRIBUTE((warn_unused_result));
                 void _cycle_error() PALUDIS_ATTRIBUTE((noreturn));
 
+                void _confirm(
+                        const std::tr1::shared_ptr<const Resolution> &,
+                        const ChangesToMakeDecision &,
+                        const std::tr1::shared_ptr<SimpleInstallJob> &);
+
             public:
                 Orderer(
                         const Environment * const,
+                        const ResolverFunctions &,
                         const std::tr1::shared_ptr<const Decider> &,
                         const std::tr1::shared_ptr<ResolverLists> &);
                 ~Orderer();

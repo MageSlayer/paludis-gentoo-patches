@@ -265,6 +265,15 @@ paludis::resolver::resolver_test::prefer_or_avoid_fn(
         return indeterminate;
 }
 
+bool
+paludis::resolver::resolver_test::confirm_fn(
+        const Resolvent &,
+        const std::tr1::shared_ptr<const Resolution> &,
+        const std::tr1::shared_ptr<const RequiredConfirmation> &)
+{
+    return true;
+}
+
 ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s, const std::string & e,
         const std::string & l) :
     TestCase(s),
@@ -318,6 +327,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             value_for<n::allowed_to_remove_fn>(std::tr1::bind(&allowed_to_remove_fn,
                     allowed_to_remove_names, std::tr1::placeholders::_1)),
             value_for<n::care_about_dep_fn>(&care_about_dep_fn),
+            value_for<n::confirm_fn>(&confirm_fn),
             value_for<n::find_repository_for_fn>(std::tr1::bind(&find_repository_for_fn,
                     &env, std::tr1::placeholders::_1, std::tr1::placeholders::_2,
                     std::tr1::placeholders::_3)),

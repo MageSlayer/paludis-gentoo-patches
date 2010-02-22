@@ -1080,6 +1080,16 @@ namespace
         return indeterminate;
     }
 
+    bool confirm_fn(
+            const Environment * const,
+            const ResolveCommandLineResolutionOptions &,
+            const Resolvent &,
+            const std::tr1::shared_ptr<const Resolution> &,
+            const std::tr1::shared_ptr<const RequiredConfirmation> &)
+    {
+        return false;
+    }
+
     void ser_thread_func(StringListStream & ser_stream, const ResolverLists & resolution_lists)
     {
         Serialiser ser(ser_stream);
@@ -1381,6 +1391,9 @@ paludis::cave::resolve_common(
                         std::tr1::cref(allowed_to_remove_specs),
                         std::tr1::placeholders::_1)),
                 value_for<n::care_about_dep_fn>(std::tr1::bind(&care_about_dep_fn,
+                        env.get(), std::tr1::cref(resolution_options), std::tr1::placeholders::_1,
+                        std::tr1::placeholders::_2, std::tr1::placeholders::_3)),
+                value_for<n::confirm_fn>(std::tr1::bind(&confirm_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::placeholders::_1,
                         std::tr1::placeholders::_2, std::tr1::placeholders::_3)),
                 value_for<n::find_repository_for_fn>(std::tr1::bind(&find_repository_for_fn,

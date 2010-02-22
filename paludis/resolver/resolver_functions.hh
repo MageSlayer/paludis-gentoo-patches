@@ -29,6 +29,7 @@
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/resolver/destination_types-fwd.hh>
 #include <paludis/resolver/constraint-fwd.hh>
+#include <paludis/resolver/required_confirmations-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/tribool-fwd.hh>
 #include <paludis/filter-fwd.hh>
@@ -41,6 +42,7 @@ namespace paludis
     {
         struct allowed_to_remove_fn;
         struct care_about_dep_fn;
+        struct confirm_fn;
         struct find_repository_for_fn;
         struct get_destination_types_for_fn;
         struct get_initial_constraints_for_fn;
@@ -62,6 +64,12 @@ namespace paludis
                 const std::tr1::shared_ptr<const Resolution> &,
                 const SanitisedDependency &
                 )> CareAboutDepFunction;
+
+        typedef std::tr1::function<bool (
+                const Resolvent &,
+                const std::tr1::shared_ptr<const Resolution> &,
+                const std::tr1::shared_ptr<const RequiredConfirmation> &
+                )> ConfirmFunction;
 
         typedef std::tr1::function<const std::tr1::shared_ptr<const Repository> (
                 const Resolvent &,
@@ -110,6 +118,7 @@ namespace paludis
         {
             NamedValue<n::allowed_to_remove_fn, AllowedToRemoveFunction> allowed_to_remove_fn;
             NamedValue<n::care_about_dep_fn, CareAboutDepFunction> care_about_dep_fn;
+            NamedValue<n::confirm_fn, ConfirmFunction> confirm_fn;
             NamedValue<n::find_repository_for_fn, FindRepositoryForFunction> find_repository_for_fn;
             NamedValue<n::get_destination_types_for_fn, GetDestinationTypesForFunction> get_destination_types_for_fn;
             NamedValue<n::get_initial_constraints_for_fn, GetInitialConstraintsFunction> get_initial_constraints_for_fn;

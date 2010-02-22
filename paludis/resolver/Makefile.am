@@ -40,6 +40,7 @@ noinst_HEADERS = \
 	failure_kinds.hh failure_kinds-fwd.hh failure_kinds-se.hh \
 	orderer.hh orderer-fwd.hh \
 	reason.hh reason-fwd.hh \
+	required_confirmations.hh required_confirmations-fwd.hh \
 	resolution.hh resolution-fwd.hh \
 	resolutions.hh resolutions-fwd.hh \
 	resolvent.hh resolvent-fwd.hh \
@@ -69,6 +70,7 @@ libpaludisresolver_a_SOURCES = \
 	jobs.cc \
 	orderer.cc \
 	reason.cc \
+	required_confirmations.cc \
 	resolution.cc \
 	resolutions.cc \
 	resolvent.cc \

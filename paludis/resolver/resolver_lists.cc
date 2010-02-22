@@ -35,6 +35,7 @@ ResolverLists::serialise(Serialiser & s) const
     s.object("ResolverLists")
         .member(SerialiserFlags<serialise::might_be_null>(), "all_resolutions", all_resolutions())
         .member(SerialiserFlags<serialise::might_be_null>(), "jobs", jobs())
+        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "job_ids_needing_confirmation", job_ids_needing_confirmation())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "taken_error_job_ids", taken_error_job_ids())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "taken_job_ids", taken_job_ids())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "untaken_error_job_ids", untaken_error_job_ids())
@@ -46,6 +47,13 @@ const ResolverLists
 ResolverLists::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "ResolverLists");
+
+    std::tr1::shared_ptr<JobIDSequence> job_ids_needing_confirmation(new JobIDSequence);
+    {
+        Deserialisator vv(*v.find_remove_member("job_ids_needing_confirmation"), "c");
+        for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
+            job_ids_needing_confirmation->push_back(vv.member<JobID>(stringify(n)));
+    }
 
     std::tr1::shared_ptr<JobIDSequence> taken_error_job_ids(new JobIDSequence);
     {
@@ -77,6 +85,7 @@ ResolverLists::deserialise(Deserialisation & d)
 
     return make_named_values<ResolverLists>(
             value_for<n::all_resolutions>(v.member<std::tr1::shared_ptr<Resolutions> >("all_resolutions")),
+            value_for<n::job_ids_needing_confirmation>(job_ids_needing_confirmation),
             value_for<n::jobs>(v.member<std::tr1::shared_ptr<Jobs> >("jobs")),
             value_for<n::taken_error_job_ids>(taken_error_job_ids),
             value_for<n::taken_job_ids>(taken_job_ids),

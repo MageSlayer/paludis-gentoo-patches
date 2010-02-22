@@ -32,6 +32,7 @@
 #include <paludis/resolver/resolver-fwd.hh>
 #include <paludis/resolver/jobs-fwd.hh>
 #include <paludis/resolver/resolver_functions-fwd.hh>
+#include <paludis/resolver/required_confirmations-fwd.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/environments/test/test_environment.hh>
@@ -97,6 +98,11 @@ namespace paludis
             Tribool prefer_or_avoid_fn(
                         const std::tr1::shared_ptr<const Map<QualifiedPackageName, bool> > &,
                         const QualifiedPackageName &);
+
+            bool confirm_fn(
+                    const Resolvent &,
+                    const std::tr1::shared_ptr<const Resolution> &,
+                    const std::tr1::shared_ptr<const RequiredConfirmation> &);
 
             struct ResolverTestCase : test::TestCase
             {

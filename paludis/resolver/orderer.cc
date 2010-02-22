@@ -30,6 +30,8 @@
 #include <paludis/resolver/resolver_lists.hh>
 #include <paludis/resolver/job.hh>
 #include <paludis/resolver/jobs.hh>
+#include <paludis/resolver/required_confirmations.hh>
+#include <paludis/resolver/resolver_functions.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -61,6 +63,7 @@ namespace paludis
     struct Implementation<Orderer>
     {
         const Environment * const env;
+        const ResolverFunctions fns;
         const std::tr1::shared_ptr<const Decider> decider;
 
         const std::tr1::shared_ptr<ResolverLists> lists;
@@ -68,9 +71,11 @@ namespace paludis
         ToOrder to_order;
 
         Implementation(const Environment * const e,
+                const ResolverFunctions & f,
                 const std::tr1::shared_ptr<const Decider> & d,
                 const std::tr1::shared_ptr<ResolverLists> & l) :
             env(e),
+            fns(f),
             decider(d),
             lists(l)
         {
@@ -78,9 +83,11 @@ namespace paludis
     };
 }
 
-Orderer::Orderer(const Environment * const e, const std::tr1::shared_ptr<const Decider> & d,
+Orderer::Orderer(const Environment * const e,
+        const ResolverFunctions & f,
+        const std::tr1::shared_ptr<const Decider> & d,
         const std::tr1::shared_ptr<ResolverLists> & l) :
-    PrivateImplementationPattern<Orderer>(new Implementation<Orderer>(e, d, l))
+    PrivateImplementationPattern<Orderer>(new Implementation<Orderer>(e, f, d, l))
 {
 }
 
@@ -112,17 +119,25 @@ namespace
 {
     struct DecisionHandler
     {
+        typedef std::tr1::function<void (
+                const std::tr1::shared_ptr<const Resolution> &,
+                const ChangesToMakeDecision &,
+                const std::tr1::shared_ptr<SimpleInstallJob> &)> MightNeedConfirmationFunction;
+
         const std::tr1::shared_ptr<Resolution> resolution;
         const std::tr1::shared_ptr<ResolverLists> lists;
         ToOrder & to_order;
+        MightNeedConfirmationFunction might_need_confirmation;
 
         DecisionHandler(
                 const std::tr1::shared_ptr<Resolution> & r,
                 const std::tr1::shared_ptr<ResolverLists> & l,
-                ToOrder & o) :
+                ToOrder & o,
+                const MightNeedConfirmationFunction & m) :
             resolution(r),
             lists(l),
-            to_order(o)
+            to_order(o),
+            might_need_confirmation(m)
         {
         }
 
@@ -196,6 +211,9 @@ namespace
                             value_for<n::failure_kinds>(FailureKinds()),
                             value_for<n::maybe_reason>(make_null_shared_ptr())
                             ));
+
+                /* do we need confirmation of this? */
+                might_need_confirmation(resolution, d, install_job);
             }
             else
             {
@@ -262,9 +280,35 @@ Orderer::_resolve_jobs()
             i_end(_imp->lists->all_resolutions()->end()) ;
             i != i_end ; ++i)
     {
-        DecisionHandler d(*i, _imp->lists, _imp->to_order);
+        DecisionHandler d(*i, _imp->lists, _imp->to_order, std::tr1::bind(
+                    &Orderer::_confirm, this, std::tr1::placeholders::_1,
+                    std::tr1::placeholders::_2, std::tr1::placeholders::_3));
         (*i)->decision()->accept(d);
     }
+}
+
+void
+Orderer::_confirm(
+        const std::tr1::shared_ptr<const Resolution> & resolution,
+        const ChangesToMakeDecision & decision,
+        const std::tr1::shared_ptr<SimpleInstallJob> & job)
+{
+    if (! decision.best())
+    {
+        const std::tr1::shared_ptr<RequiredConfirmation> c(new NotBestConfirmation);
+        if (! _imp->fns.confirm_fn()(resolution->resolvent(), resolution, c))
+            job->required_confirmations()->push_back(c);
+    }
+
+    if (ct_downgrade == decision.change_type())
+    {
+        const std::tr1::shared_ptr<DowngradeConfirmation> c(new DowngradeConfirmation);
+        if (! _imp->fns.confirm_fn()(resolution->resolvent(), resolution, c))
+            job->required_confirmations()->push_back(c);
+    }
+
+    if (! job->required_confirmations()->empty())
+        _imp->lists->job_ids_needing_confirmation()->push_back(job->id());
 }
 
 namespace

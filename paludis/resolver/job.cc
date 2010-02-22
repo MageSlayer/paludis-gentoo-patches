@@ -21,6 +21,7 @@
 #include <paludis/resolver/arrow.hh>
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/decision.hh>
+#include <paludis/resolver/required_confirmations.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_named_values.hh>
@@ -40,11 +41,13 @@ namespace paludis
         const std::tr1::shared_ptr<const Resolution> resolution;
         const std::tr1::shared_ptr<ArrowSequence> arrows;
         const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering;
+        const std::tr1::shared_ptr<RequiredConfirmations> required_confirmations;
 
         Implementation(const std::tr1::shared_ptr<const Resolution> & r) :
             resolution(r),
             arrows(new ArrowSequence),
-            used_existing_packages_when_ordering(new JobIDSequence)
+            used_existing_packages_when_ordering(new JobIDSequence),
+            required_confirmations(new RequiredConfirmations)
         {
         }
     };
@@ -55,11 +58,13 @@ namespace paludis
         const std::tr1::shared_ptr<const JobIDSequence> ids;
         const std::tr1::shared_ptr<ArrowSequence> arrows;
         const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering;
+        const std::tr1::shared_ptr<RequiredConfirmations> required_confirmations;
 
         Implementation(const std::tr1::shared_ptr<const JobIDSequence> & i) :
             ids(i),
             arrows(new ArrowSequence),
-            used_existing_packages_when_ordering(new JobIDSequence)
+            used_existing_packages_when_ordering(new JobIDSequence),
+            required_confirmations(new RequiredConfirmations)
         {
         }
     };
@@ -71,13 +76,15 @@ namespace paludis
         const std::tr1::shared_ptr<const ChangesToMakeDecision> decision;
         const std::tr1::shared_ptr<ArrowSequence> arrows;
         const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering;
+        const std::tr1::shared_ptr<RequiredConfirmations> required_confirmations;
 
         Implementation(const std::tr1::shared_ptr<const Resolution> & r,
                 const std::tr1::shared_ptr<const ChangesToMakeDecision> & d) :
             resolution(r),
             decision(d),
             arrows(new ArrowSequence),
-            used_existing_packages_when_ordering(new JobIDSequence)
+            used_existing_packages_when_ordering(new JobIDSequence),
+            required_confirmations(new RequiredConfirmations)
         {
         }
     };
@@ -89,13 +96,15 @@ namespace paludis
         const std::tr1::shared_ptr<const ChangesToMakeDecision> decision;
         const std::tr1::shared_ptr<ArrowSequence> arrows;
         const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering;
+        const std::tr1::shared_ptr<RequiredConfirmations> required_confirmations;
 
         Implementation(const std::tr1::shared_ptr<const Resolution> & r,
                 const std::tr1::shared_ptr<const ChangesToMakeDecision> & d) :
             resolution(r),
             decision(d),
             arrows(new ArrowSequence),
-            used_existing_packages_when_ordering(new JobIDSequence)
+            used_existing_packages_when_ordering(new JobIDSequence),
+            required_confirmations(new RequiredConfirmations)
         {
         }
     };
@@ -107,13 +116,15 @@ namespace paludis
         const std::tr1::shared_ptr<const RemoveDecision> decision;
         const std::tr1::shared_ptr<ArrowSequence> arrows;
         const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering;
+        const std::tr1::shared_ptr<RequiredConfirmations> required_confirmations;
 
         Implementation(const std::tr1::shared_ptr<const Resolution> & r,
                 const std::tr1::shared_ptr<const RemoveDecision> & d) :
             resolution(r),
             decision(d),
             arrows(new ArrowSequence),
-            used_existing_packages_when_ordering(new JobIDSequence)
+            used_existing_packages_when_ordering(new JobIDSequence),
+            required_confirmations(new RequiredConfirmations)
         {
         }
     };
@@ -125,13 +136,15 @@ namespace paludis
         const std::tr1::shared_ptr<const UnableToMakeDecision> decision;
         const std::tr1::shared_ptr<ArrowSequence> arrows;
         const std::tr1::shared_ptr<JobIDSequence> used_existing_packages_when_ordering;
+        const std::tr1::shared_ptr<RequiredConfirmations> required_confirmations;
 
         Implementation(const std::tr1::shared_ptr<const Resolution> & r,
                 const std::tr1::shared_ptr<const UnableToMakeDecision> & d) :
             resolution(r),
             decision(d),
             arrows(new ArrowSequence),
-            used_existing_packages_when_ordering(new JobIDSequence)
+            used_existing_packages_when_ordering(new JobIDSequence),
+            required_confirmations(new RequiredConfirmations)
         {
         }
     };
@@ -160,6 +173,15 @@ namespace
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
             result->used_existing_packages_when_ordering()->push_back(vv.member<JobID>(stringify(n)));
     }
+
+    void do_required(
+            const std::tr1::shared_ptr<Job> & result,
+            Deserialisator & v)
+    {
+        Deserialisator vv(*v.find_remove_member("required_confirmations"), "c");
+        for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
+            result->required_confirmations()->push_back(vv.member<std::tr1::shared_ptr<RequiredConfirmation> >(stringify(n)));
+    }
 }
 
 const std::tr1::shared_ptr<Job>
@@ -175,6 +197,7 @@ Job::deserialise(Deserialisation & d)
                     ));
         do_arrows(result, v);
         do_existing(result, v);
+        do_required(result, v);
     }
     else if (d.class_name() == "UsableGroupJob")
     {
@@ -188,6 +211,7 @@ Job::deserialise(Deserialisation & d)
         result.reset(new UsableGroupJob(ids));
         do_arrows(result, v);
         do_existing(result, v);
+        do_required(result, v);
     }
     else if (d.class_name() == "SimpleInstallJob")
     {
@@ -198,6 +222,7 @@ Job::deserialise(Deserialisation & d)
                     ));
         do_arrows(result, v);
         do_existing(result, v);
+        do_required(result, v);
     }
     else if (d.class_name() == "UninstallJob")
     {
@@ -208,6 +233,7 @@ Job::deserialise(Deserialisation & d)
                     ));
         do_arrows(result, v);
         do_existing(result, v);
+        do_required(result, v);
     }
     else if (d.class_name() == "FetchJob")
     {
@@ -218,6 +244,7 @@ Job::deserialise(Deserialisation & d)
                     ));
         do_arrows(result, v);
         do_existing(result, v);
+        do_required(result, v);
     }
     else if (d.class_name() == "ErrorJob")
     {
@@ -228,6 +255,7 @@ Job::deserialise(Deserialisation & d)
                     ));
         do_arrows(result, v);
         do_existing(result, v);
+        do_required(result, v);
     }
     else
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
@@ -274,6 +302,18 @@ UsableJob::used_existing_packages_when_ordering()
     return _imp->used_existing_packages_when_ordering;
 }
 
+const std::tr1::shared_ptr<const RequiredConfirmations>
+UsableJob::required_confirmations() const
+{
+    return _imp->required_confirmations;
+}
+
+const std::tr1::shared_ptr<RequiredConfirmations>
+UsableJob::required_confirmations()
+{
+    return _imp->required_confirmations;
+}
+
 const JobID
 UsableJob::id() const
 {
@@ -288,6 +328,8 @@ UsableJob::serialise(Serialiser & s) const
     s.object("UsableJob")
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "arrows", arrows())
         .member(SerialiserFlags<serialise::might_be_null>(), "resolution", resolution())
+        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(),
+                "required_confirmations", required_confirmations())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(),
                 "used_existing_packages_when_ordering", used_existing_packages_when_ordering())
         ;
@@ -332,6 +374,18 @@ UsableGroupJob::used_existing_packages_when_ordering()
     return _imp->used_existing_packages_when_ordering;
 }
 
+const std::tr1::shared_ptr<const RequiredConfirmations>
+UsableGroupJob::required_confirmations() const
+{
+    return _imp->required_confirmations;
+}
+
+const std::tr1::shared_ptr<RequiredConfirmations>
+UsableGroupJob::required_confirmations()
+{
+    return _imp->required_confirmations;
+}
+
 namespace
 {
     std::string stringify_job_id(const JobID & i)
@@ -354,6 +408,8 @@ UsableGroupJob::serialise(Serialiser & s) const
     s.object("UsableGroupJob")
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "arrows", arrows())
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "job_ids", job_ids())
+        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(),
+                "required_confirmations", required_confirmations())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(),
                 "used_existing_packages_when_ordering", used_existing_packages_when_ordering())
         ;
@@ -405,6 +461,18 @@ FetchJob::used_existing_packages_when_ordering()
     return _imp->used_existing_packages_when_ordering;
 }
 
+const std::tr1::shared_ptr<const RequiredConfirmations>
+FetchJob::required_confirmations() const
+{
+    return _imp->required_confirmations;
+}
+
+const std::tr1::shared_ptr<RequiredConfirmations>
+FetchJob::required_confirmations()
+{
+    return _imp->required_confirmations;
+}
+
 const JobID
 FetchJob::id() const
 {
@@ -420,6 +488,8 @@ FetchJob::serialise(Serialiser & s) const
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "arrows", arrows())
         .member(SerialiserFlags<serialise::might_be_null>(), "changes_to_make_decision", changes_to_make_decision())
         .member(SerialiserFlags<serialise::might_be_null>(), "resolution", resolution())
+        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(),
+                "required_confirmations", required_confirmations())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(),
                 "used_existing_packages_when_ordering", used_existing_packages_when_ordering())
         ;
@@ -471,6 +541,18 @@ SimpleInstallJob::used_existing_packages_when_ordering()
     return _imp->used_existing_packages_when_ordering;
 }
 
+const std::tr1::shared_ptr<const RequiredConfirmations>
+SimpleInstallJob::required_confirmations() const
+{
+    return _imp->required_confirmations;
+}
+
+const std::tr1::shared_ptr<RequiredConfirmations>
+SimpleInstallJob::required_confirmations()
+{
+    return _imp->required_confirmations;
+}
+
 const JobID
 SimpleInstallJob::id() const
 {
@@ -486,6 +568,8 @@ SimpleInstallJob::serialise(Serialiser & s) const
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "arrows", arrows())
         .member(SerialiserFlags<serialise::might_be_null>(), "changes_to_make_decision", changes_to_make_decision())
         .member(SerialiserFlags<serialise::might_be_null>(), "resolution", resolution())
+        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(),
+                "required_confirmations", required_confirmations())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(),
                 "used_existing_packages_when_ordering", used_existing_packages_when_ordering())
         ;
@@ -537,6 +621,18 @@ UninstallJob::used_existing_packages_when_ordering()
     return _imp->used_existing_packages_when_ordering;
 }
 
+const std::tr1::shared_ptr<const RequiredConfirmations>
+UninstallJob::required_confirmations() const
+{
+    return _imp->required_confirmations;
+}
+
+const std::tr1::shared_ptr<RequiredConfirmations>
+UninstallJob::required_confirmations()
+{
+    return _imp->required_confirmations;
+}
+
 const JobID
 UninstallJob::id() const
 {
@@ -552,6 +648,8 @@ UninstallJob::serialise(Serialiser & s) const
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "arrows", arrows())
         .member(SerialiserFlags<serialise::might_be_null>(), "remove_decision", remove_decision())
         .member(SerialiserFlags<serialise::might_be_null>(), "resolution", resolution())
+        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(),
+                "required_confirmations", required_confirmations())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(),
                 "used_existing_packages_when_ordering", used_existing_packages_when_ordering())
         ;
@@ -596,6 +694,18 @@ ErrorJob::used_existing_packages_when_ordering()
     return _imp->used_existing_packages_when_ordering;
 }
 
+const std::tr1::shared_ptr<const RequiredConfirmations>
+ErrorJob::required_confirmations() const
+{
+    return _imp->required_confirmations;
+}
+
+const std::tr1::shared_ptr<RequiredConfirmations>
+ErrorJob::required_confirmations()
+{
+    return _imp->required_confirmations;
+}
+
 const JobID
 ErrorJob::id() const
 {
@@ -611,6 +721,8 @@ ErrorJob::serialise(Serialiser & s) const
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "arrows", arrows())
         .member(SerialiserFlags<serialise::might_be_null>(), "unable_to_make_decision", unable_to_make_decision())
         .member(SerialiserFlags<serialise::might_be_null>(), "resolution", resolution())
+        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(),
+                "required_confirmations", required_confirmations())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(),
                 "used_existing_packages_when_ordering", used_existing_packages_when_ordering())
         ;
