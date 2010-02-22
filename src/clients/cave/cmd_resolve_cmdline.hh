@@ -44,7 +44,8 @@ namespace paludis
             args::ArgsGroup g_resolution_options;
 //            args::SwitchArg a_permit_older_slot_uninstalls;
             args::StringSetArg a_permit_uninstall;
-//            args::StringSetArg a_permit_downgrade;
+            args::StringSetArg a_permit_downgrade;
+            args::StringSetArg a_permit_any_version;
 //            args::StringSetArg a_permit_unsafe_uninstall;
 //            args::StringSetArg a_purge;
 

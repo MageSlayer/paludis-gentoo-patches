@@ -61,8 +61,11 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             "blockers. May be specified multiple times. Use '*/*' to allow all uninstalls, but note "
             "that the resolver will sometimes come up with extremely bad solutions to fixing blocks "
             "and may suggest stupid and dangerous uninstalls."),
-//    a_permit_downgrade(&g_resolution_options, "permit-downgrade", 'd', "Permit downgrades matching the supplied "
-//            "specification. Use '*/*' to allow all downgrades."),
+    a_permit_downgrade(&g_resolution_options, "permit-downgrade", 'd', "Permit downgrades matching the supplied "
+            "specification. Use '*/*' to allow all downgrades."),
+    a_permit_any_version(&g_resolution_options, "permit-any-version", 'a', "Permit installs of versions matching the supplied "
+            "specification even if those versions are worse than the best visible version in the slot. Use '*/*' "
+            "to allow all worse versions to be installed."),
 //    a_permit_unsafe_uninstall(&g_resolution_options, "permit-unsafe-uninstall", 'u',
 //            "Permit uninstalls matching the given specification even if the uninstall isn't known to be safe. Use "
 //            "'*/*' to allow all unsafe uninstalls. Note that this does not imply --permit-uninstall."),

@@ -51,6 +51,7 @@
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/resolutions.hh>
 #include <paludis/resolver/resolver_lists.hh>
+#include <paludis/resolver/required_confirmations.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/generator.hh>
@@ -1080,14 +1081,90 @@ namespace
         return indeterminate;
     }
 
-    bool confirm_fn(
-            const Environment * const,
-            const ResolveCommandLineResolutionOptions &,
-            const Resolvent &,
-            const std::tr1::shared_ptr<const Resolution> &,
-            const std::tr1::shared_ptr<const RequiredConfirmation> &)
+    struct ChosenIDVisitor
     {
-        return false;
+        const std::tr1::shared_ptr<const PackageID> visit(const ChangesToMakeDecision & decision) const
+        {
+            return decision.origin_id();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const ExistingNoChangeDecision & decision) const
+        {
+            return decision.existing_id();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const RemoveDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+    };
+
+    struct ConfirmFnVisitor
+    {
+        const Environment * const env;
+        const ResolveCommandLineResolutionOptions & resolution_options;
+        const std::tr1::shared_ptr<const PackageID> id;
+
+        ConfirmFnVisitor(const Environment * const e,
+                const ResolveCommandLineResolutionOptions & r,
+                const std::tr1::shared_ptr<const PackageID> & i) :
+            env(e),
+            resolution_options(r),
+            id(i)
+        {
+        }
+
+        bool visit(const DowngradeConfirmation &) const
+        {
+            if (id)
+                for (args::StringSetArg::ConstIterator a(resolution_options.a_permit_downgrade.begin_args()),
+                        a_end(resolution_options.a_permit_downgrade.end_args()) ;
+                        a != a_end ; ++a)
+                {
+                    PackageDepSpec spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+                    if (match_package(*env, spec, *id, MatchPackageOptions()))
+                        return true;
+                }
+
+            return false;
+        }
+
+        bool visit(const NotBestConfirmation &) const
+        {
+            if (id)
+                for (args::StringSetArg::ConstIterator a(resolution_options.a_permit_any_version.begin_args()),
+                        a_end(resolution_options.a_permit_any_version.end_args()) ;
+                        a != a_end ; ++a)
+                {
+                    PackageDepSpec spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+                    if (match_package(*env, spec, *id, MatchPackageOptions()))
+                        return true;
+                }
+
+            return false;
+        }
+    };
+
+    bool confirm_fn(
+            const Environment * const env,
+            const ResolveCommandLineResolutionOptions & resolution_options,
+            const Resolvent &,
+            const std::tr1::shared_ptr<const Resolution> & r,
+            const std::tr1::shared_ptr<const RequiredConfirmation> & c)
+    {
+        return c->accept_returning<bool>(ConfirmFnVisitor(env, resolution_options,
+                    r->decision()->accept_returning<std::tr1::shared_ptr<const PackageID> >(ChosenIDVisitor())
+                    ));
     }
 
     void ser_thread_func(StringListStream & ser_stream, const ResolverLists & resolution_lists)
@@ -1245,34 +1322,6 @@ namespace
         else
             return ExecuteResolutionCommand().run(env, args, resolution_lists);
     }
-
-    struct ChosenIDVisitor
-    {
-        const std::tr1::shared_ptr<const PackageID> visit(const ChangesToMakeDecision & decision) const
-        {
-            return decision.origin_id();
-        }
-
-        const std::tr1::shared_ptr<const PackageID> visit(const ExistingNoChangeDecision & decision) const
-        {
-            return decision.existing_id();
-        }
-
-        const std::tr1::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
-        {
-            return make_null_shared_ptr();
-        }
-
-        const std::tr1::shared_ptr<const PackageID> visit(const RemoveDecision &) const
-        {
-            return make_null_shared_ptr();
-        }
-
-        const std::tr1::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
-        {
-            return make_null_shared_ptr();
-        }
-    };
 
     struct KindNameVisitor
     {
