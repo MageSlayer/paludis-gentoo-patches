@@ -53,6 +53,7 @@
 #include <paludis/resolver/job.hh>
 #include <paludis/resolver/jobs.hh>
 #include <paludis/resolver/job_id.hh>
+#include <paludis/resolver/required_confirmations.hh>
 #include <paludis/package_id.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -587,12 +588,41 @@ namespace
         cout << endl;
     }
 
+    struct DisplayConfirmationVisitor
+    {
+        std::string visit(const DowngradeConfirmation &) const
+        {
+            return "--permit-downgrade";
+        }
+
+        std::string visit(const NotBestConfirmation &) const
+        {
+            return "--permit-any-version";
+        }
+    };
+
+    std::string stringify_confirmation(const RequiredConfirmation & c)
+    {
+        return c.accept_returning<std::string>(DisplayConfirmationVisitor());
+    }
+
+    void display_confirmations(
+            const Job & job)
+    {
+        const std::tr1::shared_ptr<const RequiredConfirmations> r(job.required_confirmations());
+        if (! r->empty())
+            cout << c::bold_red() << "    Cannot proceed without: " << c::normal() <<
+                join(indirect_iterator(r->begin()), indirect_iterator(r->end()), ", ", stringify_confirmation) << endl;
+    }
+
     void display_one_installish(
             const std::tr1::shared_ptr<Environment> & env,
             const DisplayResolutionCommandLine & cmdline,
             const ChangesToMakeDecision & decision,
             const std::tr1::shared_ptr<const Resolution> & resolution,
-            const bool more_annotations)
+            const SimpleInstallJob & job,
+            const bool more_annotations,
+            const bool confirmations)
     {
         std::string x("   ");
         if (! decision.best())
@@ -659,22 +689,27 @@ namespace
         display_one_description(env, cmdline, decision.origin_id(), ! old_id);
         display_choices(env, cmdline, decision.origin_id(), old_id);
         display_reasons(resolution, more_annotations);
+        if (confirmations)
+            display_confirmations(job);
     }
 
     void display_one_install(
             const std::tr1::shared_ptr<Environment> & env,
             const DisplayResolutionCommandLine & cmdline,
             const SimpleInstallJob & job,
-            const bool more_annotations)
+            const bool more_annotations,
+            const bool confirmations)
     {
-        display_one_installish(env, cmdline, *job.changes_to_make_decision(), job.resolution(), more_annotations);
+        display_one_installish(env, cmdline, *job.changes_to_make_decision(), job.resolution(),
+                job, more_annotations, confirmations);
     }
 
     void display_one_uninstall(
             const std::tr1::shared_ptr<Environment> &,
             const DisplayResolutionCommandLine &,
             const UninstallJob & job,
-            const bool more_annotations)
+            const bool more_annotations,
+            const bool confirmations)
     {
         cout << "<   " << c::bold_green() << job.resolution()->resolvent() << c::normal() << " ";
 
@@ -692,6 +727,8 @@ namespace
 
         cout << endl;
         display_reasons(job.resolution(), more_annotations);
+        if (confirmations)
+            display_confirmations(job);
     }
 
     void display_special_job_decision(
@@ -765,31 +802,34 @@ namespace
         const ResolverLists & lists;
         const bool all;
         const bool more_annotations;
+        const bool confirmations;
 
         ShowJobsDisplayer(
                 const std::tr1::shared_ptr<Environment> & e,
                 const DisplayResolutionCommandLine & c,
                 const ResolverLists & l,
                 const bool a,
-                const bool n
+                const bool n,
+                const bool f
                 ) :
             env(e),
             cmdline(c),
             lists(l),
             all(a),
-            more_annotations(n)
+            more_annotations(n),
+            confirmations(f)
         {
         }
 
         bool visit(const SimpleInstallJob & job)
         {
-            display_one_install(env, cmdline, job, more_annotations);
+            display_one_install(env, cmdline, job, more_annotations, confirmations);
             return true;
         }
 
         bool visit(const UninstallJob & job)
         {
-            display_one_uninstall(env, cmdline, job, more_annotations);
+            display_one_uninstall(env, cmdline, job, more_annotations, confirmations);
             return true;
         }
 
@@ -880,7 +920,7 @@ namespace
         {
             const std::tr1::shared_ptr<const Job> job(lists.jobs()->fetch(*i));
             ShowJobsDisplayer d(env, cmdline, lists, cmdline.display_options.a_show_all_jobs.specified() ||
-                    ! job->used_existing_packages_when_ordering()->empty(), false);
+                    ! job->used_existing_packages_when_ordering()->empty(), false, false);
             any |= job->accept_returning<bool>(d);
 
             if (! job->used_existing_packages_when_ordering()->empty())
@@ -928,7 +968,7 @@ namespace
         {
             const std::tr1::shared_ptr<const Job> job(lists.jobs()->fetch(*i));
             ShowJobsDisplayer d(env, cmdline, lists, cmdline.display_options.a_show_all_jobs.specified() ||
-                    ! job->used_existing_packages_when_ordering()->empty(), true);
+                    ! job->used_existing_packages_when_ordering()->empty(), true, false);
             if (! job->accept_returning<bool>(d))
                 throw InternalError(PALUDIS_HERE, "why didn't we get true?");
         }
@@ -939,6 +979,32 @@ namespace
         {
             const std::tr1::shared_ptr<const ErrorJob> job(lists.jobs()->fetch_as<ErrorJob>(*i));
             display_one_error(env, cmdline, job->resolution(), *job);
+        }
+
+        cout << endl;
+    }
+
+    void display_confirmation_jobs(
+            const std::tr1::shared_ptr<Environment> & env,
+            const ResolverLists & lists,
+            const DisplayResolutionCommandLine & cmdline)
+    {
+        Context context("When displaying jobs requiring confirmation:");
+
+        if (lists.job_ids_needing_confirmation()->empty())
+            return;
+
+        cout << "I cannot proceed without being permitted to do the following:" << endl << endl;
+
+        for (JobIDSequence::ConstIterator i(lists.job_ids_needing_confirmation()->begin()),
+                i_end(lists.job_ids_needing_confirmation()->end()) ;
+                i != i_end ; ++i)
+        {
+            const std::tr1::shared_ptr<const Job> job(lists.jobs()->fetch(*i));
+            ShowJobsDisplayer d(env, cmdline, lists, cmdline.display_options.a_show_all_jobs.specified() ||
+                    ! job->used_existing_packages_when_ordering()->empty(), true, true);
+            if (! job->accept_returning<bool>(d))
+                throw InternalError(PALUDIS_HERE, "why didn't we get true?");
         }
 
         cout << endl;
@@ -1008,6 +1074,7 @@ DisplayResolutionCommand::run(
 
     display_jobs(env, *lists, cmdline);
     display_untaken(env, *lists, cmdline);
+    display_confirmation_jobs(env, *lists, cmdline);
     display_errors(env, *lists, cmdline);
     display_explanations(env, *lists, cmdline);
 

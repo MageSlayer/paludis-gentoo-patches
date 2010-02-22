@@ -1469,6 +1469,9 @@ paludis::cave::resolve_common(
         if (! resolver->lists()->taken_error_job_ids()->empty())
             retcode |= 1;
 
+        if (! resolver->lists()->job_ids_needing_confirmation()->empty())
+            retcode |= 3;
+
         if (0 == retcode)
             return perform_resolution(env, resolver->lists(), resolution_options,
                     execution_options, program_options, keys_if_import, targets, is_set);
