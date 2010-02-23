@@ -34,11 +34,14 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_copy.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
-#include <paludis/dep_spec_flattener.hh>
+#include <paludis/spec_tree.hh>
+#include <paludis/repository.hh>
 
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <set>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -90,6 +93,55 @@ Resolver::add_target(const PackageOrBlockDepSpec & spec)
     _imp->decider->add_target_with_reason(spec, make_shared_ptr(new TargetReason));
 }
 
+namespace
+{
+    typedef std::set<SetName> RecursingNames;
+
+    struct SetExpander
+    {
+        const Environment * const env;
+        const std::tr1::shared_ptr<Decider> & decider;
+        const std::tr1::shared_ptr<const Reason> reason;
+        RecursingNames & recurse;
+
+        SetExpander(const Environment * const e,
+                const std::tr1::shared_ptr<Decider> & d,
+                const std::tr1::shared_ptr<const Reason> & r,
+                RecursingNames & c) :
+            env(e),
+            decider(d),
+            reason(r),
+            recurse(c)
+        {
+        }
+
+        void visit(const SetSpecTree::NodeType<NamedSetDepSpec>::Type & n) const
+        {
+            if (! recurse.insert(n.spec()->name()).second)
+                throw RecursivelyDefinedSetError(stringify(n.spec()->name()));
+
+            const std::tr1::shared_ptr<const SetSpecTree> set(env->set(n.spec()->name()));
+            if (! set)
+                throw NoSuchSetError(stringify(n.spec()->name()));
+
+            set->root()->accept(SetExpander(env, decider,
+                        make_shared_ptr(new SetReason(n.spec()->name(), reason)), recurse));
+
+            recurse.erase(n.spec()->name());
+        }
+
+        void visit(const SetSpecTree::NodeType<AllDepSpec>::Type & n) const
+        {
+            std::for_each(indirect_iterator(n.begin()), indirect_iterator(n.end()), accept_visitor(*this));
+        }
+
+        void visit(const SetSpecTree::NodeType<PackageDepSpec>::Type & n) const
+        {
+            decider->add_target_with_reason(*n.spec(), reason);
+        }
+    };
+}
+
 void
 Resolver::add_target(const SetName & set_name)
 {
@@ -100,13 +152,8 @@ Resolver::add_target(const SetName & set_name)
     if (! set)
         throw InternalError(PALUDIS_HERE, "unimplemented: no such set");
 
-    DepSpecFlattener<SetSpecTree, PackageDepSpec> flattener(_imp->env);
-    set->root()->accept(flattener);
-
-    const std::tr1::shared_ptr<Reason> reason(new SetReason(set_name, make_shared_ptr(new TargetReason)));
-    for (DepSpecFlattener<SetSpecTree, PackageDepSpec>::ConstIterator s(flattener.begin()), s_end(flattener.end()) ;
-            s != s_end ; ++s)
-        _imp->decider->add_target_with_reason(**s, reason);
+    RecursingNames recurse;
+    set->root()->accept(SetExpander(_imp->env, _imp->decider, make_shared_ptr(new TargetReason), recurse));
 }
 
 void
