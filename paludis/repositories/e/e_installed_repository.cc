@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -51,6 +51,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/common_sets.hh>
+#include <paludis/output_manager.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -256,6 +257,8 @@ EInstalledRepository::perform_config(
 
         config_cmd();
     }
+
+    output_manager->succeeded();
 }
 
 void
