@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,6 +26,7 @@
 #include <tr1/functional>
 #include <map>
 
+#include "cmd_config.hh"
 #include "cmd_display_resolution.hh"
 #include "cmd_execute_resolution.hh"
 #include "cmd_help.hh"
@@ -81,6 +82,7 @@ namespace
 CommandFactory::CommandFactory() :
     PrivateImplementationPattern<CommandFactory>(new Implementation<CommandFactory>)
 {
+    _imp->handlers.insert(std::make_pair("config", std::tr1::bind(&make_command<ConfigCommand>)));
     _imp->handlers.insert(std::make_pair("display-resolution", std::tr1::bind(&make_command<DisplayResolutionCommand>)));
     _imp->handlers.insert(std::make_pair("execute-resolution", std::tr1::bind(&make_command<ExecuteResolutionCommand>)));
     _imp->handlers.insert(std::make_pair("help", std::tr1::bind(&make_command<HelpCommand>)));
