@@ -81,5 +81,25 @@ PLATFORMS="test"
 SLOT="0"
 END
 
+# blocked-and-dep
+echo 'blocked-and-dep' >> metadata/categories.conf
+
+mkdir -p 'packages/blocked-and-dep/target'
+cat <<END > packages/blocked-and-dep/target/target-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="
+    ( !blocked-and-dep/both blocked-and-dep/both )
+    "
+END
+
+mkdir -p 'packages/blocked-and-dep/both'
+cat <<END > packages/blocked-and-dep/both/both-1.exheres-0
+SUMMARY="dep"
+PLATFORMS="test"
+SLOT="0"
+END
+
 cd ..
 

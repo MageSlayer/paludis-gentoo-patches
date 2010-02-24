@@ -239,5 +239,49 @@ namespace test_cases
             }
         }
     } test_target(false), test_target_exists(true);
+
+    struct BlockedAndDep : ResolverBlockersTestCase
+    {
+        const bool exists;
+        const bool allowed;
+
+        BlockedAndDep(const bool x, const bool a) :
+            ResolverBlockersTestCase("blocked and dep"
+                    + std::string(x ? " exists" : "")
+                    + std::string(a ? " allowed" : "")),
+            exists(x),
+            allowed(a)
+        {
+            if (allowed)
+                allowed_to_remove_names->insert(QualifiedPackageName("blocked-and-dep/both"));
+
+            if (exists)
+                install("blocked-and-dep", "both", "1");
+        }
+
+        void run()
+        {
+            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("blocked-and-dep/target"));
+
+            {
+                TestMessageSuffix s("taken errors");
+                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
+                        .kind("unable_to_make_decision", QualifiedPackageName("blocked-and-dep/both"))
+                        .finished()
+                        );
+            }
+
+            {
+                TestMessageSuffix s("ordered");
+                check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
+                        .kind("changes_to_make", QualifiedPackageName("blocked-and-dep/target"))
+                        .finished()
+                        );
+            }
+        }
+    } test_blocked_and_dep(false, false),
+        test_blocked_and_dep_exists(true, false),
+        test_blocked_and_dep_allowed(false, true),
+        test_blocked_and_dep_exists_allowed(true, true);
 }
 

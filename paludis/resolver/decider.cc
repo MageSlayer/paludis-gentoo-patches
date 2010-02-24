@@ -1182,7 +1182,7 @@ Decider::_try_to_find_decision_for(
         /* we can't stick with our existing id, if there is one, and we can't
          * fix it by installing things. this might be an error, or we might be
          * able to remove things. */
-        if (_installed_but_allowed_to_remove(resolvent))
+        if (resolution->constraints()->nothing_is_fine_too() && _installed_but_allowed_to_remove(resolvent))
             return make_shared_ptr(new RemoveDecision(
                         _installed_ids(resolvent),
                         ! resolution->constraints()->all_untaken()
