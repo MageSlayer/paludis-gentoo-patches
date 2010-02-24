@@ -77,7 +77,12 @@ namespace test_cases
 {
     struct TestNoChanges : ResolverCyclesTestCase
     {
-        TestNoChanges() : ResolverCyclesTestCase("no-changes") { }
+        TestNoChanges() :
+            ResolverCyclesTestCase("no-changes")
+        {
+            install("no-changes", "dep-a", "1")->build_dependencies_key()->set_from_string("no-changes/dep-b");
+            install("no-changes", "dep-b", "1")->build_dependencies_key()->set_from_string("no-changes/dep-a");
+        }
 
         virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)
         {
@@ -89,9 +94,6 @@ namespace test_cases
 
         void run()
         {
-            install("no-changes", "dep-a", "1")->build_dependencies_key()->set_from_string("no-changes/dep-b");
-            install("no-changes", "dep-b", "1")->build_dependencies_key()->set_from_string("no-changes/dep-a");
-
             std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("no-changes/target"));
 
             {
@@ -120,12 +122,14 @@ namespace test_cases
 
     struct TestExistingUsable : ResolverCyclesTestCase
     {
-        TestExistingUsable() : ResolverCyclesTestCase("existing-usable") { }
+        TestExistingUsable() :
+            ResolverCyclesTestCase("existing-usable")
+        {
+            install("existing-usable", "dep", "1");
+        }
 
         void run()
         {
-            install("existing-usable", "dep", "1");
-
             std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("existing-usable/target"));
 
             {

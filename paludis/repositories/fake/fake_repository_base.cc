@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -134,10 +134,33 @@ FakeRepositoryBase::add_package(const QualifiedPackageName & q)
     _imp->ids.insert(std::make_pair(q, new PackageIDSequence));
 }
 
+namespace
+{
+    struct VersionIs
+    {
+        const VersionSpec version;
+
+        VersionIs(const VersionSpec & v) :
+            version(v)
+        {
+        }
+
+        bool operator() (const std::tr1::shared_ptr<const PackageID> & i) const
+        {
+            return i->version() == version;
+        }
+    };
+}
+
 std::tr1::shared_ptr<FakePackageID>
 FakeRepositoryBase::add_version(const QualifiedPackageName & q, const VersionSpec & v)
 {
     add_package(q);
+
+    if (_imp->ids.find(q)->second->end() != std::find_if(_imp->ids.find(q)->second->begin(),
+                _imp->ids.find(q)->second->end(), VersionIs(v)))
+        throw InternalError(PALUDIS_HERE, "duplicate id added");
+
     std::tr1::shared_ptr<FakePackageID> id(new FakePackageID(_imp->env, shared_from_this(), q, v));
     _imp->ids.find(q)->second->push_back(id);
     return id;

@@ -74,13 +74,12 @@ namespace test_cases
             ResolverBlockersTestCase("hard" + std::string(t ? " transient" : "")),
             transient(t)
         {
+            install("hard", "a-pkg", "1");
+            install("hard", "z-pkg", "1");
         }
 
         void run()
         {
-            install("hard", "a-pkg", "1");
-            install("hard", "z-pkg", "1");
-
             std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("hard/target"));
 
             {
@@ -117,12 +116,11 @@ namespace test_cases
             ResolverBlockersTestCase("unfixable" + std::string(t ? " transient" : "")),
             transient(t)
         {
+            install("unfixable", "a-pkg", "1")->transient_key()->set_value(transient);
         }
 
         void run()
         {
-            install("unfixable", "a-pkg", "1")->transient_key()->set_value(transient);
-
             std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("unfixable/target"));
 
             {
@@ -159,12 +157,11 @@ namespace test_cases
             transient(t)
         {
             allowed_to_remove_names->insert(QualifiedPackageName("remove/a-pkg"));
+            install("remove", "a-pkg", "1")->transient_key()->set_value(transient);
         }
 
         void run()
         {
-            install("remove", "a-pkg", "1")->transient_key()->set_value(transient);
-
             std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("remove/target"));
 
             {
@@ -201,13 +198,13 @@ namespace test_cases
             exists(x)
         {
             allowed_to_remove_names->insert(QualifiedPackageName("target/target"));
+
+            if (exists)
+                install("target", "target", "1");
         }
 
         void run()
         {
-            if (exists)
-                install("target", "target", "1");
-
             std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions(BlockDepSpec(
                             "!target/target",
                             parse_user_package_dep_spec("target/target", &env, UserPackageDepSpecOptions()),

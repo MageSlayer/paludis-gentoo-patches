@@ -102,12 +102,14 @@ namespace test_cases
 
     struct TestEmptyAlternativeWithUpgrade : ResolverAnyTestCase
     {
-        TestEmptyAlternativeWithUpgrade() : ResolverAnyTestCase("empty alternative with upgrade") { }
+        TestEmptyAlternativeWithUpgrade() :
+            ResolverAnyTestCase("empty alternative with upgrade")
+        {
+            install("test", "dep", "2");
+        }
 
         void run()
         {
-            install("test", "dep", "2");
-
             std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("test/target"));
 
             {
@@ -137,12 +139,14 @@ namespace test_cases
 
     struct TestEmptyAlternativeWithUntakenUpgrade : ResolverAnyTestCase
     {
-        TestEmptyAlternativeWithUntakenUpgrade() : ResolverAnyTestCase("empty alternative with untaken upgrade") { }
+        TestEmptyAlternativeWithUntakenUpgrade() :
+            ResolverAnyTestCase("empty alternative with untaken upgrade")
+        {
+            install("test", "dep", "1");
+        }
 
         void run()
         {
-            install("test", "dep", "1");
-
             std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("test/target"));
 
             {
