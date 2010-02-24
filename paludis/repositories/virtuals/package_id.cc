@@ -234,6 +234,10 @@ VirtualsPackageID::canonical_form(const PackageIDCanonicalForm f) const
         case idcf_version:
             return stringify(_imp->version) + " (for " + stringify(_imp->virtual_for->value()->canonical_form(idcf_no_version)) + ")";
 
+        case idcf_no_name:
+            return stringify(_imp->version) + "::" + stringify(_imp->repository->name()) +
+                " (virtual for " + stringify(*_imp->virtual_for->value()) + ")";
+
         case last_idcf:
             break;
     }

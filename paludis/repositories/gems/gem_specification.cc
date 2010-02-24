@@ -301,6 +301,9 @@ GemSpecification::canonical_form(const PackageIDCanonicalForm f) const
         case idcf_no_version:
             return stringify(name()) + "::" + stringify(_imp->repository->name());
 
+        case idcf_no_name:
+            return stringify(version()) + "::" + stringify(repository()->name());
+
         case last_idcf:
             break;
     }

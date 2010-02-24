@@ -119,6 +119,11 @@ UnavailableID::canonical_form(const PackageIDCanonicalForm f) const
             return stringify(_imp->version) +
                 " (in ::" + *_imp->from_repositories_key->value()->begin() + ")";
 
+        case idcf_no_name:
+            return stringify(_imp->version) +
+                ":" + stringify(_imp->slot_key->value()) + "::" + stringify(_imp->repo->name()) +
+                " (in ::" + *_imp->from_repositories_key->value()->begin() + ")";
+
         case last_idcf:
             break;
     }

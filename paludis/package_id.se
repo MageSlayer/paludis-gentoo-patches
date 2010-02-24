@@ -8,6 +8,7 @@ make_enum_PackageIDCanonicalForm()
     key idcf_full                     "Everything"
     key idcf_version                  "Version, and affix as appropriate"
     key idcf_no_version               "No version"
+    key idcf_no_name                  "No name \since 0.46"
 
     doxygen_comment << "END"
         /**

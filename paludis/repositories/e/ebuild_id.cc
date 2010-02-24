@@ -589,6 +589,13 @@ EbuildID::canonical_form(const PackageIDCanonicalForm f) const
         case idcf_version:
             return stringify(version());
 
+        case idcf_no_name:
+            if (_imp->slot)
+                return stringify(version()) + ":" + stringify(_imp->slot->value()) + "::" +
+                    stringify(repository()->name());
+
+            return stringify(version()) + "::" + stringify(repository()->name());
+
         case last_idcf:
             break;
     }

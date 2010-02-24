@@ -143,6 +143,10 @@ UnpackagedID::canonical_form(const PackageIDCanonicalForm f) const
             return stringify(_imp->name) + ":" + stringify(slot_key()->value()) + "::" +
                 stringify(_imp->repository_name);
 
+        case idcf_no_name:
+            return stringify(_imp->version) + ":" +
+                stringify(slot_key()->value()) + "::" + stringify(_imp->repository_name);
+
         case last_idcf:
             break;
     }

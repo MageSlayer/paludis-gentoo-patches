@@ -777,6 +777,10 @@ FakePackageID::canonical_form(const PackageIDCanonicalForm f) const
         case idcf_no_version:
             return stringify(_imp->name) + ":" + stringify(_imp->slot->value()) + "::" + stringify(_imp->repository->name());
 
+        case idcf_no_name:
+            return stringify(_imp->version) + ":" + stringify(_imp->slot->value())
+                + "::" + stringify(_imp->repository->name());
+
         case last_idcf:
             break;
     }

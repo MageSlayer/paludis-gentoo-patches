@@ -595,6 +595,13 @@ EInstalledRepositoryID::canonical_form(const PackageIDCanonicalForm f) const
         case idcf_version:
             return stringify(version());
 
+        case idcf_no_name:
+            if (_imp->keys && _imp->keys->slot)
+                return stringify(version()) + ":" + stringify(_imp->keys->slot->value()) + "::" +
+                    stringify(repository()->name());
+
+            return stringify(version()) + "::" + stringify(repository()->name());
+
         case last_idcf:
             break;
     }

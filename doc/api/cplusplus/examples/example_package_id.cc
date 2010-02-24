@@ -66,6 +66,7 @@ int main(int argc, char * argv[])
             cout << left << setw(30) << "    idcf_full:" << " " << (*i)->canonical_form(idcf_full) << endl;
             cout << left << setw(30) << "    idcf_version:" << " " << (*i)->canonical_form(idcf_version) << endl;
             cout << left << setw(30) << "    idcf_no_version:" << " " << (*i)->canonical_form(idcf_no_version) << endl;
+            cout << left << setw(30) << "    idcf_no_name:" << " " << (*i)->canonical_form(idcf_no_name) << endl;
 
             /* Let's see what keys we have. Other examples cover keys in depth,
              * so we'll just use the basic methods here. */

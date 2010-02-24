@@ -193,6 +193,9 @@ InstalledAccountsID::canonical_form(const PackageIDCanonicalForm f) const
         case idcf_version:
             return stringify(version());
 
+        case idcf_no_name:
+            return stringify(version()) + "::" + stringify(repository()->name());
+
         case last_idcf:
             break;
     }

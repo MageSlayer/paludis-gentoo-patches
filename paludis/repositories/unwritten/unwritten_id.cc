@@ -126,6 +126,10 @@ UnwrittenID::canonical_form(const PackageIDCanonicalForm f) const
         case idcf_version:
             return stringify(_imp->version);
 
+        case idcf_no_name:
+            return stringify(_imp->version) +
+                ":" + stringify(slot_key()->value()) + "::" + stringify(_imp->repo->name());
+
         case last_idcf:
             break;
     }
