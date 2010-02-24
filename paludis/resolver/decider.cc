@@ -422,17 +422,12 @@ Decider::_make_constraints_from_blocker(
 {
     const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
 
-    /* nothing is fine too if there's nothing installed matching the block. */
-    const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::SomeArbitraryVersion(
-                generator::Matches(spec.blocking(), MatchPackageOptions()) |
-                filter::InstalledAtRoot(FSEntry("/")))]);
-
     DestinationTypes destination_types(_get_destination_types_for_blocker(spec));
     for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
         if (destination_types[*t])
             result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
                                 value_for<n::destination_type>(*t),
-                                value_for<n::nothing_is_fine_too>(ids->empty()),
+                                value_for<n::nothing_is_fine_too>(true),
                                 value_for<n::reason>(reason),
                                 value_for<n::spec>(spec),
                                 value_for<n::untaken>(false),
@@ -500,14 +495,14 @@ namespace
             return constraint.nothing_is_fine_too();
         }
 
-        bool visit(const UnableToMakeDecision &) const
+        bool visit(const UnableToMakeDecision &) const PALUDIS_ATTRIBUTE((noreturn))
         {
-            return constraint.nothing_is_fine_too();
+            throw InternalError(PALUDIS_HERE, "huh?");
         }
 
         bool visit(const RemoveDecision &) const
         {
-            return constraint.nothing_is_fine_too() || constraint.spec().if_block();
+            return constraint.nothing_is_fine_too();
         }
     };
 
@@ -1126,14 +1121,19 @@ Decider::_try_to_find_decision_for(
     const std::tr1::shared_ptr<const PackageID> installable_id(installable_id_best.first);
     bool best(installable_id_best.second);
 
-    if (resolution->constraints()->nothing_is_fine_too() && ! existing_id)
+    if (resolution->constraints()->nothing_is_fine_too())
     {
-        /* nothing existing, but nothing's ok */
-        return make_shared_ptr(new NothingNoChangeDecision(
-                    ! resolution->constraints()->all_untaken()
-                    ));
+        const std::tr1::shared_ptr<const PackageIDSequence> existing_resolvent_ids(_installed_ids(resolvent));
+        if (existing_resolvent_ids->empty())
+        {
+            /* nothing existing, but nothing's ok */
+            return make_shared_ptr(new NothingNoChangeDecision(
+                        ! resolution->constraints()->all_untaken()
+                        ));
+        }
     }
-    else if (installable_id && ! existing_id)
+
+    if (installable_id && ! existing_id)
     {
         /* there's nothing suitable existing. we fix the last_ct when we do
          * destinations. */
