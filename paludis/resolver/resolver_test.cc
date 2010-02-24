@@ -95,7 +95,7 @@ paludis::resolver::resolver_test::get_resolvents_for_fn(const PackageDepSpec & s
         const std::tr1::shared_ptr<const Reason> &)
 {
     std::tr1::shared_ptr<Resolvents> result(new Resolvents);
-    result->push_back(Resolvent(spec, slot ? slot : make_shared_ptr(new const SlotName("0")), dt_install_to_slash));
+    result->push_back(Resolvent(spec, slot ? *slot : SlotName("0"), dt_install_to_slash));
     return result;
 }
 
