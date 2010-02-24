@@ -711,7 +711,7 @@ namespace
             const bool more_annotations,
             const bool confirmations)
     {
-        cout << "<   " << c::bold_green() << job.resolution()->resolvent() << c::normal() << " ";
+        cout << "<   " << c::bold_green() << job.resolution()->resolvent().package() << c::normal() << " ";
 
         bool first(true);
         for (PackageIDSequence::ConstIterator i(job.remove_decision()->ids()->begin()),
@@ -722,7 +722,7 @@ namespace
                 cout << ", ";
             first = false;
 
-            cout << (*i)->canonical_form(idcf_version);
+            cout << (*i)->canonical_form(idcf_no_name);
         }
 
         cout << endl;
