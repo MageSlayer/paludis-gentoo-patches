@@ -18,6 +18,7 @@ _cave()
   )
 
   _cave_commands=(
+    'config:Perform post-install configuration on a package'
     'help:Display help information for a particular command'
     'perform:Perform an action upon a package'
     'print-categories:Prints a list of known categories'
@@ -64,6 +65,13 @@ _cave()
     fi
   fi
 
+}
+
+(( ${+functions[_cave_cmd_config]} )) ||
+_cave_cmd_config()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]'
 }
 
 (( ${+functions[_cave_cmd_help]} )) ||
