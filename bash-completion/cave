@@ -4,7 +4,7 @@
 
 # Based in part upon 'git' bash completion from git-1.6.4.2
 
-_cave_find_cmd() {
+__cave_find_cmd() {
     local w c=1 cmd
 
     while [[ $c -lt $COMP_CWORD ]] ; do
@@ -19,22 +19,49 @@ _cave_find_cmd() {
     echo "${cmd}"
 }
 
-_cave() {
-    local cmd="$(_cave_find_cmd)" cur="${COMP_WORDS[COMP_CWORD]}"
+__cave_global() {
+    case "${prev}" in
+        --log-level)
+            COMPREPLY=( $(compgen -W "debug qa warning slient" -- "${cur}") )
+            ;;
+        --environment|-E)
+            COMPREPLY=( $(compgen -W "paludis: portage:" -- "${cur}") )
+            ;;
+        *)
+            case "${cur}" in
+                -*)
+                    COMPREPLY=( $(compgen -W "-E --environment --log-level" -- "${cur}") )
+                    ;;
+                *)
+                    COMPREPLY=( $(compgen -W "$(cave print-commands -a)" -- "${cur}") )
+                    ;;
+            esac
+    esac
+}
 
-    if [[ -z "${cmd}" ]] ; then
-        case "${cur}" in
-            --*)
-                COMPREPLY=( $(compgen -W "--environment --log-level" -- "${cur}") )
-                ;;
-            *)
-                COMPREPLY=( $(compgen -W "$(cave print-commands)" -- "${cur}") )
-                ;;
-        esac
-        return
+__cave_help() {
+    # only complete once
+    if [[ "${prev}" == "help" ]] ; then
+        COMPREPLY=( $(compgen -W "$(cave print-commands -a) -a --all" -- "${cur}") )
     fi
+}
+
+__cave_sync() {
+    COMPREPLY=( $(compgen -W "$(cave print-repositories) --sequential" -- "${cur}") )
+}
+
+_cave() {
+    local cmd=`_cave_find_cmd` prev=`_get_pword` cur=`_get_cword`
 
     COMPREPLY=()
+
+    if [[ -z "${cmd}" ]] ; then
+        __cave_global
+    else
+        if [[ "$(type -t "__cave_${cmd}")" == "function" ]] ; then
+            "__cave_${cmd}"
+        fi
+    fi
 }
-complete -o bashdefault -o default -F _cave cave
+complete -F _cave cave
 
