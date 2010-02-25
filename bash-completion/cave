@@ -5,37 +5,44 @@
 # Based in part upon 'git' bash completion from git-1.6.4.2
 
 __cave_find_cmd() {
-    local w c=1 cmd
+    local w c cmd
 
-    while [[ $c -lt $COMP_CWORD ]] ; do
+    for (( c=1; c < COMP_CWORD; c++ )) ; do
         w="${COMP_WORDS[c]}"
         case "${w}" in
             --*) ;;
             --help) cmd="help"; break ;;
-            *) cmd="${w}"; break ;;
+            config|@(display|execute)-resolution|help|import|perform|print-@(categories|commands|environment-metadata|id-@(contents|executables|metadata)|ids|owners|packages|repositor@(ies|y-formats)|sets|sync-protocols)|resolve|show|sync|update-world) cmd="${w}"; break ;;
         esac
     done
 
     echo "${cmd}"
 }
 
+__cave_enum_value() {
+    local w c v enum="${1}"
+    for (( c=COMP_CWORD; c > 1; c-- )) ; do
+        w="${COMP_WORDS[c]}"
+        if [[ "${w}" =~ ^${enum}$ ]] ; then
+            v="${COMP_WORDS[c+1]}"
+            break;
+        fi
+    done
+
+    echo "${v}"
+}
+
 __cave_global() {
     case "${prev}" in
         --log-level)
-            COMPREPLY=( $(compgen -W "debug qa warning slient" -- "${cur}") )
+            COMPREPLY=( $(compgen -W "debug qa warning silent" -- "${cur}") )
             ;;
         --environment|-E)
             COMPREPLY=( $(compgen -W "paludis: portage:" -- "${cur}") )
             ;;
         *)
-            case "${cur}" in
-                -*)
-                    COMPREPLY=( $(compgen -W "-E --environment --log-level" -- "${cur}") )
-                    ;;
-                *)
-                    COMPREPLY=( $(compgen -W "$(cave print-commands -a)" -- "${cur}") )
-                    ;;
-            esac
+            COMPREPLY=( $(compgen -W "$(cave print-commands -a) -E --environment --log-level" -- "${cur}") )
+            ;;
     esac
 }
 
@@ -50,8 +57,41 @@ __cave_sync() {
     COMPREPLY=( $(compgen -W "$(cave print-repositories) --sequential" -- "${cur}") )
 }
 
+__cave_show() {
+    local type="$(__cave_enum_value '--type|-t')"
+    case "${prev}" in
+        --type|-t)
+            COMPREPLY=( $(compgen -W "auto repository set wildcard package" -- "${cur}") )
+            ;;
+        *)
+            case "${cur}" in
+                -*)
+                    COMPREPLY=( $(compgen -W "--type -t --complex-keys -c --internal-keys -i --flat -f --raw-names -r" -- "${cur}") )
+                    ;;
+                *)
+                    case "${type}" in
+                        repository)
+                            COMPREPLY=( $(compgen -W "$(cave print-repositories)" -- "${cur}") )
+                            ;;
+                        set)
+                            COMPREPLY=( $(compgen -W "$(cave print-sets)" -- "${cur}") )
+                            ;;
+                        package)
+                            COMPREPLY=( $(compgen -W "$(cave print-packages)" -- "${cur}") )
+                            ;;
+                        auto|wildcard|*)
+                            # TODO: provide reasonable completions for 'spec' here
+                            COMPREPLY=()
+                            ;;
+                    esac
+                    ;;
+            esac
+            ;;
+    esac
+}
+
 _cave() {
-    local cmd=`_cave_find_cmd` prev=`_get_pword` cur=`_get_cword`
+    local cmd=`__cave_find_cmd` prev=`_get_pword` cur=`_get_cword`
 
     COMPREPLY=()
 
