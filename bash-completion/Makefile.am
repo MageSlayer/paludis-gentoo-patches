@@ -2,7 +2,7 @@ MAINTAINERCLEANFILES = Makefile.in
 noinst_DATA = paludis adjutrix \
 	      inquisitio \
 	      accerso instruo reconcilio \
-	      importare
+	      importare cave
 EXTRA_DIST = $(noinst_DATA)
 
 AUTOMAKE_OPTIONS = 1.11 parallel-tests
