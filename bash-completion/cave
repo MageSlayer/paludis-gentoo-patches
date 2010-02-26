@@ -3,6 +3,7 @@
 # vim: set et sw=4 sts=4 ts=4 ft=sh :
 
 # Based in part upon 'git' bash completion from git-1.6.4.2
+# Based in part upon a cave bash completion script by Łukasz Michalik
 
 __cave_find_cmd() {
     local w c cmd
@@ -11,7 +12,7 @@ __cave_find_cmd() {
         w="${COMP_WORDS[c]}"
         case "${w}" in
             --*) ;;
-            --help) cmd="help"; break ;;
+            --help|-h) cmd="help"; break ;;
             config|@(display|execute)-resolution|help|import|perform|print-@(categories|commands|environment-metadata|id-@(contents|executables|metadata)|ids|owners|packages|repositor@(ies|y-formats)|sets|sync-protocols)|resolve|show|sync|update-world) cmd="${w}"; break ;;
         esac
     done
@@ -32,16 +33,20 @@ __cave_enum_value() {
     echo "${v}"
 }
 
+__cave_compgen() {
+    COMPREPLY=( $(compgen -W "$*" -- "${cur}") )
+}
+
 __cave_global() {
     case "${prev}" in
         --log-level)
-            COMPREPLY=( $(compgen -W "debug qa warning silent" -- "${cur}") )
+            __cave_compgen "debug qa warning silent"
             ;;
         --environment|-E)
-            COMPREPLY=( $(compgen -W "paludis: portage:" -- "${cur}") )
+            __cave_compgen "paludis: portage:"
             ;;
         *)
-            COMPREPLY=( $(compgen -W "$(cave print-commands -a) -E --environment --log-level" -- "${cur}") )
+            __cave_compgen "$(cave print-commands -a) -E --environment --log-level"
             ;;
     esac
 }
@@ -49,41 +54,138 @@ __cave_global() {
 __cave_help() {
     # only complete once
     if [[ "${prev}" == "help" ]] ; then
-        COMPREPLY=( $(compgen -W "$(cave print-commands -a) -a --all" -- "${cur}") )
+        __cave_compgen "$(cave print-commands -a) -a --all -h --help"
     fi
 }
 
 __cave_sync() {
-    COMPREPLY=( $(compgen -W "$(cave print-repositories) --sequential" -- "${cur}") )
+    __cave_compgen "$(cave print-repositories) --sequential -h --help"
 }
 
 __cave_show() {
     local type="$(__cave_enum_value '--type|-t')"
     case "${prev}" in
         --type|-t)
-            COMPREPLY=( $(compgen -W "auto repository set wildcard package" -- "${cur}") )
+            __cave_compgen "auto repository set wildcard package"
             ;;
         *)
             case "${cur}" in
                 -*)
-                    COMPREPLY=( $(compgen -W "--type -t --complex-keys -c --internal-keys -i --flat -f --raw-names -r" -- "${cur}") )
+                    __cave_compgen "--type -t --complex-keys -c --internal-keys -i --flat -f --raw-names -r --help"
                     ;;
                 *)
                     case "${type}" in
                         repository)
-                            COMPREPLY=( $(compgen -W "$(cave print-repositories)" -- "${cur}") )
+                            __cave_compgen "$(cave print-repositories)"
                             ;;
                         set)
-                            COMPREPLY=( $(compgen -W "$(cave print-sets)" -- "${cur}") )
+                            __cave_compgen "$(cave print-sets)"
                             ;;
                         package)
-                            COMPREPLY=( $(compgen -W "$(cave print-packages)" -- "${cur}") )
+                            __cave_compgen "$(cave print-packages)"
                             ;;
                         auto|wildcard|*)
                             # TODO: provide reasonable completions for 'spec' here
                             COMPREPLY=()
                             ;;
                     esac
+                    ;;
+            esac
+            ;;
+    esac
+}
+
+__cave_resolve() {
+    case "${prev}" in
+        -K|--keep-targets)
+            __cave_compgen "auto never if-transient if-same if-same-version if-possible"
+            ;;
+        -k|--keep)
+            __cave_compgen "never if-transient if-same if-same-version if-possible"
+            ;;
+        -R|--reinstall-scm)
+            __cave_compgen "always daily weekly never"
+            ;;
+        -w|--with|-W|--without)
+            __cave_compgen "$(cave print-packages)"
+            ;;
+        -S|--target-slots|-s|--slots)
+            __cave_compgen "best-or-installed installed-or-best all best"
+            ;;
+        --suggestions|--recommendations)
+            __cave_compgen "ignore display take"
+            ;;
+        -C|--continue-on-failure)
+            __cave_compgen "never if-satisfied if-independent always"
+            ;;
+        --change-phases-for)
+            __cave_compgen "all first last"
+            ;;
+        --show-descriptions)
+            __cave_compgen "none new all"
+            ;;
+        --skip-phase|--abort-at-phase|--skip-until-phase)
+            __cave_compgen "fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup"
+            ;;
+        -[UdawW0!tTiIFApBX]|--@(permit-@(uninstall|downgrade|any-version)|with?(out)|no-@(dependencies|blockers)-from|@(take|ignore)?(-from)|favor|avoid|preset|no-binaries-for|explain))
+            # TODO: better completion here
+            COMPREPLY=()
+            ;;
+        --@(@(display|execute)-resolution|perform|update-world)-program)
+            _filedir
+            ;;
+        *)
+            case "${cur}" in
+                -*)
+                    __cave_compgen "-h --help
+                        -x --execute --no-execute
+                        -z --lazy --no-lazy
+                        -c --complete --no-complete
+                        -e --everything --no-everything
+                        -U --permit-uninstall
+                        -d --permit-downgrade
+                        -a --permit-any-version
+                        -K --keep-targets
+                        -k --keep
+                        -R --reinstall-scm
+                        -w --with
+                        -W --without
+                        -S --target-slots
+                        -s --slots
+                        -D --follow-installed-build-dependencies --no-follow-installed-build-dependencies
+                        -n --no-follow-installed-dependencies --no-no-follow-installed-dependencies
+                        -0 --no-dependencies-from
+                        -! --no-blockers-from
+                        --suggestions
+                        --recommendations
+                        -t --take
+                        -T --take-from
+                        -i --ignore
+                        -I --ignore-from
+                        -F --favour
+                        -A --avoid
+                        -p --preset
+                        -b --create-binaries
+                        -B --no-binaries-for
+                        -/ --install-to-root --no-install-to-root
+                        --dump --no-dump
+                        --dump-restarts --no-dump-restarts
+                        -1 --preserve-world --no-preserve-world
+                        -C --continue-on-failure
+                        --skip-phase
+                        --abort-at-phase
+                        --skip-until-phase
+                        --change-phases-for
+                        --show-descriptions
+                        -X --explain
+                        --show-all-jobs --no-show-all-jobs
+                        --display-resolution-program
+                        --execute-resolution-program
+                        --perform-program
+                        --update-world-program
+                        "
+                    ;;
+                *)
                     ;;
             esac
             ;;
