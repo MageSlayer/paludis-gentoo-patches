@@ -1004,8 +1004,8 @@ EContentsKey::value() const
         std::vector<std::string> tokens;
         if (! VDBContentsTokeniser::tokenise(line, std::back_inserter(tokens)))
         {
-            Log::get_instance()->message("e.contents.broken", ll_warning, lc_context) << "CONTENTS has broken line " <<
-                line_number << ", skipping";
+            Log::get_instance()->message("e.contents.broken", ll_warning, lc_context) << "CONTENTS has broken line '" <<
+                line_number << "', skipping";
             continue;
         }
 
