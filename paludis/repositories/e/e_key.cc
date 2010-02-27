@@ -1031,6 +1031,9 @@ EContentsKey::value() const
         }
         else if ("misc" == tokens.at(0) || "fif" == tokens.at(0) || "dev" == tokens.at(0))
             _imp->value->add(std::tr1::shared_ptr<ContentsEntry>(new ContentsOtherEntry(tokens.at(1))));
+        else
+            Log::get_instance()->message("e.contents.unknown", ll_warning, lc_context) << "CONTENTS has unsupported entry type '" <<
+                tokens.at(0) << "', skipping";
     }
 
     return _imp->value;
