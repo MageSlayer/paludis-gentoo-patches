@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -40,6 +40,7 @@ namespace paludis
         {
             return make_shared_ptr(new PaludisDistribution(make_named_values<PaludisDistribution>(
                             value_for<n::bashrc_filename>(k->get("bashrc_filename")),
+                            value_for<n::info_messages_are_spam>(destringify<bool>(k->get("info_messages_are_spam"))),
                             value_for<n::keywords_filename_part>(k->get("keywords_filename_part")),
                             value_for<n::licenses_filename_part>(k->get("licenses_filename_part")),
                             value_for<n::mandatory_userpriv>(destringify<bool>(k->get("mandatory_userpriv"))),

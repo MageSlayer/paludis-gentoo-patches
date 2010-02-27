@@ -21,6 +21,7 @@
 #include <paludis/environments/paludis/bashable_conf.hh>
 #include <paludis/environments/paludis/paludis_config.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>
+#include <paludis/environments/paludis/extra_distribution_data.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tokeniser.hh>
@@ -42,6 +43,7 @@
 #include <paludis/action.hh>
 #include <paludis/output_manager_factory.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/distribution.hh>
 #include <list>
 #include <vector>
 #include <map>
@@ -223,9 +225,13 @@ namespace
 
     struct CreateVarsFromInfo
     {
+        const Environment * const env;
         std::tr1::shared_ptr<Map<std::string, std::string> > m;
 
-        CreateVarsFromInfo(std::tr1::shared_ptr<Map<std::string, std::string> > & mm) :
+        CreateVarsFromInfo(
+                const Environment * const e,
+                std::tr1::shared_ptr<Map<std::string, std::string> > & mm) :
+            env(e),
             m(mm)
         {
             /* convenience, for everyone */
@@ -237,6 +243,12 @@ namespace
             m->insert("normal", "\033[0;0m");
             m->insert("time", stringify(time(0)));
             m->insert("pid", stringify(getpid()));
+
+            const std::tr1::shared_ptr<const PaludisDistribution> dist(
+                    PaludisExtraDistributionData::get_instance()->data_from_distribution(
+                        *DistributionData::get_instance()->distribution_from_string(env->distribution())));
+
+            m->insert("info_messages_are_spam", stringify(dist->info_messages_are_spam()));
         }
 
         void visit(const CreateOutputManagerForRepositorySyncInfo & i)
@@ -266,10 +278,12 @@ namespace
     };
 
     const std::tr1::shared_ptr<Map<std::string, std::string> >
-    vars_from_create_output_manager_info(const CreateOutputManagerInfo & i)
+    vars_from_create_output_manager_info(
+            const Environment * const env,
+            const CreateOutputManagerInfo & i)
     {
         std::tr1::shared_ptr<Map<std::string, std::string> > result(new Map<std::string, std::string>);
-        CreateVarsFromInfo v(result);
+        CreateVarsFromInfo v(env, result);
         i.accept(v);
         return result;
     }
@@ -407,7 +421,8 @@ OutputConf::create_named_output_manager(const std::string & s, const CreateOutpu
     if (i == _imp->managers.end())
         throw PaludisConfigError("No output manager named '" + s + "' exists");
 
-    std::tr1::shared_ptr<Map<std::string, std::string> > vars(vars_from_create_output_manager_info(n));
+    std::tr1::shared_ptr<Map<std::string, std::string> > vars(vars_from_create_output_manager_info(
+                _imp->env, n));
 
     std::string handler;
     if (i->second->end() != i->second->find("handler"))

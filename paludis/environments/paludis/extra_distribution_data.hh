@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,6 +29,7 @@ namespace paludis
     namespace n
     {
         struct bashrc_filename;
+        struct info_messages_are_spam;
         struct keywords_filename_part;
         struct licenses_filename_part;
         struct mandatory_userpriv;
@@ -47,6 +48,7 @@ namespace paludis
         struct PaludisDistribution
         {
             NamedValue<n::bashrc_filename, std::string> bashrc_filename;
+            NamedValue<n::info_messages_are_spam, bool> info_messages_are_spam;
             NamedValue<n::keywords_filename_part, std::string> keywords_filename_part;
             NamedValue<n::licenses_filename_part, std::string> licenses_filename_part;
             NamedValue<n::mandatory_userpriv, bool> mandatory_userpriv;
