@@ -95,6 +95,53 @@ __cave_show() {
     esac
 }
 
+__cave_resolve_options="-h --help
+        -x --execute --no-execute
+        -z --lazy --no-lazy
+        -c --complete --no-complete
+        -e --everything --no-everything
+        -U --permit-uninstall
+        -d --permit-downgrade
+        -a --permit-any-version
+        -K --keep-targets
+        -k --keep
+        -R --reinstall-scm
+        -w --with
+        -W --without
+        -S --target-slots
+        -s --slots
+        -D --follow-installed-build-dependencies --no-follow-installed-build-dependencies
+        -n --no-follow-installed-dependencies --no-no-follow-installed-dependencies
+        -0 --no-dependencies-from
+        -! --no-blockers-from
+        --suggestions
+        --recommendations
+        -t --take
+        -T --take-from
+        -i --ignore
+        -I --ignore-from
+        -F --favour
+        -A --avoid
+        -p --preset
+        -b --create-binaries
+        -B --no-binaries-for
+        -/ --install-to-root --no-install-to-root
+        --dump --no-dump
+        --dump-restarts --no-dump-restarts
+        -1 --preserve-world --no-preserve-world
+        -C --continue-on-failure
+        --skip-phase
+        --abort-at-phase
+        --skip-until-phase
+        --change-phases-for
+        --show-descriptions
+        -X --explain
+        --show-all-jobs --no-show-all-jobs
+        --display-resolution-program
+        --execute-resolution-program
+        --perform-program
+        --update-world-program"
+
 __cave_resolve() {
     case "${prev}" in
         -K|--keep-targets)
@@ -137,55 +184,55 @@ __cave_resolve() {
         *)
             case "${cur}" in
                 -*)
-                    __cave_compgen "-h --help
-                        -x --execute --no-execute
-                        -z --lazy --no-lazy
-                        -c --complete --no-complete
-                        -e --everything --no-everything
-                        -U --permit-uninstall
-                        -d --permit-downgrade
-                        -a --permit-any-version
-                        -K --keep-targets
-                        -k --keep
-                        -R --reinstall-scm
-                        -w --with
-                        -W --without
-                        -S --target-slots
-                        -s --slots
-                        -D --follow-installed-build-dependencies --no-follow-installed-build-dependencies
-                        -n --no-follow-installed-dependencies --no-no-follow-installed-dependencies
-                        -0 --no-dependencies-from
-                        -! --no-blockers-from
-                        --suggestions
-                        --recommendations
-                        -t --take
-                        -T --take-from
-                        -i --ignore
-                        -I --ignore-from
-                        -F --favour
-                        -A --avoid
-                        -p --preset
-                        -b --create-binaries
-                        -B --no-binaries-for
-                        -/ --install-to-root --no-install-to-root
-                        --dump --no-dump
-                        --dump-restarts --no-dump-restarts
-                        -1 --preserve-world --no-preserve-world
-                        -C --continue-on-failure
-                        --skip-phase
-                        --abort-at-phase
-                        --skip-until-phase
-                        --change-phases-for
-                        --show-descriptions
-                        -X --explain
-                        --show-all-jobs --no-show-all-jobs
-                        --display-resolution-program
-                        --execute-resolution-program
-                        --perform-program
-                        --update-world-program
-                        "
+                    __cave_compgen "${__cave_resolve_options}"
                     ;;
                 *)
+                    __cave_compgen "${__cave_resolve_options}
+                        $(cave print-packages)
+                        $(cave print-sets)"
+                    ;;
+            esac
+            ;;
+    esac
+}
+
+__cave_import_options="${__cave_resolve_options}
+    -l --location
+    -u --install-under
+    -r --rewrite-uids-over-to-root
+    -D --description
+    -B --build-dependency
+    -R --run-dependency
+    -P --preserve-metadata"
+
+__cave_import() {
+    case "${prev}" in
+        -l|--location|-u|--install-under)
+            _filedir
+            ;;
+        -r|--rewrite-uids-over-to-root)
+            _uids
+            ;;
+        -D|--description)
+            COMPREPLY=()
+            ;;
+        -B|--build-dependency|-R|--run-dependency|-P|--preserve-metadata)
+            __cave_compgen "$(cave print-packages)"
+            ;;
+        -*)
+            # all the other options are the same as with __cave_resolve
+            __cave_resolve
+            ;;
+        *)
+            case "${cur}" in
+                -*)
+                    __cave_compgen "${__cave_import_options}"
+                    ;;
+                *)
+                    # TODO: make this more correct (only one package
+                    # name, then version, then slot)
+                    __cave_compgen "${__cave_import_options}
+                        $(cave print-packages)"
                     ;;
             esac
             ;;
