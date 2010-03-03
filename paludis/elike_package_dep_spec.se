@@ -6,18 +6,19 @@ make_enum_ELikePackageDepSpecOption()
     prefix epdso
     want_destringify
 
-    key epdso_allow_slot_deps            "Allow :slot deps"
-    key epdso_allow_slot_star_deps       "Allow :* slot deps"
-    key epdso_allow_slot_equal_deps      "Allow := and :=blah slot deps"
-    key epdso_allow_repository_deps      "Allow ::repo deps"
-    key epdso_allow_use_deps             "Allow [use] deps"
-    key epdso_allow_use_deps_portage     "Allow [use] deps with Portage syntax"
-    key epdso_allow_use_dep_defaults     "Allow [use+] and [use-] deps"
-    key epdso_allow_ranged_deps          "Allow [op version] deps"
-    key epdso_allow_tilde_greater_deps   "Allow ~> deps"
-    key epdso_disallow_nonranged_deps    "Disallow >=foo/bar-1 deps"
-    key epdso_nice_equal_star            "Make =* do something sensible"
-    key epdso_strict_parsing             "Error rather than warn for violations"
-    key epdso_allow_key_requirements     "Allow [.key=value] requirements. \since 0.40"
+    key epdso_allow_slot_deps                    "Allow :slot deps"
+    key epdso_allow_slot_star_deps               "Allow :* slot deps"
+    key epdso_allow_slot_equal_deps              "Allow := and :=blah slot deps"
+    key epdso_allow_repository_deps              "Allow ::repo deps"
+    key epdso_allow_use_deps                     "Allow [use] deps"
+    key epdso_allow_use_deps_portage             "Allow [use] deps with Portage syntax"
+    key epdso_allow_use_dep_defaults             "Allow [use(+)] and [use(-)] deps"
+    key epdso_allow_use_dep_question_defaults    "Allow [use(?)] deps"
+    key epdso_allow_ranged_deps                  "Allow [op version] deps"
+    key epdso_allow_tilde_greater_deps           "Allow ~> deps"
+    key epdso_disallow_nonranged_deps            "Disallow >=foo/bar-1 deps"
+    key epdso_nice_equal_star                    "Make =* do something sensible"
+    key epdso_strict_parsing                     "Error rather than warn for violations"
+    key epdso_allow_key_requirements             "Allow [.key=value] requirements. \since 0.40"
 }
 

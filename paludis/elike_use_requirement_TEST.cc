@@ -916,5 +916,42 @@ namespace test_cases
             TEST_CHECK(req2->requirement_met(&env, *id).first);
         }
     } test_prefix_star_use_requirements;
+
+    struct PrefixQuestionDefaultsRequirementsTest : TestCase
+    {
+        PrefixQuestionDefaultsRequirementsTest() : TestCase("(?) defaults") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            const std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("fake"))
+                            )));
+            env.package_database()->add_repository(1, fake);
+
+            std::tr1::shared_ptr<FakePackageID> id1(fake->add_version("cat", "pkg1", "1"));
+            set_conditionals(id1, "foo:enabled foo:disabled");
+
+            std::tr1::shared_ptr<FakePackageID> id2(fake->add_version("cat", "pkg2", "1"));
+            set_conditionals(id2, "foo:enabled foo:disabled bar:enabled bar:disabled");
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
+                parse_elike_use_requirement("foo:*(?)=", id2,
+                    ELikeUseRequirementOptions() + euro_allow_default_values + euro_allow_self_deps +
+                    euro_allow_default_question_values));
+            TEST_CHECK_EQUAL(req1->as_raw_string(), "[foo:*(?)=]");
+            TEST_CHECK(req1->requirement_met(&env, *id2).first);
+            TEST_CHECK(req1->requirement_met(&env, *id1).first);
+
+            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
+                parse_elike_use_requirement("bar:*(?)=", id2,
+                    ELikeUseRequirementOptions() + euro_allow_default_values + euro_allow_self_deps +
+                    euro_allow_default_question_values));
+            TEST_CHECK_EQUAL(req2->as_raw_string(), "[bar:*(?)=]");
+            TEST_CHECK(req2->requirement_met(&env, *id2).first);
+            TEST_CHECK(req2->requirement_met(&env, *id1).first);
+        }
+    } test_question_default_requirements;
 }
 

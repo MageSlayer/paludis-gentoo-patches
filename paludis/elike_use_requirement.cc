@@ -66,14 +66,16 @@ namespace
             const std::tr1::shared_ptr<const PackageID> _id;
             const ELikeUseRequirementOptions _options;
             const Tribool _default_value;
+            const bool _ignore_if_no_such_group;
 
         public:
             UseRequirement(const std::string & n, const std::tr1::shared_ptr<const PackageID> & i,
-                    const ELikeUseRequirementOptions & o, Tribool d) :
+                    const ELikeUseRequirementOptions & o, Tribool d, const bool g) :
                 _flags(n),
                 _id(i),
                 _options(o),
-                _default_value(d)
+                _default_value(d),
+                _ignore_if_no_such_group(g)
             {
             }
 
@@ -81,10 +83,31 @@ namespace
             {
             }
 
-            virtual bool one_requirement_met(
+            virtual bool one_requirement_met_base(
                     const Environment * const,
                     const ChoiceNameWithPrefix &,
                     const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            bool one_requirement_met(
+                    const Environment * const env,
+                    const ChoiceNameWithPrefix & c,
+                    const PackageID & id) const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                if (_ignore_if_no_such_group)
+                {
+                    std::string::size_type p(_flags.find(':'));
+                    ChoicePrefixName prefix((std::string::npos == p) ? "" : _flags.substr(0, p));
+                    if (! id.choices_key())
+                        return true;
+                    Choices::ConstIterator k(id.choices_key()->value()->find(prefix));
+                    if (id.choices_key()->value()->end() == k)
+                        return true;
+                    if ((*k)->begin() == (*k)->end())
+                        return true;
+                }
+
+                return one_requirement_met_base(env, c, id);
+            }
 
             virtual const std::string as_human_string() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
@@ -152,12 +175,16 @@ namespace
 
             const std::string default_value_human_string_fragment() const PALUDIS_ATTRIBUTE((warn_unused_result))
             {
+                std::string result;
                 if (_default_value.is_true())
-                    return ", assuming enabled if missing";
+                    result = ", assuming enabled if missing";
                 else if (_default_value.is_false())
-                    return ", assuming disabled if missing";
-                else
-                    return "";
+                    result = ", assuming disabled if missing";
+
+                if (_ignore_if_no_such_group)
+                    result.append(", only if the target has any flags with this prefix");
+
+                return result;
             }
     };
 
@@ -168,12 +195,12 @@ namespace
             EnabledUseRequirement(const std::string & n,
                     const std::tr1::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
-                    Tribool d) :
-                UseRequirement(n, i, o, d)
+                    Tribool d, const bool b) :
+                UseRequirement(n, i, o, d, b)
             {
             }
 
-            virtual bool one_requirement_met(const Environment * const, const ChoiceNameWithPrefix & flag,
+            virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
                     const PackageID & pkg) const
             {
                 return icky_use_query(flag, pkg, default_value());
@@ -192,12 +219,12 @@ namespace
             DisabledUseRequirement(const std::string & n,
                     const std::tr1::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
-                    Tribool d) :
-                UseRequirement(n, i, o, d)
+                    Tribool d, const bool b) :
+                UseRequirement(n, i, o, d, b)
             {
             }
 
-            virtual bool one_requirement_met(const Environment * const, const ChoiceNameWithPrefix & flag,
+            virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
                     const PackageID & pkg) const
             {
                 return ! icky_use_query(flag, pkg, default_value());
@@ -216,8 +243,8 @@ namespace
             ConditionalUseRequirement(const std::string & n,
                     const std::tr1::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
-                    Tribool d) :
-                UseRequirement(n, i, o, d)
+                    Tribool d, const bool b) :
+                UseRequirement(n, i, o, d, b)
             {
             }
     };
@@ -230,12 +257,12 @@ namespace
                     const std::string & n,
                     const std::tr1::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
-                    Tribool d) :
-                ConditionalUseRequirement(n, i, o, d)
+                    Tribool d, const bool b) :
+                ConditionalUseRequirement(n, i, o, d, b)
             {
             }
 
-            virtual bool one_requirement_met(const Environment * const, const ChoiceNameWithPrefix & flag,
+            virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
                     const PackageID & pkg) const
             {
                 return ! icky_use_query(flag, *package_id()) || icky_use_query(flag, pkg, default_value());
@@ -255,12 +282,12 @@ namespace
             IfNotMineThenUseRequirement(const std::string & n,
                     const std::tr1::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
-                    Tribool d) :
-                ConditionalUseRequirement(n, i, o, d)
+                    Tribool d, const bool b) :
+                ConditionalUseRequirement(n, i, o, d, b)
             {
             }
 
-            virtual bool one_requirement_met(const Environment * const, const ChoiceNameWithPrefix & flag,
+            virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
                     const PackageID & pkg) const
             {
                 return icky_use_query(flag, *package_id()) || icky_use_query(flag, pkg, default_value());
@@ -280,12 +307,12 @@ namespace
             IfMineThenNotUseRequirement(const std::string & n,
                     const std::tr1::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
-                    Tribool d) :
-                ConditionalUseRequirement(n, i, o, d)
+                    Tribool d, const bool b) :
+                ConditionalUseRequirement(n, i, o, d, b)
             {
             }
 
-            virtual bool one_requirement_met(const Environment * const, const ChoiceNameWithPrefix & flag,
+            virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
                     const PackageID & pkg) const
             {
                 return ! icky_use_query(flag, *package_id()) || ! icky_use_query(flag, pkg, default_value());
@@ -305,12 +332,12 @@ namespace
             IfNotMineThenNotUseRequirement(const std::string & n,
                     const std::tr1::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
-                    Tribool d) :
-                ConditionalUseRequirement(n, i, o, d)
+                    Tribool d, const bool b) :
+                ConditionalUseRequirement(n, i, o, d, b)
             {
             }
 
-            virtual bool one_requirement_met(const Environment * const, const ChoiceNameWithPrefix & flag,
+            virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
                     const PackageID & pkg) const
             {
                 return icky_use_query(flag, *package_id()) || ! icky_use_query(flag, pkg, default_value());
@@ -330,12 +357,12 @@ namespace
             EqualUseRequirement(const std::string & n,
                     const std::tr1::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
-                    Tribool d) :
-                ConditionalUseRequirement(n, i, o, d)
+                    Tribool d, const bool b) :
+                ConditionalUseRequirement(n, i, o, d, b)
             {
             }
 
-            virtual bool one_requirement_met(const Environment * const, const ChoiceNameWithPrefix & flag,
+            virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
                     const PackageID & pkg) const
             {
                 return icky_use_query(flag, pkg, default_value()) == icky_use_query(flag, *package_id());
@@ -355,12 +382,12 @@ namespace
             NotEqualUseRequirement(const std::string & n,
                     const std::tr1::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
-                    Tribool d) :
-                ConditionalUseRequirement(n, i, o, d)
+                    Tribool d, const bool b) :
+                ConditionalUseRequirement(n, i, o, d, b)
             {
             }
 
-            virtual bool one_requirement_met(const Environment * const, const ChoiceNameWithPrefix & flag,
+            virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
                     const PackageID & pkg) const
             {
                 return icky_use_query(flag, pkg, default_value()) != icky_use_query(flag, *package_id());
@@ -428,14 +455,14 @@ namespace
     template <typename T_>
     std::tr1::shared_ptr<const UseRequirement>
     make_requirement(const std::string & n, const std::tr1::shared_ptr<const PackageID > & i,
-            const ELikeUseRequirementOptions & o, Tribool d)
+            const ELikeUseRequirementOptions & o, Tribool d, const bool b)
     {
-        return make_shared_ptr(new T_(n, i, o, d));
+        return make_shared_ptr(new T_(n, i, o, d, b));
     }
 
     typedef std::tr1::shared_ptr<const UseRequirement> (* Factory)(
             const std::string &, const std::tr1::shared_ptr<const PackageID> &,
-            const ELikeUseRequirementOptions &, Tribool);
+            const ELikeUseRequirementOptions &, Tribool, bool);
 
     void
     parse_flag(
@@ -444,9 +471,10 @@ namespace
             const std::string & c,
             const std::tr1::shared_ptr<const PackageID> & id,
             Tribool d,
+            const bool i,
             const ELikeUseRequirementOptions & options)
     {
-        result->add_requirement(factory(c, id, options, d));
+        result->add_requirement(factory(c, id, options, d, i));
     }
 
     void
@@ -616,7 +644,7 @@ namespace
                 }
 
                 flag.erase(flag.length() - 3, 3);
-                parse_flag(result, factory, flag, id, Tribool(true), options);
+                parse_flag(result, factory, flag, id, Tribool(true), false, options);
             }
             else if ('-' == flag.at(flag.length() - 2))
             {
@@ -630,13 +658,27 @@ namespace
                 }
 
                 flag.erase(flag.length() - 3, 3);
-                parse_flag(result, factory, flag, id, Tribool(false), options);
+                parse_flag(result, factory, flag, id, Tribool(false), false, options);
+            }
+            else if ('?' == flag.at(flag.length() - 2))
+            {
+                if (! options[euro_allow_default_question_values])
+                {
+                    if (options[euro_strict_parsing])
+                        throw ELikeUseRequirementError(s, "[use(?)] not safe for use here");
+                    else
+                        Log::get_instance()->message("e.use_requirement.flag_bracket_question_not_allowed", ll_warning, lc_context)
+                            << "[use(?)] not safe for use here";
+                }
+
+                flag.erase(flag.length() - 3, 3);
+                parse_flag(result, factory, flag, id, Tribool(false), true, options);
             }
             else
                 throw ELikeUseRequirementError(s, "Invalid [] contents");
         }
         else
-            parse_flag(result, factory, flag, id, Tribool(indeterminate), options);
+            parse_flag(result, factory, flag, id, Tribool(indeterminate), false, options);
     }
 }
 
