@@ -186,6 +186,7 @@ namespace
                         value_for<n::save_base_variables>(check_get(k, "save_base_variables")),
                         value_for<n::save_unmodifiable_variables>(check_get(k, "save_unmodifiable_variables")),
                         value_for<n::save_variables>(check_get(k, "save_variables")),
+                        value_for<n::shell_options>(check_get(k, "shell_options")),
                         value_for<n::source_merged_variables>(check_get(k, "source_merged_variables")),
                         value_for<n::support_eclasses>(destringify_key<bool>(k, "support_eclasses")),
                         value_for<n::support_exlibs>(destringify_key<bool>(k, "support_exlibs")),

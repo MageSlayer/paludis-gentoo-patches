@@ -164,6 +164,7 @@ namespace paludis
         struct save_base_variables;
         struct save_unmodifiable_variables;
         struct save_variables;
+        struct shell_options;
         struct short_description;
         struct slot;
         struct source_merged_variables;
@@ -391,6 +392,7 @@ namespace paludis
             NamedValue<n::save_base_variables, std::string> save_base_variables;
             NamedValue<n::save_unmodifiable_variables, std::string> save_unmodifiable_variables;
             NamedValue<n::save_variables, std::string> save_variables;
+            NamedValue<n::shell_options, std::string> shell_options;
             NamedValue<n::source_merged_variables, std::string> source_merged_variables;
             NamedValue<n::support_eclasses, bool> support_eclasses;
             NamedValue<n::support_exlibs, bool> support_exlibs;

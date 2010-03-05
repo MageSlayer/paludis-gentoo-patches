@@ -82,6 +82,9 @@ fi
 
 shopt -s expand_aliases
 shopt -s extglob
+for p in ${PALUDIS_SHELL_OPTIONS} ; do
+    shopt -s ${p}
+done
 
 export ROOT="${ROOT%+(/)}/"
 
