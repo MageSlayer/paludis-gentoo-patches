@@ -160,10 +160,10 @@ namespace
                     throw SyncFailedError("Sync aborted by hook");
 
                 const std::tr1::shared_ptr<Repository> repo(env->package_database()->fetch_repository(name));
-                output_manager = env->create_output_manager(
-                        CreateOutputManagerForRepositorySyncInfo(repo->name(),
-                            cmdline.a_sequential.specified() ? oe_exclusive : oe_with_others,
-                            ClientOutputFeatures() + cof_summary_at_end));
+                CreateOutputManagerForRepositorySyncInfo info(repo->name(),
+                        cmdline.a_sequential.specified() ? oe_exclusive : oe_with_others,
+                        ClientOutputFeatures() + cof_summary_at_end);
+                output_manager = env->create_output_manager(info);
             }
             catch (const Exception & e)
             {
