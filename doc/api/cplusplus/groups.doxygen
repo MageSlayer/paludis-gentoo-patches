@@ -95,6 +95,14 @@ using namespace paludis;
  * - \ref example_selection.cc "example_selection.cc"
  */
 
+/** \defgroup g_selections Queries
+ *
+ * \ingroup g_environment
+ *
+ * Calling Environment::operator[] with a Selection parameter is the usual way
+ * of querying for PackageID instances with given properties.
+ */
+
 /** \defgroup g_exceptions Exceptions
  *
  * Exceptions and related utility classes.

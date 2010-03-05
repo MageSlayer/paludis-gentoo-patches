@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,8 +32,25 @@
 #include <paludis/action-fwd.hh>
 #include <tr1/memory>
 
+/** \file
+ * Declarations for the Filter class.
+ *
+ * \ingroup g_selections
+ *
+ * \section Examples
+ *
+ * - \ref example_selection.cc "example_selection.cc"
+ */
+
 namespace paludis
 {
+    /**
+     * A Filter subclass can be used to further restrict the values picked by a
+     * Generator, which when combined together produces a FilteredGenerator
+     * which can be passed to a Selection subclass.
+     *
+     * \ingroup g_selections
+     */
     class PALUDIS_VISIBLE Filter :
         private PrivateImplementationPattern<Filter>
     {
@@ -41,37 +58,70 @@ namespace paludis
             Filter(const std::tr1::shared_ptr<const FilterHandler> &);
 
         public:
+            ///\name Basic operations
+            ///\{
+
+            /**
+             * Filter subclasses can be copied without losing information.
+             */
             Filter(const Filter &);
             Filter & operator= (const Filter &);
             ~Filter();
 
+            ///\}
+
+            /**
+             * A Filter can be represented as a string, for use by operator<<.
+             */
             std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            ///\name For use by Selection
+            ///\{
+
+            /**
+             * Filter candidate repository names.
+             */
             std::tr1::shared_ptr<const RepositoryNameSet> repositories(
                     const Environment * const,
                     const std::tr1::shared_ptr<const RepositoryNameSet> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            /**
+             * Filter candidate category names.
+             */
             std::tr1::shared_ptr<const CategoryNamePartSet> categories(
                     const Environment * const,
                     const std::tr1::shared_ptr<const RepositoryNameSet> &,
                     const std::tr1::shared_ptr<const CategoryNamePartSet> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            /**
+             * Filter candidate package names.
+             */
             std::tr1::shared_ptr<const QualifiedPackageNameSet> packages(
                     const Environment * const,
                     const std::tr1::shared_ptr<const RepositoryNameSet> &,
                     const std::tr1::shared_ptr<const QualifiedPackageNameSet> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            /**
+             * Filter candidate PackageID instances.
+             */
             std::tr1::shared_ptr<const PackageIDSet> ids(
                     const Environment * const,
                     const std::tr1::shared_ptr<const PackageIDSet> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            ///\}
     };
 
     namespace filter
     {
+        /**
+         * A Filter which accepts all PackageID instances.
+         *
+         * \ingroup g_selections
+         */
         class PALUDIS_VISIBLE All :
             public Filter
         {
@@ -79,6 +129,12 @@ namespace paludis
                 All();
         };
 
+        /**
+         * A Filter which accepts only PackageID instances which support a given
+         * Action subclass.
+         *
+         * \ingroup g_selections
+         */
         template <typename>
         class PALUDIS_VISIBLE SupportsAction :
             public Filter
@@ -87,6 +143,11 @@ namespace paludis
                 SupportsAction();
         };
 
+        /**
+         * A Filter which accepts only PackageID instances which are not masked.
+         *
+         * \ingroup g_selections
+         */
         class PALUDIS_VISIBLE NotMasked :
             public Filter
         {
@@ -94,6 +155,12 @@ namespace paludis
                 NotMasked();
         };
 
+        /**
+         * A Filter which accepts only PackageID instances that are installed to
+         * a particular root.
+         *
+         * \ingroup g_selections
+         */
         class PALUDIS_VISIBLE InstalledAtRoot :
             public Filter
         {
@@ -101,6 +168,14 @@ namespace paludis
                 InstalledAtRoot(const FSEntry &);
         };
 
+        /**
+         * A Filter which accepts only PackageID instances that are accepted by
+         * two different filters.
+         *
+         * Used internally by FilteredGenerator.
+         *
+         * \ingroup g_selections
+         */
         class PALUDIS_VISIBLE And :
             public Filter
         {
@@ -108,6 +183,13 @@ namespace paludis
                 And(const Filter &, const Filter &);
         };
 
+        /**
+         * A Filter which accepts only PackageID instances that have the same
+         * slot as the specified PackageID, or, if the specified PackageID has
+         * no slot, that have no slot.
+         *
+         * \ingroup g_selections
+         */
         class PALUDIS_VISIBLE SameSlot :
             public Filter
         {
@@ -115,6 +197,12 @@ namespace paludis
                 SameSlot(const std::tr1::shared_ptr<const PackageID> &);
         };
 
+        /**
+         * A Filter which accepts only PackageID instances that have a
+         * particular slot.
+         *
+         * \ingroup g_selections
+         */
         class PALUDIS_VISIBLE Slot :
             public Filter
         {
@@ -122,6 +210,11 @@ namespace paludis
                 Slot(const SlotName &);
         };
 
+        /**
+         * A Filter which accepts only PackageID instances that have no slot.
+         *
+         * \ingroup g_selections
+         */
         class PALUDIS_VISIBLE NoSlot :
             public Filter
         {

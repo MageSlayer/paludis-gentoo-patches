@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,8 +33,23 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 
+/** \file
+ * Declarations for the Selection class.
+ *
+ * \ingroup g_selections
+ *
+ * \section Examples
+ *
+ * - \ref example_selection.cc "example_selection.cc"
+ */
+
 namespace paludis
 {
+    /**
+     * Thrown if selection::RequireExactlyOne does not get exactly one result.
+     *
+     * \ingroup g_selections
+     */
     class DidNotGetExactlyOneError :
         public Exception
     {
@@ -43,6 +58,16 @@ namespace paludis
                     const std::tr1::shared_ptr<const PackageIDSet> &) throw ();
     };
 
+    /**
+     * A Selection subclass is passed to Environment::operator[] to obtain a set
+     * of PackageID instances with given properties.
+     *
+     * Most Selection subclasses take a FilteredGenerator as a constructor
+     * parameter that specifies the required properties; the Selection itself is
+     * merely responsible for determining the format of the results.
+     *
+     * \ingroup g_selections
+     */
     class PALUDIS_VISIBLE Selection :
         private PrivateImplementationPattern<Selection>
     {
@@ -50,65 +75,162 @@ namespace paludis
             Selection(const std::tr1::shared_ptr<const SelectionHandler> &);
 
         public:
+            ///\name Basic operations
+            ///\{
+
+            /**
+             * Selection subclasses can be copied to a Selection without
+             * destroying information.
+             */
             Selection(const Selection &);
+
             ~Selection();
             Selection & operator= (const Selection &);
 
+            ///\}
+
+            /**
+             * Return a string representation of our selection query.
+             */
             std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            /**
+             * For use by Environment, not to be called directly.
+             */
             std::tr1::shared_ptr<PackageIDSequence> perform_select(const Environment * const) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     namespace selection
     {
+        /**
+         * Select some arbitrary version with the specified properties.
+         *
+         * Mostly used if you want to find out whether a PackageID with a
+         * particular property exists, but do not want to do anything in
+         * particular with the results.
+         *
+         * \ingroup g_selections
+         */
         class PALUDIS_VISIBLE SomeArbitraryVersion :
             public Selection
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 SomeArbitraryVersion(const FilteredGenerator &);
+
+                ///\}
         };
 
+        /**
+         * Return only the best version of each matching package with the
+         * specified properties.
+         *
+         * \ingroup g_selections
+         */
         class PALUDIS_VISIBLE BestVersionOnly :
             public Selection
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 BestVersionOnly(const FilteredGenerator &);
+
+                ///\}
         };
 
+        /**
+         * Return the best version in each slot of each matching package with
+         * the specified properties.
+         *
+         * \ingroup g_selections
+         */
         class PALUDIS_VISIBLE BestVersionInEachSlot :
             public Selection
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 BestVersionInEachSlot(const FilteredGenerator &);
+
+                ///\}
         };
 
+        /**
+         * Return all versions with the specified properties, sorted from worst
+         * to best.
+         *
+         * \ingroup g_selections
+         */
         class PALUDIS_VISIBLE AllVersionsSorted :
             public Selection
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 AllVersionsSorted(const FilteredGenerator &);
+
+                ///\}
         };
 
+        /**
+         * Return all versions with the specified properties, sorted from worst
+         * to best, but with like slots grouped together.
+         *
+         * \ingroup g_selections
+         */
         class PALUDIS_VISIBLE AllVersionsGroupedBySlot :
             public Selection
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 AllVersionsGroupedBySlot(const FilteredGenerator &);
+
+                ///\}
         };
 
+        /**
+         * Return all versions with the specified properties, in no particular
+         * order.
+         *
+         * \ingroup g_selections
+         */
         class PALUDIS_VISIBLE AllVersionsUnsorted :
             public Selection
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 AllVersionsUnsorted(const FilteredGenerator &);
+
+                ///\}
         };
 
+        /**
+         * Return the single version with the specified properties.
+         *
+         * If there is not exactly one version, throws DidNotGetExactlyOneError.
+         *
+         * \ingroup g_selections
+         */
         class PALUDIS_VISIBLE RequireExactlyOne :
             public Selection
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 RequireExactlyOne(const FilteredGenerator &);
+
+                ///\}
         };
     }
 

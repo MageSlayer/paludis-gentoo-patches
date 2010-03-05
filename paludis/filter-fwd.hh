@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,6 +23,12 @@
 #include <paludis/util/attributes.hh>
 #include <iosfwd>
 
+/** \file
+ * Forward declarations for paludis/filter.hh .
+ *
+ * \ingroup g_selections
+ */
+
 namespace paludis
 {
     class Filter;
@@ -37,6 +43,11 @@ namespace paludis
         class Slot;
     }
 
+    /**
+     * A Filter can be represented as a string, can be written to a stream.
+     *
+     * \ingroup g_selections
+     */
     std::ostream & operator<< (std::ostream &, const Filter &)
         PALUDIS_VISIBLE;
 }

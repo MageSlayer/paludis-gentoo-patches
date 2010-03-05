@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,8 +32,28 @@
 #include <paludis/match_package-fwd.hh>
 #include <tr1/memory>
 
+/** \file
+ * Declarations for the Generator class.
+ *
+ * \ingroup g_selections
+ *
+ * \section Examples
+ *
+ * - \ref example_selection.cc "example_selection.cc"
+ */
+
 namespace paludis
 {
+    /**
+     * A Generator specifies general properties desired from the PackageID
+     * instances to be returned by Environment::operator[].
+     *
+     * A Generator can be converted implicitly to a FilteredGenerator, either
+     * for being passed directly to a Selection subclass or for combining with
+     * one or more Filter subclasses.
+     *
+     * \ingroup g_selections
+     */
     class PALUDIS_VISIBLE Generator :
         private PrivateImplementationPattern<Generator>
     {
@@ -41,38 +61,80 @@ namespace paludis
             Generator(const std::tr1::shared_ptr<const GeneratorHandler> &);
 
         public:
+            ///\name Basic operations
+            ///\{
+
+            /**
+             * Generator subclasses can be copied without losing information.
+             */
             Generator(const Generator &);
             Generator & operator= (const Generator &);
             ~Generator();
 
+            ///\}
+
+            /**
+             * We can implicitly convert to a FilteredGenerator, for being
+             * passed to a Selection subclass or combined with one or more
+             * Filter subclasses.
+             */
             operator FilteredGenerator () const PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            /**
+             * We are representable as a string, for use when stringifying.
+             */
             std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            ///\name For use by Selection
+            ///\{
+
+            /**
+             * Used by Selection subclasses to get a candidate set of
+             * repositories for consideration.
+             */
             std::tr1::shared_ptr<const RepositoryNameSet> repositories(
                     const Environment * const) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            /**
+             * Used by Selection subclasses to get a candidate set of categories
+             * for consideration.
+             */
             std::tr1::shared_ptr<const CategoryNamePartSet> categories(
                     const Environment * const,
                     const std::tr1::shared_ptr<const RepositoryNameSet> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            /**
+             * Used by Selection subclasses to get a candidate set of package
+             * names for consideration.
+             */
             std::tr1::shared_ptr<const QualifiedPackageNameSet> packages(
                     const Environment * const,
                     const std::tr1::shared_ptr<const RepositoryNameSet> &,
                     const std::tr1::shared_ptr<const CategoryNamePartSet> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            /**
+             * Used by Selection subclasses to get a candidate set of PackageID
+             * instances for consideration.
+             */
             std::tr1::shared_ptr<const PackageIDSet> ids(
                     const Environment * const,
                     const std::tr1::shared_ptr<const RepositoryNameSet> &,
                     const std::tr1::shared_ptr<const QualifiedPackageNameSet> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            ///\}
     };
 
     namespace generator
     {
+        /**
+         * A Generator which returns all PackageIDs.
+         *
+         * \ingroup g_selections
+         */
         class PALUDIS_VISIBLE All :
             public Generator
         {
@@ -80,6 +142,12 @@ namespace paludis
                 All();
         };
 
+        /**
+         * A Generator which returns only those PackageIDs which match a
+         * particular PackageDepSpec.
+         *
+         * \ingroup g_selections
+         */
         class PALUDIS_VISIBLE Matches :
             public Generator
         {
@@ -87,6 +155,12 @@ namespace paludis
                 Matches(const PackageDepSpec &, const MatchPackageOptions &);
         };
 
+        /**
+         * A Generator which returns only those PackageIDs which have a
+         * particular package name.
+         *
+         * \ingroup g_selections
+         */
         class PALUDIS_VISIBLE Package :
             public Generator
         {
@@ -94,6 +168,12 @@ namespace paludis
                 Package(const QualifiedPackageName &);
         };
 
+        /**
+         * A Generator which returns only those PackageIDs which are from a
+         * particular repository.
+         *
+         * \ingroup g_selections
+         */
         class PALUDIS_VISIBLE FromRepository :
             public Generator
         {
@@ -101,6 +181,12 @@ namespace paludis
                 FromRepository(const RepositoryName &);
         };
 
+        /**
+         * A Generator which returns only those PackageIDs which are in a
+         * particular repository.
+         *
+         * \ingroup g_selections
+         */
         class PALUDIS_VISIBLE InRepository :
             public Generator
         {
@@ -108,6 +194,12 @@ namespace paludis
                 InRepository(const RepositoryName &);
         };
 
+        /**
+         * A Generator which returns only those PackageIDs which are in a
+         * particular category.
+         *
+         * \ingroup g_selections
+         */
         class PALUDIS_VISIBLE Category :
             public Generator
         {
@@ -115,6 +207,14 @@ namespace paludis
                 Category(const CategoryNamePart &);
         };
 
+        /**
+         * A Generator which returns the intersection of two other Generator
+         * instances.
+         *
+         * Usually constructed by using operator + on two Generators.
+         *
+         * \ingroup g_selections
+         */
         class PALUDIS_VISIBLE Intersection :
             public Generator
         {
@@ -122,6 +222,14 @@ namespace paludis
                 Intersection(const Generator &, const Generator &);
         };
 
+        /**
+         * A Generator which returns the union of two other Generator
+         * instances.
+         *
+         * Usually constructed by using operator & on two Generators.
+         *
+         * \ingroup g_selections
+         */
         class PALUDIS_VISIBLE Union :
             public Generator
         {
@@ -129,6 +237,17 @@ namespace paludis
                 Union(const Generator &, const Generator &);
         };
 
+        /**
+         * A Generator which returns PackageID instances which might support a
+         * particular Action.
+         *
+         * There is no guarantee that returned PackageID instances will actually
+         * support the Action subclass in question. However, explicitly checking
+         * whether a PackageID really does support an Action is sometimes more
+         * work than is necessary at the query stage.
+         *
+         * \ingroup g_selections
+         */
         template <typename>
         class PALUDIS_VISIBLE SomeIDsMightSupportAction :
             public Generator

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,19 +25,49 @@
 #include <paludis/filter-fwd.hh>
 #include <paludis/generator-fwd.hh>
 
+/** \file
+ * Declarations for the FilteredGenerator class.
+ *
+ * \ingroup g_selections
+ *
+ * \section Examples
+ *
+ * - \ref example_selection.cc "example_selection.cc"
+ */
+
 namespace paludis
 {
+    /**
+     * A FilteredGenerator specifies a desired set of properties for PackageIDs
+     * to be returned by Environment::operator[].
+     *
+     * Most Selection subclasses take a single FilteredGenerator as a parameter.
+     *
+     * \ingroup g_selections
+     */
     class PALUDIS_VISIBLE FilteredGenerator :
         private PrivateImplementationPattern<FilteredGenerator>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             FilteredGenerator(const FilteredGenerator &);
             FilteredGenerator(const Generator &, const Filter &);
             FilteredGenerator(const FilteredGenerator &, const Filter &);
             FilteredGenerator & operator= (const FilteredGenerator &);
             ~FilteredGenerator();
 
+            ///\}
+
+            /**
+             * Return our Generator.
+             */
             const Generator & generator() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Return our Filter.
+             */
             const Filter & filter() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 

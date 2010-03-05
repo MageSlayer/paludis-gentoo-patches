@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,13 +24,31 @@
 #include <paludis/util/attributes.hh>
 #include <iosfwd>
 
+/** \file
+ * Forward declarations for paludis/filtered_generator.hh .
+ *
+ * \ingroup g_selections
+ */
+
 namespace paludis
 {
     class FilteredGenerator;
 
+    /**
+     * A FilteredGenerator can be combined with another Filter to further
+     * restrict desired properties.
+     *
+     * \ingroup g_selections
+     */
     FilteredGenerator operator| (const FilteredGenerator &, const Filter &)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
+    /**
+     * A FilteredGenerator can be represented as a string. Generally this is
+     * used only for stringifying a Selection.
+     *
+     * \ingroup g_selections
+     */
     std::ostream & operator<< (std::ostream &, const FilteredGenerator &)
         PALUDIS_VISIBLE;
 }
