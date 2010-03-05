@@ -495,9 +495,9 @@ namespace
             return constraint.nothing_is_fine_too();
         }
 
-        bool visit(const UnableToMakeDecision &) const PALUDIS_ATTRIBUTE((noreturn))
+        bool visit(const UnableToMakeDecision &) const
         {
-            throw InternalError(PALUDIS_HERE, "huh?");
+            return true;
         }
 
         bool visit(const RemoveDecision &) const

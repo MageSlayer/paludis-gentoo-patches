@@ -323,6 +323,7 @@ paludis-*.*.*.tar.bz2
 /paludis/resolver/resolver_TEST_any
 /paludis/resolver/resolver_TEST_blockers
 /paludis/resolver/resolver_TEST_cycles
+/paludis/resolver/resolver_TEST_errors
 /paludis/resolver/resolver_TEST_serialisation
 /paludis/resolver/resolver_TEST_simple
 /paludis/resolver/resolver_TEST_suggestions
