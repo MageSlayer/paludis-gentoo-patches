@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -592,14 +592,14 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                     d != d_end ; ++d)
             {
                 if (*d == r->first)
-                    throw ConfigurationError("Repository '" + stringify(r->first) + "' depends upon itself");
+                    throw ConfigurationError("Repository '" + stringify(r->first) + "' requires itself");
                 try
                 {
                     repository_deps.add_edge(r->first, *d, true);
                 }
                 catch (const NoSuchGraphNodeError &)
                 {
-                    throw ConfigurationError("Repository '" + stringify(r->first) + "' depends upon '" +
+                    throw ConfigurationError("Repository '" + stringify(r->first) + "' requires repository '" +
                             stringify(*d) + "', which is not configured");
                 }
             }
