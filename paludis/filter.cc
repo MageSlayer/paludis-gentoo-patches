@@ -25,6 +25,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/match_package.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
@@ -371,6 +372,43 @@ namespace
             return "has no slot";
         }
     };
+
+    struct MatchesHandler :
+        AllFilterHandlerBase
+    {
+        const PackageDepSpec spec;
+        const MatchPackageOptions options;
+
+        MatchesHandler(const PackageDepSpec & s, const MatchPackageOptions & o) :
+            spec(s),
+            options(o)
+        {
+        }
+
+        virtual std::tr1::shared_ptr<const PackageIDSet> ids(
+                const Environment * const env,
+                const std::tr1::shared_ptr<const PackageIDSet> & id) const
+        {
+            std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
+
+            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
+                    i != i_end ; ++i)
+            {
+                if (match_package(*env, spec, **i, options))
+                    result->insert(*i);
+            }
+
+            return result;
+        }
+
+        virtual std::string as_string() const
+        {
+            std::string suffix;
+            if (options[mpo_ignore_additional_requirements])
+                suffix = " (ignoring additional requirements)";
+            return "packages matching " + stringify(spec) + suffix;
+        }
+    };
 }
 
 filter::All::All() :
@@ -411,6 +449,11 @@ filter::Slot::Slot(const SlotName & s) :
 
 filter::NoSlot::NoSlot() :
     Filter(make_shared_ptr(new NoSlotHandler))
+{
+}
+
+filter::Matches::Matches(const PackageDepSpec & spec, const MatchPackageOptions & o) :
+    Filter(make_shared_ptr(new MatchesHandler(spec, o)))
 {
 }
 

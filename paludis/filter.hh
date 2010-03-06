@@ -30,6 +30,8 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/action-fwd.hh>
+#include <paludis/dep_spec-fwd.hh>
+#include <paludis/match_package-fwd.hh>
 #include <tr1/memory>
 
 /** \file
@@ -220,6 +222,20 @@ namespace paludis
         {
             public:
                 NoSlot();
+        };
+
+        /**
+         * A Filter which accepts only PackageID instances that match a
+         * particular PackageDepSpec.
+         *
+         * \ingroup g_selections
+         */
+
+        class PALUDIS_VISIBLE Matches :
+            public Filter
+        {
+            public:
+                Matches(const PackageDepSpec &, const MatchPackageOptions &);
         };
     }
 

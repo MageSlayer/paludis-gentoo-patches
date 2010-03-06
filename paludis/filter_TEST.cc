@@ -217,5 +217,80 @@ namespace test_cases
                 "cat/c-3:0::repo2";
         }
     } not_masked_and_installable_filter_test;
+
+    struct MatchesFilterTestCase : FilterTestCaseBase
+    {
+        MatchesFilterTestCase() :
+            FilterTestCaseBase("matches", filter::Matches(parse_user_package_dep_spec("cat/a",
+                            &env, UserPackageDepSpecOptions()), MatchPackageOptions()))
+        {
+        }        
+
+        virtual std::string get_expected() const
+        {
+            return
+                "cat/a-1:0::inst_repo1, "
+                "cat/a-1:0::repo1, "
+                "cat/a-1:0::repo2, "
+                "cat/a-2:0::repo2";
+        }
+    } matches_filter_test;
+
+    struct MatchesCatWildcardFilterTestCase : FilterTestCaseBase
+    {
+        MatchesCatWildcardFilterTestCase() :
+            FilterTestCaseBase("matches cat wildcard", filter::Matches(parse_user_package_dep_spec("*/a",
+                            &env, UserPackageDepSpecOptions() + updso_allow_wildcards), MatchPackageOptions()))
+        {
+        }
+
+        virtual std::string get_expected() const
+        {
+            return
+                "cat/a-1:0::inst_repo1, "
+                "cat/a-1:0::repo1, "
+                "cat/a-1:0::repo2, "
+                "cat/a-2:0::repo2";
+        }
+    } matches_cat_wildcard_filter_test;
+
+    struct MatchesPkgWildcardFilterTestCase : FilterTestCaseBase
+    {
+        MatchesPkgWildcardFilterTestCase() :
+            FilterTestCaseBase("matches pkg wildcard", filter::Matches(parse_user_package_dep_spec("cat/*",
+                            &env, UserPackageDepSpecOptions() + updso_allow_wildcards), MatchPackageOptions()))
+        {
+        }
+
+        virtual std::string get_expected() const
+        {
+            return
+                "cat/a-1:0::inst_repo1, "
+                "cat/a-1:0::repo1, "
+                "cat/a-1:0::repo2, "
+                "cat/a-2:0::repo2, "
+                "cat/b-2:0::repo1, "
+                "cat/c-3:0::repo2";
+        }
+    } matches_pkg_wildcard_filter_test;
+
+    struct MatchesAllWildcardFilterTestCase : FilterTestCaseBase
+    {
+        MatchesAllWildcardFilterTestCase() :
+            FilterTestCaseBase("matches all wildcard", filter::Matches(
+                        parse_user_package_dep_spec(">=*/*-2",
+                            &env, UserPackageDepSpecOptions() + updso_allow_wildcards), MatchPackageOptions()))
+        {
+        }
+
+        virtual std::string get_expected() const
+        {
+            return
+                "cat/a-2:0::repo2, "
+                "cat/b-2:0::repo1, "
+                "cat/c-3:0::repo2";
+        }
+    } matches_all_wildcard_filter_test;
+
 }
 

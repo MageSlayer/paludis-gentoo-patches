@@ -41,6 +41,7 @@ namespace paludis
         class InstalledAtRoot;
         class And;
         class Slot;
+        class Matches;
     }
 
     /**
