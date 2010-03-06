@@ -74,7 +74,8 @@ namespace
         {
             if (options[updso_no_disambiguation])
                 throw PackageDepSpecError("Need an explicit category specified");
-            result.package(env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(s), filter));
+            result.package(env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(s),
+                filter::And(filter, filter::Matches(result, MatchPackageOptions()))));
         }
     }
 

@@ -344,16 +344,25 @@ namespace test_cases
 
             TEST_CHECK_THROWS(parse_user_package_dep_spec("pkg5", &env, UserPackageDepSpecOptions() + updso_no_disambiguation), PackageDepSpecError);
 
-            PackageDepSpec d(parse_user_package_dep_spec("=pkg1-42", &env, UserPackageDepSpecOptions()));
-            TEST_CHECK_STRINGIFY_EQUAL(d, "=cat/pkg1-42");
-            PackageDepSpec e(parse_user_package_dep_spec("=pkg1-42:0", &env, UserPackageDepSpecOptions()));
-            TEST_CHECK_STRINGIFY_EQUAL(e, "=cat/pkg1-42:0");
+            PackageDepSpec d(parse_user_package_dep_spec("=pkg1-1", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK_STRINGIFY_EQUAL(d, "=cat/pkg1-1");
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("=pkg1-42", &env, UserPackageDepSpecOptions()), NoSuchPackageError);
+
+            PackageDepSpec e(parse_user_package_dep_spec("=pkg1-1:0", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK_STRINGIFY_EQUAL(e, "=cat/pkg1-1:0");
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("=pkg1-42:0", &env, UserPackageDepSpecOptions()), NoSuchPackageError);
+
             PackageDepSpec f(parse_user_package_dep_spec("pkg1:0", &env, UserPackageDepSpecOptions()));
             TEST_CHECK_STRINGIFY_EQUAL(f, "cat/pkg1:0");
-            PackageDepSpec g(parse_user_package_dep_spec("pkg1[foo]", &env, UserPackageDepSpecOptions()));
-            TEST_CHECK_STRINGIFY_EQUAL(g, "cat/pkg1[foo]");
-            PackageDepSpec h(parse_user_package_dep_spec("pkg1[=42]", &env, UserPackageDepSpecOptions()));
-            TEST_CHECK_STRINGIFY_EQUAL(h, "=cat/pkg1-42");
+
+            PackageDepSpec g(parse_user_package_dep_spec("pkg1[-foo]", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK_STRINGIFY_EQUAL(g, "cat/pkg1[-foo]");
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("pkg1[foo]", &env, UserPackageDepSpecOptions()), NoSuchPackageError);
+
+            PackageDepSpec h(parse_user_package_dep_spec("pkg1[=1]", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK_STRINGIFY_EQUAL(h, "=cat/pkg1-1");
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("pkg1[=42]", &env, UserPackageDepSpecOptions()), NoSuchPackageError);
+
             PackageDepSpec i(parse_user_package_dep_spec("pkg1::fake", &env, UserPackageDepSpecOptions()));
             TEST_CHECK_STRINGIFY_EQUAL(i, "cat/pkg1::fake");
         }
