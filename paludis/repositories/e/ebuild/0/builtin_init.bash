@@ -66,7 +66,7 @@ builtin_init()
     touch ${TMPDIR}/build_start_time
 
     export D="${PALUDIS_PACKAGE_BUILDDIR}/image/"
-    export D="${D//+(\/)//}"
+    ebuild_cleanup_slashes D
     mkdir -p "${D}" || die "Couldn't create \$D (\"${D}\")"
     declare -r D="${D}"
 

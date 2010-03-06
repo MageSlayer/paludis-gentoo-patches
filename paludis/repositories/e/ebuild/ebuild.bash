@@ -25,6 +25,27 @@ set +C
 
 [[ -n "${PALUDIS_TRACE}" ]] && set -x
 
+ebuild_need_extglob()
+{
+    eval "_ebuild_need_extglob_$(declare -f ${1})"
+    eval "
+        ${1}()
+        {
+            eval \"
+                shopt -s extglob
+                _ebuild_need_extglob_${1} \\\"\\\${@}\\\"
+                eval \\\"\$(shopt -p extglob); return \\\${?}\\\"
+            \"
+        }"
+}
+
+ebuild_cleanup_slashes()
+{
+    export "${1}=${!1//+(\/)//}"
+    export "${1}=${!1/%*(\/)}/"
+}
+ebuild_need_extglob ebuild_cleanup_slashes
+
 ebuild_sanitise_envvars()
 {
     local p
@@ -81,12 +102,13 @@ if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] ; then
 fi
 
 shopt -s expand_aliases
-shopt -s extglob
+[[ -z ${PALUDIS_SHELL_OPTIONS} && unset == ${PALUDIS_SHELL_OPTIONS-unset} ]] &&
+    shopt -s extglob
 for p in ${PALUDIS_SHELL_OPTIONS} ; do
     shopt -s ${p}
 done
 
-export ROOT="${ROOT%+(/)}/"
+ebuild_cleanup_slashes ROOT
 
 export EBUILD_PROGRAM_NAME="$0"
 
@@ -276,10 +298,12 @@ ebuild_scrub_environment()
             done )
         export -n SANDBOX_ACTIVE
 
-        unset -v $(
-            for v in ${!BASH_*}; do
-                [[ ${v#BASH_} != @(ARGC|ARGV|LINENO|SOURCE|VERSINFO|REMATCH) ]] && echo ${v}
-            done )
+        for v in ${!BASH_*}; do
+            case "${v#BASH_}" in
+                ARGC|ARGV|LINENO|SOURCE|VERSINFO|REMATCH) ;;
+                *) unset -v ${v} ;;
+            esac
+        done
 
         set >"${1}"
         print_exports >>"${1}"

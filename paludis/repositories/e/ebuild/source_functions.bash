@@ -20,6 +20,20 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
+ebuild_need_extglob()
+{
+    eval "_ebuild_need_extglob_$(declare -f ${1})"
+    eval "
+        ${1}()
+        {
+            eval \"
+                shopt -s extglob
+                _ebuild_need_extglob_${1} \\\"\\\${@}\\\"
+                eval \\\"\$(shopt -p extglob); return \\\${?}\\\"
+            \"
+        }"
+}
+
 ebuild_safe_source()
 {
     set -- "${@}" '[^a-zA-Z_]*' '*[^a-zA-Z0-9_]*' \
@@ -38,6 +52,7 @@ ebuild_safe_source()
     source "${1}"
     eval "trap DEBUG; shopt -u extdebug; set +T; return ${?}"
 }
+ebuild_need_extglob ebuild_safe_source
 
 ebuild_verify_not_changed_from_global_scope()
 {
