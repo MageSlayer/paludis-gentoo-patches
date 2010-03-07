@@ -53,6 +53,7 @@
 #include <paludis/slot_requirement.hh>
 #include <paludis/choice.hh>
 #include <paludis/action.hh>
+#include <paludis/elike_slot_requirement.hh>
 
 #include <paludis/util/private_implementation_pattern-impl.hh>
 
@@ -138,49 +139,80 @@ Decider::_resolve_decide_with_dependencies()
     }
 }
 
-void
+bool
 Decider::_resolve_dependents()
 {
     Context context("When finding dependents:");
 
-    bool changed(true);
-    while (changed)
+    bool changed(false);
+    const std::pair<
+        std::tr1::shared_ptr<const PackageIDSequence>,
+        std::tr1::shared_ptr<const PackageIDSequence> > changing(_collect_changing());
+
+    if (changing.first->empty())
+        return false;
+
+    const std::tr1::shared_ptr<const PackageIDSequence> staying(_collect_staying(changing.first));
+
+    for (PackageIDSequence::ConstIterator s(staying->begin()), s_end(staying->end()) ;
+            s != s_end ; ++s)
     {
-        changed = false;
+        _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-        const std::pair<
-            std::tr1::shared_ptr<const PackageIDSequence>,
-            std::tr1::shared_ptr<const PackageIDSequence> > changing(_collect_changing());
+        bool allowed_to_break(_allowed_to_break(*s)), should_remove(_remove_if_dependent(*s));
 
-        if (changing.first->empty())
-            break;
+        if (allowed_to_break && ! should_remove)
+            continue;
 
-        const std::tr1::shared_ptr<const PackageIDSequence> staying(_collect_staying(changing.first));
+        if (! _dependent(*s, changing.first, changing.second))
+            continue;
 
-        for (PackageIDSequence::ConstIterator s(staying->begin()), s_end(staying->end()) ;
-                s != s_end ; ++s)
+        if (should_remove)
         {
-            _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
+            Resolvent resolvent(*s, dt_install_to_slash);
 
-            bool allowed_to_break(_allowed_to_break(*s)), should_remove(_remove_if_dependent(*s));
+            /* we've changed things if we've not already done anything for this resolvent */
+            if (_imp->resolutions_by_resolvent.end() == _imp->resolutions_by_resolvent.find(resolvent))
+                changed = true;
 
-            if (allowed_to_break && ! should_remove)
-                continue;
-
-            if (! _dependent(*s, changing.first, changing.second))
-                continue;
-
-            if (should_remove)
-            {
-                throw InternalError(PALUDIS_HERE, "remove " + stringify(**s));
-            }
-            else if (! allowed_to_break)
-            {
-                throw InternalError(PALUDIS_HERE, "unsafe " + stringify(**s));
-            }
+            const std::tr1::shared_ptr<Resolution> resolution(_resolution_for_resolvent(resolvent, true));
+            _apply_resolution_constraint(resolvent, _resolution_for_resolvent(resolvent, true),
+                    _make_constraint_for_removing_dependent(*s));
+        }
+        else if (! allowed_to_break)
+        {
+            throw InternalError(PALUDIS_HERE, "unsafe " + stringify(**s));
         }
     }
+
+    return changed;
 }
+
+const std::tr1::shared_ptr<const Constraint>
+Decider::_make_constraint_for_removing_dependent(
+        const std::tr1::shared_ptr<const PackageID> & id) const
+{
+    const std::tr1::shared_ptr<PresetReason> reason(new PresetReason("dependent", make_null_shared_ptr()));
+
+    PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
+    partial_spec.package(id->name());
+    if (id->slot_key())
+        partial_spec.slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement(
+                        id->slot_key()->value(), false)));
+    PackageDepSpec spec(partial_spec);
+
+    const std::tr1::shared_ptr<Constraint> result(new Constraint(make_named_values<Constraint>(
+                    value_for<n::destination_type>(dt_install_to_slash),
+                    value_for<n::nothing_is_fine_too>(true),
+                    value_for<n::reason>(reason),
+                    value_for<n::spec>(BlockDepSpec("!" + stringify(spec), spec, false)),
+                    value_for<n::untaken>(false),
+                    value_for<n::use_existing>(ue_if_possible)
+                    )));
+
+    return result;
+}
+
 
 namespace
 {
@@ -1733,10 +1765,15 @@ Decider::add_target_with_reason(const PackageOrBlockDepSpec & spec, const std::t
 void
 Decider::resolve()
 {
-    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Deciding"));
-    _resolve_decide_with_dependencies();
-    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Finding Dependents"));
-    _resolve_dependents();
+    while (true)
+    {
+        _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Deciding"));
+        _resolve_decide_with_dependencies();
+        _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Finding Dependents"));
+        if (! _resolve_dependents())
+            break;
+    }
+
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Finding Destinations"));
     _resolve_destinations();
 }
