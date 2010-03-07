@@ -160,6 +160,11 @@ Decider::_resolve_dependents()
         for (PackageIDSequence::ConstIterator s(staying->begin()), s_end(staying->end()) ;
                 s != s_end ; ++s)
         {
+            _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
+
+            if (_allowed_to_break(*s))
+                continue;
+
             if (! _dependent(*s, changing.first, changing.second))
                 continue;
 
@@ -1546,6 +1551,12 @@ bool
 Decider::_allowed_to_remove(const std::tr1::shared_ptr<const PackageID> & id) const
 {
     return id->supports_action(SupportsActionTest<UninstallAction>()) && _imp->fns.allowed_to_remove_fn()(id);
+}
+
+bool
+Decider::_allowed_to_break(const std::tr1::shared_ptr<const PackageID> & id) const
+{
+    return _imp->fns.allowed_to_break_fn()(id);
 }
 
 const std::tr1::shared_ptr<const PackageIDSequence>

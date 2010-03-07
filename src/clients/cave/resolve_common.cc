@@ -1031,6 +1031,19 @@ namespace
         throw InternalError(PALUDIS_HERE, "unhandled dt");
     }
 
+    bool allowed_to_break_fn(
+            const Environment * const env,
+            const PackageDepSpecList & list,
+            const std::tr1::shared_ptr<const PackageID> & i)
+    {
+        for (PackageDepSpecList::const_iterator l(list.begin()), l_end(list.end()) ;
+                l != l_end ; ++l)
+            if (match_package(*env, *l, *i, MatchPackageOptions()))
+                return true;
+
+        return false;
+    }
+
     bool allowed_to_remove_fn(
             const Environment * const env,
             const PackageDepSpecList & list,
@@ -1397,12 +1410,18 @@ paludis::cave::resolve_common(
     int retcode(0);
 
     InitialConstraints initial_constraints;
-    PackageDepSpecList allowed_to_remove_specs;
+    PackageDepSpecList allowed_to_remove_specs, allowed_to_break_specs;
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_uninstall.begin_args()),
             i_end(resolution_options.a_permit_uninstall.end_args()) ;
             i != i_end ; ++i)
         allowed_to_remove_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
+                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_uninstalls_may_break.begin_args()),
+            i_end(resolution_options.a_uninstalls_may_break.end_args()) ;
+            i != i_end ; ++i)
+        allowed_to_break_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
                     UserPackageDepSpecOptions() + updso_allow_wildcards));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_preset.begin_args()),
@@ -1435,6 +1454,10 @@ paludis::cave::resolve_common(
     }
 
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
+                value_for<n::allowed_to_break_fn>(std::tr1::bind(&allowed_to_break_fn,
+                        env.get(),
+                        std::tr1::cref(allowed_to_break_specs),
+                        std::tr1::placeholders::_1)),
                 value_for<n::allowed_to_remove_fn>(std::tr1::bind(&allowed_to_remove_fn,
                         env.get(),
                         std::tr1::cref(allowed_to_remove_specs),

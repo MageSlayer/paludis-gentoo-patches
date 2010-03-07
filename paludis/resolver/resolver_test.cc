@@ -246,6 +246,14 @@ paludis::resolver::resolver_test::find_repository_for_fn(
 }
 
 bool
+paludis::resolver::resolver_test::allowed_to_break_fn(
+        const std::tr1::shared_ptr<const QualifiedPackageNameSet> & s,
+        const std::tr1::shared_ptr<const PackageID> & i)
+{
+    return s->end() != s->find(i->name());
+}
+
+bool
 paludis::resolver::resolver_test::allowed_to_remove_fn(
         const std::tr1::shared_ptr<const QualifiedPackageNameSet> & s,
         const std::tr1::shared_ptr<const PackageID> & i)
@@ -277,6 +285,7 @@ paludis::resolver::resolver_test::confirm_fn(
 ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s, const std::string & e,
         const std::string & l) :
     TestCase(s),
+    allowed_to_break_names(new QualifiedPackageNameSet),
     allowed_to_remove_names(new QualifiedPackageNameSet),
     prefer_or_avoid_names(new Map<QualifiedPackageName, bool>)
 {
@@ -324,6 +333,8 @@ ResolverFunctions
 ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraints)
 {
     return make_named_values<ResolverFunctions>(
+            value_for<n::allowed_to_break_fn>(std::tr1::bind(&allowed_to_break_fn,
+                    allowed_to_break_names, std::tr1::placeholders::_1)),
             value_for<n::allowed_to_remove_fn>(std::tr1::bind(&allowed_to_remove_fn,
                     allowed_to_remove_names, std::tr1::placeholders::_1)),
             value_for<n::care_about_dep_fn>(&care_about_dep_fn),
