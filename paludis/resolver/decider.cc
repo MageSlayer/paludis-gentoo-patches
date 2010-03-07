@@ -162,13 +162,22 @@ Decider::_resolve_dependents()
         {
             _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-            if (_allowed_to_break(*s))
+            bool allowed_to_break(_allowed_to_break(*s)), should_remove(_remove_if_dependent(*s));
+
+            if (allowed_to_break && ! should_remove)
                 continue;
 
             if (! _dependent(*s, changing.first, changing.second))
                 continue;
 
-            throw InternalError(PALUDIS_HERE, "unsafe " + stringify(**s));
+            if (should_remove)
+            {
+                throw InternalError(PALUDIS_HERE, "remove " + stringify(**s));
+            }
+            else if (! allowed_to_break)
+            {
+                throw InternalError(PALUDIS_HERE, "unsafe " + stringify(**s));
+            }
         }
     }
 }
@@ -1557,6 +1566,12 @@ bool
 Decider::_allowed_to_break(const std::tr1::shared_ptr<const PackageID> & id) const
 {
     return _imp->fns.allowed_to_break_fn()(id);
+}
+
+bool
+Decider::_remove_if_dependent(const std::tr1::shared_ptr<const PackageID> & id) const
+{
+    return _imp->fns.remove_if_dependent_fn()(id);
 }
 
 const std::tr1::shared_ptr<const PackageIDSequence>

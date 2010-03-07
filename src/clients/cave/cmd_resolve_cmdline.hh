@@ -47,7 +47,7 @@ namespace paludis
             args::StringSetArg a_permit_downgrade;
             args::StringSetArg a_permit_any_version;
             args::StringSetArg a_uninstalls_may_break;
-//            args::StringSetArg a_remove_if_dependent;
+            args::StringSetArg a_remove_if_dependent;
 //            args::StringSetArg a_purge;
 
             args::ArgsGroup g_keep_options;

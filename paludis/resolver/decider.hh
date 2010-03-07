@@ -193,6 +193,8 @@ namespace paludis
 
                 bool _allowed_to_break(const std::tr1::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
+                bool _remove_if_dependent(const std::tr1::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
                 const std::pair<
                     std::tr1::shared_ptr<const PackageIDSequence>,
                     std::tr1::shared_ptr<const PackageIDSequence> > _collect_changing() const PALUDIS_ATTRIBUTE((warn_unused_result));

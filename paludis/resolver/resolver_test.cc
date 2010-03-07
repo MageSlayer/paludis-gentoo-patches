@@ -261,6 +261,14 @@ paludis::resolver::resolver_test::allowed_to_remove_fn(
     return s->end() != s->find(i->name());
 }
 
+bool
+paludis::resolver::resolver_test::remove_if_dependent_fn(
+        const std::tr1::shared_ptr<const QualifiedPackageNameSet> & s,
+        const std::tr1::shared_ptr<const PackageID> & i)
+{
+    return s->end() != s->find(i->name());
+}
+
 Tribool
 paludis::resolver::resolver_test::prefer_or_avoid_fn(
         const std::tr1::shared_ptr<const Map<QualifiedPackageName, bool> > & s,
@@ -287,6 +295,7 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
     TestCase(s),
     allowed_to_break_names(new QualifiedPackageNameSet),
     allowed_to_remove_names(new QualifiedPackageNameSet),
+    remove_if_dependent_names(new QualifiedPackageNameSet),
     prefer_or_avoid_names(new Map<QualifiedPackageName, bool>)
 {
     std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
@@ -351,6 +360,8 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             value_for<n::make_destination_filtered_generator_fn>(&make_destination_filtered_generator_fn),
             value_for<n::prefer_or_avoid_fn>(std::tr1::bind(&prefer_or_avoid_fn,
                     prefer_or_avoid_names, std::tr1::placeholders::_1)),
+            value_for<n::remove_if_dependent_fn>(std::tr1::bind(&remove_if_dependent_fn,
+                    remove_if_dependent_names, std::tr1::placeholders::_1)),
             value_for<n::take_dependency_fn>(&take_dependency_fn)
             );
 }

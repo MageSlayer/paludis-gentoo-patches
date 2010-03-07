@@ -99,6 +99,10 @@ namespace paludis
                     const std::tr1::shared_ptr<const QualifiedPackageNameSet> &,
                     const std::tr1::shared_ptr<const PackageID> &);
 
+            bool remove_if_dependent_fn(
+                    const std::tr1::shared_ptr<const QualifiedPackageNameSet> &,
+                    const std::tr1::shared_ptr<const PackageID> &);
+
             Tribool prefer_or_avoid_fn(
                         const std::tr1::shared_ptr<const Map<QualifiedPackageName, bool> > &,
                         const QualifiedPackageName &);
@@ -115,6 +119,7 @@ namespace paludis
                 std::tr1::shared_ptr<FakeInstalledRepository> fake_inst_repo;
                 std::tr1::shared_ptr<QualifiedPackageNameSet> allowed_to_break_names;
                 std::tr1::shared_ptr<QualifiedPackageNameSet> allowed_to_remove_names;
+                std::tr1::shared_ptr<QualifiedPackageNameSet> remove_if_dependent_names;
                 std::tr1::shared_ptr<Map<QualifiedPackageName, bool> > prefer_or_avoid_names;
 
                 ResolverTestCase(const std::string & group, const std::string & test_name, const std::string & eapi,

@@ -69,10 +69,10 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
     a_uninstalls_may_break(&g_resolution_options, "uninstalls-may-break", 'u',
             "Permit uninstalls that might break packages matching the specified specification. May be "
             "specified multiple times. Use '*/*' to allow all packages to be broken."),
-//    a_remove_if_dependent(&g_resolution_options, "remove-if-dependent", 'r',
-//            "Remove dependent packages that might be broken by other changes if those packages match "
-//            "the specified specification. May be specified multiple times. Use '*/*' to remove all "
-//            "dependent packages that might be broken, recursively. Does not imply --permit-uninstall."),
+    a_remove_if_dependent(&g_resolution_options, "remove-if-dependent", 'r',
+            "Remove dependent packages that might be broken by other changes if those packages match "
+            "the specified specification. May be specified multiple times. Use '*/*' to remove all "
+            "dependent packages that might be broken, recursively. Does not imply --permit-uninstall."),
 //    a_purge(&g_resolution_options, "purge", 'P',
 //            "Purge packages matching the given specification, if they will no longer be used after "
 //            "a resolution. Use '*/*' to accept all purges, but note that by doing so you are putting "

@@ -51,6 +51,7 @@ namespace paludis
         struct get_use_existing_fn;
         struct make_destination_filtered_generator_fn;
         struct prefer_or_avoid_fn;
+        struct remove_if_dependent_fn;
         struct take_dependency_fn;
     }
 
@@ -114,6 +115,10 @@ namespace paludis
                 )> PreferOrAvoidFunction;
 
         typedef std::tr1::function<bool (
+                const std::tr1::shared_ptr<const PackageID> &
+                )> RemoveIfDependentFunction;
+
+        typedef std::tr1::function<bool (
                 const Resolvent &,
                 const SanitisedDependency &,
                 const std::tr1::shared_ptr<const Reason> &
@@ -133,6 +138,7 @@ namespace paludis
             NamedValue<n::make_destination_filtered_generator_fn,
                 MakeDestinationFilteredGeneratorFunction> make_destination_filtered_generator_fn;
             NamedValue<n::prefer_or_avoid_fn, PreferOrAvoidFunction> prefer_or_avoid_fn;
+            NamedValue<n::remove_if_dependent_fn, RemoveIfDependentFunction> remove_if_dependent_fn;
             NamedValue<n::take_dependency_fn, TakeDependencyFunction> take_dependency_fn;
         };
     }
