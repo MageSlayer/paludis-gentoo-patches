@@ -77,6 +77,7 @@
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/destringify.hh>
 
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/create_iterator-impl.hh>
@@ -1293,14 +1294,39 @@ VDBRepository::perform_updates()
     typedef std::list<std::pair<std::tr1::shared_ptr<const PackageID>, SlotName> > SlotMoves;
     SlotMoves slot_moves;
 
-    std::time_t ignore_updates_before(0);
+    std::map<FSEntry, std::time_t> cache_contents;
     FSEntry cache_dir(_imp->params.location() / ".cache");
     FSEntry cache_file(cache_dir / "updates_time_cache");
     if (cache_file.is_regular_file_or_symlink_to_regular_file())
-        ignore_updates_before = cache_file.mtim().seconds();
+    {
+        Context ctx2("When reading update file timestamps from '" + stringify(cache_file) + "':");
+        LineConfigFile f(cache_file, LineConfigFileOptions() + lcfo_preserve_whitespace);
+
+        for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
+                line != line_end ; ++line)
+        {
+            std::string::size_type tab(line->find('\t'));
+            if (std::string::npos == tab)
+            {
+                Log::get_instance()->message("e.vdb.updates.bad_timestamp_line", ll_warning, lc_context)
+                    << "Line '" << *line << "' does not contain a tab character";
+                continue;
+            }
+            try
+            {
+                cache_contents.insert(std::make_pair(FSEntry(line->substr(tab + 1)), destringify<std::time_t>(line->substr(0, tab))));
+            }
+            catch (const DestringifyError &)
+            {
+                Log::get_instance()->message("e.vdb.updates.bad_timestamp_line", ll_warning, lc_context)
+                    << "Line '" << *line << "' contains an invalid timestamp";
+            }
+        }
+    }
 
     std::cout << std::endl << "Checking for updates (package moves etc):" << std::endl;
 
+    std::map<FSEntry, std::time_t> update_timestamps;
     for (PackageDatabase::RepositoryConstIterator r(_imp->params.environment()->package_database()->begin_repositories()),
             r_end(_imp->params.environment()->package_database()->end_repositories()) ;
             r != r_end ; ++r)
@@ -1341,7 +1367,9 @@ VDBRepository::perform_updates()
                 if (! d->is_regular_file_or_symlink_to_regular_file())
                     continue;
 
-                if (d->mtim().seconds() <= ignore_updates_before)
+                update_timestamps.insert(std::make_pair(*d, d->mtim().seconds()));
+                std::map<FSEntry, std::time_t>::const_iterator last_checked(cache_contents.find(*d));
+                if (cache_contents.end() != last_checked && d->mtim().seconds() <= last_checked->second)
                 {
                     Log::get_instance()->message("e.vdb.updates.ignoring", ll_debug, lc_context) <<
                         "Ignoring " << *d << " because it hasn't changed";
@@ -1547,7 +1575,9 @@ VDBRepository::perform_updates()
         {
             cache_dir.mkdir();
             SafeOFStream cache_file_f(cache_file);
-            cache_file_f << std::endl;
+            for (std::map<FSEntry, std::time_t>::const_iterator it(update_timestamps.begin()),
+                     it_end(update_timestamps.end()); it_end != it; ++it)
+                cache_file_f << it->second << '\t' << it->first << std::endl;
         }
     }
     catch (const Exception & e)
