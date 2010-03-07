@@ -418,7 +418,7 @@ namespace paludis
                     if (tokens.size() < 3)
                         continue;
 
-                    FSEntry p(params.location() / "profiles" / tokens.at(1));
+                    FSEntry p(profiles_desc.dirname().realpath() / tokens.at(1));
                     auto_profiles->push_back(p);
                     main_profile_path.reset(new FSEntry(p));
                     break;
@@ -1277,14 +1277,7 @@ ERepository::repository_factory_create(
         }
     }
     else if (f("profiles") == "(auto)")
-    {
-        profiles.reset(new FSEntrySequence);
-        if (master_repositories)
-            std::copy((*master_repositories->begin())->params().profiles()->begin(),
-                    (*master_repositories->begin())->params().profiles()->end(), profiles->back_inserter());
-        else
-            auto_profiles = true;
-    }
+        auto_profiles = true;
     else
         profiles_explicitly_set = true;
 
