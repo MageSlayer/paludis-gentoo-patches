@@ -36,7 +36,9 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/enum_iterator.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/repository.hh>
@@ -54,6 +56,7 @@
 
 #include <paludis/util/private_implementation_pattern-impl.hh>
 
+#include <algorithm>
 #include <map>
 #include <set>
 
@@ -133,6 +136,194 @@ Decider::_resolve_decide_with_dependencies()
             _add_dependencies_if_necessary(i->first, i->second);
         }
     }
+}
+
+void
+Decider::_resolve_dependents()
+{
+    Context context("When finding dependents:");
+
+    bool changed(true);
+    while (changed)
+    {
+        changed = false;
+
+        const std::pair<
+            std::tr1::shared_ptr<const PackageIDSequence>,
+            std::tr1::shared_ptr<const PackageIDSequence> > changing(_collect_changing());
+
+        if (changing.first->empty())
+            break;
+
+        const std::tr1::shared_ptr<const PackageIDSequence> staying(_collect_staying(changing.first));
+
+        for (PackageIDSequence::ConstIterator s(staying->begin()), s_end(staying->end()) ;
+                s != s_end ; ++s)
+        {
+            if (! _dependent(*s, changing.first, changing.second))
+                continue;
+
+            throw InternalError(PALUDIS_HERE, "unsafe " + stringify(**s));
+        }
+    }
+}
+
+namespace
+{
+    struct DependentChecker
+    {
+        const Environment * const env;
+        const std::tr1::shared_ptr<const PackageIDSequence> going_away;
+        const std::tr1::shared_ptr<const PackageIDSequence> newly_available;
+
+        DependentChecker(
+                const Environment * const e,
+                const std::tr1::shared_ptr<const PackageIDSequence> & g,
+                const std::tr1::shared_ptr<const PackageIDSequence> & n) :
+            env(e),
+            going_away(g),
+            newly_available(n)
+        {
+        }
+
+        bool visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & s)
+        {
+            const std::tr1::shared_ptr<const SetSpecTree> set(env->set(s.spec()->name()));
+            return set->root()->accept_returning<bool>(*this);
+        }
+
+        bool visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & s)
+        {
+            return
+                (indirect_iterator(going_away->end()) != std::find_if(
+                        indirect_iterator(going_away->begin()), indirect_iterator(going_away->end()),
+                        std::tr1::bind(&match_package, std::tr1::cref(*env), std::tr1::cref(*s.spec()),
+                            std::tr1::placeholders::_1, MatchPackageOptions()))) &&
+                (indirect_iterator(newly_available->end()) == std::find_if(
+                        indirect_iterator(newly_available->begin()), indirect_iterator(newly_available->end()),
+                        std::tr1::bind(&match_package, std::tr1::cref(*env), std::tr1::cref(*s.spec()),
+                            std::tr1::placeholders::_1, MatchPackageOptions())));
+        }
+
+        bool visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type &)
+        {
+            return false;
+        }
+
+        bool visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & s)
+        {
+            if (s.spec()->condition_met())
+                return indirect_iterator(s.end()) != std::find_if(
+                        indirect_iterator(s.begin()), indirect_iterator(s.end()),
+                        accept_visitor_returning<bool>(*this));
+            return false;
+        }
+
+        bool visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & s)
+        {
+            return indirect_iterator(s.end()) != std::find_if(
+                    indirect_iterator(s.begin()), indirect_iterator(s.end()),
+                    accept_visitor_returning<bool>(*this));
+        }
+
+        bool visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & s)
+        {
+            return indirect_iterator(s.end()) != std::find_if(
+                    indirect_iterator(s.begin()), indirect_iterator(s.end()),
+                    accept_visitor_returning<bool>(*this));
+        }
+
+        bool visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type &)
+        {
+            return false;
+        }
+    };
+}
+
+bool
+Decider::_dependent(
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const PackageIDSequence> & going_away,
+        const std::tr1::shared_ptr<const PackageIDSequence> & staying) const
+{
+    DependentChecker c(_imp->env, going_away, staying);;
+    if (id->dependencies_key())
+        return id->dependencies_key()->value()->root()->accept_returning<bool>(c);
+    else
+        return
+            (id->build_dependencies_key() && id->build_dependencies_key()->value()->root()->accept_returning<bool>(c)) ||
+            (id->run_dependencies_key() && id->run_dependencies_key()->value()->root()->accept_returning<bool>(c)) ||
+            (id->post_dependencies_key() && id->post_dependencies_key()->value()->root()->accept_returning<bool>(c)) ||
+            (id->suggested_dependencies_key() && id->suggested_dependencies_key()->value()->root()->accept_returning<bool>(c));
+}
+
+namespace
+{
+    struct ChangingCollector
+    {
+        std::tr1::shared_ptr<PackageIDSequence> going_away;
+        std::tr1::shared_ptr<PackageIDSequence> newly_available;
+
+        ChangingCollector() :
+            going_away(new PackageIDSequence),
+            newly_available(new PackageIDSequence)
+        {
+        }
+
+        void visit(const NothingNoChangeDecision &)
+        {
+        }
+
+        void visit(const ExistingNoChangeDecision &)
+        {
+        }
+
+        void visit(const RemoveDecision & d)
+        {
+            std::copy(d.ids()->begin(), d.ids()->end(), going_away->back_inserter());
+        }
+
+        void visit(const ChangesToMakeDecision &)
+        {
+            /* todo */
+        }
+
+        void visit(const UnableToMakeDecision &)
+        {
+        }
+    };
+}
+
+const std::pair<
+    std::tr1::shared_ptr<const PackageIDSequence>,
+    std::tr1::shared_ptr<const PackageIDSequence> >
+Decider::_collect_changing() const
+{
+    ChangingCollector c;
+
+    for (ResolutionsByResolventMap::const_iterator i(_imp->resolutions_by_resolvent.begin()),
+            i_end(_imp->resolutions_by_resolvent.end()) ;
+            i != i_end ; ++i)
+        if (i->second->decision())
+            i->second->decision()->accept(c);
+
+    return std::make_pair(c.going_away, c.newly_available);
+}
+
+const std::tr1::shared_ptr<const PackageIDSequence>
+Decider::_collect_staying(const std::tr1::shared_ptr<const PackageIDSequence> & going_away) const
+{
+    const std::tr1::shared_ptr<const PackageIDSequence> existing((*_imp->env)[selection::AllVersionsUnsorted(
+                generator::All() | filter::InstalledAtRoot(FSEntry("/")))]);
+
+    const std::tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+    for (PackageIDSequence::ConstIterator x(existing->begin()), x_end(existing->end()) ;
+            x != x_end ; ++x)
+        if (indirect_iterator(going_away->end()) == std::find(indirect_iterator(going_away->begin()),
+                    indirect_iterator(going_away->end()), **x))
+            result->push_back(*x);
+
+    return result;
 }
 
 void
@@ -1518,6 +1709,8 @@ Decider::resolve()
 {
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Deciding"));
     _resolve_decide_with_dependencies();
+    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Finding Dependents"));
+    _resolve_dependents();
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Finding Destinations"));
     _resolve_destinations();
 }

@@ -123,6 +123,7 @@ namespace paludis
                         const ChangesToMakeDecision &) const;
 
                 void _resolve_decide_with_dependencies();
+                void _resolve_dependents();
                 void _resolve_destinations();
 
                 const std::tr1::shared_ptr<Destination> _make_destination_for(
@@ -189,6 +190,18 @@ namespace paludis
                         const Resolvent & resolvent) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 bool _allowed_to_remove(const std::tr1::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const std::pair<
+                    std::tr1::shared_ptr<const PackageIDSequence>,
+                    std::tr1::shared_ptr<const PackageIDSequence> > _collect_changing() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const std::tr1::shared_ptr<const PackageIDSequence> _collect_staying(
+                        const std::tr1::shared_ptr<const PackageIDSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                bool _dependent(
+                        const std::tr1::shared_ptr<const PackageID> &,
+                        const std::tr1::shared_ptr<const PackageIDSequence> &,
+                        const std::tr1::shared_ptr<const PackageIDSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             public:
                 Decider(const Environment * const,
