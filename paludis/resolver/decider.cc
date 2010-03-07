@@ -159,15 +159,13 @@ Decider::_resolve_dependents()
     {
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-        bool allowed_to_break(_allowed_to_break(*s)), should_remove(_remove_if_dependent(*s));
-
-        if (allowed_to_break && ! should_remove)
+        if (_allowed_to_break(*s))
             continue;
 
         if (! _dependent(*s, changing.first, changing.second))
             continue;
 
-        if (should_remove)
+        if (_remove_if_dependent(*s))
         {
             Resolvent resolvent(*s, dt_install_to_slash);
 
@@ -179,7 +177,7 @@ Decider::_resolve_dependents()
             _apply_resolution_constraint(resolvent, _resolution_for_resolvent(resolvent, true),
                     _make_constraint_for_removing_dependent(*s));
         }
-        else if (! allowed_to_break)
+        else
         {
             throw InternalError(PALUDIS_HERE, "unsafe " + stringify(**s));
         }
