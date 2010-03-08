@@ -340,6 +340,11 @@ namespace
             return common_target();
         }
 
+        DestinationTypes visit(const DependentReason &) const
+        {
+            return common_target();
+        }
+
         DestinationTypes visit(const DependencyReason & reason) const
         {
             DestinationTypes result;
@@ -510,6 +515,11 @@ namespace
         UseExisting visit(const TargetReason &) const
         {
             return use_existing_from_cmdline(resolution_options.a_keep_targets, from_set);
+        }
+
+        UseExisting visit(const DependentReason &) const
+        {
+            return ue_if_possible;
         }
 
         UseExisting visit(const PresetReason &) const
@@ -693,6 +703,11 @@ namespace
     struct IsTargetVisitor
     {
         bool visit(const DependencyReason &) const
+        {
+            return false;
+        }
+
+        bool visit(const DependentReason &) const
         {
             return false;
         }

@@ -156,6 +156,11 @@ namespace
             str = "Set(" + stringify(r.set_name()) + " " + f.str + ")";
         }
 
+        void visit(const DependentReason & r)
+        {
+            str = "Dependent(" + stringify(*r.id_being_removed()) + ")";
+        }
+
         void visit(const DependencyReason & r)
         {
             std::stringstream s;
