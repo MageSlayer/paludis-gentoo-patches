@@ -66,17 +66,29 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
     a_permit_any_version(&g_resolution_options, "permit-any-version", 'a', "Permit installs of versions matching the supplied "
             "specification even if those versions are worse than the best visible version in the slot. Use '*/*' "
             "to allow all worse versions to be installed."),
+//    a_purge(&g_resolution_options, "purge", 'P',
+//            "Purge packages matching the given specification, if they will no longer be used after "
+//            "a resolution. Use '*/*' to accept all purges, but note that by doing so you are putting "
+//            "a great deal of trust in package authors to get dependencies right."),
+
+    g_dependent_options(this, "Dependent Options", "Dependent options. A package is dependent if it "
+            "requires (or looks like it might require) a package which is being removed. By default, "
+            "dependent packages are treated as errors. These options specify a different behaviour."),
     a_uninstalls_may_break(&g_resolution_options, "uninstalls-may-break", 'u',
             "Permit uninstalls that might break packages matching the specified specification. May be "
             "specified multiple times. Use '*/*' to allow all packages to be broken."),
     a_remove_if_dependent(&g_resolution_options, "remove-if-dependent", 'r',
             "Remove dependent packages that might be broken by other changes if those packages match "
             "the specified specification. May be specified multiple times. Use '*/*' to remove all "
-            "dependent packages that might be broken, recursively. Does not imply --permit-uninstall."),
-//    a_purge(&g_resolution_options, "purge", 'P',
-//            "Purge packages matching the given specification, if they will no longer be used after "
-//            "a resolution. Use '*/*' to accept all purges, but note that by doing so you are putting "
-//            "a great deal of trust in package authors to get dependencies right."),
+            "dependent packages that might be broken, recursively. Does not imply --permit-uninstall, "
+            "which must also be specified."),
+    a_less_restrictive_remove_blockers(&g_resolution_options, "less-restrictive-remove-blockers", 'l',
+            "Use less restrictive blockers for packages matching the supplied specification if that "
+            "package is to be removed by --remove-if-dependent. May be specified multiple times. "
+            "Normally removing dependents is done by a pseudo-block in the form '!cat/pkg:slot'. If "
+            "matched by this option, the block will instead only block the installed dependent "
+            "package, so if reinstalling or upgrading the package will make it no longer be dependent "
+            "then this will be done instead."),
 
     g_keep_options(this, "Reinstall Options", "Control whether installed packages are kept."),
     a_keep_targets(&g_keep_options, "keep-targets", 'K',

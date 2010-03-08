@@ -38,6 +38,7 @@
 #include <paludis/util/thread.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/map.hh>
+#include <paludis/util/make_shared_copy.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/args/escape.hh>
 #include <paludis/resolver/resolver.hh>
@@ -66,6 +67,7 @@
 #include <paludis/serialise-impl.hh>
 #include <paludis/selection_cache.hh>
 #include <paludis/package_dep_spec_properties.hh>
+#include <paludis/elike_slot_requirement.hh>
 
 #include <algorithm>
 #include <iostream>
@@ -1191,6 +1193,47 @@ namespace
                     ));
     }
 
+    const std::tr1::shared_ptr<ConstraintSequence> get_constraints_for_dependent_fn(
+            const Environment * const env,
+            const PackageDepSpecList & list,
+            const Resolvent &,
+            const std::tr1::shared_ptr<const Resolution> &,
+            const std::tr1::shared_ptr<const PackageID> & id,
+            const std::tr1::shared_ptr<const PackageIDSequence> & ids)
+    {
+        const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
+
+        std::tr1::shared_ptr<PackageDepSpec> spec;
+        if (match_any(env, list, id))
+            spec = make_shared_copy(id->uniquely_identifying_spec());
+        else
+        {
+            PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
+            partial_spec.package(id->name());
+            if (id->slot_key())
+                partial_spec.slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement(
+                                id->slot_key()->value(), false)));
+            spec = make_shared_ptr(new PackageDepSpec(partial_spec));
+        }
+
+        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+                i != i_end ; ++i)
+        {
+            const std::tr1::shared_ptr<PresetReason> reason(new PresetReason("dependent " + stringify(**i), make_null_shared_ptr()));
+
+            result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                                value_for<n::destination_type>(dt_install_to_slash),
+                                value_for<n::nothing_is_fine_too>(true),
+                                value_for<n::reason>(reason),
+                                value_for<n::spec>(BlockDepSpec("!" + stringify(*spec), *spec, false)),
+                                value_for<n::untaken>(false),
+                                value_for<n::use_existing>(ue_if_possible)
+                                ))));
+        }
+
+        return result;
+    }
+
     void ser_thread_func(StringListStream & ser_stream, const ResolverLists & resolution_lists)
     {
         Serialiser ser(ser_stream);
@@ -1421,7 +1464,7 @@ paludis::cave::resolve_common(
     int retcode(0);
 
     InitialConstraints initial_constraints;
-    PackageDepSpecList allowed_to_remove_specs, allowed_to_break_specs, remove_if_dependent_specs;
+    PackageDepSpecList allowed_to_remove_specs, allowed_to_break_specs, remove_if_dependent_specs, less_restrictive_remove_blockers_specs;
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_uninstall.begin_args()),
             i_end(resolution_options.a_permit_uninstall.end_args()) ;
@@ -1439,6 +1482,12 @@ paludis::cave::resolve_common(
             i_end(resolution_options.a_remove_if_dependent.end_args()) ;
             i != i_end ; ++i)
         remove_if_dependent_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
+                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_less_restrictive_remove_blockers.begin_args()),
+            i_end(resolution_options.a_less_restrictive_remove_blockers.end_args()) ;
+            i != i_end ; ++i)
+        less_restrictive_remove_blockers_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
                     UserPackageDepSpecOptions() + updso_allow_wildcards));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_preset.begin_args()),
@@ -1488,6 +1537,9 @@ paludis::cave::resolve_common(
                 value_for<n::find_repository_for_fn>(std::tr1::bind(&find_repository_for_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::placeholders::_1, std::tr1::placeholders::_2,
                         std::tr1::placeholders::_3)),
+                value_for<n::get_constraints_for_dependent_fn>(std::tr1::bind(&get_constraints_for_dependent_fn,
+                        env.get(), std::tr1::cref(less_restrictive_remove_blockers_specs), std::tr1::placeholders::_1,
+                        std::tr1::placeholders::_2, std::tr1::placeholders::_3, std::tr1::placeholders::_4)),
                 value_for<n::get_destination_types_for_fn>(std::tr1::bind(&get_destination_types_for_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::placeholders::_1, std::tr1::placeholders::_2,
                         std::tr1::placeholders::_3)),

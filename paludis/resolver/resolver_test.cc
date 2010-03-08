@@ -31,6 +31,7 @@
 #include <paludis/resolver/job.hh>
 #include <paludis/resolver/jobs.hh>
 #include <paludis/resolver/job_id.hh>
+#include <paludis/resolver/reason.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
@@ -46,6 +47,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/generator.hh>
+#include <paludis/elike_slot_requirement.hh>
 
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -290,6 +292,40 @@ paludis::resolver::resolver_test::confirm_fn(
     return true;
 }
 
+const std::tr1::shared_ptr<ConstraintSequence>
+paludis::resolver::resolver_test::get_constraints_for_dependent_fn(
+        const Resolvent &,
+        const std::tr1::shared_ptr<const Resolution> &,
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const PackageIDSequence> & ids)
+{
+    const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
+
+    PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
+    partial_spec.package(id->name());
+    if (id->slot_key())
+        partial_spec.slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement(
+                        id->slot_key()->value(), false)));
+    PackageDepSpec spec(partial_spec);
+
+    for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+            i != i_end ; ++i)
+    {
+        const std::tr1::shared_ptr<PresetReason> reason(new PresetReason("dependent " + stringify(**i), make_null_shared_ptr()));
+
+        result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                            value_for<n::destination_type>(dt_install_to_slash),
+                            value_for<n::nothing_is_fine_too>(true),
+                            value_for<n::reason>(reason),
+                            value_for<n::spec>(BlockDepSpec("!" + stringify(spec), spec, false)),
+                            value_for<n::untaken>(false),
+                            value_for<n::use_existing>(ue_if_possible)
+                            ))));
+    }
+
+    return result;
+}
+
 ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s, const std::string & e,
         const std::string & l) :
     TestCase(s),
@@ -351,6 +387,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             value_for<n::find_repository_for_fn>(std::tr1::bind(&find_repository_for_fn,
                     &env, std::tr1::placeholders::_1, std::tr1::placeholders::_2,
                     std::tr1::placeholders::_3)),
+            value_for<n::get_constraints_for_dependent_fn>(&get_constraints_for_dependent_fn),
             value_for<n::get_destination_types_for_fn>(&get_destination_types_for_fn),
             value_for<n::get_initial_constraints_for_fn>(
                 std::tr1::bind(&initial_constraints_for_fn, std::tr1::ref(initial_constraints),

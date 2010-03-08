@@ -63,6 +63,13 @@ namespace paludis
                     const InitialConstraints & initial_constraints,
                     const Resolvent & resolvent);
 
+            const std::tr1::shared_ptr<ConstraintSequence>
+            get_constraints_for_dependent_fn(
+                    const Resolvent &,
+                    const std::tr1::shared_ptr<const Resolution> &,
+                    const std::tr1::shared_ptr<const PackageID> & id,
+                    const std::tr1::shared_ptr<const PackageIDSequence> & ids);
+
             std::tr1::shared_ptr<Resolvents> get_resolvents_for_fn(const PackageDepSpec & spec,
                     const std::tr1::shared_ptr<const SlotName> &,
                     const std::tr1::shared_ptr<const Reason> &);

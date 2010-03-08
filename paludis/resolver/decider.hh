@@ -85,8 +85,11 @@ namespace paludis
                         const Resolvent & resolvent, const BlockDepSpec & dep,
                         const std::tr1::shared_ptr<const Reason> & reason) const;
 
-                const std::tr1::shared_ptr<const Constraint> _make_constraint_for_removing_dependent(
-                        const std::tr1::shared_ptr<const PackageID> &) const;
+                const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_for_dependent(
+                        const Resolvent &,
+                        const std::tr1::shared_ptr<const Resolution> & resolution,
+                        const std::tr1::shared_ptr<const PackageID> &,
+                        const std::tr1::shared_ptr<const PackageIDSequence> &) const;
 
                 void _apply_resolution_constraint(const Resolvent &,
                         const std::tr1::shared_ptr<Resolution> &,

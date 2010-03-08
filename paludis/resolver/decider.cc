@@ -176,8 +176,11 @@ Decider::_resolve_dependents()
                 changed = true;
 
             const std::tr1::shared_ptr<Resolution> resolution(_resolution_for_resolvent(resolvent, true));
-            _apply_resolution_constraint(resolvent, _resolution_for_resolvent(resolvent, true),
-                    _make_constraint_for_removing_dependent(*s));
+            const std::tr1::shared_ptr<const ConstraintSequence> constraints(_make_constraints_for_dependent(
+                        resolvent, resolution, *s, dependent_upon));
+            for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
+                    c != c_end ; ++c)
+                _apply_resolution_constraint(resolvent, resolution, *c);
         }
         else
         {
@@ -188,31 +191,15 @@ Decider::_resolve_dependents()
     return changed;
 }
 
-const std::tr1::shared_ptr<const Constraint>
-Decider::_make_constraint_for_removing_dependent(
-        const std::tr1::shared_ptr<const PackageID> & id) const
+const std::tr1::shared_ptr<ConstraintSequence>
+Decider::_make_constraints_for_dependent(
+        const Resolvent & resolvent,
+        const std::tr1::shared_ptr<const Resolution> & resolution,
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const PackageIDSequence> & r) const
 {
-    const std::tr1::shared_ptr<PresetReason> reason(new PresetReason("dependent", make_null_shared_ptr()));
-
-    PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
-    partial_spec.package(id->name());
-    if (id->slot_key())
-        partial_spec.slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement(
-                        id->slot_key()->value(), false)));
-    PackageDepSpec spec(partial_spec);
-
-    const std::tr1::shared_ptr<Constraint> result(new Constraint(make_named_values<Constraint>(
-                    value_for<n::destination_type>(dt_install_to_slash),
-                    value_for<n::nothing_is_fine_too>(true),
-                    value_for<n::reason>(reason),
-                    value_for<n::spec>(BlockDepSpec("!" + stringify(spec), spec, false)),
-                    value_for<n::untaken>(false),
-                    value_for<n::use_existing>(ue_if_possible)
-                    )));
-
-    return result;
+    return _imp->fns.get_constraints_for_dependent_fn()(resolvent, resolution, id, r);
 }
-
 
 namespace
 {

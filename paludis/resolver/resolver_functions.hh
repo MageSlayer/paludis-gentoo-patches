@@ -45,6 +45,7 @@ namespace paludis
         struct care_about_dep_fn;
         struct confirm_fn;
         struct find_repository_for_fn;
+        struct get_constraints_for_dependent_fn;
         struct get_destination_types_for_fn;
         struct get_initial_constraints_for_fn;
         struct get_resolvents_for_fn;
@@ -82,6 +83,13 @@ namespace paludis
                 const std::tr1::shared_ptr<const Resolution> &,
                 const ChangesToMakeDecision &
                 )> FindRepositoryForFunction;
+
+        typedef std::tr1::function<std::tr1::shared_ptr<ConstraintSequence> (
+                const Resolvent &,
+                const std::tr1::shared_ptr<const Resolution> &,
+                const std::tr1::shared_ptr<const PackageID> &,
+                const std::tr1::shared_ptr<const PackageIDSequence> &
+                )> GetConstraintsForDependentFunction;
 
         typedef std::tr1::function<DestinationTypes (
                 const PackageDepSpec &,
@@ -131,6 +139,7 @@ namespace paludis
             NamedValue<n::care_about_dep_fn, CareAboutDepFunction> care_about_dep_fn;
             NamedValue<n::confirm_fn, ConfirmFunction> confirm_fn;
             NamedValue<n::find_repository_for_fn, FindRepositoryForFunction> find_repository_for_fn;
+            NamedValue<n::get_constraints_for_dependent_fn, GetConstraintsForDependentFunction> get_constraints_for_dependent_fn;
             NamedValue<n::get_destination_types_for_fn, GetDestinationTypesForFunction> get_destination_types_for_fn;
             NamedValue<n::get_initial_constraints_for_fn, GetInitialConstraintsFunction> get_initial_constraints_for_fn;
             NamedValue<n::get_resolvents_for_fn, GetResolventsForFunction> get_resolvents_for_fn;
