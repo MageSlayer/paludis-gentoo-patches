@@ -205,7 +205,7 @@ namespace paludis
                 const std::tr1::shared_ptr<const PackageIDSequence> _collect_staying(
                         const std::tr1::shared_ptr<const PackageIDSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                bool _dependent(
+                const std::tr1::shared_ptr<const PackageIDSequence> _dependent_upon(
                         const std::tr1::shared_ptr<const PackageID> &,
                         const std::tr1::shared_ptr<const PackageIDSequence> &,
                         const std::tr1::shared_ptr<const PackageIDSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
