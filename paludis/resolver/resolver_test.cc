@@ -311,7 +311,7 @@ paludis::resolver::resolver_test::get_constraints_for_dependent_fn(
     for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
             i != i_end ; ++i)
     {
-        const std::tr1::shared_ptr<PresetReason> reason(new PresetReason("dependent " + stringify(**i), make_null_shared_ptr()));
+        const std::tr1::shared_ptr<DependentReason> reason(new DependentReason(*i));
 
         result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
                             value_for<n::destination_type>(dt_install_to_slash),
