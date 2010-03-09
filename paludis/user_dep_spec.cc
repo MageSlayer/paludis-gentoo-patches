@@ -355,9 +355,9 @@ namespace paludis
 
         Implementation(const std::string & s)
         {
-            std::string::size_type p(s.find_first_of("=<"));
+            std::string::size_type p(s.find_first_of("=<>"));
             if (std::string::npos == p)
-                throw PackageDepSpecError("Expected an = or a < inside '[." + s + "]'");
+                throw PackageDepSpecError("Expected an =, a < or a > inside '[." + s + "]'");
 
             key = s.substr(0, p);
             value = s.substr(p + 1);
@@ -510,6 +510,8 @@ namespace
                     return pattern == stringify(k.value().seconds());
                 case '<':
                     return k.value().seconds() < destringify<time_t>(pattern);
+                case '>':
+                    return k.value().seconds() > destringify<time_t>(pattern);
             }
 
             return false;
@@ -543,6 +545,8 @@ namespace
                     return pattern == stringify(k.value());
                 case '<':
                     return k.value() < destringify<long>(pattern);
+                case '>':
+                    return k.value() > destringify<long>(pattern);
             }
 
             return false;
@@ -767,6 +771,8 @@ UserKeyRequirement::as_human_string() const
             return "Key '" + _imp->key + "' has simple string value '" + _imp->value + "'";
         case '<':
             return "Key '" + _imp->key + "' contains or is less than '" + _imp->value + "'";
+        case '>':
+            return "Key '" + _imp->key + "' is greater than '" + _imp->value + "'";
     }
 
     throw InternalError(PALUDIS_HERE, "unknown op");
