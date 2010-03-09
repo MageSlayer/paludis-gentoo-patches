@@ -199,12 +199,14 @@ export PALUDIS_HOME="$(canonicalise ${PALUDIS_HOME:-${HOME}} )"
 
 ebuild_source_profile()
 {
-    if [[ -f ${1}/parent ]] ; then
-        while read line ; do
-            grep --silent '^[[:space:]]*#' <<<"${line}" && continue
-            grep --silent '[^[:space:]]' <<<"${line}" || continue
-            ebuild_source_profile $(canonicalise ${1}/${line} )
-        done <${1}/parent
+    if [[ -z ${PALUDIS_PROFILES_DIRS} ]]; then
+        if [[ -f ${1}/parent ]] ; then
+            while read line ; do
+                grep --silent '^[[:space:]]*#' <<<"${line}" && continue
+                grep --silent '[^[:space:]]' <<<"${line}" || continue
+                ebuild_source_profile $(canonicalise ${1}/${line} )
+            done <${1}/parent
+        fi
     fi
 
     local paludis_old_set=$-
@@ -417,8 +419,8 @@ ebuild_load_em_up_dan()
     fi
     ebuild_sanitise_envvars
 
-    if [[ -n ${PALUDIS_PROFILE_DIRS} ]] ; then
-        for paludis_var in ${PALUDIS_PROFILE_DIRS} ; do
+    if [[ -n ${PALUDIS_PROFILES_DIRS:-${PALUDIS_PROFILE_DIRS}} ]] ; then
+        for paludis_var in ${PALUDIS_PROFILES_DIRS:-${PALUDIS_PROFILE_DIRS}} ; do
             ebuild_source_profile "$(canonicalise "${paludis_var}")"
         done
     elif [[ -n ${PALUDIS_PROFILE_DIR} ]] ; then

@@ -46,6 +46,9 @@ namespace paludis
             public:
                 virtual ~Profile() = 0;
 
+                virtual std::tr1::shared_ptr<const FSEntrySequence> profiles_with_parents() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
                 virtual bool use_masked(
                         const std::tr1::shared_ptr<const PackageID> &,
                         const std::tr1::shared_ptr<const Choice> &,

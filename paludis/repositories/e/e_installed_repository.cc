@@ -365,6 +365,7 @@ EInstalledRepository::perform_info(
                     value_for<n::info_vars>(i ? i : make_shared_ptr(new const Set<std::string>)),
                     value_for<n::load_environment>(load_env.get()),
                     value_for<n::profiles>(make_shared_ptr(new FSEntrySequence)),
+                    value_for<n::profiles_with_parents>(make_shared_ptr(new FSEntrySequence)),
                     value_for<n::use>(""),
                     value_for<n::use_ebuild_file>(false),
                     value_for<n::use_expand>(""),

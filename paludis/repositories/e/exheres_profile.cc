@@ -74,6 +74,8 @@ namespace paludis
         const Environment * const env;
         const ERepository * const repository;
 
+        std::tr1::shared_ptr<FSEntrySequence> profiles_with_parents;
+
         PaludisLikeOptionsConf options_conf;
         EnvironmentVariablesMap environment_variables;
         PackageMaskMap package_mask;
@@ -96,6 +98,7 @@ namespace paludis
                 const std::string &, const bool) :
             env(e),
             repository(p),
+            profiles_with_parents(new FSEntrySequence),
             options_conf(make_named_values<PaludisLikeOptionsConfParams>(
                         value_for<n::allow_locking>(true),
                         value_for<n::environment>(e),
@@ -245,6 +248,14 @@ ExheresProfile::_load_dir(const FSEntry & f)
                 k != k_end ; ++k)
             _imp->environment_variables[k->first] = k->second;
     }
+
+    _imp->profiles_with_parents->push_back(f);
+}
+
+std::tr1::shared_ptr<const FSEntrySequence>
+ExheresProfile::profiles_with_parents() const
+{
+    return _imp->profiles_with_parents;
 }
 
 bool

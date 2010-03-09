@@ -133,6 +133,8 @@ namespace paludis
             const Environment * const env;
             const ERepository * const repository;
 
+            std::tr1::shared_ptr<FSEntrySequence> profiles_with_parents;
+
             ///\}
 
             ///\name Environment variables
@@ -192,6 +194,7 @@ namespace paludis
                 package_mask_file(p),
                 env(e),
                 repository(p),
+                profiles_with_parents(new FSEntrySequence),
                 system_packages(new SetSpecTree(make_shared_ptr(new AllDepSpec))),
                 system_tag(new GeneralSetDepTag(SetName("system"), stringify(name))),
                 virtuals(new Map<QualifiedPackageName, PackageDepSpec>),
@@ -279,6 +282,8 @@ Implementation<TraditionalProfile>::load_profile_directory_recursively(const FSE
     if ((*DistributionData::get_instance()->distribution_from_string(env->distribution())).support_old_style_virtuals())
         virtuals_file.add_file(dir / "virtuals");
     package_mask_file.add_file(dir / "package.mask");
+
+    profiles_with_parents->push_back(dir);
 }
 
 void
@@ -836,6 +841,12 @@ TraditionalProfile::TraditionalProfile(
 
 TraditionalProfile::~TraditionalProfile()
 {
+}
+
+std::tr1::shared_ptr<const FSEntrySequence>
+TraditionalProfile::profiles_with_parents() const
+{
+    return _imp->profiles_with_parents;
 }
 
 bool

@@ -264,6 +264,7 @@ EbuildCommand::operator() ()
         .with_setenv("SLOT", "")
         .with_setenv("PALUDIS_PROFILE_DIR", "")
         .with_setenv("PALUDIS_PROFILE_DIRS", "")
+        .with_setenv("PALUDIS_PROFILES_DIRS", "")
         .with_setenv("ROOT", params.root());
 
     if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_kv().empty())
@@ -744,6 +745,8 @@ EbuildNoFetchCommand::extend_command(const Command & cmd)
             .with_setenv("PALUDIS_PROFILE_DIR", stringify(*fetch_params.profiles()->begin()))
             .with_setenv("PALUDIS_PROFILE_DIRS", join(fetch_params.profiles()->begin(),
                     fetch_params.profiles()->end(), " "))
+            .with_setenv("PALUDIS_PROFILES_DIRS", join(fetch_params.profiles_with_parents()->begin(),
+                    fetch_params.profiles_with_parents()->end(), " "))
             .with_setenv("PALUDIS_ARCHIVES_VAR",
                     params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_a()));
 
@@ -800,6 +803,8 @@ EbuildInstallCommand::extend_command(const Command & cmd)
             .with_setenv("PALUDIS_PROFILE_DIR", stringify(*install_params.profiles()->begin()))
             .with_setenv("PALUDIS_PROFILE_DIRS", join(install_params.profiles()->begin(),
                                           install_params.profiles()->end(), " "))
+            .with_setenv("PALUDIS_PROFILES_DIRS", join(install_params.profiles_with_parents()->begin(),
+                    install_params.profiles_with_parents()->end(), " "))
             .with_setenv("PALUDIS_ARCHIVES_VAR",
                     params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_a())
             .with_setenv("SLOT", stringify(install_params.slot())));
@@ -1061,7 +1066,9 @@ EbuildPretendCommand::extend_command(const Command & cmd)
             .with_prefix_blank_lines()
             .with_setenv("PALUDIS_PROFILE_DIR", stringify(*pretend_params.profiles()->begin()))
             .with_setenv("PALUDIS_PROFILE_DIRS", join(pretend_params.profiles()->begin(),
-                    pretend_params.profiles()->end(), " ")));
+                    pretend_params.profiles()->end(), " "))
+            .with_setenv("PALUDIS_PROFILES_DIRS", join(pretend_params.profiles_with_parents()->begin(),
+                    pretend_params.profiles_with_parents()->end(), " ")));
 
     if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use().empty())
         result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use(),
@@ -1125,7 +1132,9 @@ EbuildInfoCommand::extend_command(const Command & cmd)
             .with_setenv("PALUDIS_PROFILE_DIR",
                 info_params.profiles()->empty() ? std::string("") : stringify(*info_params.profiles()->begin()))
             .with_setenv("PALUDIS_PROFILE_DIRS", join(info_params.profiles()->begin(),
-                    info_params.profiles()->end(), " ")));
+                    info_params.profiles()->end(), " "))
+            .with_setenv("PALUDIS_PROFILES_DIRS", join(info_params.profiles_with_parents()->begin(),
+                    info_params.profiles_with_parents()->end(), " ")));
 
     if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use().empty())
         result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use(),
@@ -1250,6 +1259,8 @@ EbuildBadOptionsCommand::extend_command(const Command & cmd)
             .with_setenv("PALUDIS_PROFILE_DIR", stringify(*bad_options_params.profiles()->begin()))
             .with_setenv("PALUDIS_PROFILE_DIRS", join(bad_options_params.profiles()->begin(),
                     bad_options_params.profiles()->end(), " "))
+            .with_setenv("PALUDIS_PROFILES_DIRS", join(bad_options_params.profiles_with_parents()->begin(),
+                    bad_options_params.profiles_with_parents()->end(), " "))
             .with_setenv("EX_UNMET_REQUIREMENTS", join(bad_options_params.unmet_requirements()->begin(),
                     bad_options_params.unmet_requirements()->end(), "\n"))
             );
@@ -1301,6 +1312,8 @@ EbuildFetchExtraCommand::extend_command(const Command & cmd)
             .with_setenv("PALUDIS_PROFILE_DIR", stringify(*fetch_extra_params.profiles()->begin()))
             .with_setenv("PALUDIS_PROFILE_DIRS", join(fetch_extra_params.profiles()->begin(),
                                           fetch_extra_params.profiles()->end(), " "))
+            .with_setenv("PALUDIS_PROFILES_DIRS", join(fetch_extra_params.profiles_with_parents()->begin(),
+                    fetch_extra_params.profiles_with_parents()->end(), " "))
             .with_setenv("PALUDIS_ARCHIVES_VAR",
                     params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_a())
             .with_setenv("SLOT", stringify(fetch_extra_params.slot()))
