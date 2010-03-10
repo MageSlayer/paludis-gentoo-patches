@@ -87,8 +87,9 @@ namespace
         throw ConfigurationError("Cannot find tree location (try specifying --repository-dir)");
      }
 
-    void fetch_ids(const std::tr1::shared_ptr<const PackageIDSequence> & ids, IDMap & results, unsigned & success, unsigned & total)
+    bool fetch_ids(const std::tr1::shared_ptr<const PackageIDSequence> & ids, IDMap & results, unsigned & success, unsigned & total)
     {
+        bool no_conflict_with_manifest(true);
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
         {
@@ -136,12 +137,19 @@ namespace
 
                     if (! f->failed_integrity_checks().empty())
                     {
-                        if (! r.empty())
-                            r.append(", ");
-                        r.append(f->failed_integrity_checks());
+                        if (CommandLine::get_instance()->a_override.specified())
+                            ++success;
+                        else
+                        {
+                            no_conflict_with_manifest = false;
+                            if (! r.empty())
+                                r.append(", ");
+                            r.append(f->failed_integrity_checks());
+                        }
                     }
 
-                    results.insert(std::make_pair(*i, f->target_file() + ": " + r));
+                    if (! r.empty())
+                        results.insert(std::make_pair(*i, f->target_file() + ": " + r));
                 }
 
                 if (failures->empty())
@@ -156,6 +164,7 @@ namespace
                 results.insert(std::make_pair(*i, "Uncaught exception '" + e.message() + "' (" + e.what() + ")"));
             }
         }
+        return no_conflict_with_manifest;
     }
 }
 
@@ -263,9 +272,8 @@ main(int argc, char *argv[])
                     const std::tr1::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(
                             generator::Package(*p) & generator::InRepository(env.main_repository()->name()))]);
 
-                    fetch_ids(ids,results, success, total);
                     cout << "Making manifest for: " << colour(cl_package_name, stringify(*p)) << "..." << endl;
-                    if (env.main_repository()->manifest_interface())
+                    if (fetch_ids(ids, results, success, total) && env.main_repository()->manifest_interface())
                         env.main_repository()->manifest_interface()->make_manifest(*p);
                     else
                         cerr << "Cannot make manifest for: " << colour(cl_package_name, stringify(*p)) << endl;

@@ -55,6 +55,7 @@ CommandLine::CommandLine() :
             "Use a subdirectory named for the repository name under the specified directory for repository write cache"),
     a_report_file(&general_args, "report-file", 'r',
             "Write report to the specified file, rather than stdout"),
+    a_override(&general_args, "override",  '\0', "Override Manifest if distfile's checksum does not match with it", false),
     tree_args(main_options_section(), "Tree action options",
                 "Options which are relevant for tree actions."),
     a_category(&tree_args,   "category",   'C',

@@ -60,6 +60,7 @@ class CommandLine :
         paludis::args::StringSequenceArg a_extra_repository_dir;
         paludis::args::StringArg a_write_cache_dir;
         paludis::args::StringArg a_report_file;
+        paludis::args::SwitchArg a_override;
 
         paludis::args::ArgsGroup tree_args;
         paludis::args::StringSetArg a_category;
