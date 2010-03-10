@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -94,13 +94,13 @@ namespace paludis
             check_unneeded(c),
             exclude_unmirrorable(x),
             ignore_unfetched(u),
+            ignore_not_in_manifest(nm),
             failures(new Sequence<FetchActionFailure>),
             need_nofetch(false),
             in_nofetch(n),
             m2r(new Manifest2Reader(m2)),
             use_manifest(um),
-            output_manager(md),
-            ignore_not_in_manifest(nm)
+            output_manager(md)
         {
         }
     };
