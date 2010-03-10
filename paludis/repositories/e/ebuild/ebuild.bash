@@ -298,12 +298,14 @@ ebuild_scrub_environment()
             done )
         export -n SANDBOX_ACTIVE
 
-        for v in ${!BASH_*}; do
-            case "${v#BASH_}" in
-                ARGC|ARGV|LINENO|SOURCE|VERSINFO|REMATCH) ;;
-                *) unset -v ${v} ;;
-            esac
-        done
+        unset -v $(
+            for v in ${!BASH_*}; do
+                case "${v#BASH_}" in
+                    (ARGC|ARGV|LINENO|SOURCE|VERSINFO|REMATCH) : ;;
+                    (*) echo ${v} ;;
+                esac
+            done
+        )
 
         set >"${1}"
         print_exports >>"${1}"
