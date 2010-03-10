@@ -36,7 +36,9 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/enum_iterator.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/repository.hh>
@@ -51,9 +53,11 @@
 #include <paludis/slot_requirement.hh>
 #include <paludis/choice.hh>
 #include <paludis/action.hh>
+#include <paludis/elike_slot_requirement.hh>
 
 #include <paludis/util/private_implementation_pattern-impl.hh>
 
+#include <algorithm>
 #include <map>
 #include <set>
 
@@ -133,6 +137,232 @@ Decider::_resolve_decide_with_dependencies()
             _add_dependencies_if_necessary(i->first, i->second);
         }
     }
+}
+
+bool
+Decider::_resolve_dependents()
+{
+    Context context("When finding dependents:");
+
+    bool changed(false);
+    const std::pair<
+        std::tr1::shared_ptr<const PackageIDSequence>,
+        std::tr1::shared_ptr<const PackageIDSequence> > changing(_collect_changing());
+
+    if (changing.first->empty())
+        return false;
+
+    const std::tr1::shared_ptr<const PackageIDSequence> staying(_collect_staying(changing.first));
+
+    for (PackageIDSequence::ConstIterator s(staying->begin()), s_end(staying->end()) ;
+            s != s_end ; ++s)
+    {
+        _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
+
+        if (_allowed_to_break(*s))
+            continue;
+
+        const std::tr1::shared_ptr<const PackageIDSequence> dependent_upon(_dependent_upon(
+                    *s, changing.first, changing.second));
+        if (dependent_upon->empty())
+            continue;
+
+        if (_remove_if_dependent(*s))
+        {
+            Resolvent resolvent(*s, dt_install_to_slash);
+
+            /* we've changed things if we've not already done anything for this resolvent */
+            if (_imp->resolutions_by_resolvent.end() == _imp->resolutions_by_resolvent.find(resolvent))
+                changed = true;
+
+            const std::tr1::shared_ptr<Resolution> resolution(_resolution_for_resolvent(resolvent, true));
+            const std::tr1::shared_ptr<const ConstraintSequence> constraints(_make_constraints_for_dependent(
+                        resolvent, resolution, *s, dependent_upon));
+            for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
+                    c != c_end ; ++c)
+                _apply_resolution_constraint(resolvent, resolution, *c);
+        }
+        else
+        {
+            throw InternalError(PALUDIS_HERE, "unsafe " + stringify(**s));
+        }
+    }
+
+    return changed;
+}
+
+const std::tr1::shared_ptr<ConstraintSequence>
+Decider::_make_constraints_for_dependent(
+        const Resolvent & resolvent,
+        const std::tr1::shared_ptr<const Resolution> & resolution,
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const PackageIDSequence> & r) const
+{
+    return _imp->fns.get_constraints_for_dependent_fn()(resolvent, resolution, id, r);
+}
+
+namespace
+{
+    struct DependentChecker
+    {
+        const Environment * const env;
+        const std::tr1::shared_ptr<const PackageIDSequence> going_away;
+        const std::tr1::shared_ptr<const PackageIDSequence> newly_available;
+        const std::tr1::shared_ptr<PackageIDSequence> result;
+
+        DependentChecker(
+                const Environment * const e,
+                const std::tr1::shared_ptr<const PackageIDSequence> & g,
+                const std::tr1::shared_ptr<const PackageIDSequence> & n) :
+            env(e),
+            going_away(g),
+            newly_available(n),
+            result(new PackageIDSequence)
+        {
+        }
+
+        void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & s)
+        {
+            const std::tr1::shared_ptr<const SetSpecTree> set(env->set(s.spec()->name()));
+            set->root()->accept(*this);
+        }
+
+        void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & s)
+        {
+            for (PackageIDSequence::ConstIterator g(going_away->begin()), g_end(going_away->end()) ;
+                    g != g_end ; ++g)
+            {
+                if (! match_package(*env, *s.spec(), **g, MatchPackageOptions()))
+                    continue;
+
+                if (indirect_iterator(newly_available->end()) == std::find_if(
+                            indirect_iterator(newly_available->begin()), indirect_iterator(newly_available->end()),
+                            std::tr1::bind(&match_package, std::tr1::cref(*env), std::tr1::cref(*s.spec()),
+                                std::tr1::placeholders::_1, MatchPackageOptions())))
+                    result->push_back(*g);
+            }
+        }
+
+        void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type &)
+        {
+        }
+
+        void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & s)
+        {
+            if (s.spec()->condition_met())
+                std::for_each(indirect_iterator(s.begin()), indirect_iterator(s.end()),
+                        accept_visitor(*this));
+        }
+
+        void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & s)
+        {
+            std::for_each(indirect_iterator(s.begin()), indirect_iterator(s.end()),
+                    accept_visitor(*this));
+        }
+
+        void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & s)
+        {
+            std::for_each(indirect_iterator(s.begin()), indirect_iterator(s.end()),
+                    accept_visitor(*this));
+        }
+
+        void visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type &)
+        {
+        }
+    };
+}
+
+const std::tr1::shared_ptr<const PackageIDSequence>
+Decider::_dependent_upon(
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const PackageIDSequence> & going_away,
+        const std::tr1::shared_ptr<const PackageIDSequence> & staying) const
+{
+    DependentChecker c(_imp->env, going_away, staying);
+    if (id->dependencies_key())
+        id->dependencies_key()->value()->root()->accept(c);
+    else
+    {
+        if (id->build_dependencies_key())
+            id->build_dependencies_key()->value()->root()->accept(c);
+        if (id->run_dependencies_key())
+            id->run_dependencies_key()->value()->root()->accept(c);
+        if (id->post_dependencies_key())
+            id->post_dependencies_key()->value()->root()->accept(c);
+        if (id->suggested_dependencies_key())
+            id->suggested_dependencies_key()->value()->root()->accept(c);
+    }
+
+    return c.result;
+}
+
+namespace
+{
+    struct ChangingCollector
+    {
+        std::tr1::shared_ptr<PackageIDSequence> going_away;
+        std::tr1::shared_ptr<PackageIDSequence> newly_available;
+
+        ChangingCollector() :
+            going_away(new PackageIDSequence),
+            newly_available(new PackageIDSequence)
+        {
+        }
+
+        void visit(const NothingNoChangeDecision &)
+        {
+        }
+
+        void visit(const ExistingNoChangeDecision &)
+        {
+        }
+
+        void visit(const RemoveDecision & d)
+        {
+            std::copy(d.ids()->begin(), d.ids()->end(), going_away->back_inserter());
+        }
+
+        void visit(const ChangesToMakeDecision &)
+        {
+            /* todo */
+        }
+
+        void visit(const UnableToMakeDecision &)
+        {
+        }
+    };
+}
+
+const std::pair<
+    std::tr1::shared_ptr<const PackageIDSequence>,
+    std::tr1::shared_ptr<const PackageIDSequence> >
+Decider::_collect_changing() const
+{
+    ChangingCollector c;
+
+    for (ResolutionsByResolventMap::const_iterator i(_imp->resolutions_by_resolvent.begin()),
+            i_end(_imp->resolutions_by_resolvent.end()) ;
+            i != i_end ; ++i)
+        if (i->second->decision())
+            i->second->decision()->accept(c);
+
+    return std::make_pair(c.going_away, c.newly_available);
+}
+
+const std::tr1::shared_ptr<const PackageIDSequence>
+Decider::_collect_staying(const std::tr1::shared_ptr<const PackageIDSequence> & going_away) const
+{
+    const std::tr1::shared_ptr<const PackageIDSequence> existing((*_imp->env)[selection::AllVersionsUnsorted(
+                generator::All() | filter::InstalledAtRoot(FSEntry("/")))]);
+
+    const std::tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+    for (PackageIDSequence::ConstIterator x(existing->begin()), x_end(existing->end()) ;
+            x != x_end ; ++x)
+        if (indirect_iterator(going_away->end()) == std::find(indirect_iterator(going_away->begin()),
+                    indirect_iterator(going_away->end()), **x))
+            result->push_back(*x);
+
+    return result;
 }
 
 void
@@ -1357,6 +1587,18 @@ Decider::_allowed_to_remove(const std::tr1::shared_ptr<const PackageID> & id) co
     return id->supports_action(SupportsActionTest<UninstallAction>()) && _imp->fns.allowed_to_remove_fn()(id);
 }
 
+bool
+Decider::_allowed_to_break(const std::tr1::shared_ptr<const PackageID> & id) const
+{
+    return _imp->fns.allowed_to_break_fn()(id);
+}
+
+bool
+Decider::_remove_if_dependent(const std::tr1::shared_ptr<const PackageID> & id) const
+{
+    return _imp->fns.remove_if_dependent_fn()(id);
+}
+
 const std::tr1::shared_ptr<const PackageIDSequence>
 Decider::_installed_ids(const Resolvent & resolvent) const
 {
@@ -1516,8 +1758,15 @@ Decider::add_target_with_reason(const PackageOrBlockDepSpec & spec, const std::t
 void
 Decider::resolve()
 {
-    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Deciding"));
-    _resolve_decide_with_dependencies();
+    while (true)
+    {
+        _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Deciding"));
+        _resolve_decide_with_dependencies();
+        _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Finding Dependents"));
+        if (! _resolve_dependents())
+            break;
+    }
+
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Finding Destinations"));
     _resolve_destinations();
 }

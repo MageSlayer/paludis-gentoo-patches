@@ -109,6 +109,43 @@ DependencyReason::serialise(Serialiser & s) const
 namespace paludis
 {
     template <>
+    struct Implementation<DependentReason>
+    {
+        const std::tr1::shared_ptr<const PackageID> id_being_removed;
+
+        Implementation(const std::tr1::shared_ptr<const PackageID> & i) :
+            id_being_removed(i)
+        {
+        }
+    };
+}
+
+DependentReason::DependentReason(const std::tr1::shared_ptr<const PackageID> & i) :
+    PrivateImplementationPattern<DependentReason>(new Implementation<DependentReason>(i))
+{
+}
+
+DependentReason::~DependentReason()
+{
+}
+
+const std::tr1::shared_ptr<const PackageID>
+DependentReason::id_being_removed() const
+{
+    return _imp->id_being_removed;
+}
+
+void
+DependentReason::serialise(Serialiser & s) const
+{
+    s.object("DependencyReason")
+        .member(SerialiserFlags<serialise::might_be_null>(), "id_being_removed", id_being_removed())
+        ;
+}
+
+namespace paludis
+{
+    template <>
     struct Implementation<PresetReason>
     {
         const std::string explanation;
@@ -233,11 +270,18 @@ Reason::deserialise(Deserialisation & d)
                     v.member<bool>("already_met"))
                 );
     }
+    else if (d.class_name() == "DependentReason")
+    {
+        Deserialisator v(d, "DependentReason");
+        const std::tr1::shared_ptr<const PackageID> id_being_removed(v.member<std::tr1::shared_ptr<const PackageID> >("id_being_removed"));
+        return make_shared_ptr(new DependentReason(id_being_removed));
+    }
     else
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 }
 
 template class PrivateImplementationPattern<DependencyReason>;
+template class PrivateImplementationPattern<DependentReason>;
 template class PrivateImplementationPattern<SetReason>;
 template class PrivateImplementationPattern<PresetReason>;
 

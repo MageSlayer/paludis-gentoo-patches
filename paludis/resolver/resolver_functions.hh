@@ -40,21 +40,28 @@ namespace paludis
 {
     namespace n
     {
+        struct allowed_to_break_fn;
         struct allowed_to_remove_fn;
         struct care_about_dep_fn;
         struct confirm_fn;
         struct find_repository_for_fn;
+        struct get_constraints_for_dependent_fn;
         struct get_destination_types_for_fn;
         struct get_initial_constraints_for_fn;
         struct get_resolvents_for_fn;
         struct get_use_existing_fn;
         struct make_destination_filtered_generator_fn;
         struct prefer_or_avoid_fn;
+        struct remove_if_dependent_fn;
         struct take_dependency_fn;
     }
 
     namespace resolver
     {
+        typedef std::tr1::function<bool (
+                const std::tr1::shared_ptr<const PackageID> &
+                )> AllowedToBreakFunction;
+
         typedef std::tr1::function<bool (
                 const std::tr1::shared_ptr<const PackageID> &
                 )> AllowedToRemoveFunction;
@@ -76,6 +83,13 @@ namespace paludis
                 const std::tr1::shared_ptr<const Resolution> &,
                 const ChangesToMakeDecision &
                 )> FindRepositoryForFunction;
+
+        typedef std::tr1::function<std::tr1::shared_ptr<ConstraintSequence> (
+                const Resolvent &,
+                const std::tr1::shared_ptr<const Resolution> &,
+                const std::tr1::shared_ptr<const PackageID> &,
+                const std::tr1::shared_ptr<const PackageIDSequence> &
+                )> GetConstraintsForDependentFunction;
 
         typedef std::tr1::function<DestinationTypes (
                 const PackageDepSpec &,
@@ -109,6 +123,10 @@ namespace paludis
                 )> PreferOrAvoidFunction;
 
         typedef std::tr1::function<bool (
+                const std::tr1::shared_ptr<const PackageID> &
+                )> RemoveIfDependentFunction;
+
+        typedef std::tr1::function<bool (
                 const Resolvent &,
                 const SanitisedDependency &,
                 const std::tr1::shared_ptr<const Reason> &
@@ -116,10 +134,12 @@ namespace paludis
 
         struct ResolverFunctions
         {
+            NamedValue<n::allowed_to_break_fn, AllowedToBreakFunction> allowed_to_break_fn;
             NamedValue<n::allowed_to_remove_fn, AllowedToRemoveFunction> allowed_to_remove_fn;
             NamedValue<n::care_about_dep_fn, CareAboutDepFunction> care_about_dep_fn;
             NamedValue<n::confirm_fn, ConfirmFunction> confirm_fn;
             NamedValue<n::find_repository_for_fn, FindRepositoryForFunction> find_repository_for_fn;
+            NamedValue<n::get_constraints_for_dependent_fn, GetConstraintsForDependentFunction> get_constraints_for_dependent_fn;
             NamedValue<n::get_destination_types_for_fn, GetDestinationTypesForFunction> get_destination_types_for_fn;
             NamedValue<n::get_initial_constraints_for_fn, GetInitialConstraintsFunction> get_initial_constraints_for_fn;
             NamedValue<n::get_resolvents_for_fn, GetResolventsForFunction> get_resolvents_for_fn;
@@ -127,6 +147,7 @@ namespace paludis
             NamedValue<n::make_destination_filtered_generator_fn,
                 MakeDestinationFilteredGeneratorFunction> make_destination_filtered_generator_fn;
             NamedValue<n::prefer_or_avoid_fn, PreferOrAvoidFunction> prefer_or_avoid_fn;
+            NamedValue<n::remove_if_dependent_fn, RemoveIfDependentFunction> remove_if_dependent_fn;
             NamedValue<n::take_dependency_fn, TakeDependencyFunction> take_dependency_fn;
         };
     }

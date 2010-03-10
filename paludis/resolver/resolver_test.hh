@@ -63,6 +63,13 @@ namespace paludis
                     const InitialConstraints & initial_constraints,
                     const Resolvent & resolvent);
 
+            const std::tr1::shared_ptr<ConstraintSequence>
+            get_constraints_for_dependent_fn(
+                    const Resolvent &,
+                    const std::tr1::shared_ptr<const Resolution> &,
+                    const std::tr1::shared_ptr<const PackageID> & id,
+                    const std::tr1::shared_ptr<const PackageIDSequence> & ids);
+
             std::tr1::shared_ptr<Resolvents> get_resolvents_for_fn(const PackageDepSpec & spec,
                     const std::tr1::shared_ptr<const SlotName> &,
                     const std::tr1::shared_ptr<const Reason> &);
@@ -91,7 +98,15 @@ namespace paludis
                     const std::tr1::shared_ptr<const PackageID> &,
                     const std::tr1::shared_ptr<const Reason> &);
 
+            bool allowed_to_break_fn(
+                    const std::tr1::shared_ptr<const QualifiedPackageNameSet> &,
+                    const std::tr1::shared_ptr<const PackageID> &);
+
             bool allowed_to_remove_fn(
+                    const std::tr1::shared_ptr<const QualifiedPackageNameSet> &,
+                    const std::tr1::shared_ptr<const PackageID> &);
+
+            bool remove_if_dependent_fn(
                     const std::tr1::shared_ptr<const QualifiedPackageNameSet> &,
                     const std::tr1::shared_ptr<const PackageID> &);
 
@@ -109,7 +124,9 @@ namespace paludis
                 TestEnvironment env;
                 std::tr1::shared_ptr<Repository> repo, inst_repo;
                 std::tr1::shared_ptr<FakeInstalledRepository> fake_inst_repo;
+                std::tr1::shared_ptr<QualifiedPackageNameSet> allowed_to_break_names;
                 std::tr1::shared_ptr<QualifiedPackageNameSet> allowed_to_remove_names;
+                std::tr1::shared_ptr<QualifiedPackageNameSet> remove_if_dependent_names;
                 std::tr1::shared_ptr<Map<QualifiedPackageName, bool> > prefer_or_avoid_names;
 
                 ResolverTestCase(const std::string & group, const std::string & test_name, const std::string & eapi,

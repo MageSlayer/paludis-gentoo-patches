@@ -482,6 +482,10 @@ namespace
                 }
             }
         }
+
+        void visit(const DependentReason &) const
+        {
+        }
     };
 
     struct DepArrowHandler
@@ -720,6 +724,11 @@ namespace
 
     struct AlreadyMetDep
     {
+        bool visit(const DependentReason &) const
+        {
+            return false;
+        }
+
         bool visit(const PresetReason &) const
         {
             return false;

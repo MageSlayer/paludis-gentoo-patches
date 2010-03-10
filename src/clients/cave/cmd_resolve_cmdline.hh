@@ -46,14 +46,17 @@ namespace paludis
             args::StringSetArg a_permit_uninstall;
             args::StringSetArg a_permit_downgrade;
             args::StringSetArg a_permit_any_version;
-//            args::StringSetArg a_permit_unsafe_uninstall;
 //            args::StringSetArg a_purge;
+
+            args::ArgsGroup g_dependent_options;
+            args::StringSetArg a_uninstalls_may_break;
+            args::StringSetArg a_remove_if_dependent;
+            args::StringSetArg a_less_restrictive_remove_blockers;
 
             args::ArgsGroup g_keep_options;
             args::EnumArg a_keep_targets;
             args::EnumArg a_keep;
             args::EnumArg a_reinstall_scm;
-//            args::SwitchArg a_reinstall_for_removals;
             args::StringSetArg a_with;
             args::StringSetArg a_without;
 

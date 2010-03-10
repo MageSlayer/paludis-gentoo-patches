@@ -195,6 +195,11 @@ namespace
             }
         }
 
+        std::pair<std::string, bool> visit(const DependentReason & r) const
+        {
+            return std::make_pair("dependent upon " + stringify(*r.id_being_removed()), true);
+        }
+
         std::pair<std::string, bool> visit(const TargetReason &) const
         {
             return std::make_pair("target", true);

@@ -85,6 +85,12 @@ namespace paludis
                         const Resolvent & resolvent, const BlockDepSpec & dep,
                         const std::tr1::shared_ptr<const Reason> & reason) const;
 
+                const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_for_dependent(
+                        const Resolvent &,
+                        const std::tr1::shared_ptr<const Resolution> & resolution,
+                        const std::tr1::shared_ptr<const PackageID> &,
+                        const std::tr1::shared_ptr<const PackageIDSequence> &) const;
+
                 void _apply_resolution_constraint(const Resolvent &,
                         const std::tr1::shared_ptr<Resolution> &,
                         const std::tr1::shared_ptr<const Constraint> &);
@@ -123,6 +129,7 @@ namespace paludis
                         const ChangesToMakeDecision &) const;
 
                 void _resolve_decide_with_dependencies();
+                bool _resolve_dependents() PALUDIS_ATTRIBUTE((warn_unused_result));
                 void _resolve_destinations();
 
                 const std::tr1::shared_ptr<Destination> _make_destination_for(
@@ -189,6 +196,22 @@ namespace paludis
                         const Resolvent & resolvent) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 bool _allowed_to_remove(const std::tr1::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                bool _allowed_to_break(const std::tr1::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                bool _remove_if_dependent(const std::tr1::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const std::pair<
+                    std::tr1::shared_ptr<const PackageIDSequence>,
+                    std::tr1::shared_ptr<const PackageIDSequence> > _collect_changing() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const std::tr1::shared_ptr<const PackageIDSequence> _collect_staying(
+                        const std::tr1::shared_ptr<const PackageIDSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const std::tr1::shared_ptr<const PackageIDSequence> _dependent_upon(
+                        const std::tr1::shared_ptr<const PackageID> &,
+                        const std::tr1::shared_ptr<const PackageIDSequence> &,
+                        const std::tr1::shared_ptr<const PackageIDSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             public:
                 Decider(const Environment * const,

@@ -31,6 +31,7 @@
 #include <paludis/resolver/job.hh>
 #include <paludis/resolver/jobs.hh>
 #include <paludis/resolver/job_id.hh>
+#include <paludis/resolver/reason.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
@@ -46,6 +47,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/generator.hh>
+#include <paludis/elike_slot_requirement.hh>
 
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -246,7 +248,23 @@ paludis::resolver::resolver_test::find_repository_for_fn(
 }
 
 bool
+paludis::resolver::resolver_test::allowed_to_break_fn(
+        const std::tr1::shared_ptr<const QualifiedPackageNameSet> & s,
+        const std::tr1::shared_ptr<const PackageID> & i)
+{
+    return s->end() != s->find(i->name());
+}
+
+bool
 paludis::resolver::resolver_test::allowed_to_remove_fn(
+        const std::tr1::shared_ptr<const QualifiedPackageNameSet> & s,
+        const std::tr1::shared_ptr<const PackageID> & i)
+{
+    return s->end() != s->find(i->name());
+}
+
+bool
+paludis::resolver::resolver_test::remove_if_dependent_fn(
         const std::tr1::shared_ptr<const QualifiedPackageNameSet> & s,
         const std::tr1::shared_ptr<const PackageID> & i)
 {
@@ -274,10 +292,46 @@ paludis::resolver::resolver_test::confirm_fn(
     return true;
 }
 
+const std::tr1::shared_ptr<ConstraintSequence>
+paludis::resolver::resolver_test::get_constraints_for_dependent_fn(
+        const Resolvent &,
+        const std::tr1::shared_ptr<const Resolution> &,
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const PackageIDSequence> & ids)
+{
+    const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
+
+    PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
+    partial_spec.package(id->name());
+    if (id->slot_key())
+        partial_spec.slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement(
+                        id->slot_key()->value(), false)));
+    PackageDepSpec spec(partial_spec);
+
+    for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+            i != i_end ; ++i)
+    {
+        const std::tr1::shared_ptr<DependentReason> reason(new DependentReason(*i));
+
+        result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                            value_for<n::destination_type>(dt_install_to_slash),
+                            value_for<n::nothing_is_fine_too>(true),
+                            value_for<n::reason>(reason),
+                            value_for<n::spec>(BlockDepSpec("!" + stringify(spec), spec, false)),
+                            value_for<n::untaken>(false),
+                            value_for<n::use_existing>(ue_if_possible)
+                            ))));
+    }
+
+    return result;
+}
+
 ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s, const std::string & e,
         const std::string & l) :
     TestCase(s),
+    allowed_to_break_names(new QualifiedPackageNameSet),
     allowed_to_remove_names(new QualifiedPackageNameSet),
+    remove_if_dependent_names(new QualifiedPackageNameSet),
     prefer_or_avoid_names(new Map<QualifiedPackageName, bool>)
 {
     std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
@@ -324,6 +378,8 @@ ResolverFunctions
 ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraints)
 {
     return make_named_values<ResolverFunctions>(
+            value_for<n::allowed_to_break_fn>(std::tr1::bind(&allowed_to_break_fn,
+                    allowed_to_break_names, std::tr1::placeholders::_1)),
             value_for<n::allowed_to_remove_fn>(std::tr1::bind(&allowed_to_remove_fn,
                     allowed_to_remove_names, std::tr1::placeholders::_1)),
             value_for<n::care_about_dep_fn>(&care_about_dep_fn),
@@ -331,6 +387,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             value_for<n::find_repository_for_fn>(std::tr1::bind(&find_repository_for_fn,
                     &env, std::tr1::placeholders::_1, std::tr1::placeholders::_2,
                     std::tr1::placeholders::_3)),
+            value_for<n::get_constraints_for_dependent_fn>(&get_constraints_for_dependent_fn),
             value_for<n::get_destination_types_for_fn>(&get_destination_types_for_fn),
             value_for<n::get_initial_constraints_for_fn>(
                 std::tr1::bind(&initial_constraints_for_fn, std::tr1::ref(initial_constraints),
@@ -340,6 +397,8 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             value_for<n::make_destination_filtered_generator_fn>(&make_destination_filtered_generator_fn),
             value_for<n::prefer_or_avoid_fn>(std::tr1::bind(&prefer_or_avoid_fn,
                     prefer_or_avoid_names, std::tr1::placeholders::_1)),
+            value_for<n::remove_if_dependent_fn>(std::tr1::bind(&remove_if_dependent_fn,
+                    remove_if_dependent_names, std::tr1::placeholders::_1)),
             value_for<n::take_dependency_fn>(&take_dependency_fn)
             );
 }
