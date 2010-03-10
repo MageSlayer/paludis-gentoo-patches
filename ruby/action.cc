@@ -259,7 +259,8 @@ namespace
                         value_for<n::fetch_parts>(parts),
                         value_for<n::ignore_unfetched>(false),
                         value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::safe_resume>(v_safe_resume)
+                        value_for<n::safe_resume>(v_safe_resume),
+                        value_for<n::ignore_not_in_manifest>(false)
                     ));
 
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<FetchActionOptions>::free, ptr));

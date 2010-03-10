@@ -53,7 +53,8 @@ namespace paludis
                         const UseManifest um,
                         const std::tr1::shared_ptr<OutputManager> & output_manager,
                         const bool exclude_unmirrorable,
-                        const bool ignore_unfetched);
+                        const bool ignore_unfetched,
+                        const bool ignore_not_in_manifest);
 
                 ~CheckFetchedFilesVisitor();
 

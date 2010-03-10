@@ -65,6 +65,7 @@ namespace paludis
         const bool check_unneeded;
         const bool exclude_unmirrorable;
         const bool ignore_unfetched;
+        const bool ignore_not_in_manifest;
 
         std::set<std::string> done;
         const std::tr1::shared_ptr<Sequence<FetchActionFailure> > failures;
@@ -85,7 +86,8 @@ namespace paludis
                 const UseManifest um,
                 const std::tr1::shared_ptr<OutputManager> & md,
                 const bool x,
-                const bool u) :
+                const bool u,
+                const bool nm) :
             env(e),
             id(i),
             distdir(d),
@@ -97,7 +99,8 @@ namespace paludis
             in_nofetch(n),
             m2r(new Manifest2Reader(m2)),
             use_manifest(um),
-            output_manager(md)
+            output_manager(md),
+            ignore_not_in_manifest(nm)
         {
         }
     };
@@ -113,8 +116,9 @@ CheckFetchedFilesVisitor::CheckFetchedFilesVisitor(
         const UseManifest um,
         const std::tr1::shared_ptr<OutputManager> & md,
         const bool x,
-        const bool u) :
-    PrivateImplementationPattern<CheckFetchedFilesVisitor>(new Implementation<CheckFetchedFilesVisitor>(e, i, d, c, n, m2, um, md, x, u))
+        const bool u,
+        const bool nm) :
+    PrivateImplementationPattern<CheckFetchedFilesVisitor>(new Implementation<CheckFetchedFilesVisitor>(e, i, d, c, n, m2, um, md, x, u, nm))
 {
 }
 
@@ -341,7 +345,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
         }
     }
 
-    if (! found)
+    if ((! found) && (! _imp->ignore_not_in_manifest))
     {
         _imp->output_manager->stdout_stream() << "not in Manifest";
         _imp->failures->push_back(make_named_values<FetchActionFailure>(

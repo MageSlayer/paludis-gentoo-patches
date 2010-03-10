@@ -67,6 +67,7 @@ namespace paludis
         struct safe_resume;
         struct target_file;
         struct want_phase;
+        struct ignore_not_in_manifest;
     }
 
     /**
@@ -117,6 +118,14 @@ namespace paludis
 
 
         NamedValue<n::safe_resume, bool> safe_resume;
+
+         /**
+          * Ignore if a package is or isn't referenced in the Manifest.
+          * It's useful with appareo not to get errors before generating it.
+          *
+          * \since 0.46
+          */
+        NamedValue<n::ignore_not_in_manifest, bool> ignore_not_in_manifest;
     };
 
     /**

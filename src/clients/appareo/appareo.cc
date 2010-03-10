@@ -108,7 +108,8 @@ namespace
                                 value_for<n::fetch_parts>(FetchParts() + fp_regulars + fp_extras + fp_unneeded),
                                 value_for<n::ignore_unfetched>(false),
                                 value_for<n::make_output_manager>(&make_standard_output_manager),
-                                value_for<n::safe_resume>(true)
+                                value_for<n::safe_resume>(true),
+                                value_for<n::ignore_not_in_manifest>(true)
                                 ));
                     (*i)->perform_action(a);
                     ++success;

@@ -398,7 +398,8 @@ PerformCommand::run(
                     value_for<n::fetch_parts>(parts),
                     value_for<n::ignore_unfetched>(cmdline.a_ignore_unfetched.specified()),
                     value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),
-                    value_for<n::safe_resume>(true)
+                    value_for<n::safe_resume>(true),
+                    value_for<n::ignore_not_in_manifest>(false)
                     ));
         FetchAction fetch_action(options);
         execute(env, cmdline, id, action, fetch_action);
@@ -415,7 +416,8 @@ PerformCommand::run(
                     value_for<n::fetch_parts>(parts),
                     value_for<n::ignore_unfetched>(cmdline.a_ignore_unfetched.specified()),
                     value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),
-                    value_for<n::safe_resume>(true)
+                    value_for<n::safe_resume>(true),
+                    value_for<n::ignore_not_in_manifest>(false)
                     ));
         OurPretendFetchAction pretend_fetch_action(options);
         execute(env, cmdline, id, action, pretend_fetch_action);

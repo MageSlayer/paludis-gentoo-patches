@@ -1974,7 +1974,8 @@ ERepository::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
             ((_imp->layout->package_directory(id->name())) / "Manifest"),
             _imp->params.use_manifest(),
             output_manager, fetch_action.options.exclude_unmirrorable(),
-            fetch_action.options.ignore_unfetched());
+            fetch_action.options.ignore_unfetched(),
+            fetch_action.options.ignore_not_in_manifest());
 
     if (id->fetches_key())
     {

@@ -767,7 +767,8 @@ InstallTask::_pretend()
                             value_for<n::fetch_parts>(FetchParts() + fp_regulars + fp_extras),
                             value_for<n::ignore_unfetched>(true),
                             value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),
-                            value_for<n::safe_resume>(_imp->safe_resume)
+                            value_for<n::safe_resume>(_imp->safe_resume),
+                            value_for<n::ignore_not_in_manifest>(false)
                             ));
                 FetchAction fetch_action(options);
                 try
@@ -1934,7 +1935,8 @@ InstallTask::make_fetch_action_options(const DepListEntry &, OutputManagerFromEn
             value_for<n::fetch_parts>(FetchParts() + fp_regulars + fp_extras),
             value_for<n::ignore_unfetched>(false),
             value_for<n::make_output_manager>(std::tr1::ref(o)),
-            value_for<n::safe_resume>(_imp->safe_resume)
+            value_for<n::safe_resume>(_imp->safe_resume),
+            value_for<n::ignore_not_in_manifest>(false)
             );
 }
 
