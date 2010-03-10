@@ -25,7 +25,6 @@
 #include <paludis/resolver/arrow-fwd.hh>
 #include <paludis/resolver/resolution-fwd.hh>
 #include <paludis/resolver/decision-fwd.hh>
-#include <paludis/resolver/sync_point-fwd.hh>
 #include <paludis/resolver/required_confirmations-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/simple_visitor.hh>

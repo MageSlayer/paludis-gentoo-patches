@@ -5,7 +5,6 @@ DISTCLEANFILES = \
 	change_type-se.hh change_type-se.cc \
 	destination_types-se.hh destination_types-se.cc \
 	failure_kinds-se.hh failure_kinds-se.cc \
-	sync_point-se.hh sync_point-se.cc \
 	use_existing-se.hh use_existing-se.cc
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 EXTRA_DIST = \
@@ -13,7 +12,6 @@ EXTRA_DIST = \
 	change_type-se.hh change_type-se.cc change_type.se \
 	destination_types-se.hh destination_types-se.cc destination_types.se \
 	failure_kinds-se.hh failure_kinds-se.cc failure_kinds.se \
-	sync_point-se.hh sync_point-se.cc sync_point.se \
 	use_existing-se.hh use_existing-se.cc use_existing.se \
 	$(check_SCRIPTS)
 BUILT_SOURCES = \
@@ -21,7 +19,6 @@ BUILT_SOURCES = \
 	change_type-se.hh change_type-se.cc \
 	destination_types-se.hh destination_types-se.cc \
 	failure_kinds-se.hh failure_kinds-se.cc \
-	sync_point-se.hh sync_point-se.cc \
 	use_existing-se.hh use_existing-se.cc
 
 noinst_HEADERS = \
@@ -50,7 +47,6 @@ noinst_HEADERS = \
 	sanitised_dependencies.hh sanitised_dependencies-fwd.hh \
 	spec_rewriter.hh spec_rewriter-fwd.hh \
 	suggest_restart.hh suggest_restart-fwd.hh \
-	sync_point.hh sync_point-fwd.hh sync_point-se.hh \
 	unsuitable_candidates.hh unsuitable_candidates-fwd.hh \
 	use_existing.hh use_existing-fwd.hh use_existing-se.hh
 
@@ -79,7 +75,6 @@ libpaludisresolver_a_SOURCES = \
 	sanitised_dependencies.cc \
 	spec_rewriter.cc \
 	suggest_restart.cc \
-	sync_point.cc \
 	unsuitable_candidates.cc \
 	use_existing.cc
 
@@ -227,12 +222,6 @@ use_existing-se.hh : use_existing.se $(top_srcdir)/misc/make_se.bash
 
 use_existing-se.cc : use_existing.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/use_existing.se > $@ ; then rm -f $@ ; exit 1 ; fi
-
-sync_point-se.hh : sync_point.se $(top_srcdir)/misc/make_se.bash
-	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/sync_point.se > $@ ; then rm -f $@ ; exit 1 ; fi
-
-sync_point-se.cc : sync_point.se $(top_srcdir)/misc/make_se.bash
-	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/sync_point.se > $@ ; then rm -f $@ ; exit 1 ; fi
 
 failure_kinds-se.hh : failure_kinds.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/failure_kinds.se > $@ ; then rm -f $@ ; exit 1 ; fi
