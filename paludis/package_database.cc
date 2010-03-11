@@ -195,6 +195,8 @@ PackageDatabase::add_repository(int i, const std::tr1::shared_ptr<Repository> r)
 
 namespace
 {
+    typedef std::map<const QualifiedPackageName, std::pair<bool, bool> > QPNIMap;
+
     struct CategoryRepositoryNamePairComparator
     {
         bool operator() (const std::pair<CategoryNamePart, RepositoryName> & a,
@@ -229,7 +231,6 @@ namespace
         typedef QualifiedPackageName argument_type;
         typedef bool result_type;
 
-        typedef Map<const QualifiedPackageName, bool> QPNIMap;
         const std::tr1::shared_ptr<QPNIMap> _map;
 
         IsImportant(const std::tr1::shared_ptr<QPNIMap> & m) :
@@ -239,7 +240,25 @@ namespace
 
         bool operator() (const QualifiedPackageName & qpn) const
         {
-            return _map->find(qpn)->second;
+            return _map->find(qpn)->second.first;
+        }
+    };
+
+    struct IsInUnimportantRepo
+    {
+        typedef QualifiedPackageName argument_type;
+        typedef bool result_type;
+
+        const std::tr1::shared_ptr<QPNIMap> _map;
+
+        IsInUnimportantRepo(const std::tr1::shared_ptr<QPNIMap> & m) :
+            _map(m)
+        {
+        }
+
+        bool operator() (const QualifiedPackageName & qpn) const
+        {
+            return _map->find(qpn)->second.second;
         }
     };
 }
@@ -249,10 +268,10 @@ PackageDatabase::fetch_unique_qualified_package_name(const PackageNamePart & p, 
 {
     Context context("When disambiguating package name '" + stringify(p) + "':");
 
-    // Map matching QualifiedPackageNames with a flag specifying that
-    // at least one repository containing the package things the
-    // category is important
-    typedef Map<const QualifiedPackageName, bool> QPNIMap;
+    // Map matching QualifiedPackageNames with a pair of flags specifying
+    // respectively that at least one repository containing the package thinks
+    // the category is important and that the package is in a repository
+    // that reports it is unimportant itself
     std::tr1::shared_ptr<QPNIMap> result(new QPNIMap);
     std::set<std::pair<CategoryNamePart, RepositoryName>, CategoryRepositoryNamePairComparator> checked;
 
@@ -270,9 +289,10 @@ PackageDatabase::fetch_unique_qualified_package_name(const PackageNamePart & p, 
 
         std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_cats(it->repository()->unimportant_category_names());
         bool is_important(unimportant_cats->end() == unimportant_cats->find(it->name().category()));
-        if (is_important)
-            result->erase(it->name());
-        result->insert(it->name(), is_important);
+        bool is_in_unimportant_repo(it->repository()->is_unimportant());
+        QPNIMap::iterator i(result->insert(std::make_pair(it->name(), std::make_pair(is_important, is_in_unimportant_repo))).first);
+        i->second.first = i->second.first || is_important;
+        i->second.second = i->second.second || is_in_unimportant_repo;
     }
 
     if (result->empty())
@@ -287,12 +307,18 @@ PackageDatabase::fetch_unique_qualified_package_name(const PackageNamePart & p, 
         {
             const IsImportant is_important(result);
             const IsInstalled is_installed(_imp->environment);
+            const IsInUnimportantRepo is_in_unimportant_repo(result);
 
             std::remove_copy_if(first_iterator(result->begin()), first_iterator(result->end()),
                     std::front_inserter(qpns),
                     std::tr1::bind(std::logical_and<bool>(),
                         std::tr1::bind(std::not1(is_important), _1),
                         std::tr1::bind(std::not1(is_installed), _1)));
+
+            if (! qpns.empty() && next(qpns.begin()) == qpns.end())
+                break;
+
+            qpns.remove_if(std::tr1::bind(is_in_unimportant_repo, _1));
 
             if (! qpns.empty() && next(qpns.begin()) == qpns.end())
                 break;
