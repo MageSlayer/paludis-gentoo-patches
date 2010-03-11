@@ -27,3 +27,8 @@ ERepositoryConfigurationError::ERepositoryConfigurationError(
 {
 }
 
+MissingDistfileError::MissingDistfileError(const std::string & s) throw () :
+    Exception(s)
+{
+}
+

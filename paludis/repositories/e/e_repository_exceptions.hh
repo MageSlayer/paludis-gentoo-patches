@@ -47,6 +47,20 @@ namespace paludis
             ERepositoryConfigurationError(const std::string & msg) throw ();
     };
 
+    /**
+     * Thrown when a distfile is missing in
+     * ERepository::make_manifest.
+     *
+     * \ingroup grpexceptions
+     * \ingroup grperepository
+     * \since 0.46
+     */
+    class PALUDIS_VISIBLE MissingDistfileError :
+        public Exception
+    {
+        public:
+            MissingDistfileError(const std::string &) throw ();
+    };
 
 }
 

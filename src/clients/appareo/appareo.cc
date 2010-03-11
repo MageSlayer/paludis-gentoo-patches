@@ -32,6 +32,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/selection.hh>
@@ -274,7 +275,16 @@ main(int argc, char *argv[])
 
                     cout << "Making manifest for: " << colour(cl_package_name, stringify(*p)) << "..." << endl;
                     if (fetch_ids(ids, results, success, total) && env.main_repository()->manifest_interface())
-                        env.main_repository()->manifest_interface()->make_manifest(*p);
+                    {
+                        try
+                        {
+                            env.main_repository()->manifest_interface()->make_manifest(*p);
+                        }
+                        catch (const MissingDistfileError &)
+                        {
+                            cerr << "Cannot make manifest for: " << colour(cl_package_name, stringify(*p)) << endl;
+                        }
+                    }
                     else
                         cerr << "Cannot make manifest for: " << colour(cl_package_name, stringify(*p)) << endl;
                 }

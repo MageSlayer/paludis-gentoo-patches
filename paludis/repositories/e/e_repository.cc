@@ -1094,6 +1094,9 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
 
             FSEntry f(params().distdir() / *d);
 
+            if (! f.is_regular_file_or_symlink_to_regular_file())
+	        throw MissingDistfileError("Distfile '" + f.basename() + "' does not exist");
+
             SafeIFStream file_stream(f);
 
             MemoisedHashes * hashes = MemoisedHashes::get_instance();

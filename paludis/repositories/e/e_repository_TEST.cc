@@ -897,7 +897,7 @@ namespace test_cases
 
             TEST_CHECK(made_manifest == reference_manifest);
 
-            TEST_CHECK_THROWS(repo->make_manifest(QualifiedPackageName("category/package-b")), SafeIFStreamError);
+            TEST_CHECK_THROWS(repo->make_manifest(QualifiedPackageName("category/package-b")), MissingDistfileError);
         }
     } test_e_repository_manifest;
 

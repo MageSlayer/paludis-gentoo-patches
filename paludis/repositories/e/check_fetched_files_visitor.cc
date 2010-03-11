@@ -336,7 +336,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
         {
             _imp->output_manager->stdout_stream() << "unreadable file";
             _imp->failures->push_back(make_named_values<FetchActionFailure>(
-                        value_for<n::failed_automatic_fetching>(false),
+                        value_for<n::failed_automatic_fetching>(true),
                         value_for<n::failed_integrity_checks>("Unreadable file"),
                         value_for<n::requires_manual_fetching>(false),
                         value_for<n::target_file>(stringify(distfile.basename()))
