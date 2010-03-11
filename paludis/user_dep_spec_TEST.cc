@@ -20,6 +20,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/package_database.hh>
+#include <paludis/match_package.hh>
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -32,6 +33,7 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
+#include <paludis/repositories/fake/fake_package_id.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -400,5 +402,74 @@ namespace test_cases
             TEST_CHECK_THROWS(parse_user_package_dep_spec("system", &env, UserPackageDepSpecOptions()), NoSuchPackageError);
         }
     } test_user_package_dep_spec_sets;
+
+    struct UserPackageDepSpecUserKeyReqTest : UserDepSpecTestCase
+    {
+        UserPackageDepSpecUserKeyReqTest() : UserDepSpecTestCase("user package dep spec user key requirements") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                            value_for<n::environment>(&env),
+                            value_for<n::name>(RepositoryName("fake")))));
+            env.package_database()->add_repository(1, fake);
+
+            std::tr1::shared_ptr<FakePackageID> pkg1(fake->add_version("cat", "pkg1", "1"));
+            pkg1->keywords_key()->set_from_string("~a ~b");
+            std::tr1::shared_ptr<FakePackageID> pkg2(fake->add_version("cat", "pkg1", "2"));
+            pkg2->keywords_key()->set_from_string("~a ~c");
+            std::tr1::shared_ptr<FakePackageID> pkg3(fake->add_version("cat", "pkg1", "3"));
+            pkg3->keywords_key()->set_from_string("~d");
+
+            PackageDepSpec a(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS<~a]", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK(match_package(env, a, *pkg1, MatchPackageOptions()));
+            TEST_CHECK(match_package(env, a, *pkg2, MatchPackageOptions()));
+            TEST_CHECK(! match_package(env, a, *pkg3, MatchPackageOptions()));
+
+            PackageDepSpec b(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS<~b]", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK(match_package(env, b, *pkg1, MatchPackageOptions()));
+            TEST_CHECK(! match_package(env, b, *pkg2, MatchPackageOptions()));
+            TEST_CHECK(! match_package(env, b, *pkg3, MatchPackageOptions()));
+
+            PackageDepSpec c(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS<~c]", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK(! match_package(env, c, *pkg1, MatchPackageOptions()));
+            TEST_CHECK(match_package(env, c, *pkg2, MatchPackageOptions()));
+            TEST_CHECK(! match_package(env, c, *pkg3, MatchPackageOptions()));
+
+            PackageDepSpec d(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS>~a]", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK(! match_package(env, d, *pkg1, MatchPackageOptions()));
+            TEST_CHECK(! match_package(env, d, *pkg2, MatchPackageOptions()));
+            TEST_CHECK(! match_package(env, d, *pkg3, MatchPackageOptions()));
+
+            PackageDepSpec e(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS=~d]", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK(! match_package(env, e, *pkg1, MatchPackageOptions()));
+            TEST_CHECK(! match_package(env, e, *pkg2, MatchPackageOptions()));
+            TEST_CHECK(match_package(env, e, *pkg3, MatchPackageOptions()));
+
+            PackageDepSpec f(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS=~a ~c]", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK(! match_package(env, f, *pkg1, MatchPackageOptions()));
+            TEST_CHECK(match_package(env, f, *pkg2, MatchPackageOptions()));
+            TEST_CHECK(! match_package(env, f, *pkg3, MatchPackageOptions()));
+
+            PackageDepSpec g(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER=42]", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK(match_package(env, g, *pkg1, MatchPackageOptions()));
+
+            PackageDepSpec h(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER<41]", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK(! match_package(env, h, *pkg1, MatchPackageOptions()));
+
+            PackageDepSpec i(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER<42]", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK(! match_package(env, i, *pkg1, MatchPackageOptions()));
+
+            PackageDepSpec j(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER<43]", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK(match_package(env, j, *pkg1, MatchPackageOptions()));
+
+            PackageDepSpec k(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER>42]", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK(! match_package(env, k, *pkg1, MatchPackageOptions()));
+
+            PackageDepSpec l(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER>41]", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK(match_package(env, l, *pkg1, MatchPackageOptions()));
+        }
+    } test_user_package_dep_spec_user_key_req;
 }
 

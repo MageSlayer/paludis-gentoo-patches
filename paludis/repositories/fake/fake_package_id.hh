@@ -308,6 +308,7 @@ namespace paludis
             const std::tr1::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> > homepage_key();
             const std::tr1::shared_ptr<FakeMetadataChoicesKey> choices_key();
             const std::tr1::shared_ptr<FakeMetadataValueKey<bool> > transient_key();
+            const std::tr1::shared_ptr<FakeMetadataValueKey<long> > hitchhiker_key();
 
             void set_slot(const SlotName &);
 

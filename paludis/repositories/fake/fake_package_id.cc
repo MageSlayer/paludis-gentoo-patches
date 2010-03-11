@@ -720,6 +720,7 @@ namespace paludis
         std::tr1::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> > homepage;
         std::tr1::shared_ptr<FakeMetadataChoicesKey> choices;
         std::tr1::shared_ptr<FakeMetadataValueKey<bool> > transient;
+        std::tr1::shared_ptr<FakeMetadataValueKey<long> > hitchhiker;
 
         std::tr1::shared_ptr<Mask> unsupported_mask;
         mutable bool has_masks;
@@ -1043,6 +1044,9 @@ FakePackageID::need_keys_added() const
         _imp->transient.reset(new FakeMetadataValueKey<bool>("TRANSIENT", "Transient",
                     mkt_internal, false));
 
+        _imp->hitchhiker.reset(new FakeMetadataValueKey<long>("HITCHHIKER", "Hitchhiker",
+                    mkt_internal, 42));
+
         add_metadata_key(_imp->slot);
         add_metadata_key(_imp->build_dependencies);
         add_metadata_key(_imp->run_dependencies);
@@ -1054,6 +1058,7 @@ FakePackageID::need_keys_added() const
         add_metadata_key(_imp->license);
         add_metadata_key(_imp->choices);
         add_metadata_key(_imp->transient);
+        add_metadata_key(_imp->hitchhiker);
     }
 }
 
@@ -1314,6 +1319,13 @@ FakePackageID::transient_key()
     return _imp->transient;
 }
 
+const std::tr1::shared_ptr<FakeMetadataValueKey<long> >
+FakePackageID::hitchhiker_key()
+{
+    need_keys_added();
+    return _imp->hitchhiker;
+}
+
 char
 FakePackageID::use_expand_separator() const
 {
@@ -1375,4 +1387,5 @@ template class FakeMetadataSpecTreeKey<SimpleURISpecTree>;
 template class FakeMetadataCollectionKey<KeywordNameSet>;
 
 template class FakeMetadataValueKey<bool>;
+template class FakeMetadataValueKey<long>;
 
