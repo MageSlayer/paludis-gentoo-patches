@@ -260,6 +260,9 @@ _cave_cmd_resolve()
     '(--permit-uninstall -U)'{--permit-uninstall,-U}'[Permit uninstallation of packages matching a package spec]:Spec: ' \
     '(--permit-downgrade -d)'{--permit-downgrade,-d}'[Permit downgrades of packages matching a package spec]:Spec: ' \
     '(--permit-any-version -e)'{--permit-any-version,-e}'[Permit installs of versions worse than the best visible version in the slot for packages matching a package spec]:Spec: ' \
+    '(--uninstalls-may-break -u)'{--uninstalls-may-break,-u}'[Permit uninstalls that might break packages matching the specified package spec]:Spec: ' \
+    '(--remove-if-dependent -r)'{--remove-if-dependent,-r}'[Remove dependent packages that might be broken by other changes if those packages match a package spec]:Spec: ' \
+    '(--less-restrictive-remove-blockers -l)'{--less-restrictive-remove-blockers,-l}'[Use less restrictive blockers for packages matching the supplied package spec]:Spec: ' \
     '(--keep-targets -K)'{--keep-targets,-K}'[Select whether to keep target packages]:When:((auto never if-transient if-same if-same-version if-possible))' \
     '(--keep -k)'{--keep,-k}'[Select whether to keep packages that are not targets]:When:((never if-transient if-same if-same-version if-possible))' \
     '(--reinstall-scm -R)'{--reinstall-scm,-R}'[Select whether to reinstall SCM packages that would otherwise be kept]:When:((always daily weekly never))' \
