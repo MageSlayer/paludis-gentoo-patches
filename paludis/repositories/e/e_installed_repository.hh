@@ -77,6 +77,8 @@ namespace paludis
 
                 virtual std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
 
+                virtual const bool is_unimportant() const;
+
                 virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
 
                 HookResult perform_hook(const Hook & hook)

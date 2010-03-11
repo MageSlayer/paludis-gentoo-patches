@@ -196,6 +196,12 @@ CRANInstalledRepository::has_category_named(const CategoryNamePart & c) const
     return (CategoryNamePart("cran") == c);
 }
 
+const bool
+CRANInstalledRepository::is_unimportant() const
+{
+    return false;
+}
+
 bool
 CRANInstalledRepository::has_package_named(const QualifiedPackageName & q) const
 {

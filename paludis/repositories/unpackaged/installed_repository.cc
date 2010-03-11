@@ -215,6 +215,12 @@ InstalledUnpackagedRepository::some_ids_might_support_action(const SupportsActio
     return test.accept_returning<bool>(v);
 }
 
+const bool
+InstalledUnpackagedRepository::is_unimportant() const
+{
+    return false;
+}
+
 namespace
 {
     std::pair<uid_t, gid_t>

@@ -140,6 +140,12 @@ FakeRepository::some_ids_might_support_action(const SupportsActionTestBase & a) 
     return a.accept_returning<bool>(q);
 }
 
+const bool
+FakeRepository::is_unimportant() const
+{
+    return false;
+}
+
 const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 FakeRepository::format_key() const
 {

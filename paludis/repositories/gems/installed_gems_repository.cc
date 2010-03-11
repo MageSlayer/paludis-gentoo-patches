@@ -348,6 +348,12 @@ InstalledGemsRepository::some_ids_might_support_action(const SupportsActionTestB
     return a.accept_returning<bool>(q);
 }
 
+const bool
+InstalledGemsRepository::is_unimportant() const
+{
+    return false;
+}
+
 void
 InstalledGemsRepository::need_keys_added() const
 {

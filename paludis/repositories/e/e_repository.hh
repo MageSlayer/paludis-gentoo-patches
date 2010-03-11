@@ -150,6 +150,7 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
+            virtual const bool is_unimportant() const;
 
             /**
              * Update GLEP 42 news files.

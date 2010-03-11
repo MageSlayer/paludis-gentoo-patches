@@ -162,6 +162,12 @@ EInstalledRepository::perform_hook(const Hook & hook)
     return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
 }
 
+const bool
+EInstalledRepository::is_unimportant() const
+{
+    return false;
+}
+
 std::tr1::shared_ptr<const CategoryNamePartSet>
 EInstalledRepository::unimportant_category_names() const
 {

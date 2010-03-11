@@ -120,6 +120,7 @@ namespace paludis
                 ///\name Repository content queries
                 ///\{
 
+                virtual const bool is_unimportant() const;
                 virtual bool has_category_named(const CategoryNamePart & c) const;
                 virtual bool has_package_named(const QualifiedPackageName & q) const;
                 virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names() const;

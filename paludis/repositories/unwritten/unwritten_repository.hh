@@ -70,6 +70,8 @@ namespace paludis
                 UnwrittenRepository(const UnwrittenRepositoryParams &);
                 ~UnwrittenRepository();
 
+                virtual const bool is_unimportant() const;
+
                 virtual bool can_be_favourite_repository() const;
 
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;

@@ -350,6 +350,15 @@ namespace paludis
             virtual std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
 
             /**
+             * Are we unimportant?
+             *
+             * In disambiguation, anything gets preferred over packages from unimportant repositories.
+             *
+             * \since 0.46
+             */
+            virtual const bool is_unimportant() const = 0;
+
+            /**
              * Fetch categories that contain a named package.
              */
             virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(

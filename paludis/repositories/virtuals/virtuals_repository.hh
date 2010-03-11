@@ -82,6 +82,8 @@ namespace paludis
 
             virtual bool can_be_favourite_repository() const;
 
+            virtual const bool is_unimportant() const;
+
             /* Repository */
 
             virtual std::tr1::shared_ptr<const PackageIDSequence> package_ids(

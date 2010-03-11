@@ -105,6 +105,12 @@ UnwrittenRepository::~UnwrittenRepository()
 {
 }
 
+const bool
+UnwrittenRepository::is_unimportant() const
+{
+    return true;
+}
+
 bool
 UnwrittenRepository::can_be_favourite_repository() const
 {

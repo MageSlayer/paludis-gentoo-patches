@@ -325,6 +325,12 @@ GemsRepository::some_ids_might_support_action(const SupportsActionTestBase & a) 
     return a.accept_returning<bool>(q);
 }
 
+const bool
+GemsRepository::is_unimportant() const
+{
+    return false;
+}
+
 void
 GemsRepository::need_keys_added() const
 {

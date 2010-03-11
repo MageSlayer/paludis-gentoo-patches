@@ -255,6 +255,12 @@ ExndbamRepository::has_category_named(const CategoryNamePart & c) const
     return _imp->ndbam.has_category_named(c);
 }
 
+const bool
+ExndbamRepository::is_unimportant() const
+{
+    return false;
+}
+
 ExndbamRepositoryConfigurationError::ExndbamRepositoryConfigurationError(
         const std::string & msg) throw () :
     ConfigurationError("Exndbam repository configuration error: " + msg)

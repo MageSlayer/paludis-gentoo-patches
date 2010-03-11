@@ -346,6 +346,12 @@ VirtualsRepository::can_be_favourite_repository() const
     return false;
 }
 
+const bool
+VirtualsRepository::is_unimportant() const
+{
+    return false;
+}
+
 namespace
 {
     struct SupportsActionQuery

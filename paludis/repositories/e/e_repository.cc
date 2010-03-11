@@ -981,6 +981,12 @@ ERepository::unimportant_category_names() const
     return result;
 }
 
+const bool
+ERepository::is_unimportant() const
+{
+    return false;
+}
+
 namespace
 {
     struct SupportsActionQuery

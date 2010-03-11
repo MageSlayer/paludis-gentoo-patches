@@ -291,6 +291,12 @@ AccountsRepository::regenerate_cache() const
 {
 }
 
+const bool
+AccountsRepository::is_unimportant() const
+{
+    return false;
+}
+
 bool
 AccountsRepository::has_category_named(const CategoryNamePart & c) const
 {

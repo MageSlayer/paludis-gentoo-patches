@@ -111,6 +111,12 @@ UnavailableRepository::can_be_favourite_repository() const
     return false;
 }
 
+const bool
+UnavailableRepository::is_unimportant() const
+{
+    return true;
+}
+
 void
 UnavailableRepository::_add_metadata_keys()
 {

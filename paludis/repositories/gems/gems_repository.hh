@@ -84,6 +84,8 @@ namespace paludis
 
             virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
 
+            virtual const bool is_unimportant() const;
+
             virtual bool sync(const std::tr1::shared_ptr<OutputManager> &) const;
 
             /* Keys */

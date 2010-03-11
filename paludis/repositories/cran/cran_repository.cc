@@ -510,6 +510,12 @@ namespace
     };
 }
 
+const bool
+CRANRepository::is_unimportant() const
+{
+    return false;
+}
+
 bool
 CRANRepository::some_ids_might_support_action(const SupportsActionTestBase & a) const
 {

@@ -192,6 +192,12 @@ FakeInstalledRepository::some_ids_might_support_action(const SupportsActionTestB
     return a.accept_returning<bool>(q);
 }
 
+const bool
+FakeInstalledRepository::is_unimportant() const
+{
+    return false;
+}
+
 const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 FakeInstalledRepository::format_key() const
 {

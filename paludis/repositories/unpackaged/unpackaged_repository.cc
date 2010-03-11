@@ -169,6 +169,12 @@ UnpackagedRepository::some_ids_might_support_action(const SupportsActionTestBase
     return _imp->id->supports_action(test);
 }
 
+const bool
+UnpackagedRepository::is_unimportant() const
+{
+    return false;
+}
+
 void
 UnpackagedRepository::invalidate()
 {

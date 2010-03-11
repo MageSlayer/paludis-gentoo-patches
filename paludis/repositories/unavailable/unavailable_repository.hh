@@ -73,6 +73,8 @@ namespace paludis
 
                 virtual bool can_be_favourite_repository() const;
 
+                virtual const bool is_unimportant() const;
+
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
                 virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;

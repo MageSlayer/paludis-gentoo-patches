@@ -108,6 +108,8 @@ namespace paludis
             virtual bool has_category_named(const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            virtual const bool is_unimportant() const;
+
             /* Keys */
 
             virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;

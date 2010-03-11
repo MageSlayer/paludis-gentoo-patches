@@ -231,6 +231,12 @@ VDBRepository::has_package_named(const QualifiedPackageName & q) const
     return cat_iter->second->end() != cat_iter->second->find(q);
 }
 
+const bool
+VDBRepository::is_unimportant() const
+{
+    return false;
+}
+
 std::tr1::shared_ptr<const CategoryNamePartSet>
 VDBRepository::category_names() const
 {
