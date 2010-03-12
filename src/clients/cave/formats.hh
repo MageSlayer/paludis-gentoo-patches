@@ -86,6 +86,7 @@ namespace paludis
             const std::string info_metadata();
             const std::string info_metadata_subsection();
             const std::string info_repository_heading();
+            const std::string info_id_heading();
             const std::string info_heading();
 
             const std::string colour_formatter_keyword_name_plain();

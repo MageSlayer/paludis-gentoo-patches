@@ -18,11 +18,11 @@
  */
 
 #include "cmd_info.hh"
+#include "cmd_perform.hh"
 #include "colour_formatter.hh"
 #include "format_general.hh"
 #include "formats.hh"
 #include "exceptions.hh"
-#include "select_format_for_spec.hh"
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/name.hh>
@@ -333,6 +333,52 @@ namespace
         }
         cout << endl;
     }
+
+    void do_one_id(
+            const InfoCommandLine &,
+            const std::tr1::shared_ptr<Environment> & env,
+            const std::tr1::shared_ptr<const PackageID> & id)
+    {
+        if (! id->supports_action(SupportsActionTest<InfoAction>()))
+            return;
+
+        cout << format_general_s(f::info_id_heading(), stringify(*id));
+
+        std::tr1::shared_ptr<Sequence<std::string> > args(new Sequence<std::string>);
+        args->push_back("info");
+        args->push_back("--if-supported");
+        args->push_back("--hooks");
+        args->push_back(stringify(id->uniquely_identifying_spec()));
+
+        PerformCommand command;
+        command.run(env, args);
+
+        cout << endl;
+    }
+
+    void do_one_param(
+            const InfoCommandLine & cmdline,
+            const std::tr1::shared_ptr<Environment> & env,
+            const std::string & param)
+    {
+        PackageDepSpec spec(parse_user_package_dep_spec(param, env.get(), UserPackageDepSpecOptions()));
+
+        const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*env)[selection::AllVersionsSorted(generator::Matches(
+                        spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
+        const std::tr1::shared_ptr<const PackageIDSequence> installable_ids((*env)[selection::BestVersionOnly(generator::Matches(
+                        spec, MatchPackageOptions()) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
+
+        if (installed_ids->empty() && installable_ids->empty())
+            throw NothingMatching(param);
+
+        for (PackageIDSequence::ConstIterator i(installed_ids->begin()), i_end(installed_ids->end()) ;
+                i != i_end ; ++i)
+            do_one_id(cmdline, env, *i);
+
+        for (PackageIDSequence::ConstIterator i(installable_ids->begin()), i_end(installable_ids->end()) ;
+                i != i_end ; ++i)
+            do_one_id(cmdline, env, *i);
+    }
 }
 
 bool
@@ -366,13 +412,16 @@ InfoCommand::run(
 
     if (cmdline.begin_parameters() == cmdline.end_parameters())
     {
+        cout << c::bold_red() << "No packages were specified on the command line, so detailed information is not" << c::normal() << endl;
+        cout << c::bold_red() << "available. If you are using this information for a bug report, you should pass " << c::normal() << endl;
+        cout << c::bold_red() << "the relevant package names as parameters." << c::normal() << endl;
+        cout << endl;
     }
     else
     {
         for (InfoCommandLine::ParametersConstIterator p(cmdline.begin_parameters()), p_end(cmdline.end_parameters()) ;
                 p != p_end ; ++p)
-        {
-        }
+            do_one_param(cmdline, env, *p);
     }
 
     return EXIT_SUCCESS;

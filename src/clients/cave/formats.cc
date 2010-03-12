@@ -245,6 +245,12 @@ paludis::cave::f::info_repository_heading()
 }
 
 const std::string
+paludis::cave::f::info_id_heading()
+{
+    return "Extra Information for " + c::blue() + "%s" + c::normal() + ":\\n";
+}
+
+const std::string
 paludis::cave::f::info_heading()
 {
     return c::blue() + "%s" + c::normal() + ":\\n";
