@@ -23,6 +23,7 @@ command_MANS = \
 	cave-execute-resolution.1 \
 	cave-help.1 \
 	cave-import.1 \
+	cave-info.1 \
 	cave-perform.1 \
 	cave-print-categories.1 \
 	cave-print-commands.1 \
@@ -88,6 +89,7 @@ libcave_a_SOURCES = \
 	cmd_execute_resolution.cc cmd_execute_resolution.hh \
 	cmd_help.cc cmd_help.hh \
 	cmd_import.cc cmd_import.hh \
+	cmd_info.cc cmd_info.hh \
 	cmd_perform.cc cmd_perform.hh \
 	cmd_print_categories.cc cmd_print_categories.hh \
 	cmd_print_commands.cc cmd_print_commands.hh \
@@ -121,7 +123,6 @@ libcave_a_SOURCES = \
 
 #	cmd_contents.cc \
 #	cmd_executables.cc \
-#	cmd_info.cc \
 #	cmd_owner.cc \
 #	cmd_print_id_actions.cc \
 #	cmd_print_id_masks.cc \

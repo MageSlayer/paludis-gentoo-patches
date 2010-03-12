@@ -49,6 +49,9 @@ namespace paludis
 
         std::string format_general_i(const std::string & f, const int i)
             PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
+
+        std::string format_general_his(const std::string & f, const std::string & h, const int i, const std::string & s)
+            PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
     }
 }
 

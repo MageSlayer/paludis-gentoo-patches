@@ -92,3 +92,13 @@ paludis::cave::format_general_i(const std::string & f, const int i)
     return format_string(f, m);
 }
 
+std::string
+paludis::cave::format_general_his(const std::string & f, const std::string & h, const int i, const std::string & s)
+{
+    std::tr1::shared_ptr<Map<char, std::string> > m(new Map<char, std::string>);
+    m->insert('h', h);
+    m->insert('i', std::string(i, ' '));
+    m->insert('s', s);
+    return format_string(f, m);
+}
+

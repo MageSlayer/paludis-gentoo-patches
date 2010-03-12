@@ -227,6 +227,30 @@ paludis::cave::f::show_package_id_masks()
 }
 
 const std::string
+paludis::cave::f::info_metadata()
+{
+    return "%i%i%i%i%h%{column 30}%s\\n";
+}
+
+const std::string
+paludis::cave::f::info_metadata_subsection()
+{
+    return "%i%i%i%i" + c::blue() + "%s" + c::normal() + ":\\n";
+}
+
+const std::string
+paludis::cave::f::info_repository_heading()
+{
+    return "Repository " + c::blue() + "%s" + c::normal() + ":\\n";
+}
+
+const std::string
+paludis::cave::f::info_heading()
+{
+    return c::blue() + "%s" + c::normal() + ":\\n";
+}
+
+const std::string
 paludis::cave::f::colour_formatter_keyword_name_plain()
 {
     return "%s";
