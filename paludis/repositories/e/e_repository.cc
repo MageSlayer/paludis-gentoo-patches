@@ -288,10 +288,10 @@ namespace paludis
                     mkt_normal, params.write_cache())),
         append_repository_name_to_write_cache_key(new LiteralMetadataValueKey<std::string> (
                     "append_repository_name_to_write_cache", "append_repository_name_to_write_cache",
-                    mkt_normal, stringify(params.append_repository_name_to_write_cache()))),
+                    mkt_internal, stringify(params.append_repository_name_to_write_cache()))),
         ignore_deprecated_profiles(new LiteralMetadataValueKey<std::string> (
                     "ignore_deprecated_profiles", "ignore_deprecated_profiles",
-                    mkt_normal, stringify(params.ignore_deprecated_profiles()))),
+                    mkt_internal, stringify(params.ignore_deprecated_profiles()))),
         names_cache_key(new LiteralMetadataValueKey<FSEntry> (
                     "names_cache", "names_cache", mkt_normal, params.names_cache())),
         distdir_key(new LiteralMetadataValueKey<FSEntry> (
@@ -337,11 +337,14 @@ namespace paludis
                 std::tr1::shared_ptr<InfoVarsMetadataKey>()
                 ),
         binary_destination_key(new LiteralMetadataValueKey<std::string> (
-                    "binary_destination", "binary_destination", mkt_normal, stringify(params.binary_destination()))),
+                    "binary_destination", "binary_destination", params.binary_destination() ? mkt_normal : mkt_internal,
+                    stringify(params.binary_destination()))),
         binary_src_uri_prefix_key(new LiteralMetadataValueKey<std::string> (
-                    "binary_uri_prefix", "binary_uri_prefix", mkt_normal, params.binary_uri_prefix())),
+                    "binary_uri_prefix", "binary_uri_prefix", params.binary_destination() ? mkt_normal : mkt_internal,
+                    params.binary_uri_prefix())),
         binary_keywords(new LiteralMetadataValueKey<std::string> (
-                    "binary_keywords", "binary_keywords", mkt_normal, params.binary_keywords())),
+                    "binary_keywords", "binary_keywords", params.binary_destination() ? mkt_normal : mkt_internal,
+                    params.binary_keywords())),
         accounts_repository_data_location_key(layout->accounts_repository_data_location_key()),
         e_updates_location_key(layout->e_updates_location_key()),
         sync_host_key(new LiteralMetadataValueKey<std::string> ("sync_host", "sync_host", mkt_internal, extract_host_from_url(params.sync()))),
