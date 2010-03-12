@@ -9,6 +9,7 @@ dnl `test', `impl', `testscript'. Note that there isn't much error checking done
 dnl on this file at present...
 
 add(`about',                             `hh', `test')
+add(`about_metadata',                    `hh', `cc', `fwd')
 add(`action',                            `hh', `cc', `fwd', `se')
 add(`action_names',                      `hh', `cc', `fwd')
 add(`buffer_output_manager',             `hh', `cc', `fwd')
