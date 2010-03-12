@@ -42,6 +42,7 @@ namespace paludis
                 void run_hosted(
                         const std::tr1::shared_ptr<Environment> &,
                         const SearchCommandLineCandidateOptions &,
+                        const SearchCommandLineMatchOptions &,
                         const std::tr1::shared_ptr<const Set<std::string> > &,
                         const std::tr1::function<void (const PackageDepSpec &)> &);
 

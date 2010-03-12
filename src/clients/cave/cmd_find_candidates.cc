@@ -73,9 +73,11 @@ namespace
         }
 
         SearchCommandLineCandidateOptions search_options;
+        SearchCommandLineMatchOptions match_options;
 
         FindCandidatesCommandLine() :
-            search_options(this)
+            search_options(this),
+            match_options(this)
         {
         }
     };
@@ -107,7 +109,7 @@ FindCandidatesCommand::run(
     const std::tr1::shared_ptr<Set<std::string> > patterns(new Set<std::string>);
     std::copy(cmdline.begin_parameters(), cmdline.end_parameters(), patterns->inserter());
 
-    run_hosted(env, cmdline.search_options, patterns, &print_spec);
+    run_hosted(env, cmdline.search_options, cmdline.match_options, patterns, &print_spec);
 
     return EXIT_SUCCESS;
 }
@@ -120,6 +122,7 @@ void
 FindCandidatesCommand::run_hosted(
         const std::tr1::shared_ptr<Environment> & env,
         const SearchCommandLineCandidateOptions & search_options,
+        const SearchCommandLineMatchOptions &,
         const std::tr1::shared_ptr<const Set<std::string> > &,
         const std::tr1::function<void (const PackageDepSpec &)> & yield)
 {
