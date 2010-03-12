@@ -380,6 +380,8 @@ EInstalledRepository::perform_info(
 
         info_cmd();
     }
+
+    output_manager->succeeded();
 }
 
 void

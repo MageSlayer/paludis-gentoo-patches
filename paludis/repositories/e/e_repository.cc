@@ -2582,6 +2582,8 @@ ERepository::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
         EbuildInfoCommand cmd(command_params, info_params);
         cmd();
     }
+
+    output_manager->succeeded();
 }
 
 std::string
