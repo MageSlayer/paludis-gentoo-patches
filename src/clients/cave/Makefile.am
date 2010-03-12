@@ -21,6 +21,7 @@ command_MANS = \
 	cave-config.1 \
 	cave-display-resolution.1 \
 	cave-execute-resolution.1 \
+	cave-find-candidates.1 \
 	cave-fix-cache.1 \
 	cave-help.1 \
 	cave-import.1 \
@@ -88,6 +89,7 @@ libcave_a_SOURCES = \
 	cmd_config.cc cmd_config.hh \
 	cmd_display_resolution.cc cmd_display_resolution.hh \
 	cmd_execute_resolution.cc cmd_execute_resolution.hh \
+	cmd_find_candidates.cc cmd_find_candidates.hh \
 	cmd_fix_cache.cc cmd_fix_cache.hh \
 	cmd_help.cc cmd_help.hh \
 	cmd_import.cc cmd_import.hh \
@@ -110,6 +112,7 @@ libcave_a_SOURCES = \
 	cmd_resolve_cmdline.cc cmd_resolve_cmdline.hh \
 	cmd_resolve_display_callback.cc cmd_resolve_display_callback.hh \
 	cmd_resolve_dump.cc cmd_resolve_dump.hh \
+	cmd_search_cmdline.cc cmd_search_cmdline.hh \
 	cmd_show.cc cmd_show.hh \
 	cmd_sync.cc cmd_sync.hh \
 	cmd_update_world.cc cmd_update_world.hh \
