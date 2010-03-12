@@ -29,6 +29,7 @@
 #include "cmd_config.hh"
 #include "cmd_display_resolution.hh"
 #include "cmd_execute_resolution.hh"
+#include "cmd_fix_cache.hh"
 #include "cmd_help.hh"
 #include "cmd_import.hh"
 #include "cmd_info.hh"
@@ -86,6 +87,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("config", std::tr1::bind(&make_command<ConfigCommand>)));
     _imp->handlers.insert(std::make_pair("display-resolution", std::tr1::bind(&make_command<DisplayResolutionCommand>)));
     _imp->handlers.insert(std::make_pair("execute-resolution", std::tr1::bind(&make_command<ExecuteResolutionCommand>)));
+    _imp->handlers.insert(std::make_pair("fix-cache", std::tr1::bind(&make_command<FixCacheCommand>)));
     _imp->handlers.insert(std::make_pair("help", std::tr1::bind(&make_command<HelpCommand>)));
     _imp->handlers.insert(std::make_pair("import", std::tr1::bind(&make_command<ImportCommand>)));
     _imp->handlers.insert(std::make_pair("info", std::tr1::bind(&make_command<InfoCommand>)));

@@ -21,6 +21,7 @@ command_MANS = \
 	cave-config.1 \
 	cave-display-resolution.1 \
 	cave-execute-resolution.1 \
+	cave-fix-cache.1 \
 	cave-help.1 \
 	cave-import.1 \
 	cave-info.1 \
@@ -87,6 +88,7 @@ libcave_a_SOURCES = \
 	cmd_config.cc cmd_config.hh \
 	cmd_display_resolution.cc cmd_display_resolution.hh \
 	cmd_execute_resolution.cc cmd_execute_resolution.hh \
+	cmd_fix_cache.cc cmd_fix_cache.hh \
 	cmd_help.cc cmd_help.hh \
 	cmd_import.cc cmd_import.hh \
 	cmd_info.cc cmd_info.hh \
@@ -129,8 +131,6 @@ libcave_a_SOURCES = \
 #	cmd_print_repository_metadata.cc \
 #	cmd_print_set.cc \
 #	cmd_print_sync_protocol_metadata.cc \
-#	cmd_regenerate_installable_cache.cc \
-#	cmd_regenerate_installed_cache.cc \
 #	cmd_report.cc \
 #	cmd_uninstall.cc \
 #	cmd_uninstall_unused.cc
