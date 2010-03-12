@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -258,7 +258,7 @@ namespace
 
         bool operator() (const QualifiedPackageName & qpn) const
         {
-            return _map->find(qpn)->second.second;
+            return ! _map->find(qpn)->second.second;
         }
     };
 }
@@ -271,7 +271,7 @@ PackageDatabase::fetch_unique_qualified_package_name(const PackageNamePart & p, 
     // Map matching QualifiedPackageNames with a pair of flags specifying
     // respectively that at least one repository containing the package thinks
     // the category is important and that the package is in a repository
-    // that reports it is unimportant itself
+    // that reports it is important itself
     std::tr1::shared_ptr<QPNIMap> result(new QPNIMap);
     std::set<std::pair<CategoryNamePart, RepositoryName>, CategoryRepositoryNamePairComparator> checked;
 
@@ -289,10 +289,10 @@ PackageDatabase::fetch_unique_qualified_package_name(const PackageNamePart & p, 
 
         std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_cats(it->repository()->unimportant_category_names());
         bool is_important(unimportant_cats->end() == unimportant_cats->find(it->name().category()));
-        bool is_in_unimportant_repo(it->repository()->is_unimportant());
-        QPNIMap::iterator i(result->insert(std::make_pair(it->name(), std::make_pair(is_important, is_in_unimportant_repo))).first);
+        bool is_in_important_repo(! it->repository()->is_unimportant());
+        QPNIMap::iterator i(result->insert(std::make_pair(it->name(), std::make_pair(is_important, is_in_important_repo))).first);
         i->second.first = i->second.first || is_important;
-        i->second.second = i->second.second || is_in_unimportant_repo;
+        i->second.second = i->second.second || is_in_important_repo;
     }
 
     if (result->empty())
