@@ -94,6 +94,7 @@ libcave_a_SOURCES = \
 	cmd_help.cc cmd_help.hh \
 	cmd_import.cc cmd_import.hh \
 	cmd_info.cc cmd_info.hh \
+	cmd_match.cc cmd_match.hh \
 	cmd_perform.cc cmd_perform.hh \
 	cmd_print_categories.cc cmd_print_categories.hh \
 	cmd_print_commands.cc cmd_print_commands.hh \

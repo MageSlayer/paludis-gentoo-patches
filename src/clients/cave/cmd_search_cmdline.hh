@@ -36,6 +36,22 @@ namespace paludis
             args::ArgsGroup g_candidate_options;
             args::SwitchArg a_all_versions;
         };
+
+        struct SearchCommandLineMatchOptions :
+            args::ArgsSection
+        {
+            SearchCommandLineMatchOptions(args::ArgsHandler * const);
+
+            args::ArgsGroup g_pattern_options;
+            args::EnumArg a_type;
+            args::SwitchArg a_and;
+            args::SwitchArg a_not;
+
+            args::ArgsGroup g_search_key_options;
+            args::StringSetArg a_key;
+            args::SwitchArg a_name;
+            args::SwitchArg a_description;
+        };
     }
 }
 

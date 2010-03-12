@@ -30,3 +30,26 @@ SearchCommandLineCandidateOptions::SearchCommandLineCandidateOptions(args::ArgsH
 {
 }
 
+SearchCommandLineMatchOptions::SearchCommandLineMatchOptions(args::ArgsHandler * const h) :
+    ArgsSection(h, "Match Options"),
+    g_pattern_options(this, "Pattern Options", "Alter how patterns are matched."),
+    a_type(&g_pattern_options, "type", 't', "Specify which matching algorithm to use",
+            args::EnumArg::EnumArgOptions
+            ("text",  't', "Match an exact text substring, ignoring case")
+            ("exact", 'x', "Match only an entire exact string, ignoring case"),
+            "text"
+          ),
+    a_and(&g_pattern_options, "and", '&', "If multiple patterns are specified, require that "
+            "all patterns match. Default is to succeed if any pattern matches.", true),
+    a_not(&g_pattern_options, "not", '!', "Invert the results of pattern matches.", true),
+
+    g_search_key_options(this, "Search Key Options", "Alter the keys used for searching. If "
+            "no option in this group is specified, matches are carried out on name and description. Otherwise, "
+            "matches are carried out on all of the specified keys."),
+    a_key(&g_search_key_options, "key", 'k', "Search the named metadata key (e.g. DESCRIPTION). May be specified "
+            "multiple times."),
+    a_name(&g_search_key_options, "name", 'n', "Search package names.", true),
+    a_description(&g_search_key_options, "description", 'd', "Search package descriptions.", true)
+{
+}
+
