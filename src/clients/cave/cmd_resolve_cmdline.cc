@@ -74,15 +74,15 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
     g_dependent_options(this, "Dependent Options", "Dependent options. A package is dependent if it "
             "requires (or looks like it might require) a package which is being removed. By default, "
             "dependent packages are treated as errors. These options specify a different behaviour."),
-    a_uninstalls_may_break(&g_resolution_options, "uninstalls-may-break", 'u',
+    a_uninstalls_may_break(&g_dependent_options, "uninstalls-may-break", 'u',
             "Permit uninstalls that might break packages matching the specified specification. May be "
             "specified multiple times. Use '*/*' to allow all packages to be broken."),
-    a_remove_if_dependent(&g_resolution_options, "remove-if-dependent", 'r',
+    a_remove_if_dependent(&g_dependent_options, "remove-if-dependent", 'r',
             "Remove dependent packages that might be broken by other changes if those packages match "
             "the specified specification. May be specified multiple times. Use '*/*' to remove all "
             "dependent packages that might be broken, recursively. Does not imply --permit-uninstall, "
             "which must also be specified."),
-    a_less_restrictive_remove_blockers(&g_resolution_options, "less-restrictive-remove-blockers", 'l',
+    a_less_restrictive_remove_blockers(&g_dependent_options, "less-restrictive-remove-blockers", 'l',
             "Use less restrictive blockers for packages matching the supplied specification if that "
             "package is to be removed by --remove-if-dependent. May be specified multiple times. "
             "Normally removing dependents is done by a pseudo-block in the form '!cat/pkg:slot'. If "
