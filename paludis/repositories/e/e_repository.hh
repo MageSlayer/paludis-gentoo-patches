@@ -145,6 +145,7 @@ namespace paludis
             const erepository::ERepositoryParams & params() const;
 
             std::string profile_variable(const std::string &) const;
+            std::string environment_updated_profile_variable(const std::string &) const;
 
             HookResult perform_hook(const Hook &)
                 PALUDIS_ATTRIBUTE((warn_unused_result));

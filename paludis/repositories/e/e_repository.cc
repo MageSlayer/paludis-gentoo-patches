@@ -896,6 +896,23 @@ ERepository::profile_variable(const std::string & s) const
     return _imp->profile_ptr->environment_variable(s);
 }
 
+std::string
+ERepository::environment_updated_profile_variable(const std::string & var) const
+{
+    std::vector<std::string> values;
+    std::vector<std::string>::iterator last;
+
+    _imp->need_profiles();
+
+    tokenise_whitespace(_imp->profile_ptr->environment_variable(var), std::back_inserter(values));
+    tokenise_whitespace(paludis::getenv_with_default(var, ""), std::back_inserter(values));
+
+    std::sort(values.begin(), values.end());
+    last = std::unique(values.begin(), values.end());
+
+    return join(values.begin(), last, " ");
+}
+
 std::tr1::shared_ptr<const ERepository::VirtualsSequence>
 ERepository::virtual_packages() const
 {
@@ -2460,8 +2477,8 @@ ERepository::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                     make_named_values<EbuildInstallCommandParams>(
                             value_for<n::a>(archives),
                             value_for<n::aa>(all_archives),
-                            value_for<n::config_protect>(profile_variable("CONFIG_PROTECT")),
-                            value_for<n::config_protect_mask>(profile_variable("CONFIG_PROTECT_MASK")),
+                            value_for<n::config_protect>(environment_updated_profile_variable("CONFIG_PROTECT")),
+                            value_for<n::config_protect_mask>(environment_updated_profile_variable("CONFIG_PROTECT_MASK")),
                             value_for<n::expand_vars>(expand_vars),
                             value_for<n::loadsaveenv_dir>(package_builddir / "temp"),
                             value_for<n::profiles>(_imp->params.profiles()),
