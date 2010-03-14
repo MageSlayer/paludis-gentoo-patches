@@ -119,7 +119,7 @@ main()
 
     ebuild_section "Loading saved environment..."
 
-    ebuild_safe_source ${envfile}
+    ebuild_safe_source "${envfile}"
 
     ebuild_section "Writing binary ebuild to '${ebuildfile}'..."
 

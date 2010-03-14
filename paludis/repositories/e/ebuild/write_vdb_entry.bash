@@ -113,7 +113,7 @@ main()
 
     ebuild_section "Writing VDB entry to '${vdbdir}'..."
 
-    ebuild_safe_source ${envfile}
+    ebuild_safe_source "${envfile}"
 
     ebuild_section "Writing VDB entry keys ..."
 

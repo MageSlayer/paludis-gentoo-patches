@@ -22,7 +22,7 @@ builtin_loadenv()
         || die "\$PALUDIS_LOADSAVEENV_DIR (\"${PALUDIS_LOADSAVEENV_DIR}\") not a directory"
     [[ -f "${PALUDIS_LOADSAVEENV_DIR}/loadsaveenv" ]] || \
         die "${PALUDIS_LOADSAVEENV_DIR}/loadsaveenv not a file"
-    ebuild_safe_source ${PALUDIS_LOADSAVEENV_DIR}/loadsaveenv
+    ebuild_safe_source "${PALUDIS_LOADSAVEENV_DIR}/loadsaveenv"
 }
 
 exheres_internal_loadenv()
