@@ -86,6 +86,10 @@ namespace
     {
         cout << spec << endl;
     }
+
+    void no_step(const std::string &)
+    {
+    }
 }
 
 int
@@ -109,7 +113,7 @@ FindCandidatesCommand::run(
     const std::tr1::shared_ptr<Set<std::string> > patterns(new Set<std::string>);
     std::copy(cmdline.begin_parameters(), cmdline.end_parameters(), patterns->inserter());
 
-    run_hosted(env, cmdline.search_options, cmdline.match_options, patterns, &print_spec);
+    run_hosted(env, cmdline.search_options, cmdline.match_options, patterns, &print_spec, &no_step);
 
     return EXIT_SUCCESS;
 }
@@ -124,12 +128,17 @@ FindCandidatesCommand::run_hosted(
         const SearchCommandLineCandidateOptions & search_options,
         const SearchCommandLineMatchOptions &,
         const std::tr1::shared_ptr<const Set<std::string> > &,
-        const std::tr1::function<void (const PackageDepSpec &)> & yield)
+        const std::tr1::function<void (const PackageDepSpec &)> & yield,
+        const std::tr1::function<void (const std::string &)> & step)
 {
+    step("Searching repositories");
+
     RepositoryNames repository_names;
     for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
             r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
         repository_names.insert((*r)->name());
+
+    step("Searching categories");
 
     CategoryNames category_names;
     for (RepositoryNames::const_iterator r(repository_names.begin()), r_end(repository_names.end()) ;
@@ -139,6 +148,8 @@ FindCandidatesCommand::run_hosted(
         const std::tr1::shared_ptr<const CategoryNamePartSet> cats(repo->category_names());
         std::copy(cats->begin(), cats->end(), std::inserter(category_names, category_names.end()));
     }
+
+    step("Searching packages");
 
     QualifiedPackageNames package_names;
     for (RepositoryNames::const_iterator r(repository_names.begin()), r_end(repository_names.end()) ;
@@ -153,6 +164,8 @@ FindCandidatesCommand::run_hosted(
         }
     }
 
+    step("Searching versions");
+
     for (QualifiedPackageNames::const_iterator q(package_names.begin()), q_end(package_names.end()) ;
             q != q_end ; ++q)
     {
@@ -162,7 +175,10 @@ FindCandidatesCommand::run_hosted(
                         generator::Package(*q))]);
             for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                     i != i_end ; ++i)
+            {
+                step("Checking candidates");
                 yield((*i)->uniquely_identifying_spec());
+            }
         }
         else
         {
@@ -176,7 +192,10 @@ FindCandidatesCommand::run_hosted(
 
             for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                     i != i_end ; ++i)
+            {
+                step("Checking candidates");
                 yield((*i)->uniquely_identifying_spec());
+            }
         }
     }
 }

@@ -40,13 +40,16 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/mutex.hh>
 #include <paludis/action.hh>
 #include <paludis/mask.hh>
 #include <paludis/choice.hh>
+#include <paludis/notifier_callback.hh>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
 #include <set>
+#include <map>
 
 #include "command_command_line.hh"
 
@@ -86,6 +89,16 @@ namespace
         }
     };
 
+    struct SearchStep
+    {
+        std::string stage;
+
+        SearchStep(const std::string & s) :
+            stage(s)
+        {
+        }
+    };
+
     void found_match(
             const std::tr1::shared_ptr<Environment> & env,
             const std::tr1::shared_ptr<Set<QualifiedPackageName> > & result,
@@ -107,6 +120,124 @@ namespace
     {
         if (match_command.run_hosted(env, match_options, patterns, spec))
             success(spec);
+    }
+
+    struct DisplayCallback
+    {
+        mutable Mutex mutex;
+        mutable std::map<std::string, int> metadata;
+        mutable int steps;
+        mutable std::string stage;
+        mutable unsigned width;
+
+        bool output;
+
+        DisplayCallback() :
+            steps(0),
+            stage("Searching"),
+            width(stage.length() + 2),
+            output(::isatty(1))
+        {
+            if (output)
+                cout << stage << ": " << std::flush;
+        }
+
+        ~DisplayCallback()
+        {
+            if (output)
+                cout << endl << endl;
+        }
+
+        void update() const
+        {
+            if (! output)
+                return;
+
+            std::string s(stage + ": ");
+            s.append(stringify(steps));
+
+            if (! metadata.empty())
+            {
+                std::multimap<int, std::string> biggest;
+                for (std::map<std::string, int>::const_iterator i(metadata.begin()), i_end(metadata.end()) ;
+                        i != i_end ; ++i)
+                    biggest.insert(std::make_pair(i->second, i->first));
+
+                int t(0), n(0);
+                std::string ss;
+                for (std::multimap<int, std::string>::const_reverse_iterator i(biggest.rbegin()), i_end(biggest.rend()) ;
+                        i != i_end ; ++i)
+                {
+                    ++n;
+
+                    if (n == 4)
+                        ss.append(", ...");
+
+                    if (n < 4)
+                    {
+                        if (! ss.empty())
+                            ss.append(", ");
+
+                        ss.append(stringify(i->first) + " " + i->second);
+                    }
+
+                    t += i->first;
+                }
+
+                if (! s.empty())
+                    s.append(", ");
+                s.append(stringify(t) + " metadata (" + ss + ") ");
+            }
+
+            std::cout << std::string(width, '\010') << s;
+
+            if (width > s.length())
+                std::cout
+                    << std::string(width - s.length(), ' ')
+                    << std::string(width - s.length(), '\010');
+
+            width = s.length();
+            std::cout << std::flush;
+        }
+
+        void operator() (const NotifierCallbackEvent & event) const
+        {
+            event.accept(*this);
+        }
+
+        void operator() (const SearchStep & s) const
+        {
+            if (! output)
+                return;
+
+            Lock lock(mutex);
+            ++steps;
+            stage = s.stage;
+            update();
+        }
+
+        void visit(const NotifierCallbackGeneratingMetadataEvent & e) const
+        {
+            if (! output)
+                return;
+
+            Lock lock(mutex);
+            ++metadata.insert(std::make_pair(stringify(e.repository()), 0)).first->second;
+            update();
+        }
+
+        void visit(const NotifierCallbackResolverStepEvent &) const
+        {
+        }
+
+        void visit(const NotifierCallbackResolverStageEvent &) const
+        {
+        }
+    };
+
+    void step(DisplayCallback & display_callback, const std::string & s)
+    {
+        display_callback(SearchStep(s));
     }
 }
 
@@ -134,29 +265,38 @@ SearchCommand::run(
     if (cmdline.begin_parameters() == cmdline.end_parameters())
         throw args::DoHelp("search requires at least one parameter");
 
-    const std::tr1::shared_ptr<Set<std::string> > patterns(new Set<std::string>);
-    std::copy(cmdline.begin_parameters(), cmdline.end_parameters(), patterns->inserter());
+    const std::tr1::shared_ptr<Sequence<std::string> > show_args(new Sequence<std::string>);
 
-    FindCandidatesCommand find_candidates_command;
-    MatchCommand match_command;
+    {
+        DisplayCallback display_callback;
+        ScopedNotifierCallback display_callback_holder(env.get(),
+                NotifierCallbackFunction(std::tr1::cref(display_callback)));
 
-    std::tr1::shared_ptr<Set<QualifiedPackageName> > matches(new Set<QualifiedPackageName>);
-    find_candidates_command.run_hosted(env, cmdline.search_options, cmdline.match_options,
-            patterns, std::tr1::bind(
-                &found_candidate, env, std::tr1::ref(match_command), std::tr1::cref(cmdline.match_options),
-                std::tr1::placeholders::_1, patterns, std::tr1::function<void (const PackageDepSpec &)>(std::tr1::bind(
-                        &found_match, env, std::tr1::ref(matches), std::tr1::placeholders::_1
-                        ))));
+        const std::tr1::shared_ptr<Set<std::string> > patterns(new Set<std::string>);
+        std::copy(cmdline.begin_parameters(), cmdline.end_parameters(), patterns->inserter());
 
-    if (matches->empty())
+        FindCandidatesCommand find_candidates_command;
+        MatchCommand match_command;
+
+        std::tr1::shared_ptr<Set<QualifiedPackageName> > matches(new Set<QualifiedPackageName>);
+        find_candidates_command.run_hosted(env, cmdline.search_options, cmdline.match_options,
+                patterns, std::tr1::bind(
+                    &found_candidate, env, std::tr1::ref(match_command), std::tr1::cref(cmdline.match_options),
+                    std::tr1::placeholders::_1, patterns, std::tr1::function<void (const PackageDepSpec &)>(std::tr1::bind(
+                            &found_match, env, std::tr1::ref(matches), std::tr1::placeholders::_1
+                            ))),
+                std::tr1::bind(&step, std::tr1::ref(display_callback), std::tr1::placeholders::_1)
+                );
+
+        for (Set<QualifiedPackageName>::ConstIterator p(matches->begin()), p_end(matches->end()) ;
+                p != p_end ; ++p)
+            show_args->push_back(stringify(*p));
+    }
+
+    if (show_args->empty())
         return EXIT_FAILURE;
 
     ShowCommand show_command;
-    const std::tr1::shared_ptr<Sequence<std::string> > show_args(new Sequence<std::string>);
-    for (Set<QualifiedPackageName>::ConstIterator p(matches->begin()), p_end(matches->end()) ;
-            p != p_end ; ++p)
-        show_args->push_back(stringify(*p));
-
     return show_command.run(env, show_args);
 }
 

@@ -44,7 +44,8 @@ namespace paludis
                         const SearchCommandLineCandidateOptions &,
                         const SearchCommandLineMatchOptions &,
                         const std::tr1::shared_ptr<const Set<std::string> > &,
-                        const std::tr1::function<void (const PackageDepSpec &)> &);
+                        const std::tr1::function<void (const PackageDepSpec &)> &,
+                        const std::tr1::function<void (const std::string &)> &);
 
                 std::tr1::shared_ptr<args::ArgsHandler> make_doc_cmdline();
         };
