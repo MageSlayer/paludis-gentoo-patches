@@ -41,6 +41,7 @@ command_MANS = \
 	cave-print-sets.1 \
 	cave-print-sync-protocols.1 \
 	cave-resolve.1 \
+	cave-search.1 \
 	cave-show.1 \
 	cave-sync.1 \
 	cave-update-world.1
@@ -113,6 +114,7 @@ libcave_a_SOURCES = \
 	cmd_resolve_cmdline.cc cmd_resolve_cmdline.hh \
 	cmd_resolve_display_callback.cc cmd_resolve_display_callback.hh \
 	cmd_resolve_dump.cc cmd_resolve_dump.hh \
+	cmd_search.cc cmd_search.hh \
 	cmd_search_cmdline.cc cmd_search_cmdline.hh \
 	cmd_show.cc cmd_show.hh \
 	cmd_sync.cc cmd_sync.hh \

@@ -50,6 +50,7 @@
 #include "cmd_print_sets.hh"
 #include "cmd_print_sync_protocols.hh"
 #include "cmd_resolve.hh"
+#include "cmd_search.hh"
 #include "cmd_show.hh"
 #include "cmd_sync.hh"
 #include "cmd_update_world.hh"
@@ -110,6 +111,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("print-sets", std::tr1::bind(&make_command<PrintSetsCommand>)));
     _imp->handlers.insert(std::make_pair("print-sync-protocols", std::tr1::bind(&make_command<PrintSyncProtocolsCommand>)));
     _imp->handlers.insert(std::make_pair("resolve", std::tr1::bind(&make_command<ResolveCommand>)));
+    _imp->handlers.insert(std::make_pair("search", std::tr1::bind(&make_command<SearchCommand>)));
     _imp->handlers.insert(std::make_pair("show", std::tr1::bind(&make_command<ShowCommand>)));
     _imp->handlers.insert(std::make_pair("sync", std::tr1::bind(&make_command<SyncCommand>)));
     _imp->handlers.insert(std::make_pair("update-world", std::tr1::bind(&make_command<UpdateWorldCommand>)));
