@@ -46,10 +46,14 @@ ebuild_safe_source()
     trap DEBUG
     set -T
     shopt -s extdebug
-    trap "[[ \${BASH_COMMAND%%=*} == ?(*[[:space:]])!($(IFS='|'; shift; echo "${*}")) ||
+    trap "[[ \${BASH_COMMAND%%=*} == ?(*[[:space:]])!($(IFS='|'; [[ ${1} == --rewrite-for-declare ]] && shift; shift; echo "${*}")) ||
               \${BASH_COMMAND%%[[:space:]]*} != @(*=*|export|declare) ]]" DEBUG
 
-    source "${1}"
+    if [[ ${1} == --rewrite-for-declare ]]; then
+        ( source "${2}" && set >"${2}" && print_exports >>"${2}" ) && source "${2}"
+    else
+        source "${1}"
+    fi
     eval "trap DEBUG; shopt -u extdebug; set +T; return ${?}"
 }
 ebuild_need_extglob ebuild_safe_source
