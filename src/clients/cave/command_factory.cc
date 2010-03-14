@@ -29,10 +29,12 @@
 #include "cmd_config.hh"
 #include "cmd_display_resolution.hh"
 #include "cmd_execute_resolution.hh"
+#include "cmd_find_candidates.hh"
 #include "cmd_fix_cache.hh"
 #include "cmd_help.hh"
 #include "cmd_import.hh"
 #include "cmd_info.hh"
+#include "cmd_match.hh"
 #include "cmd_perform.hh"
 #include "cmd_print_categories.hh"
 #include "cmd_print_commands.hh"
@@ -48,6 +50,7 @@
 #include "cmd_print_sets.hh"
 #include "cmd_print_sync_protocols.hh"
 #include "cmd_resolve.hh"
+#include "cmd_search.hh"
 #include "cmd_show.hh"
 #include "cmd_sync.hh"
 #include "cmd_update_world.hh"
@@ -87,10 +90,12 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("config", std::tr1::bind(&make_command<ConfigCommand>)));
     _imp->handlers.insert(std::make_pair("display-resolution", std::tr1::bind(&make_command<DisplayResolutionCommand>)));
     _imp->handlers.insert(std::make_pair("execute-resolution", std::tr1::bind(&make_command<ExecuteResolutionCommand>)));
+    _imp->handlers.insert(std::make_pair("find-candidates", std::tr1::bind(&make_command<FindCandidatesCommand>)));
     _imp->handlers.insert(std::make_pair("fix-cache", std::tr1::bind(&make_command<FixCacheCommand>)));
     _imp->handlers.insert(std::make_pair("help", std::tr1::bind(&make_command<HelpCommand>)));
     _imp->handlers.insert(std::make_pair("import", std::tr1::bind(&make_command<ImportCommand>)));
     _imp->handlers.insert(std::make_pair("info", std::tr1::bind(&make_command<InfoCommand>)));
+    _imp->handlers.insert(std::make_pair("match", std::tr1::bind(&make_command<MatchCommand>)));
     _imp->handlers.insert(std::make_pair("perform", std::tr1::bind(&make_command<PerformCommand>)));
     _imp->handlers.insert(std::make_pair("print-categories", std::tr1::bind(&make_command<PrintCategoriesCommand>)));
     _imp->handlers.insert(std::make_pair("print-commands", std::tr1::bind(&make_command<PrintCommandsCommand>)));
@@ -106,6 +111,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("print-sets", std::tr1::bind(&make_command<PrintSetsCommand>)));
     _imp->handlers.insert(std::make_pair("print-sync-protocols", std::tr1::bind(&make_command<PrintSyncProtocolsCommand>)));
     _imp->handlers.insert(std::make_pair("resolve", std::tr1::bind(&make_command<ResolveCommand>)));
+    _imp->handlers.insert(std::make_pair("search", std::tr1::bind(&make_command<SearchCommand>)));
     _imp->handlers.insert(std::make_pair("show", std::tr1::bind(&make_command<ShowCommand>)));
     _imp->handlers.insert(std::make_pair("sync", std::tr1::bind(&make_command<SyncCommand>)));
     _imp->handlers.insert(std::make_pair("update-world", std::tr1::bind(&make_command<UpdateWorldCommand>)));
