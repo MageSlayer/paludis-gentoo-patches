@@ -36,6 +36,7 @@ _cave()
     'print-sets:Prints a list of sets'
     'print-sync-protocols:Prints a list of sync protocols'
     'resolve:Display how to resolve targets and optionally perform that resolution'
+    'search:Search for packages with particular characteristics'
     'show:Displays a formatted summary of a given object'
     'sync:Sync all or specified repositories'
     'update-world:Update the world set'
@@ -316,6 +317,20 @@ _cave_cmd_resolve()
     '--change-phases-for[Control to which packages these phase options apply]:Which:((all first last))' \
     '--show-descriptions[Whether to display package descriptions]:When:((none new all))' \
     '*:package depspec:_cave_packages' && return 0
+}
+
+(( ${+functions[_cave_cmd_search]} )) ||
+_cave_cmd_search()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--all-versions -a --no-all-versions)'{--all-versions,-a,--no-all-versions}'[Search in every version of packages]' \
+    '(--type -t)'{--type,-t}'[Alter how patterns are matched]:Matching:((text exact))' \
+    '(--and -& --no-and)'{--and,-\&,--no-and}'[If multiple patterns are specified, require that all patterns match]' \
+    '(--not -! --no-not)'{--not,-\!,--no-not}'[Invert the results of pattern matches]' \
+    '(--key -k)'{--key,-k}'[Search the named metadata key]' \
+    '(--name -n --no-name)'{--name,-n,--no-name}'[Search package names]' \
+    '(--description -d --no-description)'{--description,-d,--no-description}'[Search package descriptions]'
 }
 
 (( ${+functions[_cave_cmd_show]} )) ||
