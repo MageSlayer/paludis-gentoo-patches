@@ -187,7 +187,7 @@ paludis::cave::f::show_package_version_installed()
 const std::string
 paludis::cave::f::show_package_version_installable()
 {
-    return c::green() + "%s" + c::normal();
+    return c::green() + "%s%r" + c::normal();
 }
 
 const std::string
@@ -224,6 +224,12 @@ const std::string
 paludis::cave::f::show_package_id_masks()
 {
     return "        " + c::bold_red() + "%s" + c::normal() + "\\n";
+}
+
+const std::string
+paludis::cave::f::show_package_id_masks_overridden()
+{
+    return "        " + c::green() + "%s" + c::normal() + "\\n";
 }
 
 const std::string

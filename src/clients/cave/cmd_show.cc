@@ -781,6 +781,15 @@ namespace
             MaskDisplayer d(cmdline, 2);
             std::for_each(indirect_iterator(best->begin_masks()), indirect_iterator(best->end_masks()), accept_visitor(d));
         }
+
+        if (best->begin_overridden_masks() != best->end_overridden_masks())
+        {
+            cout << format_general_s(f::show_package_id_masks_overridden(), "Overridden Masks");
+            MaskDisplayer d(cmdline, 2);
+            for (PackageID::OverriddenMasksConstIterator m(best->begin_overridden_masks()), m_end(best->end_overridden_masks()) ;
+                    m != m_end ; ++m)
+                (*m)->mask()->accept(d);
+        }
     }
 
     void do_one_package(
@@ -842,15 +851,27 @@ namespace
 
                 if ((*i)->repository()->installed_root_key())
                     cout << format_general_s(f::show_package_version_installed(), stringify((*i)->canonical_form(idcf_version)));
-                else if (! (*i)->masked())
-                    cout << format_general_s(f::show_package_version_installable(), stringify((*i)->canonical_form(idcf_version)));
                 else
                 {
                     std::string rr;
-                    for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
+                    for (PackageID::OverriddenMasksConstIterator m((*i)->begin_overridden_masks()), m_end((*i)->end_overridden_masks()) ;
                             m != m_end ; ++m)
-                        rr.append(stringify((*m)->key()));
-                    cout << format_general_sr(f::show_package_version_unavailable(), stringify((*i)->canonical_form(idcf_version)), rr);
+                        rr.append(stringify((*m)->mask()->key()));
+
+                    if (! rr.empty())
+                        rr = "(" + rr + ")";
+
+                    if (! (*i)->masked())
+                        cout << format_general_sr(f::show_package_version_installable(), stringify((*i)->canonical_form(idcf_version)), rr);
+                    else
+                    {
+                        std::string rs;
+                        for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
+                                m != m_end ; ++m)
+                            rs.append(stringify((*m)->key()));
+                        rr = rs + rr;
+                        cout << format_general_sr(f::show_package_version_unavailable(), stringify((*i)->canonical_form(idcf_version)), rr);
+                    }
                 }
 
                 if (best_installable && (**i == *best_installable))

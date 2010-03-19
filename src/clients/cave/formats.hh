@@ -66,6 +66,7 @@ namespace paludis
 
             const std::string show_package_id_heading();
             const std::string show_package_id_masks();
+            const std::string show_package_id_masks_overridden();
 
             const std::string show_metadata_key_value_raw();
             const std::string show_metadata_key_value_human();
