@@ -19,6 +19,7 @@ _cave()
 
   _cave_commands=(
     'config:Perform post-install configuration on a package'
+    'fix-cache:Fix on-disk caches'
     'help:Display help information for a particular command'
     'perform:Perform an action upon a package'
     'print-categories:Prints a list of known categories'
@@ -72,6 +73,17 @@ _cave_cmd_config()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]'
+}
+
+
+(( ${+functions[_cave_cmd_fix-cache]} )) ||
+_cave_cmd_fix-cache()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--repository -r)'{--repository,-r}'[Select the repository with the specified name]:repository name:_cave_repositories' \
+    '(--installable -i --no-installable)'{--installable,-i,--no-installable}'[Select all installable repositories]' \
+    '(--installed -I --no-installed)'{--installed,-I,--no-installed}'[Select all installed repositories]'
 }
 
 (( ${+functions[_cave_cmd_help]} )) ||
