@@ -21,6 +21,7 @@ _cave()
     'config:Perform post-install configuration on a package'
     'fix-cache:Fix on-disk caches'
     'help:Display help information for a particular command'
+    'info:Display a summary of configuration and package information'
     'perform:Perform an action upon a package'
     'print-categories:Prints a list of known categories'
     'print-commands:Prints a list of known cave commands'
@@ -75,7 +76,6 @@ _cave_cmd_config()
     '(--help -h)'{--help,-h}'[Display help messsage]'
 }
 
-
 (( ${+functions[_cave_cmd_fix-cache]} )) ||
 _cave_cmd_fix-cache()
 {
@@ -98,6 +98,13 @@ _cave_cmd_help()
       _describe -t commands 'cave command' _cave_commands
       ;;
   esac
+}
+
+(( ${+functions[_cave_cmd_info]} )) ||
+_cave_cmd_info()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]'
 }
 
 (( ${+functions[_cave_cmd_perform]} )) ||
