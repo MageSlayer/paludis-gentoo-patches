@@ -82,7 +82,7 @@ _cave_cmd_fix-cache()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '(--repository -r)'{--repository,-r}'[Select the repository with the specified name]:repository name:_cave_repositories' \
+    '*'{--repository,-r}'[Select the repository with the specified name]:repository name:_cave_repositories' \
     '(--installable -i --no-installable)'{--installable,-i,--no-installable}'[Select all installable repositories]' \
     '(--installed -I --no-installed)'{--installed,-I,--no-installed}'[Select all installed repositories]'
 }
@@ -155,14 +155,14 @@ _cave_cmd_perform()
             _arguments -s : \
               '--destination[Repository to which the install should take place]:repository name:_cave_repositories' \
               '--replacing[Spec uniquely identifying the ID to be replaced]:package spec: ' \
-              '--skip-phase[Skip the named phases]:phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
-              '--abort-at-phase[Abort when a named phase is encountered]:phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
-              '--skip-until-phase[Skip every phase until a named phase is encountered]:phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
+              '*--skip-phase[Skip the named phases]:phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
+              '*--abort-at-phase[Abort when a named phase is encountered]:phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
+              '*--skip-until-phase[Skip every phase until a named phase is encountered]:phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
               '*:package depspec:_cave_packages' && ret=0
             ;;
           uninstall)
             _arguments -s : \
-              '--config-protect[Specify additional items to include in the config protection list]:file:_files' \
+              '*--config-protect[Specify additional items to include in the config protection list]:file:_files' \
               '*:package depspec:_cave_packages' && ret=0
             ;;
         esac
@@ -175,8 +175,8 @@ _cave_cmd_print-categories()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '--containing[Show only categories containing this package name]:package name: ' \
-    '--repository[Show only categories in this repository]:repository name:_cave_repositories'
+    '*--containing[Show only categories containing this package name]:package name: ' \
+    '*--repository[Show only categories in this repository]:repository name:_cave_repositories'
 }
 
 (( ${+functions[_cave_cmd_print-commands]} )) ||
@@ -191,8 +191,8 @@ _cave_cmd_print-environment-metadata()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '--raw-name[Show only keys with this raw name]:raw name: ' \
-    '--human-name[Show only keys with this human name]:human name: ' \
+    '*--raw-name[Show only keys with this raw name]:raw name: ' \
+    '*--human-name[Show only keys with this human name]:human name: ' \
     '--format[Select the output format]:format: '
 }
 
@@ -223,8 +223,8 @@ _cave_cmd_print-id-metadata()
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '--best[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
     '--nobest[If the spec matches multiple IDs, give an error]' \
-    '--raw-name[Show only keys with this raw name]:raw name: ' \
-    '--human-name[Show only keys with this human name]:human name: ' \
+    '*--raw-name[Show only keys with this raw name]:raw name: ' \
+    '*--human-name[Show only keys with this human name]:human name: ' \
     '--format[Select the output format]:output format: ' \
     '*:package depspec:_cave_packages' && return 0
 }
@@ -277,44 +277,44 @@ _cave_cmd_resolve()
     '(--lazy -z --complete -c --everything -e --no-lazy --no-complete --no-everything)'{--complete,-c,--no-complete}'[Do all optional work]' \
     '(--lazy -z --complete -c --everything -e --no-lazy --no-complete --no-everything)'{--everything,-e,--no-everything}'[Do all optional work, and also reinstall]' \
     '(--explain -X)'{--explain,-X}'[Explain why decisions are made]:Spec: ' \
-    '(--permit-uninstall -U)'{--permit-uninstall,-U}'[Permit uninstallation of packages matching a package spec]:Spec: ' \
-    '(--permit-downgrade -d)'{--permit-downgrade,-d}'[Permit downgrades of packages matching a package spec]:Spec: ' \
-    '(--permit-any-version -e)'{--permit-any-version,-e}'[Permit installs of versions worse than the best visible version in the slot for packages matching a package spec]:Spec: ' \
-    '(--uninstalls-may-break -u)'{--uninstalls-may-break,-u}'[Permit uninstalls that might break packages matching the specified package spec]:Spec: ' \
-    '(--remove-if-dependent -r)'{--remove-if-dependent,-r}'[Remove dependent packages that might be broken by other changes if those packages match a package spec]:Spec: ' \
-    '(--less-restrictive-remove-blockers -l)'{--less-restrictive-remove-blockers,-l}'[Use less restrictive blockers for packages matching the supplied package spec]:Spec: ' \
+    '*'{--permit-uninstall,-U}'[Permit uninstallation of packages matching a package spec]:Spec: ' \
+    '*'{--permit-downgrade,-d}'[Permit downgrades of packages matching a package spec]:Spec: ' \
+    '*'{--permit-any-version,-e}'[Permit installs of versions worse than the best visible version in the slot for packages matching a package spec]:Spec: ' \
+    '*'{--uninstalls-may-break,-u}'[Permit uninstalls that might break packages matching the specified package spec]:Spec: ' \
+    '*'{--remove-if-dependent,-r}'[Remove dependent packages that might be broken by other changes if those packages match a package spec]:Spec: ' \
+    '*'{--less-restrictive-remove-blockers,-l}'[Use less restrictive blockers for packages matching the supplied package spec]:Spec: ' \
     '(--keep-targets -K)'{--keep-targets,-K}'[Select whether to keep target packages]:When:((auto never if-transient if-same if-same-version if-possible))' \
     '(--keep -k)'{--keep,-k}'[Select whether to keep packages that are not targets]:When:((never if-transient if-same if-same-version if-possible))' \
     '(--reinstall-scm -R)'{--reinstall-scm,-R}'[Select whether to reinstall SCM packages that would otherwise be kept]:When:((always daily weekly never))' \
-    '(--with -w)'{--with,-w}'[Never keep installed packages with the supplied package name]:Spec: ' \
-    '(--without -W)'{--without,-W}'[Keep installed packages with the supplied package name if possible]:Spec: ' \
+    '*'{--with,-w}'[Never keep installed packages with the supplied package name]:Spec: ' \
+    '*'{--without,-W}'[Keep installed packages with the supplied package name if possible]:Spec: ' \
     '(--target-slots -S)'{--target-slots,-S}'[Which slots to consider for targets]:Which:((best-or-installed installed-or-best all best))' \
     '(--slots -s)'{--slots,-s}'[Which slots to consider for packages that are not targets]:Which:((best-or-installed installed-or-best all best))' \
     '(--follow-installed-build-dependencies --no-follow-installed-build-dependencies -D)'{--follow-installed-build-dependencies,--no-follow-installed-build-dependencies,-D}'[Follow build dependencies for installed packages]' \
     '(--no-follow-installed-dependencies --no-no-follow-installed-dependencies -n)'{--no-follow-installed-dependencies,--no-no-follow-installed-dependencies,-n}'[Ignore dependencies for installed packages]' \
-    '(--no-dependencies-from -0)'{--no-dependencies-from,-0}'[Ignore dependencies (not blockers) from packages matching a package spec]:Spec: ' \
-    '(--no-blockers-from -!)'{--no-blockers-from,-!}'[Ignore blockers from packages matching a package spec]:Spec: ' \
+    '*'{--no-dependencies-from,-0}'[Ignore dependencies (not blockers) from packages matching a package spec]:Spec: ' \
+    '*'{--no-blockers-from,-!}'[Ignore blockers from packages matching a package spec]:Spec: ' \
     '(--dump --no-dump)'{--dump,--no-dump}'[Dump debug output]' \
     '(--dump-dependencies --no-dump-dependencies)'{--dump-dependencies,--no-dump-dependencies}'[Dump the sanitised dependencies selected for every package]' \
     '(--dump-restarts --no-dump-restarts)'{--dump-restarts,--no-dump-restarts}'[Dump restarts]' \
     '--suggestions[Control whether suggestions are taken]:When:((ignore display take))' \
     '--recommendations[Control whether recommendations are taken]:When:((ignore display take))' \
-    '(--take -t)'{--take,-t}'[Take suggestions matching a package spec]:Spec: ' \
-    '(--take-from -T)'{--take-from,-T}'[Take suggestions made by any package matching a package spec]:Spec: ' \
-    '(--ignore -i)'{--ignore,-i}'[Discard any suggestion matching a package spec]:Spec: ' \
-    '(--ignore-from -I)'{--ignore-from,-I}'[Discard all suggestions made by any package matching a package spec]:Spec: ' \
-    '(--favour -F)'{--favour,-F}'[If there is a choice, favour the specified package name]:Spec: ' \
-    '(--avoid -A)'{--avoid,-A}'[If there is a choice, avoid the specified package name]:Spec: ' \
-    '(--preset -p)'{--preset,-p}'[Preset a given constraint]:Spec: ' \
+    '*'{--take,-t}'[Take suggestions matching a package spec]:Spec: ' \
+    '*'{--take-from,-T}'[Take suggestions made by any package matching a package spec]:Spec: ' \
+    '*'{--ignore,-i}'[Discard any suggestion matching a package spec]:Spec: ' \
+    '*'{--ignore-from,-I}'[Discard all suggestions made by any package matching a package spec]:Spec: ' \
+    '*'{--favour,-F}'[If there is a choice, favour the specified package name]:Spec: ' \
+    '*'{--avoid,-A}'[If there is a choice, avoid the specified package name]:Spec: ' \
+    '*'{--preset,-p}'[Preset a given constraint]:Spec: ' \
     '(--create-binaries -b)'{--create-binaries,-b}'[Create binary packages in the specified repository]:Repository:_cave_repositories' \
-    '(--no-binaries-for -B)'{--no-binaries-for,-B}'[Do not create binary packages from any origin ID matching a spec]:Spec: ' \
+    '*'{--no-binaries-for,-B}'[Do not create binary packages from any origin ID matching a spec]:Spec: ' \
     '(--install-to-root -/ --no-install-to-root)'{--install-to-root,-/,--no-install-to-root}'[Install packages to /]' \
     '(--preserve-world -1 --no-preserve-world)'{--preserve-world,-1,--no-preserve-world}'[Do not modify the world set]' \
     '(--continue-on-failure -C)'{--continue-on-failure,-C}'[Whether to continue after an error occurs]:When:((if-fetching never if-satisfied if-independent always))' \
-    '--skip-phase[Skip the named phases]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
-    '--abort-at-phase[Abort when a named phase is encountered]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
-    '--skip-until-phase[Skip every phase until a named phase is encountered]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
-    '--change-phases-for[Control to which packages these phase options apply]:Which:((all first last))' \
+    '*--skip-phase[Skip the named phases]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
+    '*--abort-at-phase[Abort when a named phase is encountered]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
+    '*--skip-until-phase[Skip every phase until a named phase is encountered]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
+    '*--change-phases-for[Control to which packages these phase options apply]:Which:((all first last))' \
     '--show-descriptions[Whether to display package descriptions]:When:((none new all))' \
     '*:package depspec:_cave_packages' && return 0
 }
@@ -328,7 +328,7 @@ _cave_cmd_search()
     '(--type -t)'{--type,-t}'[Alter how patterns are matched]:Matching:((text exact))' \
     '(--and -& --no-and)'{--and,-\&,--no-and}'[If multiple patterns are specified, require that all patterns match]' \
     '(--not -! --no-not)'{--not,-\!,--no-not}'[Invert the results of pattern matches]' \
-    '(--key -k)'{--key,-k}'[Search the named metadata key]' \
+    '*'{--key,-k}'[Search the named metadata key]' \
     '(--name -n --no-name)'{--name,-n,--no-name}'[Search package names]' \
     '(--description -d --no-description)'{--description,-d,--no-description}'[Search package descriptions]'
 }
