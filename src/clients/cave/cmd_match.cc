@@ -40,6 +40,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/mask.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/choice.hh>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
@@ -207,8 +208,13 @@ namespace
             texts.push_back(stringify(*k.value()));
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > &)
+        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > & k)
         {
+            for (Choices::ConstIterator c(k.value()->begin()), c_end(k.value()->end()) ;
+                    c != c_end ; ++c)
+                for (Choice::ConstIterator i((*c)->begin()), i_end((*c)->end()) ;
+                        i != i_end ; ++i)
+                    texts.push_back(stringify((*i)->name_with_prefix()));
         }
 
         void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > &)
