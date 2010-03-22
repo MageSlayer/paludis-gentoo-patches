@@ -80,7 +80,7 @@ namespace
         MatchCommandLine() :
             match_options(this)
         {
-            add_usage_line("spec [ pattern ... ]");
+            add_usage_line("spec pattern ...");
         }
     };
 
@@ -316,8 +316,8 @@ MatchCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() == cmdline.end_parameters())
-        throw args::DoHelp("match requires at least one parameter");
+    if (capped_distance(cmdline.begin_parameters(), cmdline.end_parameters(), 2) < 2)
+        throw args::DoHelp("match requires at least two parameters");
 
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), UserPackageDepSpecOptions()));
 
@@ -365,7 +365,7 @@ MatchCommand::run_hosted(
         (*i)->accept(m);
     }
 
-    bool any(false), all(true), none(true);;
+    bool any(false), all(true);
     for (std::list<std::string>::const_iterator t(texts.begin()), t_end(texts.end()) ;
             t != t_end ; ++t)
     {
@@ -377,10 +377,9 @@ MatchCommand::run_hosted(
 
         any = any || current;
         all = all && current;
-        none = false;
     }
 
-    return match_options.a_and.specified() ? all : (any || none);
+    return match_options.a_and.specified() ? all : any;
 }
 
 std::tr1::shared_ptr<args::ArgsHandler>
