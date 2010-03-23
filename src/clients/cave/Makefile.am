@@ -23,6 +23,7 @@ command_MANS = \
 	cave-execute-resolution.1 \
 	cave-find-candidates.1 \
 	cave-fix-cache.1 \
+	cave-fix-linkage.1 \
 	cave-help.1 \
 	cave-import.1 \
 	cave-info.1 \
@@ -92,6 +93,7 @@ libcave_a_SOURCES = \
 	cmd_execute_resolution.cc cmd_execute_resolution.hh \
 	cmd_find_candidates.cc cmd_find_candidates.hh \
 	cmd_fix_cache.cc cmd_fix_cache.hh \
+	cmd_fix_linkage.cc cmd_fix_linkage.hh \
 	cmd_help.cc cmd_help.hh \
 	cmd_import.cc cmd_import.hh \
 	cmd_info.cc cmd_info.hh \
