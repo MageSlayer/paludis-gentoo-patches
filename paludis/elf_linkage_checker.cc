@@ -45,7 +45,6 @@
 #include <vector>
 
 using namespace paludis;
-using namespace broken_linkage_finder;
 
 namespace
 {

@@ -17,9 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "linkage_checker.hh"
+#include <paludis/linkage_checker.hh>
 
-using namespace broken_linkage_finder;
+using namespace paludis;
 
 LinkageChecker::LinkageChecker()
 {

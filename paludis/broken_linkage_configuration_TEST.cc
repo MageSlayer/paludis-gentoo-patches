@@ -17,8 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "configuration.hh"
-
+#include <paludis/broken_linkage_configuration.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -28,8 +27,6 @@
 
 #include <unistd.h>
 #include <cstdlib>
-
-using namespace broken_linkage_finder;
 
 using namespace test;
 using namespace paludis;
@@ -46,7 +43,7 @@ namespace test_cases
             setenv("SEARCH_DIRS_MASK", "/quuxlib/quux", 1);
             setenv("LD_LIBRARY_MASK", "libquux.so", 1);
 
-            Configuration config(FSEntry::cwd() / "configuration_TEST_dir");
+            BrokenLinkageConfiguration config(FSEntry::cwd() / "broken_linkage_configuration_TEST_dir");
 
             TEST_CHECK_EQUAL(join(config.begin_search_dirs(), config.end_search_dirs(), " "),
                              "/alib /barbin /barlib/foo /bazbin /bin /blib /foobin /foolib/bar /lib32 /lib64 /quuxlib /sbin /usr/bin /usr/lib* /usr/sbin");

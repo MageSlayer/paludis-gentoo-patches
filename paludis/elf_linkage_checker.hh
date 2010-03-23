@@ -17,22 +17,23 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_RECONCILIO_BROKEN_LINKAGE_FINDER_LIBTOOL_LINKAGE_CHECKER_HH
-#define PALUDIS_GUARD_RECONCILIO_BROKEN_LINKAGE_FINDER_LIBTOOL_LINKAGE_CHECKER_HH
+#ifndef PALUDIS_GUARD_PALUDIS_BROKEN_LINKAGE_FINDER_ELF_LINKAGE_CHECKER_HH
+#define PALUDIS_GUARD_PALUDIS_BROKEN_LINKAGE_FINDER_ELF_LINKAGE_CHECKER_HH
 
-#include "linkage_checker.hh"
-
+#include <paludis/linkage_checker.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <tr1/functional>
+#include <iosfwd>
 
-namespace broken_linkage_finder
+namespace paludis
 {
-    class LibtoolLinkageChecker :
+    class ElfLinkageChecker :
         public LinkageChecker,
-        private paludis::PrivateImplementationPattern<LibtoolLinkageChecker>
+        private paludis::PrivateImplementationPattern<ElfLinkageChecker>
     {
         public:
-            LibtoolLinkageChecker(const paludis::FSEntry &);
-            virtual ~LibtoolLinkageChecker();
+            ElfLinkageChecker(const paludis::FSEntry &, const std::string &);
+            virtual ~ElfLinkageChecker();
 
             virtual bool check_file(const paludis::FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual void note_symlink(const paludis::FSEntry &, const paludis::FSEntry &);

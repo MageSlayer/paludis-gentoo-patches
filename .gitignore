@@ -189,6 +189,7 @@ paludis-*.*.*.tar.bz2
 /paludis/about.hh
 /paludis/about_TEST
 /paludis/args/args_TEST
+/paludis/broken_linkage_configuration_TEST
 /paludis/dep_list_TEST
 /paludis/dep_list_TEST_blockers
 /paludis/dep_spec_TEST
@@ -445,7 +446,6 @@ paludis-*.*.*.tar.bz2
 /src/clients/inquisitio/inquisitio
 /src/clients/instruo/instruo
 /src/clients/paludis/paludis
-/src/clients/reconcilio/broken_linkage_finder/configuration_TEST
 /src/clients/reconcilio/reconcilio
 /stamp-h1
 /test/test_fail_TEST

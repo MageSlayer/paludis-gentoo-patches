@@ -21,8 +21,6 @@
 #include "fix_linkage.hh"
 #include "install.hh"
 
-#include <src/clients/reconcilio/broken_linkage_finder/broken_linkage_finder.hh>
-
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
@@ -31,6 +29,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
 
+#include <paludis/broken_linkage_finder.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/name.hh>

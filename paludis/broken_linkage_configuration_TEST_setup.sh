@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # vim: set ft=sh sw=4 sts=4 et :
 
-mkdir configuration_TEST_dir || exit 1
-cd configuration_TEST_dir || exit 1
+mkdir broken_linkage_configuration_TEST_dir || exit 1
+cd broken_linkage_configuration_TEST_dir || exit 1
 
 mkdir -p etc/revdep-rebuild
 

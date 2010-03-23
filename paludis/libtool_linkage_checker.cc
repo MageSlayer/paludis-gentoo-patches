@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "libtool_linkage_checker.hh"
+#include <paludis/libtool_linkage_checker.hh>
 
 #include <paludis/util/realpath.hh>
 #include <paludis/util/config_file.hh>
@@ -37,7 +37,6 @@
 #include <vector>
 
 using namespace paludis;
-using namespace broken_linkage_finder;
 
 typedef std::vector<std::pair<FSEntry, std::string> > Breakage;
 

@@ -17,11 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "broken_linkage_finder.hh"
-#include "configuration.hh"
-#include "elf_linkage_checker.hh"
-#include "libtool_linkage_checker.hh"
-#include "linkage_checker.hh"
+#include <paludis/broken_linkage_finder.hh>
+#include <paludis/broken_linkage_configuration.hh>
+#include <paludis/elf_linkage_checker.hh>
+#include <paludis/libtool_linkage_checker.hh>
+#include <paludis/linkage_checker.hh>
 
 #include <paludis/util/realpath.hh>
 #include <paludis/util/fs_entry.hh>
@@ -54,7 +54,6 @@
 #include <vector>
 
 using namespace paludis;
-using namespace broken_linkage_finder;
 
 typedef std::multimap<FSEntry, std::tr1::shared_ptr<const PackageID> > Files;
 typedef std::map<FSEntry, std::set<std::string> > PackageBreakage;
@@ -66,7 +65,7 @@ namespace paludis
     struct Implementation<BrokenLinkageFinder>
     {
         const Environment * env;
-        const Configuration config;
+        const BrokenLinkageConfiguration config;
         std::string library;
 
         std::vector<std::tr1::shared_ptr<LinkageChecker> > checkers;

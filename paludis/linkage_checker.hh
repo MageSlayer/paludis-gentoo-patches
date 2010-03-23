@@ -17,11 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_RECONCILIO_BROKEN_LINKAGE_FINDER_LINKAGE_CHECKER_HH
-#define PALUDIS_GUARD_RECONCILIO_BROKEN_LINKAGE_FINDER_LINKAGE_CHECKER_HH
+#ifndef PALUDIS_GUARD_PALUDIS_BROKEN_LINKAGE_FINDER_LINKAGE_CHECKER_HH
+#define PALUDIS_GUARD_PALUDIS_BROKEN_LINKAGE_FINDER_LINKAGE_CHECKER_HH
 
-#include "broken_linkage_finder.hh"
-
+#include <paludis/broken_linkage_finder.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/set-fwd.hh>
@@ -31,7 +30,7 @@
 #include <tr1/functional>
 #include <string>
 
-namespace broken_linkage_finder
+namespace paludis
 {
     class LinkageChecker :
         private paludis::InstantiationPolicy<LinkageChecker, paludis::instantiation_method::NonCopyableTag>

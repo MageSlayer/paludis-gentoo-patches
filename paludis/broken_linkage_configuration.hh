@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_RECONCILIO_BROKEN_LINKAGE_FINDER_CONFIGURATION_HH
-#define PALUDIS_GUARD_RECONCILIO_BROKEN_LINKAGE_FINDER_CONFIGURATION_HH
+#ifndef PALUDIS_GUARD_PALUDIS_BROKEN_LINKAGE_CONFIGURATION_HH
+#define PALUDIS_GUARD_PALUDIS_BROKEN_LINKAGE_CONFIGURATION_HH 1
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry-fwd.hh>
@@ -28,15 +28,15 @@
 
 #include <string>
 
-namespace broken_linkage_finder
+namespace paludis
 {
-    class Configuration :
-        private paludis::PrivateImplementationPattern<Configuration>,
-        private paludis::InstantiationPolicy<Configuration, paludis::instantiation_method::NonCopyableTag>
+    class PALUDIS_VISIBLE BrokenLinkageConfiguration :
+        private paludis::PrivateImplementationPattern<BrokenLinkageConfiguration>,
+        private paludis::InstantiationPolicy<BrokenLinkageConfiguration, paludis::instantiation_method::NonCopyableTag>
     {
         public:
-            Configuration(const paludis::FSEntry &);
-            ~Configuration();
+            BrokenLinkageConfiguration(const paludis::FSEntry &);
+            ~BrokenLinkageConfiguration();
 
             struct DirsIteratorTag;
             typedef paludis::WrappedForwardIterator<DirsIteratorTag, const paludis::FSEntry> DirsIterator;
@@ -48,14 +48,11 @@ namespace broken_linkage_finder
             bool dir_is_masked(const paludis::FSEntry &) const PALUDIS_ATTRIBUTE((warn_unused_result));
             bool lib_is_masked(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
-}
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
-namespace paludis
-{
-    extern template class WrappedForwardIterator<broken_linkage_finder::Configuration::DirsIteratorTag, const FSEntry>;
-}
+    extern template class WrappedForwardIterator<BrokenLinkageConfiguration::DirsIteratorTag, const FSEntry>;
 #endif
+}
 
 #endif
 

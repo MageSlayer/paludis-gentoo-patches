@@ -17,8 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "configuration.hh"
-
+#include <paludis/broken_linkage_configuration.hh>
 #include <paludis/util/realpath.hh>
 #include <paludis/util/wildcard_expander.hh>
 #include <paludis/util/config_file.hh>
@@ -38,12 +37,11 @@
 #include <vector>
 
 using namespace paludis;
-using namespace broken_linkage_finder;
 
 namespace paludis
 {
     template <>
-    struct Implementation<Configuration>
+    struct Implementation<BrokenLinkageConfiguration>
     {
         std::vector<std::string> ld_library_mask;
         std::vector<FSEntry> search_dirs;
@@ -58,7 +56,7 @@ namespace paludis
     };
 
     template <>
-    struct WrappedForwardIteratorTraits<Configuration::DirsIteratorTag>
+    struct WrappedForwardIteratorTraits<BrokenLinkageConfiguration::DirsIteratorTag>
     {
         typedef std::vector<FSEntry>::const_iterator UnderlyingIterator;
     };
@@ -138,8 +136,8 @@ namespace
     }
 }
 
-Configuration::Configuration(const FSEntry & root) :
-    PrivateImplementationPattern<Configuration>(new Implementation<Configuration>)
+BrokenLinkageConfiguration::BrokenLinkageConfiguration(const FSEntry & root) :
+    PrivateImplementationPattern<BrokenLinkageConfiguration>(new Implementation<BrokenLinkageConfiguration>)
 {
     Context ctx("When loading broken linkage checker configuration for '" + stringify(root) + "':");
 
@@ -162,12 +160,12 @@ Configuration::Configuration(const FSEntry & root) :
         join(_imp->ld_so_conf.begin(), _imp->ld_so_conf.end(), " ") << "\"";
 }
 
-Configuration::~Configuration()
+BrokenLinkageConfiguration::~BrokenLinkageConfiguration()
 {
 }
 
 void
-Implementation<Configuration>::load_from_environment()
+Implementation<BrokenLinkageConfiguration>::load_from_environment()
 {
     using namespace std::tr1::placeholders;
 
@@ -182,7 +180,7 @@ Implementation<Configuration>::load_from_environment()
 }
 
 void
-Implementation<Configuration>::load_from_etc_revdep_rebuild(const FSEntry & root)
+Implementation<BrokenLinkageConfiguration>::load_from_etc_revdep_rebuild(const FSEntry & root)
 {
     using namespace std::tr1::placeholders;
 
@@ -230,7 +228,7 @@ Implementation<Configuration>::load_from_etc_revdep_rebuild(const FSEntry & root
 }
 
 void
-Implementation<Configuration>::load_from_etc_profile_env(const FSEntry & root)
+Implementation<BrokenLinkageConfiguration>::load_from_etc_profile_env(const FSEntry & root)
 {
     using namespace std::tr1::placeholders;
 
@@ -259,7 +257,7 @@ Implementation<Configuration>::load_from_etc_profile_env(const FSEntry & root)
 }
 
 void
-Implementation<Configuration>::load_from_etc_ld_so_conf(const FSEntry & root)
+Implementation<BrokenLinkageConfiguration>::load_from_etc_ld_so_conf(const FSEntry & root)
 {
     FSEntry etc_ld_so_conf(root / "etc" / "ld.so.conf");
     Context ctx("When reading '" + stringify(etc_ld_so_conf) + "':");
@@ -284,7 +282,7 @@ Implementation<Configuration>::load_from_etc_ld_so_conf(const FSEntry & root)
 }
 
 void
-Implementation<Configuration>::add_defaults()
+Implementation<BrokenLinkageConfiguration>::add_defaults()
 {
     Context ctx("When adding default settings:");
 
@@ -317,41 +315,41 @@ Implementation<Configuration>::add_defaults()
             default_ld_so_conf, std::back_inserter(ld_so_conf));
 }
 
-Configuration::DirsIterator
-Configuration::begin_search_dirs() const
+BrokenLinkageConfiguration::DirsIterator
+BrokenLinkageConfiguration::begin_search_dirs() const
 {
     return DirsIterator(_imp->search_dirs.begin());
 }
 
-Configuration::DirsIterator
-Configuration::end_search_dirs() const
+BrokenLinkageConfiguration::DirsIterator
+BrokenLinkageConfiguration::end_search_dirs() const
 {
     return DirsIterator(_imp->search_dirs.end());
 }
 
-Configuration::DirsIterator
-Configuration::begin_ld_so_conf() const
+BrokenLinkageConfiguration::DirsIterator
+BrokenLinkageConfiguration::begin_ld_so_conf() const
 {
     return DirsIterator(_imp->ld_so_conf.begin());
 }
 
-Configuration::DirsIterator
-Configuration::end_ld_so_conf() const
+BrokenLinkageConfiguration::DirsIterator
+BrokenLinkageConfiguration::end_ld_so_conf() const
 {
     return DirsIterator(_imp->ld_so_conf.end());
 }
 
 bool
-Configuration::dir_is_masked(const FSEntry & dir) const
+BrokenLinkageConfiguration::dir_is_masked(const FSEntry & dir) const
 {
     return std::binary_search(_imp->search_dirs_mask.begin(), _imp->search_dirs_mask.end(), dir);
 }
 
 bool
-Configuration::lib_is_masked(const std::string & lib) const
+BrokenLinkageConfiguration::lib_is_masked(const std::string & lib) const
 {
     return std::binary_search(_imp->ld_library_mask.begin(), _imp->ld_library_mask.end(), lib);
 }
 
-template class WrappedForwardIterator<Configuration::DirsIteratorTag, const paludis::FSEntry>;
+template class WrappedForwardIterator<BrokenLinkageConfiguration::DirsIteratorTag, const paludis::FSEntry>;
 
