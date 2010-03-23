@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,6 +31,47 @@ using namespace cave;
 
 using std::cout;
 using std::endl;
+
+namespace
+{
+    struct ResolveCommandLine :
+        CaveCommandCommandLine
+    {
+        ResolveCommandLineResolutionOptions resolution_options;
+        ResolveCommandLineExecutionOptions execution_options;
+        ResolveCommandLineDisplayOptions display_options;
+        ResolveCommandLineProgramOptions program_options;
+
+        ResolveCommandLine() :
+            resolution_options(this),
+            execution_options(this),
+            display_options(this),
+            program_options(this)
+        {
+            add_usage_line("[ -x|--execute ] [ -z|--lazy or -c|--complete or -e|--everything ] spec ...");
+            add_usage_line("[ -x|--execute ] [ -z|--lazy or -c|--complete or -e|--everything ] set");
+            add_usage_line("[ -x|--execute ] !spec ...");
+        }
+
+        std::string app_name() const
+        {
+            return "cave resolve";
+        }
+
+        std::string app_synopsis() const
+        {
+            return "Display how to resolve one or more targets, and possibly then "
+                "perform that resolution.";
+        }
+
+        std::string app_description() const
+        {
+            return "Displays how to resolve one or more targets. If instructed, then "
+                "executes the relevant install and uninstall actions to perform that "
+                "resolution.";
+        }
+    };
+}
 
 bool
 ResolveCommand::important() const

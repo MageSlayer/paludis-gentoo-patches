@@ -164,21 +164,6 @@ namespace paludis
 
             void apply(const std::tr1::shared_ptr<Environment> & env) const;
         };
-
-        struct ResolveCommandLine :
-            CaveCommandCommandLine
-        {
-            virtual std::string app_name() const;
-            virtual std::string app_synopsis() const;
-            virtual std::string app_description() const;
-
-            ResolveCommandLine();
-
-            ResolveCommandLineResolutionOptions resolution_options;
-            ResolveCommandLineExecutionOptions execution_options;
-            ResolveCommandLineDisplayOptions display_options;
-            ResolveCommandLineProgramOptions program_options;
-        };
     }
 }
 

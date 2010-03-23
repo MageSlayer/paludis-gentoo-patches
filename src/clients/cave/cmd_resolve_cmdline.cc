@@ -354,38 +354,6 @@ ResolveCommandLineImportOptions::apply(const std::tr1::shared_ptr<Environment> &
     env->package_database()->add_repository(10, repo);
 }
 
-ResolveCommandLine::ResolveCommandLine() :
-    resolution_options(this),
-    execution_options(this),
-    display_options(this),
-    program_options(this)
-{
-    add_usage_line("[ -x|--execute ] [ -z|--lazy or -c|--complete or -e|--everything ] spec ...");
-    add_usage_line("[ -x|--execute ] [ -z|--lazy or -c|--complete or -e|--everything ] set");
-    add_usage_line("[ -x|--execute ] !spec ...");
-}
-
-std::string
-ResolveCommandLine::app_name() const
-{
-    return "cave resolve";
-}
-
-std::string
-ResolveCommandLine::app_synopsis() const
-{
-    return "Display how to resolve one or more targets, and possibly then "
-        "perform that resolution.";
-}
-
-std::string
-ResolveCommandLine::app_description() const
-{
-    return "Displays how to resolve one or more targets. If instructed, then "
-        "executes the relevant install and uninstall actions to perform that "
-        "resolution.";
-}
-
 void
 ResolveCommandLineResolutionOptions::apply_shortcuts()
 {
