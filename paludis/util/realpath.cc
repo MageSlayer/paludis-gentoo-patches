@@ -17,8 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "realpath.hh"
-
+#include <paludis/util/realpath.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 
@@ -80,17 +79,18 @@ namespace
 }
 
 FSEntry
-realpath_with_current_and_root(const FSEntry & file, const FSEntry & current, const FSEntry & root)
+paludis::realpath_with_current_and_root(const FSEntry & file, const FSEntry & current, const FSEntry & root)
 {
     unsigned symlinks(0);
     return do_realpath_with_current_and_root(file, current, root, file, current, symlinks);
 }
 
 FSEntry
-dereference_with_root(const FSEntry & file, const FSEntry & root)
+paludis::dereference_with_root(const FSEntry & file, const FSEntry & root)
 {
     if (file.is_symbolic_link())
         return root / realpath_with_current_and_root(FSEntry(file.readlink()), file.dirname().strip_leading(root), root);
     else
         return file;
 }
+

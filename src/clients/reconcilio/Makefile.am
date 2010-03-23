@@ -3,7 +3,7 @@ include $(top_srcdir)/misc/common-makefile.am
 AM_CXXFLAGS = -I$(top_srcdir) -I$(top_srcdir)/src \
 	      @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 
-SUBDIRS = util littlelf broken_linkage_finder .
+SUBDIRS = littlelf broken_linkage_finder .
 
 bin_PROGRAMS = reconcilio
 noinst_PROGRAMS = man-reconcilio
@@ -34,7 +34,6 @@ reconcilio_SOURCES = \
 reconcilio_LDADD = \
 	broken_linkage_finder/libbrokenlinkagefinder.a \
 	littlelf/liblittlelf.a \
-	util/libreconcilioutil.a \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/args/libpaludisargs_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \

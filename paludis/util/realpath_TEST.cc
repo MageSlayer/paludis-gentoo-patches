@@ -17,8 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "realpath.hh"
-
+#include <paludis/util/realpath.hh>
 #include <paludis/util/fs_entry.hh>
 
 #include <test/test_runner.hh>

@@ -19,8 +19,7 @@
 
 #include "libtool_linkage_checker.hh"
 
-#include <src/clients/reconcilio/util/realpath.hh>
-
+#include <paludis/util/realpath.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>

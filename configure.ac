@@ -1648,7 +1648,6 @@ AC_OUTPUT(
 	src/clients/reconcilio/Makefile
 	src/clients/reconcilio/broken_linkage_finder/Makefile
 	src/clients/reconcilio/littlelf/Makefile
-	src/clients/reconcilio/util/Makefile
 	src/output/Makefile
 	test/Makefile
 	vim/Makefile

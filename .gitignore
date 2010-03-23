@@ -408,6 +408,7 @@ paludis-*.*.*.tar.bz2
 /paludis/util/pretty_print_TEST
 /paludis/util/pty_TEST
 /paludis/util/random_TEST
+/paludis/util/realpath_TEST
 /paludis/util/return_literal_function_TEST
 /paludis/util/rmd160_TEST
 /paludis/util/safe_ifstream_TEST
@@ -431,6 +432,7 @@ paludis-*.*.*.tar.bz2
 /paludis/util/virtual_constructor_TEST
 /paludis/util/visitor_TEST
 /paludis/util/visitor_cast_TEST
+/paludis/util/wildcard_expander_TEST
 /paludis/util/wrapped_forward_iterator_TEST
 /paludis/version_operator_TEST
 /paludis/version_spec_TEST
@@ -445,8 +447,6 @@ paludis-*.*.*.tar.bz2
 /src/clients/paludis/paludis
 /src/clients/reconcilio/broken_linkage_finder/configuration_TEST
 /src/clients/reconcilio/reconcilio
-/src/clients/reconcilio/util/realpath_TEST
-/src/clients/reconcilio/util/wildcard_expander_TEST
 /stamp-h1
 /test/test_fail_TEST
 /test/test_pass_TEST

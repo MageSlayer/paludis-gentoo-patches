@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "wildcard_expander.hh"
+#include <paludis/util/wildcard_expander.hh>
 
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>

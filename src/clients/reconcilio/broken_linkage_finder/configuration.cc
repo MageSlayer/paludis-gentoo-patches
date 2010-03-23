@@ -19,9 +19,8 @@
 
 #include "configuration.hh"
 
-#include <src/clients/reconcilio/util/realpath.hh>
-#include <src/clients/reconcilio/util/wildcard_expander.hh>
-
+#include <paludis/util/realpath.hh>
+#include <paludis/util/wildcard_expander.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/join.hh>

@@ -17,16 +17,18 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_RECONCILIO_UTIL_REALPATH_HH
-#define PALUDIS_GUARD_RECONCILIO_UTIL_REALPATH_HH
+#ifndef PALUDIS_GUARD_PALUDIS_UTIL_REALPATH_HH
+#define PALUDIS_GUARD_PALUDIS_UTIL_REALPATH_HH
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 
-paludis::FSEntry realpath_with_current_and_root(
-    const paludis::FSEntry &, const paludis::FSEntry &, const paludis::FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result));
-paludis::FSEntry dereference_with_root(const paludis::FSEntry &, const paludis::FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result));
+namespace paludis
+{
+    FSEntry realpath_with_current_and_root(
+            const FSEntry &, const FSEntry &, const FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
+
+    FSEntry dereference_with_root(const FSEntry &, const FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
+}
 
 #endif
-
-
