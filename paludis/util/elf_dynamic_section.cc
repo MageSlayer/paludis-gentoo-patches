@@ -18,13 +18,13 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "elf_dynamic_section.hh"
-#include "elf_sections.hh"
-#include "elf_types.hh"
-#include "elf_relocation_section.hh"
-#include "elf_sections.hh"
-#include "elf_symbol_section.hh"
-#include "elf.hh"
+#include <paludis/util/elf_dynamic_section.hh>
+#include <paludis/util/elf_sections.hh>
+#include <paludis/util/elf_types.hh>
+#include <paludis/util/elf_relocation_section.hh>
+#include <paludis/util/elf_sections.hh>
+#include <paludis/util/elf_symbol_section.hh>
+#include <paludis/util/elf.hh>
 
 #include <paludis/util/byte_swap.hh>
 #include <paludis/util/clone-impl.hh>
@@ -63,43 +63,46 @@ namespace paludis
     };
 }
 
-namespace littlelf_internals
+namespace paludis
 {
-    template <typename ElfType_>
-    class DynEntriesStringResolvingVisitor
+    namespace littlelf_internals
     {
-        private:
-            const DynamicSection<ElfType_> & _dyn_section;
-            const StringSection<ElfType_> & _string_section;
+        template <typename ElfType_>
+        class DynEntriesStringResolvingVisitor
+        {
+            private:
+                const DynamicSection<ElfType_> & _dyn_section;
+                const StringSection<ElfType_> & _string_section;
 
-        public:
-            DynEntriesStringResolvingVisitor(
-                const DynamicSection<ElfType_> & dyn_section,
-                const StringSection<ElfType_> & string_section) :
-                _dyn_section(dyn_section),
-                _string_section(string_section)
-            {
-            }
-
-            void visit(DynamicEntry<ElfType_> &)
-            {
-            }
-
-            void visit(DynamicEntryString<ElfType_> & entry)
-            {
-                try
+            public:
+                DynEntriesStringResolvingVisitor(
+                    const DynamicSection<ElfType_> & dyn_section,
+                    const StringSection<ElfType_> & string_section) :
+                    _dyn_section(dyn_section),
+                    _string_section(string_section)
                 {
-                    entry.resolve_string(_string_section.get_string(entry.get_string_index()));
                 }
-                catch (std::out_of_range &)
+
+                void visit(DynamicEntry<ElfType_> &)
                 {
-                    throw InvalidElfFileError(
-                        entry.description() + " in " + _dyn_section.description() + " has out-of-range string index " +
-                        stringify(entry.get_string_index()) + " for " + _string_section.description() +
-                        " (max " + stringify(_string_section.get_max_string()) + ")");
                 }
-            }
-    };
+
+                void visit(DynamicEntryString<ElfType_> & entry)
+                {
+                    try
+                    {
+                        entry.resolve_string(_string_section.get_string(entry.get_string_index()));
+                    }
+                    catch (std::out_of_range &)
+                    {
+                        throw InvalidElfFileError(
+                            entry.description() + " in " + _dyn_section.description() + " has out-of-range string index " +
+                            stringify(entry.get_string_index()) + " for " + _string_section.description() +
+                            " (max " + stringify(_string_section.get_max_string()) + ")");
+                    }
+                }
+        };
+    }
 }
 
 namespace

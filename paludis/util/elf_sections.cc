@@ -18,9 +18,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "elf_sections.hh"
-#include "elf_types.hh"
-
+#include <paludis/util/elf_sections.hh>
+#include <paludis/util/elf_types.hh>
 #include <paludis/util/stringify.hh>
 
 #include <istream>

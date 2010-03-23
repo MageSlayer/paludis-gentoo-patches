@@ -18,10 +18,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "elf_relocation_section.hh"
-#include "elf_types.hh"
-#include "elf.hh"
-
+#include <paludis/util/elf_relocation_section.hh>
+#include <paludis/util/elf_types.hh>
+#include <paludis/util/elf.hh>
 #include <paludis/util/byte_swap.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>

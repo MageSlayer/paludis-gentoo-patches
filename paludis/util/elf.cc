@@ -20,11 +20,11 @@
 
 #include "config.h"
 
-#include "elf.hh"
-#include "elf_dynamic_section.hh"
-#include "elf_relocation_section.hh"
-#include "elf_symbol_section.hh"
-#include "elf_types.hh"
+#include <paludis/util/elf.hh>
+#include <paludis/util/elf_dynamic_section.hh>
+#include <paludis/util/elf_relocation_section.hh>
+#include <paludis/util/elf_symbol_section.hh>
+#include <paludis/util/elf_types.hh>
 
 #include <paludis/util/byte_swap.hh>
 #include <paludis/util/make_shared_ptr.hh>
@@ -176,41 +176,44 @@ namespace
     };
 }
 
-namespace littlelf_internals
+namespace paludis
 {
-    template <typename ElfType_>
-    class SectionNameResolvingVisitor
+    namespace littlelf_internals
     {
-        private:
-            typename ElfObject<ElfType_>::SectionIterator _begin, _end;
+        template <typename ElfType_>
+        class SectionNameResolvingVisitor
+        {
+            private:
+                typename ElfObject<ElfType_>::SectionIterator _begin, _end;
 
-        public:
-            SectionNameResolvingVisitor(typename ElfObject<ElfType_>::SectionIterator begin, typename ElfObject<ElfType_>::SectionIterator end) :
-                _begin(begin),
-                _end(end)
-            {
-            }
+            public:
+                SectionNameResolvingVisitor(typename ElfObject<ElfType_>::SectionIterator begin, typename ElfObject<ElfType_>::SectionIterator end) :
+                    _begin(begin),
+                    _end(end)
+                {
+                }
 
-            void visit(const Section<ElfType_> &)
-            {
-            }
+                void visit(const Section<ElfType_> &)
+                {
+                }
 
-            void visit(const StringSection<ElfType_> & section)
-            {
-                for (typename ElfObject<ElfType_>::SectionIterator i = _begin; i != _end; ++i)
-                    try
-                    {
-                        i->resolve_section_name(section.get_string(i->get_name_index()));
-                    }
-                    catch (std::out_of_range &)
-                    {
-                        throw InvalidElfFileError(
-                            i->description() + " has out-of-range name index " +
-                            stringify(i->get_name_index()) + " for " + section.description() +
-                            " (max " + stringify(section.get_max_string()) + ")");
-                    }
-            }
-    };
+                void visit(const StringSection<ElfType_> & section)
+                {
+                    for (typename ElfObject<ElfType_>::SectionIterator i = _begin; i != _end; ++i)
+                        try
+                        {
+                            i->resolve_section_name(section.get_string(i->get_name_index()));
+                        }
+                        catch (std::out_of_range &)
+                        {
+                            throw InvalidElfFileError(
+                                i->description() + " has out-of-range name index " +
+                                stringify(i->get_name_index()) + " for " + section.description() +
+                                " (max " + stringify(section.get_max_string()) + ")");
+                        }
+                }
+        };
+    }
 }
 
 InvalidElfFileError::InvalidElfFileError(const InvalidElfFileError & other) :

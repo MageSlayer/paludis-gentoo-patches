@@ -18,12 +18,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "elf_symbol_section.hh"
-#include "elf_sections.hh"
-#include "elf_types.hh"
-#include "elf_relocation_section.hh"
-#include "elf_dynamic_section.hh"
-#include "elf.hh"
+#include <paludis/util/elf_symbol_section.hh>
+#include <paludis/util/elf_sections.hh>
+#include <paludis/util/elf_types.hh>
+#include <paludis/util/elf_relocation_section.hh>
+#include <paludis/util/elf_dynamic_section.hh>
+#include <paludis/util/elf.hh>
 
 #include <paludis/util/byte_swap.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -69,46 +69,43 @@ namespace
     };
 }
 
-namespace littlelf_internals
+template <typename ElfType_>
+class littlelf_internals::SymbolStringResolvingVisitor
 {
-    template <typename ElfType_>
-    class SymbolStringResolvingVisitor
-    {
-        private:
-            const SymbolSection<ElfType_> & _sym_section;
-            typename std::vector<Symbol<ElfType_> >::iterator _begin, _end;
+    private:
+        const SymbolSection<ElfType_> & _sym_section;
+        typename std::vector<Symbol<ElfType_> >::iterator _begin, _end;
 
-        public:
-            SymbolStringResolvingVisitor(const SymbolSection<ElfType_> & sym_section,
-                typename std::vector<Symbol<ElfType_> >::iterator begin,
-                typename std::vector<Symbol<ElfType_> >::iterator end) :
-                _sym_section(sym_section),
-                _begin(begin),
-                _end(end)
-            {
-            }
+    public:
+        SymbolStringResolvingVisitor(const SymbolSection<ElfType_> & sym_section,
+            typename std::vector<Symbol<ElfType_> >::iterator begin,
+            typename std::vector<Symbol<ElfType_> >::iterator end) :
+            _sym_section(sym_section),
+            _begin(begin),
+            _end(end)
+        {
+        }
 
-            void visit(Section<ElfType_> &)
-            {
-            }
+        void visit(Section<ElfType_> &)
+        {
+        }
 
-            void visit(StringSection<ElfType_> & string_section)
-            {
-                for (typename std::vector<Symbol<ElfType_> >::iterator i = _begin; i != _end; ++i)
-                    try
-                    {
-                        i->resolve_symbol(string_section.get_string(i->get_symbol_index()));
-                    }
-                    catch (std::out_of_range &)
-                    {
-                        throw InvalidElfFileError(
-                            "symbol " + stringify(i - _begin) + " in " + _sym_section.description() + " has out-of-range string index " +
-                            stringify(i->get_symbol_index()) + " for " + string_section.description() +
-                            " (max " + stringify(string_section.get_max_string()) + ")");
-                    }
-            }
-    };
-}
+        void visit(StringSection<ElfType_> & string_section)
+        {
+            for (typename std::vector<Symbol<ElfType_> >::iterator i = _begin; i != _end; ++i)
+                try
+                {
+                    i->resolve_symbol(string_section.get_string(i->get_symbol_index()));
+                }
+                catch (std::out_of_range &)
+                {
+                    throw InvalidElfFileError(
+                        "symbol " + stringify(i - _begin) + " in " + _sym_section.description() + " has out-of-range string index " +
+                        stringify(i->get_symbol_index()) + " for " + string_section.description() +
+                        " (max " + stringify(string_section.get_max_string()) + ")");
+                }
+        }
+};
 
 template <typename ElfType_>
 Symbol<ElfType_>::Symbol(const typename ElfType_::Symbol & my_symbol) :

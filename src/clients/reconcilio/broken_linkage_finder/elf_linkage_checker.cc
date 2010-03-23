@@ -19,11 +19,11 @@
 
 #include "elf_linkage_checker.hh"
 
-#include <src/clients/reconcilio/littlelf/elf.hh>
-#include <src/clients/reconcilio/littlelf/elf_dynamic_section.hh>
-#include <src/clients/reconcilio/littlelf/elf_types.hh>
-#include <src/clients/reconcilio/littlelf/elf_relocation_section.hh>
-#include <src/clients/reconcilio/littlelf/elf_symbol_section.hh>
+#include <paludis/util/elf.hh>
+#include <paludis/util/elf_dynamic_section.hh>
+#include <paludis/util/elf_types.hh>
+#include <paludis/util/elf_relocation_section.hh>
+#include <paludis/util/elf_symbol_section.hh>
 
 #include <paludis/util/realpath.hh>
 #include <paludis/util/fs_entry.hh>
