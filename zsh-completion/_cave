@@ -20,6 +20,7 @@ _cave()
   _cave_commands=(
     'config:Perform post-install configuration on a package'
     'fix-cache:Fix on-disk caches'
+    'fix-linkage:Identify packages with broken linkage that can be fixed by rebuilds'
     'help:Display help information for a particular command'
     'info:Display a summary of configuration and package information'
     'perform:Perform an action upon a package'
@@ -85,6 +86,15 @@ _cave_cmd_fix-cache()
     '*'{--repository,-r}'[Select the repository with the specified name]:repository name:_cave_repositories' \
     '(--installable -i --no-installable)'{--installable,-i,--no-installable}'[Select all installable repositories]' \
     '(--installed -I --no-installed)'{--installed,-I,--no-installed}'[Select all installed repositories]'
+}
+
+(( ${+functions[_cave_cmd_fix-linkage]} )) ||
+_cave_cmd_fix-linkage()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '--library[Only rebuild packages linked against this library, even if it exists]:Library: ' \
+    '--exact[Rebuild the same package version that is currently installed]'
 }
 
 (( ${+functions[_cave_cmd_help]} )) ||
