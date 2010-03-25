@@ -289,7 +289,7 @@ _cave_cmd_resolve()
     '(--explain -X)'{--explain,-X}'[Explain why decisions are made]:Spec: ' \
     '*'{--permit-uninstall,-U}'[Permit uninstallation of packages matching a package spec]:Spec: ' \
     '*'{--permit-downgrade,-d}'[Permit downgrades of packages matching a package spec]:Spec: ' \
-    '*'{--permit-any-version,-e}'[Permit installs of versions worse than the best visible version in the slot for packages matching a package spec]:Spec: ' \
+    '*'{--permit-old-version,-o}'[Permit installs of versions worse than the best visible version in the slot for packages matching a package spec]:Spec: ' \
     '*'{--uninstalls-may-break,-u}'[Permit uninstalls that might break packages matching the specified package spec]:Spec: ' \
     '*'{--remove-if-dependent,-r}'[Remove dependent packages that might be broken by other changes if those packages match a package spec]:Spec: ' \
     '*'{--less-restrictive-remove-blockers,-l}'[Use less restrictive blockers for packages matching the supplied package spec]:Spec: ' \

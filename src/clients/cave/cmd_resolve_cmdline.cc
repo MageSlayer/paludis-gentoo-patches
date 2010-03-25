@@ -63,7 +63,7 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             "and may suggest stupid and dangerous uninstalls."),
     a_permit_downgrade(&g_resolution_options, "permit-downgrade", 'd', "Permit downgrades matching the supplied "
             "specification. Use '*/*' to allow all downgrades."),
-    a_permit_any_version(&g_resolution_options, "permit-any-version", 'a', "Permit installs of versions matching the supplied "
+    a_permit_old_version(&g_resolution_options, "permit-old-version", 'o', "Permit installs of versions matching the supplied "
             "specification even if those versions are worse than the best visible version in the slot. Use '*/*' "
             "to allow all worse versions to be installed."),
 //    a_purge(&g_resolution_options, "purge", 'P',

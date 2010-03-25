@@ -602,7 +602,7 @@ namespace
 
         std::string visit(const NotBestConfirmation &) const
         {
-            return "--permit-any-version";
+            return "--permit-old-version";
         }
     };
 

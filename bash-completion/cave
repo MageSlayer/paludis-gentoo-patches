@@ -102,7 +102,7 @@ __cave_resolve_options="-h --help
         -e --everything --no-everything
         -U --permit-uninstall
         -d --permit-downgrade
-        -a --permit-any-version
+        -o --permit-old-version
         -K --keep-targets
         -k --keep
         -R --reinstall-scm

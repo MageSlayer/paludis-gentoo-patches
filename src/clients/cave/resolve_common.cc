@@ -1183,8 +1183,8 @@ namespace
         bool visit(const NotBestConfirmation &) const
         {
             if (id)
-                for (args::StringSetArg::ConstIterator a(resolution_options.a_permit_any_version.begin_args()),
-                        a_end(resolution_options.a_permit_any_version.end_args()) ;
+                for (args::StringSetArg::ConstIterator a(resolution_options.a_permit_old_version.begin_args()),
+                        a_end(resolution_options.a_permit_old_version.end_args()) ;
                         a != a_end ; ++a)
                 {
                     PackageDepSpec spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
