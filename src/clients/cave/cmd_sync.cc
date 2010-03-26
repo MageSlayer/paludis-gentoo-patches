@@ -33,6 +33,7 @@
 #include <paludis/util/executor.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/output_manager.hh>
+#include <paludis/standard_output_manager.hh>
 #include <paludis/repository.hh>
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
@@ -150,6 +151,7 @@ namespace
             {
                 cout << format_general_spad(f::sync_repo_starting(), stringify(name), executor->pending(),
                         executor->active(), executor->done());
+                output_manager.reset(new StandardOutputManager);
 
                 if (0 != env->perform_hook(Hook("sync_pre")
                             ("TARGET", stringify(name))
