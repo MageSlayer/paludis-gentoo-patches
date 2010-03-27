@@ -476,8 +476,13 @@ VDBRepository::perform_uninstall(
                         value_for<n::package_id>(id),
                         value_for<n::root>(installed_root_key()->value())
                     ));
-
             unmerger.unmerge();
+
+            VDBPostMergeUnmergeCommand post_unmerge_command(
+                    make_named_values<VDBPostMergeUnmergeCommandParams>(
+                        value_for<n::root>(installed_root_key()->value())
+                    ));
+            post_unmerge_command();
         }
         else
         {
@@ -1023,12 +1028,12 @@ VDBRepository::merge(const MergeParams & m)
         }
     }
 
-    VDBPostMergeCommand post_merge_command(
-            make_named_values<VDBPostMergeCommandParams>(
+    VDBPostMergeUnmergeCommand post_merge_command(
+            make_named_values<VDBPostMergeUnmergeCommandParams>(
                 value_for<n::root>(installed_root_key()->value())
             ));
-
     post_merge_command();
+
     _imp->names_cache->add(m.package_id()->name());
 
     if (_imp->used_provides_cache || (! _imp->tried_provides_cache && load_provided_using_cache()))

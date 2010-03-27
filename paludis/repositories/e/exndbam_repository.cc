@@ -476,11 +476,10 @@ ExndbamRepository::merge(const MergeParams & m)
         }
     }
 
-    VDBPostMergeCommand post_merge_command(
-            make_named_values<VDBPostMergeCommandParams>(
+    VDBPostMergeUnmergeCommand post_merge_command(
+            make_named_values<VDBPostMergeUnmergeCommandParams>(
                 value_for<n::root>(installed_root_key()->value())
             ));
-
     post_merge_command();
 }
 
@@ -556,6 +555,12 @@ ExndbamRepository::perform_uninstall(
                     ));
 
             unmerger.unmerge();
+
+            VDBPostMergeUnmergeCommand post_unmerge_command(
+                    make_named_values<VDBPostMergeUnmergeCommandParams>(
+                        value_for<n::root>(installed_root_key()->value())
+                    ));
+            post_unmerge_command();
         }
         else
         {

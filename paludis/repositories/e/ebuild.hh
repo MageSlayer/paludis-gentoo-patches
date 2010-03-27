@@ -313,7 +313,7 @@ namespace paludis
          * \ingroup grpebuildinterface
          * \nosubgrouping
          */
-        struct VDBPostMergeCommandParams
+        struct VDBPostMergeUnmergeCommandParams
         {
             NamedValue<n::root, FSEntry> root;
         };
@@ -696,21 +696,21 @@ namespace paludis
         };
 
         /**
-         * Command to be run after a VDB merge.
+         * Command to be run after a VDB merge or unmerge.
          *
          * \ingroup grpebuildinterface
          */
-        class VDBPostMergeCommand :
-            private InstantiationPolicy<VDBPostMergeCommand, instantiation_method::NonCopyableTag>
+        class VDBPostMergeUnmergeCommand :
+            private InstantiationPolicy<VDBPostMergeUnmergeCommand, instantiation_method::NonCopyableTag>
         {
             private:
-                const VDBPostMergeCommandParams params;
+                const VDBPostMergeUnmergeCommandParams params;
 
             public:
                 ///\name Basic operations
                 ///\{
 
-                VDBPostMergeCommand(const VDBPostMergeCommandParams &);
+                VDBPostMergeUnmergeCommand(const VDBPostMergeUnmergeCommandParams &);
 
                 ///\}
 

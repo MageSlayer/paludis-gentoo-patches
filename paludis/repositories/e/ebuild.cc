@@ -1026,13 +1026,13 @@ WriteVDBEntryCommand::operator() ()
         throw ActionFailedError("Write VDB Entry command failed");
 }
 
-VDBPostMergeCommand::VDBPostMergeCommand(const VDBPostMergeCommandParams & p) :
+VDBPostMergeUnmergeCommand::VDBPostMergeUnmergeCommand(const VDBPostMergeUnmergeCommandParams & p) :
     params(p)
 {
 }
 
 void
-VDBPostMergeCommand::operator() ()
+VDBPostMergeUnmergeCommand::operator() ()
 {
     if (! getenv_with_default("PALUDIS_NO_GLOBAL_HOOKS", "").empty())
         return;
