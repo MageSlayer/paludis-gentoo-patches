@@ -84,7 +84,7 @@ Paludis-owned directory. This is for security reasons -- Paludis does not know
 what permissions are correct for you for the directory, and unlike Portage it
 does not grant back-door root access to all users in a particular group.</p>
 
-<p>As of Paludis 0.44.3, when Paludis does create cache subdirectories, it will
+<p>As of Paludis 0.46.0, when Paludis does create cache subdirectories, it will
 copy the mode of the main cache directory rather than going by your umask.</p>
 
 <p>Incidentally, if you want to let multiple users do Paludis cache writes and
