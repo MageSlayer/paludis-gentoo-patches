@@ -4,6 +4,15 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.46.0:
+    * We can now read environment.bz2 files from VDB created by newer Portage
+      versions.
+
+    * appareo now has various options relating to checksum overriding.
+
+    * When creating cache subdirectories, we now copy the mode of the main cache
+      directory rather than using umask to determine permissions.
+
 0.44.2:
     * Various documentation updates.
 
