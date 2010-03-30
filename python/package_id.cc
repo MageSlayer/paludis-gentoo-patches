@@ -202,6 +202,10 @@ void expose_package_id()
                 "The slot_key, if not None, indicates the package's slot."
             )
 
+        .def("choices_key", &PackageID::choices_key,
+                "The choices_key, if not None, indicates the package's choices."
+            )
+
         .def("__eq__", &py_eq<PackageID>)
 
         .def("__ne__", &py_ne<PackageID>)

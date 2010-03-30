@@ -177,6 +177,9 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assert_(isinstance(self.ipid.fs_location_key(), MetadataFSEntryKey))
         self.assert_(isinstance(self.ipid.fs_location_key(), MetadataFSEntryKey))
 
+    def test_31_choices_key(self):
+        self.assert_(isinstance(self.pid.choices_key().value(), Choices))
+
 
 if __name__ == "__main__":
     unittest.main()
