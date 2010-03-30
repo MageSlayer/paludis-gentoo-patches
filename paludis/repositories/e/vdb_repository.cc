@@ -787,6 +787,15 @@ VDBRepository::write_provides_cache() const
 {
     Context context("When saving provides cache to '" + stringify(_imp->params.provides_cache()) + "':");
 
+    if (! _imp->params.provides_cache().dirname().exists())
+    {
+        Log::get_instance()->message("e.vdb.provides.no_dir", ll_warning, lc_no_context) << "Directory '"
+            << _imp->params.provides_cache().dirname() << "' does not exist, so cannot save cache file '"
+            << _imp->params.provides_cache() << "' "
+            << "(see the faq for why this directory will not be created automatically)";
+        return;
+    }
+
     try
     {
         SafeOFStream f(_imp->params.provides_cache());
@@ -835,7 +844,6 @@ VDBRepository::regenerate_provides_cache() const
             + stringify(_imp->params.provides_cache()) + "':");
 
     FSEntry(_imp->params.provides_cache()).unlink();
-    _imp->params.provides_cache().dirname().mkdir();
 
     load_provided_the_slow_way();
     write_provides_cache();

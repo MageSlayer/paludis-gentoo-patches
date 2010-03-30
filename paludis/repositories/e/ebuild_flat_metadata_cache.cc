@@ -665,8 +665,23 @@ EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
 
     try
     {
-        _imp->filename.dirname().dirname().mkdir();
-        _imp->filename.dirname().mkdir();
+        FSEntry cat_dir(_imp->filename.dirname());
+        FSEntry repo_dir(cat_dir.dirname());
+        FSEntry main_dir(repo_dir.dirname());
+
+        if (! main_dir.exists())
+        {
+            Log::get_instance()->message("e.cache.save.no_dir", ll_warning, lc_no_context) << "Directory '"
+                << main_dir << "' does not exist, so cannot save cache file '" << _imp->filename << "' "
+                << "(see the faq for why this directory will not be created automatically)";
+            return;
+        }
+
+        if (repo_dir.mkdir(main_dir.permissions()))
+            repo_dir.chmod(main_dir.permissions());
+
+        if (cat_dir.mkdir(main_dir.permissions()))
+            cat_dir.chmod(main_dir.permissions());
     }
     catch (const FSError & e)
     {

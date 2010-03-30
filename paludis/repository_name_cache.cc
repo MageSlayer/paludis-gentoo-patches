@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -223,10 +223,14 @@ RepositoryNameCache::regenerate_cache() const
         for (DirIterator i(_imp->location, DirIteratorOptions() + dio_inode_sort), i_end ; i != i_end ; ++i)
             FSEntry(*i).unlink();
 
-    _imp->location.dirname().mkdir();
-    if (_imp->location.exists() && ! _imp->location.is_directory())
-        FSEntry(_imp->location).unlink();
-    FSEntry(_imp->location).mkdir();
+    FSEntry main_cache_dir(_imp->location.dirname());
+    if (! main_cache_dir.exists())
+        Log::get_instance()->message("repository.names_cache.no_dir", ll_warning, lc_context)
+            << "Names cache directory '" << main_cache_dir << "' does not exist "
+            << "(see the faq for why this directory will not be created automatically)";
+
+    if (FSEntry(_imp->location).mkdir(main_cache_dir.permissions()))
+        FSEntry(_imp->location).chmod(main_cache_dir.permissions());
 
     std::tr1::unordered_map<std::string, std::string, Hash<std::string> > m;
 
