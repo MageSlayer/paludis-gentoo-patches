@@ -4,6 +4,22 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.44.2:
+    * Various documentation updates.
+
+    * When disambiguating a spec like foo::bar, where cat-1/pkg::foo and
+      cat-2/pkg::bar exist, we now recognise that you must want cat-2.
+
+    * A bug causing NoConfig clients to fail to find profiles when used with a
+      supplemental repository that does not provide its own profiles description
+      has been fixed.
+
+0.44.1:
+    * EAPI 3 support is enabled.
+
+    * A bug giving incorrect results when using -* in use.conf/options.conf has
+      been fixed.
+
 0.44.0:
 
     * The 'everything' set is now called 'installed-packages'. A new set named
