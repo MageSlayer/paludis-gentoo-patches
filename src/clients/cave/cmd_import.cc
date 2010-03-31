@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -74,6 +74,9 @@ namespace
                 "is provided, as is content tracking for installed files.";
         }
 
+        args::ArgsGroup g_execution_options;
+        args::SwitchArg a_execute;
+
         args::ArgsGroup g_contents_options;
         args::StringArg a_location;
         args::StringArg a_install_under;
@@ -85,12 +88,10 @@ namespace
         args::StringSetArg a_run_dependency;
         args::StringArg a_preserve_metadata;
 
-        ResolveCommandLineResolutionOptions resolution_options;
-        ResolveCommandLineExecutionOptions execution_options;
-        ResolveCommandLineDisplayOptions display_options;
-        ResolveCommandLineProgramOptions program_options;
-
         ImportCommandLine() :
+            g_execution_options(main_options_section(), "Execution Options", "Control execution."),
+            a_execute(&g_execution_options, "execute", 'x', "Execute the suggested actions", true),
+
             g_contents_options(main_options_section(), "Contents Options",
                     "Options controlling the content to install"),
             a_location(&g_contents_options, "location", 'l',
@@ -110,13 +111,47 @@ namespace
                     "Specify a run dependency. May be specified multiple times."),
             a_preserve_metadata(&g_metadata_options, "preserve-metadata", 'P',
                     "If replacing a package previously installed using this command, copy its description "
-                    "and dependencies"),
+                    "and dependencies")
+        {
+            add_usage_line("[ --location blah ] cat/pkg [ version ] [ slot ] "
+                    "[ --execute ] [ -- options for 'cave resolve' ]");
+
+            add_note("This command uses the same underlying logic as 'cave resolve'. Any option that is "
+                    "valid for 'cave resolve' may be passed as a parameter following a '--'. For example, "
+                    "'cave import cat/pkg --build-dependency some/dep -- --lazy' may be useful. As a "
+                    "special case, '--execute' does not require a '--'.");
+        }
+    };
+
+    struct OptionsForResolve :
+        args::ArgsHandler
+    {
+        ResolveCommandLineResolutionOptions resolution_options;
+        ResolveCommandLineExecutionOptions execution_options;
+        ResolveCommandLineDisplayOptions display_options;
+        ResolveCommandLineProgramOptions program_options;
+
+        OptionsForResolve() :
             resolution_options(this),
             execution_options(this),
             display_options(this),
             program_options(this)
         {
-            add_usage_line("[ --location blah ] cat/pkg [ version ] [ slot ]");
+        }
+
+        std::string app_name() const
+        {
+            return "";
+        }
+
+        std::string app_synopsis() const
+        {
+            return "";
+        }
+
+        std::string app_description() const
+        {
+            return "";
         }
     };
 
@@ -138,7 +173,12 @@ ImportCommand::run(
         )
 {
     ImportCommandLine cmdline;
-    cmdline.run(args, "CAVE", "CAVE_IMPORT_OPTIONS", "CAVE_IMPORT_CMDLINE");
+    OptionsForResolve resolve_cmdline;
+
+    cmdline.run(args, "CAVE", "CAVE_IMPORT_OPTIONS", "CAVE_IMPORT_CMDLINE",
+            args::ArgsHandlerOptions() + args::aho_separate_after_dashes);
+    resolve_cmdline.run(cmdline.separate_after_dashes_args(),
+            "CAVE", "CAVE_RESOLVE_OPTIONS", "CAVE_RESOLVE_CMDLINE");
 
     if (cmdline.a_help.specified())
     {
@@ -224,14 +264,21 @@ ImportCommand::run(
         throw InternalError(PALUDIS_HERE, "ids is '" + join(indirect_iterator(ids->begin()), indirect_iterator(
                         ids->end()), " ") + "'");
 
-    cmdline.resolution_options.apply_shortcuts();
-    cmdline.resolution_options.verify(env);
+    resolve_cmdline.resolution_options.apply_shortcuts();
+    resolve_cmdline.resolution_options.verify(env);
+
+    if (cmdline.a_execute.specified())
+        resolve_cmdline.resolution_options.a_execute.set_specified(true);
 
     std::tr1::shared_ptr<Sequence<std::string> > targets(new Sequence<std::string>);
     targets->push_back(stringify((*ids->begin())->name()));
 
-    return resolve_common(env, cmdline.resolution_options, cmdline.execution_options, cmdline.display_options,
-            cmdline.program_options, keys, targets);
+    return resolve_common(env,
+            resolve_cmdline.resolution_options,
+            resolve_cmdline.execution_options,
+            resolve_cmdline.display_options,
+            resolve_cmdline.program_options,
+            keys, targets);
 }
 
 std::tr1::shared_ptr<args::ArgsHandler>

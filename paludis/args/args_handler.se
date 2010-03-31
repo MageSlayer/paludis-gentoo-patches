@@ -8,5 +8,6 @@ make_enum_ArgsHandlerOption()
     namespace paludis::args
 
     key aho_stop_on_first_parameter      "Stop on the first parameter encountered"
+    key aho_separate_after_dashes        "\since 0.47 Collect everything after a -- separately"
 }
 

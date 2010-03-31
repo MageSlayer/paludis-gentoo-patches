@@ -55,25 +55,26 @@ namespace
     struct FixLinkageCommandLine :
         CaveCommandCommandLine
     {
+        args::ArgsGroup g_execution_options;
+        args::SwitchArg a_execute;
+
         args::ArgsGroup g_linkage_options;
         args::StringArg a_library;
         args::SwitchArg a_exact;
 
-        ResolveCommandLineResolutionOptions resolution_options;
-        ResolveCommandLineExecutionOptions execution_options;
-        ResolveCommandLineDisplayOptions display_options;
-        ResolveCommandLineProgramOptions program_options;
-
         FixLinkageCommandLine() :
+            g_execution_options(main_options_section(), "Execution Options", "Control execution."),
+            a_execute(&g_execution_options, "execute", 'x', "Execute the suggested actions", true),
             g_linkage_options(main_options_section(), "Linkage options", "Options relating to linkage"),
-            a_library(&g_linkage_options, "library", '\0', "Only rebuild packages linked against this library, even if it exists"),
-            a_exact(&g_linkage_options, "exact", '\0', "Rebuild the same package version that is currently installed", true),
-            resolution_options(this),
-            execution_options(this),
-            display_options(this),
-            program_options(this)
+            a_library(&g_linkage_options, "library", 'l', "Only rebuild packages linked against this library, even if it exists"),
+            a_exact(&g_linkage_options, "exact", 'e', "Rebuild the same package version that is currently installed", true)
         {
-            add_usage_line("[ -x|--execute ] [ --library foo.so.1 ]");
+            add_usage_line("[ -x|--execute ] [ --library foo.so.1 ] [ -- options for 'cave resolve' ]");
+
+            add_note("This command uses the same underlying logic as 'cave resolve'. Any option that is "
+                    "valid for 'cave resolve' may be passed as a parameter following a '--'. For example, "
+                    "'cave fix-linkage --library foo.so.1 cat/pkg -- --lazy' may be useful. As a "
+                    "special case, '--execute' does not require a '--'.");
         }
 
         std::string app_name() const
@@ -93,6 +94,38 @@ namespace
                 "do said fixing.";
         }
     };
+
+    struct OptionsForResolve :
+        args::ArgsHandler
+    {
+        ResolveCommandLineResolutionOptions resolution_options;
+        ResolveCommandLineExecutionOptions execution_options;
+        ResolveCommandLineDisplayOptions display_options;
+        ResolveCommandLineProgramOptions program_options;
+
+        OptionsForResolve() :
+            resolution_options(this),
+            execution_options(this),
+            display_options(this),
+            program_options(this)
+        {
+        }
+
+        std::string app_name() const
+        {
+            return "";
+        }
+
+        std::string app_synopsis() const
+        {
+            return "";
+        }
+
+        std::string app_description() const
+        {
+            return "";
+        }
+    };
 }
 
 int
@@ -102,7 +135,12 @@ FixLinkageCommand::run(
         )
 {
     FixLinkageCommandLine cmdline;
-    cmdline.run(args, "CAVE", "CAVE_FIX_LINKAGE_OPTIONS", "CAVE_FIX_LINKAGE_CMDLINE");
+    OptionsForResolve resolve_cmdline;
+
+    cmdline.run(args, "CAVE", "CAVE_FIX_LINKAGE_OPTIONS", "CAVE_FIX_LINKAGE_CMDLINE",
+            args::ArgsHandlerOptions() + args::aho_separate_after_dashes);
+    resolve_cmdline.run(cmdline.separate_after_dashes_args(),
+            "CAVE", "CAVE_RESOLVE_OPTIONS", "CAVE_RESOLVE_CMDLINE");
 
     if (cmdline.a_help.specified())
     {
@@ -113,8 +151,11 @@ FixLinkageCommand::run(
     if (cmdline.begin_parameters() != cmdline.end_parameters())
         throw args::DoHelp("fix-linkage takes no parameters");
 
-    cmdline.resolution_options.apply_shortcuts();
-    cmdline.resolution_options.verify(env);
+    resolve_cmdline.resolution_options.apply_shortcuts();
+    resolve_cmdline.resolution_options.verify(env);
+
+    if (cmdline.a_execute.specified())
+        resolve_cmdline.resolution_options.a_execute.set_specified(true);
 
     std::string library(cmdline.a_library.argument());
     if (library.empty())
@@ -191,8 +232,11 @@ FixLinkageCommand::run(
         }
     }
 
-    return resolve_common(env, cmdline.resolution_options, cmdline.execution_options, cmdline.display_options,
-            cmdline.program_options, make_null_shared_ptr(), targets);
+    return resolve_common(env, resolve_cmdline.resolution_options,
+            resolve_cmdline.execution_options,
+            resolve_cmdline.display_options,
+            resolve_cmdline.program_options,
+            make_null_shared_ptr(), targets);
 }
 
 std::tr1::shared_ptr<args::ArgsHandler>

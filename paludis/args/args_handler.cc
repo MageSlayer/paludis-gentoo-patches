@@ -58,11 +58,17 @@ namespace paludis
         std::list<std::pair<std::string, std::string> > example_lines;
         std::list<std::string> notes;
         std::list<std::string> descriptions;
+        std::tr1::shared_ptr<Sequence<std::string> > separate_after_dashes_args;
 
         std::map<std::string, ArgsOption *> longopts;
         std::map<char, ArgsOption *> shortopts;
 
         std::tr1::shared_ptr<ArgsSection> main_options_section;
+
+        Implementation() :
+            separate_after_dashes_args(new Sequence<std::string>)
+        {
+        }
     };
 
     template <>
@@ -189,6 +195,11 @@ ArgsHandler::run(
         if (arg == "--")
         {
             ++argit;
+
+            if (options[aho_separate_after_dashes])
+                for ( ; argit != arge ; ++argit)
+                    _imp->separate_after_dashes_args->push_back(*argit);
+
             break;
         }
         else if (0 == arg.compare(0, 2, "--"))
@@ -423,6 +434,12 @@ void
 ArgsHandler::add_description_line(const std::string & e)
 {
     _imp->descriptions.push_back(e);
+}
+
+const std::tr1::shared_ptr<const Sequence<std::string> >
+ArgsHandler::separate_after_dashes_args() const
+{
+    return _imp->separate_after_dashes_args;
 }
 
 template class WrappedForwardIterator<ArgsHandler::ParametersConstIteratorTag, const std::string>;
