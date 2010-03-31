@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  * Copyright (c) 2006 Stephen Bennett
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -24,6 +24,7 @@
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/attributes.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/args/args_handler.hh>
 #include <string>
 
@@ -55,24 +56,28 @@ namespace paludis
          *
          * \ingroup g_args
          */
-        class PALUDIS_VISIBLE ArgsVisitor
+        class PALUDIS_VISIBLE ArgsVisitor :
+            private PrivateImplementationPattern<ArgsVisitor>
         {
             private:
-                ArgsHandler::ArgsIterator * _args_index, _args_end;
-                std::string _env_prefix;
-
                 const std::string & get_param(const ArgsOption &);
 
                 std::string env_name(const std::string & long_name) const;
 
-                bool _no;
-
             public:
                 /**
                  * Constructor
+                 *
+                 * \since 0.47
                  */
-                ArgsVisitor(ArgsHandler::ArgsIterator *, ArgsHandler::ArgsIterator,
-                        const std::string & env_prefix = "");
+                ArgsVisitor(
+                        ArgsHandler::ArgsIterator *,
+                        ArgsHandler::ArgsIterator,
+                        const std::string &,
+                        char & second_char_or_zero,
+                        bool no);
+
+                ~ArgsVisitor();
 
                 /// Visit a StringArg.
                 void visit(StringArg &);
@@ -94,9 +99,6 @@ namespace paludis
 
                 /// Visit a StringSequenceArg.
                 void visit(StringSequenceArg &);
-
-                /// Change whether we're visiting a --no- option
-                void set_no(const bool);
         };
     }
 }

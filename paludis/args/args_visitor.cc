@@ -1,6 +1,6 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,6 +26,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 
 #include <algorithm>
 #include <sstream>
@@ -34,32 +35,60 @@
 using namespace paludis;
 using namespace paludis::args;
 
+namespace paludis
+{
+    template <>
+    struct Implementation<ArgsVisitor>
+    {
+        ArgsHandler::ArgsIterator * args_index;
+        ArgsHandler::ArgsIterator args_end;
+        std::string env_prefix;
+        char & second_char_or_zero;
+        bool no;
+
+        Implementation(
+                ArgsHandler::ArgsIterator * i,
+                ArgsHandler::ArgsIterator e,
+                std::string p,
+                char & s,
+                bool n) :
+            args_index(i),
+            args_end(e),
+            env_prefix(p),
+            second_char_or_zero(s),
+            no(n)
+        {
+        }
+    };
+}
+
 ArgsVisitor::ArgsVisitor(ArgsHandler::ArgsIterator * ai, ArgsHandler::ArgsIterator ae,
-        const std::string & env_prefix) :
-    _args_index(ai),
-    _args_end(ae),
-    _env_prefix(env_prefix),
-    _no(false)
+        const std::string & env_prefix, char & s, bool n) :
+    PrivateImplementationPattern<ArgsVisitor>(new Implementation<ArgsVisitor>(ai, ae, env_prefix, s, n))
+{
+}
+
+ArgsVisitor::~ArgsVisitor()
 {
 }
 
 const std::string &
 ArgsVisitor::get_param(const ArgsOption & arg)
 {
-    if (++(*_args_index) == _args_end)
+    if (++(*_imp->args_index) == _imp->args_end)
         throw MissingValue("--" + arg.long_name());
 
-    return **_args_index;
+    return **_imp->args_index;
 }
 
 void ArgsVisitor::visit(StringArg & arg)
 {
-    if (! _no)
+    if (! _imp->no)
     {
         std::string p(get_param(arg));
         arg.set_specified(true);
         arg.set_argument(p);
-        if (! _env_prefix.empty())
+        if (! _imp->env_prefix.empty())
             setenv(env_name(arg.long_name()).c_str(), p.c_str(), 1);
     }
     else
@@ -73,10 +102,10 @@ void ArgsVisitor::visit(AliasArg & arg)
 
 void ArgsVisitor::visit(SwitchArg & arg)
 {
-    if (! _no)
+    if (! _imp->no)
     {
         arg.set_specified(true);
-        if (! _env_prefix.empty())
+        if (! _imp->env_prefix.empty())
             setenv(env_name(arg.long_name()).c_str(), "1", 1);
     }
     else if (! arg.can_be_negated())
@@ -84,14 +113,14 @@ void ArgsVisitor::visit(SwitchArg & arg)
     else
     {
         arg.set_specified(false);
-        if (! _env_prefix.empty())
+        if (! _imp->env_prefix.empty())
             unsetenv(env_name(arg.long_name()).c_str());
     }
 }
 
 void ArgsVisitor::visit(IntegerArg & arg)
 {
-    if (! _no)
+    if (! _imp->no)
     {
         arg.set_specified(true);
         std::string param = get_param(arg);
@@ -100,7 +129,7 @@ void ArgsVisitor::visit(IntegerArg & arg)
             int a(destringify<int>(param));
             arg.set_argument(a);
 
-            if (! _env_prefix.empty())
+            if (! _imp->env_prefix.empty())
                 setenv(env_name(arg.long_name()).c_str(), stringify(a).c_str(), 1);
         }
         catch (const DestringifyError &)
@@ -114,12 +143,21 @@ void ArgsVisitor::visit(IntegerArg & arg)
 
 void ArgsVisitor::visit(EnumArg & arg)
 {
-    if (! _no)
+    if (! _imp->no)
     {
         arg.set_specified(true);
-        std::string p(get_param(arg));
+
+        std::string p;
+        if ('\0' != _imp->second_char_or_zero)
+        {
+            p = std::string(1, _imp->second_char_or_zero);
+            _imp->second_char_or_zero = '\0';
+        }
+        else
+            p = get_param(arg);
+
         arg.set_argument(p);
-        if (! _env_prefix.empty())
+        if (! _imp->env_prefix.empty())
             setenv(env_name(arg.long_name()).c_str(), p.c_str(), 1);
     }
     else
@@ -128,14 +166,14 @@ void ArgsVisitor::visit(EnumArg & arg)
 
 void ArgsVisitor::visit(StringSetArg & arg)
 {
-    if (! _no)
+    if (! _imp->no)
     {
         arg.set_specified(true);
 
         std::string param = get_param(arg);
         arg.add_argument(param);
 
-        if (! _env_prefix.empty())
+        if (! _imp->env_prefix.empty())
             setenv(env_name(arg.long_name()).c_str(), join(arg.begin_args(),
                         arg.end_args(), " ").c_str(), 1);
     }
@@ -145,14 +183,14 @@ void ArgsVisitor::visit(StringSetArg & arg)
 
 void ArgsVisitor::visit(StringSequenceArg & arg)
 {
-    if (! _no)
+    if (! _imp->no)
     {
         arg.set_specified(true);
 
         std::string param = get_param(arg);
         arg.add_argument(param);
 
-        if (! _env_prefix.empty())
+        if (! _imp->env_prefix.empty())
             setenv(env_name(arg.long_name()).c_str(), join(arg.begin_args(),
                         arg.end_args(), " ").c_str(), 1);
     }
@@ -163,14 +201,8 @@ void ArgsVisitor::visit(StringSequenceArg & arg)
 std::string
 ArgsVisitor::env_name(const std::string & long_name) const
 {
-    std::string result(_env_prefix + "_" + long_name);
+    std::string result(_imp->env_prefix + "_" + long_name);
     std::replace(result.begin(), result.end(), '-', '_');
     return result;
-}
-
-void
-ArgsVisitor::set_no(const bool n)
-{
-    _no = n;
 }
 

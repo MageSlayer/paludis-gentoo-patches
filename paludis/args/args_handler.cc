@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -181,12 +181,10 @@ ArgsHandler::run(
     args.insert(args.end(), argseq->begin(), argseq->end());
 
     ArgsIterator argit(args.begin()), arge(args.end());
-    ArgsVisitor visitor(&argit, arge, env_prefix);
 
     for ( ; argit != arge; ++argit )
     {
         std::string arg = *argit;
-        visitor.set_no(false);
 
         if (arg == "--")
         {
@@ -205,23 +203,42 @@ ArgsHandler::run(
                 it = _imp->longopts.find(arg);
                 if (it == _imp->longopts.end())
                     throw BadArgument("--no-" + arg);
-                visitor.set_no(true);
+
+                char second_char_or_zero('\0');
+                ArgsVisitor visitor(&argit, arge, env_prefix, second_char_or_zero, true);
                 it->second->accept(visitor);
             }
             else
+            {
+                char second_char_or_zero('\0');
+                ArgsVisitor visitor(&argit, arge, env_prefix, second_char_or_zero, false);
                 it->second->accept(visitor);
+            }
         }
         else if (arg[0] == '-')
         {
             arg.erase(0, 1);
             for (std::string::iterator c = arg.begin(); c != arg.end(); ++c)
             {
+                bool maybe_second_char_used(false);
+                char second_char_or_zero('\0');
+                if (2 == arg.length() && c == arg.begin())
+                {
+                    maybe_second_char_used = true;
+                    second_char_or_zero = arg[1];
+                }
+
                 std::map<char, ArgsOption *>::iterator it = _imp->shortopts.find(*c);
                 if (it == _imp->shortopts.end())
                 {
                     throw BadArgument(std::string("-") + *c);
                 }
+
+                ArgsVisitor visitor(&argit, arge, env_prefix, second_char_or_zero, false);
                 it->second->accept(visitor);
+
+                if (maybe_second_char_used && '\0' == second_char_or_zero)
+                    break;
             }
         }
         else
