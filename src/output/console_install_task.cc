@@ -233,6 +233,10 @@ struct ConsoleInstallTask::CallbackDisplayer
     {
     }
 
+    void visit(const NotifierCallbackLinkageStepEvent &)
+    {
+    }
+
     void update()
     {
         std::string s;

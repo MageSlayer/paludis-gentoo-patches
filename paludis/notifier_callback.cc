@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -44,6 +44,17 @@ const std::string
 NotifierCallbackResolverStageEvent::stage() const
 {
     return _stage;
+}
+
+NotifierCallbackLinkageStepEvent::NotifierCallbackLinkageStepEvent(const FSEntry & r) :
+    _location(r)
+{
+}
+
+const FSEntry
+NotifierCallbackLinkageStepEvent::location() const
+{
+    return _location;
 }
 
 namespace paludis

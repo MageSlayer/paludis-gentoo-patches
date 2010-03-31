@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,6 +24,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
+#include <paludis/util/fs_entry.hh>
 #include <paludis/name.hh>
 #include <paludis/environment-fwd.hh>
 
@@ -33,7 +34,8 @@ namespace paludis
         public virtual DeclareAbstractAcceptMethods<NotifierCallbackEvent, MakeTypeList<
             NotifierCallbackGeneratingMetadataEvent,
             NotifierCallbackResolverStepEvent,
-            NotifierCallbackResolverStageEvent>::Type>
+            NotifierCallbackResolverStageEvent,
+            NotifierCallbackLinkageStepEvent>::Type>
     {
     };
 
@@ -67,6 +69,19 @@ namespace paludis
             NotifierCallbackResolverStageEvent(const std::string &);
 
             const std::string stage() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+    class PALUDIS_VISIBLE NotifierCallbackLinkageStepEvent :
+        public NotifierCallbackEvent,
+        public ImplementAcceptMethods<NotifierCallbackEvent, NotifierCallbackLinkageStepEvent>
+    {
+        private:
+            const FSEntry _location;
+
+        public:
+            NotifierCallbackLinkageStepEvent(const FSEntry &);
+
+            const FSEntry location() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE ScopedNotifierCallback :

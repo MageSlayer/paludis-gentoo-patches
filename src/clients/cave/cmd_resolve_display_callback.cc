@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -40,8 +40,8 @@ namespace paludis
 
         bool output;
 
-        Implementation() :
-            stage("Resolving: "),
+        Implementation(const std::string & s) :
+            stage(s),
             width(stage.length()),
             output(::isatty(1))
         {
@@ -50,8 +50,8 @@ namespace paludis
 }
 
 
-DisplayCallback::DisplayCallback() :
-    PrivateImplementationPattern<DisplayCallback>(new Implementation<DisplayCallback>)
+DisplayCallback::DisplayCallback(const std::string & s) :
+    PrivateImplementationPattern<DisplayCallback>(new Implementation<DisplayCallback>(s))
 {
     if (_imp->output)
         std::cout << _imp->stage << std::flush;
@@ -113,6 +113,20 @@ DisplayCallback::visit(const NotifierCallbackResolverStepEvent &) const
 
     Lock lock(_imp->mutex);
     ++_imp->steps.insert(std::make_pair("steps", 0)).first->second;
+    update();
+}
+
+void
+DisplayCallback::visit(const NotifierCallbackLinkageStepEvent & e) const
+{
+    if (! _imp->output)
+        return;
+
+    Lock lock(_imp->mutex);
+    if (e.location().is_directory_or_symlink_to_directory())
+        ++_imp->steps.insert(std::make_pair("directories", 0)).first->second;
+    else
+        ++_imp->steps.insert(std::make_pair("files", 0)).first->second;
     update();
 }
 

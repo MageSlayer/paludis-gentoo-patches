@@ -45,6 +45,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
+#include <paludis/notifier_callback.hh>
 
 #include <tr1/functional>
 #include <algorithm>
@@ -197,6 +198,8 @@ void
 Implementation<BrokenLinkageFinder>::search_directory(const FSEntry & directory)
 {
     FSEntry dir(directory);
+    env->trigger_notifier_callback(NotifierCallbackLinkageStepEvent(dir));
+
     do
     {
         dir = dir.dirname();
@@ -270,6 +273,8 @@ Implementation<BrokenLinkageFinder>::check_file(const FSEntry & file)
 
         else if (file.is_regular_file())
         {
+            env->trigger_notifier_callback(NotifierCallbackLinkageStepEvent(file));
+
             if (indirect_iterator(checkers.end()) ==
                     std::find_if(indirect_iterator(checkers.begin()), indirect_iterator(checkers.end()),
                         std::tr1::bind(&LinkageChecker::check_file, _1, file)))

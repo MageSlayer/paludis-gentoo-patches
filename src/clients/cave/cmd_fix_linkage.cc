@@ -19,6 +19,7 @@
 
 #include "cmd_fix_linkage.hh"
 #include "cmd_resolve_cmdline.hh"
+#include "cmd_resolve_display_callback.hh"
 #include "resolve_common.hh"
 
 #include <paludis/args/do_help.hh>
@@ -32,6 +33,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/notifier_callback.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_requirements.hh>
 
@@ -158,16 +160,15 @@ FixLinkageCommand::run(
         resolve_cmdline.resolution_options.a_execute.set_specified(true);
 
     std::string library(cmdline.a_library.argument());
-    if (library.empty())
-        cout << "Searching for broken packages... " << std::flush;
-    else
-        cout << "Searching for packages that depend on " << library << "... " << std::flush;
+    std::tr1::shared_ptr<BrokenLinkageFinder> finder;
+    {
+        DisplayCallback display_callback("Searching: ");
+        ScopedNotifierCallback display_callback_holder(env.get(),
+                NotifierCallbackFunction(std::tr1::cref(display_callback)));
+        finder.reset(new BrokenLinkageFinder(env.get(), cmdline.a_library.argument()));
+    }
 
-    BrokenLinkageFinder finder(env.get(), cmdline.a_library.argument());
-
-    cout << endl;
-
-    if (finder.begin_broken_packages() == finder.end_broken_packages())
+    if (finder->begin_broken_packages() == finder->end_broken_packages())
     {
         if (library.empty())
             cout << "No broken packages found" << endl;
@@ -179,21 +180,21 @@ FixLinkageCommand::run(
 
     std::tr1::shared_ptr<Sequence<std::string> > targets(new Sequence<std::string>);
 
-    for (BrokenLinkageFinder::BrokenPackageConstIterator pkg_it(finder.begin_broken_packages()),
-             pkg_it_end(finder.end_broken_packages()); pkg_it_end != pkg_it; ++pkg_it)
+    for (BrokenLinkageFinder::BrokenPackageConstIterator pkg_it(finder->begin_broken_packages()),
+             pkg_it_end(finder->end_broken_packages()); pkg_it_end != pkg_it; ++pkg_it)
     {
         cout << endl;
 
         cout << "* " << **pkg_it << endl;
 
-        for (BrokenLinkageFinder::BrokenFileConstIterator file_it(finder.begin_broken_files(*pkg_it)),
-                 file_it_end(finder.end_broken_files(*pkg_it)); file_it_end != file_it; ++file_it)
+        for (BrokenLinkageFinder::BrokenFileConstIterator file_it(finder->begin_broken_files(*pkg_it)),
+                 file_it_end(finder->end_broken_files(*pkg_it)); file_it_end != file_it; ++file_it)
         {
             cout << "    " << *file_it;
             if (library.empty())
                 cout << " (requires "
-                          << join(finder.begin_missing_requirements(*pkg_it, *file_it),
-                                  finder.end_missing_requirements(*pkg_it, *file_it),
+                          << join(finder->begin_missing_requirements(*pkg_it, *file_it),
+                                  finder->end_missing_requirements(*pkg_it, *file_it),
                                   " ") << ")";
             cout << endl;
         }
@@ -212,21 +213,21 @@ FixLinkageCommand::run(
     }
 
     std::tr1::shared_ptr<const PackageID> orphans;
-    if (finder.begin_broken_files(orphans) != finder.end_broken_files(orphans))
+    if (finder->begin_broken_files(orphans) != finder->end_broken_files(orphans))
     {
         if (library.empty())
             cout << endl << "The following broken files are not owned by any installed package:" << endl;
         else
             cout << endl << "The following files that depend on " << library << " are not owned by any installed package:" << endl;
 
-        for (BrokenLinkageFinder::BrokenFileConstIterator file_it(finder.begin_broken_files(orphans)),
-                 file_it_end(finder.end_broken_files(orphans)); file_it_end != file_it; ++file_it)
+        for (BrokenLinkageFinder::BrokenFileConstIterator file_it(finder->begin_broken_files(orphans)),
+                 file_it_end(finder->end_broken_files(orphans)); file_it_end != file_it; ++file_it)
         {
             cout << "    " << *file_it;
             if (library.empty())
                 cout << " (requires "
-                          << join(finder.begin_missing_requirements(orphans, *file_it),
-                                  finder.end_missing_requirements(orphans, *file_it),
+                          << join(finder->begin_missing_requirements(orphans, *file_it),
+                                  finder->end_missing_requirements(orphans, *file_it),
                                   " ") << ")";
             cout << endl;
         }

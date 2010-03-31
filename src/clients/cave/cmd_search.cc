@@ -233,6 +233,10 @@ namespace
         void visit(const NotifierCallbackResolverStageEvent &) const
         {
         }
+
+        void visit(const NotifierCallbackLinkageStepEvent &) const
+        {
+        }
     };
 
     void step(DisplayCallback & display_callback, const std::string & s)
