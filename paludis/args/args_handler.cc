@@ -337,9 +337,13 @@ void
 ArgsHandler::add_option(ArgsOption * const opt, const std::string & long_name,
         const char short_name)
 {
+    if (! _imp->longopts.insert(std::make_pair(long_name, opt)).second)
+        throw InternalError(PALUDIS_HERE, "duplicate long name '" + long_name + "'");
+
     _imp->longopts[long_name] = opt;
     if (short_name != '\0')
-        _imp->shortopts[short_name] = opt;
+        if (! _imp->shortopts.insert(std::make_pair(short_name, opt)).second)
+            throw InternalError(PALUDIS_HERE, "duplicate short name '" + stringify(short_name) + "'");
 }
 
 void

@@ -114,7 +114,6 @@ AliasArg::AliasArg(ArgsOption * const o, const std::string & our_long_name, bool
     ArgsOption(o->group(), our_long_name, '\0', "Alias for --" + o->long_name()),
     _other(o), _hidden(is_hidden)
 {
-    o->group()->section()->handler()->add_option(o, our_long_name);
 }
 
 const std::string

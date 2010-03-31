@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -94,7 +94,7 @@ CommandLine::CommandLine() :
     arg_spider(&group_two, "spider", '\0', "A spider?", true),
 
     group_three(main_options_section(), "Group three", "Description of group three"),
-    arg_other_enum(&group_three, "something", '\0', "Blah.", EnumArg::EnumArgOptions("a", "A")("b", "B")("c", "C"), "b"),
+    arg_other_enum(&group_three, "something-else", '\0', "Blah.", EnumArg::EnumArgOptions("a", "A")("b", "B")("c", "C"), "b"),
     arg_stringset(&group_three, "stringset", 't', "A StringSet.")
 {
 }
