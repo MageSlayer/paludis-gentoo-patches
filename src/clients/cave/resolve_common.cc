@@ -1433,6 +1433,40 @@ namespace
         }
     };
 
+    struct ShortReasonName
+    {
+        const std::string visit(const DependencyReason & r) const
+        {
+            return "from " + stringify(*r.from_id()) + " dependency " + (r.sanitised_dependency().spec().if_package() ?
+                    stringify(*r.sanitised_dependency().spec().if_package()) : stringify(*r.sanitised_dependency().spec().if_block()));
+        }
+
+        const std::string visit(const DependentReason & r) const
+        {
+            return "from dependent " + stringify(*r.id_being_removed());
+        }
+
+        const std::string visit(const TargetReason &) const
+        {
+            return "from target";
+        }
+
+        const std::string visit(const PresetReason & r) const
+        {
+            std::string result("from preset");
+            if (! r.maybe_explanation().empty())
+                result = result + " (" + r.maybe_explanation() + ")";
+            if (r.maybe_reason_for_preset())
+                result = result + " (" + r.maybe_reason_for_preset()->accept_returning<std::string>(*this) + ")";
+            return result;
+        }
+
+        const std::string visit(const SetReason & r) const
+        {
+            return "from " + stringify(r.set_name()) + " (" + r.reason_for_set()->accept_returning<std::string>(*this) + ")";
+        }
+    };
+
     void display_restarts_if_requested(const std::list<SuggestRestart> & restarts,
             const ResolveCommandLineResolutionOptions & resolution_options)
     {
@@ -1459,6 +1493,7 @@ namespace
                 << ", use existing " << r->problematic_constraint()->use_existing();
             if (r->problematic_constraint()->nothing_is_fine_too())
                 std::cout << ", nothing is fine too";
+            std::cout << " " << r->problematic_constraint()->reason()->accept_returning<std::string>(ShortReasonName());
             std::cout << std::endl;
         }
 
