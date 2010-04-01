@@ -1588,7 +1588,7 @@ paludis::cave::resolve_common(
     try
     {
         {
-            DisplayCallback display_callback("Resolving");
+            DisplayCallback display_callback("Resolving: ");
             ScopedNotifierCallback display_callback_holder(env.get(),
                     NotifierCallbackFunction(std::tr1::cref(display_callback)));
 
