@@ -93,6 +93,7 @@ _cave_cmd_fix-linkage()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--execute -x)'{--execute,-x}'[Execute resolution]' \
     '--library[Only rebuild packages linked against this library, even if it exists]:Library: ' \
     '--exact[Rebuild the same package version that is currently installed]'
 }
