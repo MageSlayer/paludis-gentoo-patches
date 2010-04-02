@@ -1355,8 +1355,7 @@ ExecuteResolutionCommand::run(
 
         int fd(destringify<int>(getenv_with_default("PALUDIS_SERIALISED_RESOLUTION_FD", "")));
         SafeIFStream deser_stream(fd);
-        const std::string deser_str((std::istreambuf_iterator<char>(deser_stream)), std::istreambuf_iterator<char>());
-        Deserialiser deserialiser(env.get(), deser_str);
+        Deserialiser deserialiser(env.get(), deser_stream);
         Deserialisation deserialisation("ResolverLists", deserialiser);
         lists = make_shared_copy(ResolverLists::deserialise(deserialisation));
     }

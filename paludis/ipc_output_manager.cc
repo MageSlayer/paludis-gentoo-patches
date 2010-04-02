@@ -243,7 +243,8 @@ IPCInputManager::_pipe_command_handler(const std::string & s)
         if (tokens.size() != 3 || tokens[1] != "1")
             return "Ebad CREATE subcommand";
 
-        Deserialiser deserialiser(_imp->env, tokens[2]);
+        std::stringstream stream(tokens[2]);
+        Deserialiser deserialiser(_imp->env, stream);
         Deserialisation deserialisation("CreateOutputManagerInfo", deserialiser);
         const std::tr1::shared_ptr<CreateOutputManagerInfo> i(CreateOutputManagerInfo::deserialise(deserialisation));
 

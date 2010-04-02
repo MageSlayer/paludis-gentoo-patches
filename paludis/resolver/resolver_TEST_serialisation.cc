@@ -82,8 +82,7 @@ namespace test_cases
                 orig_resolutions->serialise(ser);
                 str.nothing_more_to_write();
 
-                std::string strstr((std::istreambuf_iterator<char>(str)), std::istreambuf_iterator<char>());
-                Deserialiser deser(&env, strstr);
+                Deserialiser deser(&env, str);
                 Deserialisation desern("ResolverLists", deser);
                 resolutions = make_shared_ptr(new ResolverLists(ResolverLists::deserialise(desern)));
             }

@@ -20,7 +20,6 @@
 #include <paludis/serialise-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/simple_parser.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/join.hh>
@@ -125,11 +124,11 @@ namespace paludis
     struct Implementation<Deserialiser>
     {
         const Environment * const env;
-        SimpleParser parser;
+        std::istream & stream;
 
-        Implementation(const Environment * const e, const std::string & s) :
+        Implementation(const Environment * const e, std::istream & s) :
             env(e),
-            parser(s)
+            stream(s)
         {
         }
     };
@@ -142,7 +141,6 @@ namespace paludis
 
         std::string class_name;
         std::string string_value;
-        std::string raw_string;
         bool null;
         std::list<std::tr1::shared_ptr<Deserialisation> > children;
 
@@ -173,7 +171,7 @@ namespace paludis
     };
 }
 
-Deserialiser::Deserialiser(const Environment * const e, const std::string & s) :
+Deserialiser::Deserialiser(const Environment * const e, std::istream & s) :
     PrivateImplementationPattern<Deserialiser>(new Implementation<Deserialiser>(e, s))
 {
 }
@@ -182,10 +180,10 @@ Deserialiser::~Deserialiser()
 {
 }
 
-SimpleParser &
-Deserialiser::parser()
+std::istream &
+Deserialiser::stream()
 {
-    return _imp->parser;
+    return _imp->stream;
 }
 
 const Environment *
@@ -197,63 +195,90 @@ Deserialiser::environment() const
 Deserialisation::Deserialisation(const std::string & i, Deserialiser & d) :
     PrivateImplementationPattern<Deserialisation>(new Implementation<Deserialisation>(d, i))
 {
-    std::string::size_type before_p(d.parser().offset());
+    char c;
+    if (! d.stream().get(c))
+        throw InternalError(PALUDIS_HERE, "can't parse string");
 
-    if (d.parser().consume(simple_parser::exact("null;")))
-        _imp->null = true;
-    else if (d.parser().consume(simple_parser::exact("\"")))
+    if (c == '"')
     {
         while (true)
         {
-            std::string v;
-            if (d.parser().consume(simple_parser::exact("\\")))
-            {
-                if (! d.parser().consume(simple_parser::any_except("") >> v))
-                    throw InternalError(PALUDIS_HERE, "can't parse string escape");
-                _imp->string_value.append(v);
-            }
-            else if (d.parser().consume(simple_parser::exact("\";")))
-                break;
-            else if (d.parser().consume((+simple_parser::any_except("\\\"")) >> v))
-                _imp->string_value.append(v);
-            else
+            if (! d.stream().get(c))
                 throw InternalError(PALUDIS_HERE, "can't parse string");
-        }
-    }
-    else if (d.parser().consume(((+simple_parser::any_of(
-                        "abcdefghijklmnopqrstuvwxyz"
-                        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                        "_"
-                        )) >> _imp->class_name)
-                & simple_parser::exact("(")))
-    {
-        while (true)
-        {
-            std::string k;
-            if (d.parser().consume(simple_parser::exact(");")))
-                break;
-            else if (d.parser().consume(((+simple_parser::any_of(
-                                    "abcdefghijklmnopqrstuvwxyz"
-                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                                    "0123456789"
-                                    "-_"
-                                    )) >> k)
-                        & simple_parser::exact("=")))
+
+            if (c == '\\')
             {
-                std::tr1::shared_ptr<Deserialisation> c(new Deserialisation(k, d));
-                _imp->children.push_back(c);
+                if (! d.stream().get(c))
+                    throw InternalError(PALUDIS_HERE, "can't parse string");
+                _imp->string_value.append(1, c);
             }
+            else if (c == '"')
+                break;
             else
-                throw InternalError(PALUDIS_HERE, "can't parse keys, remaining text is '"
-                        + d.parser().text().substr(d.parser().offset()));
+                _imp->string_value.append(1, c);
         }
+
+        if (! d.stream().get(c))
+            throw InternalError(PALUDIS_HERE, "can't parse string");
+        if (c != ';')
+            throw InternalError(PALUDIS_HERE, "can't parse string");
     }
     else
-        throw InternalError(PALUDIS_HERE, "can't parse keys, remaining text is '"
-                + d.parser().text().substr(d.parser().offset()));
+    {
+        _imp->class_name.append(1, c);
+        while (true)
+        {
+            if (! d.stream().get(c))
+                throw InternalError(PALUDIS_HERE, "can't parse string");
 
-    std::string::size_type after_p(d.parser().offset());
-    _imp->raw_string = d.parser().text().substr(before_p, after_p - before_p);
+            if (c == ';')
+            {
+                if (_imp->class_name != "null")
+                    throw InternalError(PALUDIS_HERE, "can't parse string");
+                _imp->null = true;
+                _imp->class_name.clear();
+                break;
+            }
+            else if (c == '(')
+                break;
+            else
+                _imp->class_name.append(1, c);
+        }
+
+        if (! _imp->null)
+        {
+            while (true)
+            {
+                if (! d.stream().get(c))
+                    throw InternalError(PALUDIS_HERE, "can't parse string");
+
+                if (c == ')')
+                {
+                    if (! d.stream().get(c))
+                        throw InternalError(PALUDIS_HERE, "can't parse string");
+                    if (c != ';')
+                        throw InternalError(PALUDIS_HERE, "can't parse string");
+                    break;
+                }
+                else
+                {
+                    std::string k;
+                    k.append(1, c);
+                    while (true)
+                    {
+                        if (! d.stream().get(c))
+                            throw InternalError(PALUDIS_HERE, "can't parse string");
+                        if (c == '=')
+                            break;
+                        k.append(1, c);
+                    }
+
+                    std::tr1::shared_ptr<Deserialisation> de(new Deserialisation(k, d));
+                    _imp->children.push_back(de);
+                }
+            }
+        }
+    }
 }
 
 Deserialisation::~Deserialisation()
@@ -270,12 +295,6 @@ const std::string
 Deserialisation::class_name() const
 {
     return _imp->class_name;
-}
-
-const std::string
-Deserialisation::raw_string() const
-{
-    return _imp->raw_string;
 }
 
 bool
@@ -344,7 +363,7 @@ Deserialisator::find_remove_member(const std::string & s)
 std::tr1::shared_ptr<const PackageID>
 DeserialisatorHandler<std::tr1::shared_ptr<const PackageID> >::handle(Deserialisation & v)
 {
-    Context context("When deserialising '" + v.raw_string() + "':");
+    Context context("When deserialising:");
 
     if (v.null())
         return make_null_shared_ptr();

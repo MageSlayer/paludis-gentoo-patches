@@ -564,7 +564,7 @@ PackageOrBlockDepSpec::serialise(Serialiser & s) const
 PackageOrBlockDepSpec
 PackageOrBlockDepSpec::deserialise(Deserialisation & d, const std::tr1::shared_ptr<const PackageID> & for_id)
 {
-    Context context("When deserialising '" + d.raw_string() + "':");
+    Context context("When deserialising:");
 
     Deserialisator v(d, "PackageOrBlockDepSpec");
 
@@ -625,7 +625,7 @@ SanitisedDependency::serialise(Serialiser & s) const
 SanitisedDependency
 SanitisedDependency::deserialise(Deserialisation & d, const std::tr1::shared_ptr<const PackageID> & from_id)
 {
-    Context context("When deserialising '" + d.raw_string() + "':");
+    Context context("When deserialising:");
 
     Deserialisator v(d, "SanitisedDependency");
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,7 +22,6 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/simple_parser-fwd.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/serialise-fwd.hh>
 #include <paludis/environment-fwd.hh>
@@ -89,11 +88,12 @@ namespace paludis
         private PrivateImplementationPattern<Deserialiser>
     {
         public:
-            Deserialiser(const Environment * const, const std::string &);
+            Deserialiser(const Environment * const, std::istream &);
             ~Deserialiser();
 
             const Environment * environment() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            SimpleParser & parser() PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            std::istream & stream() PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE Deserialisation :
@@ -110,8 +110,6 @@ namespace paludis
             const std::string item_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             const std::string class_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            const std::string raw_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             const std::string string_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

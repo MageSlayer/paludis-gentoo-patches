@@ -179,7 +179,7 @@ namespace
 const std::tr1::shared_ptr<Constraint>
 Constraint::deserialise(Deserialisation & d)
 {
-    Context context("When deserialising '" + d.raw_string() + "':");
+    Context context("When deserialising:");
 
     Deserialisator v(d, "Constraint");
 
