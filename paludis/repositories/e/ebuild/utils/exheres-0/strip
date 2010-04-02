@@ -32,5 +32,5 @@ for p in ${PATH} ; do
 done
 
 export PATH="${new_path}"
-exec install "$@"
+exec strip "$@"
 
