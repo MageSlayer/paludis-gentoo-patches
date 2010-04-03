@@ -37,6 +37,7 @@ LOG_COMPILER = \
 		PALUDIS_HOOKER_DIR="$(top_srcdir)/paludis/" \
 		PALUDIS_NO_CHOWN="yupyup" \
 		PALUDIS_NO_GLOBAL_HOOKS="yes" \
+		PALUDIS_NO_XML= \
 		PALUDIS_NO_XTERM_TITLES="yes" \
 		PALUDIS_OPTIONS="" \
 		PALUDIS_OUTPUT_MANAGERS_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/environments/paludis/output_managers/`" \

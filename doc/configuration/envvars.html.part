@@ -82,5 +82,9 @@ can be dangerous and may break things; many of these variables exist mainly for 
     <dt><code>PALUDIS_EXEC_PALUDIS</code></dt>
     <dd>If set to <code>never</code>, Paludis will never re-exec itself when upgrading. If set to <code>always</code>,
     Paludis will always re-exec itself when upgrading, even if it isn't necessary.</dd>
+
+    <dt><code>PALUDIS_NO_XML</code></dt>
+    <dd>If set to a non-empty string, Paludis will disable all XML-related functionality.
+    This can be useful if libxml2 is misbehaving.</dd>
 </dl>
 

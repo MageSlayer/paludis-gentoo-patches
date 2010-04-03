@@ -23,6 +23,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/system.hh>
 #include "config.h"
 #include <dlfcn.h>
 #include <stdint.h>
@@ -55,6 +56,9 @@ namespace paludis
             cleanup(0)
         {
 #if ENABLE_XML
+            if (! getenv_with_default("PALUDIS_NO_XML", "").empty())
+                return;
+
             handle = ::dlopen(("libpaludiserepositoryxmlthings_" + stringify(PALUDIS_PC_SLOT) + ".so").c_str(), RTLD_NOW | RTLD_GLOBAL);
             if (! handle)
             {
