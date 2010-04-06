@@ -73,12 +73,6 @@ paludis::resolver::resolver_test::from_keys(const std::tr1::shared_ptr<const Map
         return mm->second;
 }
 
-bool
-paludis::resolver::resolver_test::care_about_dep_fn(const Resolvent &, const std::tr1::shared_ptr<const Resolution> &, const SanitisedDependency &)
-{
-    return true;
-}
-
 const std::tr1::shared_ptr<Constraints>
 paludis::resolver::resolver_test::initial_constraints_for_fn(
         const InitialConstraints & initial_constraints,
@@ -219,13 +213,14 @@ paludis::resolver::resolver_test::is_just_suggestion(const SanitisedDependency &
     return v.seen_suggestion && ! v.seen_not_suggestion;
 }
 
-bool
-paludis::resolver::resolver_test::take_dependency_fn(
-        const Resolvent &,
-        const SanitisedDependency & dep,
-        const std::tr1::shared_ptr<const Reason> &)
+SpecInterest
+paludis::resolver::resolver_test::interest_in_spec_fn(
+        const Resolvent &, const std::tr1::shared_ptr<const Resolution> &, const SanitisedDependency & dep)
 {
-    return ! is_just_suggestion(dep);
+    if (is_just_suggestion(dep))
+        return si_untaken;
+    else
+        return si_take;
 }
 
 UseExisting
@@ -382,7 +377,6 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
                     allowed_to_break_names, std::tr1::placeholders::_1)),
             value_for<n::allowed_to_remove_fn>(std::tr1::bind(&allowed_to_remove_fn,
                     allowed_to_remove_names, std::tr1::placeholders::_1)),
-            value_for<n::care_about_dep_fn>(&care_about_dep_fn),
             value_for<n::confirm_fn>(&confirm_fn),
             value_for<n::find_repository_for_fn>(std::tr1::bind(&find_repository_for_fn,
                     &env, std::tr1::placeholders::_1, std::tr1::placeholders::_2,
@@ -394,12 +388,12 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
                     std::tr1::placeholders::_1)),
             value_for<n::get_resolvents_for_fn>(&get_resolvents_for_fn),
             value_for<n::get_use_existing_fn>(&get_use_existing_fn),
+            value_for<n::interest_in_spec_fn>(&interest_in_spec_fn),
             value_for<n::make_destination_filtered_generator_fn>(&make_destination_filtered_generator_fn),
             value_for<n::prefer_or_avoid_fn>(std::tr1::bind(&prefer_or_avoid_fn,
                     prefer_or_avoid_names, std::tr1::placeholders::_1)),
             value_for<n::remove_if_dependent_fn>(std::tr1::bind(&remove_if_dependent_fn,
-                    remove_if_dependent_names, std::tr1::placeholders::_1)),
-            value_for<n::take_dependency_fn>(&take_dependency_fn)
+                    remove_if_dependent_names, std::tr1::placeholders::_1))
             );
 }
 

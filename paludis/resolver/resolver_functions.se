@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_SpecInterest()
+{
+    prefix si
+    namespace paludis::resolver
+
+    key si_ignore                    "Ignore the dep entirely"
+    key si_untaken                   "Treat the dep as untaken"
+    key si_take                      "Take the dep"
+
+    want_destringify
+}
+

@@ -79,7 +79,8 @@ namespace paludis
 
                 const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_from_dependency(
                         const Resolvent &, const SanitisedDependency &,
-                        const std::tr1::shared_ptr<const Reason> &) const;
+                        const std::tr1::shared_ptr<const Reason> &,
+                        const SpecInterest) const;
 
                 const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_from_blocker(
                         const Resolvent & resolvent, const BlockDepSpec & dep,
@@ -158,7 +159,9 @@ namespace paludis
                 void _add_dependencies_if_necessary(const Resolvent & our_resolvent,
                         const std::tr1::shared_ptr<Resolution> & our_resolution);
 
-                bool _care_about_dependency_spec(const Resolvent &, const std::tr1::shared_ptr<const Resolution> &,
+                SpecInterest _interest_in_spec(
+                        const Resolvent &,
+                        const std::tr1::shared_ptr<const Resolution> &,
                         const SanitisedDependency &) const;
 
                 const std::tr1::shared_ptr<Constraints> _initial_constraints_for(const Resolvent &) const;

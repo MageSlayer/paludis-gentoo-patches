@@ -897,88 +897,90 @@ namespace
         }
     };
 
-    bool care_about_dep_fn(const Environment * const env, const ResolveCommandLineResolutionOptions & resolution_options,
-            const Resolvent &, const std::tr1::shared_ptr<const Resolution> & resolution,
+    SpecInterest interest_in_spec_fn(
+            const Environment * const env,
+            const ResolveCommandLineResolutionOptions & resolution_options,
+            const Resolvent & resolvent,
+            const std::tr1::shared_ptr<const Resolution> & resolution,
             const SanitisedDependency & dep)
     {
         CareAboutDepFnVisitor v(env, resolution_options, dep);
-        return resolution->decision()->accept_returning<bool>(v);
-    }
-
-    bool
-    take_dependency_fn(const Environment * const env,
-            const ResolveCommandLineResolutionOptions & resolution_options,
-            const Resolvent & resolvent,
-            const SanitisedDependency & dep,
-            const std::tr1::shared_ptr<const Reason> &)
-    {
-        bool suggestion(is_suggestion(dep)), recommendation(is_recommendation(dep));
-
-        if (! (suggestion || recommendation))
-            return true;
-
-        for (args::StringSetArg::ConstIterator a(resolution_options.a_take.begin_args()),
-                a_end(resolution_options.a_take.end_args()) ;
-                a != a_end ; ++a)
+        if (resolution->decision()->accept_returning<bool>(v))
         {
-            PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
-            PackageDepSpec spec(*dep.spec().if_package());
-            if (match_qpns(*env, user_spec, *spec.package_ptr()))
-                return true;
-        }
+            bool suggestion(is_suggestion(dep)), recommendation(is_recommendation(dep));
 
-        for (args::StringSetArg::ConstIterator a(resolution_options.a_take_from.begin_args()),
-                a_end(resolution_options.a_take_from.end_args()) ;
-                a != a_end ; ++a)
-        {
-            PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
-            if (match_qpns(*env, user_spec, resolvent.package()))
-                return true;
-        }
+            if (! (suggestion || recommendation))
+                return si_take;
 
-        for (args::StringSetArg::ConstIterator a(resolution_options.a_ignore.begin_args()),
-                a_end(resolution_options.a_ignore.end_args()) ;
-                a != a_end ; ++a)
-        {
-            PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
-            PackageDepSpec spec(*dep.spec().if_package());
-            if (match_qpns(*env, user_spec, *spec.package_ptr()))
-                return false;
-        }
+            for (args::StringSetArg::ConstIterator a(resolution_options.a_take.begin_args()),
+                    a_end(resolution_options.a_take.end_args()) ;
+                    a != a_end ; ++a)
+            {
+                PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+                PackageDepSpec spec(*dep.spec().if_package());
+                if (match_qpns(*env, user_spec, *spec.package_ptr()))
+                    return si_take;
+            }
 
-        for (args::StringSetArg::ConstIterator a(resolution_options.a_ignore_from.begin_args()),
-                a_end(resolution_options.a_ignore_from.end_args()) ;
-                a != a_end ; ++a)
-        {
-            PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
-            if (match_qpns(*env, user_spec, resolvent.package()))
-                return false;
-        }
+            for (args::StringSetArg::ConstIterator a(resolution_options.a_take_from.begin_args()),
+                    a_end(resolution_options.a_take_from.end_args()) ;
+                    a != a_end ; ++a)
+            {
+                PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+                if (match_qpns(*env, user_spec, resolvent.package()))
+                    return si_take;
+            }
 
-        if (suggestion)
-        {
-            if (resolution_options.a_suggestions.argument() == "take")
-                return true;
-        }
+            for (args::StringSetArg::ConstIterator a(resolution_options.a_ignore.begin_args()),
+                    a_end(resolution_options.a_ignore.end_args()) ;
+                    a != a_end ; ++a)
+            {
+                PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+                PackageDepSpec spec(*dep.spec().if_package());
+                if (match_qpns(*env, user_spec, *spec.package_ptr()))
+                    return si_ignore;
+            }
 
-        if (recommendation)
-        {
-            if (resolution_options.a_recommendations.argument() == "take")
-                return true;
-        }
+            for (args::StringSetArg::ConstIterator a(resolution_options.a_ignore_from.begin_args()),
+                    a_end(resolution_options.a_ignore_from.end_args()) ;
+                    a != a_end ; ++a)
+            {
+                PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+                if (match_qpns(*env, user_spec, resolvent.package()))
+                    return si_ignore;
+            }
 
-        /* we also take suggestions and recommendations that have already been installed */
-        if (dep.spec().if_package())
-        {
-            const std::tr1::shared_ptr<const PackageIDSequence> installed_ids(
-                    (*env)[selection::SomeArbitraryVersion(
-                        generator::Matches(*dep.spec().if_package(), MatchPackageOptions()) |
-                        filter::InstalledAtRoot(FSEntry("/")))]);
-            if (! installed_ids->empty())
-                return true;
-        }
+            if (suggestion)
+            {
+                if (resolution_options.a_suggestions.argument() == "take")
+                    return si_take;
+                else if (resolution_options.a_suggestions.argument() == "ignore")
+                    return si_ignore;
+            }
 
-        return false;
+            if (recommendation)
+            {
+                if (resolution_options.a_recommendations.argument() == "take")
+                    return si_take;
+                else if (resolution_options.a_recommendations.argument() == "ignore")
+                    return si_ignore;
+            }
+
+            /* we also take suggestions and recommendations that have already been installed */
+            if (dep.spec().if_package())
+            {
+                const std::tr1::shared_ptr<const PackageIDSequence> installed_ids(
+                        (*env)[selection::SomeArbitraryVersion(
+                            generator::Matches(*dep.spec().if_package(), MatchPackageOptions()) |
+                            filter::InstalledAtRoot(FSEntry("/")))]);
+                if (! installed_ids->empty())
+                    return si_take;
+            }
+
+            return si_untaken;
+        }
+        else
+            return si_ignore;
     }
 
     const std::tr1::shared_ptr<const Repository>
@@ -1578,9 +1580,6 @@ paludis::cave::resolve_common(
                         env.get(),
                         std::tr1::cref(allowed_to_remove_specs),
                         std::tr1::placeholders::_1)),
-                value_for<n::care_about_dep_fn>(std::tr1::bind(&care_about_dep_fn,
-                        env.get(), std::tr1::cref(resolution_options), std::tr1::placeholders::_1,
-                        std::tr1::placeholders::_2, std::tr1::placeholders::_3)),
                 value_for<n::confirm_fn>(std::tr1::bind(&confirm_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::placeholders::_1,
                         std::tr1::placeholders::_2, std::tr1::placeholders::_3)),
@@ -1601,6 +1600,9 @@ paludis::cave::resolve_common(
                 value_for<n::get_use_existing_fn>(std::tr1::bind(&use_existing_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::placeholders::_1, std::tr1::placeholders::_2,
                         std::tr1::placeholders::_3)),
+                value_for<n::interest_in_spec_fn>(std::tr1::bind(&interest_in_spec_fn,
+                        env.get(), std::tr1::cref(resolution_options), std::tr1::placeholders::_1,
+                        std::tr1::placeholders::_2, std::tr1::placeholders::_3)),
                 value_for<n::make_destination_filtered_generator_fn>(std::tr1::bind(&make_destination_filtered_generator,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::placeholders::_1, std::tr1::placeholders::_2)),
                 value_for<n::prefer_or_avoid_fn>(std::tr1::bind(&prefer_or_avoid_fn,
@@ -1609,10 +1611,7 @@ paludis::cave::resolve_common(
                 value_for<n::remove_if_dependent_fn>(std::tr1::bind(&remove_if_dependent_fn,
                         env.get(),
                         std::tr1::cref(remove_if_dependent_specs),
-                        std::tr1::placeholders::_1)),
-                value_for<n::take_dependency_fn>(std::tr1::bind(&take_dependency_fn, env.get(),
-                        std::tr1::cref(resolution_options), std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3))
-
+                        std::tr1::placeholders::_1))
                 ));
 
     ScopedSelectionCache selection_cache(env.get());

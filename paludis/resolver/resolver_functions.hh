@@ -34,6 +34,11 @@
 #include <paludis/util/tribool-fwd.hh>
 #include <paludis/filter-fwd.hh>
 #include <paludis/name-fwd.hh>
+#include <paludis/package_id-fwd.hh>
+#include <paludis/repository-fwd.hh>
+#include <paludis/dep_spec-fwd.hh>
+#include <paludis/generator-fwd.hh>
+#include <paludis/filtered_generator-fwd.hh>
 #include <tr1/functional>
 
 namespace paludis
@@ -42,7 +47,6 @@ namespace paludis
     {
         struct allowed_to_break_fn;
         struct allowed_to_remove_fn;
-        struct care_about_dep_fn;
         struct confirm_fn;
         struct find_repository_for_fn;
         struct get_constraints_for_dependent_fn;
@@ -50,10 +54,10 @@ namespace paludis
         struct get_initial_constraints_for_fn;
         struct get_resolvents_for_fn;
         struct get_use_existing_fn;
+        struct interest_in_spec_fn;
         struct make_destination_filtered_generator_fn;
         struct prefer_or_avoid_fn;
         struct remove_if_dependent_fn;
-        struct take_dependency_fn;
     }
 
     namespace resolver
@@ -65,12 +69,6 @@ namespace paludis
         typedef std::tr1::function<bool (
                 const std::tr1::shared_ptr<const PackageID> &
                 )> AllowedToRemoveFunction;
-
-        typedef std::tr1::function<bool (
-                const Resolvent &,
-                const std::tr1::shared_ptr<const Resolution> &,
-                const SanitisedDependency &
-                )> CareAboutDepFunction;
 
         typedef std::tr1::function<bool (
                 const Resolvent &,
@@ -113,6 +111,12 @@ namespace paludis
                 const std::tr1::shared_ptr<const Reason> &
                 )> GetUseExistingFunction;
 
+        typedef std::tr1::function<SpecInterest (
+                const Resolvent &,
+                const std::tr1::shared_ptr<const Resolution> &,
+                const SanitisedDependency &
+                )> InterestInSpecFunction;
+
         typedef std::tr1::function<FilteredGenerator (
                 const Generator &,
                 const Resolvent &
@@ -126,17 +130,10 @@ namespace paludis
                 const std::tr1::shared_ptr<const PackageID> &
                 )> RemoveIfDependentFunction;
 
-        typedef std::tr1::function<bool (
-                const Resolvent &,
-                const SanitisedDependency &,
-                const std::tr1::shared_ptr<const Reason> &
-                )> TakeDependencyFunction;
-
         struct ResolverFunctions
         {
             NamedValue<n::allowed_to_break_fn, AllowedToBreakFunction> allowed_to_break_fn;
             NamedValue<n::allowed_to_remove_fn, AllowedToRemoveFunction> allowed_to_remove_fn;
-            NamedValue<n::care_about_dep_fn, CareAboutDepFunction> care_about_dep_fn;
             NamedValue<n::confirm_fn, ConfirmFunction> confirm_fn;
             NamedValue<n::find_repository_for_fn, FindRepositoryForFunction> find_repository_for_fn;
             NamedValue<n::get_constraints_for_dependent_fn, GetConstraintsForDependentFunction> get_constraints_for_dependent_fn;
@@ -144,11 +141,11 @@ namespace paludis
             NamedValue<n::get_initial_constraints_for_fn, GetInitialConstraintsFunction> get_initial_constraints_for_fn;
             NamedValue<n::get_resolvents_for_fn, GetResolventsForFunction> get_resolvents_for_fn;
             NamedValue<n::get_use_existing_fn, GetUseExistingFunction> get_use_existing_fn;
+            NamedValue<n::interest_in_spec_fn, InterestInSpecFunction> interest_in_spec_fn;
             NamedValue<n::make_destination_filtered_generator_fn,
                 MakeDestinationFilteredGeneratorFunction> make_destination_filtered_generator_fn;
             NamedValue<n::prefer_or_avoid_fn, PreferOrAvoidFunction> prefer_or_avoid_fn;
             NamedValue<n::remove_if_dependent_fn, RemoveIfDependentFunction> remove_if_dependent_fn;
-            NamedValue<n::take_dependency_fn, TakeDependencyFunction> take_dependency_fn;
         };
     }
 }

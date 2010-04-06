@@ -5,6 +5,7 @@ DISTCLEANFILES = \
 	change_type-se.hh change_type-se.cc \
 	destination_types-se.hh destination_types-se.cc \
 	failure_kinds-se.hh failure_kinds-se.cc \
+	resolver_functions-se.hh resolver_functions-se.cc \
 	use_existing-se.hh use_existing-se.cc
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 EXTRA_DIST = \
@@ -12,6 +13,7 @@ EXTRA_DIST = \
 	change_type-se.hh change_type-se.cc change_type.se \
 	destination_types-se.hh destination_types-se.cc destination_types.se \
 	failure_kinds-se.hh failure_kinds-se.cc failure_kinds.se \
+	resolver_functions-se.hh resolver_functions-se.cc resolver_functions.se \
 	use_existing-se.hh use_existing-se.cc use_existing.se \
 	$(check_SCRIPTS)
 BUILT_SOURCES = \
@@ -19,6 +21,7 @@ BUILT_SOURCES = \
 	change_type-se.hh change_type-se.cc \
 	destination_types-se.hh destination_types-se.cc \
 	failure_kinds-se.hh failure_kinds-se.cc \
+	resolver_functions-se.hh resolver_functions-se.cc \
 	use_existing-se.hh use_existing-se.cc
 
 noinst_HEADERS = \
@@ -71,6 +74,7 @@ libpaludisresolver_a_SOURCES = \
 	resolutions.cc \
 	resolvent.cc \
 	resolver.cc \
+	resolver_functions.cc \
 	resolver_lists.cc \
 	sanitised_dependencies.cc \
 	spec_rewriter.cc \
@@ -246,4 +250,10 @@ change_type-se.hh : change_type.se $(top_srcdir)/misc/make_se.bash
 
 change_type-se.cc : change_type.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/change_type.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+resolver_functions-se.hh : resolver_functions.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/resolver_functions.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+resolver_functions-se.cc : resolver_functions.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/resolver_functions.se > $@ ; then rm -f $@ ; exit 1 ; fi
 

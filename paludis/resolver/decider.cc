@@ -621,7 +621,8 @@ Decider::_make_constraints_from_target(
 
 const std::tr1::shared_ptr<ConstraintSequence>
 Decider::_make_constraints_from_dependency(const Resolvent & resolvent, const SanitisedDependency & dep,
-        const std::tr1::shared_ptr<const Reason> & reason) const
+        const std::tr1::shared_ptr<const Reason> & reason,
+        const SpecInterest interest) const
 {
     if (dep.spec().if_package())
     {
@@ -631,8 +632,7 @@ Decider::_make_constraints_from_dependency(const Resolvent & resolvent, const Sa
                             value_for<n::nothing_is_fine_too>(false),
                             value_for<n::reason>(reason),
                             value_for<n::spec>(*dep.spec().if_package()),
-                            value_for<n::untaken>(! _imp->fns.take_dependency_fn()(
-                                    resolvent, dep, reason)),
+                            value_for<n::untaken>(si_untaken == interest),
                             value_for<n::use_existing>(_imp->fns.get_use_existing_fn()(
                                     resolvent, *dep.spec().if_package(), reason))
                             ))));
@@ -1004,8 +1004,18 @@ Decider::_add_dependencies_if_necessary(
     {
         Context context_2("When handling dependency '" + stringify(s->spec()) + "':");
 
-        if (! _care_about_dependency_spec(our_resolvent, our_resolution, *s))
-            continue;
+        SpecInterest interest(_interest_in_spec(our_resolvent, our_resolution, *s));
+
+        switch (interest)
+        {
+            case si_ignore:
+                continue;
+
+            case si_untaken:
+            case si_take:
+            case last_si:
+                break;
+        }
 
         const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(
                     package_id, our_resolvent, *s, _already_met(*s)));
@@ -1031,7 +1041,8 @@ Decider::_add_dependencies_if_necessary(
                 r != r_end ; ++r)
         {
             const std::tr1::shared_ptr<Resolution> dep_resolution(_resolution_for_resolvent(*r, true));
-            const std::tr1::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_dependency(our_resolvent, *s, reason));
+            const std::tr1::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_dependency(
+                        our_resolvent, *s, reason, interest));
 
             for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                     c != c_end ; ++c)
@@ -1040,11 +1051,11 @@ Decider::_add_dependencies_if_necessary(
     }
 }
 
-bool
-Decider::_care_about_dependency_spec(const Resolvent & resolvent,
+SpecInterest
+Decider::_interest_in_spec(const Resolvent & resolvent,
         const std::tr1::shared_ptr<const Resolution> & resolution, const SanitisedDependency & dep) const
 {
-    return _imp->fns.care_about_dep_fn()(resolvent, resolution, dep);
+    return _imp->fns.interest_in_spec_fn()(resolvent, resolution, dep);
 }
 
 const std::tr1::shared_ptr<Constraints>
@@ -1214,7 +1225,8 @@ Decider::find_any_score(const Resolvent & our_resolvent, const SanitisedDependen
                 r != r_end ; ++r)
         {
             const std::tr1::shared_ptr<Resolution> resolution(_create_resolution_for_resolvent(*r));
-            const std::tr1::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_dependency(our_resolvent, dep, reason));
+            const std::tr1::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_dependency(
+                        our_resolvent, dep, reason, si_take));
             for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                     c != c_end ; ++c)
                 resolution->constraints()->add(*c);

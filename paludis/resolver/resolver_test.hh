@@ -57,7 +57,10 @@ namespace paludis
 
             typedef std::map<Resolvent, std::tr1::shared_ptr<Constraints> > InitialConstraints;
 
-            bool care_about_dep_fn(const Resolvent &, const std::tr1::shared_ptr<const Resolution> &, const SanitisedDependency &);
+            SpecInterest interest_in_spec_fn(
+                    const Resolvent &,
+                    const std::tr1::shared_ptr<const Resolution> &,
+                    const SanitisedDependency &);
 
             const std::tr1::shared_ptr<Constraints> initial_constraints_for_fn(
                     const InitialConstraints & initial_constraints,
@@ -75,11 +78,6 @@ namespace paludis
                     const std::tr1::shared_ptr<const Reason> &);
 
             bool is_just_suggestion(const SanitisedDependency & dep);
-
-            bool take_dependency_fn(
-                    const Resolvent &,
-                    const SanitisedDependency & dep,
-                    const std::tr1::shared_ptr<const Reason> &);
 
             UseExisting get_use_existing_fn(
                     const Resolvent &,
