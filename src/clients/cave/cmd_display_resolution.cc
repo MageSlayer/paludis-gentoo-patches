@@ -314,6 +314,9 @@ namespace
                 break;
         }
 
+        if (c.untaken())
+            result << " (untaken)";
+
         return result.str();
     }
 
@@ -336,13 +339,19 @@ namespace
         void visit(const ExistingNoChangeDecision & d) const
         {
             cout << "    The decision made was:" << endl;
-            cout << "        Use existing ID " << *d.existing_id() << endl;
+            if (d.taken())
+                cout << "        Use existing ID " << *d.existing_id() << endl;
+            else
+                cout << "        Do not take existing ID " << *d.existing_id() << endl;
         }
 
         void visit(const RemoveDecision & d) const
         {
             cout << "    The decision made was:" << endl;
-            cout << "        Remove existing IDs" << endl;
+            if (d.taken())
+                cout << "        Remove existing IDs" << endl;
+            else
+                cout << "        No not remove existing IDs" << endl;
             for (PackageIDSequence::ConstIterator i(d.ids()->begin()), i_end(d.ids()->end()) ;
                     i != i_end ; ++i)
                 cout << "            Remove " << **i << endl;
@@ -356,7 +365,10 @@ namespace
 
         void visit(const ChangesToMakeDecision & d) const
         {
-            cout << "    The decision made was:" << endl;
+            if (d.taken())
+                cout << "    The decision made was:" << endl;
+            else
+                cout << "    The decision made was not to:" << endl;
             cout << "        Use origin ID " << *d.origin_id() << endl;
             cout << "        Install to repository " << d.destination()->repository() << endl;
             for (PackageIDSequence::ConstIterator i(d.destination()->replacing()->begin()), i_end(d.destination()->replacing()->end()) ;
@@ -364,9 +376,12 @@ namespace
                 cout << "            Replacing " << **i << endl;
         }
 
-        void visit(const UnableToMakeDecision &) const
+        void visit(const UnableToMakeDecision & d) const
         {
-            cout << "    No decision could be made" << endl;
+            if (d.taken())
+                cout << "    No decision could be made" << endl;
+            else
+                cout << "    No decision could be made, but none was necessary" << endl;
         }
     };
 
