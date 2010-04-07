@@ -1075,18 +1075,10 @@ paludis::become_command(const Command & cmd)
             /* Feed in any input things */
             if (cmd.input_stream())
             {
-                while (true)
-                {
-                    char c;
-                    if (cmd.input_stream()->get(c).good())
-                    {
-                        int w(write(input_stream->write_fd(), &c, 1));
-                        if (w != 1)
-                            throw RunCommandError("write failed: " + stringify(strerror(errno)));
-                    }
-                    else
-                        break;
-                }
+                SafeOFStream output_stream(input_stream->write_fd());
+                std::copy((std::istreambuf_iterator<char>(*cmd.input_stream())),
+                        std::istreambuf_iterator<char>(),
+                        std::ostreambuf_iterator<char>(output_stream));
 
                 if (0 != close(input_stream->write_fd()))
                     throw RunCommandError("close failed: " + stringify(strerror(errno)));
