@@ -1089,6 +1089,7 @@ DisplayResolutionCommand::run(
         Deserialiser deserialiser(env.get(), deser_stream);
         Deserialisation deserialisation("ResolverLists", deserialiser);
         lists = make_shared_copy(ResolverLists::deserialise(deserialisation));
+        close(fd);
     }
 
     display_jobs(env, *lists, cmdline);
