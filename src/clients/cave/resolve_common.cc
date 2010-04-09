@@ -1369,13 +1369,10 @@ namespace
 
         if (program_options.a_execute_resolution_program.specified() || resolution_options.a_execute.specified())
         {
-            StringListStream ser_stream;
-            Serialiser ser(ser_stream);
-            resolution_lists->serialise(ser);
-
             /* backgrounding this barfs with become_command. working out why could
              * be a fun exercise for someone with way too much time on their hands.
              * */
+            StringListStream ser_stream;
             ser_thread_func(ser_stream, *resolution_lists);
 
             std::string command;
