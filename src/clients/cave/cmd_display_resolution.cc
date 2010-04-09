@@ -642,30 +642,36 @@ namespace
             const std::tr1::shared_ptr<const Resolution> & resolution,
             const SimpleInstallJob & job,
             const bool more_annotations,
-            const bool confirmations)
+            const bool confirmations,
+            const bool untaken)
     {
-        std::string x("   ");
+        std::string x("X");
         if (! decision.best())
-            x[0] = '-';
+            x = "-" + x;
+        if (untaken)
+            x = "(" + x + ")";
+
+        if (x.length() < 4)
+            x = x + std::string(4 - x.length(), ' ');
 
         do
         {
             switch (decision.change_type())
             {
                 case ct_new:
-                    cout << "n" << x << c::bold_blue();
+                    cout << x.replace(x.find('X'), 1, "n") << c::bold_blue();
                     continue;
                 case ct_slot_new:
-                    cout << "s" << x << c::bold_blue();
+                    cout << x.replace(x.find('X'), 1, "s") << c::bold_blue();
                     continue;
                 case ct_upgrade:
-                    cout << "u" << x << c::blue();
+                    cout << x.replace(x.find('X'), 1, "u") << c::blue();
                     continue;
                 case ct_reinstall:
-                    cout << "r" << x << c::yellow();
+                    cout << x.replace(x.find('X'), 1, "r") << c::yellow();
                     continue;
                 case ct_downgrade:
-                    cout << "d" << x << c::bold_yellow();
+                    cout << x.replace(x.find('X'), 1, "d") << c::bold_yellow();
                     continue;
                 case last_ct:
                     break;
@@ -718,10 +724,11 @@ namespace
             const DisplayResolutionCommandLine & cmdline,
             const SimpleInstallJob & job,
             const bool more_annotations,
-            const bool confirmations)
+            const bool confirmations,
+            const bool untaken)
     {
         display_one_installish(env, cmdline, *job.changes_to_make_decision(), job.resolution(),
-                job, more_annotations, confirmations);
+                job, more_annotations, confirmations, untaken);
     }
 
     void display_one_uninstall(
@@ -729,9 +736,13 @@ namespace
             const DisplayResolutionCommandLine &,
             const UninstallJob & job,
             const bool more_annotations,
-            const bool confirmations)
+            const bool confirmations,
+            const bool untaken)
     {
-        cout << "<   " << c::bold_green() << job.resolution()->resolvent().package() << c::normal() << " ";
+        if (untaken)
+            cout << "(<) " << c::bold_green() << job.resolution()->resolvent().package() << c::normal() << " ";
+        else
+            cout << "<   " << c::bold_green() << job.resolution()->resolvent().package() << c::normal() << " ";
 
         bool first(true);
         for (PackageIDSequence::ConstIterator i(job.remove_decision()->ids()->begin()),
@@ -763,9 +774,14 @@ namespace
     void display_unable_to_make_decision(
             const std::tr1::shared_ptr<Environment> & env,
             const std::tr1::shared_ptr<const Resolution> & resolution,
-            const UnableToMakeDecision & d)
+            const UnableToMakeDecision & d,
+            const bool untaken)
     {
-        cout << "!   " << c::bold_red() << resolution->resolvent() << c::normal() << endl;
+        if (untaken)
+            cout << "(!) " << c::bold_red() << resolution->resolvent() << c::normal() << endl;
+        else
+            cout << "!   " << c::bold_red() << resolution->resolvent() << c::normal() << endl;
+
         display_reasons(resolution, true);
 
         if (d.unsuitable_candidates()->empty())
@@ -823,6 +839,7 @@ namespace
         const bool all;
         const bool more_annotations;
         const bool confirmations;
+        const bool untaken;
 
         ShowJobsDisplayer(
                 const std::tr1::shared_ptr<Environment> & e,
@@ -830,26 +847,28 @@ namespace
                 const ResolverLists & l,
                 const bool a,
                 const bool n,
-                const bool f
+                const bool f,
+                const bool u
                 ) :
             env(e),
             cmdline(c),
             lists(l),
             all(a),
             more_annotations(n),
-            confirmations(f)
+            confirmations(f),
+            untaken(u)
         {
         }
 
         bool visit(const SimpleInstallJob & job)
         {
-            display_one_install(env, cmdline, job, more_annotations, confirmations);
+            display_one_install(env, cmdline, job, more_annotations, confirmations, untaken);
             return true;
         }
 
         bool visit(const UninstallJob & job)
         {
-            display_one_uninstall(env, cmdline, job, more_annotations, confirmations);
+            display_one_uninstall(env, cmdline, job, more_annotations, confirmations, untaken);
             return true;
         }
 
@@ -940,7 +959,7 @@ namespace
         {
             const std::tr1::shared_ptr<const Job> job(lists.jobs()->fetch(*i));
             ShowJobsDisplayer d(env, cmdline, lists, cmdline.display_options.a_show_all_jobs.specified() ||
-                    ! job->used_existing_packages_when_ordering()->empty(), false, false);
+                    ! job->used_existing_packages_when_ordering()->empty(), false, false, false);
             any |= job->accept_returning<bool>(d);
 
             if (! job->used_existing_packages_when_ordering()->empty())
@@ -965,9 +984,10 @@ namespace
             const std::tr1::shared_ptr<Environment> & env,
             const DisplayResolutionCommandLine &,
             const std::tr1::shared_ptr<const Resolution> & resolution,
-            const ErrorJob & j)
+            const ErrorJob & j,
+            const bool untaken)
     {
-        display_unable_to_make_decision(env, resolution, *j.unable_to_make_decision());
+        display_unable_to_make_decision(env, resolution, *j.unable_to_make_decision(), untaken);
     }
 
     void display_untaken(
@@ -988,7 +1008,7 @@ namespace
         {
             const std::tr1::shared_ptr<const Job> job(lists.jobs()->fetch(*i));
             ShowJobsDisplayer d(env, cmdline, lists, cmdline.display_options.a_show_all_jobs.specified() ||
-                    ! job->used_existing_packages_when_ordering()->empty(), true, false);
+                    ! job->used_existing_packages_when_ordering()->empty(), true, false, true);
             if (! job->accept_returning<bool>(d))
                 throw InternalError(PALUDIS_HERE, "why didn't we get true?");
         }
@@ -998,7 +1018,7 @@ namespace
                 i != i_end ; ++i)
         {
             const std::tr1::shared_ptr<const ErrorJob> job(lists.jobs()->fetch_as<ErrorJob>(*i));
-            display_one_error(env, cmdline, job->resolution(), *job);
+            display_one_error(env, cmdline, job->resolution(), *job, true);
         }
 
         cout << endl;
@@ -1022,7 +1042,7 @@ namespace
         {
             const std::tr1::shared_ptr<const Job> job(lists.jobs()->fetch(*i));
             ShowJobsDisplayer d(env, cmdline, lists, cmdline.display_options.a_show_all_jobs.specified() ||
-                    ! job->used_existing_packages_when_ordering()->empty(), true, true);
+                    ! job->used_existing_packages_when_ordering()->empty(), true, true, false);
             if (! job->accept_returning<bool>(d))
                 throw InternalError(PALUDIS_HERE, "why didn't we get true?");
         }
@@ -1047,7 +1067,7 @@ namespace
                 i != i_end ; ++i)
         {
             const std::tr1::shared_ptr<const ErrorJob> job(lists.jobs()->fetch_as<ErrorJob>(*i));
-            display_one_error(env, cmdline, job->resolution(), *job);
+            display_one_error(env, cmdline, job->resolution(), *job, false);
         }
 
         cout << endl;
