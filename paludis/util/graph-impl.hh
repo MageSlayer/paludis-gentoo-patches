@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -360,6 +360,18 @@ namespace paludis
                     ++m;
         }
 
+        template <typename T_>
+        static const T_ & depointer(const T_ & t)
+        {
+            return t;
+        }
+
+        template <typename T_>
+        static const T_ & depointer(const std::tr1::shared_ptr<T_> & t)
+        {
+            return *t;
+        }
+
         void sort(OutputConstIterator_ & i)
         {
             unsigned c(0);
@@ -375,7 +387,7 @@ namespace paludis
                         new NoGraphTopologicalOrderExistsError::RemainingNodes);
                 for (typename DirectedGraph<Node_, Edge_, Comparator_>::NodeConstIterator n(g.begin_nodes()), n_end(g.end_nodes()) ; n != n_end ; ++n)
                     if (done.end() == done.find(*n))
-                        r->add(stringify(*n));
+                        r->add(stringify(depointer(*n)));
 
                 throw NoGraphTopologicalOrderExistsError(r);
             }

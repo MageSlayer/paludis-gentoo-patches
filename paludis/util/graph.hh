@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -74,6 +74,12 @@ namespace paludis
             template <typename Node_>
             NoSuchGraphNodeError(const Node_ & node) throw () :
                 GraphError("Node '" + stringify(node) + "' does not exist")
+            {
+            }
+
+            template <typename Node_>
+            NoSuchGraphNodeError(const std::tr1::shared_ptr<Node_> & node) throw () :
+                GraphError("Node '" + stringify(*node) + "' does not exist")
             {
             }
 
