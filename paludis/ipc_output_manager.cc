@@ -182,6 +182,7 @@ namespace paludis
     {
         const Environment * const env;
         const OutputExclusivity exclusivity;
+        const std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)> on_create;
 
         mutable Mutex mutex;
         std::tr1::shared_ptr<OutputManager> output_manager;
@@ -189,9 +190,11 @@ namespace paludis
 
         Pipe stdout_pipe, stderr_pipe, finished_pipe;
 
-        Implementation(const Environment * const e, const OutputExclusivity x) :
+        Implementation(const Environment * const e, const OutputExclusivity x,
+                const std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)> & c) :
             env(e),
-            exclusivity(x)
+            exclusivity(x),
+            on_create(c)
         {
             if (0 != ::fcntl(finished_pipe.read_fd(), F_SETFD, FD_CLOEXEC))
                 throw InternalError(PALUDIS_HERE, "fcntl failed");
@@ -205,8 +208,9 @@ namespace paludis
     };
 }
 
-IPCInputManager::IPCInputManager(const Environment * const e, const OutputExclusivity x) :
-    PrivateImplementationPattern<IPCInputManager>(new Implementation<IPCInputManager>(e, x))
+IPCInputManager::IPCInputManager(const Environment * const e, const OutputExclusivity x,
+        const std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)> & c) :
+    PrivateImplementationPattern<IPCInputManager>(new Implementation<IPCInputManager>(e, x, c))
 {
 }
 
@@ -254,6 +258,8 @@ IPCInputManager::_pipe_command_handler(const std::string & s)
                 return "Ealready constructed";
 
             _imp->output_manager = _imp->env->create_output_manager(*i);
+            if (_imp->on_create)
+                _imp->on_create(_imp->output_manager);
         }
 
         _imp->copy_thread.reset(new Thread(std::tr1::bind(&IPCInputManager::_copy_thread, this)));
