@@ -240,7 +240,7 @@ __cave_import() {
 }
 
 _cave() {
-    local cmd=`__cave_find_cmd` prev=`_get_pword` cur=`_get_cword`
+    local cmd=`__cave_find_cmd` prev=`_get_pword 2>/dev/null || echo ${COMP_WORDS[COMP_CWORD-1]}` cur=`_get_cword`
 
     COMPREPLY=()
 
