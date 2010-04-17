@@ -43,6 +43,7 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <map>
+#include <vector>
 #include <iostream>
 #include <cstring>
 #include "config.h"
@@ -471,21 +472,53 @@ namespace
     {
         std::string command(cmd.command());
 
-        if (cmd.gid() && *cmd.gid() != getgid())
+        // If we're not changing uid or gid, do nothing.
+        if ((!cmd.uid() || *cmd.uid() == getuid()) &&
+            (!cmd.gid() || *cmd.gid() == getgid()))
         {
-            gid_t g(*cmd.gid());
+            return;
+        }
 
-            if (0 != ::setgid(*cmd.gid()))
-                std::cerr << "setgid(" << *cmd.uid() << ") failed for exec of '" << command << "': "
-                    << strerror(errno) << std::endl;
-            else if (0 != ::setgroups(1, &g))
-                std::cerr << "setgroups failed for exec of '" << command << "': " << strerror(errno) << std::endl;
+        int ngids(0);
+        std::vector<gid_t> gids;
+        gid_t gid = cmd.gid() ? *cmd.gid() : getgid();
+
+        if (cmd.uid())
+        {
+            // Fetch the list of supplemental groups for the given uid
+            struct passwd *pwd_entry(getpwuid(*cmd.uid()));
+            getgrouplist(pwd_entry->pw_name, gid, 0, &ngids);
+            gids.resize(ngids);
+            if (-1 == getgrouplist(pwd_entry->pw_name, gid, &gids[0], &ngids))
+            {
+                std::cerr << "getgrouplist failed. Did something change group?" << std::endl;
+                _exit(1);
+            }
+        }
+        else
+        {
+            gids.push_back(gid);
+        }
+
+        if (0 != ::setgid(gid))
+        {
+            std::cerr << "setgid(" << gid << ") failed for exec of '" << command << "': "
+                << strerror(errno) << std::endl;
+            _exit(1);
+        }
+        if (0 != ::setgroups(gids.size(), &gids[0]))
+        {
+            std::cerr << "setgroups failed for exec of '" << command << "': " << strerror(errno) << std::endl;
+            _exit(1);
         }
 
         if (cmd.uid() && *cmd.uid() != getuid())
             if (0 != ::setuid(*cmd.uid()))
+            {
                 std::cerr << "setuid(" << *cmd.uid() << ") failed for exec of '" << command << "': "
                     << strerror(errno) << std::endl;
+                _exit(1);
+            }
     }
 }
 
