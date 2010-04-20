@@ -18,6 +18,7 @@
  */
 
 #include "formats.hh"
+#include "config.h"
 
 using namespace paludis;
 using namespace cave;
@@ -71,6 +72,58 @@ paludis::cave::c::bold_yellow()
 }
 
 const std::string
+paludis::cave::c::pink()
+{
+    return "\033[0;35m";
+}
+
+const std::string
+paludis::cave::c::bold_pink()
+{
+    return "\033[1;35m";
+}
+
+const std::string
+paludis::cave::c::bold_blue_or_pink()
+{
+#if PALUDIS_COLOUR_PINK
+    return c::bold_pink();
+#else
+    return "\033[1;34m";
+#endif
+}
+
+const std::string
+paludis::cave::c::blue_or_pink()
+{
+#if PALUDIS_COLOUR_PINK
+    return c::pink();
+#else
+    return "\033[0;34m";
+#endif
+}
+
+const std::string
+paludis::cave::c::bold_green_or_pink()
+{
+#if PALUDIS_COLOUR_PINK
+    return c::bold_pink();
+#else
+    return "\033[1;32m";
+#endif
+}
+
+const std::string
+paludis::cave::c::green_or_pink()
+{
+#if PALUDIS_COLOUR_PINK
+    return c::pink();
+#else
+    return "\033[0;32m";
+#endif
+}
+
+const std::string
 paludis::cave::c::normal()
 {
     return "\033[0;0m";
@@ -85,25 +138,25 @@ paludis::cave::c::bold_normal()
 const std::string
 paludis::cave::f::show_set_heading()
 {
-    return "* " + c::bold_blue() + "%s" + c::normal() + "\\n";
+    return "* " + c::bold_blue_or_pink() + "%s" + c::normal() + "\\n";
 }
 
 const std::string
 paludis::cave::f::show_set_set()
 {
-    return "%i%i%i%i" + c::blue() + "%s" + c::normal() + "\\n";
+    return "%i%i%i%i" + c::blue_or_pink() + "%s" + c::normal() + "\\n";
 }
 
 const std::string
 paludis::cave::f::show_set_spec_installed()
 {
-    return "%i%i%i%i" + c::bold_green() + "%s" + c::normal() + "\\n";
+    return "%i%i%i%i" + c::bold_green_or_pink() + "%s" + c::normal() + "\\n";
 }
 
 const std::string
 paludis::cave::f::show_set_spec_installable()
 {
-    return "%i%i%i%i" + c::green() + "%s" + c::normal() + "\\n";
+    return "%i%i%i%i" + c::green_or_pink() + "%s" + c::normal() + "\\n";
 }
 
 const std::string
@@ -115,13 +168,13 @@ paludis::cave::f::show_set_spec_unavailable()
 const std::string
 paludis::cave::f::show_wildcard_heading()
 {
-    return "* " + c::bold_blue() + "%s" + c::normal() + "\\n";
+    return "* " + c::bold_blue_or_pink() + "%s" + c::normal() + "\\n";
 }
 
 const std::string
 paludis::cave::f::show_wildcard_spec_installed()
 {
-    return "    " + c::green() + "%s" + c::normal() + "\\n";
+    return "    " + c::green_or_pink() + "%s" + c::normal() + "\\n";
 }
 
 const std::string
@@ -139,7 +192,7 @@ paludis::cave::f::show_wildcard_spec_unavailable()
 const std::string
 paludis::cave::f::show_repository_heading()
 {
-    return "* " + c::bold_blue() + "%s" + c::normal() + "\\n";
+    return "* " + c::bold_blue_or_pink() + "%s" + c::normal() + "\\n";
 }
 
 const std::string
@@ -163,31 +216,31 @@ paludis::cave::f::show_metadata_continued_value()
 const std::string
 paludis::cave::f::show_metadata_subsection_human()
 {
-    return "    %i%i%i%i" + c::bold_blue() + "%h" + c::normal() + "\\n";
+    return "    %i%i%i%i" + c::bold_blue_or_pink() + "%h" + c::normal() + "\\n";
 }
 
 const std::string
 paludis::cave::f::show_metadata_subsection_raw()
 {
-    return "    %i%i%i%i" + c::bold_blue() + "%r" + c::normal() + "\\n";
+    return "    %i%i%i%i" + c::bold_blue_or_pink() + "%r" + c::normal() + "\\n";
 }
 
 const std::string
 paludis::cave::f::show_package_heading()
 {
-    return "* " + c::bold_blue() + "%s" + c::normal() + "\\n";
+    return "* " + c::bold_blue_or_pink() + "%s" + c::normal() + "\\n";
 }
 
 const std::string
 paludis::cave::f::show_package_version_installed()
 {
-    return c::bold_green() + "%s" + c::normal();
+    return c::bold_green_or_pink() + "%s" + c::normal();
 }
 
 const std::string
 paludis::cave::f::show_package_version_installable()
 {
-    return c::green() + "%s%r" + c::normal();
+    return c::green_or_pink() + "%s%r" + c::normal();
 }
 
 const std::string
@@ -217,7 +270,7 @@ paludis::cave::f::show_package_slot()
 const std::string
 paludis::cave::f::show_package_id_heading()
 {
-    return "    " + c::bold_blue() + "%s" + c::normal() + "\\n";
+    return "    " + c::bold_blue_or_pink() + "%s" + c::normal() + "\\n";
 }
 
 const std::string
@@ -229,7 +282,7 @@ paludis::cave::f::show_package_id_masks()
 const std::string
 paludis::cave::f::show_package_id_masks_overridden()
 {
-    return "        " + c::green() + "%s" + c::normal() + "\\n";
+    return "        " + c::green_or_pink() + "%s" + c::normal() + "\\n";
 }
 
 const std::string
@@ -241,31 +294,31 @@ paludis::cave::f::info_metadata()
 const std::string
 paludis::cave::f::info_metadata_subsection()
 {
-    return "%i%i%i%i" + c::blue() + "%s" + c::normal() + ":\\n";
+    return "%i%i%i%i" + c::blue_or_pink() + "%s" + c::normal() + ":\\n";
 }
 
 const std::string
 paludis::cave::f::info_repository_heading()
 {
-    return "Repository " + c::blue() + "%s" + c::normal() + ":\\n";
+    return "Repository " + c::blue_or_pink() + "%s" + c::normal() + ":\\n";
 }
 
 const std::string
 paludis::cave::f::info_id_heading()
 {
-    return "Extra Information for " + c::blue() + "%s" + c::normal() + ":\\n";
+    return "Extra Information for " + c::blue_or_pink() + "%s" + c::normal() + ":\\n";
 }
 
 const std::string
 paludis::cave::f::info_heading()
 {
-    return c::blue() + "%s" + c::normal() + ":\\n";
+    return c::blue_or_pink() + "%s" + c::normal() + ":\\n";
 }
 
 const std::string
 paludis::cave::f::fix_cache_fixing()
 {
-    return "Fixing cache for " + c::blue() + "%s" + c::normal() + "...\\n";
+    return "Fixing cache for " + c::blue_or_pink() + "%s" + c::normal() + "...\\n";
 }
 
 const std::string
@@ -277,7 +330,7 @@ paludis::cave::f::colour_formatter_keyword_name_plain()
 const std::string
 paludis::cave::f::colour_formatter_keyword_name_accepted()
 {
-    return c::green() + "%s" + c::normal();
+    return c::green_or_pink() + "%s" + c::normal();
 }
 
 const std::string
@@ -301,13 +354,13 @@ paludis::cave::f::colour_formatter_package_id_plain()
 const std::string
 paludis::cave::f::colour_formatter_package_id_installed()
 {
-    return c::bold_green() + "%s" + c::normal();
+    return c::bold_green_or_pink() + "%s" + c::normal();
 }
 
 const std::string
 paludis::cave::f::colour_formatter_package_id_installable()
 {
-    return c::green() + "%s" + c::normal();
+    return c::green_or_pink() + "%s" + c::normal();
 }
 
 const std::string
@@ -319,7 +372,7 @@ paludis::cave::f::colour_formatter_license_dep_spec_plain()
 const std::string
 paludis::cave::f::colour_formatter_license_dep_spec_accepted()
 {
-    return c::green() + "%s" + c::normal();
+    return c::green_or_pink() + "%s" + c::normal();
 }
 
 const std::string
@@ -337,7 +390,7 @@ paludis::cave::f::colour_formatter_choice_value_plain()
 const std::string
 paludis::cave::f::colour_formatter_choice_value_enabled()
 {
-    return c::green() + "%k" + c::normal() + "%v";
+    return c::green_or_pink() + "%k" + c::normal() + "%v";
 }
 
 const std::string
@@ -349,7 +402,7 @@ paludis::cave::f::colour_formatter_choice_value_disabled()
 const std::string
 paludis::cave::f::colour_formatter_choice_value_forced()
 {
-    return c::green() + "(%k%v)" + c::normal();
+    return c::green_or_pink() + "(%k%v)" + c::normal();
 }
 
 const std::string
@@ -367,7 +420,7 @@ paludis::cave::f::colour_formatter_conditional_dep_spec_plain()
 const std::string
 paludis::cave::f::colour_formatter_conditional_dep_spec_enabled()
 {
-    return c::green() + "%s" + c::normal();
+    return c::green_or_pink() + "%s" + c::normal();
 }
 
 const std::string
@@ -379,7 +432,7 @@ paludis::cave::f::colour_formatter_conditional_dep_spec_disabled()
 const std::string
 paludis::cave::f::colour_formatter_conditional_dep_spec_forced()
 {
-    return c::green() + "(%s)" + c::normal();
+    return c::green_or_pink() + "(%s)" + c::normal();
 }
 
 const std::string
@@ -421,13 +474,13 @@ paludis::cave::f::colour_formatter_package_dep_spec_plain()
 const std::string
 paludis::cave::f::colour_formatter_package_dep_spec_installed()
 {
-    return c::bold_green() + "%s" + c::normal();
+    return c::bold_green_or_pink() + "%s" + c::normal();
 }
 
 const std::string
 paludis::cave::f::colour_formatter_package_dep_spec_installable()
 {
-    return c::green() + "%s" + c::normal();
+    return c::green_or_pink() + "%s" + c::normal();
 }
 
 const std::string
@@ -445,7 +498,7 @@ paludis::cave::f::colour_formatter_block_dep_spec_plain()
 const std::string
 paludis::cave::f::colour_formatter_named_set_dep_spec_plain()
 {
-    return c::blue() + "%s" + c::normal();
+    return c::blue_or_pink() + "%s" + c::normal();
 }
 
 const std::string
@@ -475,13 +528,13 @@ paludis::cave::f::show_contents_sym()
 const std::string
 paludis::cave::f::show_choice_forced_enabled()
 {
-    return c::green() + "(%s)" + c::normal();
+    return c::green_or_pink() + "(%s)" + c::normal();
 }
 
 const std::string
 paludis::cave::f::show_choice_enabled()
 {
-    return c::green() + "%s" + c::normal();
+    return c::green_or_pink() + "%s" + c::normal();
 }
 
 const std::string
@@ -505,13 +558,13 @@ paludis::cave::f::colour_formatter_indent()
 const std::string
 paludis::cave::f::sync_heading()
 {
-    return c::bold_blue() + "%s" + c::normal() + "\\n\\n";
+    return c::bold_blue_or_pink() + "%s" + c::normal() + "\\n\\n";
 }
 
 const std::string
 paludis::cave::f::sync_message_success()
 {
-    return "* " + c::bold_green() + "%k:" + c::normal() + "%{column 30}%v\\n";
+    return "* " + c::bold_green_or_pink() + "%k:" + c::normal() + "%{column 30}%v\\n";
 }
 
 const std::string
@@ -535,19 +588,19 @@ paludis::cave::f::sync_repos_title()
 const std::string
 paludis::cave::f::sync_repo_starting()
 {
-    return "-> " + c::bold_blue() + "%s" + c::normal() + "%{column 30}starting%{column 52}%p%{column 60}%a%{column 68}%d\\n";
+    return "-> " + c::bold_blue_or_pink() + "%s" + c::normal() + "%{column 30}starting%{column 52}%p%{column 60}%a%{column 68}%d\\n";
 }
 
 const std::string
 paludis::cave::f::sync_repo_done_success()
 {
-    return "-> " + c::bold_green() + "%s" + c::normal() + "%{column 30}success%{column 52}%p%{column 60}%a%{column 68}%d\\n";
+    return "-> " + c::bold_green_or_pink() + "%s" + c::normal() + "%{column 30}success%{column 52}%p%{column 60}%a%{column 68}%d\\n";
 }
 
 const std::string
 paludis::cave::f::sync_repo_done_no_syncing_required()
 {
-    return "-> " + c::bold_green() + "%s" + c::normal() + "%{column 30}no syncing required%{column 52}%p%{column 60}%a%{column 68}%d\\n";
+    return "-> " + c::bold_green_or_pink() + "%s" + c::normal() + "%{column 30}no syncing required%{column 52}%p%{column 60}%a%{column 68}%d\\n";
 }
 
 const std::string
