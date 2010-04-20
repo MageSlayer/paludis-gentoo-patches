@@ -288,14 +288,17 @@ namespace
     {
         const Environment * const env;
         const ResolveCommandLineResolutionOptions & resolution_options;
+        const PackageDepSpecList & no_binaries_for;
         const std::tr1::shared_ptr<const PackageID> package_id;
 
         DestinationTypesFinder(
                 const Environment * const e,
                 const ResolveCommandLineResolutionOptions & c,
+                const PackageDepSpecList & n,
                 const std::tr1::shared_ptr<const PackageID> & i) :
             env(e),
             resolution_options(c),
+            no_binaries_for(n),
             package_id(i)
         {
         }
@@ -310,12 +313,9 @@ namespace
 
                 if (resolution_options.a_no_binaries_for.specified() && package_id)
                 {
-                    for (args::StringSetArg::ConstIterator a(resolution_options.a_no_binaries_for.begin_args()),
-                            a_end(resolution_options.a_no_binaries_for.end_args()) ;
-                            a != a_end ; ++a)
-                        if (match_package(*env,
-                                    parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards),
-                                    *package_id, MatchPackageOptions()))
+                    for (PackageDepSpecList::const_iterator l(no_binaries_for.begin()), l_end(no_binaries_for.end()) ;
+                            l != l_end ; ++l)
+                        if (match_package(*env, *l, *package_id, MatchPackageOptions()))
                         {
                             b = false;
                             break;
@@ -380,11 +380,12 @@ namespace
     DestinationTypes get_destination_types_for_fn(
             const Environment * const env,
             const ResolveCommandLineResolutionOptions & resolution_options,
+            const PackageDepSpecList & no_binaries_for,
             const PackageDepSpec &,
             const std::tr1::shared_ptr<const PackageID> & id,
             const std::tr1::shared_ptr<const Reason> & reason)
     {
-        DestinationTypesFinder f(env, resolution_options, id);
+        DestinationTypesFinder f(env, resolution_options, no_binaries_for, id);
         return reason->accept_returning<DestinationTypes>(f);
     }
 
@@ -535,15 +536,14 @@ namespace
     };
 
     bool use_existing_from_withish(
-            const Environment * const env,
+            const Environment * const,
             const QualifiedPackageName & name,
-            const args::StringSetArg & option)
+            const PackageDepSpecList & list)
     {
-        for (args::StringSetArg::ConstIterator a(option.begin_args()), a_end(option.end_args()) ;
-                a != a_end ; ++a)
+        for (PackageDepSpecList::const_iterator l(list.begin()), l_end(list.end()) ;
+                l != l_end ; ++l)
         {
-            PackageDepSpec spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
-            if (! package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
+            if (! package_dep_spec_has_properties(*l, make_named_values<PackageDepSpecProperties>(
                             value_for<n::has_additional_requirements>(false),
                             value_for<n::has_category_name_part>(false),
                             value_for<n::has_from_repository>(false),
@@ -557,9 +557,9 @@ namespace
                             value_for<n::has_tag>(indeterminate),
                             value_for<n::has_version_requirements>(false)
                             )))
-                throw args::DoHelp("'" + stringify(*a) + "' is not a simple cat/pkg");
+                throw args::DoHelp("'" + stringify(*l) + "' is not a simple cat/pkg");
 
-            if (name == *spec.package_ptr())
+            if (name == *l->package_ptr())
                 return true;
         }
 
@@ -569,15 +569,17 @@ namespace
     UseExisting use_existing_fn(
             const Environment * const env,
             const ResolveCommandLineResolutionOptions & resolution_options,
+            const PackageDepSpecList & without,
+            const PackageDepSpecList & with,
             const Resolvent &,
             const PackageDepSpec & spec,
             const std::tr1::shared_ptr<const Reason> & reason)
     {
         if (spec.package_ptr())
         {
-            if (use_existing_from_withish(env, *spec.package_ptr(), resolution_options.a_without))
+            if (use_existing_from_withish(env, *spec.package_ptr(), without))
                 return ue_if_possible;
-            if (use_existing_from_withish(env, *spec.package_ptr(), resolution_options.a_with))
+            if (use_existing_from_withish(env, *spec.package_ptr(), with))
                 return ue_never;
         }
 
@@ -666,13 +668,14 @@ namespace
     const std::tr1::shared_ptr<Constraints> make_initial_constraints_for(
             const Environment * const env,
             const ResolveCommandLineResolutionOptions & resolution_options,
+            const PackageDepSpecList & without,
             const Resolvent & resolvent)
     {
         const std::tr1::shared_ptr<Constraints> result(new Constraints);
 
         int n(reinstall_scm_days(resolution_options));
         if ((-1 != n) && installed_is_scm_older_than(env, resolution_options, resolvent, n)
-                && ! use_existing_from_withish(env, resolvent.package(), resolution_options.a_without))
+                && ! use_existing_from_withish(env, resolvent.package(), without))
         {
             result->add(make_shared_ptr(new Constraint(make_named_values<Constraint>(
                                 value_for<n::destination_type>(resolvent.destination_type()),
@@ -690,12 +693,13 @@ namespace
     const std::tr1::shared_ptr<Constraints> initial_constraints_for_fn(
             const Environment * const env,
             const ResolveCommandLineResolutionOptions & resolution_options,
+            const PackageDepSpecList & without,
             const InitialConstraints & initial_constraints,
             const Resolvent & resolvent)
     {
         InitialConstraints::const_iterator i(initial_constraints.find(resolvent));
         if (i == initial_constraints.end())
-            return make_initial_constraints_for(env, resolution_options, resolvent);
+            return make_initial_constraints_for(env, resolution_options, without, resolvent);
         else
             return i->second;
     }
@@ -737,6 +741,7 @@ namespace
     const std::tr1::shared_ptr<Resolvents>
     get_resolvents_for_fn(const Environment * const env,
             const ResolveCommandLineResolutionOptions & resolution_options,
+            const PackageDepSpecList & no_binaries_for,
             const PackageDepSpec & spec,
             const std::tr1::shared_ptr<const SlotName> & maybe_slot,
             const std::tr1::shared_ptr<const Reason> & reason)
@@ -793,7 +798,7 @@ namespace
         for (PackageIDSequence::ConstIterator i(result_ids->begin()), i_end(result_ids->end()) ;
                 i != i_end ; ++i)
         {
-            DestinationTypes destination_types(get_destination_types_for_fn(env, resolution_options, spec, *i, reason));
+            DestinationTypes destination_types(get_destination_types_for_fn(env, resolution_options, no_binaries_for, spec, *i, reason));
             for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
                 if (destination_types[*t])
                     result->push_back(Resolvent(*i, *t));
@@ -804,18 +809,17 @@ namespace
 
     bool ignore_dep_from(
             const Environment * const env,
-            const ResolveCommandLineResolutionOptions & resolution_options,
+            const ResolveCommandLineResolutionOptions &,
+            const PackageDepSpecList & no_blockers_from,
+            const PackageDepSpecList & no_dependencies_from,
             const std::tr1::shared_ptr<const PackageID> & id,
             const bool is_block)
     {
-        const args::StringSetArg & s(is_block ?
-                resolution_options.a_no_blockers_from :
-                resolution_options.a_no_dependencies_from);
+        const PackageDepSpecList & list(is_block ? no_blockers_from : no_dependencies_from);
 
-        for (args::StringSetArg::ConstIterator a(s.begin_args()), a_end(s.end_args()) ;
-                a != a_end ; ++a)
-            if (match_package(*env, parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards),
-                        *id, MatchPackageOptions()))
+        for (PackageDepSpecList::const_iterator l(list.begin()), l_end(list.end()) ;
+                l != l_end ; ++l)
+            if (match_package(*env, *l, *id, MatchPackageOptions()))
                 return true;
 
         return false;
@@ -825,20 +829,27 @@ namespace
     {
         const Environment * const env;
         const ResolveCommandLineResolutionOptions & resolution_options;
+        const PackageDepSpecList & no_blockers_from;
+        const PackageDepSpecList & no_dependencies_from;
         const SanitisedDependency dep;
 
         CareAboutDepFnVisitor(const Environment * const e,
                 const ResolveCommandLineResolutionOptions & c,
+                const PackageDepSpecList & b,
+                const PackageDepSpecList & f,
                 const SanitisedDependency & d) :
             env(e),
             resolution_options(c),
+            no_blockers_from(b),
+            no_dependencies_from(f),
             dep(d)
         {
         }
 
         bool visit(const ExistingNoChangeDecision & decision) const
         {
-            if (ignore_dep_from(env, resolution_options, decision.existing_id(), dep.spec().if_block()))
+            if (ignore_dep_from(env, resolution_options, no_blockers_from, no_dependencies_from,
+                        decision.existing_id(), dep.spec().if_block()))
                 return false;
 
             if (! is_enabled_dep(dep))
@@ -887,7 +898,8 @@ namespace
 
         bool visit(const ChangesToMakeDecision & decision) const
         {
-            if (ignore_dep_from(env, resolution_options, decision.origin_id(), dep.spec().if_block()))
+            if (ignore_dep_from(env, resolution_options, no_blockers_from,
+                        no_dependencies_from, decision.origin_id(), dep.spec().if_block()))
                 return false;
 
             if (is_enabled_dep(dep))
@@ -900,11 +912,17 @@ namespace
     SpecInterest interest_in_spec_fn(
             const Environment * const env,
             const ResolveCommandLineResolutionOptions & resolution_options,
+            const PackageDepSpecList & take,
+            const PackageDepSpecList & take_from,
+            const PackageDepSpecList & ignore,
+            const PackageDepSpecList & ignore_from,
+            const PackageDepSpecList & no_blockers_from,
+            const PackageDepSpecList & no_dependencies_from,
             const Resolvent & resolvent,
             const std::tr1::shared_ptr<const Resolution> & resolution,
             const SanitisedDependency & dep)
     {
-        CareAboutDepFnVisitor v(env, resolution_options, dep);
+        CareAboutDepFnVisitor v(env, resolution_options, no_blockers_from, no_dependencies_from, dep);
         if (resolution->decision()->accept_returning<bool>(v))
         {
             bool suggestion(is_suggestion(dep)), recommendation(is_recommendation(dep));
@@ -912,41 +930,33 @@ namespace
             if (! (suggestion || recommendation))
                 return si_take;
 
-            for (args::StringSetArg::ConstIterator a(resolution_options.a_take.begin_args()),
-                    a_end(resolution_options.a_take.end_args()) ;
-                    a != a_end ; ++a)
+            for (PackageDepSpecList::const_iterator l(take.begin()), l_end(take.end()) ;
+                    l != l_end ; ++l)
             {
-                PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
                 PackageDepSpec spec(*dep.spec().if_package());
-                if (match_qpns(*env, user_spec, *spec.package_ptr()))
+                if (match_qpns(*env, *l, *spec.package_ptr()))
                     return si_take;
             }
 
-            for (args::StringSetArg::ConstIterator a(resolution_options.a_take_from.begin_args()),
-                    a_end(resolution_options.a_take_from.end_args()) ;
-                    a != a_end ; ++a)
+            for (PackageDepSpecList::const_iterator l(take_from.begin()), l_end(take_from.end()) ;
+                    l != l_end ; ++l)
             {
-                PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
-                if (match_qpns(*env, user_spec, resolvent.package()))
+                if (match_qpns(*env, *l, resolvent.package()))
                     return si_take;
             }
 
-            for (args::StringSetArg::ConstIterator a(resolution_options.a_ignore.begin_args()),
-                    a_end(resolution_options.a_ignore.end_args()) ;
-                    a != a_end ; ++a)
+            for (PackageDepSpecList::const_iterator l(ignore.begin()), l_end(ignore.end()) ;
+                    l != l_end ; ++l)
             {
-                PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
                 PackageDepSpec spec(*dep.spec().if_package());
-                if (match_qpns(*env, user_spec, *spec.package_ptr()))
+                if (match_qpns(*env, *l, *spec.package_ptr()))
                     return si_ignore;
             }
 
-            for (args::StringSetArg::ConstIterator a(resolution_options.a_ignore_from.begin_args()),
-                    a_end(resolution_options.a_ignore_from.end_args()) ;
-                    a != a_end ; ++a)
+            for (PackageDepSpecList::const_iterator l(ignore_from.begin()), l_end(ignore_from.end()) ;
+                    l != l_end ; ++l)
             {
-                PackageDepSpec user_spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
-                if (match_qpns(*env, user_spec, resolvent.package()))
+                if (match_qpns(*env, *l, resolvent.package()))
                     return si_ignore;
             }
 
@@ -1087,12 +1097,12 @@ namespace
         return match_any(env, list, i);
     }
 
-    bool prefer_or_avoid_one(const Environment * const env, const QualifiedPackageName & q, const std::string & s)
+    bool prefer_or_avoid_one(const Environment * const, const QualifiedPackageName & q, const PackageDepSpec & s)
     {
-        Context context("When working out whether we favour or avoid '" + stringify(q) + "' due to '" + s + "':");
+        Context context("When working out whether we favour or avoid '" + stringify(q) + "' due to '"
+                + stringify(s) + "':");
 
-        PackageDepSpec spec(parse_user_package_dep_spec(s, env, UserPackageDepSpecOptions()));
-        if (! package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
+        if (! package_dep_spec_has_properties(s, make_named_values<PackageDepSpecProperties>(
                         value_for<n::has_additional_requirements>(false),
                         value_for<n::has_category_name_part>(false),
                         value_for<n::has_from_repository>(false),
@@ -1107,19 +1117,21 @@ namespace
                         value_for<n::has_version_requirements>(false)
                         )))
             throw args::DoHelp("'" + stringify(s) + "' is not a simple cat/pkg");
-        return *spec.package_ptr() == q;
+        return *s.package_ptr() == q;
     }
 
     Tribool prefer_or_avoid_fn(
             const Environment * const env,
-            const ResolveCommandLineResolutionOptions & resolution_options,
+            const ResolveCommandLineResolutionOptions &,
+            const PackageDepSpecList & favour,
+            const PackageDepSpecList & avoid,
             const QualifiedPackageName & q)
     {
-        if (resolution_options.a_favour.end_args() != std::find_if(resolution_options.a_favour.begin_args(),
-                    resolution_options.a_favour.end_args(), std::tr1::bind(&prefer_or_avoid_one, env, q, std::tr1::placeholders::_1)))
+        if (favour.end() != std::find_if(favour.begin(), favour.end(),
+                    std::tr1::bind(&prefer_or_avoid_one, env, q, std::tr1::placeholders::_1)))
             return true;
-        if (resolution_options.a_avoid.end_args() != std::find_if(resolution_options.a_avoid.begin_args(),
-                    resolution_options.a_avoid.end_args(), std::tr1::bind(&prefer_or_avoid_one, env, q, std::tr1::placeholders::_1)))
+        if (avoid.end() != std::find_if(avoid.begin(), avoid.end(),
+                    std::tr1::bind(&prefer_or_avoid_one, env, q, std::tr1::placeholders::_1)))
             return false;
         return indeterminate;
     }
@@ -1156,13 +1168,19 @@ namespace
     {
         const Environment * const env;
         const ResolveCommandLineResolutionOptions & resolution_options;
+        const PackageDepSpecList & permit_downgrade;
+        const PackageDepSpecList & permit_old_version;
         const std::tr1::shared_ptr<const PackageID> id;
 
         ConfirmFnVisitor(const Environment * const e,
                 const ResolveCommandLineResolutionOptions & r,
+                const PackageDepSpecList & d,
+                const PackageDepSpecList & o,
                 const std::tr1::shared_ptr<const PackageID> & i) :
             env(e),
             resolution_options(r),
+            permit_downgrade(d),
+            permit_old_version(o),
             id(i)
         {
         }
@@ -1170,12 +1188,10 @@ namespace
         bool visit(const DowngradeConfirmation &) const
         {
             if (id)
-                for (args::StringSetArg::ConstIterator a(resolution_options.a_permit_downgrade.begin_args()),
-                        a_end(resolution_options.a_permit_downgrade.end_args()) ;
-                        a != a_end ; ++a)
+                for (PackageDepSpecList::const_iterator l(permit_downgrade.begin()), l_end(permit_downgrade.end()) ;
+                        l != l_end ; ++l)
                 {
-                    PackageDepSpec spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
-                    if (match_package(*env, spec, *id, MatchPackageOptions()))
+                    if (match_package(*env, *l, *id, MatchPackageOptions()))
                         return true;
                 }
 
@@ -1185,12 +1201,10 @@ namespace
         bool visit(const NotBestConfirmation &) const
         {
             if (id)
-                for (args::StringSetArg::ConstIterator a(resolution_options.a_permit_old_version.begin_args()),
-                        a_end(resolution_options.a_permit_old_version.end_args()) ;
-                        a != a_end ; ++a)
+                for (PackageDepSpecList::const_iterator l(permit_old_version.begin()), l_end(permit_old_version.end()) ;
+                        l != l_end ; ++l)
                 {
-                    PackageDepSpec spec(parse_user_package_dep_spec(*a, env, UserPackageDepSpecOptions() + updso_allow_wildcards));
-                    if (match_package(*env, spec, *id, MatchPackageOptions()))
+                    if (match_package(*env, *l, *id, MatchPackageOptions()))
                         return true;
                 }
 
@@ -1201,11 +1215,13 @@ namespace
     bool confirm_fn(
             const Environment * const env,
             const ResolveCommandLineResolutionOptions & resolution_options,
+            const PackageDepSpecList & permit_downgrade,
+            const PackageDepSpecList & permit_old_version,
             const Resolvent &,
             const std::tr1::shared_ptr<const Resolution> & r,
             const std::tr1::shared_ptr<const RequiredConfirmation> & c)
     {
-        return c->accept_returning<bool>(ConfirmFnVisitor(env, resolution_options,
+        return c->accept_returning<bool>(ConfirmFnVisitor(env, resolution_options, permit_downgrade, permit_old_version,
                     r->decision()->accept_returning<std::tr1::shared_ptr<const PackageID> >(ChosenIDVisitor())
                     ));
     }
@@ -1513,7 +1529,10 @@ paludis::cave::resolve_common(
     int retcode(0);
 
     InitialConstraints initial_constraints;
-    PackageDepSpecList allowed_to_remove_specs, allowed_to_break_specs, remove_if_dependent_specs, less_restrictive_remove_blockers_specs;
+    PackageDepSpecList allowed_to_remove_specs, allowed_to_break_specs, remove_if_dependent_specs,
+                       less_restrictive_remove_blockers_specs, no_binaries_for, with, without,
+                       permit_old_version, permit_downgrade, take, take_from, ignore, ignore_from,
+                       favour, avoid, no_dependencies_from, no_blockers_from;
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_uninstall.begin_args()),
             i_end(resolution_options.a_permit_uninstall.end_args()) ;
@@ -1539,6 +1558,84 @@ paludis::cave::resolve_common(
         less_restrictive_remove_blockers_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
                     UserPackageDepSpecOptions() + updso_allow_wildcards));
 
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_no_binaries_for.begin_args()),
+            i_end(resolution_options.a_no_binaries_for.end_args()) ;
+            i != i_end ; ++i)
+        no_binaries_for.push_back(parse_user_package_dep_spec(*i, env.get(),
+                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_without.begin_args()),
+            i_end(resolution_options.a_without.end_args()) ;
+            i != i_end ; ++i)
+        without.push_back(parse_user_package_dep_spec(*i, env.get(),
+                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_with.begin_args()),
+            i_end(resolution_options.a_with.end_args()) ;
+            i != i_end ; ++i)
+        with.push_back(parse_user_package_dep_spec(*i, env.get(),
+                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_take.begin_args()),
+            i_end(resolution_options.a_take.end_args()) ;
+            i != i_end ; ++i)
+        take.push_back(parse_user_package_dep_spec(*i, env.get(),
+                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_take_from.begin_args()),
+            i_end(resolution_options.a_take_from.end_args()) ;
+            i != i_end ; ++i)
+        take_from.push_back(parse_user_package_dep_spec(*i, env.get(),
+                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_ignore.begin_args()),
+            i_end(resolution_options.a_ignore.end_args()) ;
+            i != i_end ; ++i)
+        ignore.push_back(parse_user_package_dep_spec(*i, env.get(),
+                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_ignore_from.begin_args()),
+            i_end(resolution_options.a_ignore_from.end_args()) ;
+            i != i_end ; ++i)
+        ignore_from.push_back(parse_user_package_dep_spec(*i, env.get(),
+                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_favour.begin_args()),
+            i_end(resolution_options.a_favour.end_args()) ;
+            i != i_end ; ++i)
+        favour.push_back(parse_user_package_dep_spec(*i, env.get(),
+                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_avoid.begin_args()),
+            i_end(resolution_options.a_avoid.end_args()) ;
+            i != i_end ; ++i)
+        avoid.push_back(parse_user_package_dep_spec(*i, env.get(),
+                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_no_dependencies_from.begin_args()),
+            i_end(resolution_options.a_no_dependencies_from.end_args()) ;
+            i != i_end ; ++i)
+        no_dependencies_from.push_back(parse_user_package_dep_spec(*i, env.get(),
+                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_no_blockers_from.begin_args()),
+            i_end(resolution_options.a_no_blockers_from.end_args()) ;
+            i != i_end ; ++i)
+        no_blockers_from.push_back(parse_user_package_dep_spec(*i, env.get(),
+                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_downgrade.begin_args()),
+            i_end(resolution_options.a_permit_downgrade.end_args()) ;
+            i != i_end ; ++i)
+        permit_downgrade.push_back(parse_user_package_dep_spec(*i, env.get(),
+                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_old_version.begin_args()),
+            i_end(resolution_options.a_permit_old_version.end_args()) ;
+            i != i_end ; ++i)
+        permit_old_version.push_back(parse_user_package_dep_spec(*i, env.get(),
+                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+
     for (args::StringSetArg::ConstIterator i(resolution_options.a_preset.begin_args()),
             i_end(resolution_options.a_preset.end_args()) ;
             i != i_end ; ++i)
@@ -1546,7 +1643,7 @@ paludis::cave::resolve_common(
         const std::tr1::shared_ptr<const Reason> reason(new PresetReason("preset", make_null_shared_ptr()));
         PackageDepSpec spec(parse_user_package_dep_spec(*i, env.get(), UserPackageDepSpecOptions()));
         const std::tr1::shared_ptr<const Resolvents> resolvents(get_resolvents_for_fn(
-                    env.get(), resolution_options, spec, make_null_shared_ptr(), reason));
+                    env.get(), resolution_options, no_binaries_for, spec, make_null_shared_ptr(), reason));
 
         if (resolvents->empty())
             throw args::DoHelp("Preset '" + *i + "' has no resolvents");
@@ -1563,52 +1660,47 @@ paludis::cave::resolve_common(
                             value_for<n::use_existing>(ue_if_possible)
                             )));
             initial_constraints.insert(std::make_pair(*r, make_initial_constraints_for(
-                            env.get(), resolution_options, *r))).first->second->add(
+                            env.get(), resolution_options, without, *r))).first->second->add(
                     constraint);
         }
     }
 
+    using std::tr1::placeholders::_1;
+    using std::tr1::placeholders::_2;
+    using std::tr1::placeholders::_3;
+    using std::tr1::placeholders::_4;
+
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
                 value_for<n::allowed_to_break_fn>(std::tr1::bind(&allowed_to_break_fn,
-                        env.get(),
-                        std::tr1::cref(allowed_to_break_specs),
-                        std::tr1::placeholders::_1)),
+                        env.get(), std::tr1::cref(allowed_to_break_specs), _1)),
                 value_for<n::allowed_to_remove_fn>(std::tr1::bind(&allowed_to_remove_fn,
-                        env.get(),
-                        std::tr1::cref(allowed_to_remove_specs),
-                        std::tr1::placeholders::_1)),
+                        env.get(), std::tr1::cref(allowed_to_remove_specs), _1)),
                 value_for<n::confirm_fn>(std::tr1::bind(&confirm_fn,
-                        env.get(), std::tr1::cref(resolution_options), std::tr1::placeholders::_1,
-                        std::tr1::placeholders::_2, std::tr1::placeholders::_3)),
+                        env.get(), std::tr1::cref(resolution_options), std::tr1::cref(permit_downgrade),
+                        std::tr1::cref(permit_old_version), _1, _2, _3)),
                 value_for<n::find_repository_for_fn>(std::tr1::bind(&find_repository_for_fn,
-                        env.get(), std::tr1::cref(resolution_options), std::tr1::placeholders::_1, std::tr1::placeholders::_2,
-                        std::tr1::placeholders::_3)),
+                        env.get(), std::tr1::cref(resolution_options), _1, _2, _3)),
                 value_for<n::get_constraints_for_dependent_fn>(std::tr1::bind(&get_constraints_for_dependent_fn,
-                        env.get(), std::tr1::cref(less_restrictive_remove_blockers_specs), std::tr1::placeholders::_1,
-                        std::tr1::placeholders::_2, std::tr1::placeholders::_3, std::tr1::placeholders::_4)),
+                        env.get(), std::tr1::cref(less_restrictive_remove_blockers_specs), _1, _2, _3, _4)),
                 value_for<n::get_destination_types_for_fn>(std::tr1::bind(&get_destination_types_for_fn,
-                        env.get(), std::tr1::cref(resolution_options), std::tr1::placeholders::_1, std::tr1::placeholders::_2,
-                        std::tr1::placeholders::_3)),
+                        env.get(), std::tr1::cref(resolution_options), std::tr1::cref(no_binaries_for), _1, _2, _3)),
                 value_for<n::get_initial_constraints_for_fn>(std::tr1::bind(&initial_constraints_for_fn,
-                        env.get(), std::tr1::cref(resolution_options), std::tr1::cref(initial_constraints), std::tr1::placeholders::_1)),
+                        env.get(), std::tr1::cref(resolution_options), std::tr1::cref(without),
+                        std::tr1::cref(initial_constraints), _1)),
                 value_for<n::get_resolvents_for_fn>(std::tr1::bind(&get_resolvents_for_fn,
-                        env.get(), std::tr1::cref(resolution_options), std::tr1::placeholders::_1, std::tr1::placeholders::_2,
-                        std::tr1::placeholders::_3)),
+                        env.get(), std::tr1::cref(resolution_options), std::tr1::cref(no_binaries_for), _1, _2, _3)),
                 value_for<n::get_use_existing_fn>(std::tr1::bind(&use_existing_fn,
-                        env.get(), std::tr1::cref(resolution_options), std::tr1::placeholders::_1, std::tr1::placeholders::_2,
-                        std::tr1::placeholders::_3)),
+                        env.get(), std::tr1::cref(resolution_options), std::tr1::cref(with), std::tr1::cref(without), _1, _2, _3)),
                 value_for<n::interest_in_spec_fn>(std::tr1::bind(&interest_in_spec_fn,
-                        env.get(), std::tr1::cref(resolution_options), std::tr1::placeholders::_1,
-                        std::tr1::placeholders::_2, std::tr1::placeholders::_3)),
+                        env.get(), std::tr1::cref(resolution_options), std::tr1::cref(take), std::tr1::cref(take_from),
+                        std::tr1::cref(ignore), std::tr1::cref(ignore_from), std::tr1::cref(no_dependencies_from),
+                        std::tr1::cref(no_blockers_from), _1, _2, _3)),
                 value_for<n::make_destination_filtered_generator_fn>(std::tr1::bind(&make_destination_filtered_generator,
-                        env.get(), std::tr1::cref(resolution_options), std::tr1::placeholders::_1, std::tr1::placeholders::_2)),
+                        env.get(), std::tr1::cref(resolution_options), _1, _2)),
                 value_for<n::prefer_or_avoid_fn>(std::tr1::bind(&prefer_or_avoid_fn,
-                        env.get(), std::tr1::cref(resolution_options),
-                        std::tr1::placeholders::_1)),
+                        env.get(), std::tr1::cref(resolution_options), std::tr1::cref(favour), std::tr1::cref(avoid), _1)),
                 value_for<n::remove_if_dependent_fn>(std::tr1::bind(&remove_if_dependent_fn,
-                        env.get(),
-                        std::tr1::cref(remove_if_dependent_specs),
-                        std::tr1::placeholders::_1))
+                        env.get(), std::tr1::cref(remove_if_dependent_specs), _1))
                 ));
 
     ScopedSelectionCache selection_cache(env.get());
@@ -1637,7 +1729,7 @@ paludis::cave::resolve_common(
                     restarts.push_back(e);
                     display_callback(ResolverRestart());
                     initial_constraints.insert(std::make_pair(e.resolvent(), make_initial_constraints_for(
-                                    env.get(), resolution_options, e.resolvent()))).first->second->add(
+                                    env.get(), resolution_options, without, e.resolvent()))).first->second->add(
                             e.suggested_preset());
                     resolver = make_shared_ptr(new Resolver(env.get(), resolver_functions));
 
