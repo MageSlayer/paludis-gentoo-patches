@@ -77,6 +77,8 @@ namespace
                     "valid for 'cave resolve' may be passed as a parameter following a '--'. For example, "
                     "'cave fix-linkage --library foo.so.1 cat/pkg -- --lazy' may be useful. As a "
                     "special case, '--execute' does not require a '--'.");
+            add_note("By default, '--lazy' and '--preserve-world' are both provided automatically. To "
+                    "override this, use '-- --no-lazy --no-preserve-world'.");
         }
 
         std::string app_name() const
@@ -141,6 +143,9 @@ FixLinkageCommand::run(
 
     cmdline.run(args, "CAVE", "CAVE_FIX_LINKAGE_OPTIONS", "CAVE_FIX_LINKAGE_CMDLINE",
             args::ArgsHandlerOptions() + args::aho_separate_after_dashes);
+
+    resolve_cmdline.resolution_options.a_lazy.set_specified(true);
+    resolve_cmdline.execution_options.a_preserve_world.set_specified(true);
     resolve_cmdline.run(cmdline.separate_after_dashes_args(),
             "CAVE", "CAVE_RESOLVE_OPTIONS", "CAVE_RESOLVE_CMDLINE");
 
