@@ -166,6 +166,9 @@ namespace
                         cmdline.a_sequential.specified() ? oe_exclusive : oe_with_others,
                         ClientOutputFeatures() + cof_summary_at_end);
                 output_manager = env->create_output_manager(info);
+
+                last_flushed = Timestamp::now();
+                last_output = last_flushed;
             }
             catch (const Exception & e)
             {
