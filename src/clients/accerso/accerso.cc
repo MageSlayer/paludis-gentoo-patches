@@ -32,6 +32,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/pretty_print.hh>
+#include <paludis/util/return_literal_function.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/create_output_manager_info.hh>
@@ -146,10 +147,11 @@ main(int argc, char *argv[])
                             value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                             value_for<n::exclude_unmirrorable>(true),
                             value_for<n::fetch_parts>(FetchParts() + fp_regulars + fp_unneeded),
+                            value_for<n::ignore_not_in_manifest>(false),
                             value_for<n::ignore_unfetched>(false),
                             value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),
                             value_for<n::safe_resume>(true),
-                            value_for<n::ignore_not_in_manifest>(false)
+                            value_for<n::want_phase>(std::tr1::bind(return_literal_function(wp_yes)))
                             ));
 
                 try

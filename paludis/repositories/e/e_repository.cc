@@ -2051,6 +2051,31 @@ ERepository::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
             for (EAPIPhases::ConstIterator phase(fetch_extra_phases.begin_phases()), phase_end(fetch_extra_phases.end_phases()) ;
                     phase != phase_end ; ++phase)
             {
+                bool skip(false);
+                do
+                {
+                    switch (fetch_action.options.want_phase()(phase->equal_option("skipname")))
+                    {
+                        case wp_yes:
+                            continue;
+
+                        case wp_skip:
+                            skip = true;
+                            continue;
+
+                        case wp_abort:
+                            throw ActionAbortedError("Told to abort fetch");
+
+                        case last_wp:
+                            break;
+                    }
+
+                    throw InternalError(PALUDIS_HERE, "bad want_phase");
+                } while (false);
+
+                if (skip)
+                    continue;
+
                 if (can_skip_phase(id, *phase))
                     continue;
 

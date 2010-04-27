@@ -24,6 +24,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/return_literal_function.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/repository.hh>
 #include <tr1/memory>
@@ -132,10 +133,11 @@ namespace
                     value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                     value_for<n::exclude_unmirrorable>(exclude_unmirrorable),
                     value_for<n::fetch_parts>(parts),
+                    value_for<n::ignore_not_in_manifest>(false),
                     value_for<n::ignore_unfetched>(false),
                     value_for<n::make_output_manager>(&make_standard_output_manager),
                     value_for<n::safe_resume>(safe_resume),
-                    value_for<n::ignore_not_in_manifest>(false)
+                    value_for<n::want_phase>(std::tr1::bind(return_literal_function(wp_yes)))
                     ));
     }
 

@@ -42,6 +42,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/iterator_funcs.hh>
+#include <paludis/util/return_literal_function.hh>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
@@ -392,14 +393,16 @@ PerformCommand::run(
             return EXIT_SUCCESS;
 
         OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
+        WantInstallPhase want_phase(cmdline, output_manager_holder);
         FetchActionOptions options(make_named_values<FetchActionOptions>(
                     value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                     value_for<n::exclude_unmirrorable>(cmdline.a_exclude_unmirrorable.specified()),
                     value_for<n::fetch_parts>(parts),
+                    value_for<n::ignore_not_in_manifest>(false),
                     value_for<n::ignore_unfetched>(cmdline.a_ignore_unfetched.specified()),
                     value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),
                     value_for<n::safe_resume>(true),
-                    value_for<n::ignore_not_in_manifest>(false)
+                    value_for<n::want_phase>(want_phase)
                     ));
         FetchAction fetch_action(options);
         execute(env, cmdline, id, action, fetch_action);
@@ -414,10 +417,11 @@ PerformCommand::run(
                     value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                     value_for<n::exclude_unmirrorable>(cmdline.a_exclude_unmirrorable.specified()),
                     value_for<n::fetch_parts>(parts),
+                    value_for<n::ignore_not_in_manifest>(false),
                     value_for<n::ignore_unfetched>(cmdline.a_ignore_unfetched.specified()),
                     value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),
                     value_for<n::safe_resume>(true),
-                    value_for<n::ignore_not_in_manifest>(false)
+                    value_for<n::want_phase>(std::tr1::bind(return_literal_function(wp_yes)))
                     ));
         OurPretendFetchAction pretend_fetch_action(options);
         execute(env, cmdline, id, action, pretend_fetch_action);

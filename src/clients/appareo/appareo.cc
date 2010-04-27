@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2009 Kim Højgaard-Hansen
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,6 +32,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/return_literal_function.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
@@ -108,10 +109,11 @@ namespace
                                 value_for<n::errors>(failures),
                                 value_for<n::exclude_unmirrorable>(false),
                                 value_for<n::fetch_parts>(FetchParts() + fp_regulars + fp_extras + fp_unneeded),
+                                value_for<n::ignore_not_in_manifest>(true),
                                 value_for<n::ignore_unfetched>(false),
                                 value_for<n::make_output_manager>(&make_standard_output_manager),
                                 value_for<n::safe_resume>(true),
-                                value_for<n::ignore_not_in_manifest>(true)
+                                value_for<n::want_phase>(std::tr1::bind(return_literal_function(wp_yes)))
                                 ));
                     (*i)->perform_action(a);
                     ++success;

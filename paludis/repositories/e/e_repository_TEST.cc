@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,6 +32,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/return_literal_function.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/package_id.hh>
@@ -938,10 +939,11 @@ namespace test_cases
                         value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                         value_for<n::exclude_unmirrorable>(false),
                         value_for<n::fetch_parts>(FetchParts() + fp_regulars + fp_extras),
+                        value_for<n::ignore_not_in_manifest>(false),
                         value_for<n::ignore_unfetched>(false),
                         value_for<n::make_output_manager>(&make_standard_output_manager),
                         value_for<n::safe_resume>(true),
-                        value_for<n::ignore_not_in_manifest>(false)
+                        value_for<n::want_phase>(std::tr1::bind(return_literal_function(wp_yes)))
                     ));
 
             {
@@ -1046,10 +1048,11 @@ namespace test_cases
                         value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                         value_for<n::exclude_unmirrorable>(false),
                         value_for<n::fetch_parts>(FetchParts() + fp_regulars + fp_extras),
+                        value_for<n::ignore_not_in_manifest>(false),
                         value_for<n::ignore_unfetched>(false),
                         value_for<n::make_output_manager>(&make_standard_output_manager),
                         value_for<n::safe_resume>(true),
-                        value_for<n::ignore_not_in_manifest>(false)
+                        value_for<n::want_phase>(std::tr1::bind(return_literal_function(wp_yes)))
                     ));
 
             const std::tr1::shared_ptr<const PackageID> id(*env[selection::AllVersionsSorted(generator::Matches(

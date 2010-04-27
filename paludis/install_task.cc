@@ -49,6 +49,7 @@
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/return_literal_function.hh>
 #include <paludis/handled_information.hh>
 #include <paludis/create_output_manager_info.hh>
 #include <paludis/output_manager_from_environment.hh>
@@ -765,10 +766,11 @@ InstallTask::_pretend()
                             value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
                             value_for<n::exclude_unmirrorable>(false),
                             value_for<n::fetch_parts>(FetchParts() + fp_regulars + fp_extras),
+                            value_for<n::ignore_not_in_manifest>(false),
                             value_for<n::ignore_unfetched>(true),
                             value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),
                             value_for<n::safe_resume>(_imp->safe_resume),
-                            value_for<n::ignore_not_in_manifest>(false)
+                            value_for<n::want_phase>(std::tr1::bind(return_literal_function(wp_yes)))
                             ));
                 FetchAction fetch_action(options);
                 try
@@ -1933,10 +1935,11 @@ InstallTask::make_fetch_action_options(const DepListEntry &, OutputManagerFromEn
             value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
             value_for<n::exclude_unmirrorable>(false),
             value_for<n::fetch_parts>(FetchParts() + fp_regulars + fp_extras),
+            value_for<n::ignore_not_in_manifest>(false),
             value_for<n::ignore_unfetched>(false),
             value_for<n::make_output_manager>(std::tr1::ref(o)),
             value_for<n::safe_resume>(_imp->safe_resume),
-            value_for<n::ignore_not_in_manifest>(false)
+            value_for<n::want_phase>(std::tr1::bind(return_literal_function(wp_yes)))
             );
 }
 

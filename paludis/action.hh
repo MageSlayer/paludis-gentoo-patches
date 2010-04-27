@@ -98,6 +98,14 @@ namespace paludis
          */
         NamedValue<n::fetch_parts, FetchParts> fetch_parts;
 
+         /**
+          * Ignore if a package is or isn't referenced in the Manifest.
+          * It's useful with appareo not to get errors before generating it.
+          *
+          * \since 0.46
+          */
+        NamedValue<n::ignore_not_in_manifest, bool> ignore_not_in_manifest;
+
         /**
          * Ignore any unfetched packages. Verify digests for anything that's
          * already there, and if we know for sure manual fetching will be
@@ -119,13 +127,10 @@ namespace paludis
 
         NamedValue<n::safe_resume, bool> safe_resume;
 
-         /**
-          * Ignore if a package is or isn't referenced in the Manifest.
-          * It's useful with appareo not to get errors before generating it.
-          *
-          * \since 0.46
-          */
-        NamedValue<n::ignore_not_in_manifest, bool> ignore_not_in_manifest;
+        /**
+         * \since 0.48
+         */
+        NamedValue<n::want_phase, std::tr1::function<WantPhase (const std::string &)> > want_phase;
     };
 
     /**
