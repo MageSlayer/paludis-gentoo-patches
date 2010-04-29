@@ -1690,7 +1690,7 @@ paludis::cave::resolve_common(
                 value_for<n::get_resolvents_for_fn>(std::tr1::bind(&get_resolvents_for_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::cref(no_binaries_for), _1, _2, _3)),
                 value_for<n::get_use_existing_fn>(std::tr1::bind(&use_existing_fn,
-                        env.get(), std::tr1::cref(resolution_options), std::tr1::cref(with), std::tr1::cref(without), _1, _2, _3)),
+                        env.get(), std::tr1::cref(resolution_options), std::tr1::cref(without), std::tr1::cref(with), _1, _2, _3)),
                 value_for<n::interest_in_spec_fn>(std::tr1::bind(&interest_in_spec_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::cref(take), std::tr1::cref(take_from),
                         std::tr1::cref(ignore), std::tr1::cref(ignore_from), std::tr1::cref(no_dependencies_from),
