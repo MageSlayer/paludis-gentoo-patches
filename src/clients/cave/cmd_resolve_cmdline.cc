@@ -283,10 +283,10 @@ ResolveCommandLineExecutionOptions::ResolveCommandLineExecutionOptions(args::Arg
     a_continue_on_failure(&g_failure_options, "continue-on-failure", 'C',
             "Whether to continue after an error occurs",
             args::EnumArg::EnumArgOptions
-            ("never",                      "Never")
-            ("if-satisfied",               "If remaining packages' dependencies are satisfied")
-            ("if-independent",             "If remaining packages do not depend upon any failing package")
-            ("always",                     "Always (dangerous)"),
+            ("never",                      'n', "Never")
+            ("if-satisfied",               's', "If remaining packages' dependencies are satisfied")
+            ("if-independent",             'i', "If remaining packages do not depend upon any failing package")
+            ("always",                     'a', "Always (dangerous)"),
             "never"),
 
     g_phase_options(this, "Phase Options", "Options controlling which phases to execute. No sanity checking "
