@@ -246,15 +246,15 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
 ResolveCommandLineDisplayOptions::ResolveCommandLineDisplayOptions(args::ArgsHandler * const h) :
     ArgsSection(h, "Display Options"),
     g_display_options(this, "Display Options", "Options relating to the resolution display."),
-//    a_show_option_descriptions(&g_display_options, "show-option-descriptions", '\0',
-//            "Whether to display descriptions for package options",
-//            args::EnumArg::EnumArgOptions
-//            ("none",                       "Don't show any descriptions")
-//            ("new",                        "Show for any new options")
-//            ("changed",                    "Show for new or changed options")
-//            ("all",                        "Show all options"),
-//            "changed"
-//            ),
+    a_show_option_descriptions(&g_display_options, "show-option-descriptions", '\0',
+            "Whether to display descriptions for package options",
+            args::EnumArg::EnumArgOptions
+            ("none",                       "Don't show any descriptions")
+            ("new",                        "Show for any new options")
+            ("changed",                    "Show for new or changed options")
+            ("all",                        "Show all options"),
+            "changed"
+            ),
     a_show_descriptions(&g_display_options, "show-descriptions", '\0',
             "Whether to display package descriptions",
             args::EnumArg::EnumArgOptions

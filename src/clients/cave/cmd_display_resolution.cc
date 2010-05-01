@@ -73,7 +73,9 @@
 #include <set>
 #include <iterator>
 #include <iostream>
+#include <iomanip>
 #include <cstdlib>
+#include <map>
 
 using namespace paludis;
 using namespace cave;
@@ -81,6 +83,9 @@ using namespace paludis::resolver;
 
 using std::cout;
 using std::endl;
+
+typedef std::map<ChoiceNameWithPrefix, std::tr1::shared_ptr<PackageIDSequence> > ChoiceValuesToExplain;
+typedef std::map<std::string, ChoiceValuesToExplain> ChoicesToExplain;
 
 namespace
 {
@@ -454,9 +459,10 @@ namespace
 
     void display_choices(
             const std::tr1::shared_ptr<Environment> &,
-            const DisplayResolutionCommandLine &,
+            const DisplayResolutionCommandLine & cmdline,
             const std::tr1::shared_ptr<const PackageID> & id,
-            const std::tr1::shared_ptr<const PackageID> & old_id
+            const std::tr1::shared_ptr<const PackageID> & old_id,
+            ChoicesToExplain & choices_to_explain
             )
     {
         if (! id->choices_key())
@@ -541,6 +547,26 @@ namespace
                 }
 
                 s.append(t);
+
+                bool show_description;
+                if (cmdline.display_options.a_show_option_descriptions.argument() == "none")
+                    show_description = false;
+                else if (cmdline.display_options.a_show_option_descriptions.argument() == "new")
+                    show_description = ! old_id;
+                else if (cmdline.display_options.a_show_option_descriptions.argument() == "changed")
+                    show_description = added || ! old_id;
+                else if (cmdline.display_options.a_show_option_descriptions.argument() == "all")
+                    show_description = true;
+                else
+                    throw args::DoHelp("Don't understand argument '"
+                            + cmdline.display_options.a_show_option_descriptions.argument() + "' to '--"
+                            + cmdline.display_options.a_show_option_descriptions.long_name() + "'");
+
+                if (show_description)
+                    choices_to_explain.insert(std::make_pair((*k)->human_name(),
+                                ChoiceValuesToExplain())).first->second.insert(std::make_pair(
+                                (*i)->name_with_prefix(), make_shared_ptr(
+                                    new PackageIDSequence))).first->second->push_back(id);
             }
         }
 
@@ -643,7 +669,8 @@ namespace
             const SimpleInstallJob & job,
             const bool more_annotations,
             const bool confirmations,
-            const bool untaken)
+            const bool untaken,
+            ChoicesToExplain & choices_to_explain)
     {
         std::string x("X");
         if (! decision.best())
@@ -713,7 +740,7 @@ namespace
             old_id = *decision.destination()->replacing()->begin();
 
         display_one_description(env, cmdline, decision.origin_id(), ! old_id);
-        display_choices(env, cmdline, decision.origin_id(), old_id);
+        display_choices(env, cmdline, decision.origin_id(), old_id, choices_to_explain);
         display_reasons(resolution, more_annotations);
         if (confirmations)
             display_confirmations(job);
@@ -725,10 +752,11 @@ namespace
             const SimpleInstallJob & job,
             const bool more_annotations,
             const bool confirmations,
-            const bool untaken)
+            const bool untaken,
+            ChoicesToExplain & choices_to_explain)
     {
         display_one_installish(env, cmdline, *job.changes_to_make_decision(), job.resolution(),
-                job, more_annotations, confirmations, untaken);
+                job, more_annotations, confirmations, untaken, choices_to_explain);
     }
 
     void display_one_uninstall(
@@ -840,6 +868,7 @@ namespace
         const bool more_annotations;
         const bool confirmations;
         const bool untaken;
+        ChoicesToExplain & choices_to_explain;
 
         ShowJobsDisplayer(
                 const std::tr1::shared_ptr<Environment> & e,
@@ -848,7 +877,8 @@ namespace
                 const bool a,
                 const bool n,
                 const bool f,
-                const bool u
+                const bool u,
+                ChoicesToExplain & x
                 ) :
             env(e),
             cmdline(c),
@@ -856,13 +886,14 @@ namespace
             all(a),
             more_annotations(n),
             confirmations(f),
-            untaken(u)
+            untaken(u),
+            choices_to_explain(x)
         {
         }
 
         bool visit(const SimpleInstallJob & job)
         {
-            display_one_install(env, cmdline, job, more_annotations, confirmations, untaken);
+            display_one_install(env, cmdline, job, more_annotations, confirmations, untaken, choices_to_explain);
             return true;
         }
 
@@ -946,7 +977,8 @@ namespace
     void display_jobs(
             const std::tr1::shared_ptr<Environment> & env,
             const ResolverLists & lists,
-            const DisplayResolutionCommandLine & cmdline)
+            const DisplayResolutionCommandLine & cmdline,
+            ChoicesToExplain & choices_to_explain)
     {
         Context context("When displaying jobs:");
 
@@ -959,7 +991,7 @@ namespace
         {
             const std::tr1::shared_ptr<const Job> job(lists.jobs()->fetch(*i));
             ShowJobsDisplayer d(env, cmdline, lists, cmdline.display_options.a_show_all_jobs.specified() ||
-                    ! job->used_existing_packages_when_ordering()->empty(), false, false, false);
+                    ! job->used_existing_packages_when_ordering()->empty(), false, false, false, choices_to_explain);
             any |= job->accept_returning<bool>(d);
 
             if (! job->used_existing_packages_when_ordering()->empty())
@@ -993,7 +1025,8 @@ namespace
     void display_untaken(
             const std::tr1::shared_ptr<Environment> & env,
             const ResolverLists & lists,
-            const DisplayResolutionCommandLine & cmdline)
+            const DisplayResolutionCommandLine & cmdline,
+            ChoicesToExplain & choices_to_explain)
     {
         Context context("When displaying untaken jobs:");
 
@@ -1008,7 +1041,7 @@ namespace
         {
             const std::tr1::shared_ptr<const Job> job(lists.jobs()->fetch(*i));
             ShowJobsDisplayer d(env, cmdline, lists, cmdline.display_options.a_show_all_jobs.specified() ||
-                    ! job->used_existing_packages_when_ordering()->empty(), true, false, true);
+                    ! job->used_existing_packages_when_ordering()->empty(), true, false, true, choices_to_explain);
             if (! job->accept_returning<bool>(d))
                 throw InternalError(PALUDIS_HERE, "why didn't we get true?");
         }
@@ -1041,8 +1074,10 @@ namespace
                 i != i_end ; ++i)
         {
             const std::tr1::shared_ptr<const Job> job(lists.jobs()->fetch(*i));
+            ChoicesToExplain ignore_choices_to_explain;
             ShowJobsDisplayer d(env, cmdline, lists, cmdline.display_options.a_show_all_jobs.specified() ||
-                    ! job->used_existing_packages_when_ordering()->empty(), true, true, false);
+                    ! job->used_existing_packages_when_ordering()->empty(), true, true, false,
+                    ignore_choices_to_explain);
             if (! job->accept_returning<bool>(d))
                 throw InternalError(PALUDIS_HERE, "why didn't we get true?");
         }
@@ -1072,6 +1107,55 @@ namespace
 
         cout << endl;
     }
+
+    void display_choices_to_explain(
+            const std::tr1::shared_ptr<Environment> &,
+            const ResolverLists &,
+            const DisplayResolutionCommandLine &,
+            const ChoicesToExplain & choices_to_explain)
+    {
+        Context context("When displaying choices to explain:");
+
+        for (ChoicesToExplain::const_iterator p(choices_to_explain.begin()), p_end(choices_to_explain.end()) ;
+                p != p_end ; ++p)
+        {
+            cout << p->first << ":" << endl;
+            for (ChoiceValuesToExplain::const_iterator v(p->second.begin()), v_end(p->second.end()) ;
+                    v != v_end ; ++v)
+            {
+                bool all_same(true);
+                const std::tr1::shared_ptr<const ChoiceValue> first_choice_value(
+                        (*v->second->begin())->choices_key()->value()->find_by_name_with_prefix(v->first));
+                std::string description(first_choice_value->description());
+                for (PackageIDSequence::ConstIterator w(next(v->second->begin())), w_end(v->second->end()) ;
+                        w != w_end ; ++w)
+                    if ((*w)->choices_key()->value()->find_by_name_with_prefix(v->first)->description() != description)
+                    {
+                        all_same = false;
+                        break;
+                    }
+
+                if (all_same)
+                    cout << "    " << std::left << std::setw(30) << (stringify(first_choice_value->unprefixed_name())
+                            + ":") << " " << description << endl;
+                else
+                {
+                    cout << "    " << first_choice_value->unprefixed_name() << ":" << endl;
+                    for (PackageIDSequence::ConstIterator w(v->second->begin()), w_end(v->second->end()) ;
+                            w != w_end ; ++w)
+                    {
+                        const std::tr1::shared_ptr<const ChoiceValue> value(
+                                (*w)->choices_key()->value()->find_by_name_with_prefix(v->first));
+                        cout << "        " << std::left << std::setw(30) <<
+                            ((*w)->canonical_form(idcf_no_version) + ":") << " " << value->description() << endl;
+                    }
+                }
+            }
+
+            cout << endl;
+        }
+    }
+
 }
 
 bool
@@ -1112,8 +1196,10 @@ DisplayResolutionCommand::run(
         close(fd);
     }
 
-    display_jobs(env, *lists, cmdline);
-    display_untaken(env, *lists, cmdline);
+    ChoicesToExplain choices_to_explain;
+    display_jobs(env, *lists, cmdline, choices_to_explain);
+    display_untaken(env, *lists, cmdline, choices_to_explain);
+    display_choices_to_explain(env, *lists, cmdline, choices_to_explain);
     display_confirmation_jobs(env, *lists, cmdline);
     display_errors(env, *lists, cmdline);
     display_explanations(env, *lists, cmdline);
