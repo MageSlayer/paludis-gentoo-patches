@@ -194,7 +194,8 @@ _cave_cmd_print-categories()
 _cave_cmd_print-commands()
 {
   _arguments -s : \
-    '(--help -h)'{--help,-h}'[Display help messsage]'
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '--all[Print all available commands]'
 }
 
 (( ${+functions[_cave_cmd_print-environment-metadata]} )) ||
