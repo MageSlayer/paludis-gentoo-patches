@@ -255,6 +255,18 @@ namespace paludis
             public:
                 SomeIDsMightSupportAction();
         };
+
+        /**
+         * A Generator which returns no PackageIDs.
+         *
+         * \ingroup g_selections
+         */
+        class PALUDIS_VISIBLE Nothing :
+            public Generator
+        {
+            public:
+                Nothing();
+        };
     }
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE

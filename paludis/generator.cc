@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -672,6 +672,44 @@ namespace
             return "packages that might support action " + stringify(ActionNames<A_>::value);
         }
     };
+
+    struct NothingGeneratorHandler :
+        GeneratorHandler
+    {
+        virtual std::tr1::shared_ptr<const RepositoryNameSet> repositories(
+                const Environment * const) const
+        {
+            return make_shared_ptr(new RepositoryNameSet);
+        }
+
+        virtual std::tr1::shared_ptr<const CategoryNamePartSet> categories(
+                const Environment * const,
+                const std::tr1::shared_ptr<const RepositoryNameSet> &) const
+        {
+            return make_shared_ptr(new CategoryNamePartSet);
+        }
+
+        virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> packages(
+                const Environment * const,
+                const std::tr1::shared_ptr<const RepositoryNameSet> &,
+                const std::tr1::shared_ptr<const CategoryNamePartSet> &) const
+        {
+            return make_shared_ptr(new QualifiedPackageNameSet);
+        }
+
+        virtual std::tr1::shared_ptr<const PackageIDSet> ids(
+                const Environment * const,
+                const std::tr1::shared_ptr<const RepositoryNameSet> &,
+                const std::tr1::shared_ptr<const QualifiedPackageNameSet> &) const
+        {
+            return make_shared_ptr(new PackageIDSet);
+        }
+
+        virtual std::string as_string() const
+        {
+            return "no packages";
+        }
+    };
 }
 
 generator::All::All() :
@@ -711,6 +749,11 @@ generator::Intersection::Intersection(const Generator & g1, const Generator & g2
 
 generator::Union::Union(const Generator & g1, const Generator & g2) :
     Generator(make_shared_ptr(new UnionGeneratorHandler(g1, g2)))
+{
+}
+
+generator::Nothing::Nothing() :
+    Generator(make_shared_ptr(new NothingGeneratorHandler))
 {
 }
 

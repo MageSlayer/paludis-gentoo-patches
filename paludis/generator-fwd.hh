@@ -43,6 +43,7 @@ namespace paludis
         class Category;
         class Intersection;
         class Union;
+        class Nothing;
         template <typename> class SomeIDsMightSupportAction;
     }
 
