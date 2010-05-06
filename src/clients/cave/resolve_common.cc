@@ -288,87 +288,39 @@ namespace
     {
         const Environment * const env;
         const ResolveCommandLineResolutionOptions & resolution_options;
-        const PackageDepSpecList & no_binaries_for;
         const std::tr1::shared_ptr<const PackageID> package_id;
 
         DestinationTypesFinder(
                 const Environment * const e,
                 const ResolveCommandLineResolutionOptions & c,
-                const PackageDepSpecList & n,
                 const std::tr1::shared_ptr<const PackageID> & i) :
             env(e),
             resolution_options(c),
-            no_binaries_for(n),
             package_id(i)
         {
         }
 
-        DestinationTypes common_target() const
-        {
-            DestinationTypes result;
-
-            if (resolution_options.a_create_binaries.specified())
-            {
-                bool b(true);
-
-                if (resolution_options.a_no_binaries_for.specified() && package_id)
-                {
-                    for (PackageDepSpecList::const_iterator l(no_binaries_for.begin()), l_end(no_binaries_for.end()) ;
-                            l != l_end ; ++l)
-                        if (match_package(*env, *l, *package_id, MatchPackageOptions()))
-                        {
-                            b = false;
-                            break;
-                        }
-                }
-
-                if (b)
-                    result += dt_create_binary;
-            }
-
-            if (resolution_options.a_install_to_root.specified())
-                result += dt_install_to_slash;
-
-            if (result.none())
-                result += dt_install_to_slash;
-
-            return result;
-        }
-
         DestinationTypes visit(const TargetReason &) const
         {
-            return common_target();
+            if (resolution_options.a_create_binaries_for_targets.specified())
+                return DestinationTypes() + dt_create_binary;
+            else
+                return DestinationTypes() + dt_install_to_slash;
         }
 
         DestinationTypes visit(const DependentReason &) const
         {
-            return common_target();
+            return DestinationTypes() + dt_install_to_slash;
         }
 
-        DestinationTypes visit(const DependencyReason & reason) const
+        DestinationTypes visit(const DependencyReason &) const
         {
-            DestinationTypes result;
-
-            bool is_buildish(is_buildish_dep(reason.sanitised_dependency())),
-                 is_runish(is_runish_dep(reason.sanitised_dependency()));
-
-            if ((! is_buildish) && (! is_runish))
-                throw InternalError(PALUDIS_HERE, "not buildish or runish. eek. labels are { "
-                        + join(indirect_iterator(reason.sanitised_dependency().active_dependency_labels()->begin()),
-                            indirect_iterator(reason.sanitised_dependency().active_dependency_labels()->end()), ", ")
-                        + " }");
-
-            if (is_buildish)
-                result += dt_install_to_slash;
-            if (is_runish)
-                result |= visit(TargetReason());
-
-            return result;
+            return DestinationTypes() + dt_install_to_slash;
         }
 
         DestinationTypes visit(const PresetReason &) const
         {
-            return common_target();
+            return DestinationTypes();
         }
 
         DestinationTypes visit(const SetReason & r) const
@@ -380,18 +332,18 @@ namespace
     DestinationTypes get_destination_types_for_fn(
             const Environment * const env,
             const ResolveCommandLineResolutionOptions & resolution_options,
-            const PackageDepSpecList & no_binaries_for,
             const PackageDepSpec &,
             const std::tr1::shared_ptr<const PackageID> & id,
             const std::tr1::shared_ptr<const Reason> & reason)
     {
-        DestinationTypesFinder f(env, resolution_options, no_binaries_for, id);
+        DestinationTypesFinder f(env, resolution_options, id);
         return reason->accept_returning<DestinationTypes>(f);
     }
 
     FilteredGenerator make_destination_filtered_generator(
             const Environment * const,
-            const ResolveCommandLineResolutionOptions & resolution_options,
+            const ResolveCommandLineResolutionOptions &,
+            const std::tr1::shared_ptr<const Generator> & all_binary_repos_generator,
             const Generator & g,
             const Resolvent & r)
     {
@@ -401,23 +353,10 @@ namespace
                 return g | filter::InstalledAtRoot(FSEntry("/"));
 
             case dt_create_binary:
-                {
-                    std::tr1::shared_ptr<Generator> generator;
-                    for (args::StringSetArg::ConstIterator a(resolution_options.a_create_binaries.begin_args()),
-                            a_end(resolution_options.a_create_binaries.end_args()) ;
-                            a != a_end ; ++a)
-                    {
-                        if (! generator)
-                            generator.reset(new generator::InRepository(RepositoryName(*a)));
-                        else
-                            generator.reset(new generator::Intersection(*generator, generator::InRepository(RepositoryName(*a))));
-                    }
-
-                    if (! generator)
-                        throw args::DoHelp("No binary destinations were specified");
-                    else
-                        return g & *generator;
-                }
+                if (all_binary_repos_generator)
+                    return g & *all_binary_repos_generator;
+                else
+                    return generator::Nothing();
 
             case last_dt:
                 break;
@@ -645,13 +584,18 @@ namespace
             return false;
     }
 
-    bool installed_is_scm_older_than(const Environment * const env, const ResolveCommandLineResolutionOptions & resolution_options,
-            const Resolvent & q, const int n)
+    bool installed_is_scm_older_than(
+            const Environment * const env,
+            const ResolveCommandLineResolutionOptions & resolution_options,
+            const std::tr1::shared_ptr<const Generator> & all_binary_repos_generator,
+            const Resolvent & q,
+            const int n)
     {
         Context context("When working out whether '" + stringify(q) + "' has installed SCM packages:");
 
         const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
-                    make_destination_filtered_generator(env, resolution_options, generator::Package(q.package()), q) |
+                    make_destination_filtered_generator(env, resolution_options, all_binary_repos_generator,
+                        generator::Package(q.package()), q) |
                     make_slot_filter(q)
                     )]);
 
@@ -668,13 +612,14 @@ namespace
     const std::tr1::shared_ptr<Constraints> make_initial_constraints_for(
             const Environment * const env,
             const ResolveCommandLineResolutionOptions & resolution_options,
+            const std::tr1::shared_ptr<const Generator> & all_binary_repos_generator,
             const PackageDepSpecList & without,
             const Resolvent & resolvent)
     {
         const std::tr1::shared_ptr<Constraints> result(new Constraints);
 
         int n(reinstall_scm_days(resolution_options));
-        if ((-1 != n) && installed_is_scm_older_than(env, resolution_options, resolvent, n)
+        if ((-1 != n) && installed_is_scm_older_than(env, resolution_options, all_binary_repos_generator, resolvent, n)
                 && ! use_existing_from_withish(env, resolvent.package(), without))
         {
             result->add(make_shared_ptr(new Constraint(make_named_values<Constraint>(
@@ -695,11 +640,12 @@ namespace
             const ResolveCommandLineResolutionOptions & resolution_options,
             const PackageDepSpecList & without,
             const InitialConstraints & initial_constraints,
+            const std::tr1::shared_ptr<const Generator> & all_binary_repos_generator,
             const Resolvent & resolvent)
     {
         InitialConstraints::const_iterator i(initial_constraints.find(resolvent));
         if (i == initial_constraints.end())
-            return make_initial_constraints_for(env, resolution_options, without, resolvent);
+            return make_initial_constraints_for(env, resolution_options, all_binary_repos_generator, without, resolvent);
         else
             return i->second;
     }
@@ -741,7 +687,6 @@ namespace
     const std::tr1::shared_ptr<Resolvents>
     get_resolvents_for_fn(const Environment * const env,
             const ResolveCommandLineResolutionOptions & resolution_options,
-            const PackageDepSpecList & no_binaries_for,
             const PackageDepSpec & spec,
             const std::tr1::shared_ptr<const SlotName> & maybe_slot,
             const std::tr1::shared_ptr<const Reason> & reason)
@@ -798,7 +743,7 @@ namespace
         for (PackageIDSequence::ConstIterator i(result_ids->begin()), i_end(result_ids->end()) ;
                 i != i_end ; ++i)
         {
-            DestinationTypes destination_types(get_destination_types_for_fn(env, resolution_options, no_binaries_for, spec, *i, reason));
+            DestinationTypes destination_types(get_destination_types_for_fn(env, resolution_options, spec, *i, reason));
             for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
                 if (destination_types[*t])
                     result->push_back(Resolvent(*i, *t));
@@ -995,7 +940,7 @@ namespace
 
     const std::tr1::shared_ptr<const Repository>
     find_repository_for_fn(const Environment * const env,
-            const ResolveCommandLineResolutionOptions & resolution_options,
+            const ResolveCommandLineResolutionOptions &,
             const Resolvent & resolvent,
             const std::tr1::shared_ptr<const Resolution> &,
             const ChangesToMakeDecision & decision)
@@ -1013,10 +958,7 @@ namespace
                     break;
 
                 case dt_create_binary:
-                    if (resolution_options.a_create_binaries.end_args() == std::find(
-                                resolution_options.a_create_binaries.begin_args(),
-                                resolution_options.a_create_binaries.end_args(),
-                                stringify((*r)->name())))
+                    if ((*r)->installed_root_key())
                         continue;
                     break;
 
@@ -1530,7 +1472,7 @@ paludis::cave::resolve_common(
 
     InitialConstraints initial_constraints;
     PackageDepSpecList allowed_to_remove_specs, allowed_to_break_specs, remove_if_dependent_specs,
-                       less_restrictive_remove_blockers_specs, no_binaries_for, with, without,
+                       less_restrictive_remove_blockers_specs, with, without,
                        permit_old_version, permit_downgrade, take, take_from, ignore, ignore_from,
                        favour, avoid, no_dependencies_from, no_blockers_from;
 
@@ -1556,12 +1498,6 @@ paludis::cave::resolve_common(
             i_end(resolution_options.a_less_restrictive_remove_blockers.end_args()) ;
             i != i_end ; ++i)
         less_restrictive_remove_blockers_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    UserPackageDepSpecOptions() + updso_allow_wildcards));
-
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_no_binaries_for.begin_args()),
-            i_end(resolution_options.a_no_binaries_for.end_args()) ;
-            i != i_end ; ++i)
-        no_binaries_for.push_back(parse_user_package_dep_spec(*i, env.get(),
                     UserPackageDepSpecOptions() + updso_allow_wildcards));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_without.begin_args()),
@@ -1636,6 +1572,22 @@ paludis::cave::resolve_common(
         permit_old_version.push_back(parse_user_package_dep_spec(*i, env.get(),
                     UserPackageDepSpecOptions() + updso_allow_wildcards));
 
+    std::tr1::shared_ptr<Generator> all_binary_repos_generator;
+    for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
+            r_end(env->package_database()->end_repositories()) ;
+            r != r_end ; ++r)
+        if ((*r)->destination_interface() && ! (*r)->installed_root_key())
+        {
+            if (all_binary_repos_generator)
+                all_binary_repos_generator.reset(new generator::Intersection(*all_binary_repos_generator,
+                            generator::InRepository((*r)->name())));
+            else
+                all_binary_repos_generator.reset(new generator::InRepository((*r)->name()));
+        }
+
+    if (! all_binary_repos_generator)
+        all_binary_repos_generator.reset(new generator::Nothing());
+
     for (args::StringSetArg::ConstIterator i(resolution_options.a_preset.begin_args()),
             i_end(resolution_options.a_preset.end_args()) ;
             i != i_end ; ++i)
@@ -1643,7 +1595,7 @@ paludis::cave::resolve_common(
         const std::tr1::shared_ptr<const Reason> reason(new PresetReason("preset", make_null_shared_ptr()));
         PackageDepSpec spec(parse_user_package_dep_spec(*i, env.get(), UserPackageDepSpecOptions()));
         const std::tr1::shared_ptr<const Resolvents> resolvents(get_resolvents_for_fn(
-                    env.get(), resolution_options, no_binaries_for, spec, make_null_shared_ptr(), reason));
+                    env.get(), resolution_options, spec, make_null_shared_ptr(), reason));
 
         if (resolvents->empty())
             throw args::DoHelp("Preset '" + *i + "' has no resolvents");
@@ -1660,7 +1612,7 @@ paludis::cave::resolve_common(
                             value_for<n::use_existing>(ue_if_possible)
                             )));
             initial_constraints.insert(std::make_pair(*r, make_initial_constraints_for(
-                            env.get(), resolution_options, without, *r))).first->second->add(
+                            env.get(), resolution_options, all_binary_repos_generator, without, *r))).first->second->add(
                     constraint);
         }
     }
@@ -1683,12 +1635,12 @@ paludis::cave::resolve_common(
                 value_for<n::get_constraints_for_dependent_fn>(std::tr1::bind(&get_constraints_for_dependent_fn,
                         env.get(), std::tr1::cref(less_restrictive_remove_blockers_specs), _1, _2, _3, _4)),
                 value_for<n::get_destination_types_for_fn>(std::tr1::bind(&get_destination_types_for_fn,
-                        env.get(), std::tr1::cref(resolution_options), std::tr1::cref(no_binaries_for), _1, _2, _3)),
+                        env.get(), std::tr1::cref(resolution_options), _1, _2, _3)),
                 value_for<n::get_initial_constraints_for_fn>(std::tr1::bind(&initial_constraints_for_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::cref(without),
-                        std::tr1::cref(initial_constraints), _1)),
+                        std::tr1::cref(initial_constraints), all_binary_repos_generator, _1)),
                 value_for<n::get_resolvents_for_fn>(std::tr1::bind(&get_resolvents_for_fn,
-                        env.get(), std::tr1::cref(resolution_options), std::tr1::cref(no_binaries_for), _1, _2, _3)),
+                        env.get(), std::tr1::cref(resolution_options), _1, _2, _3)),
                 value_for<n::get_use_existing_fn>(std::tr1::bind(&use_existing_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::cref(without), std::tr1::cref(with), _1, _2, _3)),
                 value_for<n::interest_in_spec_fn>(std::tr1::bind(&interest_in_spec_fn,
@@ -1696,7 +1648,7 @@ paludis::cave::resolve_common(
                         std::tr1::cref(ignore), std::tr1::cref(ignore_from), std::tr1::cref(no_dependencies_from),
                         std::tr1::cref(no_blockers_from), _1, _2, _3)),
                 value_for<n::make_destination_filtered_generator_fn>(std::tr1::bind(&make_destination_filtered_generator,
-                        env.get(), std::tr1::cref(resolution_options), _1, _2)),
+                        env.get(), std::tr1::cref(resolution_options), all_binary_repos_generator, _1, _2)),
                 value_for<n::prefer_or_avoid_fn>(std::tr1::bind(&prefer_or_avoid_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::cref(favour), std::tr1::cref(avoid), _1)),
                 value_for<n::remove_if_dependent_fn>(std::tr1::bind(&remove_if_dependent_fn,
@@ -1729,7 +1681,7 @@ paludis::cave::resolve_common(
                     restarts.push_back(e);
                     display_callback(ResolverRestart());
                     initial_constraints.insert(std::make_pair(e.resolvent(), make_initial_constraints_for(
-                                    env.get(), resolution_options, without, e.resolvent()))).first->second->add(
+                                    env.get(), resolution_options, all_binary_repos_generator, without, e.resolvent()))).first->second->add(
                             e.suggested_preset());
                     resolver = make_shared_ptr(new Resolver(env.get(), resolver_functions));
 

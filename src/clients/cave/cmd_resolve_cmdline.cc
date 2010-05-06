@@ -219,13 +219,12 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             "If no options from this group are selected, install only to /. Otherwise, install to all of the "
             "specified destinations, and install to / as necessary to satisfy build dependencies."),
 //    a_fetch(&g_destination_options, "fetch", 'f', "Only fetch packages, do not install anything", true),
-    a_create_binaries(&g_destination_options, "create-binaries", 'b', "Create binary packages in the specified "
-            "repository. Specify multiple times if different binary destination types are required."),
-    a_no_binaries_for(&g_destination_options, "no-binaries-for", 'B', "Do not create binary packages from any "
-            "origin ID matching this spec. May be specified multiple times. (e.g. --no-binaries-for '*/*::accounts' "
-            "--no-binaries-for '*/*::virtuals')"),
-//    a_install_to_chroot(&g_destination_options, "install-to-chroot", '~', "Install packages to the environment-configured chroot", true),
-    a_install_to_root(&g_destination_options, "install-to-root", '/', "Install packages to /", true),
+    a_create_binaries_for_targets(&g_destination_options, "create-binaries-for-targets", 'b',
+            "Rather than installing targets to /, instead create binary packages for targets, and install packages "
+            "to / as necessary for dependencies.", true),
+//    a_install_via_binary(&g_destination_options, "install-via-binary", 'B',
+//            "If installing a package to / that matches the supplied spec, create a binary package and install that. May "
+//            "be specified multiple times."),
 
 //    g_query_options(this, "Query Options", "Query the user interactively when making decisions. "
 //            "If only --query is specified, prompt for everything. Otherwise, prompt only for the specified decisions."),
@@ -403,18 +402,7 @@ ResolveCommandLineResolutionOptions::apply_shortcuts()
 }
 
 void
-ResolveCommandLineResolutionOptions::verify(const std::tr1::shared_ptr<const Environment> & env)
+ResolveCommandLineResolutionOptions::verify(const std::tr1::shared_ptr<const Environment> &)
 {
-    if (a_create_binaries.specified())
-    {
-        for (args::StringSetArg::ConstIterator a(a_create_binaries.begin_args()),
-                a_end(a_create_binaries.end_args()) ;
-                a != a_end ; ++a)
-        {
-            std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(RepositoryName(*a)));
-            if (repo->installed_root_key() || ! repo->destination_interface())
-                throw args::DoHelp("Repository '" + *a + "' not suitable for --" + a_create_binaries.long_name());
-        }
-    }
 }
 

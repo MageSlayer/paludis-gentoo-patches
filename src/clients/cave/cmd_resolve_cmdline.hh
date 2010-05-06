@@ -91,10 +91,10 @@ namespace paludis
 
             args::ArgsGroup g_destination_options;
 //            args::SwitchArg a_fetch;
-            args::StringSetArg a_create_binaries;
-            args::StringSetArg a_no_binaries_for;
-//            args::SwitchArg a_install_to_chroot;
-            args::SwitchArg a_install_to_root;
+            args::SwitchArg a_create_binaries_for_targets;
+//            args::StringSetArg a_install_via_binary;
+//            args::StringSetArg a_no_binaries_for;
+
 //
 //            args::ArgsGroup g_query_options;
 //            args::SwitchArg a_query;
