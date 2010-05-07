@@ -248,30 +248,6 @@ namespace
         return v.seen_compiled_against_dep;
     }
 
-    bool is_buildish_dep(const SanitisedDependency & dep)
-    {
-        if (dep.active_dependency_labels()->empty())
-            throw InternalError(PALUDIS_HERE, "not implemented");
-
-        LabelTypesVisitor v;
-        std::for_each(indirect_iterator(dep.active_dependency_labels()->begin()),
-                indirect_iterator(dep.active_dependency_labels()->end()),
-                accept_visitor(v));
-        return v.seen_buildish_dep;
-    }
-
-    bool is_runish_dep(const SanitisedDependency & dep)
-    {
-        if (dep.active_dependency_labels()->empty())
-            throw InternalError(PALUDIS_HERE, "not implemented");
-
-        LabelTypesVisitor v;
-        std::for_each(indirect_iterator(dep.active_dependency_labels()->begin()),
-                indirect_iterator(dep.active_dependency_labels()->end()),
-                accept_visitor(v));
-        return v.seen_runish_dep;
-    }
-
     bool is_enabled_dep(const SanitisedDependency & dep)
     {
         if (dep.active_dependency_labels()->empty())
