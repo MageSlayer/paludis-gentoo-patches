@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNAVAILABLE_UNAVAILABLE_ID_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNAVAILABLE_UNAVAILABLE_ID_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNAVAILABLE_UNAVAILABLE_PACKAGE_ID_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNAVAILABLE_UNAVAILABLE_PACKAGE_ID_HH 1
 
 #include <paludis/util/named_value.hh>
 #include <paludis/package_id.hh>
@@ -43,7 +43,7 @@ namespace paludis
 
     namespace unavailable_repository
     {
-        struct UnavailableIDParams
+        struct UnavailablePackageIDParams
         {
             NamedValue<n::description, std::tr1::shared_ptr<const MetadataValueKey<std::string> > > description;
             NamedValue<n::environment, const Environment *> environment;
@@ -57,20 +57,20 @@ namespace paludis
             NamedValue<n::version, VersionSpec> version;
         };
 
-        class PALUDIS_VISIBLE UnavailableID :
+        class PALUDIS_VISIBLE UnavailablePackageID :
             public PackageID,
-            private PrivateImplementationPattern<UnavailableID>
+            private PrivateImplementationPattern<UnavailablePackageID>
         {
             private:
-                PrivateImplementationPattern<UnavailableID>::ImpPtr & _imp;
+                PrivateImplementationPattern<UnavailablePackageID>::ImpPtr & _imp;
 
             protected:
                 void need_keys_added() const;
                 void need_masks_added() const;
 
             public:
-                UnavailableID(const UnavailableIDParams &);
-                ~UnavailableID();
+                UnavailablePackageID(const UnavailablePackageIDParams &);
+                ~UnavailablePackageID();
 
                  const std::string canonical_form(const PackageIDCanonicalForm) const;
                  const QualifiedPackageName name() const;

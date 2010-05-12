@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/unavailable/unavailable_id.hh>
+#include <paludis/repositories/unavailable/unavailable_package_id.hh>
 #include <paludis/repositories/unavailable/unavailable_repository.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
@@ -40,7 +40,7 @@ using namespace paludis::unavailable_repository;
 namespace paludis
 {
     template <>
-    struct Implementation<UnavailableID>
+    struct Implementation<UnavailablePackageID>
     {
         const Environment * const env;
         const QualifiedPackageName name;
@@ -55,7 +55,7 @@ namespace paludis
         const std::tr1::shared_ptr<const Mask> mask;
 
         Implementation(
-                const UnavailableIDParams & e) :
+                const UnavailablePackageIDParams & e) :
             env(e.environment()),
             name(e.name()),
             version(e.version()),
@@ -72,9 +72,9 @@ namespace paludis
     };
 }
 
-UnavailableID::UnavailableID(const UnavailableIDParams & entry) :
-    PrivateImplementationPattern<UnavailableID>(new Implementation<UnavailableID>(entry)),
-    _imp(PrivateImplementationPattern<UnavailableID>::_imp)
+UnavailablePackageID::UnavailablePackageID(const UnavailablePackageIDParams & entry) :
+    PrivateImplementationPattern<UnavailablePackageID>(new Implementation<UnavailablePackageID>(entry)),
+    _imp(PrivateImplementationPattern<UnavailablePackageID>::_imp)
 {
     add_metadata_key(_imp->slot_key);
     add_metadata_key(_imp->description_key);
@@ -86,22 +86,22 @@ UnavailableID::UnavailableID(const UnavailableIDParams & entry) :
     add_mask(_imp->mask);
 }
 
-UnavailableID::~UnavailableID()
+UnavailablePackageID::~UnavailablePackageID()
 {
 }
 
 void
-UnavailableID::need_keys_added() const
+UnavailablePackageID::need_keys_added() const
 {
 }
 
 void
-UnavailableID::need_masks_added() const
+UnavailablePackageID::need_masks_added() const
 {
 }
 
 const std::string
-UnavailableID::canonical_form(const PackageIDCanonicalForm f) const
+UnavailablePackageID::canonical_form(const PackageIDCanonicalForm f) const
 {
     switch (f)
     {
@@ -132,7 +132,7 @@ UnavailableID::canonical_form(const PackageIDCanonicalForm f) const
 }
 
 PackageDepSpec
-UnavailableID::uniquely_identifying_spec() const
+UnavailablePackageID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
             (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository()->name()) +
@@ -141,43 +141,43 @@ UnavailableID::uniquely_identifying_spec() const
 }
 
 const QualifiedPackageName
-UnavailableID::name() const
+UnavailablePackageID::name() const
 {
     return _imp->name;
 }
 
 const VersionSpec
-UnavailableID::version() const
+UnavailablePackageID::version() const
 {
     return _imp->version;
 }
 
 const std::tr1::shared_ptr<const Repository>
-UnavailableID::repository() const
+UnavailablePackageID::repository() const
 {
     return _imp->repo->shared_from_this();
 }
 
 bool
-UnavailableID::supports_action(const SupportsActionTestBase & a) const
+UnavailablePackageID::supports_action(const SupportsActionTestBase & a) const
 {
     return simple_visitor_cast<const SupportsActionTest<InstallAction> >(a);
 }
 
 void
-UnavailableID::perform_action(Action & a) const
+UnavailablePackageID::perform_action(Action & a) const
 {
     throw ActionFailedError("Unsupported action: " + a.simple_name());
 }
 
 std::tr1::shared_ptr<const Set<std::string> >
-UnavailableID::breaks_portage() const
+UnavailablePackageID::breaks_portage() const
 {
     return make_shared_ptr(new Set<std::string>);
 }
 
 bool
-UnavailableID::arbitrary_less_than_comparison(const PackageID & other) const
+UnavailablePackageID::arbitrary_less_than_comparison(const PackageID & other) const
 {
     if (! other.slot_key())
         return false;
@@ -197,137 +197,137 @@ UnavailableID::arbitrary_less_than_comparison(const PackageID & other) const
 }
 
 std::size_t
-UnavailableID::extra_hash_value() const
+UnavailablePackageID::extra_hash_value() const
 {
     return Hash<std::pair<SlotName, std::string> >()(std::make_pair(
                 slot_key()->value(), *_imp->from_repositories_key->value()->begin()));
 }
 
 const std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
-UnavailableID::contains_key() const
+UnavailablePackageID::contains_key() const
 {
     return std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
-UnavailableID::contained_in_key() const
+UnavailablePackageID::contained_in_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >();
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
-UnavailableID::fs_location_key() const
+UnavailablePackageID::fs_location_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<bool> >
-UnavailableID::transient_key() const
+UnavailablePackageID::transient_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<bool> >();
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
-UnavailableID::virtual_for_key() const
+UnavailablePackageID::virtual_for_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >();
 }
 
 const std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
-UnavailableID::keywords_key() const
+UnavailablePackageID::keywords_key() const
 {
     return std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
-UnavailableID::provide_key() const
+UnavailablePackageID::provide_key() const
 {
     return std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >();
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-UnavailableID::dependencies_key() const
+UnavailablePackageID::dependencies_key() const
 {
     return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-UnavailableID::build_dependencies_key() const
+UnavailablePackageID::build_dependencies_key() const
 {
     return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-UnavailableID::run_dependencies_key() const
+UnavailablePackageID::run_dependencies_key() const
 {
     return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-UnavailableID::post_dependencies_key() const
+UnavailablePackageID::post_dependencies_key() const
 {
     return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-UnavailableID::suggested_dependencies_key() const
+UnavailablePackageID::suggested_dependencies_key() const
 {
     return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
-UnavailableID::short_description_key() const
+UnavailablePackageID::short_description_key() const
 {
     return _imp->description_key;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
-UnavailableID::long_description_key() const
+UnavailablePackageID::long_description_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
-UnavailableID::fetches_key() const
+UnavailablePackageID::fetches_key() const
 {
     return std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
-UnavailableID::homepage_key() const
+UnavailablePackageID::homepage_key() const
 {
     return std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >
-UnavailableID::contents_key() const
+UnavailablePackageID::contents_key() const
 {
     return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >();
 }
 
 const std::tr1::shared_ptr<const MetadataTimeKey>
-UnavailableID::installed_time_key() const
+UnavailablePackageID::installed_time_key() const
 {
     return std::tr1::shared_ptr<const MetadataTimeKey>();
 }
 
 const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
-UnavailableID::from_repositories_key() const
+UnavailablePackageID::from_repositories_key() const
 {
     return _imp->from_repositories_key;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >
-UnavailableID::choices_key() const
+UnavailablePackageID::choices_key() const
 {
     return _imp->choices_key;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<SlotName> >
-UnavailableID::slot_key() const
+UnavailablePackageID::slot_key() const
 {
     return _imp->slot_key;
 }
 
-template class PrivateImplementationPattern<UnavailableID>;
+template class PrivateImplementationPattern<UnavailablePackageID>;
 

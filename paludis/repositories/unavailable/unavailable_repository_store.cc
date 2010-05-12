@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,7 +19,7 @@
 
 #include <paludis/repositories/unavailable/unavailable_repository_store.hh>
 #include <paludis/repositories/unavailable/unavailable_repository_file.hh>
-#include <paludis/repositories/unavailable/unavailable_id.hh>
+#include <paludis/repositories/unavailable/unavailable_package_id.hh>
 #include <paludis/repositories/unavailable/unavailable_mask.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/fs_entry.hh>
@@ -162,7 +162,7 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
             ids = p->second;
         }
 
-        ids->push_back(make_shared_ptr(new UnavailableID(make_named_values<UnavailableIDParams>(
+        ids->push_back(make_shared_ptr(new UnavailablePackageID(make_named_values<UnavailablePackageIDParams>(
                             value_for<n::description>((*i).description()),
                             value_for<n::environment>(env),
                             value_for<n::from_repositories>(from_repositories),
