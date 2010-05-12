@@ -1,7 +1,7 @@
 " Vim filetype detection file
 " Language:	Paludis Things
 " Author:	Ciaran McCreesh
-" Copyright:	Copyright (c) 2007 Ciaran McCreesh
+" Copyright:	Copyright (c) 2007, 2010 Ciaran McCreesh
 " Licence:	You may redistribute this under the same terms as Vim itself
 "
 " Filetype detection for Paludis things.
@@ -69,6 +69,9 @@ au BufNewFile,BufRead **/options.conf.d/*.conf
    \      set filetype=paludis-use-conf
 
 au BufNewFile,BufRead repository_defaults.conf
+    \     set filetype=paludis-repositories-conf
+
+au BufNewFile,BufRead repository.template
     \     set filetype=paludis-repositories-conf
 
 au BufNewFile,BufRead **/repositories/*.conf

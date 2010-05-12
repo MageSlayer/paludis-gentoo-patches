@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -123,6 +123,7 @@ RepositoryFactory::RepositoryFactory() :
     register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_e>::Type *>(0), this);
     register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_gems>::Type *>(0), this);
     register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_fake>::Type *>(0), this);
+    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_repository>::Type *>(0), this);
     register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_unavailable>::Type *>(0), this);
     register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_unwritten>::Type *>(0), this);
     register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_unpackaged>::Type *>(0), this);

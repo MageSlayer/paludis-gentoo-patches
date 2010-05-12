@@ -1270,7 +1270,7 @@ AC_SUBST([VIM_INSTALL_DIR])
 dnl }}}
 
 dnl {{{ repositories
-m4_define(ALL_REPOSITORIES_m4, [accounts,cran,e,fake,gems,unavailable,unpackaged,unwritten,virtuals])
+m4_define(ALL_REPOSITORIES_m4, [accounts,cran,e,fake,gems,repository,unavailable,unpackaged,unwritten,virtuals])
 ALL_REPOSITORIES=`echo ALL_REPOSITORIES_m4 | tr , ' '`
 DEFAULT_REPOSITORIES="e fake unavailable unpackaged unwritten virtuals"
 AC_MSG_CHECKING([which repositories to build...])
@@ -1285,6 +1285,7 @@ AC_ARG_WITH([repositories],
 			  e               Ebuild, Ebin, Exheres, VDB etc
 			  fake            A fake repository for test cases and adjutrix
 			  gems            Ruby gems (unusable)
+			  repository      Automatic repository config generation (via 'unavailable')
 			  unavailable     Unavailable
 			  unpackaged      Unpackaged (for importare)
 			  unwritten       Unwritten
@@ -1622,6 +1623,7 @@ AC_OUTPUT(
 	paludis/repositories/e/ebuild/utils/exheres-0/Makefile
 	paludis/repositories/fake/Makefile
 	paludis/repositories/gems/Makefile
+	paludis/repositories/repository/Makefile
 	paludis/repositories/unavailable/Makefile
 	paludis/repositories/unpackaged/Makefile
 	paludis/repositories/unwritten/Makefile
