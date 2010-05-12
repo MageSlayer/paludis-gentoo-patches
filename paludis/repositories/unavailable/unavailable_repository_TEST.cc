@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -93,7 +93,9 @@ namespace test_cases
                     "cat-one/pkg-six-3:0::unavailable (in ::bar) "
                     "cat-one/pkg-two-1:1::unavailable (in ::foo) "
                     "cat-one/pkg-two-2:2::unavailable (in ::foo) "
-                    "cat-two/pkg-six-1:0::unavailable (in ::bar)"
+                    "cat-two/pkg-six-1:0::unavailable (in ::bar) "
+                    "repository/bar-0::unavailable "
+                    "repository/foo-0::unavailable"
                     );
 
             const std::tr1::shared_ptr<FakeRepository> hide_bar(new FakeRepository(make_named_values<FakeRepositoryParams>(
@@ -114,7 +116,8 @@ namespace test_cases
                     "cat-one/pkg-one-2:0::unavailable (in ::foo) "
                     "cat-one/pkg-one-3:0::unavailable (in ::foo) "
                     "cat-one/pkg-two-1:1::unavailable (in ::foo) "
-                    "cat-one/pkg-two-2:2::unavailable (in ::foo)"
+                    "cat-one/pkg-two-2:2::unavailable (in ::foo) "
+                    "repository/foo-0::unavailable"
                     );
         }
     } test_contents;

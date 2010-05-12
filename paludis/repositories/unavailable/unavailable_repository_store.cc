@@ -20,6 +20,7 @@
 #include <paludis/repositories/unavailable/unavailable_repository_store.hh>
 #include <paludis/repositories/unavailable/unavailable_repository_file.hh>
 #include <paludis/repositories/unavailable/unavailable_package_id.hh>
+#include <paludis/repositories/unavailable/unavailable_repository_id.hh>
 #include <paludis/repositories/unavailable/unavailable_mask.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/fs_entry.hh>
@@ -135,48 +136,73 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
         repository_description.reset(new LiteralMetadataValueKey<std::string>(
                 "REPOSITORY_DESCRIPTION", "Repository description", mkt_normal, file.description()));
 
-    QualifiedPackageName old_name("x/x");
-    std::tr1::shared_ptr<QualifiedPackageNameSet> pkgs;
-    std::tr1::shared_ptr<PackageIDSequence> ids;
-    for (UnavailableRepositoryFile::ConstIterator i(file.begin()), i_end(file.end()) ;
-            i != i_end ; ++i)
     {
-        if (old_name.category() != (*i).name().category())
+        QualifiedPackageName old_name("x/x");
+        std::tr1::shared_ptr<QualifiedPackageNameSet> pkgs;
+        std::tr1::shared_ptr<PackageIDSequence> ids;
+        for (UnavailableRepositoryFile::ConstIterator i(file.begin()), i_end(file.end()) ;
+                i != i_end ; ++i)
         {
-            _imp->categories->insert((*i).name().category());
-            PackageNames::iterator p(_imp->package_names.find((*i).name().category()));
-            if (_imp->package_names.end() == p)
-                p = _imp->package_names.insert(std::make_pair((*i).name().category(),
-                            make_shared_ptr(new QualifiedPackageNameSet))).first;
-            pkgs = p->second;
+            if (old_name.category() != (*i).name().category())
+            {
+                _imp->categories->insert((*i).name().category());
+                PackageNames::iterator p(_imp->package_names.find((*i).name().category()));
+                if (_imp->package_names.end() == p)
+                    p = _imp->package_names.insert(std::make_pair((*i).name().category(),
+                                make_shared_ptr(new QualifiedPackageNameSet))).first;
+                pkgs = p->second;
+            }
+
+            if (old_name != (*i).name())
+            {
+                pkgs->insert((*i).name());
+                IDs::iterator p(_imp->ids.find((*i).name()));
+                if (_imp->ids.end() == p)
+                    p = _imp->ids.insert(std::make_pair((*i).name(),
+                                make_shared_ptr(new PackageIDSequence))).first;
+
+                ids = p->second;
+            }
+
+            ids->push_back(make_shared_ptr(new UnavailablePackageID(make_named_values<UnavailablePackageIDParams>(
+                                value_for<n::description>((*i).description()),
+                                value_for<n::environment>(env),
+                                value_for<n::from_repositories>(from_repositories),
+                                value_for<n::mask>(mask),
+                                value_for<n::name>((*i).name()),
+                                value_for<n::repository>(_imp->repo),
+                                value_for<n::repository_description>(repository_description),
+                                value_for<n::repository_homepage>(repository_homepage),
+                                value_for<n::slot>((*i).slot()),
+                                value_for<n::version>((*i).version())
+                            ))));
+
+            old_name = (*i).name();
         }
-
-        if (old_name != (*i).name())
-        {
-            pkgs->insert((*i).name());
-            IDs::iterator p(_imp->ids.find((*i).name()));
-            if (_imp->ids.end() == p)
-                p = _imp->ids.insert(std::make_pair((*i).name(),
-                            make_shared_ptr(new PackageIDSequence))).first;
-
-            ids = p->second;
-        }
-
-        ids->push_back(make_shared_ptr(new UnavailablePackageID(make_named_values<UnavailablePackageIDParams>(
-                            value_for<n::description>((*i).description()),
-                            value_for<n::environment>(env),
-                            value_for<n::from_repositories>(from_repositories),
-                            value_for<n::mask>(mask),
-                            value_for<n::name>((*i).name()),
-                            value_for<n::repository>(_imp->repo),
-                            value_for<n::repository_description>(repository_description),
-                            value_for<n::repository_homepage>(repository_homepage),
-                            value_for<n::slot>((*i).slot()),
-                            value_for<n::version>((*i).version())
-                        ))));
-
-        old_name = (*i).name();
     }
+
+    const std::tr1::shared_ptr<UnavailableRepositoryID> id(new UnavailableRepositoryID(
+                make_named_values<UnavailableRepositoryIDParams>(
+                    value_for<n::description>(repository_description),
+                    value_for<n::environment>(env),
+                    value_for<n::format>(make_null_shared_ptr()),
+                    value_for<n::homepage>(repository_homepage),
+                    value_for<n::name>(CategoryNamePart("repository") + PackageNamePart(file.repo_name())),
+                    value_for<n::repository>(_imp->repo),
+                    value_for<n::sync>(make_null_shared_ptr())
+                    )));
+
+    _imp->categories->insert(id->name().category());
+    PackageNames::iterator p(_imp->package_names.find(id->name().category()));
+    if (_imp->package_names.end() == p)
+        p = _imp->package_names.insert(std::make_pair(id->name().category(),
+                    make_shared_ptr(new QualifiedPackageNameSet))).first;
+    p->second->insert(id->name());
+
+    IDs::iterator i(_imp->ids.find(id->name()));
+    if (_imp->ids.end() == i)
+        i = _imp->ids.insert(std::make_pair(id->name(), make_shared_ptr(new PackageIDSequence))).first;
+    i->second->push_back(id);
 }
 
 bool
@@ -202,6 +228,7 @@ UnavailableRepositoryStore::unimportant_category_names() const
 {
     std::tr1::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
     result->insert(CategoryNamePart("virtual"));
+    result->insert(CategoryNamePart("repository"));
     return result;
 }
 

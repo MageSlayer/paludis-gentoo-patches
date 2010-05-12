@@ -14,6 +14,7 @@ noinst_LTLIBRARIES = libpaludisunavailablerepository.la
 noinst_HEADERS = \
 	unavailable_repository.hh unavailable_repository-fwd.hh \
 	unavailable_package_id.hh \
+	unavailable_repository_id.hh \
 	unavailable_mask.hh \
 	unavailable_repository_store.hh \
 	unavailable_repository_file.hh unavailable_repository_file-fwd.hh
@@ -21,6 +22,7 @@ noinst_HEADERS = \
 libpaludisunavailablerepository_la_SOURCES = \
 	unavailable_repository.cc \
 	unavailable_package_id.cc \
+	unavailable_repository_id.cc \
 	unavailable_mask.cc \
 	unavailable_repository_store.cc \
 	unavailable_repository_file.cc \
