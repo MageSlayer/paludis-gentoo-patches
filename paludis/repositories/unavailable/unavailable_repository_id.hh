@@ -33,6 +33,7 @@ namespace paludis
         struct environment;
         struct format;
         struct homepage;
+        struct mask;
         struct name;
         struct repository;
         struct sync;
@@ -46,6 +47,7 @@ namespace paludis
             NamedValue<n::environment, const Environment *> environment;
             NamedValue<n::format, std::tr1::shared_ptr<const MetadataValueKey<std::string> > > format;
             NamedValue<n::homepage, std::tr1::shared_ptr<const MetadataValueKey<std::string> > > homepage;
+            NamedValue<n::mask, std::tr1::shared_ptr<const Mask> > mask;
             NamedValue<n::name, QualifiedPackageName> name;
             NamedValue<n::repository, const UnavailableRepository *> repository;
             NamedValue<n::sync, std::tr1::shared_ptr<const MetadataValueKey<std::string> > > sync;

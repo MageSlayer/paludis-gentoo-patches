@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -42,7 +42,7 @@ namespace paludis
     template <>
     struct Implementation<UnavailableRepositoryFile>
     {
-        std::string repo_name, homepage, description;
+        std::string repo_name, homepage, description, sync, repo_format;
         Entries entries;
     };
 
@@ -108,6 +108,10 @@ UnavailableRepositoryFile::_load(const FSEntry & f)
                 _imp->homepage = value;
             else if (key == "description")
                 _imp->description = value;
+            else if (key == "sync")
+                _imp->sync = value;
+            else if (key == "repo_format")
+                _imp->repo_format = value;
             else
                 Log::get_instance()->message("unavailable_repository.file.unknown_key", ll_warning, lc_context)
                     << "Ignoring unknown key '" << key << "' with value '" << value << "'";
@@ -224,6 +228,18 @@ std::string
 UnavailableRepositoryFile::description() const
 {
     return _imp->description;
+}
+
+std::string
+UnavailableRepositoryFile::sync() const
+{
+    return _imp->sync;
+}
+
+std::string
+UnavailableRepositoryFile::repo_format() const
+{
+    return _imp->repo_format;
 }
 
 template class PrivateImplementationPattern<UnavailableRepositoryFile>;

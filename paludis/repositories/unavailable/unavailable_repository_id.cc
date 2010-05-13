@@ -49,6 +49,9 @@ namespace paludis
 
         const std::tr1::shared_ptr<const MetadataValueKey<std::string> > description_key;
         const std::tr1::shared_ptr<const MetadataValueKey<std::string> > homepage_key;
+        const std::tr1::shared_ptr<const MetadataValueKey<std::string> > sync_key;
+        const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        const std::tr1::shared_ptr<const Mask> mask;
 
         Implementation(
                 const UnavailableRepositoryIDParams & e) :
@@ -57,7 +60,10 @@ namespace paludis
             version("0", VersionSpecOptions()),
             repo(e.repository()),
             description_key(e.description()),
-            homepage_key(e.homepage())
+            homepage_key(e.homepage()),
+            sync_key(e.sync()),
+            format_key(e.format()),
+            mask(e.mask())
         {
         }
     };
@@ -67,9 +73,16 @@ UnavailableRepositoryID::UnavailableRepositoryID(const UnavailableRepositoryIDPa
     PrivateImplementationPattern<UnavailableRepositoryID>(new Implementation<UnavailableRepositoryID>(entry)),
     _imp(PrivateImplementationPattern<UnavailableRepositoryID>::_imp)
 {
-    add_metadata_key(_imp->description_key);
+    if (_imp->description_key)
+        add_metadata_key(_imp->description_key);
     if (_imp->homepage_key)
         add_metadata_key(_imp->homepage_key);
+    if (_imp->sync_key)
+        add_metadata_key(_imp->sync_key);
+    if (_imp->format_key)
+        add_metadata_key(_imp->format_key);
+    if (_imp->mask)
+        add_mask(_imp->mask);
 }
 
 UnavailableRepositoryID::~UnavailableRepositoryID()

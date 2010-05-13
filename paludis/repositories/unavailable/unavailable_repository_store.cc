@@ -121,22 +121,29 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
         return;
     }
 
-    std::tr1::shared_ptr<Mask> mask(new UnavailableMask);
-    std::tr1::shared_ptr<Set<std::string> > from_repositories_set(new Set<std::string>);
-    from_repositories_set->insert(file.repo_name());
-    std::tr1::shared_ptr<MetadataCollectionKey<Set<std::string> > > from_repositories(
-            new LiteralMetadataStringSetKey("OWNING_REPOSITORY", "Owning repository",
-                mkt_significant, from_repositories_set));
-
-    std::tr1::shared_ptr<MetadataValueKey<std::string> > repository_homepage, repository_description;
+    std::tr1::shared_ptr<MetadataValueKey<std::string> > repository_homepage, repository_description,
+        repository_format, repository_sync;
     if (! file.homepage().empty())
         repository_homepage.reset(new LiteralMetadataValueKey<std::string>(
                 "REPOSITORY_HOMEPAGE", "Repository homepage", mkt_normal, file.homepage()));
     if (! file.description().empty())
         repository_description.reset(new LiteralMetadataValueKey<std::string>(
                 "REPOSITORY_DESCRIPTION", "Repository description", mkt_normal, file.description()));
+    if (! file.repo_format().empty())
+        repository_format.reset(new LiteralMetadataValueKey<std::string>(
+                "REPOSITORY_FORMAT", "Repository format", mkt_normal, file.repo_format()));
+    if (! file.sync().empty())
+        repository_sync.reset(new LiteralMetadataValueKey<std::string>(
+                "REPOSITORY_SYNC", "Repository sync", mkt_normal, file.sync()));
 
     {
+        std::tr1::shared_ptr<Mask> mask(new UnavailableMask);
+        std::tr1::shared_ptr<Set<std::string> > from_repositories_set(new Set<std::string>);
+        from_repositories_set->insert(file.repo_name());
+        std::tr1::shared_ptr<MetadataCollectionKey<Set<std::string> > > from_repositories(
+                new LiteralMetadataStringSetKey("OWNING_REPOSITORY", "Owning repository",
+                    mkt_significant, from_repositories_set));
+
         QualifiedPackageName old_name("x/x");
         std::tr1::shared_ptr<QualifiedPackageNameSet> pkgs;
         std::tr1::shared_ptr<PackageIDSequence> ids;
@@ -181,15 +188,18 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
         }
     }
 
+    const std::tr1::shared_ptr<NoConfigurationInformationMask> no_configuration_mask(new NoConfigurationInformationMask);
     const std::tr1::shared_ptr<UnavailableRepositoryID> id(new UnavailableRepositoryID(
                 make_named_values<UnavailableRepositoryIDParams>(
                     value_for<n::description>(repository_description),
                     value_for<n::environment>(env),
-                    value_for<n::format>(make_null_shared_ptr()),
+                    value_for<n::format>(repository_format),
                     value_for<n::homepage>(repository_homepage),
+                    value_for<n::mask>(repository_sync && repository_format ?
+                        make_null_shared_ptr() : no_configuration_mask),
                     value_for<n::name>(CategoryNamePart("repository") + PackageNamePart(file.repo_name())),
                     value_for<n::repository>(_imp->repo),
-                    value_for<n::sync>(make_null_shared_ptr())
+                    value_for<n::sync>(repository_sync)
                     )));
 
     _imp->categories->insert(id->name().category());
