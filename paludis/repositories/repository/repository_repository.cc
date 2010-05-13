@@ -29,6 +29,7 @@
 #include <paludis/action.hh>
 #include <paludis/syncer.hh>
 #include <paludis/hook.hh>
+#include <paludis/package_id.hh>
 #include <list>
 
 using namespace paludis;
@@ -85,7 +86,7 @@ RepositoryRepository::RepositoryRepository(const RepositoryRepositoryParams & p)
             p.environment(),
             p.name(),
             make_named_values<RepositoryCapabilities>(
-                value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
+                value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(this)),
                 value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
                 value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
                 value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
@@ -327,6 +328,37 @@ const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
 RepositoryRepository::sync_host_key() const
 {
     return make_null_shared_ptr();
+}
+
+bool
+RepositoryRepository::is_suitable_destination_for(const PackageID & e) const
+{
+    std::string f(e.repository()->format_key() ? e.repository()->format_key()->value() : "");
+    return f == "unavailable";
+}
+
+bool
+RepositoryRepository::is_default_destination() const
+{
+    return false;
+}
+
+bool
+RepositoryRepository::want_pre_post_phases() const
+{
+    return true;
+}
+
+void
+RepositoryRepository::merge(const MergeParams & m)
+{
+    using namespace std::tr1::placeholders;
+
+    Context context("When merging '" + stringify(*m.package_id()) + "' at '" + stringify(m.image_dir())
+            + "' to RepositoryRepository repository '" + stringify(name()) + "':");
+
+    if (! is_suitable_destination_for(*m.package_id()))
+        throw ActionFailedError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
 }
 
 template class PrivateImplementationPattern<repository_repository::RepositoryRepository>;

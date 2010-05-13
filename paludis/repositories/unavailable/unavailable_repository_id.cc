@@ -26,6 +26,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -156,10 +157,88 @@ UnavailableRepositoryID::supports_action(const SupportsActionTestBase & a) const
     return simple_visitor_cast<const SupportsActionTest<InstallAction> >(a);
 }
 
-void
-UnavailableRepositoryID::perform_action(Action & a) const
+namespace
 {
-    throw ActionFailedError("Unsupported action: " + a.simple_name());
+    void used_this_for_config_protect(std::string & s, const std::string & v)
+    {
+        s = v;
+    }
+
+    std::tr1::shared_ptr<OutputManager> this_output_manager(
+            const std::tr1::shared_ptr<OutputManager> & o, const Action &)
+    {
+        return o;
+    }
+
+    bool ignore_nothing(const FSEntry &)
+    {
+        return false;
+    }
+}
+
+void
+UnavailableRepositoryID::perform_action(Action & action) const
+{
+    Timestamp build_start_time(Timestamp::now());
+
+    const InstallAction * const install_action(simple_visitor_cast<const InstallAction>(action));
+    if (! install_action)
+        throw ActionFailedError("Unsupported action: " + action.simple_name());
+
+    if (! (*install_action->options.destination()).destination_interface())
+        throw ActionFailedError("Can't install '" + stringify(*this)
+                + "' to destination '" + stringify(install_action->options.destination()->name())
+                + "' because destination does not provide destination_interface");
+
+    std::tr1::shared_ptr<OutputManager> output_manager(install_action->options.make_output_manager()(*install_action));
+    std::string used_config_protect;
+
+    switch (install_action->options.want_phase()("merge"))
+    {
+        case wp_yes:
+            {
+                (*install_action->options.destination()).destination_interface()->merge(
+                        make_named_values<MergeParams>(
+                            value_for<n::build_start_time>(build_start_time),
+                            value_for<n::environment_file>(FSEntry("/dev/null")),
+                            value_for<n::image_dir>(FSEntry("/dev/null")),
+                            value_for<n::merged_entries>(make_shared_ptr(new FSEntrySet)),
+                            value_for<n::options>(MergerOptions()),
+                            value_for<n::output_manager>(output_manager),
+                            value_for<n::package_id>(shared_from_this()),
+                            value_for<n::perform_uninstall>(install_action->options.perform_uninstall()),
+                            value_for<n::used_this_for_config_protect>(std::tr1::bind(
+                                    &used_this_for_config_protect, std::tr1::ref(used_config_protect), std::tr1::placeholders::_1))
+                            ));
+            }
+            break;
+
+        case wp_skip:
+            break;
+
+        case wp_abort:
+            throw ActionAbortedError("Told to abort install");
+
+        case last_wp:
+            throw InternalError(PALUDIS_HERE, "bad WantPhase");
+    }
+
+    for (PackageIDSequence::ConstIterator i(install_action->options.replacing()->begin()),
+            i_end(install_action->options.replacing()->end()) ;
+            i != i_end ; ++i)
+    {
+        Context local_context("When cleaning '" + stringify(**i) + "':");
+
+        UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
+                    value_for<n::config_protect>(used_config_protect),
+                    value_for<n::if_for_install_id>(shared_from_this()),
+                    value_for<n::ignore_for_unmerge>(&ignore_nothing),
+                    value_for<n::is_overwrite>(false),
+                    value_for<n::make_output_manager>(std::tr1::bind(
+                            &this_output_manager, output_manager, std::tr1::placeholders::_1))
+                    ));
+        install_action->options.perform_uninstall()(*i, uo);
+    }
 }
 
 std::tr1::shared_ptr<const Set<std::string> >

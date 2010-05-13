@@ -57,6 +57,7 @@ namespace paludis
         class PALUDIS_VISIBLE RepositoryRepository :
             private PrivateImplementationPattern<RepositoryRepository>,
             public Repository,
+            public RepositoryDestinationInterface,
             public std::tr1::enable_shared_from_this<RepositoryRepository>
         {
             private:
@@ -96,6 +97,17 @@ namespace paludis
                 virtual void invalidate_masks();
 
                 virtual bool sync(const std::tr1::shared_ptr<OutputManager> &) const;
+
+                virtual bool is_suitable_destination_for(const PackageID &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual bool is_default_destination() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual bool want_pre_post_phases() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual void merge(const MergeParams &);
 
                 ///\name RepositoryFactory functions
                 ///\{

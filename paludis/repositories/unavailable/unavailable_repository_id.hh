@@ -24,6 +24,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/repositories/unavailable/unavailable_repository_file-fwd.hh>
 #include <paludis/repositories/unavailable/unavailable_repository-fwd.hh>
+#include <tr1/memory>
 
 namespace paludis
 {
@@ -55,7 +56,8 @@ namespace paludis
 
         class PALUDIS_VISIBLE UnavailableRepositoryID :
             public PackageID,
-            private PrivateImplementationPattern<UnavailableRepositoryID>
+            private PrivateImplementationPattern<UnavailableRepositoryID>,
+            public std::tr1::enable_shared_from_this<UnavailableRepositoryID>
         {
             private:
                 PrivateImplementationPattern<UnavailableRepositoryID>::ImpPtr & _imp;
@@ -106,7 +108,7 @@ namespace paludis
 
                  bool supports_action(const SupportsActionTestBase &) const
                      PALUDIS_ATTRIBUTE((warn_unused_result));
-                 void perform_action(Action &) const PALUDIS_ATTRIBUTE((noreturn));
+                 void perform_action(Action &) const;
 
                  std::tr1::shared_ptr<const Set<std::string> > breaks_portage() const
                      PALUDIS_ATTRIBUTE((warn_unused_result));
