@@ -35,6 +35,7 @@
 #include <paludis/hook.hh>
 #include <paludis/package_id.hh>
 #include <paludis/output_manager.hh>
+#include <paludis/environment.hh>
 #include <list>
 
 using namespace paludis;
@@ -467,6 +468,16 @@ RepositoryRepository::merge(const MergeParams & m)
             SafeOFStream config_filename_output(config_filename_file);
             config_filename_output << data;
         }
+
+        m.output_manager()->stdout_stream() << "Syncing..." << std::endl;
+        _imp->params.environment()->repository_from_new_config_file(config_filename_file)->sync(m.output_manager());
+
+        /* the repo we'd get before syncing is mostly unusable */
+        const std::tr1::shared_ptr<Repository> newly_created_repo(
+                _imp->params.environment()->repository_from_new_config_file(config_filename_file));
+
+        m.output_manager()->stdout_stream() << "Fixing cache..." << std::endl;
+        newly_created_repo->regenerate_cache();
     }
     catch (...)
     {
