@@ -188,31 +188,34 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
         }
     }
 
-    const std::tr1::shared_ptr<NoConfigurationInformationMask> no_configuration_mask(new NoConfigurationInformationMask);
-    const std::tr1::shared_ptr<UnavailableRepositoryID> id(new UnavailableRepositoryID(
-                make_named_values<UnavailableRepositoryIDParams>(
-                    value_for<n::description>(repository_description),
-                    value_for<n::environment>(env),
-                    value_for<n::format>(repository_format),
-                    value_for<n::homepage>(repository_homepage),
-                    value_for<n::mask>(repository_sync && repository_format ?
-                        make_null_shared_ptr() : no_configuration_mask),
-                    value_for<n::name>(CategoryNamePart("repository") + PackageNamePart(file.repo_name())),
-                    value_for<n::repository>(_imp->repo),
-                    value_for<n::sync>(repository_sync)
-                    )));
+    if (file.autoconfigurable())
+    {
+        const std::tr1::shared_ptr<NoConfigurationInformationMask> no_configuration_mask(new NoConfigurationInformationMask);
+        const std::tr1::shared_ptr<UnavailableRepositoryID> id(new UnavailableRepositoryID(
+                    make_named_values<UnavailableRepositoryIDParams>(
+                        value_for<n::description>(repository_description),
+                        value_for<n::environment>(env),
+                        value_for<n::format>(repository_format),
+                        value_for<n::homepage>(repository_homepage),
+                        value_for<n::mask>(repository_sync && repository_format ?
+                            make_null_shared_ptr() : no_configuration_mask),
+                        value_for<n::name>(CategoryNamePart("repository") + PackageNamePart(file.repo_name())),
+                        value_for<n::repository>(_imp->repo),
+                        value_for<n::sync>(repository_sync)
+                        )));
 
-    _imp->categories->insert(id->name().category());
-    PackageNames::iterator p(_imp->package_names.find(id->name().category()));
-    if (_imp->package_names.end() == p)
-        p = _imp->package_names.insert(std::make_pair(id->name().category(),
-                    make_shared_ptr(new QualifiedPackageNameSet))).first;
-    p->second->insert(id->name());
+        _imp->categories->insert(id->name().category());
+        PackageNames::iterator p(_imp->package_names.find(id->name().category()));
+        if (_imp->package_names.end() == p)
+            p = _imp->package_names.insert(std::make_pair(id->name().category(),
+                        make_shared_ptr(new QualifiedPackageNameSet))).first;
+        p->second->insert(id->name());
 
-    IDs::iterator i(_imp->ids.find(id->name()));
-    if (_imp->ids.end() == i)
-        i = _imp->ids.insert(std::make_pair(id->name(), make_shared_ptr(new PackageIDSequence))).first;
-    i->second->push_back(id);
+        IDs::iterator i(_imp->ids.find(id->name()));
+        if (_imp->ids.end() == i)
+            i = _imp->ids.insert(std::make_pair(id->name(), make_shared_ptr(new PackageIDSequence))).first;
+        i->second->push_back(id);
+    }
 }
 
 bool

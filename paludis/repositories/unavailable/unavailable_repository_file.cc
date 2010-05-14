@@ -43,7 +43,13 @@ namespace paludis
     struct Implementation<UnavailableRepositoryFile>
     {
         std::string repo_name, homepage, description, sync, repo_format;
+        bool autoconfigurable;
         Entries entries;
+
+        Implementation() :
+            autoconfigurable(false)
+        {
+        }
     };
 
     template <>
@@ -98,7 +104,14 @@ UnavailableRepositoryFile::_load(const FSEntry & f)
         {
             if (key == "format")
             {
-                if (value != "unavailable-1")
+                if (value == "unavailable-1")
+                {
+                }
+                else if (value == "unavailable-2")
+                {
+                    _imp->autoconfigurable = true;
+                }
+                else
                     throw UnavailableRepositoryConfigurationError(
                             "Unsupported format '" + value + "' in '" + stringify(f) + "'");
             }
@@ -240,6 +253,12 @@ std::string
 UnavailableRepositoryFile::repo_format() const
 {
     return _imp->repo_format;
+}
+
+bool
+UnavailableRepositoryFile::autoconfigurable() const
+{
+    return _imp->autoconfigurable;
 }
 
 template class PrivateImplementationPattern<UnavailableRepositoryFile>;

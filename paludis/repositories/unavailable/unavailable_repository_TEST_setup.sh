@@ -10,6 +10,7 @@ END
 
 mkdir -p repo2
 cat <<"END" > repo2/foo.repository
+format = unavailable-2
 repo_name = foo
 
 cat-one/
@@ -20,6 +21,7 @@ cat-one/
         :2 2 ; Two
 END
 cat <<"END" > repo2/bar.repository
+format = unavailable-2
 repo_name = bar
 
 cat-one/

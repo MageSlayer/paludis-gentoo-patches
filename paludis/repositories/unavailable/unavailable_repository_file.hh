@@ -49,6 +49,7 @@ namespace paludis
                 std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 std::string sync() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 std::string repo_format() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool autoconfigurable() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 
