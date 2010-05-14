@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,26 +27,23 @@
 
 namespace paludis
 {
-    namespace unpackaged_repositories
+    class PALUDIS_VISIBLE CommaSeparatedDepPrinter :
+        private PrivateImplementationPattern<CommaSeparatedDepPrinter>
     {
-        class PALUDIS_VISIBLE DepPrinter :
-            private PrivateImplementationPattern<DepPrinter>
-        {
-            public:
-                DepPrinter(const Environment * const, const DependencySpecTree::ItemFormatter &, const bool);
-                ~DepPrinter();
+        public:
+            CommaSeparatedDepPrinter(const Environment * const, const DependencySpecTree::ItemFormatter &, const bool);
+            ~CommaSeparatedDepPrinter();
 
-                const std::string result() const;
+            const std::string result() const;
 
-                void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node);
-                void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type & node);
-                void visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type & node);
-                void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node);
-                void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node);
-                void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node);
-                void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node);
-        };
-    }
+            void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node);
+            void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type & node);
+            void visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type & node);
+            void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node);
+            void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node);
+            void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node);
+            void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node);
+    };
 }
 
 #endif

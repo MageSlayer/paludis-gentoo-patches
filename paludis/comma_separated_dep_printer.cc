@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/unpackaged/dep_printer.hh>
+#include <paludis/comma_separated_dep_printer.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/options.hh>
@@ -31,12 +31,11 @@
 #include <sstream>
 
 using namespace paludis;
-using namespace paludis::unpackaged_repositories;
 
 namespace paludis
 {
     template <>
-    struct Implementation<DepPrinter>
+    struct Implementation<CommaSeparatedDepPrinter>
     {
         std::stringstream s;
         const Environment * const env;
@@ -60,18 +59,18 @@ namespace paludis
     };
 }
 
-DepPrinter::DepPrinter(const Environment * const e,
+CommaSeparatedDepPrinter::CommaSeparatedDepPrinter(const Environment * const e,
         const DependencySpecTree::ItemFormatter & f, const bool flat) :
-    PrivateImplementationPattern<DepPrinter>(new Implementation<DepPrinter>(e, f, 0, flat))
+    PrivateImplementationPattern<CommaSeparatedDepPrinter>(new Implementation<CommaSeparatedDepPrinter>(e, f, 0, flat))
 {
 }
 
-DepPrinter::~DepPrinter()
+CommaSeparatedDepPrinter::~CommaSeparatedDepPrinter()
 {
 }
 
 void
-DepPrinter::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
+CommaSeparatedDepPrinter::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
 {
     if (! _imp->flat)
         _imp->s << _imp->formatter.indent(_imp->indent);
@@ -99,35 +98,35 @@ DepPrinter::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & nod
 }
 
 void
-DepPrinter::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type &)
+CommaSeparatedDepPrinter::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type &)
 {
 }
 
 void
-DepPrinter::visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type &)
+CommaSeparatedDepPrinter::visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type &)
 {
 }
 
 void
-DepPrinter::visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
-{
-    std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
-}
-
-void
-DepPrinter::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
+CommaSeparatedDepPrinter::visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
 {
     std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
 }
 
 void
-DepPrinter::visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
+CommaSeparatedDepPrinter::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
 {
     std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
 }
 
 void
-DepPrinter::visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node)
+CommaSeparatedDepPrinter::visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
+{
+    std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+}
+
+void
+CommaSeparatedDepPrinter::visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node)
 {
     if (! _imp->flat)
         _imp->s << _imp->formatter.indent(_imp->indent);
@@ -143,7 +142,7 @@ DepPrinter::visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & no
 }
 
 const std::string
-DepPrinter::result() const
+CommaSeparatedDepPrinter::result() const
 {
     return _imp->s.str();
 }

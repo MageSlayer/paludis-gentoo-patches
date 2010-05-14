@@ -191,6 +191,7 @@ paludis-*.*.*.tar.bz2
 /paludis/about_TEST
 /paludis/args/args_TEST
 /paludis/broken_linkage_configuration_TEST
+/paludis/comma_separated_dep_parser_TEST
 /paludis/dep_list_TEST
 /paludis/dep_list_TEST_blockers
 /paludis/dep_spec_TEST
@@ -315,7 +316,6 @@ paludis-*.*.*.tar.bz2
 /paludis/repositories/gems/installed_gems_repository_TEST
 /paludis/repositories/gems/yaml_TEST
 /paludis/repositories/unavailable/unavailable_repository_TEST
-/paludis/repositories/unpackaged/dep_parser_TEST
 /paludis/repositories/unpackaged/installed_repository_TEST
 /paludis/repositories/unpackaged/unpackaged_repository_TEST
 /paludis/repositories/unwritten/unwritten_repository_TEST

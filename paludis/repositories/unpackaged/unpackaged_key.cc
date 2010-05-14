@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,8 +18,6 @@
  */
 
 #include <paludis/repositories/unpackaged/unpackaged_key.hh>
-#include <paludis/repositories/unpackaged/dep_printer.hh>
-#include <paludis/repositories/unpackaged/dep_parser.hh>
 #include <paludis/repositories/unpackaged/unpackaged_id.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/fs_entry.hh>
@@ -30,6 +28,8 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/choice.hh>
 #include <paludis/elike_choices.hh>
+#include <paludis/comma_separated_dep_printer.hh>
+#include <paludis/comma_separated_dep_parser.hh>
 #include <tr1/memory>
 
 using namespace paludis;
@@ -52,7 +52,7 @@ namespace paludis
                 const std::tr1::shared_ptr<const DependenciesLabelSequence> & l,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             env(e),
-            value(DepParser::parse(env, v)),
+            value(CommaSeparatedDepParser::parse(env, v)),
             labels(l),
             raw_name(r),
             human_name(h),
@@ -101,7 +101,7 @@ UnpackagedDependencyKey::type() const
 std::string
 UnpackagedDependencyKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
 {
-    DepPrinter p(_imp->env, f, false);
+    CommaSeparatedDepPrinter p(_imp->env, f, false);
     _imp->value->root()->accept(p);
     return p.result();
 }
@@ -109,7 +109,7 @@ UnpackagedDependencyKey::pretty_print(const DependencySpecTree::ItemFormatter & 
 std::string
 UnpackagedDependencyKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
 {
-    DepPrinter p(_imp->env, f, true);
+    CommaSeparatedDepPrinter p(_imp->env, f, true);
     _imp->value->root()->accept(p);
     return p.result();
 }

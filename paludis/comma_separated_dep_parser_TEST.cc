@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,30 +17,29 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/unpackaged/dep_parser.hh>
-#include <paludis/repositories/unpackaged/dep_printer.hh>
+#include <paludis/comma_separated_dep_parser.hh>
+#include <paludis/comma_separated_dep_printer.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/stringify_formatter.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
 using namespace paludis;
-using namespace paludis::unpackaged_repositories;
 using namespace test;
 
 namespace test_cases
 {
-    struct DepParserTest : TestCase
+    struct CommaSeparatedDepParserTest : TestCase
     {
-        DepParserTest() : TestCase("dep parser") { }
+        CommaSeparatedDepParserTest() : TestCase("comma separated dep parser") { }
 
         void run()
         {
             TestEnvironment env;
             std::tr1::shared_ptr<const DependencySpecTree> spec(
-                    DepParser::parse(&env, "cat/one  , cat/two, cat/three\n"));
+                    CommaSeparatedDepParser::parse(&env, "cat/one  , cat/two, cat/three\n"));
             StringifyFormatter f;
-            DepPrinter p(&env, f, true);
+            CommaSeparatedDepPrinter p(&env, f, true);
             spec->root()->accept(p);
             TEST_CHECK_EQUAL(p.result(), "cat/one, cat/two, cat/three");
         }

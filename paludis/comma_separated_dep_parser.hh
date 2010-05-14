@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNPACKAGED_DEP_PARSER_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNPACKAGED_DEP_PARSER_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_COMMA_SEPARATED_DEP_PARSER_HH
+#define PALUDIS_GUARD_PALUDIS_COMMA_SEPARATED_DEP_PARSER_HH 1
 
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/spec_tree-fwd.hh>
@@ -26,16 +26,13 @@
 
 namespace paludis
 {
-    namespace unpackaged_repositories
+    class PALUDIS_VISIBLE CommaSeparatedDepParser :
+        private InstantiationPolicy<CommaSeparatedDepParser, instantiation_method::NonInstantiableTag>
     {
-        class PALUDIS_VISIBLE DepParser :
-            private InstantiationPolicy<DepParser, instantiation_method::NonInstantiableTag>
-        {
-            public:
-                static std::tr1::shared_ptr<const DependencySpecTree> parse(
-                        const Environment * const env, const std::string &);
-        };
-    }
+        public:
+            static std::tr1::shared_ptr<const DependencySpecTree> parse(
+                    const Environment * const env, const std::string &);
+    };
 }
 
 #endif

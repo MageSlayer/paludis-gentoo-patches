@@ -21,8 +21,6 @@
 #include <paludis/repositories/unpackaged/installed_repository.hh>
 #include <paludis/ndbam.hh>
 #include <paludis/ndbam_unmerger.hh>
-#include <paludis/repositories/unpackaged/dep_parser.hh>
-#include <paludis/repositories/unpackaged/dep_printer.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/fs_entry.hh>
@@ -46,6 +44,9 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/comma_separated_dep_parser.hh>
+#include <paludis/comma_separated_dep_printer.hh>
+#include <paludis/formatter.hh>
 #include <tr1/functional>
 
 using namespace paludis;
@@ -337,7 +338,7 @@ namespace
                 Context context("When reading '" + stringify(_f) + "' as an InstalledUnpackagedDependencyKey:");
 
                 SafeIFStream f(_f);
-                _v = DepParser::parse(_env, strip_trailing(
+                _v = CommaSeparatedDepParser::parse(_env, strip_trailing(
                             std::string((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>()), "\n"));
                 return _v;
             }
@@ -345,7 +346,7 @@ namespace
             std::string
             pretty_print(const DependencySpecTree::ItemFormatter & f) const
             {
-                DepPrinter p(_env, f, false);
+                CommaSeparatedDepPrinter p(_env, f, false);
                 value()->root()->accept(p);
                 return p.result();
             }
@@ -353,7 +354,7 @@ namespace
             std::string
             pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
             {
-                DepPrinter p(_env, f, true);
+                CommaSeparatedDepPrinter p(_env, f, true);
                 value()->root()->accept(p);
                 return p.result();
             }

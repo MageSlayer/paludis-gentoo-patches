@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/unpackaged/dep_parser.hh>
+#include <paludis/comma_separated_dep_parser.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/exception.hh>
@@ -29,10 +29,9 @@
 #include <list>
 
 using namespace paludis;
-using namespace paludis::unpackaged_repositories;
 
 std::tr1::shared_ptr<const DependencySpecTree>
-DepParser::parse(const Environment * const env, const std::string & s)
+CommaSeparatedDepParser::parse(const Environment * const env, const std::string & s)
 {
     Context context("When parsing '" + s + "':");
 
