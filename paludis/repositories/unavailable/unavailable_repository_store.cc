@@ -21,6 +21,7 @@
 #include <paludis/repositories/unavailable/unavailable_repository_file.hh>
 #include <paludis/repositories/unavailable/unavailable_package_id.hh>
 #include <paludis/repositories/unavailable/unavailable_repository_id.hh>
+#include <paludis/repositories/unavailable/unavailable_repository_dependencies_key.hh>
 #include <paludis/repositories/unavailable/unavailable_mask.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/fs_entry.hh>
@@ -191,8 +192,14 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
     if (file.autoconfigurable())
     {
         const std::tr1::shared_ptr<NoConfigurationInformationMask> no_configuration_mask(new NoConfigurationInformationMask);
+        std::tr1::shared_ptr<UnavailableRepositoryDependenciesKey> deps;
+        if (! file.dependencies().empty())
+            deps.reset(new UnavailableRepositoryDependenciesKey(env, "dependencies", "Dependencies", mkt_dependencies,
+                        file.dependencies()));
+
         const std::tr1::shared_ptr<UnavailableRepositoryID> id(new UnavailableRepositoryID(
                     make_named_values<UnavailableRepositoryIDParams>(
+                        value_for<n::dependencies>(deps),
                         value_for<n::description>(repository_description),
                         value_for<n::environment>(env),
                         value_for<n::format>(repository_format),

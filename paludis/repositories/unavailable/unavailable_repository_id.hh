@@ -30,6 +30,7 @@ namespace paludis
 {
     namespace n
     {
+        struct dependencies;
         struct description;
         struct environment;
         struct format;
@@ -44,6 +45,7 @@ namespace paludis
     {
         struct UnavailableRepositoryIDParams
         {
+            NamedValue<n::dependencies, std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > > dependencies;
             NamedValue<n::description, std::tr1::shared_ptr<const MetadataValueKey<std::string> > > description;
             NamedValue<n::environment, const Environment *> environment;
             NamedValue<n::format, std::tr1::shared_ptr<const MetadataValueKey<std::string> > > format;

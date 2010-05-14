@@ -42,7 +42,7 @@ namespace paludis
     template <>
     struct Implementation<UnavailableRepositoryFile>
     {
-        std::string repo_name, homepage, description, sync, repo_format;
+        std::string repo_name, homepage, description, sync, repo_format, dependencies;
         bool autoconfigurable;
         Entries entries;
 
@@ -125,6 +125,8 @@ UnavailableRepositoryFile::_load(const FSEntry & f)
                 _imp->sync = value;
             else if (key == "repo_format")
                 _imp->repo_format = value;
+            else if (key == "dependencies")
+                _imp->dependencies = value;
             else
                 Log::get_instance()->message("unavailable_repository.file.unknown_key", ll_warning, lc_context)
                     << "Ignoring unknown key '" << key << "' with value '" << value << "'";
@@ -253,6 +255,12 @@ std::string
 UnavailableRepositoryFile::repo_format() const
 {
     return _imp->repo_format;
+}
+
+std::string
+UnavailableRepositoryFile::dependencies() const
+{
+    return _imp->dependencies;
 }
 
 bool

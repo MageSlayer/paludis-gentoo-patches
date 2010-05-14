@@ -49,6 +49,7 @@ namespace paludis
         const VersionSpec version;
         const UnavailableRepository * const repo;
 
+        const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies_key;
         const std::tr1::shared_ptr<const MetadataValueKey<std::string> > description_key;
         const std::tr1::shared_ptr<const MetadataValueKey<std::string> > homepage_key;
         const std::tr1::shared_ptr<const MetadataValueKey<std::string> > sync_key;
@@ -61,6 +62,7 @@ namespace paludis
             name(e.name()),
             version("0", VersionSpecOptions()),
             repo(e.repository()),
+            dependencies_key(e.dependencies()),
             description_key(e.description()),
             homepage_key(e.homepage()),
             sync_key(e.sync()),
@@ -75,6 +77,8 @@ UnavailableRepositoryID::UnavailableRepositoryID(const UnavailableRepositoryIDPa
     PrivateImplementationPattern<UnavailableRepositoryID>(new Implementation<UnavailableRepositoryID>(entry)),
     _imp(PrivateImplementationPattern<UnavailableRepositoryID>::_imp)
 {
+    if (_imp->dependencies_key)
+        add_metadata_key(_imp->dependencies_key);
     if (_imp->description_key)
         add_metadata_key(_imp->description_key);
     if (_imp->homepage_key)
@@ -307,13 +311,13 @@ UnavailableRepositoryID::provide_key() const
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnavailableRepositoryID::dependencies_key() const
 {
-    return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return _imp->dependencies_key;
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnavailableRepositoryID::build_dependencies_key() const
 {
-    return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return _imp->dependencies_key;
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
