@@ -28,6 +28,7 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/simple_parser.hh>
 #include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/safe_ofstream.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/syncer.hh>
@@ -454,13 +455,14 @@ RepositoryRepository::merge(const MergeParams & m)
     if (config_filename_file.exists())
         throw ConfigurationError("config_filename '" + stringify(config_filename_file) + "' already exists");
 
-    m.output_manager()->stdout_stream() << "Would write to " << config_filename_file << std::endl;
+    m.output_manager()->stdout_stream() << "Creating " << config_filename_file << "..." << std::endl;
 
     SafeIFStream config_template_input(config_template_file);
     std::string data((std::istreambuf_iterator<char>(config_template_input)), std::istreambuf_iterator<char>());
     data = replace_vars(data, repo_sync, repo_format, repo_name);
 
-    m.output_manager()->stdout_stream() << data << std::endl;
+    SafeOFStream config_filename_output(config_filename_file);
+    config_filename_output << data;
 }
 
 template class PrivateImplementationPattern<repository_repository::RepositoryRepository>;
