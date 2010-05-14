@@ -12,6 +12,7 @@ CLEANFILES += \
 	exndbam.html \
 	installed_accounts.html \
 	installed_unpackaged.html \
+	repository.html \
 	unavailable.html \
 	unwritten.html \
 	vdb.html
@@ -24,6 +25,7 @@ EXTRA_DIST = \
 	exndbam.html.part \
 	installed_accounts.html.part \
 	installed_unpackaged.html.part \
+	repository.html \
 	unavailable.html.part \
 	unwritten.html.part \
 	vdb.html.part
@@ -37,13 +39,14 @@ paludisconfigurationrepositorieshtml_DATA = \
 	exndbam.html \
 	installed_accounts.html \
 	installed_unpackaged.html \
+	repository.html \
 	unavailable.html \
 	unwritten.html \
 	vdb.html
 
 if HAVE_HTMLTIDY
 
-TESTS = $(paludisconfigurationhtml_DATA)
+TESTS = $(paludisconfigurationrepositorieshtml_DATA)
 LOG_COMPILER_INTERP = $(top_srcdir)/doc/htmltidy.bash
 
 endif
@@ -65,6 +68,9 @@ installed_accounts.html : header.html.part $(srcdir)/installed_accounts.html.par
 
 installed_unpackaged.html : header.html.part $(srcdir)/installed_unpackaged.html.part footer.html.part
 	cat header.html.part $(srcdir)/installed_unpackaged.html.part footer.html.part > $@
+
+repository.html : header.html.part $(srcdir)/repository.html.part footer.html.part
+	cat header.html.part $(srcdir)/repository.html.part footer.html.part > $@
 
 unavailable.html : header.html.part $(srcdir)/unavailable.html.part footer.html.part
 	cat header.html.part $(srcdir)/unavailable.html.part footer.html.part > $@

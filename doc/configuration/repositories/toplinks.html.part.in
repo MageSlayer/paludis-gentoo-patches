@@ -22,7 +22,7 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/repositories/vdb.html">VDB</a>
+                <a href="###TOPURI###configuration/repositories/unwritten.html">unwritten</a>
             </td>
         </tr>
 
@@ -40,7 +40,7 @@
             </td>
 
             <td class="currentpage">
-                &nbsp;
+                <a href="###TOPURI###configuration/repositories/vdb.html">VDB</a>
             </td>
         </tr>
 
@@ -108,7 +108,7 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/repositories/unavailable.html">unavailable</a>
+                <a href="###TOPURI###configuration/repositories/repository.html">repository</a>
             </td>
 
             <td class="currentpage">
@@ -126,7 +126,7 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/repositories/unwritten.html">unwritten</a>
+                <a href="###TOPURI###configuration/repositories/unavailable.html">unavailable</a>
             </td>
 
             <td class="currentpage">

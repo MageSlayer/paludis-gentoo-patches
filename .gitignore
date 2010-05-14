@@ -144,6 +144,7 @@ paludis-*.*.*.tar.bz2
 /doc/configuration/repositories/index.html
 /doc/configuration/repositories/installed_accounts.html
 /doc/configuration/repositories/installed_unpackaged.html
+/doc/configuration/repositories/repository.html
 /doc/configuration/repositories/toplinks.html.part
 /doc/configuration/repositories/unavailable.html
 /doc/configuration/repositories/unwritten.html

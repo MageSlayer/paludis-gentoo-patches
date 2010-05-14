@@ -83,6 +83,7 @@ old-style virtuals:</p>
     <li><a href="exndbam.html">exndbam</a>, for tracking installed packages installed from an exheres.</li>
     <li><a href="accounts.html">accounts</a> and <a href="installed_accounts.html">installed_accounts</a> format
     repositories, for tracking user and group accounts.</li>
+    <li><a href="repository.html">repository</a>, for automatic repository configuration.</li>
     <li><a href="unwritten.html">unwritten</a>, for packages that have yet to be written.</li>
 </ul>
 

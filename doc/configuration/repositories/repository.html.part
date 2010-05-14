@@ -1,0 +1,35 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>repository Repository Format</h1>
+
+<p>The <code>repository</code> repository format is used to automatically create configuration files for new
+repositories whose information is published in <code>unavailable</code> format repositories, which can be installed
+using packages named like <code>repository/foo</code>. At present it is only supported on Exherbo.</p>
+
+<p>As well as the <a href="index.html">general keys supported for all repositories</a>, the following keys have meaning
+for <code>repository</code> format repositories:</p>
+
+<dl>
+    <dt><code>config_template</code></dt>
+    <dd>The template file to use when creating configuration files. Mandatory. Most users will want to set this to
+    <code>/etc/paludis/repository.template</code>, which will then need to be created as described below.</dd>
+
+    <dt><code>config_filename</code></dt>
+    <dd>The filename to use when creating configuration files. Most users will want to set this to
+    <code>/etc/paludis/repositories/%{repository_template_name}.conf</code> (note the <code>%</code>, which is not
+    a <code>$</code>).</dd>
+</dl>
+
+<h2>Repository Template</h2>
+
+<p>A typical <code>/etc/paludis/repository.template</code> will look like:</p>
+
+<pre>
+format = %{repository_template_format}
+location = /var/db/paludis/repositories/%{repository_template_name}
+sync = %{repository_template_sync}
+</pre>
+
+<p>Note again the <code>%</code> variables. Percent variables are replaced when creating the repository template file;
+variables using the conventional dollar syntax are written without substitution to the configuration file.</p>
+
