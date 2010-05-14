@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -143,6 +143,9 @@ namespace paludis
                     const CreateOutputManagerInfo &) const;
 
             void set_want_choice_enabled(const ChoicePrefixName &, const UnprefixedChoiceName &, const Tribool);
+
+            virtual const std::tr1::shared_ptr<Repository> repository_from_new_config_file(
+                    const FSEntry &) PALUDIS_ATTRIBUTE((noreturn));
     };
 }
 

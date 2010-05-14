@@ -437,6 +437,12 @@ class EnvironmentImplementationWrapper :
         {
             return make_shared_ptr(new StandardOutputManager);
         }
+
+        virtual const std::tr1::shared_ptr<Repository> repository_from_new_config_file(
+                const FSEntry &)
+        {
+            throw PythonMethodNotImplemented("EnvironmentImplementation", "repository_from_new_config_file");
+        }
 };
 
 struct NoConfigEnvironmentWrapper :

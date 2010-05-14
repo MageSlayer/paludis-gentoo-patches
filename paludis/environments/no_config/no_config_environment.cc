@@ -608,3 +608,10 @@ NoConfigEnvironment::populate_sets() const
 {
 }
 
+const std::tr1::shared_ptr<Repository>
+NoConfigEnvironment::repository_from_new_config_file(const FSEntry &)
+{
+    throw InternalError(PALUDIS_HERE, "can't create repositories on the fly for NoConfigEnvironment");
+}
+
+

@@ -135,6 +135,8 @@ namespace paludis
 
                 RepositoryConstIterator end_repositories() const;
 
+                const std::tr1::function<std::string (const std::string &)> repo_func_from_file(const FSEntry &);
+
                 ///\}
 
                 /**

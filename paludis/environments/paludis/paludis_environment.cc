@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -552,5 +552,14 @@ PaludisEnvironment::populate_sets() const
             add_set(n_s, n_s, std::tr1::bind(&make_set, this, *d, n_s, sfsmo_star, sft_paludis_conf), false);
         }
     }
+}
+
+const std::tr1::shared_ptr<Repository>
+PaludisEnvironment::repository_from_new_config_file(const FSEntry & f)
+{
+    const std::tr1::function<std::string (const std::string &)> repo_func(_imp->config->repo_func_from_file(f));
+    if (! repo_func)
+        throw PaludisConfigError("File '" + stringify(f) + "' does not describe a valid repository");
+    return RepositoryFactory::get_instance()->create(this, repo_func);
 }
 

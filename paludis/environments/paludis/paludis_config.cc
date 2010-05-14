@@ -174,6 +174,8 @@ namespace paludis
         std::tr1::shared_ptr<FSEntrySequence> bashrc_files;
 
         Repos repos;
+        std::tr1::function<std::string (const std::string &)> predefined_conf_vars_func;
+        std::string root_prefix;
 
         std::tr1::shared_ptr<KeywordsConf> keywords_conf;
         std::tr1::shared_ptr<UseConf> use_conf;
@@ -416,27 +418,25 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             &KeyValueConfigFile::no_transformation));
     }
 
-    std::string root_prefix;
-
     if (specpath)
     {
-        root_prefix = specpath->get("root");
+        _imp->root_prefix = specpath->get("root");
         local_config_suffix = specpath->get("config-suffix");
 
         if (! local_config_suffix.empty())
             local_config_suffix.insert(0, "-");
     }
 
-    if (! root_prefix.empty() && stringify(FSEntry(root_prefix).realpath()) != "/")
+    if (! _imp->root_prefix.empty() && stringify(FSEntry(_imp->root_prefix).realpath()) != "/")
     {
-        local_config_dir = FSEntry(root_prefix) / SYSCONFDIR / ("paludis" + local_config_suffix);
+        local_config_dir = FSEntry(_imp->root_prefix) / SYSCONFDIR / ("paludis" + local_config_suffix);
         if (! local_config_dir.exists())
             throw PaludisConfigError("Can't find configuration directory under root ("
                     "tried '" + stringify(local_config_dir) + "' and couldn't find any "
                     "specpath variables on the commandline");
     }
 
-    _imp->root = root_prefix.empty() ? "/" : root_prefix;
+    _imp->root = _imp->root_prefix.empty() ? "/" : _imp->root_prefix;
     _imp->config_dir = stringify(local_config_dir);
 
     const std::tr1::shared_ptr<const PaludisDistribution> dist(
@@ -472,11 +472,10 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         }
     }
 
-    std::tr1::function<std::string (const std::string &)> predefined_conf_vars_func(
-            std::tr1::bind(&initial_conf_vars, root_prefix, std::tr1::placeholders::_1));
+    _imp->predefined_conf_vars_func = std::tr1::bind(&initial_conf_vars, _imp->root_prefix, std::tr1::placeholders::_1);
 
     Log::get_instance()->message("paludis_environment.paludis_config.real_dir", ll_debug, lc_no_context)
-        << "PaludisConfig real directory is '" << local_config_dir << "', root prefix is '" << root_prefix
+        << "PaludisConfig real directory is '" << local_config_dir << "', root prefix is '" << _imp->root_prefix
         << "', config suffix is '" << local_config_suffix << "'";
 
     /* repositories */
@@ -485,9 +484,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
         if ((local_config_dir / (dist->repository_defaults_filename_part() + ".conf")).exists())
         {
-            predefined_conf_vars_func = std::tr1::bind(&from_kv, make_shared_ptr(new KeyValueConfigFile(
+            _imp->predefined_conf_vars_func = std::tr1::bind(&from_kv, make_shared_ptr(new KeyValueConfigFile(
                             local_config_dir / (dist->repository_defaults_filename_part() + ".conf"), KeyValueConfigFileOptions(),
-                            std::tr1::bind(&to_kv_func, predefined_conf_vars_func, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
+                            std::tr1::bind(&to_kv_func, _imp->predefined_conf_vars_func, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
                             &KeyValueConfigFile::no_transformation)),
                     std::tr1::placeholders::_1);
         }
@@ -500,9 +499,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                     .with_stderr_prefix(dist->repository_defaults_filename_part() + ".bash> ")
                     .with_captured_stdout_stream(&s));
             int exit_status(run_command(cmd));
-            predefined_conf_vars_func = std::tr1::bind(&from_kv, make_shared_ptr(new KeyValueConfigFile(
+            _imp->predefined_conf_vars_func = std::tr1::bind(&from_kv, make_shared_ptr(new KeyValueConfigFile(
                             s, KeyValueConfigFileOptions(),
-                            std::tr1::bind(&to_kv_func, predefined_conf_vars_func, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
+                            std::tr1::bind(&to_kv_func, _imp->predefined_conf_vars_func, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
                             &KeyValueConfigFile::no_transformation)),
                     std::tr1::placeholders::_1);
             if (exit_status != 0)
@@ -536,39 +535,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         {
             Context local_context("When reading repository file '" + stringify(*repo_file) + "':");
 
-            std::tr1::shared_ptr<KeyValueConfigFile> kv;
-            if (is_file_with_extension(*repo_file, ".bash", IsFileWithOptions()))
-            {
-                std::stringstream s;
-                Command cmd(Command("bash '" + stringify(*repo_file) + "'")
-                        .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-                        .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-                        .with_stderr_prefix(repo_file->basename() + "> ")
-                        .with_captured_stdout_stream(&s));
-                int exit_status(run_command(cmd));
-                kv.reset(new KeyValueConfigFile(s, KeyValueConfigFileOptions(),
-                            std::tr1::bind(&to_kv_func, predefined_conf_vars_func, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
-                            &KeyValueConfigFile::no_transformation));
-
-                if (exit_status != 0)
-                {
-                    Log::get_instance()->message("paludis_environment.repositories.failure", ll_warning, lc_context)
-                        << "Script '" << *repo_file << "' returned non-zero exit status '" << exit_status << "'";
-                    kv.reset();
-                }
-            }
-            else
-                kv.reset(new KeyValueConfigFile(*repo_file, KeyValueConfigFileOptions(),
-                            std::tr1::bind(&to_kv_func, predefined_conf_vars_func, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
-                            &KeyValueConfigFile::no_transformation));
-
-            if (! kv)
+            const std::tr1::function<std::string (const std::string &)> repo_func(repo_func_from_file(*repo_file));
+            if (! repo_func)
                 continue;
-
-            std::tr1::function<std::string (const std::string &)> repo_func(std::tr1::bind(&from_kv, kv, std::tr1::placeholders::_1));
-
-            repo_func = std::tr1::bind(&override, "repo_file", stringify(*repo_file), repo_func, std::tr1::placeholders::_1);
-            repo_func = std::tr1::bind(&override, "root", root_prefix.empty() ? "/" : root_prefix, repo_func, std::tr1::placeholders::_1);
 
             RepositoryName name(RepositoryFactory::get_instance()->name(_imp->env, repo_func));
             if (! repo_configs.insert(std::make_pair(name, repo_func)).second)
@@ -635,7 +604,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         if ((*DistributionData::get_instance()->distribution_from_string(distribution())).support_old_style_virtuals())
         {
             std::tr1::shared_ptr<Map<std::string, std::string> > iv_keys(new Map<std::string, std::string>);
-            iv_keys->insert("root", root_prefix.empty() ? "/" : root_prefix);
+            iv_keys->insert("root", _imp->root_prefix.empty() ? "/" : _imp->root_prefix);
             iv_keys->insert("format", "installed_virtuals");
             _imp->repos.push_back(std::tr1::bind(&from_keys, iv_keys, std::tr1::placeholders::_1));
 
@@ -837,6 +806,45 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
 PaludisConfig::~PaludisConfig()
 {
+}
+
+const std::tr1::function<std::string (const std::string &)>
+PaludisConfig::repo_func_from_file(const FSEntry & repo_file)
+{
+    std::tr1::shared_ptr<KeyValueConfigFile> kv;
+    if (is_file_with_extension(repo_file, ".bash", IsFileWithOptions()))
+    {
+        std::stringstream s;
+        Command cmd(Command("bash '" + stringify(repo_file) + "'")
+                .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+                .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+                .with_stderr_prefix(repo_file.basename() + "> ")
+                .with_captured_stdout_stream(&s));
+        int exit_status(run_command(cmd));
+        kv.reset(new KeyValueConfigFile(s, KeyValueConfigFileOptions(),
+                    std::tr1::bind(&to_kv_func, _imp->predefined_conf_vars_func, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
+                    &KeyValueConfigFile::no_transformation));
+
+        if (exit_status != 0)
+        {
+            Log::get_instance()->message("paludis_environment.repositories.failure", ll_warning, lc_context)
+                << "Script '" << repo_file << "' returned non-zero exit status '" << exit_status << "'";
+            return std::tr1::function<std::string (const std::string &)>();
+        }
+    }
+    else
+        kv.reset(new KeyValueConfigFile(repo_file, KeyValueConfigFileOptions(),
+                    std::tr1::bind(&to_kv_func, _imp->predefined_conf_vars_func, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
+                    &KeyValueConfigFile::no_transformation));
+
+    std::tr1::function<std::string (const std::string &)> repo_func(
+            std::tr1::bind(&from_kv, kv, std::tr1::placeholders::_1));
+
+    repo_func = std::tr1::bind(&override, "repo_file", stringify(repo_file), repo_func, std::tr1::placeholders::_1);
+    repo_func = std::tr1::bind(&override, "root", _imp->root_prefix.empty() ? "/" : _imp->root_prefix,
+            repo_func, std::tr1::placeholders::_1);
+
+    return repo_func;
 }
 
 std::tr1::shared_ptr<const FSEntrySequence>

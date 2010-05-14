@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -243,6 +243,20 @@ namespace paludis
              */
             virtual void remove_selection_cache(
                     const std::tr1::shared_ptr<const SelectionCache> &) = 0;
+
+            /**
+             * Create a repository from a particular file.
+             *
+             * Does not add the repository to the PackageDatabase.
+             *
+             * This allows RepositoryRepository to add a repo config file, then
+             * sync that repo. If you aren't RepositoryRepository you shouldn't
+             * be calling this.
+             *
+             * \since 0.48
+             */
+            virtual const std::tr1::shared_ptr<Repository> repository_from_new_config_file(
+                    const FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
 
