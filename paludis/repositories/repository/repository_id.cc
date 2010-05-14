@@ -47,11 +47,14 @@ namespace paludis
         const VersionSpec version;
         const RepositoryRepository * const repo;
 
+        const std::tr1::shared_ptr<LiteralMetadataValueKey<bool> > transient_key;
+
         Implementation(const RepositoryIDParams & e) :
             env(e.environment()),
             name(e.name()),
             version("0", VersionSpecOptions()),
-            repo(e.repository())
+            repo(e.repository()),
+            transient_key(new LiteralMetadataValueKey<bool>("transient", "transient", mkt_internal, true))
         {
         }
     };
@@ -61,6 +64,7 @@ RepositoryID::RepositoryID(const RepositoryIDParams & entry) :
     PrivateImplementationPattern<RepositoryID>(new Implementation<RepositoryID>(entry)),
     _imp(PrivateImplementationPattern<RepositoryID>::_imp)
 {
+    add_metadata_key(_imp->transient_key);
 }
 
 RepositoryID::~RepositoryID()
@@ -179,7 +183,7 @@ RepositoryID::fs_location_key() const
 const std::tr1::shared_ptr<const MetadataValueKey<bool> >
 RepositoryID::transient_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<bool> >();
+    return _imp->transient_key;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
