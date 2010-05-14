@@ -25,11 +25,15 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/simple_parser.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/syncer.hh>
 #include <paludis/hook.hh>
 #include <paludis/package_id.hh>
+#include <paludis/output_manager.hh>
 #include <list>
 
 using namespace paludis;
@@ -349,16 +353,114 @@ RepositoryRepository::want_pre_post_phases() const
     return true;
 }
 
+namespace
+{
+    std::string get_string_key(const std::tr1::shared_ptr<const MetadataKeyHolder> & id, const std::string & k)
+    {
+        PackageID::MetadataConstIterator i(id->find_metadata(k));
+        if (id->end_metadata() == i)
+            return "";
+
+        const MetadataValueKey<std::string> * const ii(simple_visitor_cast<const MetadataValueKey<std::string> >(**i));
+        if (! ii)
+            return "";
+
+        return ii->value();
+    }
+
+    std::string replace_vars(
+            const std::string & s,
+            const std::string & sync,
+            const std::string & format,
+            const std::string & name)
+    {
+        std::string result;
+        SimpleParser parser(s);
+
+        while (! parser.eof())
+        {
+            std::string read;
+
+            if (parser.consume(simple_parser::exact("%%")))
+                result.append("%");
+            else if (parser.consume(simple_parser::exact("%")))
+            {
+                if (parser.consume(simple_parser::exact("{")))
+                {
+                    if (! parser.consume((+simple_parser::any_except("}") >> read) &
+                                simple_parser::exact("}")))
+                        throw ConfigurationError("Bad %{variable} in '" + s + "'");
+                }
+                else if (parser.consume(+simple_parser::any_of(
+                                "abcdefghijklmnopqrstuvwxyz"
+                                "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                "0123456789_"
+                                ) >> read))
+                {
+                }
+                else
+                    throw ConfigurationError("Bad %variable in '" + s + "'");
+
+                if (read == "repository_template_name")
+                    result.append(name);
+                else if (read == "repository_template_format")
+                    result.append(format);
+                else if (read == "repository_template_sync")
+                    result.append(sync);
+                else
+                    throw ConfigurationError("Unknown %variable '" + read + "' in '" + s + "'");
+            }
+            else if (parser.consume(+simple_parser::any_except("%") >> read))
+                result.append(read);
+            else
+                throw InternalError(PALUDIS_HERE, "failed to consume anything");
+        }
+
+        return result;
+    }
+}
+
 void
 RepositoryRepository::merge(const MergeParams & m)
 {
     using namespace std::tr1::placeholders;
 
-    Context context("When merging '" + stringify(*m.package_id()) + "' at '" + stringify(m.image_dir())
+    Context context("When merging '" + stringify(*m.package_id())
             + "' to RepositoryRepository repository '" + stringify(name()) + "':");
 
     if (! is_suitable_destination_for(*m.package_id()))
         throw ActionFailedError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
+
+    std::string repo_sync(get_string_key(m.package_id(), "REPOSITORY_SYNC"));
+    std::string repo_format(get_string_key(m.package_id(), "REPOSITORY_FORMAT"));
+    std::string repo_name(stringify(m.package_id()->name().package()));
+
+    if (repo_sync.empty())
+        throw InternalError(PALUDIS_HERE, "no REPOSITORY_SYNC in " + stringify(*m.package_id()));
+    if (repo_format.empty())
+        throw InternalError(PALUDIS_HERE, "no REPOSITORY_FORMAT in " + stringify(*m.package_id()));
+
+    std::string config_template(_imp->config_template_key->value());
+    std::string config_filename(_imp->config_filename_key->value());
+
+    config_template = replace_vars(config_template, repo_sync, repo_format, repo_name);
+    config_filename = replace_vars(config_filename, repo_sync, repo_format, repo_name);
+
+    FSEntry config_template_file(config_template);
+    if (! config_template_file.is_regular_file_or_symlink_to_regular_file())
+        throw ConfigurationError("config_template '" + stringify(config_template_file) + "' is not a regular file");
+
+    FSEntry config_filename_file(config_filename);
+    if (config_filename_file.exists())
+        throw ConfigurationError("config_filename '" + stringify(config_filename_file) + "' already exists");
+
+    m.output_manager()->stdout_stream() << "Would write to " << config_filename_file << std::endl;
+
+    SafeIFStream config_template_input(config_template_file);
+    std::string data((std::istreambuf_iterator<char>(config_template_input)), std::istreambuf_iterator<char>());
+    data = replace_vars(data, repo_sync, repo_format, repo_name);
+
+    m.output_manager()->stdout_stream() << data << std::endl;
 }
 
 template class PrivateImplementationPattern<repository_repository::RepositoryRepository>;
