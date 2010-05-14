@@ -455,14 +455,25 @@ RepositoryRepository::merge(const MergeParams & m)
     if (config_filename_file.exists())
         throw ConfigurationError("config_filename '" + stringify(config_filename_file) + "' already exists");
 
-    m.output_manager()->stdout_stream() << "Creating " << config_filename_file << "..." << std::endl;
+    try
+    {
+        m.output_manager()->stdout_stream() << "Creating " << config_filename_file << "..." << std::endl;
 
-    SafeIFStream config_template_input(config_template_file);
-    std::string data((std::istreambuf_iterator<char>(config_template_input)), std::istreambuf_iterator<char>());
-    data = replace_vars(data, repo_sync, repo_format, repo_name);
+        {
+            SafeIFStream config_template_input(config_template_file);
+            std::string data((std::istreambuf_iterator<char>(config_template_input)), std::istreambuf_iterator<char>());
+            data = replace_vars(data, repo_sync, repo_format, repo_name);
 
-    SafeOFStream config_filename_output(config_filename_file);
-    config_filename_output << data;
+            SafeOFStream config_filename_output(config_filename_file);
+            config_filename_output << data;
+        }
+    }
+    catch (...)
+    {
+        m.output_manager()->stdout_stream() << "Removing " << config_filename_file << "..." << std::endl;
+        config_filename_file.unlink();
+        throw;
+    }
 }
 
 template class PrivateImplementationPattern<repository_repository::RepositoryRepository>;
