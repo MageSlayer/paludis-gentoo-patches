@@ -34,6 +34,7 @@
 #include <paludis/action.hh>
 #include <paludis/unchoices_key.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/output_manager.hh>
 
 using namespace paludis;
 using namespace paludis::unavailable_repository;
@@ -239,6 +240,8 @@ UnavailableRepositoryID::perform_action(Action & action) const
                     ));
         install_action->options.perform_uninstall()(*i, uo);
     }
+
+    output_manager->succeeded();
 }
 
 std::tr1::shared_ptr<const Set<std::string> >
