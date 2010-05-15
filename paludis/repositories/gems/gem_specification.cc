@@ -444,10 +444,10 @@ GemSpecification::contained_in_key() const
     return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<bool> >
-GemSpecification::transient_key() const
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+GemSpecification::behaviours_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<bool> >();
+    return make_null_shared_ptr();
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<SlotName> >

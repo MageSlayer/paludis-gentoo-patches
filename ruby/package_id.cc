@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2007, 2008 Richard Brown
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -541,8 +541,8 @@ namespace
                         &KeyValue<MetadataValueKey<std::tr1::shared_ptr<const Choices> >, &PackageID::choices_key>::fetch)), 0);
         rb_define_method(c_package_id, "slot_key", RUBY_FUNC_CAST((
                         &KeyValue<MetadataValueKey<SlotName>, &PackageID::slot_key>::fetch)), 0);
-        rb_define_method(c_package_id, "transient_key", RUBY_FUNC_CAST((
-                        &KeyValue<MetadataValueKey<bool>, &PackageID::transient_key>::fetch)), 0);
+        rb_define_method(c_package_id, "behaviours_key", RUBY_FUNC_CAST((
+                        &KeyValue<MetadataCollectionKey<Set<std::string> >, &PackageID::behaviours_key>::fetch)), 0);
 
         /*
          * Document-module: Paludis::PackageIDCanonicalForm

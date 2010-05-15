@@ -104,7 +104,7 @@ namespace paludis
                      contents_key() const;
                  const std::tr1::shared_ptr<const MetadataTimeKey> installed_time_key() const;
                  const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > fs_location_key() const;
-                 const std::tr1::shared_ptr<const MetadataValueKey<bool> > transient_key() const;
+                 const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const;
                  const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const;
                  const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > > choices_key() const;
 

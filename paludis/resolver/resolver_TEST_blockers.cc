@@ -116,7 +116,7 @@ namespace test_cases
             ResolverBlockersTestCase("unfixable" + std::string(t ? " transient" : "")),
             transient(t)
         {
-            install("unfixable", "a-pkg", "1")->transient_key()->set_value(transient);
+            install("unfixable", "a-pkg", "1")->behaviours_set()->insert(transient ? "transient" : "");
         }
 
         void run()
@@ -157,7 +157,7 @@ namespace test_cases
             transient(t)
         {
             allowed_to_remove_names->insert(QualifiedPackageName("remove/a-pkg"));
-            install("remove", "a-pkg", "1")->transient_key()->set_value(transient);
+            install("remove", "a-pkg", "1")->behaviours_set()->insert(transient ? "transient" : "");
         }
 
         void run()

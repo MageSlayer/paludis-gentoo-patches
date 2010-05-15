@@ -284,10 +284,10 @@ UnavailableRepositoryID::fs_location_key() const
     return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<bool> >
-UnavailableRepositoryID::transient_key() const
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+UnavailableRepositoryID::behaviours_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<bool> >();
+    return make_null_shared_ptr();
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >

@@ -403,8 +403,8 @@ AccountsID::fs_location_key() const
     return _imp->fs_location_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<bool> >
-AccountsID::transient_key() const
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+AccountsID::behaviours_key() const
 {
     return make_null_shared_ptr();
 }

@@ -307,17 +307,24 @@ namespace paludis
             virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > fs_location_key() const = 0;
 
             /**
-             * The transient_key, if non-zero, indicates whether this
-             * PackageID's originating repository is volatile.
-             */
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<bool> > transient_key() const = 0;
-
-            /**
              * The choices_key, if non-zero, contains zero or more
              * MetadataValueKey<std::tr1::shared_ptr<const Choice> > child
              * keys holding choice information for this ID.
              */
             virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > > choices_key() const = 0;
+
+            /**
+             * The behaviours_key may contain strings indicating that the PackageID
+             * behaves in a particular way.
+             *
+             * Strings with recognised meanings currently are:
+             *
+             * - "transient", saying that an installed ID's origin is expected not to exist
+             * - "used", saying that an installed ID should not be treated as unused
+             *
+             * \since 0.48
+             */
+            virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const = 0;
 
             ///\}
 

@@ -719,8 +719,10 @@ namespace paludis
         std::tr1::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> > src_uri;
         std::tr1::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> > homepage;
         std::tr1::shared_ptr<FakeMetadataChoicesKey> choices;
-        std::tr1::shared_ptr<FakeMetadataValueKey<bool> > transient;
         std::tr1::shared_ptr<FakeMetadataValueKey<long> > hitchhiker;
+        std::tr1::shared_ptr<LiteralMetadataStringSetKey> behaviours;
+
+        std::tr1::shared_ptr<Set<std::string> > behaviours_set;
 
         std::tr1::shared_ptr<Mask> unsupported_mask;
         mutable bool has_masks;
@@ -737,6 +739,7 @@ namespace paludis
             suggested_dependencies_labels(new DependenciesLabelSequence),
             slot(new LiteralMetadataValueKey<SlotName>("SLOT", "Slot", mkt_internal, SlotName("0"))),
             keywords(new FakeMetadataKeywordSetKey("KEYWORDS", "Keywords", "test", mkt_normal, id, env)),
+            behaviours_set(new Set<std::string>),
             has_masks(false)
         {
             build_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("DEPEND",
@@ -1041,8 +1044,8 @@ FakePackageID::need_keys_added() const
 
         _imp->choices.reset(new FakeMetadataChoicesKey(_imp->env, shared_from_this()));
 
-        _imp->transient.reset(new FakeMetadataValueKey<bool>("TRANSIENT", "Transient",
-                    mkt_internal, false));
+        _imp->behaviours.reset(new LiteralMetadataStringSetKey("BEHAVIOURS", "Behaviours",
+                    mkt_internal, _imp->behaviours_set));
 
         _imp->hitchhiker.reset(new FakeMetadataValueKey<long>("HITCHHIKER", "Hitchhiker",
                     mkt_internal, 42));
@@ -1057,7 +1060,7 @@ FakePackageID::need_keys_added() const
         add_metadata_key(_imp->provide);
         add_metadata_key(_imp->license);
         add_metadata_key(_imp->choices);
-        add_metadata_key(_imp->transient);
+        add_metadata_key(_imp->behaviours);
         add_metadata_key(_imp->hitchhiker);
     }
 }
@@ -1305,20 +1308,6 @@ FakePackageID::size_of_all_distfiles_key() const
     return std::tr1::shared_ptr<const MetadataValueKey<long> >();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<bool> >
-FakePackageID::transient_key() const
-{
-    need_keys_added();
-    return _imp->transient;
-}
-
-const std::tr1::shared_ptr<FakeMetadataValueKey<bool> >
-FakePackageID::transient_key()
-{
-    need_keys_added();
-    return _imp->transient;
-}
-
 const std::tr1::shared_ptr<FakeMetadataValueKey<long> >
 FakePackageID::hitchhiker_key()
 {
@@ -1372,6 +1361,19 @@ FakePackageID::slot_key() const
 {
     need_keys_added();
     return _imp->slot;
+}
+
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+FakePackageID::behaviours_key() const
+{
+    need_keys_added();
+    return _imp->behaviours;
+}
+
+const std::tr1::shared_ptr<Set<std::string> >
+FakePackageID::behaviours_set()
+{
+    return _imp->behaviours_set;
 }
 
 template class FakeMetadataSpecTreeKey<LicenseSpecTree>;

@@ -292,10 +292,10 @@ UnpackagedID::slot_key() const
     return _imp->slot_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<bool> >
-UnpackagedID::transient_key() const
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+UnpackagedID::behaviours_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<bool> >();
+    return make_null_shared_ptr();
 }
 
 bool

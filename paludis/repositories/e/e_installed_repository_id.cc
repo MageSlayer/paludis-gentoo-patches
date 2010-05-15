@@ -720,10 +720,10 @@ EInstalledRepositoryID::license_key() const
     return _imp->keys->license;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<bool> >
-EInstalledRepositoryID::transient_key() const
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+EInstalledRepositoryID::behaviours_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<bool> >();
+    return make_null_shared_ptr();
 }
 
 const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >

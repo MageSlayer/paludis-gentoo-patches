@@ -698,10 +698,10 @@ EbuildID::raw_use_expand_hidden_key() const
     return _imp->raw_use_expand_hidden;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<bool> >
-EbuildID::transient_key() const
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+EbuildID::behaviours_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<bool> >();
+    return make_null_shared_ptr();
 }
 
 const std::tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >

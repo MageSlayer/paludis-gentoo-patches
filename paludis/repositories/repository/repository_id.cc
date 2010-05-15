@@ -47,24 +47,38 @@ namespace paludis
         const VersionSpec version;
         const RepositoryRepository * const repo;
 
-        const std::tr1::shared_ptr<LiteralMetadataValueKey<bool> > transient_key;
+        const std::tr1::shared_ptr<LiteralMetadataStringSetKey> behaviours_key;
+        static const std::tr1::shared_ptr<Set<std::string> > behaviours_set;
 
         Implementation(const RepositoryIDParams & e) :
             env(e.environment()),
             name(e.name()),
             version("0", VersionSpecOptions()),
             repo(e.repository()),
-            transient_key(new LiteralMetadataValueKey<bool>("transient", "transient", mkt_internal, true))
+            behaviours_key(new LiteralMetadataStringSetKey("behaviours", "behaviours", mkt_internal, behaviours_set))
         {
         }
     };
 }
 
+namespace
+{
+    std::tr1::shared_ptr<Set<std::string> > make_behaviours()
+    {
+        std::tr1::shared_ptr<Set<std::string> > result(new Set<std::string>);
+        result->insert("transient");
+        result->insert("used");
+        return result;
+    }
+}
+
+const std::tr1::shared_ptr<Set<std::string> > Implementation<RepositoryID>::behaviours_set = make_behaviours();
+
 RepositoryID::RepositoryID(const RepositoryIDParams & entry) :
     PrivateImplementationPattern<RepositoryID>(new Implementation<RepositoryID>(entry)),
     _imp(PrivateImplementationPattern<RepositoryID>::_imp)
 {
-    add_metadata_key(_imp->transient_key);
+    add_metadata_key(_imp->behaviours_key);
 }
 
 RepositoryID::~RepositoryID()
@@ -180,10 +194,10 @@ RepositoryID::fs_location_key() const
     return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<bool> >
-RepositoryID::transient_key() const
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+RepositoryID::behaviours_key() const
 {
-    return _imp->transient_key;
+    return _imp->behaviours_key;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >

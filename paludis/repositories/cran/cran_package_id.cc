@@ -546,10 +546,10 @@ CRANPackageID::fs_location_key() const
     return _imp->fs_location_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<bool> >
-CRANPackageID::transient_key() const
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+CRANPackageID::behaviours_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<bool> >();
+    return make_null_shared_ptr();
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >

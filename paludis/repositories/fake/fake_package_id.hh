@@ -289,7 +289,7 @@ namespace paludis
             virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > fs_location_key() const;
             virtual const std::tr1::shared_ptr<const MetadataValueKey<long> > size_of_download_required_key() const;
             virtual const std::tr1::shared_ptr<const MetadataValueKey<long> > size_of_all_distfiles_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<bool> > transient_key() const;
+            virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const;
             virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const;
             virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > > choices_key() const;
 
@@ -307,8 +307,9 @@ namespace paludis
             const std::tr1::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> > fetches_key();
             const std::tr1::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> > homepage_key();
             const std::tr1::shared_ptr<FakeMetadataChoicesKey> choices_key();
-            const std::tr1::shared_ptr<FakeMetadataValueKey<bool> > transient_key();
             const std::tr1::shared_ptr<FakeMetadataValueKey<long> > hitchhiker_key();
+
+            const std::tr1::shared_ptr<Set<std::string> > behaviours_set();
 
             void set_slot(const SlotName &);
 

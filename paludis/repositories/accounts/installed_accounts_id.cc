@@ -57,7 +57,8 @@ namespace paludis
         const VersionSpec version;
         const std::tr1::shared_ptr<const Repository> repository;
 
-        const std::tr1::shared_ptr<const LiteralMetadataValueKey<bool> > transient_key;
+        static const std::tr1::shared_ptr<Set<std::string> > behaviours_set;
+        const std::tr1::shared_ptr<const LiteralMetadataStringSetKey> behaviours_key;
 
         mutable Mutex mutex;
         mutable std::tr1::shared_ptr<const AccountsDepKey> dependencies_key;
@@ -71,19 +72,33 @@ namespace paludis
             name(q),
             version("0", VersionSpecOptions()),
             repository(r),
-            transient_key(new LiteralMetadataValueKey<bool>("transient", "Transient", mkt_internal, true)),
+            behaviours_key(new LiteralMetadataStringSetKey("behaviours", "Behaviours", mkt_internal,
+                        behaviours_set)),
             is_user(u)
         {
         }
     };
 }
 
+namespace
+{
+    std::tr1::shared_ptr<Set<std::string> > make_behaviours()
+    {
+        std::tr1::shared_ptr<Set<std::string> > result(new Set<std::string>);
+        result->insert("transient");
+        result->insert("used");
+        return result;
+    }
+}
+
+const std::tr1::shared_ptr<Set<std::string> > Implementation<InstalledAccountsID>::behaviours_set = make_behaviours();
+
 InstalledAccountsID::InstalledAccountsID(const Environment * const e,
         const QualifiedPackageName & q, const std::tr1::shared_ptr<const Repository> & r, const bool u) :
     PrivateImplementationPattern<InstalledAccountsID>(new Implementation<InstalledAccountsID>(e, q, r, u)),
     _imp(PrivateImplementationPattern<InstalledAccountsID>::_imp)
 {
-    add_metadata_key(_imp->transient_key);
+    add_metadata_key(_imp->behaviours_key);
 }
 
 InstalledAccountsID::~InstalledAccountsID()
@@ -320,10 +335,10 @@ InstalledAccountsID::fs_location_key() const
     return make_null_shared_ptr();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<bool> >
-InstalledAccountsID::transient_key() const
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+InstalledAccountsID::behaviours_key() const
 {
-    return _imp->transient_key;
+    return _imp->behaviours_key;
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >

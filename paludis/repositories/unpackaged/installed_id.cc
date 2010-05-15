@@ -404,6 +404,9 @@ namespace paludis
         std::tr1::shared_ptr<InstalledUnpackagedStringKey> description_key;
         std::tr1::shared_ptr<InstalledUnpackagedDependencyKey> build_dependencies_key;
         std::tr1::shared_ptr<InstalledUnpackagedDependencyKey> run_dependencies_key;
+        std::tr1::shared_ptr<LiteralMetadataStringSetKey> behaviours_key;
+
+        static const std::tr1::shared_ptr<Set<std::string> > behaviours_set;
 
         Implementation(
                 const Environment * const e,
@@ -424,7 +427,8 @@ namespace paludis
             build_dependencies_labels(new DependenciesLabelSequence),
             run_dependencies_labels(new DependenciesLabelSequence),
             slot_key(new LiteralMetadataValueKey<SlotName> ("slot", "Slot", mkt_internal, s)),
-            fs_location_key(new InstalledUnpackagedFSEntryKey(l))
+            fs_location_key(new InstalledUnpackagedFSEntryKey(l)),
+            behaviours_key(new LiteralMetadataStringSetKey("behaviours", "behaviours", mkt_internal, behaviours_set))
         {
             build_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("build_dependencies",
                             return_literal_function(true))));
@@ -460,6 +464,18 @@ namespace paludis
     };
 }
 
+namespace
+{
+    std::tr1::shared_ptr<Set<std::string> > make_behaviours()
+    {
+        std::tr1::shared_ptr<Set<std::string> > result(new Set<std::string>);
+        result->insert("transient");
+        return result;
+    }
+}
+
+const std::tr1::shared_ptr<Set<std::string> > Implementation<InstalledUnpackagedID>::behaviours_set = make_behaviours();
+
 InstalledUnpackagedID::InstalledUnpackagedID(const Environment * const e, const QualifiedPackageName & q,
         const VersionSpec & v, const SlotName & s, const RepositoryName & n, const FSEntry & l,
         const std::string &, const FSEntry & ro, const NDBAM * const d) :
@@ -480,6 +496,7 @@ InstalledUnpackagedID::InstalledUnpackagedID(const Environment * const e, const 
         add_metadata_key(_imp->build_dependencies_key);
     if (_imp->run_dependencies_key)
         add_metadata_key(_imp->run_dependencies_key);
+    add_metadata_key(_imp->behaviours_key);
 }
 
 InstalledUnpackagedID::~InstalledUnpackagedID()
@@ -691,11 +708,10 @@ InstalledUnpackagedTransientKey::pretty_print() const
     return stringify(value());
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<bool> >
-InstalledUnpackagedID::transient_key() const
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+InstalledUnpackagedID::behaviours_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<bool> >(
-            new InstalledUnpackagedTransientKey("transient", "Transient", mkt_internal, true));
+    return _imp->behaviours_key;
 }
 
 namespace

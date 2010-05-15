@@ -543,10 +543,10 @@ VirtualsPackageID::slot_key() const
     return _imp->virtual_for->value()->slot_key();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<bool> >
-VirtualsPackageID::transient_key() const
+const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+VirtualsPackageID::behaviours_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<bool> >();
+    return make_null_shared_ptr();
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >

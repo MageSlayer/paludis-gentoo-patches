@@ -1390,7 +1390,8 @@ Decider::_try_to_find_decision_for(
     else if (existing_id && ! installable_id)
     {
         /* there's nothing installable. this may or may not be ok. */
-        bool is_transient(existing_id->transient_key() && existing_id->transient_key()->value());
+        bool is_transient(existing_id->behaviours_key() && existing_id->behaviours_key()->value()->end() !=
+                existing_id->behaviours_key()->value()->find("transient"));
 
         switch (resolution->constraints()->strictest_use_existing())
         {
@@ -1487,7 +1488,8 @@ Decider::_try_to_find_decision_for(
                 }
         }
 
-        bool is_transient(existing_id->transient_key() && existing_id->transient_key()->value());
+        bool is_transient(existing_id->behaviours_key() && existing_id->behaviours_key()->value()->end() !=
+                existing_id->behaviours_key()->value()->find("transient"));
 
         /* we've got existing and installable. do we have any reason not to pick the existing id? */
         const std::tr1::shared_ptr<Decision> existing(new ExistingNoChangeDecision(
@@ -1688,7 +1690,8 @@ Decider::_get_unmatching_constraints(
 
         if (existing)
         {
-            bool is_transient(id->transient_key() && id->transient_key()->value());
+            bool is_transient(id->behaviours_key() && id->behaviours_key()->value()->end() !=
+                    id->behaviours_key()->value()->find("transient"));
             decision.reset(new ExistingNoChangeDecision(
                     id,
                     true,

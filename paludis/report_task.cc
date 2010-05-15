@@ -201,7 +201,8 @@ ReportTask::execute()
 
                     if ((*v)->from_repositories_key())
                     {
-                        is_missing = ! ((*v)->transient_key() && (*v)->transient_key()->value());
+                        is_missing = ! ((*v)->behaviours_key() && (*v)->behaviours_key()->value()->end() !=
+                                (*v)->behaviours_key()->value()->find("transient"));
 
                         for (Set<std::string>::ConstIterator o((*v)->from_repositories_key()->value()->begin()),
                                 o_end((*v)->from_repositories_key()->value()->end()) ;

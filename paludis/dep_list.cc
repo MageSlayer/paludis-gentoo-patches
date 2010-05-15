@@ -496,7 +496,8 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::T
         }
 
     if (! best_visible_candidate && ! already_installed->empty() &&
-        (*already_installed->last())->transient_key() && (*already_installed->last())->transient_key()->value() &&
+        (*already_installed->last())->behaviours_key() &&
+        (*already_installed->last())->behaviours_key()->value()->end() != (*already_installed->last())->behaviours_key()->value()->find("transient") &&
         (dl_target_package != d->_imp->opts->target_type() || ! d->is_top_level_target(**already_installed->last())))
     {
             Log::get_instance()->message("dep_list.no_visible.transient", ll_debug, lc_context) << "No visible packages matching '"
