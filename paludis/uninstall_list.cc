@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -207,13 +207,14 @@ UninstallList::add_unused()
     Context context("When finding unused packages:");
 
     std::tr1::shared_ptr<const PackageIDSet> world(collect_world()),
-        everything(collect_all_installed());
+        everything(collect_all_installed()), used(collect_used());
 
     std::tr1::shared_ptr<PackageIDSet>
         world_plus_deps(new PackageIDSet),
         unused(new PackageIDSet);
 
     std::copy(world->begin(), world->end(), world_plus_deps->inserter());
+    std::copy(used->begin(), used->end(), world_plus_deps->inserter());
 
     std::size_t old_size(0);
     while (old_size != world_plus_deps->size())
@@ -552,6 +553,25 @@ UninstallList::collect_world() const
             i_end(everything->end()) ; i != i_end ; ++i)
     {
         if (match_package_in_set(*_imp->env, *world, **i, MatchPackageOptions()))
+            result->insert(*i);
+    }
+
+    return result;
+}
+
+std::tr1::shared_ptr<const PackageIDSet>
+UninstallList::collect_used() const
+{
+    Context local_context("When collecting used packages:");
+
+    std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
+    std::tr1::shared_ptr<const PackageIDSet> everything(collect_all_installed());
+
+    for (PackageIDSet::ConstIterator i(everything->begin()),
+            i_end(everything->end()) ; i != i_end ; ++i)
+    {
+        if ((*i)->behaviours_key() && (*i)->behaviours_key()->value()->end() !=
+                (*i)->behaviours_key()->value()->find("used"))
             result->insert(*i);
     }
 
