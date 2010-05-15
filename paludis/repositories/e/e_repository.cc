@@ -421,7 +421,7 @@ namespace paludis
                     if (tokens.size() < 3)
                         continue;
 
-                    FSEntry p(profiles_desc.dirname().realpath() / tokens.at(1));
+                    FSEntry p(profiles_desc.dirname().realpath().dirname() / "profiles" / tokens.at(1));
                     auto_profiles->push_back(p);
                     main_profile_path.reset(new FSEntry(p));
                     break;
