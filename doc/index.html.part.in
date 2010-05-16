@@ -6,6 +6,9 @@
     <li>We use <a href="http://trac.pioto.org/paludis/">Trac</a> for bug reports, feature requests etc.</li>
     <li>The current version is ###PALUDIS_VERSION###. See <a href="news.html">the release notes</a> and <a
         href="changelog.html">changelog</a>.</li>
+    <li>You should generally install Paludis using your distribution's package manager, rather than by hand. However, if
+        you can't do that, you can <a href="http://paludis.pioto.org/download/">download Paludis</a> or
+        <a href="http://git.pioto.org/gitweb/paludis.git">browse the source</a>.</li>
 </ul>
 
 <h2>Overview</h2>
