@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -101,8 +101,8 @@ namespace test_cases
                 TEST_CHECK_EQUAL(g, "# this is a comment\n\nfoo/bar\n>=bar/baz-1.23\n\n# the end\nmoo/oink\n");
             }
 
-            f.remove(">=bar/baz-1.23");
-            f.remove("bar/cow");
+            TEST_CHECK(f.remove(">=bar/baz-1.23"));
+            TEST_CHECK(! f.remove("bar/cow"));
 
             {
                 SetSpecStringifier p;
@@ -170,9 +170,9 @@ namespace test_cases
                 TEST_CHECK_EQUAL(g, "# this is a comment\n\n? foo/bar\n* >=bar/baz-1.23\n\n* set\n? settee\n\n# the end\n* moo/oink\n* couch\n");
             }
 
-            f.remove(">=bar/baz-1.23");
-            f.remove("bar/cow");
-            f.remove("set");
+            TEST_CHECK(f.remove(">=bar/baz-1.23"));
+            TEST_CHECK(! f.remove("bar/cow"));
+            TEST_CHECK(f.remove("set"));
 
             {
                 SetSpecStringifier p;

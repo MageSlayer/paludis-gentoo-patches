@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -59,7 +59,7 @@ namespace
 
             virtual std::tr1::shared_ptr<SetSpecTree> contents() const = 0;
             virtual void add(const std::string &) = 0;
-            virtual void remove(const std::string &) = 0;
+            virtual bool remove(const std::string &) = 0;
             virtual void rewrite() const = 0;
     };
 
@@ -80,7 +80,7 @@ namespace
 
             virtual std::tr1::shared_ptr<SetSpecTree> contents() const;
             virtual void add(const std::string &);
-            virtual void remove(const std::string &);
+            virtual bool remove(const std::string &);
             virtual void rewrite() const;
     };
 
@@ -96,7 +96,7 @@ namespace
 
             virtual std::tr1::shared_ptr<SetSpecTree> contents() const;
             virtual void add(const std::string &) PALUDIS_ATTRIBUTE((noreturn));
-            virtual void remove(const std::string &) PALUDIS_ATTRIBUTE((noreturn));
+            virtual bool remove(const std::string &) PALUDIS_ATTRIBUTE((noreturn));
             virtual void rewrite() const PALUDIS_ATTRIBUTE((noreturn));
     };
 
@@ -117,7 +117,7 @@ namespace
 
             virtual std::tr1::shared_ptr<SetSpecTree> contents() const;
             virtual void add(const std::string &);
-            virtual void remove(const std::string &);
+            virtual bool remove(const std::string &);
             virtual void rewrite() const;
     };
 
@@ -383,7 +383,7 @@ SimpleHandler::add(const std::string & p)
     _contents.reset();
 }
 
-void
+bool
 SimpleHandler::remove(const std::string & p)
 {
     Lock l(_mutex);
@@ -391,7 +391,19 @@ SimpleHandler::remove(const std::string & p)
     Context context("When removing '" + stringify(p) + "' from simple set file '" + stringify(_p.file_name()) + "':");
 
     _contents.reset();
-    _lines.remove(p);
+
+    bool result(false);
+    for (std::list<std::string>::iterator i(_lines.begin()), i_end(_lines.end()) ;
+            i != i_end ; )
+        if (*i == p)
+        {
+            result = true;
+            _lines.erase(i++);
+        }
+        else
+            ++i;
+
+    return result;
 }
 
 void
@@ -461,15 +473,26 @@ PaludisConfHandler::add(const std::string & p)
     _contents.reset();
 }
 
-void
+bool
 PaludisConfHandler::remove(const std::string & p)
 {
     Context context("When removing '" + stringify(p) + "' from paludis conf set file '" + stringify(_p.file_name()) + "':");
 
     Lock l(_mutex);
-
     _contents.reset();
-    _lines.remove_if(TokenOneIs(p));
+
+    bool result(false);
+    for (std::list<std::string>::iterator i(_lines.begin()), i_end(_lines.end()) ;
+            i != i_end ; )
+        if (TokenOneIs(p)(*i))
+        {
+            result = true;
+            _lines.erase(i++);
+        }
+        else
+            ++i;
+
+    return result;
 }
 
 void
@@ -538,7 +561,7 @@ PaludisBashHandler::add(const std::string & p)
     throw SetFileError(_p.file_name(), "Cannot add entry '" + p + "' to bash script '" + stringify(_p.file_name()) + "'");
 }
 
-void
+bool
 PaludisBashHandler::remove(const std::string & p)
 {
     throw SetFileError(_p.file_name(), "Cannot remove entry '" + p + "' from bash script '" + stringify(_p.file_name()) + "'");
@@ -593,7 +616,7 @@ SetFile::add(const std::string & p)
     _imp->handler->add(p);
 }
 
-void
+bool
 SetFile::remove(const std::string & p)
 {
     return _imp->handler->remove(p);
