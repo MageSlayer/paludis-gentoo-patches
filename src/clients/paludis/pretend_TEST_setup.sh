@@ -15,7 +15,7 @@ cat <<END > root/${SYSCONFDIR}/paludis/use.conf
 */* foo
 END
 
-cat <<END > root/${SYSCONFDIR}/paludis/environment.conf
+cat <<END > root/${SYSCONFDIR}/paludis/general.conf
 world = `pwd`/root/world
 END
 

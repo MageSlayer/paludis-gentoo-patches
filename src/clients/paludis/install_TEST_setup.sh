@@ -41,7 +41,7 @@ END
 
     for d in always none ; do
 
-        cat <<END > root/${SYSCONFDIR}/paludis-${c}-checks-${d}/environment.conf
+        cat <<END > root/${SYSCONFDIR}/paludis-${c}-checks-${d}/general.conf
 world = `pwd`/root/world-${c}
 END
 

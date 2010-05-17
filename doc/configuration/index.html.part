@@ -25,7 +25,7 @@
     and <code>.bash</code> dynamic configuration files.</li>
     <li><a href="specs.html">Dependency specifications</a> in general.</li>
     <li><a href="specpath.html">specpath.conf</a>, and where Paludis looks for configuration files.</li>
-    <li><a href="environment.html">environment.conf</a>: for environment options.</li>
+    <li><a href="general.html">general.conf</a>: for general options.</li>
     <li><a href="keywords.html">keywords.conf or platforms.conf</a>: for keywords or platforms.</li>
     <li><a href="use.html">use.conf or options.conf</a>: for USE flags or options.</li>
     <li><a href="licenses.html">licenses.conf or licences.conf</a>: for licence filtering.</li>

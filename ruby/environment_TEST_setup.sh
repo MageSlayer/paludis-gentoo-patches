@@ -43,7 +43,7 @@ cat <<END > home/.paludis/mirrors.conf
 testmirror http://c
 END
 
-cat <<END > home/.paludis/environment.conf
+cat <<END > home/.paludis/general.conf
 world = /dev/null
 END
 

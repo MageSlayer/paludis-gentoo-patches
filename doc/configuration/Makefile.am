@@ -17,8 +17,8 @@ CLEANFILES += \
 	fetchlist \
 	specpath.html \
 	specpath.html.part \
-	environment.html \
-	environment.html.part \
+	general.html \
+	general.html.part \
 	keywords.html \
 	keywords.html.part \
 	packagemask.html \
@@ -44,7 +44,7 @@ EXTRA_DIST = \
 	fetchers.html.part.in \
 	envvars.html.part \
 	specpath.html.part.in \
-	environment.html.part.in \
+	general.html.part.in \
 	keywords.html.part.in \
 	packagemask.html.part.in \
 	licenses.html.part.in \
@@ -65,7 +65,7 @@ paludisconfigurationhtml_DATA = \
 	fetchers.html \
 	envvars.html \
 	specpath.html \
-	environment.html \
+	general.html \
 	keywords.html \
 	packagemask.html \
 	mirrors.html \
@@ -149,11 +149,11 @@ specpath.html.part : $(srcdir)/specpath.html.part.in $(srcdir)/paludisenvironmen
 	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
 	    < $(srcdir)/specpath.html.part.in > specpath.html.part
 
-environment.html.part : $(srcdir)/environment.html.part.in $(srcdir)/paludisenvironmentonly.html.part
+general.html.part : $(srcdir)/general.html.part.in $(srcdir)/paludisenvironmentonly.html.part
 	sed \
 	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
 	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
-	    < $(srcdir)/environment.html.part.in > environment.html.part
+	    < $(srcdir)/general.html.part.in > general.html.part
 
 keywords.html.part : $(srcdir)/keywords.html.part.in $(srcdir)/paludisenvironmentonly.html.part
 	sed \
@@ -203,8 +203,8 @@ fetchers.html.part : $(srcdir)/fetchers.html.part.in fetchlist
 	    -e 's,###FETCHERS###,,g' \
 	    < $(srcdir)/fetchers.html.part.in > fetchers.html.part
 
-environment.html : header.html.part environment.html.part footer.html.part
-	cat header.html.part environment.html.part footer.html.part > $@
+general.html : header.html.part general.html.part footer.html.part
+	cat header.html.part general.html.part footer.html.part > $@
 
 keywords.html : header.html.part keywords.html.part footer.html.part
 	cat header.html.part keywords.html.part footer.html.part > $@

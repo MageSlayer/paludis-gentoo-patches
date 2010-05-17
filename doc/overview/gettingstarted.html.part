@@ -45,7 +45,7 @@ another filesystem root).</p>
 <p>By default, will be unable to use packages that use EAPIs that Portage does not support. The packages in the Paludis
 overlay fall into this category.  You may override this by setting the <code>PALUDIS_IGNORE_BREAKS_PORTAGE</code>
 in <code>make.conf</code>; the allowed values are the same as for the <code>accept_breaks_portage</code>
-key in Paludis's <a href="../configuration/environment.html"><code>environment.conf</code></a>,
+key in Paludis's <a href="../configuration/general.html"><code>general.conf</code></a>,
 except that the default is an empty string.</p>
 
 <p>Next, proceed to <a href="#testing">Testing a configuration</a>.</p>
@@ -88,9 +88,9 @@ should usually be <code>/etc</code>:</p>
 mkdir -p /etc/paludis/repositories
 </pre>
 
-<h3>environment.conf</h3>
+<h3>general.conf</h3>
 
-<p>The file <code>/etc/paludis/environment.conf</code> must, at minimum, specify the location of the world file
+<p>The file <code>/etc/paludis/general.conf</code> must, at minimum, specify the location of the world file
 (other options are described elsewhere in the documentation).  The usual location for Paludis on Gentoo and
 Gentoo-derived systems is:</p>
 

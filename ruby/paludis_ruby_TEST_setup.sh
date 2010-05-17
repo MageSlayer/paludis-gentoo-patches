@@ -37,7 +37,7 @@ cat <<END > home/.paludis/licenses.conf
 */* *
 END
 
-cat <<END > home/.paludis/environment.conf
+cat <<END > home/.paludis/general.conf
 world = `pwd`/world
 END
 

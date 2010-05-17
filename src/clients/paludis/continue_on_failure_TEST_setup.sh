@@ -24,7 +24,7 @@ cat <<END > root/${SYSCONFDIR}/paludis/keywords.conf
 */* test
 END
 
-cat <<END > root/${SYSCONFDIR}/paludis/environment.conf
+cat <<END > root/${SYSCONFDIR}/paludis/general.conf
 world = `pwd`/root/world
 END
 

@@ -190,8 +190,8 @@ namespace paludis
         mutable std::tr1::shared_ptr<uid_t> reduced_uid;
         mutable std::tr1::shared_ptr<gid_t> reduced_gid;
 
-        mutable Mutex environment_conf_mutex;
-        mutable bool has_environment_conf;
+        mutable Mutex general_conf_mutex;
+        mutable bool has_general_conf;
         mutable bool accept_all_breaks_portage;
         mutable Set<std::string> accept_breaks_portage;
         mutable std::string reduced_username;
@@ -200,7 +200,7 @@ namespace paludis
 
         Implementation(PaludisEnvironment * const);
 
-        void need_environment_conf() const;
+        void need_general_conf() const;
     };
 
     Implementation<PaludisConfig>::Implementation(PaludisEnvironment * e) :
@@ -215,7 +215,7 @@ namespace paludis
         package_unmask_conf(new PackageMaskConf(e)),
         mirrors_conf(new MirrorsConf(e)),
         output_conf(new OutputConf(e)),
-        has_environment_conf(false),
+        has_general_conf(false),
         accept_all_breaks_portage(false),
         reduced_username(getenv_with_default("PALUDIS_REDUCED_USERNAME", "paludisbuild")),
         commandline_environment(new Map<std::string, std::string>)
@@ -223,14 +223,14 @@ namespace paludis
     }
 
     void
-    Implementation<PaludisConfig>::need_environment_conf() const
+    Implementation<PaludisConfig>::need_general_conf() const
     {
-        Lock lock(environment_conf_mutex);
+        Lock lock(general_conf_mutex);
 
-        if (has_environment_conf)
+        if (has_general_conf)
             return;
 
-        Context context("When loading environment.conf:");
+        Context context("When loading general.conf:");
 
         std::tr1::shared_ptr<KeyValueConfigFile> kv;
         std::tr1::shared_ptr<FSEntry> world_file;
@@ -246,21 +246,21 @@ namespace paludis
                 std::tr1::placeholders::_1,
                 std::tr1::placeholders::_2);
 
-        if ((FSEntry(config_dir) / "environment.conf").exists())
+        if ((FSEntry(config_dir) / "general.conf").exists())
         {
             kv.reset(new KeyValueConfigFile(
-                FSEntry(config_dir) / "environment.conf",
+                FSEntry(config_dir) / "general.conf",
                 KeyValueConfigFileOptions(),
                 def_predefined,
                 &KeyValueConfigFile::no_transformation));
         }
-        else if ((FSEntry(config_dir) / "environment.bash").exists())
+        else if ((FSEntry(config_dir) / "general.bash").exists())
         {
             std::stringstream s;
-            Command cmd(Command("bash '" + stringify(FSEntry(config_dir) / "environment.bash") + "'")
+            Command cmd(Command("bash '" + stringify(FSEntry(config_dir) / "general.bash") + "'")
                     .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
                     .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-                    .with_stderr_prefix("environment.bash> ")
+                    .with_stderr_prefix("general.bash> ")
                     .with_captured_stdout_stream(&s));
             int exit_status(run_command(cmd));
             kv.reset(new KeyValueConfigFile(
@@ -271,16 +271,55 @@ namespace paludis
 
             if (exit_status != 0)
             {
-                Log::get_instance()->message("paludis_environment.environment_bash.failure", ll_warning, lc_context)
-                    << "Script '" << (FSEntry(config_dir) / "environment.bash") <<
+                Log::get_instance()->message("paludis_environment.general.bash.failure", ll_warning, lc_context)
+                    << "Script '" << (FSEntry(config_dir) / "general.bash") <<
+                    "' returned non-zero exit status '" << exit_status << "'";
+                kv.reset();
+            }
+        }
+        else if ((FSEntry(config_dir) / "environment.conf").exists())
+        {
+            Log::get_instance()->message("paludis_environment.general.rename", ll_warning, lc_context)
+                << "The file '" << (FSEntry(config_dir) / "environment.conf") << "' should be renamed to '"
+                << (FSEntry(config_dir) / "general.conf") << "'.";
+
+            kv.reset(new KeyValueConfigFile(
+                FSEntry(config_dir) / "environment.conf",
+                KeyValueConfigFileOptions(),
+                def_predefined,
+                &KeyValueConfigFile::no_transformation));
+        }
+        else if ((FSEntry(config_dir) / "general.bash").exists())
+        {
+            Log::get_instance()->message("paludis_environment.general.rename", ll_warning, lc_context)
+                << "The file '" << (FSEntry(config_dir) / "environment.bash") << "' should be renamed to '"
+                << (FSEntry(config_dir) / "general.bash") << "'.";
+
+            std::stringstream s;
+            Command cmd(Command("bash '" + stringify(FSEntry(config_dir) / "general.bash") + "'")
+                    .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+                    .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+                    .with_stderr_prefix("general.bash> ")
+                    .with_captured_stdout_stream(&s));
+            int exit_status(run_command(cmd));
+            kv.reset(new KeyValueConfigFile(
+                s,
+                KeyValueConfigFileOptions(),
+                def_predefined,
+                &KeyValueConfigFile::no_transformation));
+
+            if (exit_status != 0)
+            {
+                Log::get_instance()->message("paludis_environment.general.bash.failure", ll_warning, lc_context)
+                    << "Script '" << (FSEntry(config_dir) / "general.bash") <<
                     "' returned non-zero exit status '" << exit_status << "'";
                 kv.reset();
             }
         }
         else
         {
-            Log::get_instance()->message("paludis_environment.no_environment_conf", ll_debug, lc_context)
-                << "No environment.conf or environment.bash in '" << config_dir << "'";
+            Log::get_instance()->message("paludis_environment.no_general_conf", ll_debug, lc_context)
+                << "No general.conf or general.bash in '" << config_dir << "'";
             std::stringstream str;
             kv.reset(new KeyValueConfigFile(
                 str,
@@ -320,11 +359,11 @@ namespace paludis
         if (! world_file)
             Log::get_instance()->message("paludis_environment.world.no_world", ll_warning, lc_context)
                 << "No world file specified. You should specify 'world = /path/to/world/file' in "
-                << (FSEntry(config_dir) / "environment.conf")
+                << (FSEntry(config_dir) / "general.conf")
                 << ". Any attempted updates to world will not be saved.";
         world.reset(new World(env, world_file));
 
-        has_environment_conf = true;
+        has_general_conf = true;
     }
 
     template <>
@@ -938,7 +977,7 @@ std::string
 PaludisConfig::reduced_username() const
 {
     Context context("When determining reduced username:");
-    _imp->need_environment_conf();
+    _imp->need_general_conf();
 
     Log::get_instance()->message("paludis_environment.reduced_username", ll_debug, lc_context)
         << "Reduced username is '" << _imp->reduced_username << "'";
@@ -949,7 +988,7 @@ PaludisConfig::reduced_username() const
 bool
 PaludisConfig::accept_all_breaks_portage() const
 {
-    _imp->need_environment_conf();
+    _imp->need_general_conf();
 
     return _imp->accept_all_breaks_portage;
 }
@@ -957,7 +996,7 @@ PaludisConfig::accept_all_breaks_portage() const
 const Set<std::string> &
 PaludisConfig::accept_breaks_portage() const
 {
-    _imp->need_environment_conf();
+    _imp->need_general_conf();
 
     return _imp->accept_breaks_portage;
 }
@@ -1007,7 +1046,7 @@ PaludisConfig::mirrors_conf() const
 std::tr1::shared_ptr<const World>
 PaludisConfig::world() const
 {
-    _imp->need_environment_conf();
+    _imp->need_general_conf();
     return _imp->world;
 }
 
@@ -1019,7 +1058,7 @@ PaludisConfig::distribution() const
     if (! _imp->distribution.empty())
         return _imp->distribution;
 
-    _imp->need_environment_conf();
+    _imp->need_general_conf();
 
     if (_imp->distribution.empty())
         _imp->distribution = getenv_with_default("PALUDIS_DISTRIBUTION", DEFAULT_DISTRIBUTION);

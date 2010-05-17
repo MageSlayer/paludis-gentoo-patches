@@ -29,7 +29,7 @@ cat <<END > home/.paludis/licenses.conf
 */* *
 END
 
-cat <<END > home/.paludis/environment.conf
+cat <<END > home/.paludis/general.conf
 world = /dev/null
 END
 

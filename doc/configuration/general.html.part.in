@@ -1,12 +1,11 @@
 <!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
 
-<h1>environment.conf</h1>
+<h1>general.conf</h1>
 
 ###PALUDISENVIRONMENTONLY###
 
-<p>The <code>environment.conf</code> file can be used to control general environment settings. It is a standard
-key=value configuration file, and may optionally be in bash format. This file overwrites the key=value sets from the
-commandline given in --environment(-E). Recognised keys are as follows:</p>
+<p>The <code>general.conf</code> file can be used to control general settings. It is a standard key=value configuration
+file, and may optionally be in bash format.</p>
 
 <dl>
     <dt><code>world</code></dt>

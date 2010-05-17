@@ -5,7 +5,7 @@ SUBDIRS =
 AUTOMAKE_OPTIONS = 1.11 parallel-tests
 
 vimscripts = \
-	paludis-environment-conf.vim \
+	paludis-general-conf.vim \
 	paludis-keywords-conf.vim \
 	paludis-licenses-conf.vim \
 	paludis-mirrors-conf.vim \

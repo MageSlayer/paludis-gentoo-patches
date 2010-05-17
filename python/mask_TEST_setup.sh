@@ -83,7 +83,7 @@ cat <<END > home/.paludis/keywords.conf
 */* test
 END
 
-cat <<END > home/.paludis/environment.conf
+cat <<END > home/.paludis/general.conf
 world = /dev/null
 END
 

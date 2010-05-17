@@ -59,7 +59,7 @@ the exheres repository format.</p>
     and <code>.bash</code> dynamic configuration files.</li>
     <li><a href="configuration/specs.html">Dependency specifications</a> in general.</li>
     <li><a href="configuration/specpath.html">specpath.conf</a>, and where Paludis looks for configuration files.</li>
-    <li><a href="configuration/environment.html">environment.conf</a>: for environment options.</li>
+    <li><a href="configuration/general.html">general.conf</a>: for general options.</li>
     <li><a href="configuration/keywords.html">keywords.conf or platforms.conf</a>: for keywords or platforms.</li>
     <li><a href="configuration/use.html">use.conf or options.conf</a>: for USE flags or options.</li>
     <li><a href="configuration/licenses.html">licenses.conf or licences.conf</a>: for licence filtering.</li>

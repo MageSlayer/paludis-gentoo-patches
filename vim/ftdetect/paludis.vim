@@ -11,8 +11,8 @@ if &compatible || v:version < 700
     finish
 endif
 
-au BufNewFile,BufRead environment.conf
-    \     set filetype=paludis-environment-conf
+au BufNewFile,BufRead general.conf
+    \     set filetype=paludis-general-conf
 
 au BufNewFile,BufRead keywords.conf
     \     set filetype=paludis-keywords-conf

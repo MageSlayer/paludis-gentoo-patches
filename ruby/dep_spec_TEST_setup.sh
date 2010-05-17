@@ -15,7 +15,7 @@ profiles = \${location}/profiles/testprofile
 builddir = `pwd`
 END
 
-cat <<END > home/.paludis/environment.conf
+cat <<END > home/.paludis/general.conf
 world = /dev/null
 END
 
