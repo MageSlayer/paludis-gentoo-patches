@@ -77,7 +77,7 @@ namespace paludis
             void _load_atom_file(const FSEntry &, I_, const std::string &, const bool);
 
             void _add_string_to_world(const std::string &) const;
-            void _remove_string_from_world(const std::string &) const;
+            bool _remove_string_from_world(const std::string &) const;
 
         protected:
             virtual void need_keys_added() const;

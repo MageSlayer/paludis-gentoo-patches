@@ -67,3 +67,15 @@ cat <<"END" > known_use_expand_names/${SYSCONFDIR}/portage/package.use
 cat-one/pkg-one -foo_cards_two foo_cards_three
 END
 
+mkdir -p world/{${SYSCONFDIR},var/lib/portage}
+ln -s $(pwd )/profile world/${SYSCONFDIR}/make.profile
+cat <<END > world/${SYSCONFDIR}/make.conf
+PORTDIR="`pwd`/repo"
+END
+cat <<END > world/var/lib/portage/world
+cat/unchanged
+cat/before
+cat/alsounchanged
+END
+
+

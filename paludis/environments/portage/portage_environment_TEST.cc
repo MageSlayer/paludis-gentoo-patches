@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,14 +17,13 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "portage_environment.hh"
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
+#include <paludis/environments/portage/portage_environment.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <paludis/package_id.hh>
 #include <paludis/package_database.hh>
 #include <paludis/dep_spec.hh>
@@ -36,6 +35,8 @@
 #include <paludis/selection.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/choice.hh>
+#include <test/test_runner.hh>
+#include <test/test_framework.hh>
 
 using namespace paludis;
 using namespace test;
@@ -185,5 +186,28 @@ namespace test_cases
             TEST_CHECK(! accept_keyword(env, KeywordName("foo"), *id5));
         }
     } test_accept_keywords;
+
+    struct TestWorldUpdates : TestCase
+    {
+        TestWorldUpdates() : TestCase("world updates") { }
+
+        void run()
+        {
+            TestPortageEnvironment env("portage_environment_TEST_dir/world");
+            FSEntry w(FSEntry::cwd() / "portage_environment_TEST_dir" / "world" / "var" / "lib" / "portage" / "world");
+
+            env.update_config_files_for_package_move(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
+                    .package(QualifiedPackageName("cat/before")),
+                    QualifiedPackageName("cat/after"));
+
+            SafeIFStream f(w);
+            std::string ff((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+            TEST_CHECK_EQUAL(ff,
+                    "cat/unchanged\n"
+                    "cat/alsounchanged\n"
+                    "cat/after\n"
+                    );
+        }
+    } world_updates_test;
 }
 

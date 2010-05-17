@@ -120,7 +120,7 @@ namespace paludis
             done_hooks(false),
             overlay_importance(10),
             package_database(new PackageDatabase(e)),
-            world_file("/var/lib/portage/world"),
+            world_file(s + "/var/lib/portage/world"),
             format_key(new LiteralMetadataValueKey<std::string>("format", "Format", mkt_significant, "portage")),
             config_location_key(new LiteralMetadataValueKey<FSEntry>("conf_dir", "Config dir", mkt_normal,
                         conf_dir)),
@@ -929,12 +929,13 @@ PortageEnvironment::_add_string_to_world(const std::string & s) const
     world.rewrite();
 }
 
-void
+bool
 PortageEnvironment::_remove_string_from_world(const std::string & s) const
 {
     Lock l(_imp->world_mutex);
 
     Context context("When removing '" + s + "' from world file '" + stringify(_imp->world_file) + "':");
+    bool result(false);
 
     using namespace std::tr1::placeholders;
 
@@ -950,9 +951,18 @@ PortageEnvironment::_remove_string_from_world(const std::string & s) const
                 value_for<n::type>(sft_simple)
                 ));
 
-        world.remove(s);
+        result = world.remove(s);
         world.rewrite();
     }
+
+    return result;
+}
+
+void
+PortageEnvironment::update_config_files_for_package_move(const PackageDepSpec & s, const QualifiedPackageName & n) const
+{
+    if (_remove_string_from_world(stringify(s)))
+        _add_string_to_world(stringify(PartiallyMadePackageDepSpec(s).package(n)));
 }
 
 void
@@ -1018,10 +1028,5 @@ const std::tr1::shared_ptr<Repository>
 PortageEnvironment::repository_from_new_config_file(const FSEntry &)
 {
     throw InternalError(PALUDIS_HERE, "can't create repositories on the fly for PortageEnvironment");
-}
-
-void
-PortageEnvironment::update_config_files_for_package_move(const PackageDepSpec &, const QualifiedPackageName &) const
-{
 }
 
