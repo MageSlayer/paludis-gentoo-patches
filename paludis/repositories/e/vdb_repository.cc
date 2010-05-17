@@ -1588,6 +1588,15 @@ VDBRepository::perform_updates()
                     rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->value() / (*i)->suggested_dependencies_key()->raw_name(),
                             (*i)->suggested_dependencies_key(), dep_rewrites);
             }
+
+            std::cout << std::endl << "Updating configuration files" << std::endl;
+
+            for (DepRewrites::const_iterator i(dep_rewrites.begin()), i_end(dep_rewrites.end()) ;
+                    i != i_end ; ++i)
+                _imp->params.environment()->update_config_files_for_package_move(
+                        make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(i->first),
+                        i->second
+                        );
         }
 
         if (! failed)
