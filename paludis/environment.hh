@@ -409,7 +409,7 @@ namespace paludis
 
             ///\}
 
-            ///\name World functionality
+            ///\name World and configuration functionality
             ///\{
 
             /**
@@ -431,6 +431,16 @@ namespace paludis
              * Remove this set from world, if it is present.
              */
             virtual void remove_from_world(const SetName &) const = 0;
+
+            /**
+             * Where possible, update configuration files with the first spec to use the second package name.
+             *
+             * Does not necessarily invalidate any in-memory configuration.
+             *
+             * \since 0.48
+             */
+            virtual void update_config_files_for_package_move(
+                    const PackageDepSpec &, const QualifiedPackageName &) const = 0;
 
             ///\}
 

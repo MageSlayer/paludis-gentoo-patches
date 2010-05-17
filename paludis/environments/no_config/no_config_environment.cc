@@ -614,4 +614,8 @@ NoConfigEnvironment::repository_from_new_config_file(const FSEntry &)
     throw InternalError(PALUDIS_HERE, "can't create repositories on the fly for NoConfigEnvironment");
 }
 
+void
+NoConfigEnvironment::update_config_files_for_package_move(const PackageDepSpec &, const QualifiedPackageName &) const
+{
+}
 

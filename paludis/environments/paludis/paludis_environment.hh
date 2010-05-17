@@ -169,6 +169,9 @@ namespace paludis
 
             virtual const std::tr1::shared_ptr<Repository> repository_from_new_config_file(
                     const FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual void update_config_files_for_package_move(
+                    const PackageDepSpec &, const QualifiedPackageName &) const;
     };
 }
 #endif

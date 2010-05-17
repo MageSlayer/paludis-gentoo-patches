@@ -563,3 +563,8 @@ PaludisEnvironment::repository_from_new_config_file(const FSEntry & f)
     return RepositoryFactory::get_instance()->create(this, repo_func);
 }
 
+void
+PaludisEnvironment::update_config_files_for_package_move(const PackageDepSpec &, const QualifiedPackageName &) const
+{
+}
+

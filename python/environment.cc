@@ -443,6 +443,12 @@ class EnvironmentImplementationWrapper :
         {
             throw PythonMethodNotImplemented("EnvironmentImplementation", "repository_from_new_config_file");
         }
+
+        virtual void update_config_files_for_package_move(
+                const PackageDepSpec &, const QualifiedPackageName &) const
+        {
+            throw PythonMethodNotImplemented("EnvironmentImplementation", "update_config_files_for_package_move");
+        }
 };
 
 struct NoConfigEnvironmentWrapper :
