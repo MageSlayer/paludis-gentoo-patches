@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -127,16 +127,17 @@ World::_add_string_to_world(const std::string & n) const
     world.rewrite();
 }
 
-void
+bool
 World::_remove_string_from_world(const std::string & n) const
 {
     using namespace std::tr1::placeholders;
+    bool result(false);
 
     if (! _imp->maybe_world_file)
     {
         Log::get_instance()->message("paludis_environment.world.no_world", ll_warning, lc_context)
             << "Not removing '" << n << "' from world because no world file has been configured";
-        return;
+        return result;
     }
 
     Lock l(_imp->mutex);
@@ -154,9 +155,18 @@ World::_remove_string_from_world(const std::string & n) const
                 value_for<n::type>(sft_simple)
                 ));
 
-        world.remove(n);
+        result = world.remove(n);
         world.rewrite();
     }
+
+    return result;
+}
+
+void
+World::update_config_files_for_package_move(const PackageDepSpec & s, const QualifiedPackageName & n) const
+{
+    if (_remove_string_from_world(stringify(s)))
+        _add_string_to_world(stringify(PartiallyMadePackageDepSpec(s).package(n)));
 }
 
 const std::tr1::shared_ptr<const SetSpecTree>

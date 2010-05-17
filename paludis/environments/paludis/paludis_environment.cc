@@ -564,7 +564,8 @@ PaludisEnvironment::repository_from_new_config_file(const FSEntry & f)
 }
 
 void
-PaludisEnvironment::update_config_files_for_package_move(const PackageDepSpec &, const QualifiedPackageName &) const
+PaludisEnvironment::update_config_files_for_package_move(const PackageDepSpec & s, const QualifiedPackageName & n) const
 {
+    _imp->config->world()->update_config_files_for_package_move(s, n);
 }
 
