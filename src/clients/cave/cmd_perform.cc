@@ -382,7 +382,7 @@ PerformCommand::run(
 
         OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         ConfigActionOptions options(make_named_values<ConfigActionOptions>(
-                    value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
+                    n::make_output_manager() = std::tr1::ref(output_manager_holder)
                     ));
         ConfigAction config_action(options);
         execute(env, cmdline, id, action, config_action);
@@ -395,14 +395,14 @@ PerformCommand::run(
         OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         WantInstallPhase want_phase(cmdline, output_manager_holder);
         FetchActionOptions options(make_named_values<FetchActionOptions>(
-                    value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
-                    value_for<n::exclude_unmirrorable>(cmdline.a_exclude_unmirrorable.specified()),
-                    value_for<n::fetch_parts>(parts),
-                    value_for<n::ignore_not_in_manifest>(false),
-                    value_for<n::ignore_unfetched>(cmdline.a_ignore_unfetched.specified()),
-                    value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),
-                    value_for<n::safe_resume>(true),
-                    value_for<n::want_phase>(want_phase)
+                    n::errors() = make_shared_ptr(new Sequence<FetchActionFailure>),
+                    n::exclude_unmirrorable() = cmdline.a_exclude_unmirrorable.specified(),
+                    n::fetch_parts() = parts,
+                    n::ignore_not_in_manifest() = false,
+                    n::ignore_unfetched() = cmdline.a_ignore_unfetched.specified(),
+                    n::make_output_manager() = std::tr1::ref(output_manager_holder),
+                    n::safe_resume() = true,
+                    n::want_phase() = want_phase
                     ));
         FetchAction fetch_action(options);
         execute(env, cmdline, id, action, fetch_action);
@@ -414,14 +414,14 @@ PerformCommand::run(
 
         OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         FetchActionOptions options(make_named_values<FetchActionOptions>(
-                    value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
-                    value_for<n::exclude_unmirrorable>(cmdline.a_exclude_unmirrorable.specified()),
-                    value_for<n::fetch_parts>(parts),
-                    value_for<n::ignore_not_in_manifest>(false),
-                    value_for<n::ignore_unfetched>(cmdline.a_ignore_unfetched.specified()),
-                    value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),
-                    value_for<n::safe_resume>(true),
-                    value_for<n::want_phase>(std::tr1::bind(return_literal_function(wp_yes)))
+                    n::errors() = make_shared_ptr(new Sequence<FetchActionFailure>),
+                    n::exclude_unmirrorable() = cmdline.a_exclude_unmirrorable.specified(),
+                    n::fetch_parts() = parts,
+                    n::ignore_not_in_manifest() = false,
+                    n::ignore_unfetched() = cmdline.a_ignore_unfetched.specified(),
+                    n::make_output_manager() = std::tr1::ref(output_manager_holder),
+                    n::safe_resume() = true,
+                    n::want_phase() = std::tr1::bind(return_literal_function(wp_yes))
                     ));
         OurPretendFetchAction pretend_fetch_action(options);
         execute(env, cmdline, id, action, pretend_fetch_action);
@@ -443,7 +443,7 @@ PerformCommand::run(
 
         OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         InfoActionOptions options(make_named_values<InfoActionOptions>(
-                    value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
+                    n::make_output_manager() = std::tr1::ref(output_manager_holder)
                     ));
         InfoAction info_action(options);
         execute(env, cmdline, id, action, info_action);
@@ -478,14 +478,14 @@ PerformCommand::run(
         OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         WantInstallPhase want_phase(cmdline, output_manager_holder);
         InstallActionOptions options(make_named_values<InstallActionOptions>(
-                    value_for<n::destination>(destination),
-                    value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),
-                    value_for<n::perform_uninstall>(std::tr1::bind(&perform_uninstall,
+                    n::destination() = destination,
+                    n::make_output_manager() = std::tr1::ref(output_manager_holder),
+                    n::perform_uninstall() = std::tr1::bind(&perform_uninstall,
                             env, std::tr1::cref(cmdline), std::tr1::placeholders::_1,
                             action, std::tr1::placeholders::_2
-                            )),
-                    value_for<n::replacing>(replacing),
-                    value_for<n::want_phase>(want_phase)
+                            ),
+                    n::replacing() = replacing,
+                    n::want_phase() = want_phase
                     ));
         InstallAction install_action(options);
         execute(env, cmdline, id, action, install_action);
@@ -497,7 +497,7 @@ PerformCommand::run(
 
         OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         PretendActionOptions options(make_named_values<PretendActionOptions>(
-                    value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
+                    n::make_output_manager() = std::tr1::ref(output_manager_holder)
                     ));
         PretendAction pretend_action(options);
         execute(env, cmdline, id, action, pretend_action);
@@ -511,11 +511,11 @@ PerformCommand::run(
 
         OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         UninstallActionOptions options(make_named_values<UninstallActionOptions>(
-                    value_for<n::config_protect>(cmdline.a_config_protect.argument()),
-                    value_for<n::if_for_install_id>(make_null_shared_ptr()),
-                    value_for<n::ignore_for_unmerge>(&ignore_nothing),
-                    value_for<n::is_overwrite>(false),
-                    value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
+                    n::config_protect() = cmdline.a_config_protect.argument(),
+                    n::if_for_install_id() = make_null_shared_ptr(),
+                    n::ignore_for_unmerge() = &ignore_nothing,
+                    n::is_overwrite() = false,
+                    n::make_output_manager() = std::tr1::ref(output_manager_holder)
                     ));
         UninstallAction uninstall_action(options);
         execute(env, cmdline, id, action, uninstall_action);

@@ -243,18 +243,18 @@ RangeRewriter::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & 
 
     const PackageDepSpec & a(*node.spec());
     if (! package_dep_spec_has_properties(a, make_named_values<PackageDepSpecProperties>(
-                    value_for<n::has_additional_requirements>(false),
-                    value_for<n::has_category_name_part>(false),
-                    value_for<n::has_from_repository>(false),
-                    value_for<n::has_in_repository>(false),
-                    value_for<n::has_installable_to_path>(false),
-                    value_for<n::has_installable_to_repository>(false),
-                    value_for<n::has_installed_at_path>(false),
-                    value_for<n::has_package>(true),
-                    value_for<n::has_package_name_part>(false),
-                    value_for<n::has_slot_requirement>(false),
-                    value_for<n::has_tag>(indeterminate),
-                    value_for<n::has_version_requirements>(true)
+                    n::has_additional_requirements() = false,
+                    n::has_category_name_part() = false,
+                    n::has_from_repository() = false,
+                    n::has_in_repository() = false,
+                    n::has_installable_to_path() = false,
+                    n::has_installable_to_repository() = false,
+                    n::has_installed_at_path() = false,
+                    n::has_package() = true,
+                    n::has_package_name_part() = false,
+                    n::has_slot_requirement() = false,
+                    n::has_tag() = indeterminate,
+                    n::has_version_requirements() = true
                     )))
     {
         _imp->invalid = true;

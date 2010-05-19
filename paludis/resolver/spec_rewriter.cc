@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -110,7 +110,7 @@ SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::tr1
             return make_null_shared_ptr();
 
         const std::tr1::shared_ptr<RewrittenSpec> result(new RewrittenSpec(make_named_values<RewrittenSpec>(
-                        value_for<n::specs>(make_shared_ptr(new Sequence<PackageOrBlockDepSpec>))
+                        n::specs() = make_shared_ptr(new Sequence<PackageOrBlockDepSpec>)
                         )));
 
         for (std::set<QualifiedPackageName>::const_iterator n(r->second.begin()), n_end(r->second.end()) ;
@@ -130,7 +130,7 @@ SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::tr1
             return make_null_shared_ptr();
 
         const std::tr1::shared_ptr<RewrittenSpec> result(new RewrittenSpec(make_named_values<RewrittenSpec>(
-                        value_for<n::specs>(make_shared_ptr(new Sequence<PackageOrBlockDepSpec>))
+                        n::specs() = make_shared_ptr(new Sequence<PackageOrBlockDepSpec>)
                         )));
 
         for (std::set<QualifiedPackageName>::const_iterator n(r->second.begin()), n_end(r->second.end()) ;

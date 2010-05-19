@@ -488,16 +488,16 @@ AccountsID::perform_action(Action & action) const
             {
                 (*install_action->options.destination()).destination_interface()->merge(
                         make_named_values<MergeParams>(
-                            value_for<n::build_start_time>(build_start_time),
-                            value_for<n::environment_file>(FSEntry("/dev/null")),
-                            value_for<n::image_dir>(fs_location_key()->value()),
-                            value_for<n::merged_entries>(make_shared_ptr(new FSEntrySet)),
-                            value_for<n::options>(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs),
-                            value_for<n::output_manager>(output_manager),
-                            value_for<n::package_id>(shared_from_this()),
-                            value_for<n::perform_uninstall>(install_action->options.perform_uninstall()),
-                            value_for<n::used_this_for_config_protect>(std::tr1::bind(
-                                    &used_this_for_config_protect, std::tr1::ref(used_config_protect), std::tr1::placeholders::_1))
+                            n::build_start_time() = build_start_time,
+                            n::environment_file() = FSEntry("/dev/null"),
+                            n::image_dir() = fs_location_key()->value(),
+                            n::merged_entries() = make_shared_ptr(new FSEntrySet),
+                            n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
+                            n::output_manager() = output_manager,
+                            n::package_id() = shared_from_this(),
+                            n::perform_uninstall() = install_action->options.perform_uninstall(),
+                            n::used_this_for_config_protect() = std::tr1::bind(
+                                &used_this_for_config_protect, std::tr1::ref(used_config_protect), std::tr1::placeholders::_1)
                             ));
             }
             break;
@@ -522,11 +522,11 @@ AccountsID::perform_action(Action & action) const
         else
         {
             UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
-                        value_for<n::config_protect>(used_config_protect),
-                        value_for<n::if_for_install_id>(shared_from_this()),
-                        value_for<n::ignore_for_unmerge>(&ignore_nothing),
-                        value_for<n::is_overwrite>(false),
-                        value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, output_manager, std::tr1::placeholders::_1))
+                        n::config_protect() = used_config_protect,
+                        n::if_for_install_id() = shared_from_this(),
+                        n::ignore_for_unmerge() = &ignore_nothing,
+                        n::is_overwrite() = false,
+                        n::make_output_manager() = std::tr1::bind(&this_output_manager, output_manager, std::tr1::placeholders::_1)
                         ));
             install_action->options.perform_uninstall()(*i, uo);
         }

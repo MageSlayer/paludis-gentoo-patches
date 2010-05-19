@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -75,16 +75,16 @@ namespace test_cases
             std::tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
                         RepositoryName("unpackaged"),
                         make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
-                            value_for<n::build_dependencies>(""),
-                            value_for<n::description>(""),
-                            value_for<n::environment>(&env),
-                            value_for<n::install_under>(FSEntry("/")),
-                            value_for<n::location>(FSEntry("unpackaged_repository_TEST_dir/pkg")),
-                            value_for<n::name>(QualifiedPackageName("cat/pkg")),
-                            value_for<n::rewrite_ids_over_to_root>(-1),
-                            value_for<n::run_dependencies>(""),
-                            value_for<n::slot>(SlotName("foo")),
-                            value_for<n::version>(VersionSpec("1.0", VersionSpecOptions()))
+                            n::build_dependencies() = "",
+                            n::description() = "",
+                            n::environment() = &env,
+                            n::install_under() = FSEntry("/"),
+                            n::location() = FSEntry("unpackaged_repository_TEST_dir/pkg"),
+                            n::name() = QualifiedPackageName("cat/pkg"),
+                            n::rewrite_ids_over_to_root() = -1,
+                            n::run_dependencies() = "",
+                            n::slot() = SlotName("foo"),
+                            n::version() = VersionSpec("1.0", VersionSpecOptions())
                             )));
             env.package_database()->add_repository(1, repo);
 
@@ -105,16 +105,16 @@ namespace test_cases
             std::tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
                         RepositoryName("unpackaged"),
                         make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
-                            value_for<n::build_dependencies>(""),
-                            value_for<n::description>(""),
-                            value_for<n::environment>(&env),
-                            value_for<n::install_under>(FSEntry("/")),
-                            value_for<n::location>(FSEntry("unpackaged_repository_TEST_dir/pkg")),
-                            value_for<n::name>(QualifiedPackageName("cat/pkg")),
-                            value_for<n::rewrite_ids_over_to_root>(-1),
-                            value_for<n::run_dependencies>(""),
-                            value_for<n::slot>(SlotName("foo")),
-                            value_for<n::version>(VersionSpec("1.0", VersionSpecOptions()))
+                            n::build_dependencies() = "",
+                            n::description() = "",
+                            n::environment() = &env,
+                            n::install_under() = FSEntry("/"),
+                            n::location() = FSEntry("unpackaged_repository_TEST_dir/pkg"),
+                            n::name() = QualifiedPackageName("cat/pkg"),
+                            n::rewrite_ids_over_to_root() = -1,
+                            n::run_dependencies() = "",
+                            n::slot() = SlotName("foo"),
+                            n::version() = VersionSpec("1.0", VersionSpecOptions())
                         )));
             env.package_database()->add_repository(1, repo);
 
@@ -140,16 +140,16 @@ namespace test_cases
             std::tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
                         RepositoryName("unpackaged"),
                         make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
-                            value_for<n::build_dependencies>(""),
-                            value_for<n::description>(""),
-                            value_for<n::environment>(&env),
-                            value_for<n::install_under>(FSEntry("/")),
-                            value_for<n::location>(FSEntry("unpackaged_repository_TEST_dir/pkg")),
-                            value_for<n::name>(QualifiedPackageName("cat/pkg")),
-                            value_for<n::rewrite_ids_over_to_root>(-1),
-                            value_for<n::run_dependencies>(""),
-                            value_for<n::slot>(SlotName("foo")),
-                            value_for<n::version>(VersionSpec("1.0", VersionSpecOptions()))
+                            n::build_dependencies() = "",
+                            n::description() = "",
+                            n::environment() = &env,
+                            n::install_under() = FSEntry("/"),
+                            n::location() = FSEntry("unpackaged_repository_TEST_dir/pkg"),
+                            n::name() = QualifiedPackageName("cat/pkg"),
+                            n::rewrite_ids_over_to_root() = -1,
+                            n::run_dependencies() = "",
+                            n::slot() = SlotName("foo"),
+                            n::version() = VersionSpec("1.0", VersionSpecOptions())
                         )));
             env.package_database()->add_repository(1, repo);
 
@@ -170,16 +170,16 @@ namespace test_cases
             std::tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
                         RepositoryName("unpackaged"),
                         make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
-                            value_for<n::build_dependencies>(""),
-                            value_for<n::description>(""),
-                            value_for<n::environment>(&env),
-                            value_for<n::install_under>(FSEntry("/")),
-                            value_for<n::location>(FSEntry("unpackaged_repository_TEST_dir/pkg")),
-                            value_for<n::name>(QualifiedPackageName("cat/pkg")),
-                            value_for<n::rewrite_ids_over_to_root>(-1),
-                            value_for<n::run_dependencies>(""),
-                            value_for<n::slot>(SlotName("foo")),
-                            value_for<n::version>(VersionSpec("1.0", VersionSpecOptions()))
+                            n::build_dependencies() = "",
+                            n::description() = "",
+                            n::environment() = &env,
+                            n::install_under() = FSEntry("/"),
+                            n::location() = FSEntry("unpackaged_repository_TEST_dir/pkg"),
+                            n::name() = QualifiedPackageName("cat/pkg"),
+                            n::rewrite_ids_over_to_root() = -1,
+                            n::run_dependencies() = "",
+                            n::slot() = SlotName("foo"),
+                            n::version() = VersionSpec("1.0", VersionSpecOptions())
                         )));
             env.package_database()->add_repository(1, repo);
 
@@ -211,25 +211,25 @@ namespace test_cases
             std::tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
                         RepositoryName("unpackaged"),
                         make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
-                            value_for<n::build_dependencies>(""),
-                            value_for<n::description>(""),
-                            value_for<n::environment>(&env),
-                            value_for<n::install_under>(FSEntry("/")),
-                            value_for<n::location>(FSEntry("unpackaged_repository_TEST_dir/pkg")),
-                            value_for<n::name>(QualifiedPackageName("cat/pkg")),
-                            value_for<n::rewrite_ids_over_to_root>(-1),
-                            value_for<n::run_dependencies>(""),
-                            value_for<n::slot>(SlotName("foo")),
-                            value_for<n::version>(VersionSpec("1.0", VersionSpecOptions()))
+                            n::build_dependencies() = "",
+                            n::description() = "",
+                            n::environment() = &env,
+                            n::install_under() = FSEntry("/"),
+                            n::location() = FSEntry("unpackaged_repository_TEST_dir/pkg"),
+                            n::name() = QualifiedPackageName("cat/pkg"),
+                            n::rewrite_ids_over_to_root() = -1,
+                            n::run_dependencies() = "",
+                            n::slot() = SlotName("foo"),
+                            n::version() = VersionSpec("1.0", VersionSpecOptions())
                         )));
             env.package_database()->add_repository(1, repo);
 
             std::tr1::shared_ptr<Repository> installed_repo(new InstalledUnpackagedRepository(
                         RepositoryName("installed-unpackaged"),
                         make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::location>(FSEntry("unpackaged_repository_TEST_dir/installed")),
-                            value_for<n::root>(FSEntry("unpackaged_repository_TEST_dir/root"))
+                            n::environment() = &env,
+                            n::location() = FSEntry("unpackaged_repository_TEST_dir/installed"),
+                            n::root() = FSEntry("unpackaged_repository_TEST_dir/root")
                         )));
             env.package_database()->add_repository(0, installed_repo);
 
@@ -239,11 +239,11 @@ namespace test_cases
                     *env[selection::RequireExactlyOne(generator::All())]->begin());
 
             InstallAction action(make_named_values<InstallActionOptions>(
-                        value_for<n::destination>(installed_repo),
-                        value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::perform_uninstall>(&cannot_uninstall),
-                        value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
-                        value_for<n::want_phase>(&want_all_phases)
+                        n::destination() = installed_repo,
+                        n::make_output_manager() = &make_standard_output_manager,
+                        n::perform_uninstall() = &cannot_uninstall,
+                        n::replacing() = make_shared_ptr(new PackageIDSequence),
+                        n::want_phase() = &want_all_phases
                     ));
             id->perform_action(action);
 
@@ -267,25 +267,25 @@ namespace test_cases
             std::tr1::shared_ptr<Repository> repo(new UnpackagedRepository(
                         RepositoryName("unpackaged"),
                         make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
-                            value_for<n::build_dependencies>(""),
-                            value_for<n::description>(""),
-                            value_for<n::environment>(&env),
-                            value_for<n::install_under>(FSEntry("/magic/pixie")),
-                            value_for<n::location>(FSEntry("unpackaged_repository_TEST_dir/under_pkg")),
-                            value_for<n::name>(QualifiedPackageName("cat/pkg")),
-                            value_for<n::rewrite_ids_over_to_root>(-1),
-                            value_for<n::run_dependencies>(""),
-                            value_for<n::slot>(SlotName("foo")),
-                            value_for<n::version>(VersionSpec("1.0", VersionSpecOptions()))
+                            n::build_dependencies() = "",
+                            n::description() = "",
+                            n::environment() = &env,
+                            n::install_under() = FSEntry("/magic/pixie"),
+                            n::location() = FSEntry("unpackaged_repository_TEST_dir/under_pkg"),
+                            n::name() = QualifiedPackageName("cat/pkg"),
+                            n::rewrite_ids_over_to_root() = -1,
+                            n::run_dependencies() = "",
+                            n::slot() = SlotName("foo"),
+                            n::version() = VersionSpec("1.0", VersionSpecOptions())
                             )));
             env.package_database()->add_repository(1, repo);
 
             std::tr1::shared_ptr<Repository> installed_repo(new InstalledUnpackagedRepository(
                         RepositoryName("installed-unpackaged"),
                         make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::location>(FSEntry("unpackaged_repository_TEST_dir/under_installed")),
-                            value_for<n::root>(FSEntry("unpackaged_repository_TEST_dir/under_root"))
+                            n::environment() = &env,
+                            n::location() = FSEntry("unpackaged_repository_TEST_dir/under_installed"),
+                            n::root() = FSEntry("unpackaged_repository_TEST_dir/under_root")
                         )));
             env.package_database()->add_repository(0, installed_repo);
 
@@ -295,11 +295,11 @@ namespace test_cases
                     *env[selection::RequireExactlyOne(generator::All())]->begin());
 
             InstallAction action(make_named_values<InstallActionOptions>(
-                        value_for<n::destination>(installed_repo),
-                        value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::perform_uninstall>(&cannot_uninstall),
-                        value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
-                        value_for<n::want_phase>(&want_all_phases)
+                        n::destination() = installed_repo,
+                        n::make_output_manager() = &make_standard_output_manager,
+                        n::perform_uninstall() = &cannot_uninstall,
+                        n::replacing() = make_shared_ptr(new PackageIDSequence),
+                        n::want_phase() = &want_all_phases
                     ));
             id->perform_action(action);
 

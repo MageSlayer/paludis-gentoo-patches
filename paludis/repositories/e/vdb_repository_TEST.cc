@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -352,27 +352,27 @@ namespace test_cases
             env.package_database()->add_repository(0, vdb_repo);
 
             InstallAction install_action(make_named_values<InstallActionOptions>(
-                        value_for<n::destination>(vdb_repo),
-                        value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::perform_uninstall>(&do_uninstall),
-                        value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
-                        value_for<n::want_phase>(&want_all_phases)
+                        n::destination() = vdb_repo,
+                        n::make_output_manager() = &make_standard_output_manager,
+                        n::perform_uninstall() = &do_uninstall,
+                        n::replacing() = make_shared_ptr(new PackageIDSequence),
+                        n::want_phase() = &want_all_phases
                     ));
 
             UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
-                        value_for<n::config_protect>(""),
-                        value_for<n::if_for_install_id>(make_null_shared_ptr()),
-                        value_for<n::ignore_for_unmerge>(&ignore_nothing),
-                        value_for<n::is_overwrite>(false),
-                        value_for<n::make_output_manager>(&make_standard_output_manager)
+                        n::config_protect() = "",
+                        n::if_for_install_id() = make_null_shared_ptr(),
+                        n::ignore_for_unmerge() = &ignore_nothing,
+                        n::is_overwrite() = false,
+                        n::make_output_manager() = &make_standard_output_manager
                     ));
 
             InfoActionOptions info_action_options(make_named_values<InfoActionOptions>(
-                        value_for<n::make_output_manager>(&make_standard_output_manager)
+                        n::make_output_manager() = &make_standard_output_manager
                         ));
 
             ConfigActionOptions config_action_options(make_named_values<ConfigActionOptions>(
-                        value_for<n::make_output_manager>(&make_standard_output_manager)
+                        n::make_output_manager() = &make_standard_output_manager
                         ));
 
             InfoAction info_action(info_action_options);
@@ -482,27 +482,27 @@ namespace test_cases
             env.package_database()->add_repository(0, vdb_repo);
 
             InstallAction install_action(make_named_values<InstallActionOptions>(
-                        value_for<n::destination>(vdb_repo),
-                        value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::perform_uninstall>(&do_uninstall),
-                        value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
-                        value_for<n::want_phase>(&want_all_phases)
+                        n::destination() = vdb_repo,
+                        n::make_output_manager() = &make_standard_output_manager,
+                        n::perform_uninstall() = &do_uninstall,
+                        n::replacing() = make_shared_ptr(new PackageIDSequence),
+                        n::want_phase() = &want_all_phases
                     ));
 
             UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
-                        value_for<n::config_protect>(""),
-                        value_for<n::if_for_install_id>(make_null_shared_ptr()),
-                        value_for<n::ignore_for_unmerge>(&ignore_nothing),
-                        value_for<n::is_overwrite>(false),
-                        value_for<n::make_output_manager>(&make_standard_output_manager)
+                        n::config_protect() = "",
+                        n::if_for_install_id() = make_null_shared_ptr(),
+                        n::ignore_for_unmerge() = &ignore_nothing,
+                        n::is_overwrite() = false,
+                        n::make_output_manager() = &make_standard_output_manager
                     ));
 
             InfoActionOptions info_action_options(make_named_values<InfoActionOptions>(
-                        value_for<n::make_output_manager>(&make_standard_output_manager)
+                        n::make_output_manager() = &make_standard_output_manager
                         ));
 
             ConfigActionOptions config_action_options(make_named_values<ConfigActionOptions>(
-                        value_for<n::make_output_manager>(&make_standard_output_manager)
+                        n::make_output_manager() = &make_standard_output_manager
                         ));
 
             InfoAction info_action(info_action_options);
@@ -591,11 +591,11 @@ namespace test_cases
                         PackageDepSpec(parse_user_package_dep_spec(victim,
                                 &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
             InstallAction install_action(make_named_values<InstallActionOptions>(
-                        value_for<n::destination>(vdb_repo),
-                        value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::perform_uninstall>(&do_uninstall),
-                        value_for<n::replacing>(replacing),
-                        value_for<n::want_phase>(&want_all_phases)
+                        n::destination() = vdb_repo,
+                        n::make_output_manager() = &make_standard_output_manager,
+                        n::perform_uninstall() = &do_uninstall,
+                        n::replacing() = replacing,
+                        n::want_phase() = &want_all_phases
                     ));
             (*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec(chosen_one,
@@ -634,11 +634,11 @@ namespace test_cases
             env.package_database()->add_repository(0, vdb_repo);
 
             UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
-                        value_for<n::config_protect>(""),
-                        value_for<n::if_for_install_id>(make_null_shared_ptr()),
-                        value_for<n::ignore_for_unmerge>(&ignore_nothing),
-                        value_for<n::is_overwrite>(false),
-                        value_for<n::make_output_manager>(&make_standard_output_manager)
+                        n::config_protect() = "",
+                        n::if_for_install_id() = make_null_shared_ptr(),
+                        n::ignore_for_unmerge() = &ignore_nothing,
+                        n::is_overwrite() = false,
+                        n::make_output_manager() = &make_standard_output_manager
                     ));
 
             {
@@ -954,11 +954,11 @@ namespace test_cases
                         PackageDepSpec(parse_user_package_dep_spec(victim,
                                 &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
             InstallAction install_action(make_named_values<InstallActionOptions>(
-                        value_for<n::destination>(vdb_repo),
-                        value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::perform_uninstall>(&do_uninstall),
-                        value_for<n::replacing>(replacing),
-                        value_for<n::want_phase>(&want_all_phases)
+                        n::destination() = vdb_repo,
+                        n::make_output_manager() = &make_standard_output_manager,
+                        n::perform_uninstall() = &do_uninstall,
+                        n::replacing() = replacing,
+                        n::want_phase() = &want_all_phases
                     ));
             (*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec(chosen_one,
@@ -1013,11 +1013,11 @@ namespace test_cases
             env.package_database()->add_repository(0, vdb_repo);
 
             UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
-                        value_for<n::config_protect>(""),
-                        value_for<n::if_for_install_id>(make_null_shared_ptr()),
-                        value_for<n::ignore_for_unmerge>(&ignore_nothing),
-                        value_for<n::is_overwrite>(false),
-                        value_for<n::make_output_manager>(&make_standard_output_manager)
+                        n::config_protect() = "",
+                        n::if_for_install_id() = make_null_shared_ptr(),
+                        n::ignore_for_unmerge() = &ignore_nothing,
+                        n::is_overwrite() = false,
+                        n::make_output_manager() = &make_standard_output_manager
                     ));
 
             TEST_CHECK_EQUAL(read_file(provides_cache), "paludis-3\ninstalled\n");
@@ -1208,11 +1208,11 @@ namespace test_cases
             env.package_database()->add_repository(0, vdb_repo);
 
             InstallAction install_action(make_named_values<InstallActionOptions>(
-                        value_for<n::destination>(vdb_repo),
-                        value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::perform_uninstall>(&do_uninstall),
-                        value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
-                        value_for<n::want_phase>(&want_all_phases)
+                        n::destination() = vdb_repo,
+                        n::make_output_manager() = &make_standard_output_manager,
+                        n::perform_uninstall() = &do_uninstall,
+                        n::replacing() = make_shared_ptr(new PackageIDSequence),
+                        n::want_phase() = &want_all_phases
                     ));
 
             TEST_CHECK(vdb_repo->package_ids(QualifiedPackageName("cat/pkg"))->empty());
@@ -1280,11 +1280,11 @@ namespace test_cases
                         PackageDepSpec(parse_user_package_dep_spec(victim,
                                 &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
             InstallAction install_action(make_named_values<InstallActionOptions>(
-                        value_for<n::destination>(vdb_repo),
-                        value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::perform_uninstall>(&do_uninstall),
-                        value_for<n::replacing>(replacing),
-                        value_for<n::want_phase>(&want_all_phases)
+                        n::destination() = vdb_repo,
+                        n::make_output_manager() = &make_standard_output_manager,
+                        n::perform_uninstall() = &do_uninstall,
+                        n::replacing() = replacing,
+                        n::want_phase() = &want_all_phases
                     ));
             (*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec(chosen_one,

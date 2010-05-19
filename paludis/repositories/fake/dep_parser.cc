@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -176,17 +176,17 @@ paludis::fakerepository::parse_depend(const std::string & s,
 
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
-                value_for<n::on_all>(std::tr1::bind(&any_all_handler<DependencySpecTree, AllDepSpec>, std::tr1::ref(stack))),
-                value_for<n::on_annotations>(&discard_annotations),
-                value_for<n::on_any>(std::tr1::bind(&any_all_handler<DependencySpecTree, AnyDepSpec>, std::tr1::ref(stack))),
-                value_for<n::on_arrow>(std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2)),
-                value_for<n::on_error>(std::tr1::bind(&error_handler, s, _1)),
-                value_for<n::on_label>(std::tr1::bind(&labels_not_allowed_handler, s, _1)),
-                value_for<n::on_pop>(std::tr1::bind(&pop_handler<DependencySpecTree>, std::tr1::ref(stack), s)),
-                value_for<n::on_should_be_empty>(std::tr1::bind(&should_be_empty_handler<DependencySpecTree>, std::tr1::ref(stack), s)),
-                value_for<n::on_string>(std::tr1::bind(&package_or_block_dep_spec_string_handler<DependencySpecTree>, std::tr1::ref(stack), _1, id)),
-                value_for<n::on_use>(std::tr1::bind(&use_handler<DependencySpecTree>, std::tr1::ref(stack), _1, env, id)),
-                value_for<n::on_use_under_any>(&do_nothing)
+                n::on_all() = std::tr1::bind(&any_all_handler<DependencySpecTree, AllDepSpec>, std::tr1::ref(stack)),
+                n::on_annotations() = &discard_annotations,
+                n::on_any() = std::tr1::bind(&any_all_handler<DependencySpecTree, AnyDepSpec>, std::tr1::ref(stack)),
+                n::on_arrow() = std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2),
+                n::on_error() = std::tr1::bind(&error_handler, s, _1),
+                n::on_label() = std::tr1::bind(&labels_not_allowed_handler, s, _1),
+                n::on_pop() = std::tr1::bind(&pop_handler<DependencySpecTree>, std::tr1::ref(stack), s),
+                n::on_should_be_empty() = std::tr1::bind(&should_be_empty_handler<DependencySpecTree>, std::tr1::ref(stack), s),
+                n::on_string() = std::tr1::bind(&package_or_block_dep_spec_string_handler<DependencySpecTree>, std::tr1::ref(stack), _1, id),
+                n::on_use() = std::tr1::bind(&use_handler<DependencySpecTree>, std::tr1::ref(stack), _1, env, id),
+                n::on_use_under_any() = &do_nothing
                 ));
 
     parse_elike_dependencies(s, callbacks);
@@ -206,17 +206,17 @@ paludis::fakerepository::parse_provide(const std::string & s,
 
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
-                value_for<n::on_all>(std::tr1::bind(&any_all_handler<ProvideSpecTree, AllDepSpec>, std::tr1::ref(stack))),
-                value_for<n::on_annotations>(&discard_annotations),
-                value_for<n::on_any>(std::tr1::bind(&any_not_allowed_handler, s)),
-                value_for<n::on_arrow>(std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2)),
-                value_for<n::on_error>(std::tr1::bind(&error_handler, s, _1)),
-                value_for<n::on_label>(std::tr1::bind(&labels_not_allowed_handler, s, _1)),
-                value_for<n::on_pop>(std::tr1::bind(&pop_handler<ProvideSpecTree>, std::tr1::ref(stack), s)),
-                value_for<n::on_should_be_empty>(std::tr1::bind(&should_be_empty_handler<ProvideSpecTree>, std::tr1::ref(stack), s)),
-                value_for<n::on_string>(std::tr1::bind(&package_dep_spec_string_handler<ProvideSpecTree>, std::tr1::ref(stack), _1, id)),
-                value_for<n::on_use>(std::tr1::bind(&use_handler<ProvideSpecTree>, std::tr1::ref(stack), _1, env, id)),
-                value_for<n::on_use_under_any>(&do_nothing)
+                n::on_all() = std::tr1::bind(&any_all_handler<ProvideSpecTree, AllDepSpec>, std::tr1::ref(stack)),
+                n::on_annotations() = &discard_annotations,
+                n::on_any() = std::tr1::bind(&any_not_allowed_handler, s),
+                n::on_arrow() = std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2),
+                n::on_error() = std::tr1::bind(&error_handler, s, _1),
+                n::on_label() = std::tr1::bind(&labels_not_allowed_handler, s, _1),
+                n::on_pop() = std::tr1::bind(&pop_handler<ProvideSpecTree>, std::tr1::ref(stack), s),
+                n::on_should_be_empty() = std::tr1::bind(&should_be_empty_handler<ProvideSpecTree>, std::tr1::ref(stack), s),
+                n::on_string() = std::tr1::bind(&package_dep_spec_string_handler<ProvideSpecTree>, std::tr1::ref(stack), _1, id),
+                n::on_use() = std::tr1::bind(&use_handler<ProvideSpecTree>, std::tr1::ref(stack), _1, env, id),
+                n::on_use_under_any() = &do_nothing
                 ));
 
     parse_elike_dependencies(s, callbacks);
@@ -236,17 +236,17 @@ paludis::fakerepository::parse_fetchable_uri(const std::string & s,
 
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
-                value_for<n::on_all>(std::tr1::bind(&any_all_handler<FetchableURISpecTree, AllDepSpec>, std::tr1::ref(stack))),
-                value_for<n::on_annotations>(&discard_annotations),
-                value_for<n::on_any>(std::tr1::bind(&any_not_allowed_handler, s)),
-                value_for<n::on_arrow>(std::tr1::bind(&arrow_handler<FetchableURISpecTree>, std::tr1::ref(stack), _1, _2)),
-                value_for<n::on_error>(std::tr1::bind(&error_handler, s, _1)),
-                value_for<n::on_label>(std::tr1::bind(&labels_not_allowed_handler, s, _1)),
-                value_for<n::on_pop>(std::tr1::bind(&pop_handler<FetchableURISpecTree>, std::tr1::ref(stack), s)),
-                value_for<n::on_should_be_empty>(std::tr1::bind(&should_be_empty_handler<FetchableURISpecTree>, std::tr1::ref(stack), s)),
-                value_for<n::on_string>(std::tr1::bind(&arrow_handler<FetchableURISpecTree>, std::tr1::ref(stack), _1, "")),
-                value_for<n::on_use>(std::tr1::bind(&use_handler<FetchableURISpecTree>, std::tr1::ref(stack), _1, env, id)),
-                value_for<n::on_use_under_any>(&do_nothing)
+                n::on_all() = std::tr1::bind(&any_all_handler<FetchableURISpecTree, AllDepSpec>, std::tr1::ref(stack)),
+                n::on_annotations() = &discard_annotations,
+                n::on_any() = std::tr1::bind(&any_not_allowed_handler, s),
+                n::on_arrow() = std::tr1::bind(&arrow_handler<FetchableURISpecTree>, std::tr1::ref(stack), _1, _2),
+                n::on_error() = std::tr1::bind(&error_handler, s, _1),
+                n::on_label() = std::tr1::bind(&labels_not_allowed_handler, s, _1),
+                n::on_pop() = std::tr1::bind(&pop_handler<FetchableURISpecTree>, std::tr1::ref(stack), s),
+                n::on_should_be_empty() = std::tr1::bind(&should_be_empty_handler<FetchableURISpecTree>, std::tr1::ref(stack), s),
+                n::on_string() = std::tr1::bind(&arrow_handler<FetchableURISpecTree>, std::tr1::ref(stack), _1, ""),
+                n::on_use() = std::tr1::bind(&use_handler<FetchableURISpecTree>, std::tr1::ref(stack), _1, env, id),
+                n::on_use_under_any() = &do_nothing
                 ));
 
     parse_elike_dependencies(s, callbacks);
@@ -266,17 +266,17 @@ paludis::fakerepository::parse_simple_uri(const std::string & s,
 
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
-                value_for<n::on_all>(std::tr1::bind(&any_all_handler<SimpleURISpecTree, AllDepSpec>, std::tr1::ref(stack))),
-                value_for<n::on_annotations>(&discard_annotations),
-                value_for<n::on_any>(std::tr1::bind(&any_not_allowed_handler, s)),
-                value_for<n::on_arrow>(std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2)),
-                value_for<n::on_error>(std::tr1::bind(&error_handler, s, _1)),
-                value_for<n::on_label>(std::tr1::bind(&labels_not_allowed_handler, s, _1)),
-                value_for<n::on_pop>(std::tr1::bind(&pop_handler<SimpleURISpecTree>, std::tr1::ref(stack), s)),
-                value_for<n::on_should_be_empty>(std::tr1::bind(&should_be_empty_handler<SimpleURISpecTree>, std::tr1::ref(stack), s)),
-                value_for<n::on_string>(std::tr1::bind(&simple_uri_handler<SimpleURISpecTree>, std::tr1::ref(stack), _1)),
-                value_for<n::on_use>(std::tr1::bind(&use_handler<SimpleURISpecTree>, std::tr1::ref(stack), _1, env, id)),
-                value_for<n::on_use_under_any>(&do_nothing)
+                n::on_all() = std::tr1::bind(&any_all_handler<SimpleURISpecTree, AllDepSpec>, std::tr1::ref(stack)),
+                n::on_annotations() = &discard_annotations,
+                n::on_any() = std::tr1::bind(&any_not_allowed_handler, s),
+                n::on_arrow() = std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2),
+                n::on_error() = std::tr1::bind(&error_handler, s, _1),
+                n::on_label() = std::tr1::bind(&labels_not_allowed_handler, s, _1),
+                n::on_pop() = std::tr1::bind(&pop_handler<SimpleURISpecTree>, std::tr1::ref(stack), s),
+                n::on_should_be_empty() = std::tr1::bind(&should_be_empty_handler<SimpleURISpecTree>, std::tr1::ref(stack), s),
+                n::on_string() = std::tr1::bind(&simple_uri_handler<SimpleURISpecTree>, std::tr1::ref(stack), _1),
+                n::on_use() = std::tr1::bind(&use_handler<SimpleURISpecTree>, std::tr1::ref(stack), _1, env, id),
+                n::on_use_under_any() = &do_nothing
                 ));
 
     parse_elike_dependencies(s, callbacks);
@@ -296,17 +296,17 @@ paludis::fakerepository::parse_license(const std::string & s,
 
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
-            value_for<n::on_all>(std::tr1::bind(&any_all_handler<LicenseSpecTree, AllDepSpec>, std::tr1::ref(stack))),
-            value_for<n::on_annotations>(&discard_annotations),
-            value_for<n::on_any>(std::tr1::bind(&any_all_handler<LicenseSpecTree, AnyDepSpec>, std::tr1::ref(stack))),
-            value_for<n::on_arrow>(std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2)),
-            value_for<n::on_error>(std::tr1::bind(&error_handler, s, _1)),
-            value_for<n::on_label>(std::tr1::bind(&labels_not_allowed_handler, s, _1)),
-            value_for<n::on_pop>(std::tr1::bind(&pop_handler<LicenseSpecTree>, std::tr1::ref(stack), s)),
-            value_for<n::on_should_be_empty>(std::tr1::bind(&should_be_empty_handler<LicenseSpecTree>, std::tr1::ref(stack), s)),
-            value_for<n::on_string>(std::tr1::bind(&license_handler<LicenseSpecTree>, std::tr1::ref(stack), _1)),
-            value_for<n::on_use>(std::tr1::bind(&use_handler<LicenseSpecTree>, std::tr1::ref(stack), _1, env, id)),
-            value_for<n::on_use_under_any>(&do_nothing)
+            n::on_all() = std::tr1::bind(&any_all_handler<LicenseSpecTree, AllDepSpec>, std::tr1::ref(stack)),
+            n::on_annotations() = &discard_annotations,
+            n::on_any() = std::tr1::bind(&any_all_handler<LicenseSpecTree, AnyDepSpec>, std::tr1::ref(stack)),
+            n::on_arrow() = std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2),
+            n::on_error() = std::tr1::bind(&error_handler, s, _1),
+            n::on_label() = std::tr1::bind(&labels_not_allowed_handler, s, _1),
+            n::on_pop() = std::tr1::bind(&pop_handler<LicenseSpecTree>, std::tr1::ref(stack), s),
+            n::on_should_be_empty() = std::tr1::bind(&should_be_empty_handler<LicenseSpecTree>, std::tr1::ref(stack), s),
+            n::on_string() = std::tr1::bind(&license_handler<LicenseSpecTree>, std::tr1::ref(stack), _1),
+            n::on_use() = std::tr1::bind(&use_handler<LicenseSpecTree>, std::tr1::ref(stack), _1, env, id),
+            n::on_use_under_any() = &do_nothing
             ));
 
     parse_elike_dependencies(s, callbacks);

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -49,8 +49,8 @@ namespace test_cases
             TestEnvironment env;
             std::tr1::shared_ptr<AccountsRepository> repo(new AccountsRepository(
                         make_named_values<AccountsRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("accounts"))
+                            n::environment() = &env,
+                            n::name() = RepositoryName("accounts")
                         )));
             env.package_database()->add_repository(1, repo);
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "accounts");

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  * Copyright (c) 2007 Piotr Jaroszyński
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -194,8 +194,8 @@ BashHookFile::run(const Hook & hook) const
             << "' returned failure '" << exit_status << "'";
 
     return make_named_values<HookResult>(
-            value_for<n::max_exit_status>(exit_status),
-            value_for<n::output>(output));
+            n::max_exit_status() = exit_status,
+            n::output() = output);
 }
 
 HookResult
@@ -247,8 +247,8 @@ FancyHookFile::run(const Hook & hook) const
             << "' returned failure '" << exit_status << "'";
 
     return make_named_values<HookResult>(
-            value_for<n::max_exit_status>(exit_status),
-            value_for<n::output>(output)
+            n::max_exit_status() = exit_status,
+            n::output() = output
             );
 }
 
@@ -408,7 +408,7 @@ SoHookFile::run(const Hook & hook) const
     Context c("When running .so hook '" + stringify(file_name()) + "' for hook '" + hook.name() + "':");
 
     if (! _run)
-        return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
+        return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 
     Log::get_instance()->message("hook.so.starting", ll_debug, lc_no_context) << "Starting .so hook '" <<
         file_name() << "' for '" << hook.name() << "'";
@@ -697,7 +697,7 @@ Hooker::_find_hooks(const Hook & hook) const
 HookResult
 Hooker::perform_hook(const Hook & hook) const
 {
-    HookResult result(make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>("")));
+    HookResult result(make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = ""));
 
     Context context("When triggering hook '" + hook.name() + "':");
     Log::get_instance()->message("hook.starting", ll_debug, lc_no_context) << "Starting hook '" << hook.name() << "'";

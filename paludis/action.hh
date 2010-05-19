@@ -49,25 +49,25 @@ namespace paludis
 {
     namespace n
     {
-        struct config_protect;
-        struct destination;
-        struct errors;
-        struct exclude_unmirrorable;
-        struct failed_automatic_fetching;
-        struct failed_integrity_checks;
-        struct fetch_parts;
-        struct if_for_install_id;
-        struct ignore_for_unmerge;
-        struct ignore_unfetched;
-        struct is_overwrite;
-        struct make_output_manager;
-        struct perform_uninstall;
-        struct replacing;
-        struct requires_manual_fetching;
-        struct safe_resume;
-        struct target_file;
-        struct want_phase;
-        struct ignore_not_in_manifest;
+        typedef Name<struct config_protect_name> config_protect;
+        typedef Name<struct destination_name> destination;
+        typedef Name<struct errors_name> errors;
+        typedef Name<struct exclude_unmirrorable_name> exclude_unmirrorable;
+        typedef Name<struct failed_automatic_fetching_name> failed_automatic_fetching;
+        typedef Name<struct failed_integrity_checks_name> failed_integrity_checks;
+        typedef Name<struct fetch_parts_name> fetch_parts;
+        typedef Name<struct if_for_install_id_name> if_for_install_id;
+        typedef Name<struct ignore_for_unmerge_name> ignore_for_unmerge;
+        typedef Name<struct ignore_unfetched_name> ignore_unfetched;
+        typedef Name<struct is_overwrite_name> is_overwrite;
+        typedef Name<struct make_output_manager_name> make_output_manager;
+        typedef Name<struct perform_uninstall_name> perform_uninstall;
+        typedef Name<struct replacing_name> replacing;
+        typedef Name<struct requires_manual_fetching_name> requires_manual_fetching;
+        typedef Name<struct safe_resume_name> safe_resume;
+        typedef Name<struct target_file_name> target_file;
+        typedef Name<struct want_phase_name> want_phase;
+        typedef Name<struct ignore_not_in_manifest_name> ignore_not_in_manifest;
     }
 
     /**

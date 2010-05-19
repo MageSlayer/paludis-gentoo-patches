@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -66,15 +66,15 @@ namespace paludis
 
                 values.insert(std::make_pair(strip_trailing_string(d->basename(), ".conf"),
                             make_shared_ptr(new Distribution(make_named_values<Distribution>(
-                                        value_for<n::concept_keyword>(k.get("concept_keyword")),
-                                        value_for<n::concept_license>(k.get("concept_license")),
-                                        value_for<n::concept_use>(k.get("concept_use")),
-                                        value_for<n::default_environment>(k.get("default_environment")),
-                                        value_for<n::extra_data_dir>(FSEntry(strip_trailing_string(stringify(d->realpath()), ".conf"))),
-                                        value_for<n::fallback_environment>(k.get("fallback_environment")),
-                                        value_for<n::name>(strip_trailing_string(d->basename(), ".conf")),
-                                        value_for<n::paludis_package>(k.get("paludis_package")),
-                                        value_for<n::support_old_style_virtuals>(destringify<bool>(k.get("support_old_style_virtuals")))
+                                        n::concept_keyword() = k.get("concept_keyword"),
+                                        n::concept_license() = k.get("concept_license"),
+                                        n::concept_use() = k.get("concept_use"),
+                                        n::default_environment() = k.get("default_environment"),
+                                        n::extra_data_dir() = FSEntry(strip_trailing_string(stringify(d->realpath()), ".conf")),
+                                        n::fallback_environment() = k.get("fallback_environment"),
+                                        n::name() = strip_trailing_string(d->basename(), ".conf"),
+                                        n::paludis_package() = k.get("paludis_package"),
+                                        n::support_old_style_virtuals() = destringify<bool>(k.get("support_old_style_virtuals"))
                                         )))));
             }
         }

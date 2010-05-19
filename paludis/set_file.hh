@@ -53,12 +53,12 @@ namespace paludis
 
     namespace n
     {
-        struct environment;
-        struct file_name;
-        struct parser;
-        struct set_operator_mode;
-        struct tag;
-        struct type;
+        typedef Name<struct environment_name> environment;
+        typedef Name<struct file_name_name> file_name;
+        typedef Name<struct parser_name> parser;
+        typedef Name<struct set_operator_mode_name> set_operator_mode;
+        typedef Name<struct tag_name> tag;
+        typedef Name<struct type_name> type;
     }
 
     /**

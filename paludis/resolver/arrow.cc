@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -42,9 +42,9 @@ Arrow::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "Arrow");
     return make_named_values<Arrow>(
-            value_for<n::comes_after>(v.member<JobID>("comes_after")),
-            value_for<n::failure_kinds>(v.member<FailureKinds>("failure_kinds")),
-            value_for<n::maybe_reason>(v.member<std::tr1::shared_ptr<const Reason> >("maybe_reason"))
+            n::comes_after() = v.member<JobID>("comes_after"),
+            n::failure_kinds() = v.member<FailureKinds>("failure_kinds"),
+            n::maybe_reason() = v.member<std::tr1::shared_ptr<const Reason> >("maybe_reason")
             );
 }
 

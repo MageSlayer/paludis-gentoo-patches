@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -49,9 +49,9 @@ Resolution::deserialise(Deserialisation & d)
     Deserialisator v(d, "Resolution");
 
     return make_shared_ptr(new Resolution(make_named_values<Resolution>(
-                    value_for<n::constraints>(v.member<std::tr1::shared_ptr<Constraints> >("constraints")),
-                    value_for<n::decision>(v.member<std::tr1::shared_ptr<Decision> >("decision")),
-                    value_for<n::resolvent>(v.member<Resolvent>("resolvent"))
+                    n::constraints() = v.member<std::tr1::shared_ptr<Constraints> >("constraints"),
+                    n::decision() = v.member<std::tr1::shared_ptr<Decision> >("decision"),
+                    n::resolvent() = v.member<Resolvent>("resolvent")
                     )));
 }
 

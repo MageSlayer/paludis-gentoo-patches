@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,27 +20,13 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_NAMED_VALUE_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_NAMED_VALUE_FWD_HH 1
 
-#include <string>
-#include <paludis/util/tribool-fwd.hh>
-
 namespace paludis
 {
     template <typename K_, typename V_>
     class NamedValue;
 
-    template <typename K_, typename V_>
-    NamedValue<K_, V_>
-    value_for(const V_ & v);
-
-    /* Hack: let "foo" work for strings, but ban other magic conversions */
-    template <typename K_>
-    NamedValue<K_, std::string>
-    value_for(const char * const v);
-
-    /* Hack: let indeterminate work for Tribools, but ban other magic conversions */
-    template <typename K_>
-    NamedValue<K_, Tribool>
-    value_for(TriboolIndeterminateValueType);
+    template <typename T_>
+    struct Name;
 }
 
 #endif

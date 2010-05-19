@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -43,10 +43,10 @@ namespace paludis
 
 EStripper::EStripper(const EStripperOptions & options) :
     Stripper(make_named_values<StripperOptions>(
-                value_for<n::debug_dir>(options.debug_dir()),
-                value_for<n::image_dir>(options.image_dir()),
-                value_for<n::split>(options.split()),
-                value_for<n::strip>(options.strip())
+                n::debug_dir() = options.debug_dir(),
+                n::image_dir() = options.image_dir(),
+                n::split() = options.split(),
+                n::strip() = options.strip()
                 )),
     PrivateImplementationPattern<EStripper>(new Implementation<EStripper>(options)),
     _imp(PrivateImplementationPattern<EStripper>::_imp)

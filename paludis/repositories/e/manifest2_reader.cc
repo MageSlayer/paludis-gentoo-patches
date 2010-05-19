@@ -127,13 +127,13 @@ Manifest2Reader::Manifest2Reader(const FSEntry & f) :
         }
 
         _imp->entries.insert(std::make_pair(std::make_pair(type,name), make_named_values<Manifest2Entry>(
-                        value_for<n::md5>(md5),
-                        value_for<n::name>(name),
-                        value_for<n::rmd160>(rmd160),
-                        value_for<n::sha1>(sha1),
-                        value_for<n::sha256>(sha256),
-                        value_for<n::size>(size),
-                        value_for<n::type>(type)
+                        n::md5() = md5,
+                        n::name() = name,
+                        n::rmd160() = rmd160,
+                        n::sha1() = sha1,
+                        n::sha256() = sha256,
+                        n::size() = size,
+                        n::type() = type
                         )));
     }
 }

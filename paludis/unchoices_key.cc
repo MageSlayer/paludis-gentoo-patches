@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -41,13 +41,13 @@ namespace
                 _value(new Choices)
             {
                 _value->add(make_shared_ptr(new Choice(make_named_values<ChoiceParams>(
-                                    value_for<n::consider_added_or_changed>(false),
-                                    value_for<n::contains_every_value>(true),
-                                    value_for<n::hidden>(true),
-                                    value_for<n::human_name>("Choices"),
-                                    value_for<n::prefix>(ChoicePrefixName("")),
-                                    value_for<n::raw_name>("Choices"),
-                                    value_for<n::show_with_no_prefix>(true)
+                                    n::consider_added_or_changed() = false,
+                                    n::contains_every_value() = true,
+                                    n::hidden() = true,
+                                    n::human_name() = "Choices",
+                                    n::prefix() = ChoicePrefixName(""),
+                                    n::raw_name() = "Choices",
+                                    n::show_with_no_prefix() = true
                                     ))));
             }
 

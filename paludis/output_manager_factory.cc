@@ -47,7 +47,7 @@ namespace paludis
 {
     namespace n
     {
-        struct create_function;
+        typedef Name<struct create_function_name> create_function;
     }
 }
 
@@ -139,7 +139,7 @@ OutputManagerFactory::add_manager(
             f != f_end ; ++f)
     {
         if (! _imp->keys.insert(std::make_pair(*f, make_named_values<Funcs>(
-                            value_for<n::create_function>(create_function)
+                            n::create_function() = create_function
                             ))).second)
             throw ConfigurationError("Handler for output manager format '" + stringify(*f) + "' already exists");
     }

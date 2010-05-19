@@ -43,8 +43,8 @@ namespace test_cases
             TestEnvironment e;
 
             const std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                            value_for<n::environment>(&e),
-                            value_for<n::name>(RepositoryName("r1"))
+                            n::environment() = &e,
+                            n::name() = RepositoryName("r1")
                             )));
             r1->add_version("some-cat", "foo", "1");
             r1->add_version("other-cat", "foo", "1");
@@ -53,8 +53,8 @@ namespace test_cases
             e.package_database()->add_repository(1, r1);
 
             const std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                            value_for<n::environment>(&e),
-                            value_for<n::name>(RepositoryName("r2"))
+                            n::environment() = &e,
+                            n::name() = RepositoryName("r2")
                             )));
             e.package_database()->add_repository(2, r2);
 
@@ -89,20 +89,20 @@ namespace test_cases
             PackageDatabase & p(*e.package_database());
 
             p.add_repository(1, std::tr1::shared_ptr<FakeRepository>(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                                value_for<n::environment>(&e),
-                                value_for<n::name>(RepositoryName("my-main-repository"))))));
+                                n::environment() = &e,
+                                n::name() = RepositoryName("my-main-repository")))));
             p.add_repository(1, std::tr1::shared_ptr<FakeRepository>(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                                value_for<n::environment>(&e),
-                                value_for<n::name>(RepositoryName("x-new-repository"))))));
+                                n::environment() = &e,
+                                n::name() = RepositoryName("x-new-repository")))));
             p.add_repository(1, std::tr1::shared_ptr<FakeRepository>(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                                value_for<n::environment>(&e),
-                                value_for<n::name>(RepositoryName("bar-overlay"))))));
+                                n::environment() = &e,
+                                n::name() = RepositoryName("bar-overlay")))));
             p.add_repository(1, std::tr1::shared_ptr<FakeRepository>(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                                value_for<n::environment>(&e),
-                                value_for<n::name>(RepositoryName("baz-overlay"))))));
+                                n::environment() = &e,
+                                n::name() = RepositoryName("baz-overlay")))));
             p.add_repository(1, std::tr1::shared_ptr<FakeRepository>(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                                value_for<n::environment>(&e),
-                                value_for<n::name>(RepositoryName("sunrise"))))));
+                                n::environment() = &e,
+                                n::name() = RepositoryName("sunrise")))));
 
             FuzzyRepositoriesFinder f1(e, "my-main-respository");
             TEST_CHECK_EQUAL(std::distance(f1.begin(), f1.end()), 1);

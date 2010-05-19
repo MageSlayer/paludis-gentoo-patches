@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -69,10 +69,10 @@ namespace test_cases
         void run()
         {
             TestStripper s(make_named_values<StripperOptions>(
-                        value_for<n::debug_dir>(FSEntry("stripper_TEST_dir/image").realpath() / "usr" / "lib" / "debug"),
-                        value_for<n::image_dir>(FSEntry("stripper_TEST_dir/image").realpath()),
-                        value_for<n::split>(true),
-                        value_for<n::strip>(true)
+                        n::debug_dir() = FSEntry("stripper_TEST_dir/image").realpath() / "usr" / "lib" / "debug",
+                        n::image_dir() = FSEntry("stripper_TEST_dir/image").realpath(),
+                        n::split() = true,
+                        n::strip() = true
                     ));
             s.strip();
 

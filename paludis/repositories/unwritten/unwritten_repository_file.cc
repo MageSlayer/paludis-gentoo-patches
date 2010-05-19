@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -289,15 +289,15 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
 
             if (! entry)
                 entry.reset(new UnwrittenRepositoryFileEntry(make_named_values<UnwrittenRepositoryFileEntry>(
-                                value_for<n::added_by>(std::tr1::shared_ptr<const MetadataValueKey<std::string> >()),
-                                value_for<n::bug_ids>(std::tr1::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > >()),
-                                value_for<n::comment>(std::tr1::shared_ptr<const MetadataValueKey<std::string> >()),
-                                value_for<n::description>(std::tr1::shared_ptr<const MetadataValueKey<std::string> >()),
-                                value_for<n::homepage>(std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >()),
-                                value_for<n::name>(category + package),
-                                value_for<n::remote_ids>(std::tr1::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > >()),
-                                value_for<n::slot>(slot),
-                                value_for<n::version>(version)
+                                n::added_by() = std::tr1::shared_ptr<const MetadataValueKey<std::string> >(),
+                                n::bug_ids() = std::tr1::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > >(),
+                                n::comment() = std::tr1::shared_ptr<const MetadataValueKey<std::string> >(),
+                                n::description() = std::tr1::shared_ptr<const MetadataValueKey<std::string> >(),
+                                n::homepage() = std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >(),
+                                n::name() = category + package,
+                                n::remote_ids() = std::tr1::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > >(),
+                                n::slot() = slot,
+                                n::version() = version
                                 )));
 
             if (token == "description")

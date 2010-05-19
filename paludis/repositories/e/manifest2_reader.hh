@@ -36,13 +36,13 @@ namespace paludis
 {
     namespace n
     {
-        struct md5;
-        struct name;
-        struct rmd160;
-        struct sha1;
-        struct sha256;
-        struct size;
-        struct type;
+        typedef Name<struct md5_name> md5;
+        typedef Name<struct name_name> name;
+        typedef Name<struct rmd160_name> rmd160;
+        typedef Name<struct sha1_name> sha1;
+        typedef Name<struct sha256_name> sha256;
+        typedef Name<struct size_name> size;
+        typedef Name<struct type_name> type;
     }
 
     namespace erepository

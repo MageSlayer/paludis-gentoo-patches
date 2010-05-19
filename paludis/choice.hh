@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -45,13 +45,13 @@ namespace paludis
 {
     namespace n
     {
-        struct consider_added_or_changed;
-        struct contains_every_value;
-        struct hidden;
-        struct human_name;
-        struct prefix;
-        struct raw_name;
-        struct show_with_no_prefix;
+        typedef Name<struct consider_added_or_changed_name> consider_added_or_changed;
+        typedef Name<struct contains_every_value_name> contains_every_value;
+        typedef Name<struct hidden_name> hidden;
+        typedef Name<struct human_name_name> human_name;
+        typedef Name<struct prefix_name> prefix;
+        typedef Name<struct raw_name_name> raw_name;
+        typedef Name<struct show_with_no_prefix_name> show_with_no_prefix;
     }
 
     /**

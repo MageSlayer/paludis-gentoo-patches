@@ -45,19 +45,19 @@ namespace paludis
 {
     namespace n
     {
-        struct allowed_to_break_fn;
-        struct allowed_to_remove_fn;
-        struct confirm_fn;
-        struct find_repository_for_fn;
-        struct get_constraints_for_dependent_fn;
-        struct get_destination_types_for_fn;
-        struct get_initial_constraints_for_fn;
-        struct get_resolvents_for_fn;
-        struct get_use_existing_fn;
-        struct interest_in_spec_fn;
-        struct make_destination_filtered_generator_fn;
-        struct prefer_or_avoid_fn;
-        struct remove_if_dependent_fn;
+        typedef Name<struct allowed_to_break_fn_name> allowed_to_break_fn;
+        typedef Name<struct allowed_to_remove_fn_name> allowed_to_remove_fn;
+        typedef Name<struct confirm_fn_name> confirm_fn;
+        typedef Name<struct find_repository_for_fn_name> find_repository_for_fn;
+        typedef Name<struct get_constraints_for_dependent_fn_name> get_constraints_for_dependent_fn;
+        typedef Name<struct get_destination_types_for_fn_name> get_destination_types_for_fn;
+        typedef Name<struct get_initial_constraints_for_fn_name> get_initial_constraints_for_fn;
+        typedef Name<struct get_resolvents_for_fn_name> get_resolvents_for_fn;
+        typedef Name<struct get_use_existing_fn_name> get_use_existing_fn;
+        typedef Name<struct interest_in_spec_fn_name> interest_in_spec_fn;
+        typedef Name<struct make_destination_filtered_generator_fn_name> make_destination_filtered_generator_fn;
+        typedef Name<struct prefer_or_avoid_fn_name> prefer_or_avoid_fn;
+        typedef Name<struct remove_if_dependent_fn_name> remove_if_dependent_fn;
     }
 
     namespace resolver

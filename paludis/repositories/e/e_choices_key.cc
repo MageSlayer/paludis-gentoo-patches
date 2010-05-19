@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -227,8 +227,8 @@ namespace paludis
 {
     namespace n
     {
-        struct default_value;
-        struct implicit;
+        typedef Name<struct default_value_name> default_value;
+        typedef Name<struct implicit_name> implicit;
     }
 }
 
@@ -295,13 +295,13 @@ EChoicesKey::populate_myoptions() const
     Context local_context("When using raw_myoptions_key to populate choices:");
 
     std::tr1::shared_ptr<Choice> options(new Choice(make_named_values<ChoiceParams>(
-                    value_for<n::consider_added_or_changed>(true),
-                    value_for<n::contains_every_value>(false),
-                    value_for<n::hidden>(false),
-                    value_for<n::human_name>(_imp->id->eapi()->supported()->ebuild_environment_variables()->env_use()),
-                    value_for<n::prefix>(ChoicePrefixName("")),
-                    value_for<n::raw_name>(_imp->id->eapi()->supported()->ebuild_environment_variables()->env_use()),
-                    value_for<n::show_with_no_prefix>(true)
+                    n::consider_added_or_changed() = true,
+                    n::contains_every_value() = false,
+                    n::hidden() = false,
+                    n::human_name() = _imp->id->eapi()->supported()->ebuild_environment_variables()->env_use(),
+                    n::prefix() = ChoicePrefixName(""),
+                    n::raw_name() = _imp->id->eapi()->supported()->ebuild_environment_variables()->env_use(),
+                    n::show_with_no_prefix() = true
                 )));
     _imp->value->add(options);
 
@@ -323,13 +323,13 @@ EChoicesKey::populate_myoptions() const
             std::string lower_u;
             std::transform(u->begin(), u->end(), std::back_inserter(lower_u), &::tolower);
             std::tr1::shared_ptr<Choice> exp(new Choice(make_named_values<ChoiceParams>(
-                            value_for<n::consider_added_or_changed>(true),
-                            value_for<n::contains_every_value>(false),
-                            value_for<n::hidden>(hidden ? hidden->end() != hidden->find(*u) : false),
-                            value_for<n::human_name>(lower_u),
-                            value_for<n::prefix>(ChoicePrefixName(lower_u)),
-                            value_for<n::raw_name>(stringify(*u)),
-                            value_for<n::show_with_no_prefix>(false)
+                            n::consider_added_or_changed() = true,
+                            n::contains_every_value() = false,
+                            n::hidden() = hidden ? hidden->end() != hidden->find(*u) : false,
+                            n::human_name() = lower_u,
+                            n::prefix() = ChoicePrefixName(lower_u),
+                            n::raw_name() = stringify(*u),
+                            n::show_with_no_prefix() = false
                         )));
             _imp->value->add(exp);
 
@@ -369,13 +369,13 @@ EChoicesKey::populate_iuse() const
     Context local_context("When using raw_iuse_key and raw_use_key to populate choices:");
 
     std::tr1::shared_ptr<Choice> use(new Choice(make_named_values<ChoiceParams>(
-                    value_for<n::consider_added_or_changed>(true),
-                    value_for<n::contains_every_value>(false),
-                    value_for<n::hidden>(false),
-                    value_for<n::human_name>(_imp->id->eapi()->supported()->ebuild_environment_variables()->env_use()),
-                    value_for<n::prefix>(ChoicePrefixName("")),
-                    value_for<n::raw_name>(_imp->id->eapi()->supported()->ebuild_environment_variables()->env_use()),
-                    value_for<n::show_with_no_prefix>(true)
+                    n::consider_added_or_changed() = true,
+                    n::contains_every_value() = false,
+                    n::hidden() = false,
+                    n::human_name() = _imp->id->eapi()->supported()->ebuild_environment_variables()->env_use(),
+                    n::prefix() = ChoicePrefixName(""),
+                    n::raw_name() = _imp->id->eapi()->supported()->ebuild_environment_variables()->env_use(),
+                    n::show_with_no_prefix() = true
                 )));
     _imp->value->add(use);
 
@@ -412,8 +412,8 @@ EChoicesKey::populate_iuse() const
         {
             std::pair<ChoiceNameWithPrefix, Tribool> flag(parse_iuse(_imp->id->eapi(), u->first));
             std::pair<ChoiceNameWithPrefix, ChoiceOptions> flag_with_options(flag.first, make_named_values<ChoiceOptions>(
-                        value_for<n::default_value>(flag.second),
-                        value_for<n::implicit>(u->second)
+                        n::default_value() = flag.second,
+                        n::implicit() = u->second
                         ));
 
             iuse_sanitised.insert(stringify(flag.first));
@@ -477,13 +477,13 @@ EChoicesKey::populate_iuse() const
     if ((! env_arch.empty()) && _imp->maybe_e_repository && ! _imp->id->eapi()->supported()->ebuild_options()->require_use_expand_in_iuse())
     {
         std::tr1::shared_ptr<Choice> arch(new Choice(make_named_values<ChoiceParams>(
-                        value_for<n::consider_added_or_changed>(false),
-                        value_for<n::contains_every_value>(false),
-                        value_for<n::hidden>(true),
-                        value_for<n::human_name>(env_arch),
-                        value_for<n::prefix>(ChoicePrefixName("")),
-                        value_for<n::raw_name>(env_arch),
-                        value_for<n::show_with_no_prefix>(false)
+                        n::consider_added_or_changed() = false,
+                        n::contains_every_value() = false,
+                        n::hidden() = true,
+                        n::human_name() = env_arch,
+                        n::prefix() = ChoicePrefixName(""),
+                        n::raw_name() = env_arch,
+                        n::show_with_no_prefix() = false
                     )));
         _imp->value->add(arch);
 
@@ -501,13 +501,13 @@ EChoicesKey::populate_iuse() const
             std::string lower_u;
             std::transform(u->begin(), u->end(), std::back_inserter(lower_u), &::tolower);
             std::tr1::shared_ptr<Choice> exp(new Choice(make_named_values<ChoiceParams>(
-                            value_for<n::consider_added_or_changed>(true),
-                            value_for<n::contains_every_value>(! _imp->id->eapi()->supported()->ebuild_options()->require_use_expand_in_iuse()),
-                            value_for<n::hidden>(hidden ? hidden->end() != hidden->find(*u) : false),
-                            value_for<n::human_name>(lower_u),
-                            value_for<n::prefix>(ChoicePrefixName(lower_u)),
-                            value_for<n::raw_name>(stringify(*u)),
-                            value_for<n::show_with_no_prefix>(false)
+                            n::consider_added_or_changed() = true,
+                            n::contains_every_value() = ! _imp->id->eapi()->supported()->ebuild_options()->require_use_expand_in_iuse(),
+                            n::hidden() = hidden ? hidden->end() != hidden->find(*u) : false,
+                            n::human_name() = lower_u,
+                            n::prefix() = ChoicePrefixName(lower_u),
+                            n::raw_name() = stringify(*u),
+                            n::show_with_no_prefix() = false
                             )));
             _imp->value->add(exp);
 

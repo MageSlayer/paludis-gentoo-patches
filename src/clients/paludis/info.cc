@@ -247,7 +247,7 @@ int do_one_info(
     {
         OutputManagerFromEnvironment output_manager_holder(env.get(), *p, oe_exclusive, ClientOutputFeatures());
         InfoActionOptions options(make_named_values<InfoActionOptions>(
-                    value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
+                    n::make_output_manager() = std::tr1::ref(output_manager_holder)
                     ));
         InfoAction a(options);
 

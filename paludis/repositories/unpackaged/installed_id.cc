@@ -877,15 +877,15 @@ InstalledUnpackagedID::uninstall(const bool replace,
 
     NDBAMUnmerger unmerger(
             make_named_values<NDBAMUnmergerOptions>(
-                value_for<n::config_protect>(getenv_with_default("CONFIG_PROTECT", "")),
-                value_for<n::config_protect_mask>(getenv_with_default("CONFIG_PROTECT_MASK", "")),
-                value_for<n::contents_file>(ver_dir / "contents"),
-                value_for<n::environment>(_imp->env),
-                value_for<n::ignore>(&ignore_nothing),
-                value_for<n::ndbam>(_imp->ndbam),
-                value_for<n::output_manager>(output_manager),
-                value_for<n::package_id>(shared_from_this()),
-                value_for<n::root>(_imp->root)
+                n::config_protect() = getenv_with_default("CONFIG_PROTECT", ""),
+                n::config_protect_mask() = getenv_with_default("CONFIG_PROTECT_MASK", ""),
+                n::contents_file() = ver_dir / "contents",
+                n::environment() = _imp->env,
+                n::ignore() = &ignore_nothing,
+                n::ndbam() = _imp->ndbam,
+                n::output_manager() = output_manager,
+                n::package_id() = shared_from_this(),
+                n::root() = _imp->root
             ));
 
     unmerger.unmerge();

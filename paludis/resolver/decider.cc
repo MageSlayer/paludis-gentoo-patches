@@ -39,6 +39,7 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/enum_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/tribool.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/repository.hh>
@@ -446,8 +447,8 @@ Decider::_make_destination_for(
                 + stringify(*decision.origin_id()));
 
     return make_shared_ptr(new Destination(make_named_values<Destination>(
-                    value_for<n::replacing>(_find_replacing(decision.origin_id(), repo)),
-                    value_for<n::repository>(repo->name())
+                    n::replacing() = _find_replacing(decision.origin_id(), repo),
+                    n::repository() = repo->name()
                     )));
 }
 
@@ -557,9 +558,9 @@ const std::tr1::shared_ptr<Resolution>
 Decider::_create_resolution_for_resolvent(const Resolvent & r) const
 {
     return make_shared_ptr(new Resolution(make_named_values<Resolution>(
-                    value_for<n::constraints>(_initial_constraints_for(r)),
-                    value_for<n::decision>(make_null_shared_ptr()),
-                    value_for<n::resolvent>(r)
+                    n::constraints() = _initial_constraints_for(r),
+                    n::decision() = make_null_shared_ptr(),
+                    n::resolvent() = r
                     )));
 }
 
@@ -604,12 +605,12 @@ Decider::_make_constraints_from_target(
     {
         const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
         result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                            value_for<n::destination_type>(resolvent.destination_type()),
-                            value_for<n::nothing_is_fine_too>(false),
-                            value_for<n::reason>(reason),
-                            value_for<n::spec>(spec),
-                            value_for<n::untaken>(false),
-                            value_for<n::use_existing>(_imp->fns.get_use_existing_fn()(resolvent, *spec.if_package(), reason))
+                            n::destination_type() = resolvent.destination_type(),
+                            n::nothing_is_fine_too() = false,
+                            n::reason() = reason,
+                            n::spec() = spec,
+                            n::untaken() = false,
+                            n::use_existing() = _imp->fns.get_use_existing_fn()(resolvent, *spec.if_package(), reason)
                             ))));
         return result;
     }
@@ -628,13 +629,13 @@ Decider::_make_constraints_from_dependency(const Resolvent & resolvent, const Sa
     {
         const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
         result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                            value_for<n::destination_type>(resolvent.destination_type()),
-                            value_for<n::nothing_is_fine_too>(false),
-                            value_for<n::reason>(reason),
-                            value_for<n::spec>(*dep.spec().if_package()),
-                            value_for<n::untaken>(si_untaken == interest),
-                            value_for<n::use_existing>(_imp->fns.get_use_existing_fn()(
-                                    resolvent, *dep.spec().if_package(), reason))
+                            n::destination_type() = resolvent.destination_type(),
+                            n::nothing_is_fine_too() = false,
+                            n::reason() = reason,
+                            n::spec() = *dep.spec().if_package(),
+                            n::untaken() = si_untaken == interest,
+                            n::use_existing() = _imp->fns.get_use_existing_fn()(
+                                    resolvent, *dep.spec().if_package(), reason)
                             ))));
         return result;
     }
@@ -656,12 +657,12 @@ Decider::_make_constraints_from_blocker(
     for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
         if (destination_types[*t])
             result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                                value_for<n::destination_type>(*t),
-                                value_for<n::nothing_is_fine_too>(true),
-                                value_for<n::reason>(reason),
-                                value_for<n::spec>(spec),
-                                value_for<n::untaken>(false),
-                                value_for<n::use_existing>(ue_if_possible)
+                                n::destination_type() = *t,
+                                n::nothing_is_fine_too() = true,
+                                n::reason() = reason,
+                                n::spec() = spec,
+                                n::untaken() = false,
+                                n::use_existing() = ue_if_possible
                                 ))));
 
     return result;
@@ -1572,8 +1573,8 @@ Decider::_make_unsuitable_candidate(
         const bool existing) const
 {
     return make_named_values<UnsuitableCandidate>(
-            value_for<n::package_id>(id),
-            value_for<n::unmet_constraints>(_get_unmatching_constraints(resolvent, id, existing))
+            n::package_id() = id,
+            n::unmet_constraints() = _get_unmatching_constraints(resolvent, id, existing)
             );
 }
 

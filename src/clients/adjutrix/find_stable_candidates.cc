@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -48,8 +48,8 @@ namespace paludis
 {
     namespace n
     {
-        struct best_version;
-        struct our_version;
+        typedef Name<struct best_version_name> best_version;
+        typedef Name<struct our_version_name> our_version;
     }
 }
 
@@ -155,8 +155,8 @@ namespace
                 slots_to_versions.erase(slot_as_string(*v));
                 slots_to_versions.insert(std::make_pair(slot_as_string(*v),
                             make_named_values<SlotsEntry>(
-                                value_for<n::best_version>(VersionSpec("0", VersionSpecOptions())),
-                                value_for<n::our_version>((*v)->version())
+                                n::best_version() = VersionSpec("0", VersionSpecOptions()),
+                                n::our_version() = (*v)->version()
                                 )));
             }
 
@@ -166,8 +166,8 @@ namespace
                 /* ensure that an entry exists */
                 slots_to_versions.insert(std::make_pair(slot_as_string(*v),
                             make_named_values<SlotsEntry>(
-                                value_for<n::best_version>((*v)->version()),
-                                value_for<n::our_version>(VersionSpec("0", VersionSpecOptions()))
+                                n::best_version() = (*v)->version(),
+                                n::our_version() = VersionSpec("0", VersionSpecOptions())
                                 )));
 
                 /* update the entry to mark our current version as the best

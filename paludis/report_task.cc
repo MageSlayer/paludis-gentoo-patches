@@ -164,9 +164,9 @@ ReportTask::execute()
     }
 
     UninstallList unused_list(e, make_named_values<UninstallListOptions>(
-                value_for<n::with_dependencies_as_errors>(false),
-                value_for<n::with_dependencies_included>(false),
-                value_for<n::with_unused_dependencies>(false)
+                n::with_dependencies_as_errors() = false,
+                n::with_dependencies_included() = false,
+                n::with_unused_dependencies() = false
                 ));
     unused_list.add_unused();
     std::set<std::tr1::shared_ptr<const PackageID>, PackageIDSetComparator> unused;
@@ -214,8 +214,8 @@ ReportTask::execute()
                                              generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                                                  .package((*v)->name())
                                                  .version_requirement(make_named_values<VersionRequirement>(
-                                                         value_for<n::version_operator>(vo_equal),
-                                                         value_for<n::version_spec>((*v)->version()))),
+                                                         n::version_operator() = vo_equal,
+                                                         n::version_spec() = (*v)->version())),
                                                  MatchPackageOptions())) |
                                             filter::SupportsAction<InstallAction>()))]);
 

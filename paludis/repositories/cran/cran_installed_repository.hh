@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2006 Danny van Dyk
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -37,9 +37,9 @@ namespace paludis
 {
     namespace n
     {
-        struct environment;
-        struct location;
-        struct root;
+        typedef Name<struct environment_name> environment;
+        typedef Name<struct location_name> location;
+        typedef Name<struct root_name> root;
     }
 
     /**

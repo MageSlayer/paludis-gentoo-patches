@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -114,9 +114,9 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
     if (parser.consume((options[vso_ignore_case] ? simple_parser::exact_ignoring_case("scm") : simple_parser::exact("scm")) >> scm_str))
     {
         _imp->parts.push_back(make_named_values<VersionSpecComponent>(
-                    value_for<n::number_value>(""),
-                    value_for<n::text>(scm_str),
-                    value_for<n::type>(vsct_scm)
+                    n::number_value() = "",
+                    n::text() = scm_str,
+                    n::type() = vsct_scm
                     ));
     }
     else
@@ -131,15 +131,15 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
 
             if (first_number || '0' != number_part[0])
                 _imp->parts.push_back(make_named_values<VersionSpecComponent>(
-                            value_for<n::number_value>(strip_leading(number_part, "0")),
-                            value_for<n::text>(first_number ? number_part : "." + number_part),
-                            value_for<n::type>(vsct_number)
+                            n::number_value() = strip_leading(number_part, "0"),
+                            n::text() = first_number ? number_part : "." + number_part,
+                            n::type() = vsct_number
                             ));
             else
                 _imp->parts.push_back(make_named_values<VersionSpecComponent>(
-                            value_for<n::number_value>(number_part),
-                            value_for<n::text>("." + number_part),
-                            value_for<n::type>(vsct_floatlike)
+                            n::number_value() = number_part,
+                            n::text() = "." + number_part,
+                            n::type() = vsct_floatlike
                             ));
 
             if (! parser.consume(simple_parser::exact(".")))
@@ -152,15 +152,15 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
             std::string l;
             if (parser.consume(simple_parser::any_of("abcdefghijklmnopqrstuvwxyz") >> l))
                 _imp->parts.push_back(make_named_values<VersionSpecComponent>(
-                            value_for<n::number_value>(l),
-                            value_for<n::text>(l),
-                            value_for<n::type>(vsct_letter)
+                            n::number_value() = l,
+                            n::text() = l,
+                            n::type() = vsct_letter
                             ));
             else if (options[vso_ignore_case] && parser.consume(simple_parser::any_of("ABCDEFGHIJKLMNOPQRSTUVWXYZ") >> l))
                 _imp->parts.push_back(make_named_values<VersionSpecComponent>(
-                            value_for<n::number_value>(std::string(1, std::tolower(l.at(0)))),
-                            value_for<n::text>(l),
-                            value_for<n::type>(vsct_letter)
+                            n::number_value() = std::string(1, std::tolower(l.at(0))),
+                            n::text() = l,
+                            n::type() = vsct_letter
                             ));
         }
 
@@ -193,9 +193,9 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
             }
 
             _imp->parts.push_back(make_named_values<VersionSpecComponent>(
-                        value_for<n::number_value>(number_str),
-                        value_for<n::text>(raw_text),
-                        value_for<n::type>(k)
+                        n::number_value() = number_str,
+                        n::text() = raw_text,
+                        n::type() = k
                         ));
         }
 
@@ -215,9 +215,9 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
                     number_str = "0";
             }
             _imp->parts.push_back(make_named_values<VersionSpecComponent>(
-                        value_for<n::number_value>(number_str),
-                        value_for<n::text>(raw_text),
-                        value_for<n::type>(vsct_trypart)
+                        n::number_value() = number_str,
+                        n::text() = raw_text,
+                        n::type() = vsct_trypart
                         ));
         }
 
@@ -229,9 +229,9 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
                 _imp->parts.back().number_value() = "MAX";
 
             _imp->parts.push_back(make_named_values<VersionSpecComponent>(
-                        value_for<n::number_value>(""),
-                        value_for<n::text>(scm_str),
-                        value_for<n::type>(vsct_scm)
+                        n::number_value() = "",
+                        n::text() = scm_str,
+                        n::type() = vsct_scm
                         ));
         }
 
@@ -263,9 +263,9 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
             if (number_str.empty())
                 number_str = "0";
             _imp->parts.push_back(make_named_values<VersionSpecComponent>(
-                        value_for<n::number_value>(number_str),
-                        value_for<n::text>(raw_text),
-                        value_for<n::type>(vsct_revision)
+                        n::number_value() = number_str,
+                        n::text() = raw_text,
+                        n::type() = vsct_revision
                         ));
 
             if (empty)
@@ -329,9 +329,9 @@ namespace
             v1(a.begin()), v1_end(a.end()), v2(b.begin()), v2_end(b.end());
 
         VersionSpecComponent end_part(make_named_values<VersionSpecComponent>(
-                    value_for<n::number_value>(""),
-                    value_for<n::text>(""),
-                    value_for<n::type>(vsct_empty)
+                    n::number_value() = "",
+                    n::text() = "",
+                    n::type() = vsct_empty
                     ));
         while (true)
         {

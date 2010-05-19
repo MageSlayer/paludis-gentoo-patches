@@ -106,14 +106,14 @@ namespace
                 if ((*i)->supports_action(SupportsActionTest<FetchAction>()))
                 {
                     FetchAction a(make_named_values<FetchActionOptions>(
-                                value_for<n::errors>(failures),
-                                value_for<n::exclude_unmirrorable>(false),
-                                value_for<n::fetch_parts>(FetchParts() + fp_regulars + fp_extras + fp_unneeded),
-                                value_for<n::ignore_not_in_manifest>(true),
-                                value_for<n::ignore_unfetched>(false),
-                                value_for<n::make_output_manager>(&make_standard_output_manager),
-                                value_for<n::safe_resume>(true),
-                                value_for<n::want_phase>(std::tr1::bind(return_literal_function(wp_yes)))
+                                n::errors() = failures,
+                                n::exclude_unmirrorable() = false,
+                                n::fetch_parts() = FetchParts() + fp_regulars + fp_extras + fp_unneeded,
+                                n::ignore_not_in_manifest() = true,
+                                n::ignore_unfetched() = false,
+                                n::make_output_manager() = &make_standard_output_manager,
+                                n::safe_resume() = true,
+                                n::want_phase() = std::tr1::bind(return_literal_function(wp_yes))
                                 ));
                     (*i)->perform_action(a);
                     ++success;
@@ -234,16 +234,16 @@ main(int argc, char *argv[])
             keys->insert("distdir", CommandLine::get_instance()->a_download_directory.argument());
 
             NoConfigEnvironment env(make_named_values<no_config_environment::Params>(
-                    value_for<n::accept_unstable>(true),
-                    value_for<n::disable_metadata_cache>(false),
-                    value_for<n::extra_accept_keywords>(""),
-                    value_for<n::extra_params>(keys),
-                    value_for<n::extra_repository_dirs>(extra_repository_dirs),
-                    value_for<n::master_repository_name>(CommandLine::get_instance()->a_master_repository_name.argument()),
-                    value_for<n::profiles_if_not_auto>(""),
-                    value_for<n::repository_dir>(get_location_and_add_filters()),
-                    value_for<n::repository_type>(no_config_environment::ncer_ebuild),
-                    value_for<n::write_cache>(CommandLine::get_instance()->a_write_cache_dir.argument())
+                    n::accept_unstable() = true,
+                    n::disable_metadata_cache() = false,
+                    n::extra_accept_keywords() = "",
+                    n::extra_params() = keys,
+                    n::extra_repository_dirs() = extra_repository_dirs,
+                    n::master_repository_name() = CommandLine::get_instance()->a_master_repository_name.argument(),
+                    n::profiles_if_not_auto() = "",
+                    n::repository_dir() = get_location_and_add_filters(),
+                    n::repository_type() = no_config_environment::ncer_ebuild,
+                    n::write_cache() = CommandLine::get_instance()->a_write_cache_dir.argument()
                     ));
 
             IDMap results(PackageIDComparator(env.package_database().get()));

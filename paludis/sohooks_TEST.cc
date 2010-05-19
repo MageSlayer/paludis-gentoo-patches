@@ -36,13 +36,13 @@ namespace
     HookResult
     so_hook_run(const Environment *, const Hook &)
     {
-        return make_named_values<HookResult>(value_for<n::max_exit_status>(6), value_for<n::output>(""));
+        return make_named_values<HookResult>(n::max_exit_status() = 6, n::output() = "");
     }
 
     HookResult
     so_hook_output_run(const Environment *, const Hook &)
     {
-        return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>("foo"));
+        return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "foo");
     }
 
     HookResult
@@ -50,7 +50,7 @@ namespace
     {
         SafeOFStream f(FSEntry("hooker_TEST_dir/ordering.out"), O_CREAT | O_WRONLY | O_APPEND);
         f << "sohook" << std::endl;
-        return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
+        return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
     }
 
     void
@@ -71,7 +71,7 @@ paludis_hook_run(const Environment * env, const Hook & hook)
     if ("ordering" == hook.name())
         return ordering_run(env, hook);
 
-    return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
+    return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
 void

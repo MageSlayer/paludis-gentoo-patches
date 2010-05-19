@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -147,11 +147,11 @@ namespace
 #endif
 
             InstallAction action(make_named_values<InstallActionOptions>(
-                        value_for<n::destination>(v_repo),
-                        value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::perform_uninstall>(&cannot_uninstall),
-                        value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
-                        value_for<n::want_phase>(&want_all_phases)
+                        n::destination() = v_repo,
+                        n::make_output_manager() = &make_standard_output_manager,
+                        n::perform_uninstall() = &cannot_uninstall,
+                        n::replacing() = make_shared_ptr(new PackageIDSequence),
+                        n::want_phase() = &want_all_phases
                     ));
 
             StringifyFormatter f;

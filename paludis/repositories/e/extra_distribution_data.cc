@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -51,23 +51,23 @@ namespace paludis
         static std::tr1::shared_ptr<EDistribution> make_data(const std::tr1::shared_ptr<const KeyValueConfigFile> & k)
         {
             return make_shared_ptr(new EDistribution(make_named_values<EDistribution>(
-                            value_for<n::default_buildroot>(k->get("default_buildroot")),
-                            value_for<n::default_distdir>(k->get("default_distdir")),
-                            value_for<n::default_eapi_when_unknown>(k->get("default_eapi_when_unknown")),
-                            value_for<n::default_eapi_when_unspecified>(k->get("default_eapi_when_unspecified")),
-                            value_for<n::default_layout>(k->get("default_layout")),
-                            value_for<n::default_names_cache>(k->get("default_names_cache")),
-                            value_for<n::default_profile_eapi>(k->get("default_profile_eapi")),
-                            value_for<n::default_profile_layout>(k->get("default_profile_layout")),
-                            value_for<n::default_provides_cache>(k->get("default_provides_cache")),
-                            value_for<n::default_write_cache>(k->get("default_write_cache")),
-                            value_for<n::news_directory>(FSEntry(k->get("news_directory"))),
-                            value_for<n::qa_category_dir_checks>(make_set(k->get("qa_category_dir_checks"))),
-                            value_for<n::qa_eclass_file_contents_checks>(make_set(k->get("qa_eclass_file_contents_checks"))),
-                            value_for<n::qa_package_dir_checks>(make_set(k->get("qa_package_dir_checks"))),
-                            value_for<n::qa_package_id_checks>(make_set(k->get("qa_package_id_checks"))),
-                            value_for<n::qa_package_id_file_contents_checks>(make_set(k->get("qa_package_id_file_contents_checks"))),
-                            value_for<n::qa_tree_checks>(make_set(k->get("qa_tree_checks")))
+                            n::default_buildroot() = k->get("default_buildroot"),
+                            n::default_distdir() = k->get("default_distdir"),
+                            n::default_eapi_when_unknown() = k->get("default_eapi_when_unknown"),
+                            n::default_eapi_when_unspecified() = k->get("default_eapi_when_unspecified"),
+                            n::default_layout() = k->get("default_layout"),
+                            n::default_names_cache() = k->get("default_names_cache"),
+                            n::default_profile_eapi() = k->get("default_profile_eapi"),
+                            n::default_profile_layout() = k->get("default_profile_layout"),
+                            n::default_provides_cache() = k->get("default_provides_cache"),
+                            n::default_write_cache() = k->get("default_write_cache"),
+                            n::news_directory() = FSEntry(k->get("news_directory")),
+                            n::qa_category_dir_checks() = make_set(k->get("qa_category_dir_checks")),
+                            n::qa_eclass_file_contents_checks() = make_set(k->get("qa_eclass_file_contents_checks")),
+                            n::qa_package_dir_checks() = make_set(k->get("qa_package_dir_checks")),
+                            n::qa_package_id_checks() = make_set(k->get("qa_package_id_checks")),
+                            n::qa_package_id_file_contents_checks() = make_set(k->get("qa_package_id_file_contents_checks")),
+                            n::qa_tree_checks() = make_set(k->get("qa_tree_checks"))
                             )));
         }
     };

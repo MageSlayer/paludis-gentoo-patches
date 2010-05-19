@@ -34,8 +34,8 @@ namespace
             const std::tr1::shared_ptr<const Sequence<std::string> > & s, const FSEntry & f)
     {
         return make_shared_ptr(new RepositoryMaskInfo(make_named_values<RepositoryMaskInfo>(
-                        value_for<n::comment>(s),
-                        value_for<n::mask_file>(f)
+                        n::comment() = s,
+                        n::mask_file() = f
                         )));
     }
 }

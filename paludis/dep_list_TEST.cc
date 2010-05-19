@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -1930,15 +1930,15 @@ namespace test_cases
         {
             TestEnvironment env;
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("repo")))));
+                            n::environment() = &env,
+                            n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
             std::tr1::shared_ptr<FakeInstalledRepository> destination_repo(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("installed_repo")),
-                            value_for<n::suitable_destination>(true),
-                            value_for<n::supports_uninstall>(true)
+                            n::environment() = &env,
+                            n::name() = RepositoryName("installed_repo"),
+                            n::suitable_destination() = true,
+                            n::supports_uninstall() = true
                             )));
             env.package_database()->add_repository(2, destination_repo);
 
@@ -1977,15 +1977,15 @@ namespace test_cases
         {
             TestEnvironment env;
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("repo")))));
+                            n::environment() = &env,
+                            n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
             std::tr1::shared_ptr<FakeInstalledRepository> destination_repo(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("installed_repo")),
-                            value_for<n::suitable_destination>(true),
-                            value_for<n::supports_uninstall>(true)
+                            n::environment() = &env,
+                            n::name() = RepositoryName("installed_repo"),
+                            n::suitable_destination() = true,
+                            n::supports_uninstall() = true
                             )));
             env.package_database()->add_repository(2, destination_repo);
 
@@ -2025,17 +2025,17 @@ namespace test_cases
             TestEnvironment env;
 
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("repo")))));
+                            n::environment() = &env,
+                            n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1");
 
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("installed_repo")),
-                            value_for<n::suitable_destination>(true),
-                            value_for<n::supports_uninstall>(true)
+                            n::environment() = &env,
+                            n::name() = RepositoryName("installed_repo"),
+                            n::suitable_destination() = true,
+                            n::supports_uninstall() = true
                             )));
             env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "one", "2");
@@ -2059,17 +2059,17 @@ namespace test_cases
             TestEnvironment env;
 
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("repo")))));
+                            n::environment() = &env,
+                            n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
 
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("installed_repo")),
-                            value_for<n::suitable_destination>(true),
-                            value_for<n::supports_uninstall>(true)
+                            n::environment() = &env,
+                            n::name() = RepositoryName("installed_repo"),
+                            n::suitable_destination() = true,
+                            n::supports_uninstall() = true
                             )));
             env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "two", "2");
@@ -2094,17 +2094,17 @@ namespace test_cases
             TestEnvironment env;
 
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("repo")))));
+                            n::environment() = &env,
+                            n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
 
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("installed_repo")),
-                            value_for<n::suitable_destination>(true),
-                            value_for<n::supports_uninstall>(true)
+                            n::environment() = &env,
+                            n::name() = RepositoryName("installed_repo"),
+                            n::suitable_destination() = true,
+                            n::supports_uninstall() = true
                             )));
             env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "two", "2");
@@ -2131,17 +2131,17 @@ namespace test_cases
             TestEnvironment env;
 
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("repo")))));
+                            n::environment() = &env,
+                            n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
 
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("installed_repo")),
-                            value_for<n::suitable_destination>(true),
-                            value_for<n::supports_uninstall>(true)
+                            n::environment() = &env,
+                            n::name() = RepositoryName("installed_repo"),
+                            n::suitable_destination() = true,
+                            n::supports_uninstall() = true
                             )));
             env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "two", "2");
@@ -2189,18 +2189,18 @@ namespace test_cases
             TestEnvironment env;
 
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("repo")))));
+                            n::environment() = &env,
+                            n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
             repo->add_version("cat", "two", "2");
 
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("installed_repo")),
-                            value_for<n::suitable_destination>(true),
-                            value_for<n::supports_uninstall>(true)
+                            n::environment() = &env,
+                            n::name() = RepositoryName("installed_repo"),
+                            n::suitable_destination() = true,
+                            n::supports_uninstall() = true
                             )));
             env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "two", "0");
@@ -2234,8 +2234,8 @@ namespace test_cases
             TestEnvironment env;
 
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("repo")))));
+                            n::environment() = &env,
+                            n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "zero", "1")->build_dependencies_key()->set_from_string(
                 "( cat/one cat/two cat/three-live cat/four-cvs cat/five-svn cat/six-darcs )");
@@ -2248,10 +2248,10 @@ namespace test_cases
 
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("installed_repo")),
-                            value_for<n::suitable_destination>(true),
-                            value_for<n::supports_uninstall>(true)
+                            n::environment() = &env,
+                            n::name() = RepositoryName("installed_repo"),
+                            n::suitable_destination() = true,
+                            n::supports_uninstall() = true
                             )));
             env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "one", "scm");
@@ -2283,8 +2283,8 @@ namespace test_cases
             TestEnvironment env;
 
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("repo")))));
+                            n::environment() = &env,
+                            n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/three");
             std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "two", "1"));
@@ -2295,10 +2295,10 @@ namespace test_cases
 
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("installed_repo")),
-                            value_for<n::suitable_destination>(true),
-                            value_for<n::supports_uninstall>(true)
+                            n::environment() = &env,
+                            n::name() = RepositoryName("installed_repo"),
+                            n::suitable_destination() = true,
+                            n::supports_uninstall() = true
                             )));
             env.package_database()->add_repository(2, installed_repo);
 

@@ -116,12 +116,12 @@ World::_add_string_to_world(const std::string & n) const
     }
 
     SetFile world(make_named_values<SetFileParams>(
-                value_for<n::environment>(_imp->env),
-                value_for<n::file_name>(*_imp->maybe_world_file),
-                value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All())),
-                value_for<n::set_operator_mode>(sfsmo_natural),
-                value_for<n::tag>(std::tr1::shared_ptr<DepTag>()),
-                value_for<n::type>(sft_simple)
+                n::environment() = _imp->env,
+                n::file_name() = *_imp->maybe_world_file,
+                n::parser() = std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All()),
+                n::set_operator_mode() = sfsmo_natural,
+                n::tag() = std::tr1::shared_ptr<DepTag>(),
+                n::type() = sft_simple
                 ));
     world.add(n);
     world.rewrite();
@@ -147,12 +147,12 @@ World::_remove_string_from_world(const std::string & n) const
     if (_imp->maybe_world_file->exists())
     {
         SetFile world(make_named_values<SetFileParams>(
-                value_for<n::environment>(_imp->env),
-                value_for<n::file_name>(*_imp->maybe_world_file),
-                value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All())),
-                value_for<n::set_operator_mode>(sfsmo_natural),
-                value_for<n::tag>(std::tr1::shared_ptr<DepTag>()),
-                value_for<n::type>(sft_simple)
+                n::environment() = _imp->env,
+                n::file_name() = *_imp->maybe_world_file,
+                n::parser() = std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All()),
+                n::set_operator_mode() = sfsmo_natural,
+                n::tag() = std::tr1::shared_ptr<DepTag>(),
+                n::type() = sft_simple
                 ));
 
         result = world.remove(n);
@@ -181,12 +181,12 @@ World::world_set() const
         if (_imp->maybe_world_file->exists())
         {
             SetFile world(make_named_values<SetFileParams>(
-                    value_for<n::environment>(_imp->env),
-                    value_for<n::file_name>(*_imp->maybe_world_file),
-                    value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All())),
-                    value_for<n::set_operator_mode>(sfsmo_natural),
-                    value_for<n::tag>(tag),
-                    value_for<n::type>(sft_simple)
+                    n::environment() = _imp->env,
+                    n::file_name() = *_imp->maybe_world_file,
+                    n::parser() = std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All()),
+                    n::set_operator_mode() = sfsmo_natural,
+                    n::tag() = tag,
+                    n::type() = sft_simple
                     ));
             return world.contents();
         }

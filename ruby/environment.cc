@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  * Copyright (c) 2007, 2008 Richard Brown
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -385,16 +385,16 @@ namespace
 
             std::tr1::shared_ptr<Environment> * e = new std::tr1::shared_ptr<Environment>(new
                     NoConfigEnvironment(make_named_values<no_config_environment::Params>(
-                            value_for<n::accept_unstable>(false),
-                            value_for<n::disable_metadata_cache>(false),
-                            value_for<n::extra_accept_keywords>(""),
-                            value_for<n::extra_params>(std::tr1::shared_ptr<Map<std::string, std::string> >()),
-                            value_for<n::extra_repository_dirs>(extra_repository_dirs),
-                            value_for<n::master_repository_name>(master_repository_name),
-                            value_for<n::profiles_if_not_auto>(""),
-                            value_for<n::repository_dir>(FSEntry(path)),
-                            value_for<n::repository_type>(no_config_environment::ncer_auto),
-                            value_for<n::write_cache>(write_cache)
+                            n::accept_unstable() = false,
+                            n::disable_metadata_cache() = false,
+                            n::extra_accept_keywords() = "",
+                            n::extra_params() = std::tr1::shared_ptr<Map<std::string, std::string> >(),
+                            n::extra_repository_dirs() = extra_repository_dirs,
+                            n::master_repository_name() = master_repository_name,
+                            n::profiles_if_not_auto() = "",
+                            n::repository_dir() = FSEntry(path),
+                            n::repository_type() = no_config_environment::ncer_auto,
+                            n::write_cache() = write_cache
                             )));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<Environment> >::free, e));
             rb_obj_call_init(tdata, argc, argv);

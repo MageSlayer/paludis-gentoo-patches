@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -65,17 +65,17 @@ namespace test_cases
 
             std::string in("|| ( a b ( c d e ) )"), out;
             ELikeDepParserCallbacks callbacks(make_named_values<ELikeDepParserCallbacks>(
-                        value_for<n::on_all>(std::tr1::bind(&handler, std::tr1::ref(out), "all<", "", "", "", "")),
-                        value_for<n::on_annotations>(std::tr1::bind(&handle_annotations, std::tr1::ref(out), _1)),
-                        value_for<n::on_any>(std::tr1::bind(&handler, std::tr1::ref(out), "any<", "", "", "", "")),
-                        value_for<n::on_arrow>(std::tr1::bind(&handler, std::tr1::ref(out), "a<", _1, ", ", _2, ">")),
-                        value_for<n::on_error>(std::tr1::bind(&handler, std::tr1::ref(out), "error<", _1, ">", "", "")),
-                        value_for<n::on_label>(std::tr1::bind(&handler, std::tr1::ref(out), "label<", _1, "", "", "")),
-                        value_for<n::on_pop>(std::tr1::bind(&handler, std::tr1::ref(out), ">", "", "", "", "")),
-                        value_for<n::on_should_be_empty>(std::tr1::bind(&handler, std::tr1::ref(out), "EMPTY", "", "", "", "")),
-                        value_for<n::on_string>(std::tr1::bind(&handler, std::tr1::ref(out), "s<", _1, ">", "", "")),
-                        value_for<n::on_use>(std::tr1::bind(&handler, std::tr1::ref(out), "use<", _1, ", ", "", "")),
-                        value_for<n::on_use_under_any>(&do_nothing)
+                        n::on_all() = std::tr1::bind(&handler, std::tr1::ref(out), "all<", "", "", "", ""),
+                        n::on_annotations() = std::tr1::bind(&handle_annotations, std::tr1::ref(out), _1),
+                        n::on_any() = std::tr1::bind(&handler, std::tr1::ref(out), "any<", "", "", "", ""),
+                        n::on_arrow() = std::tr1::bind(&handler, std::tr1::ref(out), "a<", _1, ", ", _2, ">"),
+                        n::on_error() = std::tr1::bind(&handler, std::tr1::ref(out), "error<", _1, ">", "", ""),
+                        n::on_label() = std::tr1::bind(&handler, std::tr1::ref(out), "label<", _1, "", "", ""),
+                        n::on_pop() = std::tr1::bind(&handler, std::tr1::ref(out), ">", "", "", "", ""),
+                        n::on_should_be_empty() = std::tr1::bind(&handler, std::tr1::ref(out), "EMPTY", "", "", "", ""),
+                        n::on_string() = std::tr1::bind(&handler, std::tr1::ref(out), "s<", _1, ">", "", ""),
+                        n::on_use() = std::tr1::bind(&handler, std::tr1::ref(out), "use<", _1, ", ", "", ""),
+                        n::on_use_under_any() = &do_nothing
                         ));
             parse_elike_dependencies(in, callbacks);
             TEST_CHECK_EQUAL(out, "any<s<a>s<b>all<s<c>s<d>s<e>>>EMPTY");
@@ -92,17 +92,17 @@ namespace test_cases
 
             std::string in("( ( ) )"), out;
             ELikeDepParserCallbacks callbacks(make_named_values<ELikeDepParserCallbacks>(
-                        value_for<n::on_all>(std::tr1::bind(&handler, std::tr1::ref(out), "all<", "", "", "", "")),
-                        value_for<n::on_annotations>(std::tr1::bind(&handle_annotations, std::tr1::ref(out), _1)),
-                        value_for<n::on_any>(std::tr1::bind(&handler, std::tr1::ref(out), "any<", "", "", "", "")),
-                        value_for<n::on_arrow>(std::tr1::bind(&handler, std::tr1::ref(out), "a<", _1, ", ", _2, ">")),
-                        value_for<n::on_error>(std::tr1::bind(&handler, std::tr1::ref(out), "error<", _1, ">", "", "")),
-                        value_for<n::on_label>(std::tr1::bind(&handler, std::tr1::ref(out), "label<", _1, "", "", "")),
-                        value_for<n::on_pop>(std::tr1::bind(&handler, std::tr1::ref(out), ">", "", "", "", "")),
-                        value_for<n::on_should_be_empty>(std::tr1::bind(&handler, std::tr1::ref(out), "EMPTY", "", "", "", "")),
-                        value_for<n::on_string>(std::tr1::bind(&handler, std::tr1::ref(out), "s<", _1, ">", "", "")),
-                        value_for<n::on_use>(std::tr1::bind(&handler, std::tr1::ref(out), "use<", _1, ", ", "", "")),
-                        value_for<n::on_use_under_any>(&do_nothing)
+                        n::on_all() = std::tr1::bind(&handler, std::tr1::ref(out), "all<", "", "", "", ""),
+                        n::on_annotations() = std::tr1::bind(&handle_annotations, std::tr1::ref(out), _1),
+                        n::on_any() = std::tr1::bind(&handler, std::tr1::ref(out), "any<", "", "", "", ""),
+                        n::on_arrow() = std::tr1::bind(&handler, std::tr1::ref(out), "a<", _1, ", ", _2, ">"),
+                        n::on_error() = std::tr1::bind(&handler, std::tr1::ref(out), "error<", _1, ">", "", ""),
+                        n::on_label() = std::tr1::bind(&handler, std::tr1::ref(out), "label<", _1, "", "", ""),
+                        n::on_pop() = std::tr1::bind(&handler, std::tr1::ref(out), ">", "", "", "", ""),
+                        n::on_should_be_empty() = std::tr1::bind(&handler, std::tr1::ref(out), "EMPTY", "", "", "", ""),
+                        n::on_string() = std::tr1::bind(&handler, std::tr1::ref(out), "s<", _1, ">", "", ""),
+                        n::on_use() = std::tr1::bind(&handler, std::tr1::ref(out), "use<", _1, ", ", "", ""),
+                        n::on_use_under_any() = &do_nothing
                     ));
             parse_elike_dependencies(in, callbacks);
             TEST_CHECK_EQUAL(out, "all<all<>>EMPTY");
@@ -119,17 +119,17 @@ namespace test_cases
 
             std::string in("a [[ first = foo second = [ bar baz ] ]]"), out;
             ELikeDepParserCallbacks callbacks(make_named_values<ELikeDepParserCallbacks>(
-                        value_for<n::on_all>(std::tr1::bind(&handler, std::tr1::ref(out), "all<", "", "", "", "")),
-                        value_for<n::on_annotations>(std::tr1::bind(&handle_annotations, std::tr1::ref(out), _1)),
-                        value_for<n::on_any>(std::tr1::bind(&handler, std::tr1::ref(out), "any<", "", "", "", "")),
-                        value_for<n::on_arrow>(std::tr1::bind(&handler, std::tr1::ref(out), "a<", _1, ", ", _2, ">")),
-                        value_for<n::on_error>(std::tr1::bind(&handler, std::tr1::ref(out), "error<", _1, ">", "", "")),
-                        value_for<n::on_label>(std::tr1::bind(&handler, std::tr1::ref(out), "label<", _1, "", "", "")),
-                        value_for<n::on_pop>(std::tr1::bind(&handler, std::tr1::ref(out), ">", "", "", "", "")),
-                        value_for<n::on_should_be_empty>(std::tr1::bind(&handler, std::tr1::ref(out), "EMPTY", "", "", "", "")),
-                        value_for<n::on_string>(std::tr1::bind(&handler, std::tr1::ref(out), "s<", _1, ">", "", "")),
-                        value_for<n::on_use>(std::tr1::bind(&handler, std::tr1::ref(out), "use<", _1, ", ", "", "")),
-                        value_for<n::on_use_under_any>(&do_nothing)
+                        n::on_all() = std::tr1::bind(&handler, std::tr1::ref(out), "all<", "", "", "", ""),
+                        n::on_annotations() = std::tr1::bind(&handle_annotations, std::tr1::ref(out), _1),
+                        n::on_any() = std::tr1::bind(&handler, std::tr1::ref(out), "any<", "", "", "", ""),
+                        n::on_arrow() = std::tr1::bind(&handler, std::tr1::ref(out), "a<", _1, ", ", _2, ">"),
+                        n::on_error() = std::tr1::bind(&handler, std::tr1::ref(out), "error<", _1, ">", "", ""),
+                        n::on_label() = std::tr1::bind(&handler, std::tr1::ref(out), "label<", _1, "", "", ""),
+                        n::on_pop() = std::tr1::bind(&handler, std::tr1::ref(out), ">", "", "", "", ""),
+                        n::on_should_be_empty() = std::tr1::bind(&handler, std::tr1::ref(out), "EMPTY", "", "", "", ""),
+                        n::on_string() = std::tr1::bind(&handler, std::tr1::ref(out), "s<", _1, ">", "", ""),
+                        n::on_use() = std::tr1::bind(&handler, std::tr1::ref(out), "use<", _1, ", ", "", ""),
+                        n::on_use_under_any() = &do_nothing
                     ));
             parse_elike_dependencies(in, callbacks);
             TEST_CHECK_EQUAL(out, "s<a>[first:foo;second:bar baz;]EMPTY");

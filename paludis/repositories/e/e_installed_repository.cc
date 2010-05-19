@@ -159,7 +159,7 @@ EInstalledRepository::perform_hook(const Hook & hook)
     if (hook.name() == "sync_all_post")
         perform_updates();
 
-    return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
+    return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
 const bool
@@ -237,28 +237,28 @@ EInstalledRepository::perform_config(
             phase != phase_end ; ++phase)
     {
         EbuildConfigCommand config_cmd(make_named_values<EbuildCommandParams>(
-                    value_for<n::builddir>(_imp->params.builddir()),
-                    value_for<n::clearenv>(phase->option("clearenv")),
-                    value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
-                    value_for<n::distdir>(ver_dir),
-                    value_for<n::ebuild_dir>(ver_dir),
-                    value_for<n::ebuild_file>(ver_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild")),
-                    value_for<n::eclassdirs>(eclassdirs),
-                    value_for<n::environment>(_imp->params.environment()),
-                    value_for<n::exlibsdirs>(make_shared_ptr(new FSEntrySequence)),
-                    value_for<n::files_dir>(ver_dir),
-                    value_for<n::maybe_output_manager>(output_manager),
-                    value_for<n::package_builddir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-config")),
-                    value_for<n::package_id>(id),
-                    value_for<n::portdir>(ver_dir),
-                    value_for<n::root>(stringify(_imp->params.root())),
-                    value_for<n::sandbox>(phase->option("sandbox")),
-                    value_for<n::sydbox>(phase->option("sydbox")),
-                    value_for<n::userpriv>(phase->option("userpriv"))
+                    n::builddir() = _imp->params.builddir(),
+                    n::clearenv() = phase->option("clearenv"),
+                    n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                    n::distdir() = ver_dir,
+                    n::ebuild_dir() = ver_dir,
+                    n::ebuild_file() = ver_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild"),
+                    n::eclassdirs() = eclassdirs,
+                    n::environment() = _imp->params.environment(),
+                    n::exlibsdirs() = make_shared_ptr(new FSEntrySequence),
+                    n::files_dir() = ver_dir,
+                    n::maybe_output_manager() = output_manager,
+                    n::package_builddir() = _imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-config"),
+                    n::package_id() = id,
+                    n::portdir() = ver_dir,
+                    n::root() = stringify(_imp->params.root()),
+                    n::sandbox() = phase->option("sandbox"),
+                    n::sydbox() = phase->option("sydbox"),
+                    n::userpriv() = phase->option("userpriv")
                 ),
 
                 make_named_values<EbuildConfigCommandParams>(
-                    value_for<n::load_environment>(load_env.get())
+                    n::load_environment() = load_env.get()
                 ));
 
         config_cmd();
@@ -346,36 +346,36 @@ EInstalledRepository::perform_info(
         }
 
         EbuildInfoCommand info_cmd(make_named_values<EbuildCommandParams>(
-                    value_for<n::builddir>(_imp->params.builddir()),
-                    value_for<n::clearenv>(phase->option("clearenv")),
-                    value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
-                    value_for<n::distdir>(ver_dir),
-                    value_for<n::ebuild_dir>(ver_dir),
-                    value_for<n::ebuild_file>(ver_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild")),
-                    value_for<n::eclassdirs>(eclassdirs),
-                    value_for<n::environment>(_imp->params.environment()),
-                    value_for<n::exlibsdirs>(make_shared_ptr(new FSEntrySequence)),
-                    value_for<n::files_dir>(ver_dir),
-                    value_for<n::maybe_output_manager>(output_manager),
-                    value_for<n::package_builddir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-info")),
-                    value_for<n::package_id>(id),
-                    value_for<n::portdir>(ver_dir),
-                    value_for<n::root>(stringify(_imp->params.root())),
-                    value_for<n::sandbox>(phase->option("sandbox")),
-                    value_for<n::sydbox>(phase->option("sydbox")),
-                    value_for<n::userpriv>(phase->option("userpriv"))
+                    n::builddir() = _imp->params.builddir(),
+                    n::clearenv() = phase->option("clearenv"),
+                    n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                    n::distdir() = ver_dir,
+                    n::ebuild_dir() = ver_dir,
+                    n::ebuild_file() = ver_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild"),
+                    n::eclassdirs() = eclassdirs,
+                    n::environment() = _imp->params.environment(),
+                    n::exlibsdirs() = make_shared_ptr(new FSEntrySequence),
+                    n::files_dir() = ver_dir,
+                    n::maybe_output_manager() = output_manager,
+                    n::package_builddir() = _imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-info"),
+                    n::package_id() = id,
+                    n::portdir() = ver_dir,
+                    n::root() = stringify(_imp->params.root()),
+                    n::sandbox() = phase->option("sandbox"),
+                    n::sydbox() = phase->option("sydbox"),
+                    n::userpriv() = phase->option("userpriv")
                 ),
 
                 make_named_values<EbuildInfoCommandParams>(
-                    value_for<n::expand_vars>(make_shared_ptr(new Map<std::string, std::string>)),
-                    value_for<n::info_vars>(i ? i : make_shared_ptr(new const Set<std::string>)),
-                    value_for<n::load_environment>(load_env.get()),
-                    value_for<n::profiles>(make_shared_ptr(new FSEntrySequence)),
-                    value_for<n::profiles_with_parents>(make_shared_ptr(new FSEntrySequence)),
-                    value_for<n::use>(""),
-                    value_for<n::use_ebuild_file>(false),
-                    value_for<n::use_expand>(""),
-                    value_for<n::use_expand_hidden>("")
+                    n::expand_vars() = make_shared_ptr(new Map<std::string, std::string>),
+                    n::info_vars() = i ? i : make_shared_ptr(new const Set<std::string>),
+                    n::load_environment() = load_env.get(),
+                    n::profiles() = make_shared_ptr(new FSEntrySequence),
+                    n::profiles_with_parents() = make_shared_ptr(new FSEntrySequence),
+                    n::use() = "",
+                    n::use_ebuild_file() = false,
+                    n::use_expand() = "",
+                    n::use_expand_hidden() = ""
                     ));
 
         info_cmd();

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -89,12 +89,12 @@ UnwrittenRepository::UnwrittenRepository(const UnwrittenRepositoryParams & p) :
             p.environment(),
             p.name(),
             make_named_values<RepositoryCapabilities>(
-                value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
-                value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
-                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
-                value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
-                value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
-                value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
+                n::destination_interface() = static_cast<RepositoryDestinationInterface *>(0),
+                n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
+                n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
+                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
+                n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
+                n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
     _imp(PrivateImplementationPattern<UnwrittenRepository>::_imp)
 {
@@ -269,14 +269,14 @@ UnwrittenRepository::sync(const std::tr1::shared_ptr<OutputManager> & output_man
             s_end(sync_list.end()) ; s != s_end ; ++s)
     {
         DefaultSyncer syncer(make_named_values<SyncerParams>(
-                    value_for<n::environment>(_imp->params.environment()),
-                    value_for<n::local>(stringify(_imp->params.location())),
-                    value_for<n::remote>(*s)
+                    n::environment() = _imp->params.environment(),
+                    n::local() = stringify(_imp->params.location()),
+                    n::remote() = *s
                     ));
         SyncOptions opts(make_named_values<SyncOptions>(
-                    value_for<n::filter_file>(FSEntry("/dev/null")),
-                    value_for<n::options>(_imp->params.sync_options()),
-                    value_for<n::output_manager>(output_manager)
+                    n::filter_file() = FSEntry("/dev/null"),
+                    n::options() = _imp->params.sync_options(),
+                    n::output_manager() = output_manager
                     ));
         try
         {
@@ -318,11 +318,11 @@ UnwrittenRepository::repository_factory_create(
 
     return std::tr1::shared_ptr<UnwrittenRepository>(new UnwrittenRepository(
                 make_named_values<UnwrittenRepositoryParams>(
-                    value_for<n::environment>(env),
-                    value_for<n::location>(location),
-                    value_for<n::name>(RepositoryName(name_str)),
-                    value_for<n::sync>(sync),
-                    value_for<n::sync_options>(sync_options)
+                    n::environment() = env,
+                    n::location() = location,
+                    n::name() = RepositoryName(name_str),
+                    n::sync() = sync,
+                    n::sync_options() = sync_options
                 )));
 }
 
@@ -353,7 +353,7 @@ UnwrittenRepository::populate_sets() const
 HookResult
 UnwrittenRepository::perform_hook(const Hook &)
 {
-    return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
+    return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::string> >

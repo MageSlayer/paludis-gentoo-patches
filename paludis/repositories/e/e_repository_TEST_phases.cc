@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -138,10 +138,10 @@ namespace
 
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("installed")),
-                            value_for<n::suitable_destination>(true),
-                            value_for<n::supports_uninstall>(true)
+                            n::environment() = &env,
+                            n::name() = RepositoryName("installed"),
+                            n::suitable_destination() = true,
+                            n::supports_uninstall() = true
                             )));
             installed_repo->add_version("cat", "pretend-installed", "0")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
             installed_repo->add_version("cat", "pretend-installed", "1")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
@@ -162,11 +162,11 @@ namespace
             extra_settings(env);
 
             InstallAction action(make_named_values<InstallActionOptions>(
-                        value_for<n::destination>(installed_repo),
-                        value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::perform_uninstall>(&cannot_uninstall),
-                        value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
-                        value_for<n::want_phase>(&want_all_phases)
+                        n::destination() = installed_repo,
+                        n::make_output_manager() = &make_standard_output_manager,
+                        n::perform_uninstall() = &cannot_uninstall,
+                        n::replacing() = make_shared_ptr(new PackageIDSequence),
+                        n::want_phase() = &want_all_phases
                     ));
 
             const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(

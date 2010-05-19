@@ -165,7 +165,7 @@ TestEnvironment::mirrors(const std::string & s) const
 HookResult
 TestEnvironment::perform_hook(const Hook &) const
 {
-    return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
+    return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
 std::tr1::shared_ptr<const FSEntrySequence>

@@ -936,14 +936,14 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             FetchAction action(make_named_values<FetchActionOptions>(
-                        value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
-                        value_for<n::exclude_unmirrorable>(false),
-                        value_for<n::fetch_parts>(FetchParts() + fp_regulars + fp_extras),
-                        value_for<n::ignore_not_in_manifest>(false),
-                        value_for<n::ignore_unfetched>(false),
-                        value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::safe_resume>(true),
-                        value_for<n::want_phase>(std::tr1::bind(return_literal_function(wp_yes)))
+                        n::errors() = make_shared_ptr(new Sequence<FetchActionFailure>),
+                        n::exclude_unmirrorable() = false,
+                        n::fetch_parts() = FetchParts() + fp_regulars + fp_extras,
+                        n::ignore_not_in_manifest() = false,
+                        n::ignore_unfetched() = false,
+                        n::make_output_manager() = &make_standard_output_manager,
+                        n::safe_resume() = true,
+                        n::want_phase() = std::tr1::bind(return_literal_function(wp_yes))
                     ));
 
             {
@@ -1045,14 +1045,14 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             FetchAction action(make_named_values<FetchActionOptions>(
-                        value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
-                        value_for<n::exclude_unmirrorable>(false),
-                        value_for<n::fetch_parts>(FetchParts() + fp_regulars + fp_extras),
-                        value_for<n::ignore_not_in_manifest>(false),
-                        value_for<n::ignore_unfetched>(false),
-                        value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::safe_resume>(true),
-                        value_for<n::want_phase>(std::tr1::bind(return_literal_function(wp_yes)))
+                        n::errors() = make_shared_ptr(new Sequence<FetchActionFailure>),
+                        n::exclude_unmirrorable() = false,
+                        n::fetch_parts() = FetchParts() + fp_regulars + fp_extras,
+                        n::ignore_not_in_manifest() = false,
+                        n::ignore_unfetched() = false,
+                        n::make_output_manager() = &make_standard_output_manager,
+                        n::safe_resume() = true,
+                        n::want_phase() = std::tr1::bind(return_literal_function(wp_yes))
                     ));
 
             const std::tr1::shared_ptr<const PackageID> id(*env[selection::AllVersionsSorted(generator::Matches(

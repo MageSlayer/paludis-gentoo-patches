@@ -250,26 +250,26 @@ EbuildID::need_keys_added() const
                         + (count == 0 ? "no" : stringify(count)) + " ebuild variable phases but expected exactly one");
 
             EbuildMetadataCommand cmd(make_named_values<EbuildCommandParams>(
-                    value_for<n::builddir>(_imp->repository->params().builddir()),
-                    value_for<n::clearenv>(phases.begin_phases()->option("clearenv")),
-                    value_for<n::commands>(join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " ")),
-                    value_for<n::distdir>(_imp->repository->params().distdir()),
-                    value_for<n::ebuild_dir>(_imp->repository->layout()->package_directory(name())),
-                    value_for<n::ebuild_file>(_imp->ebuild),
-                    value_for<n::eclassdirs>(_imp->repository->params().eclassdirs()),
-                    value_for<n::environment>(_imp->environment),
-                    value_for<n::exlibsdirs>(_imp->repository->layout()->exlibsdirs(name())),
-                    value_for<n::files_dir>(_imp->repository->layout()->package_directory(name()) / "files"),
-                    value_for<n::maybe_output_manager>(make_null_shared_ptr()),
-                    value_for<n::package_builddir>(_imp->repository->params().builddir() / (stringify(name().category()) + "-" + stringify(name().package()) + "-" + stringify(version()) + "-metadata")),
-                    value_for<n::package_id>(shared_from_this()),
-                    value_for<n::portdir>(
+                    n::builddir() = _imp->repository->params().builddir(),
+                    n::clearenv() = phases.begin_phases()->option("clearenv"),
+                    n::commands() = join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " "),
+                    n::distdir() = _imp->repository->params().distdir(),
+                    n::ebuild_dir() = _imp->repository->layout()->package_directory(name()),
+                    n::ebuild_file() = _imp->ebuild,
+                    n::eclassdirs() = _imp->repository->params().eclassdirs(),
+                    n::environment() = _imp->environment,
+                    n::exlibsdirs() = _imp->repository->layout()->exlibsdirs(name()),
+                    n::files_dir() = _imp->repository->layout()->package_directory(name()) / "files",
+                    n::maybe_output_manager() = make_null_shared_ptr(),
+                    n::package_builddir() = _imp->repository->params().builddir() / (stringify(name().category()) + "-" + stringify(name().package()) + "-" + stringify(version()) + "-metadata"),
+                    n::package_id() = shared_from_this(),
+                    n::portdir() = 
                         (_imp->repository->params().master_repositories() && ! _imp->repository->params().master_repositories()->empty()) ?
-                        (*_imp->repository->params().master_repositories()->begin())->params().location() : _imp->repository->params().location()),
-                    value_for<n::root>("/"),
-                    value_for<n::sandbox>(phases.begin_phases()->option("sandbox")),
-                    value_for<n::sydbox>(phases.begin_phases()->option("sydbox")),
-                    value_for<n::userpriv>(phases.begin_phases()->option("userpriv"))
+                        (*_imp->repository->params().master_repositories()->begin())->params().location() : _imp->repository->params().location(),
+                    n::root() = "/",
+                    n::sandbox() = phases.begin_phases()->option("sandbox"),
+                    n::sydbox() = phases.begin_phases()->option("sydbox"),
+                    n::userpriv() = phases.begin_phases()->option("userpriv")
                     ));
 
             if (! cmd())
@@ -485,10 +485,10 @@ EbuildID::need_masks_added() const
         {
             add_overridden_mask(make_shared_ptr(new OverriddenMask(
                             make_named_values<OverriddenMask>(
-                                value_for<n::mask>(make_shared_ptr(new EUnacceptedMask('~',
+                                n::mask() = make_shared_ptr(new EUnacceptedMask('~',
                                             DistributionData::get_instance()->distribution_from_string(
-                                                _imp->environment->distribution())->concept_keyword() + " (unstable accepted)", keywords_key()))),
-                                value_for<n::override_reason>(mro_accepted_unstable)
+                                                _imp->environment->distribution())->concept_keyword() + " (unstable accepted)", keywords_key())),
+                                n::override_reason() = mro_accepted_unstable
                                 ))));
         }
     }
@@ -524,16 +524,16 @@ EbuildID::need_masks_added() const
         if (_imp->repository_mask->value())
             add_overridden_mask(make_shared_ptr(new OverriddenMask(
                             make_named_values<OverriddenMask>(
-                                value_for<n::mask>(make_shared_ptr(new ERepositoryMask('r', "repository (overridden)", _imp->repository_mask))),
-                                value_for<n::override_reason>(mro_overridden_by_user)
+                                n::mask() = make_shared_ptr(new ERepositoryMask('r', "repository (overridden)", _imp->repository_mask)),
+                                n::override_reason() = mro_overridden_by_user
                                 ))));
 
         /* profile unless user */
         if (_imp->profile_mask->value())
             add_overridden_mask(make_shared_ptr(new OverriddenMask(
                             make_named_values<OverriddenMask>(
-                                value_for<n::mask>(make_shared_ptr(new ERepositoryMask('p', "profile (overridden)", _imp->profile_mask))),
-                                value_for<n::override_reason>(mro_overridden_by_user)
+                                n::mask() = make_shared_ptr(new ERepositoryMask('p', "profile (overridden)", _imp->profile_mask)),
+                                n::override_reason() = mro_overridden_by_user
                                 ))));
 
         /* user */
@@ -541,8 +541,8 @@ EbuildID::need_masks_added() const
         if (user_mask)
             add_overridden_mask(make_shared_ptr(new OverriddenMask(
                             make_named_values<OverriddenMask>(
-                                value_for<n::mask>(user_mask),
-                                value_for<n::override_reason>(mro_overridden_by_user)
+                                n::mask() = user_mask,
+                                n::override_reason() = mro_overridden_by_user
                                 ))));
 
     }
@@ -1364,13 +1364,13 @@ EbuildID::add_build_options(const std::tr1::shared_ptr<Choices> & choices) const
     if (eapi()->supported())
     {
         std::tr1::shared_ptr<Choice> build_options(new Choice(make_named_values<ChoiceParams>(
-                        value_for<n::consider_added_or_changed>(false),
-                        value_for<n::contains_every_value>(false),
-                        value_for<n::hidden>(false),
-                        value_for<n::human_name>(canonical_build_options_human_name()),
-                        value_for<n::prefix>(canonical_build_options_prefix()),
-                        value_for<n::raw_name>(canonical_build_options_raw_name()),
-                        value_for<n::show_with_no_prefix>(false)
+                        n::consider_added_or_changed() = false,
+                        n::contains_every_value() = false,
+                        n::hidden() = false,
+                        n::human_name() = canonical_build_options_human_name(),
+                        n::prefix() = canonical_build_options_prefix(),
+                        n::raw_name() = canonical_build_options_raw_name(),
+                        n::show_with_no_prefix() = false
                         )));
         choices->add(build_options);
 

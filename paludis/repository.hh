@@ -56,28 +56,28 @@ namespace paludis
 {
     namespace n
     {
-        struct arch;
-        struct build_start_time;
-        struct destination_interface;
-        struct environment_file;
-        struct environment_variable_interface;
-        struct image_dir;
-        struct make_virtuals_interface;
-        struct manifest_interface;
-        struct merged_entries;
-        struct options;
-        struct output_manager;
-        struct package_id;
-        struct path;
-        struct perform_uninstall;
-        struct profile;
-        struct provided_by;
-        struct provided_by_spec;
-        struct provides_interface;
-        struct status;
-        struct used_this_for_config_protect;
-        struct virtual_name;
-        struct virtuals_interface;
+        typedef Name<struct arch_name> arch;
+        typedef Name<struct build_start_time_name> build_start_time;
+        typedef Name<struct destination_interface_name> destination_interface;
+        typedef Name<struct environment_file_name> environment_file;
+        typedef Name<struct environment_variable_interface_name> environment_variable_interface;
+        typedef Name<struct image_dir_name> image_dir;
+        typedef Name<struct make_virtuals_interface_name> make_virtuals_interface;
+        typedef Name<struct manifest_interface_name> manifest_interface;
+        typedef Name<struct merged_entries_name> merged_entries;
+        typedef Name<struct options_name> options;
+        typedef Name<struct output_manager_name> output_manager;
+        typedef Name<struct package_id_name> package_id;
+        typedef Name<struct path_name> path;
+        typedef Name<struct perform_uninstall_name> perform_uninstall;
+        typedef Name<struct profile_name> profile;
+        typedef Name<struct provided_by_name> provided_by;
+        typedef Name<struct provided_by_spec_name> provided_by_spec;
+        typedef Name<struct provides_interface_name> provides_interface;
+        typedef Name<struct status_name> status;
+        typedef Name<struct used_this_for_config_protect_name> used_this_for_config_protect;
+        typedef Name<struct virtual_name_name> virtual_name;
+        typedef Name<struct virtuals_interface_name> virtuals_interface;
     }
 
     /**

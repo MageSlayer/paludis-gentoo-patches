@@ -28,19 +28,19 @@ namespace paludis
 {
     namespace n
     {
-        struct bashrc_filename;
-        struct info_messages_are_spam;
-        struct keywords_filename_part;
-        struct licenses_filename_part;
-        struct mandatory_userpriv;
-        struct mirrors_filename_part;
-        struct output_filename_part;
-        struct output_managers_directory;
-        struct package_mask_filename_part;
-        struct package_unmask_filename_part;
-        struct repositories_directory;
-        struct repository_defaults_filename_part;
-        struct use_filename_part;
+        typedef Name<struct bashrc_filename_name> bashrc_filename;
+        typedef Name<struct info_messages_are_spam_name> info_messages_are_spam;
+        typedef Name<struct keywords_filename_part_name> keywords_filename_part;
+        typedef Name<struct licenses_filename_part_name> licenses_filename_part;
+        typedef Name<struct mandatory_userpriv_name> mandatory_userpriv;
+        typedef Name<struct mirrors_filename_part_name> mirrors_filename_part;
+        typedef Name<struct output_filename_part_name> output_filename_part;
+        typedef Name<struct output_managers_directory_name> output_managers_directory;
+        typedef Name<struct package_mask_filename_part_name> package_mask_filename_part;
+        typedef Name<struct package_unmask_filename_part_name> package_unmask_filename_part;
+        typedef Name<struct repositories_directory_name> repositories_directory;
+        typedef Name<struct repository_defaults_filename_part_name> repository_defaults_filename_part;
+        typedef Name<struct use_filename_part_name> use_filename_part;
     }
 
     namespace paludis_environment

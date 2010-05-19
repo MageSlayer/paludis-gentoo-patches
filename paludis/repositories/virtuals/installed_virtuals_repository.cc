@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -110,12 +110,12 @@ namespace
 InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * const env,
         const FSEntry & r) :
     Repository(env, RepositoryName(make_name(r)), make_named_values<RepositoryCapabilities>(
-                value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(this)),
-                value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
-                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
-                value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
-                value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
-                value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
+                n::destination_interface() = static_cast<RepositoryDestinationInterface *>(this),
+                n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
+                n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
+                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
+                n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
+                n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
     PrivateImplementationPattern<InstalledVirtualsRepository>(
             new Implementation<InstalledVirtualsRepository>(env, r)),
@@ -237,7 +237,7 @@ InstalledVirtualsRepository::perform_hook(const Hook & hook)
     Context context("When performing hook '" + stringify(hook.name()) + "' for repository '"
             + stringify(name()) + "':");
 
-    return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
+    return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
 bool

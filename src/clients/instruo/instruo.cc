@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -329,16 +329,16 @@ main(int argc, char *argv[])
         std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
         keys->insert("append_repository_name_to_write_cache", "false");
         NoConfigEnvironment env(make_named_values<no_config_environment::Params>(
-                    value_for<n::accept_unstable>(true),
-                    value_for<n::disable_metadata_cache>(true),
-                    value_for<n::extra_accept_keywords>(""),
-                    value_for<n::extra_params>(keys),
-                    value_for<n::extra_repository_dirs>(extra_repository_dirs),
-                    value_for<n::master_repository_name>(CommandLine::get_instance()->a_master_repository_name.argument()),
-                    value_for<n::profiles_if_not_auto>(""),
-                    value_for<n::repository_dir>(CommandLine::get_instance()->a_repository_directory.argument()),
-                    value_for<n::repository_type>(no_config_environment::ncer_ebuild),
-                    value_for<n::write_cache>(CommandLine::get_instance()->a_output_directory.argument())
+                    n::accept_unstable() = true,
+                    n::disable_metadata_cache() = true,
+                    n::extra_accept_keywords() = "",
+                    n::extra_params() = keys,
+                    n::extra_repository_dirs() = extra_repository_dirs,
+                    n::master_repository_name() = CommandLine::get_instance()->a_master_repository_name.argument(),
+                    n::profiles_if_not_auto() = "",
+                    n::repository_dir() = CommandLine::get_instance()->a_repository_directory.argument(),
+                    n::repository_type() = no_config_environment::ncer_ebuild,
+                    n::write_cache() = CommandLine::get_instance()->a_output_directory.argument()
                 ));
 
         std::tr1::shared_ptr<PackageIDSequence> ids(env[selection::AllVersionsSorted(

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -150,18 +150,18 @@ void
 ConsoleQueryTask::display_header(const PackageDepSpec & a, const std::tr1::shared_ptr<const PackageID> & e) const
 {
     if (package_dep_spec_has_properties(a, make_named_values<PackageDepSpecProperties>(
-                    value_for<n::has_additional_requirements>(false),
-                    value_for<n::has_category_name_part>(false),
-                    value_for<n::has_from_repository>(false),
-                    value_for<n::has_in_repository>(false),
-                    value_for<n::has_installable_to_path>(false),
-                    value_for<n::has_installable_to_repository>(false),
-                    value_for<n::has_installed_at_path>(false),
-                    value_for<n::has_package>(true),
-                    value_for<n::has_package_name_part>(false),
-                    value_for<n::has_slot_requirement>(false),
-                    value_for<n::has_tag>(indeterminate),
-                    value_for<n::has_version_requirements>(false)
+                    n::has_additional_requirements() = false,
+                    n::has_category_name_part() = false,
+                    n::has_from_repository() = false,
+                    n::has_in_repository() = false,
+                    n::has_installable_to_path() = false,
+                    n::has_installable_to_repository() = false,
+                    n::has_installed_at_path() = false,
+                    n::has_package() = true,
+                    n::has_package_name_part() = false,
+                    n::has_slot_requirement() = false,
+                    n::has_tag() = indeterminate,
+                    n::has_version_requirements() = false
                     )))
         output_starred_item(render_as_package_name(stringify(e->name())));
     else
@@ -172,18 +172,18 @@ void
 ConsoleQueryTask::display_compact(const PackageDepSpec & a, const std::tr1::shared_ptr<const PackageID> & e) const
 {
     if (package_dep_spec_has_properties(a, make_named_values<PackageDepSpecProperties>(
-                    value_for<n::has_additional_requirements>(false),
-                    value_for<n::has_category_name_part>(false),
-                    value_for<n::has_from_repository>(false),
-                    value_for<n::has_in_repository>(false),
-                    value_for<n::has_installable_to_path>(false),
-                    value_for<n::has_installable_to_repository>(false),
-                    value_for<n::has_installed_at_path>(false),
-                    value_for<n::has_package>(true),
-                    value_for<n::has_package_name_part>(false),
-                    value_for<n::has_slot_requirement>(false),
-                    value_for<n::has_tag>(indeterminate),
-                    value_for<n::has_version_requirements>(false)
+                    n::has_additional_requirements() = false,
+                    n::has_category_name_part() = false,
+                    n::has_from_repository() = false,
+                    n::has_in_repository() = false,
+                    n::has_installable_to_path() = false,
+                    n::has_installable_to_repository() = false,
+                    n::has_installed_at_path() = false,
+                    n::has_package() = true,
+                    n::has_package_name_part() = false,
+                    n::has_slot_requirement() = false,
+                    n::has_tag() = indeterminate,
+                    n::has_version_requirements() = false
                     )))
     {
         std::string pad(std::max<long>(1, 30 - stringify(e->name()).length()), ' ');

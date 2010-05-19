@@ -32,13 +32,13 @@ namespace paludis
 {
     namespace n
     {
-        struct all_resolutions;
-        struct job_ids_needing_confirmation;
-        struct jobs;
-        struct taken_error_job_ids;
-        struct taken_job_ids;
-        struct untaken_error_job_ids;
-        struct untaken_job_ids;
+        typedef Name<struct all_resolutions_name> all_resolutions;
+        typedef Name<struct job_ids_needing_confirmation_name> job_ids_needing_confirmation;
+        typedef Name<struct jobs_name> jobs;
+        typedef Name<struct taken_error_job_ids_name> taken_error_job_ids;
+        typedef Name<struct taken_job_ids_name> taken_job_ids;
+        typedef Name<struct untaken_error_job_ids_name> untaken_error_job_ids;
+        typedef Name<struct untaken_job_ids_name> untaken_job_ids;
     }
 
     namespace resolver

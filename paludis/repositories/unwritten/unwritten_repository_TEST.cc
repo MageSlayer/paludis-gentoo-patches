@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -49,11 +49,11 @@ namespace test_cases
             TestEnvironment env;
             std::tr1::shared_ptr<UnwrittenRepository> repo(new UnwrittenRepository(
                         make_named_values<UnwrittenRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::location>(FSEntry::cwd() / "unwritten_repository_TEST_dir" / "repo1"),
-                            value_for<n::name>(RepositoryName("unwritten")),
-                            value_for<n::sync>(""),
-                            value_for<n::sync_options>("")
+                            n::environment() = &env,
+                            n::location() = FSEntry::cwd() / "unwritten_repository_TEST_dir" / "repo1",
+                            n::name() = RepositoryName("unwritten"),
+                            n::sync() = "",
+                            n::sync_options() = ""
                         )));
             env.package_database()->add_repository(1, repo);
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "unwritten");
@@ -69,11 +69,11 @@ namespace test_cases
             TestEnvironment env;
             std::tr1::shared_ptr<UnwrittenRepository> repo(new UnwrittenRepository(
                         make_named_values<UnwrittenRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::location>(FSEntry::cwd() / "unwritten_repository_TEST_dir" / "repo2"),
-                            value_for<n::name>(RepositoryName("unwritten")),
-                            value_for<n::sync>(""),
-                            value_for<n::sync_options>("")
+                            n::environment() = &env,
+                            n::location() = FSEntry::cwd() / "unwritten_repository_TEST_dir" / "repo2",
+                            n::name() = RepositoryName("unwritten"),
+                            n::sync() = "",
+                            n::sync_options() = ""
                         )));
             env.package_database()->add_repository(1, repo);
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "unwritten");

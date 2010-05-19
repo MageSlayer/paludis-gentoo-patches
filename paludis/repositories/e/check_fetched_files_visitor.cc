@@ -203,10 +203,10 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
             case manifest_require:
             case last_manifest:
                 _imp->failures->push_back(make_named_values<FetchActionFailure>(
-                        value_for<n::failed_automatic_fetching>(false),
-                        value_for<n::failed_integrity_checks>("No Manifest available"),
-                        value_for<n::requires_manual_fetching>(false),
-                        value_for<n::target_file>(stringify(distfile.basename()))
+                        n::failed_automatic_fetching() = false,
+                        n::failed_integrity_checks() = "No Manifest available",
+                        n::requires_manual_fetching() = false,
+                        n::target_file() = stringify(distfile.basename())
                         ));
                 return false;
 
@@ -234,10 +234,10 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                 << "Malformed Manifest: no file size found";
             _imp->output_manager->stdout_stream() << "incorrect size";
             _imp->failures->push_back(make_named_values<FetchActionFailure>(
-                    value_for<n::failed_automatic_fetching>(false),
-                    value_for<n::failed_integrity_checks>("Incorrect file size"),
-                    value_for<n::requires_manual_fetching>(false),
-                    value_for<n::target_file>(stringify(distfile.basename()))
+                    n::failed_automatic_fetching() = false,
+                    n::failed_integrity_checks() = "Incorrect file size",
+                    n::requires_manual_fetching() = false,
+                    n::target_file() = stringify(distfile.basename())
                     ));
             return false;
         }
@@ -258,10 +258,10 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                         << "Malformed Manifest: failed RMD160 checksum";
                     _imp->output_manager->stdout_stream() << "failed RMD160";
                     _imp->failures->push_back(make_named_values<FetchActionFailure>(
-                            value_for<n::failed_automatic_fetching>(false),
-                            value_for<n::failed_integrity_checks>("Failed RMD160 checksum"),
-                            value_for<n::requires_manual_fetching>(false),
-                            value_for<n::target_file>(stringify(distfile.basename()))
+                            n::failed_automatic_fetching() = false,
+                            n::failed_integrity_checks() = "Failed RMD160 checksum",
+                            n::requires_manual_fetching() = false,
+                            n::target_file() = stringify(distfile.basename())
                             ));
                     return false;
                 }
@@ -279,10 +279,10 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                         << "Malformed Manifest: failed SHA1 checksum";
                     _imp->output_manager->stdout_stream() << "failed SHA1";
                     _imp->failures->push_back(make_named_values<FetchActionFailure>(
-                            value_for<n::failed_automatic_fetching>(false),
-                            value_for<n::failed_integrity_checks>("Failed SHA1 checksum"),
-                            value_for<n::requires_manual_fetching>(false),
-                            value_for<n::target_file>(stringify(distfile.basename()))
+                            n::failed_automatic_fetching() = false,
+                            n::failed_integrity_checks() = "Failed SHA1 checksum",
+                            n::requires_manual_fetching() = false,
+                            n::target_file() = stringify(distfile.basename())
                             ));
                     return false;
                 }
@@ -300,10 +300,10 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                         << "Malformed Manifest: failed SHA256 checksum";
                     _imp->output_manager->stdout_stream() << "failed SHA256";
                     _imp->failures->push_back(make_named_values<FetchActionFailure>(
-                            value_for<n::failed_automatic_fetching>(false),
-                            value_for<n::failed_integrity_checks>("Failed SHA256 checksum"),
-                            value_for<n::requires_manual_fetching>(false),
-                            value_for<n::target_file>(stringify(distfile.basename()))
+                                n::failed_automatic_fetching() = false,
+                                n::failed_integrity_checks() = "Failed SHA256 checksum",
+                                n::requires_manual_fetching() = false,
+                                n::target_file() = stringify(distfile.basename())
                             ));
                     return false;
                 }
@@ -321,10 +321,10 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                         << "Malformed Manifest: failed MD5 checksum";
                     _imp->output_manager->stdout_stream() << "failed MD5";
                     _imp->failures->push_back(make_named_values<FetchActionFailure>(
-                            value_for<n::failed_automatic_fetching>(false),
-                            value_for<n::failed_integrity_checks>("Failed MD5 checksum"),
-                            value_for<n::requires_manual_fetching>(false),
-                            value_for<n::target_file>(stringify(distfile.basename()))
+                            n::failed_automatic_fetching() = false,
+                            n::failed_integrity_checks() = "Failed MD5 checksum",
+                            n::requires_manual_fetching() = false,
+                            n::target_file() = stringify(distfile.basename())
                             ));
                     return false;
                 }
@@ -336,10 +336,10 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
         {
             _imp->output_manager->stdout_stream() << "unreadable file";
             _imp->failures->push_back(make_named_values<FetchActionFailure>(
-                        value_for<n::failed_automatic_fetching>(true),
-                        value_for<n::failed_integrity_checks>("Unreadable file"),
-                        value_for<n::requires_manual_fetching>(false),
-                        value_for<n::target_file>(stringify(distfile.basename()))
+                        n::failed_automatic_fetching() = true,
+                        n::failed_integrity_checks() = "Unreadable file",
+                        n::requires_manual_fetching() = false,
+                        n::target_file() = stringify(distfile.basename())
                         ));
             return false;
         }
@@ -349,10 +349,10 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
     {
         _imp->output_manager->stdout_stream() << "not in Manifest";
         _imp->failures->push_back(make_named_values<FetchActionFailure>(
-                    value_for<n::failed_automatic_fetching>(false),
-                    value_for<n::failed_integrity_checks>("Not in Manifest"),
-                    value_for<n::requires_manual_fetching>(false),
-                    value_for<n::target_file>(stringify(distfile.basename()))
+                    n::failed_automatic_fetching() = false,
+                    n::failed_integrity_checks() = "Not in Manifest",
+                    n::requires_manual_fetching() = false,
+                    n::target_file() = stringify(distfile.basename())
                 ));
         return false;
     }
@@ -386,10 +386,10 @@ CheckFetchedFilesVisitor::visit(const FetchableURISpecTree::NodeType<FetchableUR
                 _imp->output_manager->stdout_stream() << "requires manual fetch";
                 _imp->need_nofetch = true;
                 _imp->failures->push_back(make_named_values<FetchActionFailure>(
-                        value_for<n::failed_automatic_fetching>(false),
-                        value_for<n::failed_integrity_checks>(""),
-                        value_for<n::requires_manual_fetching>(true),
-                        value_for<n::target_file>(node.spec()->filename())
+                        n::failed_automatic_fetching() = false,
+                        n::failed_integrity_checks() = "",
+                        n::requires_manual_fetching() = true,
+                        n::target_file() = node.spec()->filename()
                         ));
             }
         }
@@ -399,10 +399,10 @@ CheckFetchedFilesVisitor::visit(const FetchableURISpecTree::NodeType<FetchableUR
                 << "Automatic fetch failed for '" << node.spec()->filename() << "'";
             _imp->output_manager->stdout_stream() << "does not exist";
             _imp->failures->push_back(make_named_values<FetchActionFailure>(
-                        value_for<n::failed_automatic_fetching>(true),
-                        value_for<n::failed_integrity_checks>(""),
-                        value_for<n::requires_manual_fetching>(false),
-                        value_for<n::target_file>(node.spec()->filename())
+                        n::failed_automatic_fetching() = true,
+                        n::failed_integrity_checks() = "",
+                        n::requires_manual_fetching() = false,
+                        n::target_file() = node.spec()->filename()
                         ));
         }
         else
@@ -413,10 +413,10 @@ CheckFetchedFilesVisitor::visit(const FetchableURISpecTree::NodeType<FetchableUR
         Log::get_instance()->message("e.check_fetched_files.empty", ll_debug, lc_context) << "Empty file for '" << node.spec()->filename() << "'";
         _imp->output_manager->stdout_stream() << "empty file";
         _imp->failures->push_back(make_named_values<FetchActionFailure>(
-                value_for<n::failed_automatic_fetching>(false),
-                value_for<n::failed_integrity_checks>("SIZE (empty file)"),
-                value_for<n::requires_manual_fetching>(false),
-                value_for<n::target_file>(node.spec()->filename())
+                    n::failed_automatic_fetching() = false,
+                    n::failed_integrity_checks() = "SIZE (empty file)",
+                    n::requires_manual_fetching() = false,
+                    n::target_file() = node.spec()->filename()
                 ));
     }
     else if (! check_distfile_manifest(_imp->distdir / node.spec()->filename()))

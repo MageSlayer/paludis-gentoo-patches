@@ -340,12 +340,12 @@ namespace
                 adl << (adl.str().empty() ? "" : ", ") << stringify(**i);
 
             return make_named_values<SanitisedDependency>(
-                    value_for<n::active_dependency_labels>(*labels_stack.begin()),
-                    value_for<n::active_dependency_labels_as_string>(adl.str()),
-                    value_for<n::metadata_key_human_name>(human_name),
-                    value_for<n::metadata_key_raw_name>(raw_name),
-                    value_for<n::original_specs_as_string>(original_specs_as_string),
-                    value_for<n::spec>(spec)
+                    n::active_dependency_labels() = *labels_stack.begin(),
+                    n::active_dependency_labels_as_string() = adl.str(),
+                    n::metadata_key_human_name() = human_name,
+                    n::metadata_key_raw_name() = raw_name,
+                    n::original_specs_as_string() = original_specs_as_string,
+                    n::spec() = spec
                     );
         }
 
@@ -498,14 +498,14 @@ paludis::resolver::operator<< (std::ostream & s, const PackageOrBlockDepSpec & d
 }
 
 PackageOrBlockDepSpec::PackageOrBlockDepSpec(const BlockDepSpec & s) :
-    if_block(value_for<n::if_block>(make_shared_ptr(new BlockDepSpec(s)))),
-    if_package(value_for<n::if_package>(make_null_shared_ptr()))
+    if_block(n::if_block() = make_shared_ptr(new BlockDepSpec(s))),
+    if_package(n::if_package() = make_null_shared_ptr())
 {
 }
 
 PackageOrBlockDepSpec::PackageOrBlockDepSpec(const PackageDepSpec & s) :
-    if_block(value_for<n::if_block>(make_null_shared_ptr())),
-    if_package(value_for<n::if_package>(make_shared_ptr(new PackageDepSpec(s))))
+    if_block(n::if_block() = make_null_shared_ptr()),
+    if_package(n::if_package() = make_shared_ptr(new PackageDepSpec(s)))
 {
 }
 
@@ -630,13 +630,13 @@ SanitisedDependency::deserialise(Deserialisation & d, const std::tr1::shared_ptr
     Deserialisator v(d, "SanitisedDependency");
 
     return make_named_values<SanitisedDependency>(
-            value_for<n::active_dependency_labels>(make_null_shared_ptr()),
-            value_for<n::active_dependency_labels_as_string>(v.member<std::string>("active_dependency_labels_as_string")),
-            value_for<n::metadata_key_human_name>(v.member<std::string>("metadata_key_human_name")),
-            value_for<n::metadata_key_raw_name>(v.member<std::string>("metadata_key_raw_name")),
-            value_for<n::original_specs_as_string>(v.member<std::string>("original_specs_as_string")),
-            value_for<n::spec>(PackageOrBlockDepSpec::deserialise(*v.find_remove_member("spec"),
-                    from_id))
+            n::active_dependency_labels() = make_null_shared_ptr(),
+            n::active_dependency_labels_as_string() = v.member<std::string>("active_dependency_labels_as_string"),
+            n::metadata_key_human_name() = v.member<std::string>("metadata_key_human_name"),
+            n::metadata_key_raw_name() = v.member<std::string>("metadata_key_raw_name"),
+            n::original_specs_as_string() = v.member<std::string>("original_specs_as_string"),
+            n::spec() = PackageOrBlockDepSpec::deserialise(*v.find_remove_member("spec"),
+                    from_id)
             );
 }
 

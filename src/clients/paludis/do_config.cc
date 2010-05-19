@@ -53,7 +53,7 @@ namespace
 
         OutputManagerFromEnvironment output_manager_holder(env, p, oe_exclusive, ClientOutputFeatures());
         ConfigActionOptions options(make_named_values<ConfigActionOptions>(
-                    value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
+                    n::make_output_manager() = std::tr1::ref(output_manager_holder)
                     ));
         ConfigAction a(options);
         try

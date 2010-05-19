@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -45,10 +45,10 @@ namespace paludis
 {
     namespace n
     {
-        struct comment;
-        struct mask;
-        struct mask_file;
-        struct override_reason;
+        typedef Name<struct comment_name> comment;
+        typedef Name<struct mask_name> mask;
+        typedef Name<struct mask_file_name> mask_file;
+        typedef Name<struct override_reason_name> override_reason;
     }
 
     /**

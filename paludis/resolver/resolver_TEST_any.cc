@@ -36,6 +36,7 @@
 #include <paludis/util/map-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/tribool.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/package_database.hh>

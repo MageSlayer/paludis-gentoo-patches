@@ -33,8 +33,8 @@ namespace
     VersionRequirement * make_version_requirement(const VersionOperator & op, const VersionSpec & spec)
     {
         return new VersionRequirement(make_named_values<VersionRequirement>(
-                    value_for<n::version_operator>(op),
-                    value_for<n::version_spec>(spec)
+                    n::version_operator() = op,
+                    n::version_spec() = spec
                     ));
     }
 }

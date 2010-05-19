@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -208,9 +208,9 @@ namespace
                             std::string version(fix_whitespace(unstupid_libxml_string(xmlNodeListGetString(doc, n->xmlChildrenNode, 1))));
                             ((*pkg).*(name == "unaffected" ? &GLSAPackage::add_unaffected : &GLSAPackage::add_vulnerable))(
                             make_named_values<erepository::GLSARange>(
-                                value_for<n::op>(op),
-                                value_for<n::slot>(slot),
-                                value_for<n::version>(version)
+                                n::op() = op,
+                                n::slot() = slot,
+                                n::version() = version
                                 ));
                         }
                         else
@@ -287,10 +287,10 @@ paludis_xml_things_create_metadata_xml_from_xml_file(const FSEntry & filename)
 {
     std::tr1::shared_ptr<erepository::MetadataXML> result(new erepository::MetadataXML(
                 make_named_values<erepository::MetadataXML>(
-                    value_for<n::herds>(make_shared_ptr(new Sequence<std::string>)),
-                    value_for<n::long_description>(""),
-                    value_for<n::maintainers>(make_shared_ptr(new Sequence<std::string>)),
-                    value_for<n::uses>(make_shared_ptr(new Map<ChoiceNameWithPrefix, std::string>))
+                    n::herds() = make_shared_ptr(new Sequence<std::string>),
+                    n::long_description() = "",
+                    n::maintainers() = make_shared_ptr(new Sequence<std::string>),
+                    n::uses() = make_shared_ptr(new Map<ChoiceNameWithPrefix, std::string>)
                     )));
 
     std::tr1::shared_ptr<xmlDoc> doc(manage_libxml_ptr(xmlParseFile(stringify(filename).c_str()), &xmlFreeDoc));

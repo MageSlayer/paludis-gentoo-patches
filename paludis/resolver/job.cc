@@ -318,7 +318,7 @@ const JobID
 UsableJob::id() const
 {
     return make_named_values<JobID>(
-            value_for<n::string_id>("usable:" + stringify(resolution()->resolvent()))
+            n::string_id() = "usable:" + stringify(resolution()->resolvent())
             );
 }
 
@@ -398,7 +398,7 @@ const JobID
 UsableGroupJob::id() const
 {
     return make_named_values<JobID>(
-            value_for<n::string_id>("usable_group:" + join(_imp->ids->begin(), _imp->ids->end(), "+", &stringify_job_id))
+            n::string_id() = "usable_group:" + join(_imp->ids->begin(), _imp->ids->end(), "+", &stringify_job_id)
             );
 }
 
@@ -477,7 +477,7 @@ const JobID
 FetchJob::id() const
 {
     return make_named_values<JobID>(
-            value_for<n::string_id>("fetch:" + stringify(resolution()->resolvent()))
+            n::string_id() = "fetch:" + stringify(resolution()->resolvent())
             );
 }
 
@@ -557,7 +557,7 @@ const JobID
 SimpleInstallJob::id() const
 {
     return make_named_values<JobID>(
-            value_for<n::string_id>("install:" + stringify(resolution()->resolvent()))
+            n::string_id() = "install:" + stringify(resolution()->resolvent())
             );
 }
 
@@ -637,7 +637,7 @@ const JobID
 UninstallJob::id() const
 {
     return make_named_values<JobID>(
-            value_for<n::string_id>("install:" + stringify(resolution()->resolvent()))
+            n::string_id() = "install:" + stringify(resolution()->resolvent())
             );
 }
 
@@ -710,7 +710,7 @@ const JobID
 ErrorJob::id() const
 {
     return make_named_values<JobID>(
-            value_for<n::string_id>("error:" + stringify(resolution()->resolvent()))
+            n::string_id() = "error:" + stringify(resolution()->resolvent())
             );
 }
 

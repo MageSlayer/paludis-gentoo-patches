@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -92,12 +92,12 @@ namespace paludis
 GemsRepository::GemsRepository(const gems::RepositoryParams & params) :
     Repository(params.environment(), RepositoryName("gems"),
             make_named_values<RepositoryCapabilities>(
-                value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
-                value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
-                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
-                value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
-                value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
-                value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
+                n::destination_interface() = static_cast<RepositoryDestinationInterface *>(0),
+                n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
+                n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
+                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
+                n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
+                n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
     PrivateImplementationPattern<GemsRepository>(new Implementation<GemsRepository>(params)),
     _imp(PrivateImplementationPattern<GemsRepository>::_imp)
@@ -377,12 +377,12 @@ GemsRepository::repository_factory_create(
                 *DistributionData::get_instance()->distribution_from_string(env->distribution()))->default_buildroot();
 
     return make_shared_ptr(new GemsRepository(make_named_values<gems::RepositoryParams>(
-                value_for<n::builddir>(builddir),
-                value_for<n::environment>(env),
-                value_for<n::install_dir>(install_dir),
-                value_for<n::location>(location),
-                value_for<n::sync>(sync),
-                value_for<n::sync_options>(sync_options)
+                n::builddir() = builddir,
+                n::environment() = env,
+                n::install_dir() = install_dir,
+                n::location() = location,
+                n::sync() = sync,
+                n::sync_options() = sync_options
                 )));
 }
 
@@ -410,7 +410,7 @@ GemsRepository::populate_sets() const
 HookResult
 GemsRepository::perform_hook(const Hook &)
 {
-    return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
+    return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
 bool

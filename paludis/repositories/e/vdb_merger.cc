@@ -81,15 +81,15 @@ namespace
 
 VDBMerger::VDBMerger(const VDBMergerParams & p) :
     Merger(make_named_values<MergerParams>(
-            value_for<n::environment>(p.environment()),
-            value_for<n::fix_mtimes_before>(p.fix_mtimes_before()),
-            value_for<n::get_new_ids_or_minus_one>(std::tr1::bind(&get_new_ids_or_minus_one, p.environment(), std::tr1::placeholders::_1)),
-            value_for<n::image>(p.image()),
-            value_for<n::install_under>(FSEntry("/")),
-            value_for<n::merged_entries>(p.merged_entries()),
-            value_for<n::no_chown>(! getenv_with_default("PALUDIS_NO_CHOWN", "").empty()),
-            value_for<n::options>(p.options()),
-            value_for<n::root>(p.root())
+                n::environment() = p.environment(),
+                n::fix_mtimes_before() = p.fix_mtimes_before(),
+                n::get_new_ids_or_minus_one() = std::tr1::bind(&get_new_ids_or_minus_one, p.environment(), std::tr1::placeholders::_1),
+                n::image() = p.image(),
+                n::install_under() = FSEntry("/"),
+                n::merged_entries() = p.merged_entries(),
+                n::no_chown() = ! getenv_with_default("PALUDIS_NO_CHOWN", "").empty(),
+                n::options() = p.options(),
+                n::root() = p.root()
             )),
     PrivateImplementationPattern<VDBMerger>(new Implementation<VDBMerger>(p)),
     _imp(PrivateImplementationPattern<VDBMerger>::_imp)

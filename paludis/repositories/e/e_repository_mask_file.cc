@@ -84,7 +84,7 @@ MaskFile::MaskFile(const FSEntry & f, const LineConfigFileOptions & opts) :
         }
 
         _imp->lines.push_back(std::make_pair(*it, std::tr1::shared_ptr<RepositoryMaskInfo>(new RepositoryMaskInfo(
-                            make_named_values<RepositoryMaskInfo>(value_for<n::comment>(comment), value_for<n::mask_file>(f))))));
+                            make_named_values<RepositoryMaskInfo>(n::comment() = comment, n::mask_file() = f)))));
         comment_used = true;
     }
 }

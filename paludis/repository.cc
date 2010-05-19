@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -79,7 +79,7 @@ namespace paludis
 {
     namespace n
     {
-        struct repository_blacklist;
+        typedef Name<struct repository_blacklist_name> repository_blacklist;
     }
 }
 
@@ -106,8 +106,8 @@ namespace paludis
         static std::tr1::shared_ptr<RepositoryDistribution> make_data(const std::tr1::shared_ptr<const KeyValueConfigFile> & k)
         {
             return make_shared_ptr(new RepositoryDistribution(make_named_values<RepositoryDistribution>(
-                            value_for<n::repository_blacklist>(std::tr1::bind(std::tr1::mem_fn(&KeyValueConfigFile::get),
-                                    k, std::tr1::placeholders::_1))
+                            n::repository_blacklist() = std::tr1::bind(std::tr1::mem_fn(&KeyValueConfigFile::get),
+                                    k, std::tr1::placeholders::_1)
                             )));
         }
     };

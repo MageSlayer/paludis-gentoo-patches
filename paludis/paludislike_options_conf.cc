@@ -67,17 +67,17 @@ namespace paludis
 {
     namespace n
     {
-        struct equals_value;
-        struct locked;
-        struct minus;
-        struct minus_star;
-        struct prefix;
-        struct set_name;
-        struct set_value;
-        struct spec;
-        struct unprefixed_name;
-        struct values;
-        struct values_groups;
+        typedef Name<struct equals_value_name> equals_value;
+        typedef Name<struct locked_name> locked;
+        typedef Name<struct minus_name> minus;
+        typedef Name<struct minus_star_name> minus_star;
+        typedef Name<struct prefix_name> prefix;
+        typedef Name<struct set_name_name> set_name;
+        typedef Name<struct set_value_name> set_value;
+        typedef Name<struct spec_name> spec;
+        typedef Name<struct unprefixed_name_name> unprefixed_name;
+        typedef Name<struct values_name> values;
+        typedef Name<struct values_groups_name> values_groups;
     }
 }
 
@@ -215,16 +215,16 @@ PaludisLikeOptionsConf::add_file(const FSEntry & f)
                                 SpecsWithValuesGroups())).first);
                 values_groups = &i->second.insert(i->second.end(),
                         make_named_values<SpecWithValuesGroups>(
-                            value_for<n::spec>(*d),
-                            value_for<n::values_groups>(ValuesGroups())
+                            n::spec() = *d,
+                            n::values_groups() = ValuesGroups()
                             ))->values_groups();
             }
             else
             {
                 values_groups = &_imp->wildcard_specs.insert(_imp->wildcard_specs.end(),
                         make_named_values<SpecWithValuesGroups>(
-                            value_for<n::spec>(*d),
-                            value_for<n::values_groups>(ValuesGroups())
+                            n::spec() = *d,
+                            n::values_groups() = ValuesGroups()
                             ))->values_groups();
             }
         }
@@ -234,10 +234,10 @@ PaludisLikeOptionsConf::add_file(const FSEntry & f)
 
             values_groups = &_imp->set_specs.insert(_imp->set_specs.end(),
                     make_named_values<SetNameWithValuesGroups>(
-                        value_for<n::set_name>(n),
-                        value_for<n::set_value>(DeferredConstructionPtr<std::tr1::shared_ptr<const SetSpecTree> >(
-                                std::tr1::bind(&make_set_value, _imp->params.environment(), f, n))),
-                        value_for<n::values_groups>(ValuesGroups())
+                        n::set_name() = n,
+                        n::set_value() = DeferredConstructionPtr<std::tr1::shared_ptr<const SetSpecTree> >(
+                                std::tr1::bind(&make_set_value, _imp->params.environment(), f, n)),
+                        n::values_groups() = ValuesGroups()
                         ))->values_groups();
         }
 
@@ -259,9 +259,9 @@ PaludisLikeOptionsConf::add_file(const FSEntry & f)
                 std::transform(t->begin(), previous(t->end()), std::back_inserter(p), &::tolower);
 
                 values_group = &*values_groups->insert(values_groups->end(), make_named_values<ValuesGroup>(
-                            value_for<n::minus_star>(false),
-                            value_for<n::prefix>(ChoicePrefixName(p)),
-                            value_for<n::values>(Values())
+                            n::minus_star() = false,
+                            n::prefix() = ChoicePrefixName(p),
+                            n::values() = Values()
                             ));
             }
             else
@@ -269,9 +269,9 @@ PaludisLikeOptionsConf::add_file(const FSEntry & f)
                 /* if we don't have a foo: active, make one */
                 if (! values_group)
                     values_group = &*values_groups->insert(values_groups->end(), make_named_values<ValuesGroup>(
-                                value_for<n::minus_star>(false),
-                                value_for<n::prefix>(ChoicePrefixName("")),
-                                value_for<n::values>(Values())
+                                n::minus_star() = false,
+                                n::prefix() = ChoicePrefixName(""),
+                                n::values() = Values()
                                 ));
 
                 if ("-*" == *t)
@@ -296,10 +296,10 @@ PaludisLikeOptionsConf::add_file(const FSEntry & f)
                     {
                         /* -bar */
                         values_group->values().insert(make_named_values<Value>(
-                                    value_for<n::equals_value>(""),
-                                    value_for<n::locked>(locked),
-                                    value_for<n::minus>(true),
-                                    value_for<n::unprefixed_name>(UnprefixedChoiceName(t->substr(1)))
+                                    n::equals_value() = "",
+                                    n::locked() = locked,
+                                    n::minus() = true,
+                                    n::unprefixed_name() = UnprefixedChoiceName(t->substr(1))
                                     ));
                     }
                     else
@@ -309,20 +309,20 @@ PaludisLikeOptionsConf::add_file(const FSEntry & f)
                         {
                             /* foo */
                             values_group->values().insert(make_named_values<Value>(
-                                        value_for<n::equals_value>(""),
-                                        value_for<n::locked>(locked),
-                                        value_for<n::minus>(false),
-                                        value_for<n::unprefixed_name>(UnprefixedChoiceName(*t))
+                                        n::equals_value() = "",
+                                        n::locked() = locked,
+                                        n::minus() = false,
+                                        n::unprefixed_name() = UnprefixedChoiceName(*t)
                                         ));
                         }
                         else
                         {
                             /* foo=blah */
                             values_group->values().insert(make_named_values<Value>(
-                                        value_for<n::equals_value>(t->substr(equals_p + 1)),
-                                        value_for<n::locked>(locked),
-                                        value_for<n::minus>(false),
-                                        value_for<n::unprefixed_name>(UnprefixedChoiceName(t->substr(0, equals_p)))
+                                        n::equals_value() = t->substr(equals_p + 1),
+                                        n::locked() = locked,
+                                        n::minus() = false,
+                                        n::unprefixed_name() = UnprefixedChoiceName(t->substr(0, equals_p))
                                         ));
                         }
                     }
@@ -337,18 +337,18 @@ namespace
     bool match_anything(const PackageDepSpec & spec)
     {
         return package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
-                    value_for<n::has_additional_requirements>(false),
-                    value_for<n::has_category_name_part>(false),
-                    value_for<n::has_from_repository>(false),
-                    value_for<n::has_in_repository>(false),
-                    value_for<n::has_installable_to_path>(false),
-                    value_for<n::has_installable_to_repository>(false),
-                    value_for<n::has_installed_at_path>(false),
-                    value_for<n::has_package>(false),
-                    value_for<n::has_package_name_part>(false),
-                    value_for<n::has_slot_requirement>(false),
-                    value_for<n::has_tag>(false),
-                    value_for<n::has_version_requirements>(false)
+                    n::has_additional_requirements() = false,
+                    n::has_category_name_part() = false,
+                    n::has_from_repository() = false,
+                    n::has_in_repository() = false,
+                    n::has_installable_to_path() = false,
+                    n::has_installable_to_repository() = false,
+                    n::has_installed_at_path() = false,
+                    n::has_package() = false,
+                    n::has_package_name_part() = false,
+                    n::has_slot_requirement() = false,
+                    n::has_tag() = false,
+                    n::has_version_requirements() = false
                     ));
     }
 
@@ -373,10 +373,10 @@ namespace
 
             std::pair<Values::const_iterator, Values::const_iterator> range(i->values().equal_range(
                         make_named_values<Value>(
-                            value_for<n::equals_value>(""),
-                            value_for<n::locked>(false),
-                            value_for<n::minus>(false),
-                            value_for<n::unprefixed_name>(unprefixed_name)
+                            n::equals_value() = "",
+                            n::locked() = false,
+                            n::minus() = false,
+                            n::unprefixed_name() = unprefixed_name
                             )));
             for ( ; range.first != range.second ; ++range.first)
             {

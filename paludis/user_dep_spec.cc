@@ -178,8 +178,8 @@ namespace
 
                         VersionSpec vs(ver, user_version_spec_options());
                         result.version_requirement(make_named_values<VersionRequirement>(
-                                    value_for<n::version_operator>(vop),
-                                    value_for<n::version_spec>(vs)));
+                                    n::version_operator() = vop,
+                                    n::version_spec() = vs));
                         had_bracket_version_requirements = true;
                     }
                 }
@@ -229,12 +229,12 @@ namespace
             {
                 if (req.length() >= 2 && '?' == req.at(req.length() - 2))
                     reqs.installable_to_path(make_named_values<InstallableToPath>(
-                                value_for<n::include_masked>(true),
-                                value_for<n::path>(FSEntry(req.substr(0, req.length() - 2)))));
+                                n::include_masked() = true,
+                                n::path() = FSEntry(req.substr(0, req.length() - 2))));
                 else
                     reqs.installable_to_path(make_named_values<InstallableToPath>(
-                                value_for<n::include_masked>(false),
-                                value_for<n::path>(FSEntry(req.substr(0, req.length() - 1)))));
+                                n::include_masked() = false,
+                                n::path() = FSEntry(req.substr(0, req.length() - 1))));
             }
             else
                 reqs.installed_at_path(req);
@@ -245,12 +245,12 @@ namespace
             {
                 if (req.length() >= 3 && '?' == req.at(req.length() - 2))
                     reqs.installable_to_repository(make_named_values<InstallableToRepository>(
-                                value_for<n::include_masked>(true),
-                                value_for<n::repository>(RepositoryName(req.substr(0, req.length() - 2)))));
+                                n::include_masked() = true,
+                                n::repository() = RepositoryName(req.substr(0, req.length() - 2))));
                 else
                     reqs.installable_to_repository(make_named_values<InstallableToRepository>(
-                                value_for<n::include_masked>(false),
-                                value_for<n::repository>(RepositoryName(req.substr(0, req.length() - 1)))));
+                                n::include_masked() = false,
+                                n::repository() = RepositoryName(req.substr(0, req.length() - 1))));
             }
             else
                 reqs.in_repository(RepositoryName(req));
@@ -306,20 +306,20 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const Environment *
     PartiallyMadePackageDepSpecOptions o;
 
     return partial_parse_generic_elike_package_dep_spec(ss, make_named_values<GenericELikePackageDepSpecParseFunctions>(
-            value_for<n::add_package_requirement>(std::tr1::bind(&user_add_package_requirement, _1, _2, env, options, filter)),
-            value_for<n::add_version_requirement>(std::tr1::bind(&elike_add_version_requirement, _1, _2, _3)),
-            value_for<n::check_sanity>(std::tr1::bind(&user_check_sanity, _1, options, env)),
-            value_for<n::get_remove_trailing_version>(std::tr1::bind(&elike_get_remove_trailing_version, _1,
-                    user_version_spec_options())),
-            value_for<n::get_remove_version_operator>(std::tr1::bind(&elike_get_remove_version_operator, _1,
-                    ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps + epdso_nice_equal_star)),
-            value_for<n::has_version_operator>(std::tr1::bind(&elike_has_version_operator, _1,
-                    std::tr1::cref(had_bracket_version_requirements), ELikePackageDepSpecOptions())),
-            value_for<n::options_for_partially_made_package_dep_spec>(std::tr1::bind(&fixed_options_for_partially_made_package_dep_spec, o)),
-            value_for<n::remove_trailing_repo_if_exists>(std::tr1::bind(&user_remove_trailing_repo_if_exists, _1, _2)),
-            value_for<n::remove_trailing_slot_if_exists>(std::tr1::bind(&user_remove_trailing_slot_if_exists, _1, _2)),
-            value_for<n::remove_trailing_square_bracket_if_exists>(std::tr1::bind(&user_remove_trailing_square_bracket_if_exists,
-                    _1, _2, std::tr1::ref(had_bracket_version_requirements)))
+            n::add_package_requirement() = std::tr1::bind(&user_add_package_requirement, _1, _2, env, options, filter),
+            n::add_version_requirement() = std::tr1::bind(&elike_add_version_requirement, _1, _2, _3),
+            n::check_sanity() = std::tr1::bind(&user_check_sanity, _1, options, env),
+            n::get_remove_trailing_version() = std::tr1::bind(&elike_get_remove_trailing_version, _1,
+                    user_version_spec_options()),
+            n::get_remove_version_operator() = std::tr1::bind(&elike_get_remove_version_operator, _1,
+                    ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps + epdso_nice_equal_star),
+            n::has_version_operator() = std::tr1::bind(&elike_has_version_operator, _1,
+                    std::tr1::cref(had_bracket_version_requirements), ELikePackageDepSpecOptions()),
+            n::options_for_partially_made_package_dep_spec() = std::tr1::bind(&fixed_options_for_partially_made_package_dep_spec, o),
+            n::remove_trailing_repo_if_exists() = std::tr1::bind(&user_remove_trailing_repo_if_exists, _1, _2),
+            n::remove_trailing_slot_if_exists() = std::tr1::bind(&user_remove_trailing_slot_if_exists, _1, _2),
+            n::remove_trailing_square_bracket_if_exists() = std::tr1::bind(&user_remove_trailing_square_bracket_if_exists,
+                    _1, _2, std::tr1::ref(had_bracket_version_requirements))
             ));
 }
 

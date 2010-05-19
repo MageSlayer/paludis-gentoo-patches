@@ -40,6 +40,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/set-impl.hh>
+#include <paludis/util/tribool.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/package_database.hh>
@@ -309,12 +310,12 @@ paludis::resolver::resolver_test::get_constraints_for_dependent_fn(
         const std::tr1::shared_ptr<DependentReason> reason(new DependentReason(*i));
 
         result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                            value_for<n::destination_type>(dt_install_to_slash),
-                            value_for<n::nothing_is_fine_too>(true),
-                            value_for<n::reason>(reason),
-                            value_for<n::spec>(BlockDepSpec("!" + stringify(spec), spec, false)),
-                            value_for<n::untaken>(false),
-                            value_for<n::use_existing>(ue_if_possible)
+                            n::destination_type() = dt_install_to_slash,
+                            n::nothing_is_fine_too() = true,
+                            n::reason() = reason,
+                            n::spec() = BlockDepSpec("!" + stringify(spec), spec, false),
+                            n::untaken() = false,
+                            n::use_existing() = ue_if_possible
                             ))));
     }
 
@@ -356,10 +357,10 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
 
     fake_inst_repo.reset(new FakeInstalledRepository(
                 make_named_values<FakeInstalledRepositoryParams>(
-                    value_for<n::environment>(&env),
-                    value_for<n::name>(RepositoryName("fake-inst")),
-                    value_for<n::suitable_destination>(true),
-                    value_for<n::supports_uninstall>(true)
+                    n::environment() = &env,
+                    n::name() = RepositoryName("fake-inst"),
+                    n::suitable_destination() = true,
+                    n::supports_uninstall() = true
                     )));
     env.package_database()->add_repository(1, fake_inst_repo);
 
@@ -373,27 +374,27 @@ ResolverFunctions
 ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraints)
 {
     return make_named_values<ResolverFunctions>(
-            value_for<n::allowed_to_break_fn>(std::tr1::bind(&allowed_to_break_fn,
-                    allowed_to_break_names, std::tr1::placeholders::_1)),
-            value_for<n::allowed_to_remove_fn>(std::tr1::bind(&allowed_to_remove_fn,
-                    allowed_to_remove_names, std::tr1::placeholders::_1)),
-            value_for<n::confirm_fn>(&confirm_fn),
-            value_for<n::find_repository_for_fn>(std::tr1::bind(&find_repository_for_fn,
+            n::allowed_to_break_fn() = std::tr1::bind(&allowed_to_break_fn,
+                    allowed_to_break_names, std::tr1::placeholders::_1),
+            n::allowed_to_remove_fn() = std::tr1::bind(&allowed_to_remove_fn,
+                    allowed_to_remove_names, std::tr1::placeholders::_1),
+            n::confirm_fn() = &confirm_fn,
+            n::find_repository_for_fn() = std::tr1::bind(&find_repository_for_fn,
                     &env, std::tr1::placeholders::_1, std::tr1::placeholders::_2,
-                    std::tr1::placeholders::_3)),
-            value_for<n::get_constraints_for_dependent_fn>(&get_constraints_for_dependent_fn),
-            value_for<n::get_destination_types_for_fn>(&get_destination_types_for_fn),
-            value_for<n::get_initial_constraints_for_fn>(
+                    std::tr1::placeholders::_3),
+            n::get_constraints_for_dependent_fn() = &get_constraints_for_dependent_fn,
+            n::get_destination_types_for_fn() = &get_destination_types_for_fn,
+            n::get_initial_constraints_for_fn() = 
                 std::tr1::bind(&initial_constraints_for_fn, std::tr1::ref(initial_constraints),
-                    std::tr1::placeholders::_1)),
-            value_for<n::get_resolvents_for_fn>(&get_resolvents_for_fn),
-            value_for<n::get_use_existing_fn>(&get_use_existing_fn),
-            value_for<n::interest_in_spec_fn>(&interest_in_spec_fn),
-            value_for<n::make_destination_filtered_generator_fn>(&make_destination_filtered_generator_fn),
-            value_for<n::prefer_or_avoid_fn>(std::tr1::bind(&prefer_or_avoid_fn,
-                    prefer_or_avoid_names, std::tr1::placeholders::_1)),
-            value_for<n::remove_if_dependent_fn>(std::tr1::bind(&remove_if_dependent_fn,
-                    remove_if_dependent_names, std::tr1::placeholders::_1))
+                    std::tr1::placeholders::_1),
+            n::get_resolvents_for_fn() = &get_resolvents_for_fn,
+            n::get_use_existing_fn() = &get_use_existing_fn,
+            n::interest_in_spec_fn() = &interest_in_spec_fn,
+            n::make_destination_filtered_generator_fn() = &make_destination_filtered_generator_fn,
+            n::prefer_or_avoid_fn() = std::tr1::bind(&prefer_or_avoid_fn,
+                    prefer_or_avoid_names, std::tr1::placeholders::_1),
+            n::remove_if_dependent_fn() = std::tr1::bind(&remove_if_dependent_fn,
+                    remove_if_dependent_names, std::tr1::placeholders::_1)
             );
 }
 

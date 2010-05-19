@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -34,14 +34,14 @@ namespace paludis
 {
     namespace n
     {
-        struct active_dependency_labels;
-        struct active_dependency_labels_as_string;
-        struct if_package;
-        struct if_block;
-        struct metadata_key_human_name;
-        struct metadata_key_raw_name;
-        struct original_specs_as_string;
-        struct spec;
+        typedef Name<struct active_dependency_labels_name> active_dependency_labels;
+        typedef Name<struct active_dependency_labels_as_string_name> active_dependency_labels_as_string;
+        typedef Name<struct if_package_name> if_package;
+        typedef Name<struct if_block_name> if_block;
+        typedef Name<struct metadata_key_human_name_name> metadata_key_human_name;
+        typedef Name<struct metadata_key_raw_name_name> metadata_key_raw_name;
+        typedef Name<struct original_specs_as_string_name> original_specs_as_string;
+        typedef Name<struct spec_name> spec;
     }
 
     namespace resolver

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -330,13 +330,13 @@ NDBAM::entries(const QualifiedPackageName & q)
                 SlotName s(tokens[1]);
                 std::string m(tokens[2]);
                 pc.entries->push_back(make_shared_ptr(new NDBAMEntry(NDBAMEntry(make_named_values<NDBAMEntry>(
-                                        value_for<n::fs_location>(d->realpath()),
-                                        value_for<n::magic>(m),
-                                        value_for<n::mutex>(make_shared_ptr(new Mutex)),
-                                        value_for<n::name>(q),
-                                        value_for<n::package_id>(std::tr1::shared_ptr<PackageID>()),
-                                        value_for<n::slot>(s),
-                                        value_for<n::version>(v)
+                                        n::fs_location() = d->realpath(),
+                                        n::magic() = m,
+                                        n::mutex() = make_shared_ptr(new Mutex),
+                                        n::name() = q,
+                                        n::package_id() = std::tr1::shared_ptr<PackageID>(),
+                                        n::slot() = s,
+                                        n::version() = v
                                 )))));
             }
             catch (const InternalError &)
@@ -382,13 +382,13 @@ NDBAM::add_entry(const QualifiedPackageName & q, const FSEntry & d)
         SlotName s(tokens[1]);
         std::string m(tokens[2]);
         pc.entries->push_back(make_shared_ptr(new NDBAMEntry(NDBAMEntry(make_named_values<NDBAMEntry>(
-                                value_for<n::fs_location>(d.realpath()),
-                                value_for<n::magic>(m),
-                                value_for<n::mutex>(make_shared_ptr(new Mutex)),
-                                value_for<n::name>(q),
-                                value_for<n::package_id>(std::tr1::shared_ptr<PackageID>()),
-                                value_for<n::slot>(s),
-                                value_for<n::version>(v)
+                                n::fs_location() = d.realpath(),
+                                n::magic() = m,
+                                n::mutex() = make_shared_ptr(new Mutex),
+                                n::name() = q,
+                                n::package_id() = std::tr1::shared_ptr<PackageID>(),
+                                n::slot() = s,
+                                n::version() = v
                         )))));
     }
 }

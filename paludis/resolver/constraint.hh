@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,12 +35,12 @@ namespace paludis
 {
     namespace n
     {
-        struct destination_type;
-        struct nothing_is_fine_too;
-        struct reason;
-        struct spec;
-        struct untaken;
-        struct use_existing;
+        typedef Name<struct destination_type_name> destination_type;
+        typedef Name<struct nothing_is_fine_too_name> nothing_is_fine_too;
+        typedef Name<struct reason_name> reason;
+        typedef Name<struct spec_name> spec;
+        typedef Name<struct untaken_name> untaken;
+        typedef Name<struct use_existing_name> use_existing;
     }
 
     namespace resolver

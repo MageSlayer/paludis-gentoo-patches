@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,7 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_NAMED_VALUE_HH 1
 
 #include <paludis/util/named_value-fwd.hh>
-#include <paludis/util/tribool.hh>
+#include <paludis/util/tribool-fwd.hh>
+#include <string>
 
 namespace paludis
 {
@@ -36,7 +37,7 @@ namespace paludis
      * Usually a struct containing NamedValue objects will be constructed using
      * the make_named_values() function. For each NamedValue object,
      * make_named_values() takes a parameter in the form
-     * value_for<n::whatever_K_is>(the_value).
+     * <code>n::whatever_K_is() = the_value</code>.
      *
      * In all cases, NamedValue members are listed in name-sorted order, and
      * the same name is used for K_ and the member name.
@@ -80,26 +81,31 @@ namespace paludis
             }
     };
 
-    template <typename K_, typename V_>
-    NamedValue<K_, V_>
-    value_for(const V_ & v)
+    /**
+     * A Name is used to make the assignment for NamedValue keys work.
+     *
+     * \ingroup g_oo
+     */
+    template <typename T_>
+    class Name
     {
-        return NamedValue<K_, V_>(v);
-    }
+        public:
+            template <typename V_>
+            NamedValue<Name<T_>, V_> operator= (const V_ & v) const
+            {
+                return NamedValue<Name<T_>, V_>(v);
+            }
 
-    template <typename K_>
-    NamedValue<K_, std::string>
-    value_for(const char * const v)
-    {
-        return NamedValue<K_, std::string>(v);
-    }
+            NamedValue<Name<T_>, std::string> operator= (const char * const v) const
+            {
+                return NamedValue<Name<T_>, std::string>(std::string(v));
+            }
 
-    template <typename K_>
-    NamedValue<K_, Tribool>
-    value_for(TriboolIndeterminateValueType v)
-    {
-        return NamedValue<K_, Tribool>(v);
-    }
+            NamedValue<Name<T_>, Tribool> operator= (TriboolIndeterminateValueType) const
+            {
+                return NamedValue<Name<T_>, Tribool>(Tribool(indeterminate));
+            }
+    };
 }
 
 #endif

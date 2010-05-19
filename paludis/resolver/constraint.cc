@@ -187,13 +187,13 @@ Constraint::deserialise(Deserialisation & d)
     IDFinder id_finder;
 
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                    value_for<n::destination_type>(destringify<DestinationType>(v.member<std::string>("destination_type"))),
-                    value_for<n::nothing_is_fine_too>(v.member<bool>("nothing_is_fine_too")),
-                    value_for<n::reason>(reason),
-                    value_for<n::spec>(PackageOrBlockDepSpec::deserialise(*v.find_remove_member("spec"),
-                            reason->accept_returning<std::tr1::shared_ptr<const PackageID> >(id_finder))),
-                    value_for<n::untaken>(v.member<bool>("untaken")),
-                    value_for<n::use_existing>(destringify<UseExisting>(v.member<std::string>("use_existing")))
+                    n::destination_type() = destringify<DestinationType>(v.member<std::string>("destination_type")),
+                    n::nothing_is_fine_too() = v.member<bool>("nothing_is_fine_too"),
+                    n::reason() = reason,
+                    n::spec() = PackageOrBlockDepSpec::deserialise(*v.find_remove_member("spec"),
+                            reason->accept_returning<std::tr1::shared_ptr<const PackageID> >(id_finder)),
+                    n::untaken() = v.member<bool>("untaken"),
+                    n::use_existing() = destringify<UseExisting>(v.member<std::string>("use_existing"))
             )));
 }
 

@@ -449,9 +449,9 @@ EnumArg::EnumArgOptions::EnumArgOptions(const std::string & opt, const std::stri
     PrivateImplementationPattern<EnumArgOptions>(new Implementation<EnumArgOptions>)
 {
     _imp->options.push_back(make_named_values<AllowedEnumArg>(
-                value_for<n::description>(desc),
-                value_for<n::long_name>(opt),
-                value_for<n::short_name>('\0')
+                n::description() = desc,
+                n::long_name() = opt,
+                n::short_name() = '\0'
                 ));
 }
 
@@ -459,9 +459,9 @@ EnumArg::EnumArgOptions::EnumArgOptions(const std::string & opt, const char s, c
     PrivateImplementationPattern<EnumArgOptions>(new Implementation<EnumArgOptions>)
 {
     _imp->options.push_back(make_named_values<AllowedEnumArg>(
-                value_for<n::description>(desc),
-                value_for<n::long_name>(opt),
-                value_for<n::short_name>(s)
+                n::description() = desc,
+                n::long_name() = opt,
+                n::short_name() = s
                 ));
 }
 
@@ -469,9 +469,9 @@ EnumArg::EnumArgOptions &
 EnumArg::EnumArgOptions::operator() (const std::string & opt, const std::string & desc)
 {
     _imp->options.push_back(make_named_values<AllowedEnumArg>(
-                value_for<n::description>(desc),
-                value_for<n::long_name>(opt),
-                value_for<n::short_name>('\0')
+                n::description() = desc,
+                n::long_name() = opt,
+                n::short_name() = '\0'
                 ));
     return *this;
 }
@@ -480,9 +480,9 @@ EnumArg::EnumArgOptions &
 EnumArg::EnumArgOptions::operator() (const std::string & opt, const char s, const std::string & desc)
 {
     _imp->options.push_back(make_named_values<AllowedEnumArg>(
-                value_for<n::description>(desc),
-                value_for<n::long_name>(opt),
-                value_for<n::short_name>(s)
+                n::description() = desc,
+                n::long_name() = opt,
+                n::short_name() = s
                 ));
     return *this;
 }

@@ -200,16 +200,16 @@ namespace
 
                 /* we can't install until we've fetched */
                 install_job->arrows()->push_back(make_named_values<Arrow>(
-                            value_for<n::comes_after>(fetch_job->id()),
-                            value_for<n::failure_kinds>(FailureKinds()),
-                            value_for<n::maybe_reason>(make_null_shared_ptr())
+                            n::comes_after() = fetch_job->id(),
+                            n::failure_kinds() = FailureKinds(),
+                            n::maybe_reason() = make_null_shared_ptr()
                             ));
 
                 /* we aren't usable until we've been installed */
                 usable_job->arrows()->push_back(make_named_values<Arrow>(
-                            value_for<n::comes_after>(install_job->id()),
-                            value_for<n::failure_kinds>(FailureKinds()),
-                            value_for<n::maybe_reason>(make_null_shared_ptr())
+                            n::comes_after() = install_job->id(),
+                            n::failure_kinds() = FailureKinds(),
+                            n::maybe_reason() = make_null_shared_ptr()
                             ));
 
                 /* do we need confirmation of this? */
@@ -430,9 +430,9 @@ namespace
                      * blocker is currently met */
                     jobs->fetch(jobs->find_id_for_installed(r.from_resolvent()))->arrows()->push_back(
                             make_named_values<Arrow>(
-                                value_for<n::comes_after>(our_identifier),
-                                value_for<n::failure_kinds>(failure_kinds),
-                                value_for<n::maybe_reason>(reason)
+                                n::comes_after() = our_identifier,
+                                n::failure_kinds() = failure_kinds,
+                                n::maybe_reason() = reason
                                 ));
                 }
             }
@@ -462,9 +462,9 @@ namespace
                         if (is_usable)
                             jobs->fetch(jobs->find_id_for_installed(r.from_resolvent()))->arrows()->push_back(
                                     make_named_values<Arrow>(
-                                        value_for<n::comes_after>(our_identifier),
-                                        value_for<n::failure_kinds>(failure_kinds),
-                                        value_for<n::maybe_reason>(reason)
+                                        n::comes_after() = our_identifier,
+                                        n::failure_kinds() = failure_kinds,
+                                        n::maybe_reason() = reason
                                         ));
                     }
 
@@ -474,9 +474,9 @@ namespace
                         if (is_usable)
                             jobs->fetch(jobs->find_id_for_usable(r.from_resolvent()))->arrows()->push_back(
                                     make_named_values<Arrow>(
-                                        value_for<n::comes_after>(our_identifier),
-                                        value_for<n::failure_kinds>(failure_kinds),
-                                        value_for<n::maybe_reason>(reason)
+                                        n::comes_after() = our_identifier,
+                                        n::failure_kinds() = failure_kinds,
+                                        n::maybe_reason() = reason
                                         ));
                     }
                 }

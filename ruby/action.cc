@@ -255,14 +255,14 @@ namespace
                 parts += fp_unneeded;
 
             ptr = new FetchActionOptions(make_named_values<FetchActionOptions>(
-                        value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
-                        value_for<n::exclude_unmirrorable>(v_exclude_unmirrorable),
-                        value_for<n::fetch_parts>(parts),
-                        value_for<n::ignore_not_in_manifest>(false),
-                        value_for<n::ignore_unfetched>(false),
-                        value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::safe_resume>(v_safe_resume),
-                        value_for<n::want_phase>(std::tr1::bind(return_literal_function(wp_yes)))
+                        n::errors() = make_shared_ptr(new Sequence<FetchActionFailure>),
+                        n::exclude_unmirrorable() = v_exclude_unmirrorable,
+                        n::fetch_parts() = parts,
+                        n::ignore_not_in_manifest() = false,
+                        n::ignore_unfetched() = false,
+                        n::make_output_manager() = &make_standard_output_manager,
+                        n::safe_resume() = v_safe_resume,
+                        n::want_phase() = std::tr1::bind(return_literal_function(wp_yes))
                     ));
 
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<FetchActionOptions>::free, ptr));
@@ -356,10 +356,10 @@ namespace
             }
 
             ptr = new FetchActionFailure(make_named_values<FetchActionFailure>(
-                        value_for<n::failed_automatic_fetching>(v_failed_automatic_fetching),
-                        value_for<n::failed_integrity_checks>(v_failed_integrity_checks),
-                        value_for<n::requires_manual_fetching>(v_requires_manual_fetching),
-                        value_for<n::target_file>(v_target_file)
+                        n::failed_automatic_fetching() = v_failed_automatic_fetching,
+                        n::failed_integrity_checks() = v_failed_integrity_checks,
+                        n::requires_manual_fetching() = v_requires_manual_fetching,
+                        n::target_file() = v_target_file
                     ));
 
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<FetchActionFailure>::free, ptr));
@@ -473,7 +473,7 @@ namespace
         easy_action_new(VALUE self)
         {
             O_ options(make_named_values<O_>(
-                        value_for<n::make_output_manager>(&make_standard_output_manager)
+                        n::make_output_manager() = &make_standard_output_manager
                         ));
 
             std::tr1::shared_ptr<Action> * a(new std::tr1::shared_ptr<Action>(new A_(options)));
@@ -528,11 +528,11 @@ namespace
             }
 
             ptr = new InstallActionOptions(make_named_values<InstallActionOptions>(
-                        value_for<n::destination>(v_destination),
-                        value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::perform_uninstall>(&cannot_perform_uninstall),
-                        value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
-                        value_for<n::want_phase>(&want_all_phases)
+                        n::destination() = v_destination,
+                        n::make_output_manager() = &make_standard_output_manager,
+                        n::perform_uninstall() = &cannot_perform_uninstall,
+                        n::replacing() = make_shared_ptr(new PackageIDSequence),
+                        n::want_phase() = &want_all_phases
                     ));
 
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<InstallActionOptions>::free, ptr));
@@ -620,11 +620,11 @@ namespace
             }
 
             ptr = new UninstallActionOptions(make_named_values<UninstallActionOptions>(
-                        value_for<n::config_protect>(v_config_protect),
-                        value_for<n::if_for_install_id>(make_null_shared_ptr()),
-                        value_for<n::ignore_for_unmerge>(&ignore_nothing),
-                        value_for<n::is_overwrite>(false),
-                        value_for<n::make_output_manager>(&make_standard_output_manager)
+                        n::config_protect() = v_config_protect,
+                        n::if_for_install_id() = make_null_shared_ptr(),
+                        n::ignore_for_unmerge() = &ignore_nothing,
+                        n::is_overwrite() = false,
+                        n::make_output_manager() = &make_standard_output_manager
                     ));
 
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<UninstallActionOptions>::free, ptr));

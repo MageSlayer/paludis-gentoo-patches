@@ -194,9 +194,9 @@ UninstallList::add_errors_for_system()
 
         if (needed)
             _imp->uninstall_list.insert(l, make_named_values<UninstallListEntry>(
-                    value_for<n::kind>(ulk_required_by),
-                    value_for<n::package_id>(l->package_id()),
-                    value_for<n::tags>(tags)
+                    n::kind() = ulk_required_by,
+                    n::package_id() = l->package_id(),
+                    n::tags() = tags
                     ));
     }
 }
@@ -252,9 +252,9 @@ UninstallList::add_package(const std::tr1::shared_ptr<const PackageID> & e, cons
 
     std::list<UninstallListEntry>::iterator i(_imp->uninstall_list.insert(
                 _imp->uninstall_list.end(), make_named_values<UninstallListEntry>(
-                    value_for<n::kind>(k),
-                    value_for<n::package_id>(e),
-                    value_for<n::tags>(make_shared_ptr(new Set<std::tr1::shared_ptr<DepTag> >))
+                    n::kind() = k,
+                    n::package_id() = e,
+                    n::tags() = make_shared_ptr(new Set<std::tr1::shared_ptr<DepTag> >)
                     )));
 
     if (t)
@@ -336,8 +336,8 @@ namespace
             for (PackageIDSequence::ConstIterator it = m->begin(), it_end = m->end();
                  it_end != it; ++it)
                 matches->insert(make_named_values<DepTagEntry>(
-                            value_for<n::generation>(0),
-                            value_for<n::tag>(std::tr1::shared_ptr<const DepTag>(new DependencyDepTag(*it, *node.spec())))
+                            n::generation() = 0,
+                            n::tag() = std::tr1::shared_ptr<const DepTag>(new DependencyDepTag(*it, *node.spec()))
                             ));
         }
 

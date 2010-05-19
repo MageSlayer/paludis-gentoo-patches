@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,16 +28,16 @@ namespace paludis
 {
     namespace n
     {
-        struct build_dependencies;
-        struct description;
-        struct environment;
-        struct install_under;
-        struct location;
-        struct name;
-        struct rewrite_ids_over_to_root;
-        struct run_dependencies;
-        struct slot;
-        struct version;
+        typedef Name<struct build_dependencies_name> build_dependencies;
+        typedef Name<struct description_name> description;
+        typedef Name<struct environment_name> environment;
+        typedef Name<struct install_under_name> install_under;
+        typedef Name<struct location_name> location;
+        typedef Name<struct name_name> name;
+        typedef Name<struct rewrite_ids_over_to_root_name> rewrite_ids_over_to_root;
+        typedef Name<struct run_dependencies_name> run_dependencies;
+        typedef Name<struct slot_name> slot;
+        typedef Name<struct version_name> version;
     }
 
     namespace unpackaged_repositories

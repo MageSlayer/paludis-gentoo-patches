@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2006, 2007 Danny van Dyk
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -164,12 +164,12 @@ CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryPa
             p.environment(),
             RepositoryName("installed-cran"),
             make_named_values<RepositoryCapabilities>(
-                value_for<n::destination_interface>(this),
-                value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
-                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
-                value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
-                value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
-                value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
+                n::destination_interface() = this,
+                n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
+                n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
+                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
+                n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
+                n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
     PrivateImplementationPattern<CRANInstalledRepository>(new Implementation<CRANInstalledRepository>(p)),
     _imp(PrivateImplementationPattern<CRANInstalledRepository>::_imp)
@@ -395,9 +395,9 @@ CRANInstalledRepository::repository_factory_create(
         throw CRANInstalledRepositoryConfigurationError("Key 'world' is no longer supported.");
 
     return std::tr1::shared_ptr<Repository>(new CRANInstalledRepository(make_named_values<CRANInstalledRepositoryParams>(
-                    value_for<n::environment>(env),
-                    value_for<n::location>(location),
-                    value_for<n::root>(root)
+                    n::environment() = env,
+                    n::location() = location,
+                    n::root() = root
                 )));
 }
 
@@ -582,7 +582,7 @@ CRANInstalledRepository::populate_sets() const
 HookResult
 CRANInstalledRepository::perform_hook(const Hook &)
 {
-    return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
+    return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
 bool

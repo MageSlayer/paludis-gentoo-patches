@@ -58,7 +58,7 @@ JobID::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "JobID");
     return make_named_values<JobID>(
-            value_for<n::string_id>(v.member<std::string>("string_id"))
+            n::string_id() = v.member<std::string>("string_id")
             );
 }
 

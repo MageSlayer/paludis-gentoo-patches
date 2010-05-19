@@ -29,11 +29,11 @@ namespace paludis
 {
     namespace n
     {
-        struct config_filename;
-        struct config_template;
-        struct environment;
-        struct name;
-        struct root;
+        typedef Name<struct config_filename_name> config_filename;
+        typedef Name<struct config_template_name> config_template;
+        typedef Name<struct environment_name> environment;
+        typedef Name<struct name_name> name;
+        typedef Name<struct root_name> root;
     }
 
     namespace repository_repository

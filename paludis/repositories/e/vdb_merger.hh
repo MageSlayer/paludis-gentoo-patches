@@ -31,16 +31,16 @@ namespace paludis
 
     namespace n
     {
-        struct config_protect;
-        struct config_protect_mask;
-        struct contents_file;
-        struct environment;
-        struct image;
-        struct merged_entries;
-        struct options;
-        struct output_manager;
-        struct package_id;
-        struct root;
+        typedef Name<struct config_protect_name> config_protect;
+        typedef Name<struct config_protect_mask_name> config_protect_mask;
+        typedef Name<struct contents_file_name> contents_file;
+        typedef Name<struct environment_name> environment;
+        typedef Name<struct image_name> image;
+        typedef Name<struct merged_entries_name> merged_entries;
+        typedef Name<struct options_name> options;
+        typedef Name<struct output_manager_name> output_manager;
+        typedef Name<struct package_id_name> package_id;
+        typedef Name<struct root_name> root;
     }
 
     /**

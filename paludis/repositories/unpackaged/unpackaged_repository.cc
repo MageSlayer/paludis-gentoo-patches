@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -96,12 +96,12 @@ UnpackagedRepository::UnpackagedRepository(const RepositoryName & n,
         const UnpackagedRepositoryParams & params) :
     PrivateImplementationPattern<UnpackagedRepository>(new Implementation<UnpackagedRepository>(n, params)),
     Repository(params.environment(), n, make_named_values<RepositoryCapabilities>(
-                value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
-                value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
-                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
-                value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
-                value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
-                value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
+                n::destination_interface() = static_cast<RepositoryDestinationInterface *>(0),
+                n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
+                n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
+                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
+                n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
+                n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
     _imp(PrivateImplementationPattern<UnpackagedRepository>::_imp)
 {
@@ -250,16 +250,16 @@ UnpackagedRepository::repository_factory_create(
 
     return make_shared_ptr(new UnpackagedRepository(RepositoryName("unpackaged"),
                 make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
-                    value_for<n::build_dependencies>(build_dependencies),
-                    value_for<n::description>(description),
-                    value_for<n::environment>(env),
-                    value_for<n::install_under>(install_under),
-                    value_for<n::location>(location),
-                    value_for<n::name>(QualifiedPackageName(name)),
-                    value_for<n::rewrite_ids_over_to_root>(rewrite_ids_over_to_root),
-                    value_for<n::run_dependencies>(run_dependencies),
-                    value_for<n::slot>(SlotName(slot)),
-                    value_for<n::version>(VersionSpec(version, user_version_spec_options()))
+                    n::build_dependencies() = build_dependencies,
+                    n::description() = description,
+                    n::environment() = env,
+                    n::install_under() = install_under,
+                    n::location() = location,
+                    n::name() = QualifiedPackageName(name),
+                    n::rewrite_ids_over_to_root() = rewrite_ids_over_to_root,
+                    n::run_dependencies() = run_dependencies,
+                    n::slot() = SlotName(slot),
+                    n::version() = VersionSpec(version, user_version_spec_options())
                 )));
 }
 
@@ -287,7 +287,7 @@ UnpackagedRepository::populate_sets() const
 HookResult
 UnpackagedRepository::perform_hook(const Hook &)
 {
-    return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
+    return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
 bool

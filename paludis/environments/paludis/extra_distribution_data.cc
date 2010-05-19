@@ -39,19 +39,19 @@ namespace paludis
         static std::tr1::shared_ptr<PaludisDistribution> make_data(const std::tr1::shared_ptr<const KeyValueConfigFile> & k)
         {
             return make_shared_ptr(new PaludisDistribution(make_named_values<PaludisDistribution>(
-                            value_for<n::bashrc_filename>(k->get("bashrc_filename")),
-                            value_for<n::info_messages_are_spam>(destringify<bool>(k->get("info_messages_are_spam"))),
-                            value_for<n::keywords_filename_part>(k->get("keywords_filename_part")),
-                            value_for<n::licenses_filename_part>(k->get("licenses_filename_part")),
-                            value_for<n::mandatory_userpriv>(destringify<bool>(k->get("mandatory_userpriv"))),
-                            value_for<n::mirrors_filename_part>(k->get("mirrors_filename_part")),
-                            value_for<n::output_filename_part>(k->get("output_filename_part")),
-                            value_for<n::output_managers_directory>(k->get("output_managers_directory")),
-                            value_for<n::package_mask_filename_part>(k->get("package_mask_filename_part")),
-                            value_for<n::package_unmask_filename_part>(k->get("package_unmask_filename_part")),
-                            value_for<n::repositories_directory>(k->get("repositories_directory")),
-                            value_for<n::repository_defaults_filename_part>(k->get("repository_defaults_filename_part")),
-                            value_for<n::use_filename_part>(k->get("use_filename_part"))
+                            n::bashrc_filename() = k->get("bashrc_filename"),
+                            n::info_messages_are_spam() = destringify<bool>(k->get("info_messages_are_spam")),
+                            n::keywords_filename_part() = k->get("keywords_filename_part"),
+                            n::licenses_filename_part() = k->get("licenses_filename_part"),
+                            n::mandatory_userpriv() = destringify<bool>(k->get("mandatory_userpriv")),
+                            n::mirrors_filename_part() = k->get("mirrors_filename_part"),
+                            n::output_filename_part() = k->get("output_filename_part"),
+                            n::output_managers_directory() = k->get("output_managers_directory"),
+                            n::package_mask_filename_part() = k->get("package_mask_filename_part"),
+                            n::package_unmask_filename_part() = k->get("package_unmask_filename_part"),
+                            n::repositories_directory() = k->get("repositories_directory"),
+                            n::repository_defaults_filename_part() = k->get("repository_defaults_filename_part"),
+                            n::use_filename_part() = k->get("use_filename_part")
                             )));
         }
     };

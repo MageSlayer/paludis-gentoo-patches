@@ -42,10 +42,10 @@ namespace paludis
 {
     namespace n
     {
-        struct create_function;
-        struct dependencies_function;
-        struct importance_function;
-        struct name_function;
+        typedef Name<struct create_function_name> create_function;
+        typedef Name<struct dependencies_function_name> dependencies_function;
+        typedef Name<struct importance_function_name> importance_function;
+        typedef Name<struct name_function_name> name_function;
     }
 }
 
@@ -203,10 +203,10 @@ RepositoryFactory::add_repository_format(
             f != f_end ; ++f)
     {
         if (! _imp->keys.insert(std::make_pair(*f, make_named_values<Funcs>(
-                            value_for<n::create_function>(create_function),
-                            value_for<n::dependencies_function>(dependencies_function),
-                            value_for<n::importance_function>(importance_function),
-                            value_for<n::name_function>(name_function)
+                            n::create_function() = create_function,
+                            n::dependencies_function() = dependencies_function,
+                            n::importance_function() = importance_function,
+                            n::name_function() = name_function
                             ))).second)
             throw ConfigurationError("Handler for repository format '" + stringify(*f) + "' already exists");
     }

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,16 +27,16 @@ namespace paludis
 {
     namespace n
     {
-        struct add_package_requirement;
-        struct add_version_requirement;
-        struct check_sanity;
-        struct get_remove_trailing_version;
-        struct get_remove_version_operator;
-        struct has_version_operator;
-        struct options_for_partially_made_package_dep_spec;
-        struct remove_trailing_repo_if_exists;
-        struct remove_trailing_slot_if_exists;
-        struct remove_trailing_square_bracket_if_exists;
+        typedef Name<struct add_package_requirement_name> add_package_requirement;
+        typedef Name<struct add_version_requirement_name> add_version_requirement;
+        typedef Name<struct check_sanity_name> check_sanity;
+        typedef Name<struct get_remove_trailing_version_name> get_remove_trailing_version;
+        typedef Name<struct get_remove_version_operator_name> get_remove_version_operator;
+        typedef Name<struct has_version_operator_name> has_version_operator;
+        typedef Name<struct options_for_partially_made_package_dep_spec_name> options_for_partially_made_package_dep_spec;
+        typedef Name<struct remove_trailing_repo_if_exists_name> remove_trailing_repo_if_exists;
+        typedef Name<struct remove_trailing_slot_if_exists_name> remove_trailing_slot_if_exists;
+        typedef Name<struct remove_trailing_square_bracket_if_exists_name> remove_trailing_square_bracket_if_exists;
     }
 
     struct GenericELikePackageDepSpecParseFunctions

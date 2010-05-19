@@ -609,8 +609,8 @@ GemSpecification::need_masks_added() const
         if (user_mask)
             add_overridden_mask(make_shared_ptr(new OverriddenMask(
                             make_named_values<OverriddenMask>(
-                                value_for<n::mask>(user_mask),
-                                value_for<n::override_reason>(mro_overridden_by_user)
+                                n::mask() = user_mask,
+                                n::override_reason() = mro_overridden_by_user
                                 ))));
     }
 

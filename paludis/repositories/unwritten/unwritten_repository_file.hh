@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,15 +33,15 @@ namespace paludis
 {
     namespace n
     {
-        struct added_by;
-        struct bug_ids;
-        struct comment;
-        struct description;
-        struct homepage;
-        struct name;
-        struct remote_ids;
-        struct slot;
-        struct version;
+        typedef Name<struct added_by_name> added_by;
+        typedef Name<struct bug_ids_name> bug_ids;
+        typedef Name<struct comment_name> comment;
+        typedef Name<struct description_name> description;
+        typedef Name<struct homepage_name> homepage;
+        typedef Name<struct name_name> name;
+        typedef Name<struct remote_ids_name> remote_ids;
+        typedef Name<struct slot_name> slot;
+        typedef Name<struct version_name> version;
     }
 
     namespace unwritten_repository

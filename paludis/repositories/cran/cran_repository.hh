@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2006 Danny van Dyk
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -40,13 +40,13 @@ namespace paludis
 
     namespace n
     {
-        struct builddir;
-        struct distdir;
-        struct environment;
-        struct library;
-        struct location;
-        struct mirror;
-        struct sync;
+        typedef Name<struct builddir_name> builddir;
+        typedef Name<struct distdir_name> distdir;
+        typedef Name<struct environment_name> environment;
+        typedef Name<struct library_name> library;
+        typedef Name<struct location_name> location;
+        typedef Name<struct mirror_name> mirror;
+        typedef Name<struct sync_name> sync;
     }
 
     /**

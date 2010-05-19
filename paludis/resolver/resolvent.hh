@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,11 +33,11 @@ namespace paludis
 {
     namespace n
     {
-        struct destination_type;
-        struct name_or_null;
-        struct null_means_unknown;
-        struct package;
-        struct slot;
+        typedef Name<struct destination_type_name> destination_type;
+        typedef Name<struct name_or_null_name> name_or_null;
+        typedef Name<struct null_means_unknown_name> null_means_unknown;
+        typedef Name<struct package_name> package;
+        typedef Name<struct slot_name> slot;
     }
 
     namespace resolver

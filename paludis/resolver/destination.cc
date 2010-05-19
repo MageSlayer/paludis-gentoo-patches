@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -41,8 +41,8 @@ Destination::deserialise(Deserialisation & d)
 
 
     return make_shared_ptr(new Destination(make_named_values<Destination>(
-                    value_for<n::replacing>(replacing),
-                    value_for<n::repository>(RepositoryName(v.member<std::string>("repository")))
+                    n::replacing() = replacing,
+                    n::repository() = RepositoryName(v.member<std::string>("repository"))
                     )));
 }
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,17 +27,17 @@ namespace paludis
 {
     namespace n
     {
-        struct on_all;
-        struct on_annotations;
-        struct on_any;
-        struct on_arrow;
-        struct on_error;
-        struct on_label;
-        struct on_pop;
-        struct on_should_be_empty;
-        struct on_string;
-        struct on_use;
-        struct on_use_under_any;
+        typedef Name<struct on_all_name> on_all;
+        typedef Name<struct on_annotations_name> on_annotations;
+        typedef Name<struct on_any_name> on_any;
+        typedef Name<struct on_arrow_name> on_arrow;
+        typedef Name<struct on_error_name> on_error;
+        typedef Name<struct on_label_name> on_label;
+        typedef Name<struct on_pop_name> on_pop;
+        typedef Name<struct on_should_be_empty_name> on_should_be_empty;
+        typedef Name<struct on_string_name> on_string;
+        typedef Name<struct on_use_name> on_use;
+        typedef Name<struct on_use_under_any_name> on_use_under_any;
     }
 
     struct ELikeDepParserCallbacks

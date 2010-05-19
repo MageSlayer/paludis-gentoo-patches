@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,9 +38,9 @@ namespace paludis
 {
     namespace n
     {
-        struct allow_locking;
-        struct environment;
-        struct make_config_file;
+        typedef Name<struct allow_locking_name> allow_locking;
+        typedef Name<struct environment_name> environment;
+        typedef Name<struct make_config_file_name> make_config_file;
     }
 
     /**

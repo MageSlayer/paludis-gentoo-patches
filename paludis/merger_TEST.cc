@@ -175,15 +175,15 @@ namespace
                         + (0 == n ? "" : "_" + stringify(n)) + "_dir/root"),
                 env(FSEntry("merger_TEST_dir/hooks")),
                 merger(make_named_values<MergerParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::fix_mtimes_before>(Timestamp(0, 0)),
-                            value_for<n::get_new_ids_or_minus_one>(&get_new_ids_or_minus_one),
-                            value_for<n::image>(image_dir),
-                            value_for<n::install_under>(FSEntry("/")),
-                            value_for<n::merged_entries>(make_shared_ptr(new FSEntrySet)),
-                            value_for<n::no_chown>(true),
-                            value_for<n::options>(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs),
-                            value_for<n::root>(root_dir)
+                            n::environment() = &env,
+                            n::fix_mtimes_before() = Timestamp(0, 0),
+                            n::get_new_ids_or_minus_one() = &get_new_ids_or_minus_one,
+                            n::image() = image_dir,
+                            n::install_under() = FSEntry("/"),
+                            n::merged_entries() = make_shared_ptr(new FSEntrySet),
+                            n::no_chown() = true,
+                            n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
+                            n::root() = root_dir
                         ))
             {
             }
@@ -196,15 +196,15 @@ namespace
                 root_dir("merger_TEST_dir/" + custom_test + "/root"),
                 env(FSEntry("merger_TEST_dir/hooks")),
                 merger(make_named_values<MergerParams>(
-                        value_for<n::environment>(&env),
-                        value_for<n::fix_mtimes_before>(fix ? FSEntry("merger_TEST_dir/reference").mtim() : Timestamp(0, 0)),
-                        value_for<n::get_new_ids_or_minus_one>(&get_new_ids_or_minus_one),
-                        value_for<n::image>(image_dir),
-                        value_for<n::install_under>(FSEntry("/")),
-                        value_for<n::merged_entries>(make_shared_ptr(new FSEntrySet)),
-                        value_for<n::no_chown>(true),
-                        value_for<n::options>(o),
-                        value_for<n::root>(root_dir)
+                        n::environment() = &env,
+                        n::fix_mtimes_before() = fix ? FSEntry("merger_TEST_dir/reference").mtim() : Timestamp(0, 0),
+                        n::get_new_ids_or_minus_one() = &get_new_ids_or_minus_one,
+                        n::image() = image_dir,
+                        n::install_under() = FSEntry("/"),
+                        n::merged_entries() = make_shared_ptr(new FSEntrySet),
+                        n::no_chown() = true,
+                        n::options() = o,
+                        n::root() = root_dir
                         ))
             {
             }

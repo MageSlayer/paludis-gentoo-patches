@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,6 +23,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/tribool.hh>
 #include <paludis/paludislike_options_conf.hh>
 #include <paludis/choice.hh>
 
@@ -40,9 +41,9 @@ namespace paludis
         Implementation(const PaludisEnvironment * const e) :
             env(e),
             handler(new PaludisLikeOptionsConf(make_named_values<PaludisLikeOptionsConfParams>(
-                            value_for<n::allow_locking>(false),
-                            value_for<n::environment>(e),
-                            value_for<n::make_config_file>(&make_bashable_conf)
+                            n::allow_locking() = false,
+                            n::environment() = e,
+                            n::make_config_file() = &make_bashable_conf
                             )))
         {
         }

@@ -215,10 +215,10 @@ UnavailableRepositoryFile::_load(const FSEntry & f)
             for (std::list<VersionSpec>::const_iterator v(versions.begin()), v_end(versions.end()) ;
                     v != v_end ; ++v)
                 _imp->entries.push_back(make_named_values<UnavailableRepositoryFileEntry>(
-                            value_for<n::description>(desc),
-                            value_for<n::name>(category + package),
-                            value_for<n::slot>(slot),
-                            value_for<n::version>(*v)
+                            n::description() = desc,
+                            n::name() = category + package,
+                            n::slot() = slot,
+                            n::version() = *v
                         ));
         }
         else

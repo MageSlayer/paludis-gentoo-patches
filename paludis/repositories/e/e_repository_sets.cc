@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  * Copyright (c) 2006 Danny van Dyk
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -119,12 +119,12 @@ ERepositorySets::package_set(const SetName & ss) const
         Context context("When loading package set '" + stringify(s.first) + "' from '" + stringify(ff) + "':");
 
         SetFile f(make_named_values<SetFileParams>(
-                    value_for<n::environment>(_imp->environment),
-                    value_for<n::file_name>(ff),
-                    value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->environment, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All())),
-                    value_for<n::set_operator_mode>(s.second),
-                    value_for<n::tag>(tag),
-                    value_for<n::type>(sft_paludis_conf)
+                    n::environment() = _imp->environment,
+                    n::file_name() = ff,
+                    n::parser() = std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->environment, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All()),
+                    n::set_operator_mode() = s.second,
+                    n::tag() = tag,
+                    n::type() = sft_paludis_conf
                     ));
 
         return f.contents();
@@ -221,9 +221,9 @@ namespace
         {
             return e.version().remove_revision() == VersionSpec(ver, ver_options).remove_revision() &&
                 match_range(e, make_named_values<erepository::GLSARange>(
-                            value_for<n::op>(r.op().substr(1)),
-                            value_for<n::slot>(r.slot()),
-                            value_for<n::version>(r.version())),
+                            n::op() = r.op().substr(1),
+                            n::slot() = r.slot(),
+                            n::version() = r.version()),
                         ver_options, pds_options);
         }
 
@@ -314,8 +314,8 @@ ERepositorySets::security_set(bool insecurity) const
                                     make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                                     .package((*c)->name())
                                     .version_requirement(make_named_values<VersionRequirement>(
-                                            value_for<n::version_operator>(vo_equal),
-                                            value_for<n::version_spec>((*c)->version())))
+                                            n::version_operator() = vo_equal,
+                                            n::version_spec() = (*c)->version()))
                                     .in_repository((*c)->repository()->name())));
                         spec->set_tag(glsa_tags.find(glsa->id())->second);
                         security_packages->root()->append(spec);
@@ -347,8 +347,8 @@ ERepositorySets::security_set(bool insecurity) const
                             std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                                         .package((*r)->name())
                                         .version_requirement(make_named_values<VersionRequirement>(
-                                                value_for<n::version_operator>(vo_equal),
-                                                value_for<n::version_spec>((*r)->version())))
+                                                n::version_operator() = vo_equal,
+                                                n::version_spec() = (*r)->version()))
                                         .in_repository((*r)->repository()->name())));
                             spec->set_tag(glsa_tags.find(glsa->id())->second);
                             security_packages->root()->append(spec);

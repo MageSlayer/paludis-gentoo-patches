@@ -84,13 +84,13 @@ ResolverLists::deserialise(Deserialisation & d)
     }
 
     return make_named_values<ResolverLists>(
-            value_for<n::all_resolutions>(v.member<std::tr1::shared_ptr<Resolutions> >("all_resolutions")),
-            value_for<n::job_ids_needing_confirmation>(job_ids_needing_confirmation),
-            value_for<n::jobs>(v.member<std::tr1::shared_ptr<Jobs> >("jobs")),
-            value_for<n::taken_error_job_ids>(taken_error_job_ids),
-            value_for<n::taken_job_ids>(taken_job_ids),
-            value_for<n::untaken_error_job_ids>(untaken_error_job_ids),
-            value_for<n::untaken_job_ids>(untaken_job_ids)
+            n::all_resolutions() = v.member<std::tr1::shared_ptr<Resolutions> >("all_resolutions"),
+            n::job_ids_needing_confirmation() = job_ids_needing_confirmation,
+            n::jobs() = v.member<std::tr1::shared_ptr<Jobs> >("jobs"),
+            n::taken_error_job_ids() = taken_error_job_ids,
+            n::taken_job_ids() = taken_job_ids,
+            n::untaken_error_job_ids() = untaken_error_job_ids,
+            n::untaken_job_ids() = untaken_job_ids
             );
 }
 

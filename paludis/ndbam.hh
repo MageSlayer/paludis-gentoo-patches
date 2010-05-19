@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -37,13 +37,13 @@ namespace paludis
 {
     namespace n
     {
-        struct fs_location;
-        struct magic;
-        struct mutex;
-        struct name;
-        struct package_id;
-        struct slot;
-        struct version;
+        typedef Name<struct fs_location_name> fs_location;
+        typedef Name<struct magic_name> magic;
+        typedef Name<struct mutex_name> mutex;
+        typedef Name<struct name_name> name;
+        typedef Name<struct package_id_name> package_id;
+        typedef Name<struct slot_name> slot;
+        typedef Name<struct version_name> version;
     }
 
     struct NDBAMEntry

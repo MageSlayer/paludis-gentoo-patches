@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,10 +32,10 @@ namespace paludis
 {
     namespace n
     {
-        struct all;
-        struct errors;
-        struct ordered;
-        struct untaken;
+        typedef Name<struct all_name> all;
+        typedef Name<struct errors_name> errors;
+        typedef Name<struct ordered_name> ordered;
+        typedef Name<struct untaken_name> untaken;
     }
 
     namespace resolver

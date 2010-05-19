@@ -106,7 +106,7 @@ ConfigCommand::run(
 
     OutputManagerFromEnvironment output_manager_holder(env.get(), id, oe_exclusive, ClientOutputFeatures());
     ConfigAction action(make_named_values<ConfigActionOptions>(
-                value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
+                n::make_output_manager() = std::tr1::ref(output_manager_holder)
                 ));
     id->perform_action(action);
 

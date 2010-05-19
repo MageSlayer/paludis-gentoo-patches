@@ -459,18 +459,18 @@ namespace
                 l != l_end ; ++l)
         {
             if (! package_dep_spec_has_properties(*l, make_named_values<PackageDepSpecProperties>(
-                            value_for<n::has_additional_requirements>(false),
-                            value_for<n::has_category_name_part>(false),
-                            value_for<n::has_from_repository>(false),
-                            value_for<n::has_in_repository>(false),
-                            value_for<n::has_installable_to_path>(false),
-                            value_for<n::has_installable_to_repository>(false),
-                            value_for<n::has_installed_at_path>(false),
-                            value_for<n::has_package>(true),
-                            value_for<n::has_package_name_part>(false),
-                            value_for<n::has_slot_requirement>(false),
-                            value_for<n::has_tag>(indeterminate),
-                            value_for<n::has_version_requirements>(false)
+                            n::has_additional_requirements() = false,
+                            n::has_category_name_part() = false,
+                            n::has_from_repository() = false,
+                            n::has_in_repository() = false,
+                            n::has_installable_to_path() = false,
+                            n::has_installable_to_repository() = false,
+                            n::has_installed_at_path() = false,
+                            n::has_package() = true,
+                            n::has_package_name_part() = false,
+                            n::has_slot_requirement() = false,
+                            n::has_tag() = indeterminate,
+                            n::has_version_requirements() = false
                             )))
                 throw args::DoHelp("'" + stringify(*l) + "' is not a simple cat/pkg");
 
@@ -599,12 +599,12 @@ namespace
                 && ! use_existing_from_withish(env, resolvent.package(), without))
         {
             result->add(make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                                value_for<n::destination_type>(resolvent.destination_type()),
-                                value_for<n::nothing_is_fine_too>(false),
-                                value_for<n::reason>(make_shared_ptr(new PresetReason("is scm", make_null_shared_ptr()))),
-                                value_for<n::spec>(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(resolvent.package())),
-                                value_for<n::untaken>(false),
-                                value_for<n::use_existing>(ue_only_if_transient)
+                                n::destination_type() = resolvent.destination_type(),
+                                n::nothing_is_fine_too() = false,
+                                n::reason() = make_shared_ptr(new PresetReason("is scm", make_null_shared_ptr())),
+                                n::spec() = make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(resolvent.package()),
+                                n::untaken() = false,
+                                n::use_existing() = ue_only_if_transient
                                 ))));
         }
 
@@ -1021,18 +1021,18 @@ namespace
                 + stringify(s) + "':");
 
         if (! package_dep_spec_has_properties(s, make_named_values<PackageDepSpecProperties>(
-                        value_for<n::has_additional_requirements>(false),
-                        value_for<n::has_category_name_part>(false),
-                        value_for<n::has_from_repository>(false),
-                        value_for<n::has_in_repository>(false),
-                        value_for<n::has_installable_to_path>(false),
-                        value_for<n::has_installable_to_repository>(false),
-                        value_for<n::has_installed_at_path>(false),
-                        value_for<n::has_package>(true),
-                        value_for<n::has_package_name_part>(false),
-                        value_for<n::has_slot_requirement>(false),
-                        value_for<n::has_tag>(indeterminate),
-                        value_for<n::has_version_requirements>(false)
+                        n::has_additional_requirements() = false,
+                        n::has_category_name_part() = false,
+                        n::has_from_repository() = false,
+                        n::has_in_repository() = false,
+                        n::has_installable_to_path() = false,
+                        n::has_installable_to_repository() = false,
+                        n::has_installed_at_path() = false,
+                        n::has_package() = true,
+                        n::has_package_name_part() = false,
+                        n::has_slot_requirement() = false,
+                        n::has_tag() = indeterminate,
+                        n::has_version_requirements() = false
                         )))
             throw args::DoHelp("'" + stringify(s) + "' is not a simple cat/pkg");
         return *s.package_ptr() == q;
@@ -1173,12 +1173,12 @@ namespace
             const std::tr1::shared_ptr<DependentReason> reason(new DependentReason(*i));
 
             result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                                value_for<n::destination_type>(dt_install_to_slash),
-                                value_for<n::nothing_is_fine_too>(true),
-                                value_for<n::reason>(reason),
-                                value_for<n::spec>(BlockDepSpec("!" + stringify(*spec), *spec, false)),
-                                value_for<n::untaken>(false),
-                                value_for<n::use_existing>(ue_if_possible)
+                                n::destination_type() = dt_install_to_slash,
+                                n::nothing_is_fine_too() = true,
+                                n::reason() = reason,
+                                n::spec() = BlockDepSpec("!" + stringify(*spec), *spec, false),
+                                n::untaken() = false,
+                                n::use_existing() = ue_if_possible
                                 ))));
         }
 
@@ -1580,12 +1580,12 @@ paludis::cave::resolve_common(
                 r != r_end ; ++r)
         {
             const std::tr1::shared_ptr<Constraint> constraint(new Constraint(make_named_values<Constraint>(
-                            value_for<n::destination_type>(r->destination_type()),
-                            value_for<n::nothing_is_fine_too>(true),
-                            value_for<n::reason>(reason),
-                            value_for<n::spec>(spec),
-                            value_for<n::untaken>(false),
-                            value_for<n::use_existing>(ue_if_possible)
+                            n::destination_type() = r->destination_type(),
+                            n::nothing_is_fine_too() = true,
+                            n::reason() = reason,
+                            n::spec() = spec,
+                            n::untaken() = false,
+                            n::use_existing() = ue_if_possible
                             )));
             initial_constraints.insert(std::make_pair(*r, make_initial_constraints_for(
                             env.get(), resolution_options, all_binary_repos_generator, without, *r))).first->second->add(
@@ -1599,36 +1599,36 @@ paludis::cave::resolve_common(
     using std::tr1::placeholders::_4;
 
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
-                value_for<n::allowed_to_break_fn>(std::tr1::bind(&allowed_to_break_fn,
-                        env.get(), std::tr1::cref(allowed_to_break_specs), _1)),
-                value_for<n::allowed_to_remove_fn>(std::tr1::bind(&allowed_to_remove_fn,
-                        env.get(), std::tr1::cref(allowed_to_remove_specs), _1)),
-                value_for<n::confirm_fn>(std::tr1::bind(&confirm_fn,
+                n::allowed_to_break_fn() = std::tr1::bind(&allowed_to_break_fn,
+                        env.get(), std::tr1::cref(allowed_to_break_specs), _1),
+                n::allowed_to_remove_fn() = std::tr1::bind(&allowed_to_remove_fn,
+                        env.get(), std::tr1::cref(allowed_to_remove_specs), _1),
+                n::confirm_fn() = std::tr1::bind(&confirm_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::cref(permit_downgrade),
-                        std::tr1::cref(permit_old_version), _1, _2, _3)),
-                value_for<n::find_repository_for_fn>(std::tr1::bind(&find_repository_for_fn,
-                        env.get(), std::tr1::cref(resolution_options), _1, _2, _3)),
-                value_for<n::get_constraints_for_dependent_fn>(std::tr1::bind(&get_constraints_for_dependent_fn,
-                        env.get(), std::tr1::cref(less_restrictive_remove_blockers_specs), _1, _2, _3, _4)),
-                value_for<n::get_destination_types_for_fn>(std::tr1::bind(&get_destination_types_for_fn,
-                        env.get(), std::tr1::cref(resolution_options), _1, _2, _3)),
-                value_for<n::get_initial_constraints_for_fn>(std::tr1::bind(&initial_constraints_for_fn,
+                        std::tr1::cref(permit_old_version), _1, _2, _3),
+                n::find_repository_for_fn() = std::tr1::bind(&find_repository_for_fn,
+                        env.get(), std::tr1::cref(resolution_options), _1, _2, _3),
+                n::get_constraints_for_dependent_fn() = std::tr1::bind(&get_constraints_for_dependent_fn,
+                        env.get(), std::tr1::cref(less_restrictive_remove_blockers_specs), _1, _2, _3, _4),
+                n::get_destination_types_for_fn() = std::tr1::bind(&get_destination_types_for_fn,
+                        env.get(), std::tr1::cref(resolution_options), _1, _2, _3),
+                n::get_initial_constraints_for_fn() = std::tr1::bind(&initial_constraints_for_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::cref(without),
-                        std::tr1::cref(initial_constraints), all_binary_repos_generator, _1)),
-                value_for<n::get_resolvents_for_fn>(std::tr1::bind(&get_resolvents_for_fn,
-                        env.get(), std::tr1::cref(resolution_options), _1, _2, _3)),
-                value_for<n::get_use_existing_fn>(std::tr1::bind(&use_existing_fn,
-                        env.get(), std::tr1::cref(resolution_options), std::tr1::cref(without), std::tr1::cref(with), _1, _2, _3)),
-                value_for<n::interest_in_spec_fn>(std::tr1::bind(&interest_in_spec_fn,
+                        std::tr1::cref(initial_constraints), all_binary_repos_generator, _1),
+                n::get_resolvents_for_fn() = std::tr1::bind(&get_resolvents_for_fn,
+                        env.get(), std::tr1::cref(resolution_options), _1, _2, _3),
+                n::get_use_existing_fn() = std::tr1::bind(&use_existing_fn,
+                        env.get(), std::tr1::cref(resolution_options), std::tr1::cref(without), std::tr1::cref(with), _1, _2, _3),
+                n::interest_in_spec_fn() = std::tr1::bind(&interest_in_spec_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::cref(take), std::tr1::cref(take_from),
                         std::tr1::cref(ignore), std::tr1::cref(ignore_from), std::tr1::cref(no_blockers_from),
-                        std::tr1::cref(no_dependencies_from), _1, _2, _3)),
-                value_for<n::make_destination_filtered_generator_fn>(std::tr1::bind(&make_destination_filtered_generator,
-                        env.get(), std::tr1::cref(resolution_options), all_binary_repos_generator, _1, _2)),
-                value_for<n::prefer_or_avoid_fn>(std::tr1::bind(&prefer_or_avoid_fn,
-                        env.get(), std::tr1::cref(resolution_options), std::tr1::cref(favour), std::tr1::cref(avoid), _1)),
-                value_for<n::remove_if_dependent_fn>(std::tr1::bind(&remove_if_dependent_fn,
-                        env.get(), std::tr1::cref(remove_if_dependent_specs), _1))
+                        std::tr1::cref(no_dependencies_from), _1, _2, _3),
+                n::make_destination_filtered_generator_fn() = std::tr1::bind(&make_destination_filtered_generator,
+                        env.get(), std::tr1::cref(resolution_options), all_binary_repos_generator, _1, _2),
+                n::prefer_or_avoid_fn() = std::tr1::bind(&prefer_or_avoid_fn,
+                        env.get(), std::tr1::cref(resolution_options), std::tr1::cref(favour), std::tr1::cref(avoid), _1),
+                n::remove_if_dependent_fn() = std::tr1::bind(&remove_if_dependent_fn,
+                        env.get(), std::tr1::cref(remove_if_dependent_specs), _1)
                 ));
 
     ScopedSelectionCache selection_cache(env.get());

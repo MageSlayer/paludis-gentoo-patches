@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -111,11 +111,11 @@ namespace test_cases
                         PackageDepSpec(parse_user_package_dep_spec(victim,
                                 &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
             InstallAction install_action(make_named_values<InstallActionOptions>(
-                        value_for<n::destination>(exndbam_repo),
-                        value_for<n::make_output_manager>(&make_standard_output_manager),
-                        value_for<n::perform_uninstall>(&do_uninstall),
-                        value_for<n::replacing>(replacing),
-                        value_for<n::want_phase>(&want_all_phases)
+                        n::destination() = exndbam_repo,
+                        n::make_output_manager() = &make_standard_output_manager,
+                        n::perform_uninstall() = &do_uninstall,
+                        n::replacing() = replacing,
+                        n::want_phase() = &want_all_phases
                     ));
             (*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec(chosen_one,

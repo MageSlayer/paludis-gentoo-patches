@@ -92,12 +92,12 @@ RepositoryRepository::RepositoryRepository(const RepositoryRepositoryParams & p)
             p.environment(),
             p.name(),
             make_named_values<RepositoryCapabilities>(
-                value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(this)),
-                value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
-                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
-                value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
-                value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
-                value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
+                n::destination_interface() = static_cast<RepositoryDestinationInterface *>(this),
+                n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
+                n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
+                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
+                n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
+                n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
     _imp(PrivateImplementationPattern<RepositoryRepository>::_imp)
 {
@@ -286,11 +286,11 @@ RepositoryRepository::repository_factory_create(
 
     return std::tr1::shared_ptr<RepositoryRepository>(new RepositoryRepository(
                 make_named_values<RepositoryRepositoryParams>(
-                    value_for<n::config_filename>(config_filename),
-                    value_for<n::config_template>(config_template),
-                    value_for<n::environment>(env),
-                    value_for<n::name>(RepositoryName(name_str)),
-                    value_for<n::root>(root_str)
+                    n::config_filename() = config_filename,
+                    n::config_template() = config_template,
+                    n::environment() = env,
+                    n::name() = RepositoryName(name_str),
+                    n::root() = root_str
                 )));
 }
 
@@ -321,7 +321,7 @@ RepositoryRepository::populate_sets() const
 HookResult
 RepositoryRepository::perform_hook(const Hook &)
 {
-    return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
+    return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
 const std::tr1::shared_ptr<const MetadataValueKey<std::string> >

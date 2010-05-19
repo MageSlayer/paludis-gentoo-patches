@@ -43,9 +43,9 @@ namespace paludis
 {
     namespace n
     {
-        struct description;
-        struct long_name;
-        struct short_name;
+        typedef Name<struct description_name> description;
+        typedef Name<struct long_name_name> long_name;
+        typedef Name<struct short_name_name> short_name;
     }
 
     namespace args

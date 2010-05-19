@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,10 +26,10 @@ namespace paludis
 {
     namespace n
     {
-        struct environment;
-        struct name;
-        struct suitable_destination;
-        struct supports_uninstall;
+        typedef Name<struct environment_name> environment;
+        typedef Name<struct name_name> name;
+        typedef Name<struct suitable_destination_name> suitable_destination;
+        typedef Name<struct supports_uninstall_name> supports_uninstall;
     }
 
     /**

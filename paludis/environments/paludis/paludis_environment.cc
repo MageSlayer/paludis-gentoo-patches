@@ -507,14 +507,14 @@ namespace
         const std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(n, stringify(f.basename())));
 
         SetFile s(make_named_values<SetFileParams>(
-                    value_for<n::environment>(env),
-                    value_for<n::file_name>(f),
-                    value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec,
+                    n::environment() = env,
+                    n::file_name() = f,
+                    n::parser() = std::tr1::bind(&parse_user_package_dep_spec,
                             std::tr1::placeholders::_1, env, UserPackageDepSpecOptions() + updso_allow_wildcards,
-                            filter::All())),
-                    value_for<n::set_operator_mode>(mode),
-                    value_for<n::tag>(tag),
-                    value_for<n::type>(type)
+                            filter::All()),
+                    n::set_operator_mode() = mode,
+                    n::tag() = tag,
+                    n::type() = type
                     ));
         return s.contents();
     }

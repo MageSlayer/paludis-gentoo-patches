@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -53,12 +53,12 @@ namespace test_cases
             PackageDatabase & p(*e.package_database());
 
             const std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                            value_for<n::environment>(&e),
-                            value_for<n::name>(RepositoryName("repo1"))
+                            n::environment() = &e,
+                            n::name() = RepositoryName("repo1")
                             )));
             const std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                            value_for<n::environment>(&e),
-                            value_for<n::name>(RepositoryName("repo2"))
+                            n::environment() = &e,
+                            n::name() = RepositoryName("repo2")
                             )));
 
             TEST_CHECK_THROWS(p.fetch_repository(RepositoryName("repo1")), NoSuchRepositoryError);
@@ -106,8 +106,8 @@ namespace test_cases
         {
             CoolFakeRepository(const Environment * const e, const RepositoryName & rn) :
                 FakeRepository(make_named_values<FakeRepositoryParams>(
-                            value_for<n::environment>(e),
-                            value_for<n::name>(rn)
+                            n::environment() = e,
+                            n::name() = rn
                             ))
             {
             }
@@ -127,8 +127,8 @@ namespace test_cases
             PackageDatabase & p(*e.package_database());
 
             std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                            value_for<n::environment>(&e),
-                            value_for<n::name>(RepositoryName("repo1")))));
+                            n::environment() = &e,
+                            n::name() = RepositoryName("repo1"))));
             r1->add_version(CategoryNamePart("cat-one") + PackageNamePart("pkg-one"), VersionSpec("0", VersionSpecOptions()));
             r1->add_version(CategoryNamePart("cat-one") + PackageNamePart("pkg-two"), VersionSpec("0", VersionSpecOptions()));
             r1->add_version(CategoryNamePart("cat-two") + PackageNamePart("pkg-two"), VersionSpec("0", VersionSpecOptions()));
@@ -137,8 +137,8 @@ namespace test_cases
             TEST_CHECK(true);
 
             std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                            value_for<n::environment>(&e),
-                            value_for<n::name>(RepositoryName("repo2")))));
+                            n::environment() = &e,
+                            n::name() = RepositoryName("repo2"))));
             r2->add_version(CategoryNamePart("cat-three") + PackageNamePart("pkg-three"), VersionSpec("0", VersionSpecOptions()));
             r2->add_version(CategoryNamePart("cat-three") + PackageNamePart("pkg-four"), VersionSpec("0", VersionSpecOptions()));
             p.add_repository(10, r2);
@@ -169,10 +169,10 @@ namespace test_cases
 
             std::tr1::shared_ptr<FakeInstalledRepository> r4(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
-                            value_for<n::environment>(&e),
-                            value_for<n::name>(RepositoryName("repo4")),
-                            value_for<n::suitable_destination>(true),
-                            value_for<n::supports_uninstall>(true)
+                            n::environment() = &e,
+                            n::name() = RepositoryName("repo4"),
+                            n::suitable_destination() = true,
+                            n::supports_uninstall() = true
                             )));
             r4->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-installed"), VersionSpec("0", VersionSpecOptions()));
             r4->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-fail4"), VersionSpec("0", VersionSpecOptions()));

@@ -77,11 +77,11 @@ namespace
             const std::tr1::shared_ptr<paludis::Repository> & r)
     {
         return new InstallActionOptions(make_named_values<InstallActionOptions>(
-                    value_for<n::destination>(r),
-                    value_for<n::make_output_manager>(&make_standard_output_manager),
-                    value_for<n::perform_uninstall>(&cannot_perform_uninstall),
-                    value_for<n::replacing>(make_shared_ptr(new PackageIDSequence)),
-                    value_for<n::want_phase>(&want_all_phases)
+                    n::destination() = r,
+                    n::make_output_manager() = &make_standard_output_manager,
+                    n::perform_uninstall() = &cannot_perform_uninstall,
+                    n::replacing() = make_shared_ptr(new PackageIDSequence),
+                    n::want_phase() = &want_all_phases
                     ));
     }
 
@@ -89,32 +89,32 @@ namespace
             const std::string & c)
     {
         return new UninstallActionOptions(make_named_values<UninstallActionOptions>(
-                    value_for<n::config_protect>(c),
-                    value_for<n::if_for_install_id>(make_null_shared_ptr()),
-                    value_for<n::ignore_for_unmerge>(&ignore_nothing),
-                    value_for<n::is_overwrite>(false),
-                    value_for<n::make_output_manager>(&make_standard_output_manager)
+                    n::config_protect() = c,
+                    n::if_for_install_id() = make_null_shared_ptr(),
+                    n::ignore_for_unmerge() = &ignore_nothing,
+                    n::is_overwrite() = false,
+                    n::make_output_manager() = &make_standard_output_manager
                     ));
     }
 
     InfoActionOptions * make_info_action_options()
     {
         return new InfoActionOptions(make_named_values<InfoActionOptions>(
-                    value_for<n::make_output_manager>(&make_standard_output_manager)
+                    n::make_output_manager() = &make_standard_output_manager
                     ));
     }
 
     ConfigActionOptions * make_config_action_options()
     {
         return new ConfigActionOptions(make_named_values<ConfigActionOptions>(
-                    value_for<n::make_output_manager>(&make_standard_output_manager)
+                    n::make_output_manager() = &make_standard_output_manager
                     ));
     }
 
     PretendActionOptions * make_pretend_action_options()
     {
         return new PretendActionOptions(make_named_values<PretendActionOptions>(
-                    value_for<n::make_output_manager>(&make_standard_output_manager)
+                    n::make_output_manager() = &make_standard_output_manager
                     ));
     }
 
@@ -130,14 +130,14 @@ namespace
             parts += fp_unneeded;
 
         return new FetchActionOptions(make_named_values<FetchActionOptions>(
-                    value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
-                    value_for<n::exclude_unmirrorable>(exclude_unmirrorable),
-                    value_for<n::fetch_parts>(parts),
-                    value_for<n::ignore_not_in_manifest>(false),
-                    value_for<n::ignore_unfetched>(false),
-                    value_for<n::make_output_manager>(&make_standard_output_manager),
-                    value_for<n::safe_resume>(safe_resume),
-                    value_for<n::want_phase>(std::tr1::bind(return_literal_function(wp_yes)))
+                    n::errors() = make_shared_ptr(new Sequence<FetchActionFailure>),
+                    n::exclude_unmirrorable() = exclude_unmirrorable,
+                    n::fetch_parts() = parts,
+                    n::ignore_not_in_manifest() = false,
+                    n::ignore_unfetched() = false,
+                    n::make_output_manager() = &make_standard_output_manager,
+                    n::safe_resume() = safe_resume,
+                    n::want_phase() = std::tr1::bind(return_literal_function(wp_yes))
                     ));
     }
 

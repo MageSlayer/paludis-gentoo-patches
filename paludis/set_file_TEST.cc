@@ -70,12 +70,12 @@ namespace test_cases
             TestEnvironment env;
 
             SetFile f(make_named_values<SetFileParams>(
-                        value_for<n::environment>(static_cast<Environment *>(0)),
-                        value_for<n::file_name>(FSEntry("set_file_TEST_dir/simple1")),
-                        value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All())),
-                        value_for<n::set_operator_mode>(sfsmo_natural),
-                        value_for<n::tag>(std::tr1::shared_ptr<DepTag>()),
-                        value_for<n::type>(sft_simple)
+                        n::environment() = static_cast<Environment *>(0),
+                        n::file_name() = FSEntry("set_file_TEST_dir/simple1"),
+                        n::parser() = std::tr1::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All()),
+                        n::set_operator_mode() = sfsmo_natural,
+                        n::tag() = std::tr1::shared_ptr<DepTag>(),
+                        n::type() = sft_simple
                         ));
 
             {
@@ -137,12 +137,12 @@ namespace test_cases
             TestEnvironment env;
 
             SetFile f(make_named_values<SetFileParams>(
-                        value_for<n::environment>(static_cast<Environment *>(0)),
-                        value_for<n::file_name>(FSEntry("set_file_TEST_dir/paludisconf1")),
-                        value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All())),
-                        value_for<n::set_operator_mode>(sfsmo_natural),
-                        value_for<n::tag>(std::tr1::shared_ptr<DepTag>()),
-                        value_for<n::type>(sft_paludis_conf)
+                        n::environment() = static_cast<Environment *>(0),
+                        n::file_name() = FSEntry("set_file_TEST_dir/paludisconf1"),
+                        n::parser() = std::tr1::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All()),
+                        n::set_operator_mode() = sfsmo_natural,
+                        n::tag() = std::tr1::shared_ptr<DepTag>(),
+                        n::type() = sft_paludis_conf
                         ));
 
             {
@@ -207,12 +207,12 @@ namespace test_cases
             TestEnvironment env;
 
             SetFile f(make_named_values<SetFileParams>(
-                        value_for<n::environment>(static_cast<Environment *>(0)),
-                        value_for<n::file_name>(FSEntry("set_file_TEST_dir/override")),
-                        value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All())),
-                        value_for<n::set_operator_mode>(sfsmo_natural),
-                        value_for<n::tag>(std::tr1::shared_ptr<DepTag>()),
-                        value_for<n::type>(sft_paludis_conf)
+                        n::environment() = static_cast<Environment *>(0),
+                        n::file_name() = FSEntry("set_file_TEST_dir/override"),
+                        n::parser() = std::tr1::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All()),
+                        n::set_operator_mode() = sfsmo_natural,
+                        n::tag() = std::tr1::shared_ptr<DepTag>(),
+                        n::type() = sft_paludis_conf
                         ));
 
             {
@@ -222,12 +222,12 @@ namespace test_cases
             }
 
             SetFile fstar(make_named_values<SetFileParams>(
-                        value_for<n::environment>(static_cast<Environment *>(0)),
-                        value_for<n::file_name>(FSEntry("set_file_TEST_dir/override")),
-                        value_for<n::parser>(std::tr1::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All())),
-                        value_for<n::set_operator_mode>(sfsmo_star),
-                        value_for<n::tag>(std::tr1::shared_ptr<DepTag>()),
-                        value_for<n::type>(sft_paludis_conf)
+                        n::environment() = static_cast<Environment *>(0),
+                        n::file_name() = FSEntry("set_file_TEST_dir/override"),
+                        n::parser() = std::tr1::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All()),
+                        n::set_operator_mode() = sfsmo_star,
+                        n::tag() = std::tr1::shared_ptr<DepTag>(),
+                        n::type() = sft_paludis_conf
                         ));
 
             {

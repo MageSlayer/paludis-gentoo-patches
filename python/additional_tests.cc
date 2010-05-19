@@ -48,8 +48,8 @@ namespace environment
     void test_env(Environment & e)
     {
         std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                        value_for<n::environment>(&e),
-                        value_for<n::name>(RepositoryName("fakerepo")))));
+                        n::environment() = &e,
+                        n::name() = RepositoryName("fakerepo"))));
         std::tr1::shared_ptr<PackageID> pid(repo->add_version("cat", "pkg", "1.0"));
         e.package_database()->add_repository(0, repo);
 

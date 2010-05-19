@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -40,18 +40,19 @@ namespace paludis
 {
     namespace n
     {
-        struct environment;
-        struct filter_file;
-        struct local;
-        struct options;
-        struct output_manager;
-        struct remote;
+        typedef Name<struct environment_name> environment;
+        typedef Name<struct filter_file_name> filter_file;
+        typedef Name<struct local_name> local;
+        typedef Name<struct options_name> options;
+        typedef Name<struct output_manager_name> output_manager;
+        typedef Name<struct remote_name> remote;
     }
 
     /**
-     * Options used by Syncer.
+     * Options used by Synce
+     * .
      *
-     * \see Syncer
+     InstalledAt(env->root())cer
      * \ingroup g_repository
      * \nosubgrouping
      */

@@ -56,13 +56,13 @@ namespace paludis
 {
     namespace n
     {
-        struct action_requirement;
-        struct ignore_unfetched_requirement;
-        struct manager;
-        struct matches_requirement;
-        struct name_requirement;
-        struct output_exclusivity_requirement;
-        struct type_requirement;
+        typedef Name<struct action_requirement_name> action_requirement;
+        typedef Name<struct ignore_unfetched_requirement_name> ignore_unfetched_requirement;
+        typedef Name<struct manager_name> manager;
+        typedef Name<struct matches_requirement_name> matches_requirement;
+        typedef Name<struct name_requirement_name> name_requirement;
+        typedef Name<struct output_exclusivity_requirement_name> output_exclusivity_requirement;
+        typedef Name<struct type_requirement_name> type_requirement;
     }
 }
 
@@ -379,13 +379,13 @@ OutputConf::add(const FSEntry & filename)
             r != r_end ; ++r)
     {
         Rule rule(make_named_values<Rule>(
-                    value_for<n::action_requirement>("*"),
-                    value_for<n::ignore_unfetched_requirement>(indeterminate),
-                    value_for<n::manager>("unset"),
-                    value_for<n::matches_requirement>(make_null_shared_ptr()),
-                    value_for<n::name_requirement>("*"),
-                    value_for<n::output_exclusivity_requirement>(static_cast<OutputExclusivity>(-1)),
-                    value_for<n::type_requirement>("*")
+                    n::action_requirement() = "*",
+                    n::ignore_unfetched_requirement() = Tribool(indeterminate),
+                    n::manager() = "unset",
+                    n::matches_requirement() = make_null_shared_ptr(),
+                    n::name_requirement() = "*",
+                    n::output_exclusivity_requirement() = static_cast<OutputExclusivity>(-1),
+                    n::type_requirement() = "*"
                     ));
         for (Map<std::string, std::string>::ConstIterator m(r->second->begin()), m_end(r->second->end()) ;
                 m != m_end ; ++m)

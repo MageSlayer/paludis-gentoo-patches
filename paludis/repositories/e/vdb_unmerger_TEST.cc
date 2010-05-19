@@ -123,15 +123,15 @@ namespace
                 env.package_database()->add_repository(0, repo);
 
                 unmerger.reset(new VDBUnmergerNoDisplay(make_named_values<VDBUnmergerOptions>(
-                                value_for<n::config_protect>("/protected_file /protected_dir"),
-                                value_for<n::config_protect_mask>("/protected_dir/unprotected_file /protected_dir/unprotected_dir"),
-                                value_for<n::environment>(&env),
-                                value_for<n::ignore>(&ignore_nothing),
-                                value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
-                                value_for<n::package_id>(*env[selection::RequireExactlyOne(generator::Matches(
+                                n::config_protect() = "/protected_file /protected_dir",
+                                n::config_protect_mask() = "/protected_dir/unprotected_file /protected_dir/unprotected_dir",
+                                n::environment() = &env,
+                                n::ignore() = &ignore_nothing,
+                                n::output_manager() = make_shared_ptr(new StandardOutputManager),
+                                n::package_id() = *env[selection::RequireExactlyOne(generator::Matches(
                                             parse_user_package_dep_spec("cat/" + fix(what), &env, UserPackageDepSpecOptions()),
-                                            MatchPackageOptions()))]->begin()),
-                                value_for<n::root>(root_dir)
+                                            MatchPackageOptions()))]->begin(),
+                                n::root() = root_dir
                                 )));
 
                 main_run();

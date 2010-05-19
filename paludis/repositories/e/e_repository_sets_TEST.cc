@@ -92,10 +92,10 @@ namespace test_cases
                         std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
             std::tr1::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("installed")),
-                            value_for<n::suitable_destination>(true),
-                            value_for<n::supports_uninstall>(true)
+                            n::environment() = &env,
+                            n::name() = RepositoryName("installed"),
+                            n::suitable_destination() = true,
+                            n::supports_uninstall() = true
                             )));
             installed->add_version("cat-two", "bar", "1.5");
             env.package_database()->add_repository(0, installed);
@@ -165,10 +165,10 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
             std::tr1::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("installed")),
-                            value_for<n::suitable_destination>(true),
-                            value_for<n::supports_uninstall>(true)
+                            n::environment() = &env,
+                            n::name() = RepositoryName("installed"),
+                            n::suitable_destination() = true,
+                            n::supports_uninstall() = true
                             )));
             installed->add_version("cat-one", "foo", "2.1");
             installed->add_version("cat-two", "bar", "1.5");

@@ -575,13 +575,13 @@ FakeMetadataChoicesKey::add(const std::string & n, const std::string & v)
     if (_imp->choices.end() == _imp->choices.find(n))
     {
         std::tr1::shared_ptr<Choice> c(new Choice(make_named_values<ChoiceParams>(
-                        value_for<n::consider_added_or_changed>(false),
-                        value_for<n::contains_every_value>(false),
-                        value_for<n::hidden>(false),
-                        value_for<n::human_name>(n.empty() ? "default" : n),
-                        value_for<n::prefix>(ChoicePrefixName(n)),
-                        value_for<n::raw_name>(n.empty() ? "default" : n),
-                        value_for<n::show_with_no_prefix>(false)
+                        n::consider_added_or_changed() = false,
+                        n::contains_every_value() = false,
+                        n::hidden() = false,
+                        n::human_name() = n.empty() ? "default" : n,
+                        n::prefix() = ChoicePrefixName(n),
+                        n::raw_name() = n.empty() ? "default" : n,
+                        n::show_with_no_prefix() = false
                         )));
         _imp->value->add(c);
         _imp->choices.insert(std::make_pair(n, c));
@@ -1171,8 +1171,8 @@ FakePackageID::need_masks_added() const
         if (user_mask)
             add_overridden_mask(make_shared_ptr(new OverriddenMask(
                             make_named_values<OverriddenMask>(
-                                value_for<n::mask>(user_mask),
-                                value_for<n::override_reason>(mro_overridden_by_user)
+                                n::mask() = user_mask,
+                                n::override_reason() = mro_overridden_by_user
                                 ))));
     }
 

@@ -97,18 +97,18 @@ namespace paludis
 ExndbamRepository::ExndbamRepository(const RepositoryName & n, const ExndbamRepositoryParams & p) :
     EInstalledRepository(
             make_named_values<EInstalledRepositoryParams>(
-                value_for<n::builddir>(p.builddir()),
-                value_for<n::environment>(p.environment()),
-                value_for<n::root>(p.root())
+                n::builddir() = p.builddir(),
+                n::environment() = p.environment(),
+                n::root() = p.root()
                 ),
             n,
             make_named_values<RepositoryCapabilities>(
-                value_for<n::destination_interface>(this),
-                value_for<n::environment_variable_interface>(this),
-                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
-                value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
-                value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
-                value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
+                n::destination_interface() = this,
+                n::environment_variable_interface() = this,
+                n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
+                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
+                n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
+                n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
     PrivateImplementationPattern<ExndbamRepository>(new Implementation<ExndbamRepository>(p)),
     _imp(PrivateImplementationPattern<ExndbamRepository>::_imp)
@@ -164,11 +164,11 @@ ExndbamRepository::repository_factory_create(
     return std::tr1::shared_ptr<Repository>(new ExndbamRepository(
                 RepositoryName(name),
                 make_named_values<ExndbamRepositoryParams>(
-                    value_for<n::builddir>(builddir),
-                    value_for<n::eapi_when_unknown>(eapi_when_unknown),
-                    value_for<n::environment>(env),
-                    value_for<n::location>(location),
-                    value_for<n::root>(root)
+                    n::builddir() = builddir,
+                    n::eapi_when_unknown() = eapi_when_unknown,
+                    n::environment() = env,
+                    n::location() = location,
+                    n::root() = root
                     )
                 ));
 }
@@ -374,11 +374,11 @@ ExndbamRepository::merge(const MergeParams & m)
 
     WriteVDBEntryCommand write_vdb_entry_command(
             make_named_values<WriteVDBEntryParams>(
-            value_for<n::environment>(_imp->params.environment()),
-            value_for<n::environment_file>(m.environment_file()),
-            value_for<n::maybe_output_manager>(m.output_manager()),
-            value_for<n::output_directory>(target_ver_dir),
-            value_for<n::package_id>(std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id()))
+                n::environment() = _imp->params.environment(),
+                n::environment_file() = m.environment_file(),
+                n::maybe_output_manager() = m.output_manager(),
+                n::output_directory() = target_ver_dir,
+                n::package_id() = std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id())
             ));
 
     write_vdb_entry_command();
@@ -410,19 +410,19 @@ ExndbamRepository::merge(const MergeParams & m)
 
     NDBAMMerger merger(
             make_named_values<NDBAMMergerParams>(
-            value_for<n::config_protect>(config_protect),
-            value_for<n::config_protect_mask>(config_protect_mask),
-            value_for<n::contents_file>(target_ver_dir / "contents"),
-            value_for<n::environment>(_imp->params.environment()),
-            value_for<n::fix_mtimes_before>(fix_mtimes ?  m.build_start_time() : Timestamp(0, 0)),
-            value_for<n::get_new_ids_or_minus_one>(std::tr1::bind(&get_new_ids_or_minus_one, _imp->params.environment(), std::tr1::placeholders::_1)),
-            value_for<n::image>(m.image_dir()),
-            value_for<n::install_under>(FSEntry("/")),
-            value_for<n::merged_entries>(m.merged_entries()),
-            value_for<n::options>(m.options()),
-            value_for<n::output_manager>(m.output_manager()),
-            value_for<n::package_id>(m.package_id()),
-            value_for<n::root>(installed_root_key()->value())
+                n::config_protect() = config_protect,
+                n::config_protect_mask() = config_protect_mask,
+                n::contents_file() = target_ver_dir / "contents",
+                n::environment() = _imp->params.environment(),
+                n::fix_mtimes_before() = fix_mtimes ?  m.build_start_time() : Timestamp(0, 0),
+                n::get_new_ids_or_minus_one() = std::tr1::bind(&get_new_ids_or_minus_one, _imp->params.environment(), std::tr1::placeholders::_1),
+                n::image() = m.image_dir(),
+                n::install_under() = FSEntry("/"),
+                n::merged_entries() = m.merged_entries(),
+                n::options() = m.options(),
+                n::output_manager() = m.output_manager(),
+                n::package_id() = m.package_id(),
+                n::root() = installed_root_key()->value()
             ));
 
     (m.used_this_for_config_protect())(config_protect);
@@ -443,12 +443,12 @@ ExndbamRepository::merge(const MergeParams & m)
     if (if_overwritten_id)
     {
         UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
-                    value_for<n::config_protect>(config_protect),
-                    value_for<n::if_for_install_id>(m.package_id()),
-                    value_for<n::ignore_for_unmerge>(std::tr1::bind(&ignore_merged, m.merged_entries(),
-                            std::tr1::placeholders::_1)),
-                    value_for<n::is_overwrite>(true),
-                    value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1))
+                    n::config_protect() = config_protect,
+                    n::if_for_install_id() = m.package_id(),
+                    n::ignore_for_unmerge() = std::tr1::bind(&ignore_merged, m.merged_entries(),
+                            std::tr1::placeholders::_1),
+                    n::is_overwrite() = true,
+                    n::make_output_manager() = std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1)
                     ));
         m.perform_uninstall()(if_overwritten_id, uo);
     }
@@ -464,12 +464,12 @@ ExndbamRepository::merge(const MergeParams & m)
             if (candidate != if_overwritten_id && candidate->fs_location_key()->value() != target_ver_dir && slot_is_same(candidate, m.package_id()))
             {
                 UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
-                            value_for<n::config_protect>(config_protect),
-                            value_for<n::if_for_install_id>(m.package_id()),
-                            value_for<n::ignore_for_unmerge>(std::tr1::bind(&ignore_merged, m.merged_entries(),
-                                    std::tr1::placeholders::_1)),
-                            value_for<n::is_overwrite>(false),
-                            value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1))
+                            n::config_protect() = config_protect,
+                            n::if_for_install_id() = m.package_id(),
+                            n::ignore_for_unmerge() = std::tr1::bind(&ignore_merged, m.merged_entries(),
+                                    std::tr1::placeholders::_1),
+                            n::is_overwrite() = false,
+                            n::make_output_manager() = std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1)
                             ));
                 m.perform_uninstall()(candidate, uo);
             }
@@ -478,7 +478,7 @@ ExndbamRepository::merge(const MergeParams & m)
 
     VDBPostMergeUnmergeCommand post_merge_command(
             make_named_values<VDBPostMergeUnmergeCommandParams>(
-                value_for<n::root>(installed_root_key()->value())
+                n::root() = installed_root_key()->value()
             ));
     post_merge_command();
 }
@@ -543,22 +543,22 @@ ExndbamRepository::perform_uninstall(
             /* unmerge */
             NDBAMUnmerger unmerger(
                     make_named_values<NDBAMUnmergerOptions>(
-                    value_for<n::config_protect>(final_config_protect),
-                    value_for<n::config_protect_mask>(config_protect_mask),
-                    value_for<n::contents_file>(ver_dir / "contents"),
-                    value_for<n::environment>(_imp->params.environment()),
-                    value_for<n::ignore>(a.options.ignore_for_unmerge()),
-                    value_for<n::ndbam>(&_imp->ndbam),
-                    value_for<n::output_manager>(output_manager),
-                    value_for<n::package_id>(id),
-                    value_for<n::root>(installed_root_key()->value())
+                    n::config_protect() = final_config_protect,
+                    n::config_protect_mask() = config_protect_mask,
+                    n::contents_file() = ver_dir / "contents",
+                    n::environment() = _imp->params.environment(),
+                    n::ignore() = a.options.ignore_for_unmerge(),
+                    n::ndbam() = &_imp->ndbam,
+                    n::output_manager() = output_manager,
+                    n::package_id() = id,
+                    n::root() = installed_root_key()->value()
                     ));
 
             unmerger.unmerge();
 
             VDBPostMergeUnmergeCommand post_unmerge_command(
                     make_named_values<VDBPostMergeUnmergeCommandParams>(
-                        value_for<n::root>(installed_root_key()->value())
+                        n::root() = installed_root_key()->value()
                     ));
             post_unmerge_command();
         }
@@ -567,32 +567,32 @@ ExndbamRepository::perform_uninstall(
             FSEntry package_builddir(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-uninstall"));
             EbuildCommandParams params(
                     make_named_values<EbuildCommandParams>(
-                        value_for<n::builddir>(_imp->params.builddir()),
-                        value_for<n::clearenv>(phase->option("clearenv")),
-                        value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
-                        value_for<n::distdir>(ver_dir),
-                        value_for<n::ebuild_dir>(ver_dir),
-                        value_for<n::ebuild_file>(ver_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild")),
-                        value_for<n::eclassdirs>(eclassdirs),
-                        value_for<n::environment>(_imp->params.environment()),
-                        value_for<n::exlibsdirs>(make_shared_ptr(new FSEntrySequence)),
-                        value_for<n::files_dir>(ver_dir),
-                        value_for<n::maybe_output_manager>(output_manager),
-                        value_for<n::package_builddir>(package_builddir),
-                        value_for<n::package_id>(id),
-                        value_for<n::portdir>(_imp->params.location()),
-                        value_for<n::root>(stringify(_imp->params.root())),
-                        value_for<n::sandbox>(phase->option("sandbox")),
-                        value_for<n::sydbox>(phase->option("sydbox")),
-                        value_for<n::userpriv>(phase->option("userpriv"))
+                        n::builddir() = _imp->params.builddir(),
+                        n::clearenv() = phase->option("clearenv"),
+                        n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                        n::distdir() = ver_dir,
+                        n::ebuild_dir() = ver_dir,
+                        n::ebuild_file() = ver_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild"),
+                        n::eclassdirs() = eclassdirs,
+                        n::environment() = _imp->params.environment(),
+                        n::exlibsdirs() = make_shared_ptr(new FSEntrySequence),
+                        n::files_dir() = ver_dir,
+                        n::maybe_output_manager() = output_manager,
+                        n::package_builddir() = package_builddir,
+                        n::package_id() = id,
+                        n::portdir() = _imp->params.location(),
+                        n::root() = stringify(_imp->params.root()),
+                        n::sandbox() = phase->option("sandbox"),
+                        n::sydbox() = phase->option("sydbox"),
+                        n::userpriv() = phase->option("userpriv")
                     ));
 
             EbuildUninstallCommandParams uninstall_params(
                     make_named_values<EbuildUninstallCommandParams>(
-                        value_for<n::load_environment>(load_env.get()),
-                        value_for<n::loadsaveenv_dir>(package_builddir / "temp"),
-                        value_for<n::replaced_by>(a.options.if_for_install_id()),
-                        value_for<n::unmerge_only>(false)
+                        n::load_environment() = load_env.get(),
+                        n::loadsaveenv_dir() = package_builddir / "temp",
+                        n::replaced_by() = a.options.if_for_install_id(),
+                        n::unmerge_only() = false
                     ));
 
             EbuildUninstallCommand uninstall_cmd_pre(params, uninstall_params);

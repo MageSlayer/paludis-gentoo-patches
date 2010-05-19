@@ -92,12 +92,12 @@ InstalledUnpackagedRepository::InstalledUnpackagedRepository(
         const RepositoryName & n, const InstalledUnpackagedRepositoryParams & p) :
     PrivateImplementationPattern<InstalledUnpackagedRepository>(new Implementation<InstalledUnpackagedRepository>(p)),
     Repository(p.environment(), n, make_named_values<RepositoryCapabilities>(
-                value_for<n::destination_interface>(this),
-                value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
-                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
-                value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
-                value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
-                value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
+                n::destination_interface() = this,
+                n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
+                n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
+                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
+                n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
+                n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
     _imp(PrivateImplementationPattern<InstalledUnpackagedRepository>::_imp)
 {
@@ -349,20 +349,20 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
 
     NDBAMMerger merger(
             make_named_values<NDBAMMergerParams>(
-                value_for<n::config_protect>(getenv_with_default("CONFIG_PROTECT", "")),
-                value_for<n::config_protect_mask>(getenv_with_default("CONFIG_PROTECT_MASK", "")),
-                value_for<n::contents_file>(target_ver_dir / "contents"),
-                value_for<n::environment>(_imp->params.environment()),
-                value_for<n::fix_mtimes_before>(m.build_start_time()),
-                value_for<n::get_new_ids_or_minus_one>(std::tr1::bind(&get_new_ids_or_minus_one,
-                        _imp->params.environment(), rewrite_ids_over_to_root, _1)),
-                value_for<n::image>(m.image_dir()),
-                value_for<n::install_under>(install_under),
-                value_for<n::merged_entries>(make_shared_ptr(new FSEntrySet)),
-                value_for<n::options>(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs),
-                value_for<n::output_manager>(m.output_manager()),
-                value_for<n::package_id>(m.package_id()),
-                value_for<n::root>(installed_root_key()->value())
+                n::config_protect() = getenv_with_default("CONFIG_PROTECT", ""),
+                n::config_protect_mask() = getenv_with_default("CONFIG_PROTECT_MASK", ""),
+                n::contents_file() = target_ver_dir / "contents",
+                n::environment() = _imp->params.environment(),
+                n::fix_mtimes_before() = m.build_start_time(),
+                n::get_new_ids_or_minus_one() = std::tr1::bind(&get_new_ids_or_minus_one,
+                        _imp->params.environment(), rewrite_ids_over_to_root, _1),
+                n::image() = m.image_dir(),
+                n::install_under() = install_under,
+                n::merged_entries() = make_shared_ptr(new FSEntrySet),
+                n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
+                n::output_manager() = m.output_manager(),
+                n::package_id() = m.package_id(),
+                n::root() = installed_root_key()->value()
             ));
 
     if (! merger.check())
@@ -461,9 +461,9 @@ InstalledUnpackagedRepository::repository_factory_create(
 
     return make_shared_ptr(new InstalledUnpackagedRepository(RepositoryName("installed-unpackaged"),
                 make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
-                    value_for<n::environment>(env),
-                    value_for<n::location>(location),
-                    value_for<n::root>(root)
+                    n::environment() = env,
+                    n::location() = location,
+                    n::root() = root
                 )));
 }
 
@@ -492,7 +492,7 @@ InstalledUnpackagedRepository::populate_sets() const
 HookResult
 InstalledUnpackagedRepository::perform_hook(const Hook &)
 {
-    return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
+    return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
 bool

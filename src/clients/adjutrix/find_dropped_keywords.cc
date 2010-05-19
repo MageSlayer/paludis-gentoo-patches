@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -48,8 +48,8 @@ namespace paludis
 {
     namespace n
     {
-        struct best_anywhere;
-        struct best_keyworded;
+        typedef Name<struct best_anywhere_name> best_anywhere;
+        typedef Name<struct best_keyworded_name> best_keyworded;
     }
 }
 
@@ -151,8 +151,8 @@ namespace
             /* ensure that there's an entry for this SLOT */
             versions_in_slots.insert(std::make_pair(slot_as_string(*v), VersionsEntry(
                             make_named_values<VersionsEntry>(
-                                value_for<n::best_anywhere>(VersionSpec("0", VersionSpecOptions())),
-                                value_for<n::best_keyworded>(VersionSpec("0", VersionSpecOptions()))
+                                n::best_anywhere() = VersionSpec("0", VersionSpecOptions()),
+                                n::best_keyworded() = VersionSpec("0", VersionSpecOptions())
                                 ))));
 
             if ((*v)->keywords_key()->value()->end() != (*v)->keywords_key()->value()->find(keyword) ||

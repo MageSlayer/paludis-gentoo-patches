@@ -94,9 +94,9 @@ void
 RepositoryRepositoryStore::_populate_one(const RepositoryName & repo_name)
 {
     const std::tr1::shared_ptr<RepositoryID> id(new RepositoryID(make_named_values<RepositoryIDParams>(
-                    value_for<n::environment>(_imp->env),
-                    value_for<n::name>(CategoryNamePart("repository") + PackageNamePart(stringify(repo_name))),
-                    value_for<n::repository>(_imp->repo)
+                    n::environment() = _imp->env,
+                    n::name() = CategoryNamePart("repository") + PackageNamePart(stringify(repo_name)),
+                    n::repository() = _imp->repo
                     )));
 
     _imp->categories->insert(id->name().category());

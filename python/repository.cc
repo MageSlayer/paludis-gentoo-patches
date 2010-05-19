@@ -107,8 +107,8 @@ namespace
     make_fake_repository(const Environment * const env, const RepositoryName & n)
     {
         return make_shared_ptr(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                        value_for<n::environment>(env),
-                        value_for<n::name>(n)
+                        n::environment() = env,
+                        n::name() = n
                         )));
     }
 }

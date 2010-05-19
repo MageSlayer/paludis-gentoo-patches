@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -101,10 +101,10 @@ namespace test_cases
                 env(),
                 installed_repo(new FakeInstalledRepository(
                             make_named_values<FakeInstalledRepositoryParams>(
-                                value_for<n::environment>(&env),
-                                value_for<n::name>(RepositoryName("installed")),
-                                value_for<n::suitable_destination>(true),
-                                value_for<n::supports_uninstall>(true)
+                                n::environment() = &env,
+                                n::name() = RepositoryName("installed"),
+                                n::suitable_destination() = true,
+                                n::supports_uninstall() = true
                                 ))),
 #ifdef ENABLE_VIRTUALS_REPOSITORY
                 virtuals_repo(RepositoryFactory::get_instance()->create(&env, virtuals_repo_keys)),
@@ -182,9 +182,9 @@ namespace test_cases
             virtual UninstallListOptions options()
             {
                 return make_named_values<UninstallListOptions>(
-                        value_for<n::with_dependencies_as_errors>(false),
-                        value_for<n::with_dependencies_included>(false),
-                        value_for<n::with_unused_dependencies>(false)
+                        n::with_dependencies_as_errors() = false,
+                        n::with_dependencies_included() = false,
+                        n::with_unused_dependencies() = false
                         );
             }
 
@@ -270,9 +270,9 @@ namespace test_cases
         UninstallListOptions options()
         {
             return make_named_values<UninstallListOptions>(
-                value_for<n::with_dependencies_as_errors>(false),
-                value_for<n::with_dependencies_included>(false),
-                value_for<n::with_unused_dependencies>(true)
+                n::with_dependencies_as_errors() = false,
+                n::with_dependencies_included() = false,
+                n::with_unused_dependencies() = true
                 );
         }
     } uninstall_list_with_unused_deps_test;
@@ -304,9 +304,9 @@ namespace test_cases
         UninstallListOptions options()
         {
             return make_named_values<UninstallListOptions>(
-                value_for<n::with_dependencies_as_errors>(false),
-                value_for<n::with_dependencies_included>(false),
-                value_for<n::with_unused_dependencies>(true)
+                n::with_dependencies_as_errors() = false,
+                n::with_dependencies_included() = false,
+                n::with_unused_dependencies() = true
                 );
         }
     } uninstall_list_with_unused_deps_recursive_test;
@@ -338,9 +338,9 @@ namespace test_cases
         UninstallListOptions options()
         {
             return make_named_values<UninstallListOptions>(
-                value_for<n::with_dependencies_as_errors>(false),
-                value_for<n::with_dependencies_included>(false),
-                value_for<n::with_unused_dependencies>(true)
+                n::with_dependencies_as_errors() = false,
+                n::with_dependencies_included() = false,
+                n::with_unused_dependencies() = true
                 );
         }
     } uninstall_list_with_unused_deps_with_used_test;
@@ -376,9 +376,9 @@ namespace test_cases
         UninstallListOptions options()
         {
             return make_named_values<UninstallListOptions>(
-                value_for<n::with_dependencies_as_errors>(false),
-                value_for<n::with_dependencies_included>(false),
-                value_for<n::with_unused_dependencies>(true)
+                n::with_dependencies_as_errors() = false,
+                n::with_dependencies_included() = false,
+                n::with_unused_dependencies() = true
                 );
         }
     } uninstall_list_with_unused_deps_with_cross_used_test;
@@ -415,9 +415,9 @@ namespace test_cases
         UninstallListOptions options()
         {
             return make_named_values<UninstallListOptions>(
-                value_for<n::with_dependencies_as_errors>(false),
-                value_for<n::with_dependencies_included>(false),
-                value_for<n::with_unused_dependencies>(true)
+                n::with_dependencies_as_errors() = false,
+                n::with_dependencies_included() = false,
+                n::with_unused_dependencies() = true
                 );
         }
     } uninstall_list_with_unused_deps_world_test;
@@ -455,9 +455,9 @@ namespace test_cases
         UninstallListOptions options()
         {
             return make_named_values<UninstallListOptions>(
-                value_for<n::with_dependencies_as_errors>(false),
-                value_for<n::with_dependencies_included>(false),
-                value_for<n::with_unused_dependencies>(true)
+                n::with_dependencies_as_errors() = false,
+                n::with_dependencies_included() = false,
+                n::with_unused_dependencies() = true
                 );
         }
     } uninstall_list_with_unused_deps_world_target_test;
@@ -511,9 +511,9 @@ namespace test_cases
         UninstallListOptions options()
         {
             return make_named_values<UninstallListOptions>(
-                value_for<n::with_dependencies_as_errors>(false),
-                value_for<n::with_dependencies_included>(false),
-                value_for<n::with_unused_dependencies>(false)
+                n::with_dependencies_as_errors() = false,
+                n::with_dependencies_included() = false,
+                n::with_unused_dependencies() = false
                 );
         }
     } uninstall_list_slots_test;

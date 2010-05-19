@@ -211,8 +211,8 @@ FixLinkageCommand::run(
 
         if (cmdline.a_exact.specified())
             part_spec.version_requirement(make_named_values<VersionRequirement>(
-                        value_for<n::version_operator>(vo_equal),
-                        value_for<n::version_spec>((*pkg_it)->version())));
+                        n::version_operator() = vo_equal,
+                        n::version_spec() = (*pkg_it)->version()));
 
         targets->push_back(stringify(PackageDepSpec(part_spec)));
     }

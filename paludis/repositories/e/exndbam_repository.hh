@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,11 +31,11 @@ namespace paludis
 {
     namespace n
     {
-        struct builddir;
-        struct eapi_when_unknown;
-        struct environment;
-        struct location;
-        struct root;
+        typedef Name<struct builddir_name> builddir;
+        typedef Name<struct eapi_when_unknown_name> eapi_when_unknown;
+        typedef Name<struct environment_name> environment;
+        typedef Name<struct location_name> location;
+        typedef Name<struct root_name> root;
     }
 
     namespace erepository

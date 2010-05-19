@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -55,13 +55,13 @@ namespace paludis
 FakeRepository::FakeRepository(const FakeRepositoryParams & params) :
     PrivateImplementationPattern<FakeRepository>(new Implementation<FakeRepository>),
     FakeRepositoryBase(params.environment(), params.name(), make_named_values<RepositoryCapabilities>(
-                value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
-                value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
-                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
-                value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
-                value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
-                value_for<n::virtuals_interface>((*DistributionData::get_instance()->distribution_from_string(
-                            params.environment()->distribution())).support_old_style_virtuals() ? this : 0)
+                n::destination_interface() = static_cast<RepositoryDestinationInterface *>(0),
+                n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
+                n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
+                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
+                n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
+                n::virtuals_interface() = (*DistributionData::get_instance()->distribution_from_string(
+                            params.environment()->distribution())).support_old_style_virtuals() ? this : 0
                 )),
             _imp(PrivateImplementationPattern<FakeRepository>::_imp)
 {
@@ -82,8 +82,8 @@ void
 FakeRepository::add_virtual_package(const QualifiedPackageName & q, const std::tr1::shared_ptr<const PackageDepSpec> & p)
 {
     _imp->virtual_packages->push_back(make_named_values<RepositoryVirtualsEntry>(
-                value_for<n::provided_by_spec>(p),
-                value_for<n::virtual_name>(q)
+                n::provided_by_spec() = p,
+                n::virtual_name() = q
                 ));
 }
 

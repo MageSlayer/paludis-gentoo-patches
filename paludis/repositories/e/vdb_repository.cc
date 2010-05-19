@@ -164,18 +164,18 @@ namespace paludis
 VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
     EInstalledRepository(
             make_named_values<EInstalledRepositoryParams>(
-                value_for<n::builddir>(p.builddir()),
-                value_for<n::environment>(p.environment()),
-                value_for<n::root>(p.root())
+                n::builddir() = p.builddir(),
+                n::environment() = p.environment(),
+                n::root() = p.root()
                 ),
             p.name(),
             make_named_values<RepositoryCapabilities>(
-                value_for<n::destination_interface>(this),
-                value_for<n::environment_variable_interface>(this),
-                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
-                value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
-                value_for<n::provides_interface>(this),
-                value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
+                n::destination_interface() = this,
+                n::environment_variable_interface() = this,
+                n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
+                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
+                n::provides_interface() = this,
+                n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
     PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(this, p)),
     _imp(PrivateImplementationPattern<VDBRepository>::_imp)
@@ -352,14 +352,14 @@ VDBRepository::repository_factory_create(
                     env->distribution()))->default_eapi_when_unknown();
 
     return std::tr1::shared_ptr<Repository>(new VDBRepository(make_named_values<VDBRepositoryParams>(
-                value_for<n::builddir>(builddir),
-                value_for<n::eapi_when_unknown>(eapi_when_unknown),
-                value_for<n::environment>(env),
-                value_for<n::location>(location),
-                value_for<n::name>(RepositoryName(name)),
-                value_for<n::names_cache>(names_cache),
-                value_for<n::provides_cache>(provides_cache),
-                value_for<n::root>(root)
+                n::builddir() = builddir,
+                n::eapi_when_unknown() = eapi_when_unknown,
+                n::environment() = env,
+                n::location() = location,
+                n::name() = RepositoryName(name),
+                n::names_cache() = names_cache,
+                n::provides_cache() = provides_cache,
+                n::root() = root
                 )));
 }
 
@@ -468,19 +468,19 @@ VDBRepository::perform_uninstall(
             /* unmerge */
             VDBUnmerger unmerger(
                     make_named_values<VDBUnmergerOptions>(
-                        value_for<n::config_protect>(final_config_protect),
-                        value_for<n::config_protect_mask>(config_protect_mask),
-                        value_for<n::environment>(_imp->params.environment()),
-                        value_for<n::ignore>(a.options.ignore_for_unmerge()),
-                        value_for<n::output_manager>(output_manager),
-                        value_for<n::package_id>(id),
-                        value_for<n::root>(installed_root_key()->value())
+                        n::config_protect() = final_config_protect,
+                        n::config_protect_mask() = config_protect_mask,
+                        n::environment() = _imp->params.environment(),
+                        n::ignore() = a.options.ignore_for_unmerge(),
+                        n::output_manager() = output_manager,
+                        n::package_id() = id,
+                        n::root() = installed_root_key()->value()
                     ));
             unmerger.unmerge();
 
             VDBPostMergeUnmergeCommand post_unmerge_command(
                     make_named_values<VDBPostMergeUnmergeCommandParams>(
-                        value_for<n::root>(installed_root_key()->value())
+                        n::root() = installed_root_key()->value()
                     ));
             post_unmerge_command();
         }
@@ -488,31 +488,31 @@ VDBRepository::perform_uninstall(
         {
             FSEntry package_builddir(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-uninstall"));
             EbuildCommandParams params(make_named_values<EbuildCommandParams>(
-                    value_for<n::builddir>(_imp->params.builddir()),
-                    value_for<n::clearenv>(phase->option("clearenv")),
-                    value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
-                    value_for<n::distdir>(pkg_dir),
-                    value_for<n::ebuild_dir>(pkg_dir),
-                    value_for<n::ebuild_file>(pkg_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild")),
-                    value_for<n::eclassdirs>(eclassdirs),
-                    value_for<n::environment>(_imp->params.environment()),
-                    value_for<n::exlibsdirs>(make_shared_ptr(new FSEntrySequence)),
-                    value_for<n::files_dir>(pkg_dir),
-                    value_for<n::maybe_output_manager>(output_manager),
-                    value_for<n::package_builddir>(package_builddir),
-                    value_for<n::package_id>(id),
-                    value_for<n::portdir>(_imp->params.location()),
-                    value_for<n::root>(stringify(_imp->params.root())),
-                    value_for<n::sandbox>(phase->option("sandbox")),
-                    value_for<n::sydbox>(phase->option("sydbox")),
-                    value_for<n::userpriv>(phase->option("userpriv"))
+                    n::builddir() = _imp->params.builddir(),
+                    n::clearenv() = phase->option("clearenv"),
+                    n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                    n::distdir() = pkg_dir,
+                    n::ebuild_dir() = pkg_dir,
+                    n::ebuild_file() = pkg_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild"),
+                    n::eclassdirs() = eclassdirs,
+                    n::environment() = _imp->params.environment(),
+                    n::exlibsdirs() = make_shared_ptr(new FSEntrySequence),
+                    n::files_dir() = pkg_dir,
+                    n::maybe_output_manager() = output_manager,
+                    n::package_builddir() = package_builddir,
+                    n::package_id() = id,
+                    n::portdir() = _imp->params.location(),
+                    n::root() = stringify(_imp->params.root()),
+                    n::sandbox() = phase->option("sandbox"),
+                    n::sydbox() = phase->option("sydbox"),
+                    n::userpriv() = phase->option("userpriv")
                     ));
 
             EbuildUninstallCommandParams uninstall_params(make_named_values<EbuildUninstallCommandParams>(
-                        value_for<n::load_environment>(load_env.get()),
-                        value_for<n::loadsaveenv_dir>(package_builddir / "temp"),
-                        value_for<n::replaced_by>(a.options.if_for_install_id()),
-                        value_for<n::unmerge_only>(false)
+                        n::load_environment() = load_env.get(),
+                        n::loadsaveenv_dir() = package_builddir / "temp",
+                        n::replaced_by() = a.options.if_for_install_id(),
+                        n::unmerge_only() = false
                     ));
 
             EbuildUninstallCommand uninstall_cmd_pre(params, uninstall_params);
@@ -606,8 +606,8 @@ VDBRepository::provided_packages() const
         for (std::list<QualifiedPackageName>::const_iterator it2(it->second->begin()),
                  it2_end(it->second->end()); it2_end != it2; ++it2)
             _imp->provides->push_back(make_named_values<RepositoryProvidesEntry>(
-                        value_for<n::provided_by>(id),
-                        value_for<n::virtual_name>(*it2)
+                        n::provided_by() = id,
+                        n::virtual_name() = *it2
                     ));
     }
 
@@ -902,11 +902,11 @@ VDBRepository::merge(const MergeParams & m)
 
     WriteVDBEntryCommand write_vdb_entry_command(
             make_named_values<WriteVDBEntryParams>(
-                value_for<n::environment>(_imp->params.environment()),
-                value_for<n::environment_file>(m.environment_file()),
-                value_for<n::maybe_output_manager>(m.output_manager()),
-                value_for<n::output_directory>(tmp_vdb_dir),
-                value_for<n::package_id>(std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id()))
+                n::environment() = _imp->params.environment(),
+                n::environment_file() = m.environment_file(),
+                n::maybe_output_manager() = m.output_manager(),
+                n::output_directory() = tmp_vdb_dir,
+                n::package_id() = std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id())
             ));
 
     write_vdb_entry_command();
@@ -940,17 +940,17 @@ VDBRepository::merge(const MergeParams & m)
 
     VDBMerger merger(
             make_named_values<VDBMergerParams>(
-                value_for<n::config_protect>(config_protect),
-                value_for<n::config_protect_mask>(config_protect_mask),
-                value_for<n::contents_file>(vdb_dir / "CONTENTS"),
-                value_for<n::environment>(_imp->params.environment()),
-                value_for<n::fix_mtimes_before>(fix_mtimes ?  m.build_start_time() : Timestamp(0, 0)),
-                value_for<n::image>(m.image_dir()),
-                value_for<n::merged_entries>(m.merged_entries()),
-                value_for<n::options>(m.options()),
-                value_for<n::output_manager>(m.output_manager()),
-                value_for<n::package_id>(m.package_id()),
-                value_for<n::root>(installed_root_key()->value())
+                n::config_protect() = config_protect,
+                n::config_protect_mask() = config_protect_mask,
+                n::contents_file() = vdb_dir / "CONTENTS",
+                n::environment() = _imp->params.environment(),
+                n::fix_mtimes_before() = fix_mtimes ?  m.build_start_time() : Timestamp(0, 0),
+                n::image() = m.image_dir(),
+                n::merged_entries() = m.merged_entries(),
+                n::options() = m.options(),
+                n::output_manager() = m.output_manager(),
+                n::package_id() = m.package_id(),
+                n::root() = installed_root_key()->value()
             ));
 
     (m.used_this_for_config_protect())(config_protect);
@@ -1003,12 +1003,12 @@ VDBRepository::merge(const MergeParams & m)
     if (is_replace)
     {
         UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
-                    value_for<n::config_protect>(config_protect),
-                    value_for<n::if_for_install_id>(m.package_id()),
-                    value_for<n::ignore_for_unmerge>(std::tr1::bind(&ignore_merged, m.merged_entries(),
-                            std::tr1::placeholders::_1)),
-                    value_for<n::is_overwrite>(true),
-                    value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1))
+                    n::config_protect() = config_protect,
+                    n::if_for_install_id() = m.package_id(),
+                    n::ignore_for_unmerge() = std::tr1::bind(&ignore_merged, m.merged_entries(),
+                            std::tr1::placeholders::_1),
+                    n::is_overwrite() = true,
+                    n::make_output_manager() = std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1)
                     ));
         m.perform_uninstall()(is_replace, uo);
     }
@@ -1024,12 +1024,12 @@ VDBRepository::merge(const MergeParams & m)
             if (candidate != is_replace && candidate != new_id && slot_is_same(candidate, m.package_id()))
             {
                 UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
-                            value_for<n::config_protect>(config_protect),
-                            value_for<n::if_for_install_id>(m.package_id()),
-                            value_for<n::ignore_for_unmerge>(std::tr1::bind(&ignore_merged, m.merged_entries(),
-                                    std::tr1::placeholders::_1)),
-                            value_for<n::is_overwrite>(false),
-                            value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1))
+                            n::config_protect() = config_protect,
+                            n::if_for_install_id() = m.package_id(),
+                            n::ignore_for_unmerge() = std::tr1::bind(&ignore_merged, m.merged_entries(),
+                                    std::tr1::placeholders::_1),
+                            n::is_overwrite() = false,
+                            n::make_output_manager() = std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1)
                             ));
                 m.perform_uninstall()(candidate, uo);
             }
@@ -1038,7 +1038,7 @@ VDBRepository::merge(const MergeParams & m)
 
     VDBPostMergeUnmergeCommand post_merge_command(
             make_named_values<VDBPostMergeUnmergeCommandParams>(
-                value_for<n::root>(installed_root_key()->value())
+                n::root() = installed_root_key()->value()
             ));
     post_merge_command();
 

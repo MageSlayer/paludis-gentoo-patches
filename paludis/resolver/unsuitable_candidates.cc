@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,8 +35,8 @@ UnsuitableCandidate::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "UnsuitableCandidate");
     return make_named_values<UnsuitableCandidate>(
-            value_for<n::package_id>(v.member<std::tr1::shared_ptr<const PackageID> >("package_id")),
-            value_for<n::unmet_constraints>(v.member<std::tr1::shared_ptr<Constraints> >("unmet_constraints"))
+            n::package_id() = v.member<std::tr1::shared_ptr<const PackageID> >("package_id"),
+            n::unmet_constraints() = v.member<std::tr1::shared_ptr<Constraints> >("unmet_constraints")
             );
 }
 

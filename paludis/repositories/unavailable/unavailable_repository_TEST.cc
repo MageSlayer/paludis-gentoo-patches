@@ -50,11 +50,11 @@ namespace test_cases
             TestEnvironment env;
             std::tr1::shared_ptr<UnavailableRepository> repo(new UnavailableRepository(
                         make_named_values<UnavailableRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::location>(FSEntry::cwd() / "unavailable_repository_TEST_dir" / "repo1"),
-                            value_for<n::name>(RepositoryName("unavailable")),
-                            value_for<n::sync>(""),
-                            value_for<n::sync_options>("")
+                            n::environment() = &env,
+                            n::location() = FSEntry::cwd() / "unavailable_repository_TEST_dir" / "repo1",
+                            n::name() = RepositoryName("unavailable"),
+                            n::sync() = "",
+                            n::sync_options() = ""
                         )));
             env.package_database()->add_repository(1, repo);
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "unavailable");
@@ -70,11 +70,11 @@ namespace test_cases
             TestEnvironment env;
             std::tr1::shared_ptr<UnavailableRepository> repo(new UnavailableRepository(
                         make_named_values<UnavailableRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::location>(FSEntry::cwd() / "unavailable_repository_TEST_dir" / "repo2"),
-                            value_for<n::name>(RepositoryName("unavailable")),
-                            value_for<n::sync>(""),
-                            value_for<n::sync_options>("")
+                            n::environment() = &env,
+                            n::location() = FSEntry::cwd() / "unavailable_repository_TEST_dir" / "repo2",
+                            n::name() = RepositoryName("unavailable"),
+                            n::sync() = "",
+                            n::sync_options() = ""
                         )));
             env.package_database()->add_repository(1, repo);
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "unavailable");
@@ -99,8 +99,8 @@ namespace test_cases
                     );
 
             const std::tr1::shared_ptr<FakeRepository> hide_bar(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("bar"))
+                            n::environment() = &env,
+                            n::name() = RepositoryName("bar")
                             )));
             env.package_database()->add_repository(2, hide_bar);
             repo->invalidate();

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,18 +28,18 @@ namespace paludis
 {
     namespace n
     {
-        struct has_additional_requirements;
-        struct has_category_name_part;
-        struct has_from_repository;
-        struct has_in_repository;
-        struct has_installable_to_path;
-        struct has_installable_to_repository;
-        struct has_installed_at_path;
-        struct has_package;
-        struct has_package_name_part;
-        struct has_slot_requirement;
-        struct has_tag;
-        struct has_version_requirements;
+        typedef Name<struct has_additional_requirements_name> has_additional_requirements;
+        typedef Name<struct has_category_name_part_name> has_category_name_part;
+        typedef Name<struct has_from_repository_name> has_from_repository;
+        typedef Name<struct has_in_repository_name> has_in_repository;
+        typedef Name<struct has_installable_to_path_name> has_installable_to_path;
+        typedef Name<struct has_installable_to_repository_name> has_installable_to_repository;
+        typedef Name<struct has_installed_at_path_name> has_installed_at_path;
+        typedef Name<struct has_package_name> has_package;
+        typedef Name<struct has_package_name_part_name> has_package_name_part;
+        typedef Name<struct has_slot_requirement_name> has_slot_requirement;
+        typedef Name<struct has_tag_name> has_tag;
+        typedef Name<struct has_version_requirements_name> has_version_requirements;
     }
 
     /**

@@ -29,9 +29,9 @@ namespace paludis
 {
     namespace n
     {
-        struct environment;
-        struct name;
-        struct repository;
+        typedef Name<struct environment_name> environment;
+        typedef Name<struct name_name> name;
+        typedef Name<struct repository_name> repository;
     }
 
     namespace repository_repository

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,12 +29,12 @@ namespace paludis
 {
     namespace n
     {
-        struct debug_dir;
-        struct image_dir;
-        struct output_manager;
-        struct package_id;
-        struct split;
-        struct strip;
+        typedef Name<struct debug_dir_name> debug_dir;
+        typedef Name<struct image_dir_name> image_dir;
+        typedef Name<struct output_manager_name> output_manager;
+        typedef Name<struct package_id_name> package_id;
+        typedef Name<struct split_name> split;
+        typedef Name<struct strip_name> strip;
     }
 
     namespace unpackaged_repositories

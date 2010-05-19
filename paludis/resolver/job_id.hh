@@ -29,7 +29,7 @@ namespace paludis
 {
     namespace n
     {
-        struct string_id;
+        typedef Name<struct string_id_name> string_id;
     }
 
     namespace resolver

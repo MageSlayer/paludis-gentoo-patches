@@ -324,14 +324,14 @@ InstallTask::set_targets_from_serialisation(const std::string & format,
             throw InternalError(PALUDIS_HERE, "Serialised value '" + *s + "' too long");
 
         _imp->dep_list.push_back(make_named_values<DepListEntry>(
-                value_for<n::associated_entry>(static_cast<DepListEntry *>(0)),
-                value_for<n::destination>(destination),
-                value_for<n::generation>(0),
-                value_for<n::handled>(handled),
-                value_for<n::kind>(kind),
-                value_for<n::package_id>(package_id),
-                value_for<n::state>(state),
-                value_for<n::tags>(make_shared_ptr(new DepListEntryTags))
+                n::associated_entry() = static_cast<DepListEntry *>(0),
+                n::destination() = destination,
+                n::generation() = 0,
+                n::handled() = handled,
+                n::kind() = kind,
+                n::package_id() = package_id,
+                n::state() = state,
+                n::tags() = make_shared_ptr(new DepListEntryTags)
                 ));
     }
 }
@@ -562,8 +562,8 @@ InstallTask::_add_package_id(const std::tr1::shared_ptr<const PackageID> & targe
     part_spec.package(target->name());
     part_spec.in_repository(target->repository()->name());
     part_spec.version_requirement(make_named_values<VersionRequirement>(
-                value_for<n::version_operator>(vo_equal),
-                value_for<n::version_spec>(target->version())));
+                n::version_operator() = vo_equal,
+                n::version_spec() = target->version()));
 
     if (target->slot_key())
         part_spec.slot_requirement(make_shared_ptr(new UserSlotExactRequirement(target->slot_key()->value())));
@@ -748,7 +748,7 @@ InstallTask::_pretend()
             if (dep->package_id()->supports_action(pretend_action_query))
             {
                 PretendActionOptions options(make_named_values<PretendActionOptions>(
-                            value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
+                            n::make_output_manager() = std::tr1::ref(output_manager_holder)
                             ));
                 PretendAction pretend_action(options);
                 dep->package_id()->perform_action(pretend_action);
@@ -763,14 +763,14 @@ InstallTask::_pretend()
             if (dep->package_id()->supports_action(fetch_action_query))
             {
                 FetchActionOptions options(make_named_values<FetchActionOptions>(
-                            value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
-                            value_for<n::exclude_unmirrorable>(false),
-                            value_for<n::fetch_parts>(FetchParts() + fp_regulars + fp_extras),
-                            value_for<n::ignore_not_in_manifest>(false),
-                            value_for<n::ignore_unfetched>(true),
-                            value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),
-                            value_for<n::safe_resume>(_imp->safe_resume),
-                            value_for<n::want_phase>(std::tr1::bind(return_literal_function(wp_yes)))
+                            n::errors() = make_shared_ptr(new Sequence<FetchActionFailure>),
+                            n::exclude_unmirrorable() = false,
+                            n::fetch_parts() = FetchParts() + fp_regulars + fp_extras,
+                            n::ignore_not_in_manifest() = false,
+                            n::ignore_unfetched() = true,
+                            n::make_output_manager() = std::tr1::ref(output_manager_holder),
+                            n::safe_resume() = _imp->safe_resume,
+                            n::want_phase() = std::tr1::bind(return_literal_function(wp_yes))
                             ));
                 FetchAction fetch_action(options);
                 try
@@ -919,12 +919,12 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
                 replacing.reset(new PackageIDSequence);
 
             InstallActionOptions install_options(make_named_values<InstallActionOptions>(
-                        value_for<n::destination>(dep->destination()),
-                        value_for<n::make_output_manager>(std::tr1::ref(*output_manager_holder)),
-                        value_for<n::perform_uninstall>(std::tr1::bind(&InstallTask::_clean, this, dep,
-                                std::tr1::placeholders::_1, std::tr1::placeholders::_2, cpvr, x, y, s, f)),
-                        value_for<n::replacing>(replacing),
-                        value_for<n::want_phase>(std::tr1::function<WantPhase (const std::string &)>())
+                        n::destination() = dep->destination(),
+                        n::make_output_manager() = std::tr1::ref(*output_manager_holder),
+                        n::perform_uninstall() = std::tr1::bind(&InstallTask::_clean, this, dep,
+                                std::tr1::placeholders::_1, std::tr1::placeholders::_2, cpvr, x, y, s, f),
+                        n::replacing() = replacing,
+                        n::want_phase() = std::tr1::function<WantPhase (const std::string &)>()
                     ));
 
             bool done_any(false);
@@ -1433,18 +1433,18 @@ namespace
         void visit(const SetSpecTree::NodeType<PackageDepSpec>::Type & node)
         {
             if (package_dep_spec_has_properties(*node.spec(), make_named_values<PackageDepSpecProperties>(
-                            value_for<n::has_additional_requirements>(false),
-                            value_for<n::has_category_name_part>(false),
-                            value_for<n::has_from_repository>(false),
-                            value_for<n::has_in_repository>(false),
-                            value_for<n::has_installable_to_path>(false),
-                            value_for<n::has_installable_to_repository>(false),
-                            value_for<n::has_installed_at_path>(false),
-                            value_for<n::has_package>(true),
-                            value_for<n::has_package_name_part>(false),
-                            value_for<n::has_slot_requirement>(false),
-                            value_for<n::has_tag>(indeterminate),
-                            value_for<n::has_version_requirements>(false)
+                            n::has_additional_requirements() = false,
+                            n::has_category_name_part() = false,
+                            n::has_from_repository() = false,
+                            n::has_in_repository() = false,
+                            n::has_installable_to_path() = false,
+                            n::has_installable_to_repository() = false,
+                            n::has_installed_at_path() = false,
+                            n::has_package() = true,
+                            n::has_package_name_part() = false,
+                            n::has_slot_requirement() = false,
+                            n::has_tag() = indeterminate,
+                            n::has_version_requirements() = false
                             )))
             {
                 env->add_to_world(*node.spec()->package_ptr());
@@ -1932,14 +1932,14 @@ FetchActionOptions
 InstallTask::make_fetch_action_options(const DepListEntry &, OutputManagerFromEnvironment & o) const
 {
     return make_named_values<FetchActionOptions>(
-            value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
-            value_for<n::exclude_unmirrorable>(false),
-            value_for<n::fetch_parts>(FetchParts() + fp_regulars + fp_extras),
-            value_for<n::ignore_not_in_manifest>(false),
-            value_for<n::ignore_unfetched>(false),
-            value_for<n::make_output_manager>(std::tr1::ref(o)),
-            value_for<n::safe_resume>(_imp->safe_resume),
-            value_for<n::want_phase>(std::tr1::bind(return_literal_function(wp_yes)))
+            n::errors() = make_shared_ptr(new Sequence<FetchActionFailure>),
+            n::exclude_unmirrorable() = false,
+            n::fetch_parts() = FetchParts() + fp_regulars + fp_extras,
+            n::ignore_not_in_manifest() = false,
+            n::ignore_unfetched() = false,
+            n::make_output_manager() = std::tr1::ref(o),
+            n::safe_resume() = _imp->safe_resume,
+            n::want_phase() = std::tr1::bind(return_literal_function(wp_yes))
             );
 }
 

@@ -157,7 +157,7 @@ PyHookFile::run(const Hook & hook) const
     Context c("When running hook '" + stringify(file_name()) + "' for hook '" + hook.name() + "':");
 
     if (! _loaded)
-        return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
+        return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 
     Lock l(_mutex);
 
@@ -183,7 +183,7 @@ PyHookFile::run(const Hook & hook) const
                 << _get_traceback() << "'";
         }
 
-        return make_named_values<HookResult>(value_for<n::max_exit_status>(1), value_for<n::output>(""));
+        return make_named_values<HookResult>(n::max_exit_status() = 1, n::output() = "");
     }
 
     Prefix p(this, _run_prefixed ? strip_trailing_string(file_name().basename(), ".py") + "> " : "");
@@ -208,7 +208,7 @@ PyHookFile::run(const Hook & hook) const
         Log::get_instance()->message("hook.python.failure", ll_warning, lc_no_context) <<
             "Hook '" << file_name() << "': running hook_run_" << hook.name()
             << " function failed: '" << _get_traceback() << "'";
-        return make_named_values<HookResult>(value_for<n::max_exit_status>(1), value_for<n::output>(""));
+        return make_named_values<HookResult>(n::max_exit_status() = 1, n::output() = "");
     }
 
     if (hook.output_dest == hod_grab)
@@ -221,18 +221,18 @@ PyHookFile::run(const Hook & hook) const
                 << "Hook '" << file_name() << "':  hook_run_" << hook.name()
                 << " function returned '" << result_s << "'";
 
-            return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(result_s));
+            return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = result_s);
         }
         else
         {
             Log::get_instance()->message("hook.python.bad_output", ll_warning, lc_no_context)
                 << "Hook '" << file_name() << "':  hook_run_" << hook.name()
                 << " function returned not a string.";
-            return make_named_values<HookResult>(value_for<n::max_exit_status>(1), value_for<n::output>(""));
+            return make_named_values<HookResult>(n::max_exit_status() = 1, n::output() = "");
         }
     }
     else
-        return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
+        return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
 void

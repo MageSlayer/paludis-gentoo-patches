@@ -43,8 +43,8 @@ namespace test_cases
         {
             TestEnvironment env;
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
-                            value_for<n::environment>(&env),
-                            value_for<n::name>(RepositoryName("repo")))));
+                            n::environment() = &env,
+                            n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
             std::tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 

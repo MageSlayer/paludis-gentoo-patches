@@ -100,9 +100,9 @@ namespace paludis
             repository(p),
             profiles_with_parents(new FSEntrySequence),
             options_conf(make_named_values<PaludisLikeOptionsConfParams>(
-                        value_for<n::allow_locking>(true),
-                        value_for<n::environment>(e),
-                        value_for<n::make_config_file>(&make_config_file)
+                        n::allow_locking() = true,
+                        n::environment() = e,
+                        n::make_config_file() = &make_config_file
                         )),
             package_mask_file(p),
             packages_file(p),

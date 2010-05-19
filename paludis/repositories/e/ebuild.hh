@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -43,50 +43,50 @@ namespace paludis
 
     namespace n
     {
-        struct a;
-        struct aa;
-        struct binary_distdir;
-        struct binary_ebuild_location;
-        struct builddir;
-        struct clearenv;
-        struct commands;
-        struct config_protect;
-        struct config_protect_mask;
-        struct destination_repository;
-        struct distdir;
-        struct ebuild_dir;
-        struct ebuild_file;
-        struct eclassdirs;
-        struct environment;
-        struct environment_file;
-        struct exlibsdirs;
-        struct expand_vars;
-        struct files_dir;
-        struct image;
-        struct info_vars;
-        struct load_environment;
-        struct loadsaveenv_dir;
-        struct maybe_output_manager;
-        struct merger_options;
-        struct output_directory;
-        struct package_builddir;
-        struct package_id;
-        struct portdir;
-        struct profiles;
-        struct profiles_with_parents;
-        struct replaced_by;
-        struct replacing_ids;
-        struct root;
-        struct sandbox;
-        struct sydbox;
-        struct slot;
-        struct unmerge_only;
-        struct unmet_requirements;
-        struct use;
-        struct use_ebuild_file;
-        struct use_expand;
-        struct use_expand_hidden;
-        struct userpriv;
+        typedef Name<struct a_name> a;
+        typedef Name<struct aa_name> aa;
+        typedef Name<struct binary_distdir_name> binary_distdir;
+        typedef Name<struct binary_ebuild_location_name> binary_ebuild_location;
+        typedef Name<struct builddir_name> builddir;
+        typedef Name<struct clearenv_name> clearenv;
+        typedef Name<struct commands_name> commands;
+        typedef Name<struct config_protect_name> config_protect;
+        typedef Name<struct config_protect_mask_name> config_protect_mask;
+        typedef Name<struct destination_repository_name> destination_repository;
+        typedef Name<struct distdir_name> distdir;
+        typedef Name<struct ebuild_dir_name> ebuild_dir;
+        typedef Name<struct ebuild_file_name> ebuild_file;
+        typedef Name<struct eclassdirs_name> eclassdirs;
+        typedef Name<struct environment_name> environment;
+        typedef Name<struct environment_file_name> environment_file;
+        typedef Name<struct exlibsdirs_name> exlibsdirs;
+        typedef Name<struct expand_vars_name> expand_vars;
+        typedef Name<struct files_dir_name> files_dir;
+        typedef Name<struct image_name> image;
+        typedef Name<struct info_vars_name> info_vars;
+        typedef Name<struct load_environment_name> load_environment;
+        typedef Name<struct loadsaveenv_dir_name> loadsaveenv_dir;
+        typedef Name<struct maybe_output_manager_name> maybe_output_manager;
+        typedef Name<struct merger_options_name> merger_options;
+        typedef Name<struct output_directory_name> output_directory;
+        typedef Name<struct package_builddir_name> package_builddir;
+        typedef Name<struct package_id_name> package_id;
+        typedef Name<struct portdir_name> portdir;
+        typedef Name<struct profiles_name> profiles;
+        typedef Name<struct profiles_with_parents_name> profiles_with_parents;
+        typedef Name<struct replaced_by_name> replaced_by;
+        typedef Name<struct replacing_ids_name> replacing_ids;
+        typedef Name<struct root_name> root;
+        typedef Name<struct sandbox_name> sandbox;
+        typedef Name<struct sydbox_name> sydbox;
+        typedef Name<struct slot_name> slot;
+        typedef Name<struct unmerge_only_name> unmerge_only;
+        typedef Name<struct unmet_requirements_name> unmet_requirements;
+        typedef Name<struct use_name> use;
+        typedef Name<struct use_ebuild_file_name> use_ebuild_file;
+        typedef Name<struct use_expand_name> use_expand;
+        typedef Name<struct use_expand_hidden_name> use_expand_hidden;
+        typedef Name<struct userpriv_name> userpriv;
     }
 
     namespace erepository

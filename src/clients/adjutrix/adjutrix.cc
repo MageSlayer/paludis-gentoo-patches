@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -137,17 +137,17 @@ main(int argc, char *argv[])
             extra_repository_dirs->push_back(*d);
 
         NoConfigEnvironment env(make_named_values<no_config_environment::Params>(
-                    value_for<n::accept_unstable>(CommandLine::get_instance()->a_unstable.specified()),
-                    value_for<n::disable_metadata_cache>(false),
-                    value_for<n::extra_accept_keywords>(""),
-                    value_for<n::extra_params>(std::tr1::shared_ptr<Map<std::string, std::string> >()),
-                    value_for<n::extra_repository_dirs>(extra_repository_dirs),
-                    value_for<n::master_repository_name>(CommandLine::get_instance()->a_master_repository_name.argument()),
-                    value_for<n::profiles_if_not_auto>(CommandLine::get_instance()->a_profile.argument()),
-                    value_for<n::repository_dir>(get_location_and_add_filters()),
-                    value_for<n::repository_type>((CommandLine::get_instance()->a_reverse_deps.specified()) ?
-                        no_config_environment::ncer_auto : no_config_environment::ncer_ebuild),
-                    value_for<n::write_cache>(CommandLine::get_instance()->a_write_cache_dir.argument())
+                    n::accept_unstable() = CommandLine::get_instance()->a_unstable.specified(),
+                    n::disable_metadata_cache() = false,
+                    n::extra_accept_keywords() = "",
+                    n::extra_params() = std::tr1::shared_ptr<Map<std::string, std::string> >(),
+                    n::extra_repository_dirs() = extra_repository_dirs,
+                    n::master_repository_name() = CommandLine::get_instance()->a_master_repository_name.argument(),
+                    n::profiles_if_not_auto() = CommandLine::get_instance()->a_profile.argument(),
+                    n::repository_dir() = get_location_and_add_filters(),
+                    n::repository_type() = (CommandLine::get_instance()->a_reverse_deps.specified()) ?
+                        no_config_environment::ncer_auto : no_config_environment::ncer_ebuild,
+                    n::write_cache() = CommandLine::get_instance()->a_write_cache_dir.argument()
                     ));
 
         if (CommandLine::get_instance()->a_find_stable_candidates.specified())

@@ -377,12 +377,12 @@ UnpackagedID::perform_action(Action & action) const
         case wp_yes:
             {
                 UnpackagedStripper stripper(make_named_values<UnpackagedStripperOptions>(
-                            value_for<n::debug_dir>(fs_location_key()->value() / "usr" / libdir / "debug"),
-                            value_for<n::image_dir>(fs_location_key()->value()),
-                            value_for<n::output_manager>(output_manager),
-                            value_for<n::package_id>(shared_from_this()),
-                            value_for<n::split>(split_choice && split_choice->enabled()),
-                            value_for<n::strip>(strip_choice && strip_choice->enabled())
+                            n::debug_dir() = fs_location_key()->value() / "usr" / libdir / "debug",
+                            n::image_dir() = fs_location_key()->value(),
+                            n::output_manager() = output_manager,
+                            n::package_id() = shared_from_this(),
+                            n::split() = split_choice && split_choice->enabled(),
+                            n::strip() = strip_choice && strip_choice->enabled()
                             ));
 
                 stripper.strip();
@@ -408,17 +408,17 @@ UnpackagedID::perform_action(Action & action) const
                     extra_merger_options += mo_nondestructive;
                 (*install_action->options.destination()).destination_interface()->merge(
                         make_named_values<MergeParams>(
-                            value_for<n::build_start_time>(build_start_time),
-                            value_for<n::environment_file>(FSEntry("/dev/null")),
-                            value_for<n::image_dir>(fs_location_key()->value()),
-                            value_for<n::merged_entries>(make_shared_ptr(new FSEntrySet)),
-                            value_for<n::options>((MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs)
-                                | extra_merger_options),
-                            value_for<n::output_manager>(output_manager),
-                            value_for<n::package_id>(shared_from_this()),
-                            value_for<n::perform_uninstall>(install_action->options.perform_uninstall()),
-                            value_for<n::used_this_for_config_protect>(std::tr1::bind(
-                                    &used_this_for_config_protect, std::tr1::ref(used_config_protect), std::tr1::placeholders::_1))
+                            n::build_start_time() = build_start_time,
+                            n::environment_file() = FSEntry("/dev/null"),
+                            n::image_dir() = fs_location_key()->value(),
+                            n::merged_entries() = make_shared_ptr(new FSEntrySet),
+                            n::options() = (MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs)
+                                | extra_merger_options,
+                            n::output_manager() = output_manager,
+                            n::package_id() = shared_from_this(),
+                            n::perform_uninstall() = install_action->options.perform_uninstall(),
+                            n::used_this_for_config_protect() = std::tr1::bind(
+                                    &used_this_for_config_protect, std::tr1::ref(used_config_protect), std::tr1::placeholders::_1)
                             ));
             }
             break;
@@ -441,11 +441,11 @@ UnpackagedID::perform_action(Action & action) const
             continue;
 
         UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
-                    value_for<n::config_protect>(used_config_protect),
-                    value_for<n::if_for_install_id>(shared_from_this()),
-                    value_for<n::ignore_for_unmerge>(&ignore_nothing),
-                    value_for<n::is_overwrite>(false),
-                    value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, output_manager, std::tr1::placeholders::_1))
+                    n::config_protect() = used_config_protect,
+                    n::if_for_install_id() = shared_from_this(),
+                    n::ignore_for_unmerge() = &ignore_nothing,
+                    n::is_overwrite() = false,
+                    n::make_output_manager() = std::tr1::bind(&this_output_manager, output_manager, std::tr1::placeholders::_1)
                     ));
         install_action->options.perform_uninstall()(*i, uo);
     }

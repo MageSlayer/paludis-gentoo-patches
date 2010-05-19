@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -90,16 +90,16 @@ namespace
 
         return std::tr1::shared_ptr<Environment>(new NoConfigEnvironment(
                     make_named_values<no_config_environment::Params>(
-                        value_for<n::accept_unstable>(accept_unstable),
-                        value_for<n::disable_metadata_cache>(disable_metadata_cache),
-                        value_for<n::extra_accept_keywords>(extra_accept_keywords),
-                        value_for<n::extra_params>(extra_params),
-                        value_for<n::extra_repository_dirs>(extra_repository_dirs),
-                        value_for<n::master_repository_name>(master_repository_name),
-                        value_for<n::profiles_if_not_auto>(profile),
-                        value_for<n::repository_dir>(repository_dir),
-                        value_for<n::repository_type>(repository_type),
-                        value_for<n::write_cache>(write_cache)
+                        n::accept_unstable() = accept_unstable,
+                        n::disable_metadata_cache() = disable_metadata_cache,
+                        n::extra_accept_keywords() = extra_accept_keywords,
+                        n::extra_params() = extra_params,
+                        n::extra_repository_dirs() = extra_repository_dirs,
+                        n::master_repository_name() = master_repository_name,
+                        n::profiles_if_not_auto() = profile,
+                        n::repository_dir() = repository_dir,
+                        n::repository_type() = repository_type,
+                        n::write_cache() = write_cache
                     )));
     }
 }

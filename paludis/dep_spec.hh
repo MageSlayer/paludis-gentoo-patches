@@ -310,9 +310,9 @@ namespace paludis
 
     namespace n
     {
-        struct include_masked;
-        struct path;
-        struct repository;
+        typedef Name<struct include_masked_name> include_masked;
+        typedef Name<struct path_name> path;
+        typedef Name<struct repository_name> repository;
     }
 
     /**

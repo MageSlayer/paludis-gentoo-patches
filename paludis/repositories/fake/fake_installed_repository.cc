@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -60,12 +60,12 @@ namespace paludis
 
 FakeInstalledRepository::FakeInstalledRepository(const FakeInstalledRepositoryParams & p) :
     FakeRepositoryBase(p.environment(), p.name(), make_named_values<RepositoryCapabilities>(
-                value_for<n::destination_interface>(this),
-                value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
-                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
-                value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
-                value_for<n::provides_interface>(this),
-                value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
+                n::destination_interface() = this,
+                n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
+                n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
+                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
+                n::provides_interface() = this,
+                n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
     PrivateImplementationPattern<FakeInstalledRepository>(new Implementation<FakeInstalledRepository>(
                 p.supports_uninstall(), p.suitable_destination())),
@@ -110,8 +110,8 @@ FakeInstalledRepository::provided_packages() const
 
                 for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator q(f.begin()), q_end(f.end()) ; q != q_end ; ++q)
                     result->push_back(make_named_values<RepositoryProvidesEntry>(
-                            value_for<n::provided_by>(*v),
-                            value_for<n::virtual_name>(QualifiedPackageName((*q)->text()))
+                            n::provided_by() = *v,
+                            n::virtual_name() = QualifiedPackageName((*q)->text())
                             ));
             }
         }
@@ -232,10 +232,10 @@ FakeInstalledRepository::repository_factory_create(
     RepositoryName name(f("name"));
 
     return make_shared_ptr(new FakeInstalledRepository(make_named_values<FakeInstalledRepositoryParams>(
-                    value_for<n::environment>(env),
-                    value_for<n::name>(name),
-                    value_for<n::suitable_destination>(true),
-                    value_for<n::supports_uninstall>(true)
+                    n::environment() = env,
+                    n::name() = name,
+                    n::suitable_destination() = true,
+                    n::supports_uninstall() = true
                     )));
 }
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,10 +31,10 @@ namespace paludis
 {
     namespace n
     {
-        struct description;
-        struct name;
-        struct slot;
-        struct version;
+        typedef Name<struct description_name> description;
+        typedef Name<struct name_name> name;
+        typedef Name<struct slot_name> slot;
+        typedef Name<struct version_name> version;
     }
 
     namespace unavailable_repository

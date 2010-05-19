@@ -291,18 +291,18 @@ namespace
                 const Environment * const env) const
         {
             if (package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
-                            value_for<n::has_additional_requirements>(indeterminate),
-                            value_for<n::has_category_name_part>(indeterminate),
-                            value_for<n::has_from_repository>(indeterminate),
-                            value_for<n::has_in_repository>(false),
-                            value_for<n::has_installable_to_path>(indeterminate),
-                            value_for<n::has_installable_to_repository>(indeterminate),
-                            value_for<n::has_installed_at_path>(false),
-                            value_for<n::has_package>(indeterminate),
-                            value_for<n::has_package_name_part>(indeterminate),
-                            value_for<n::has_slot_requirement>(indeterminate),
-                            value_for<n::has_tag>(indeterminate),
-                            value_for<n::has_version_requirements>(indeterminate)
+                            n::has_additional_requirements() = indeterminate,
+                            n::has_category_name_part() = indeterminate,
+                            n::has_from_repository() = indeterminate,
+                            n::has_in_repository() = false,
+                            n::has_installable_to_path() = indeterminate,
+                            n::has_installable_to_repository() = indeterminate,
+                            n::has_installed_at_path() = false,
+                            n::has_package() = indeterminate,
+                            n::has_package_name_part() = indeterminate,
+                            n::has_slot_requirement() = indeterminate,
+                            n::has_tag() = indeterminate,
+                            n::has_version_requirements() = indeterminate
                             )))
                 return AllGeneratorHandlerBase::repositories(env);
 

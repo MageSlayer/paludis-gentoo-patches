@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -111,12 +111,12 @@ AccountsRepository::AccountsRepository(const AccountsRepositoryParams & p) :
             p.environment(),
             p.name(),
             make_named_values<RepositoryCapabilities>(
-                value_for<n::destination_interface>(static_cast<RepositoryDestinationInterface *>(0)),
-                value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
-                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
-                value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
-                value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
-                value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
+                n::destination_interface() = static_cast<RepositoryDestinationInterface *>(0),
+                n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
+                n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
+                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
+                n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
+                n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
     _imp(PrivateImplementationPattern<AccountsRepository>::_imp)
 {
@@ -129,12 +129,12 @@ AccountsRepository::AccountsRepository(const InstalledAccountsRepositoryParams &
             p.environment(),
             p.name(),
             make_named_values<RepositoryCapabilities>(
-                value_for<n::destination_interface>(this),
-                value_for<n::environment_variable_interface>(static_cast<RepositoryEnvironmentVariableInterface *>(0)),
-                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
-                value_for<n::manifest_interface>(static_cast<RepositoryManifestInterface *>(0)),
-                value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
-                value_for<n::virtuals_interface>(static_cast<RepositoryVirtualsInterface *>(0))
+                n::destination_interface() = this,
+                n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
+                n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
+                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
+                n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
+                n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
     _imp(PrivateImplementationPattern<AccountsRepository>::_imp)
 {
@@ -173,8 +173,8 @@ AccountsRepository::repository_factory_create(
 
     return std::tr1::shared_ptr<AccountsRepository>(new AccountsRepository(
                 make_named_values<AccountsRepositoryParams>(
-                    value_for<n::environment>(env),
-                    value_for<n::name>(RepositoryName(name_str))
+                    n::environment() = env,
+                    n::name() = RepositoryName(name_str)
                 )));
 }
 
@@ -202,10 +202,10 @@ AccountsRepository::repository_factory_installed_create(
 
     return std::tr1::shared_ptr<AccountsRepository>(new AccountsRepository(
                 make_named_values<InstalledAccountsRepositoryParams>(
-                    value_for<n::environment>(env),
-                    value_for<n::handler>(handler),
-                    value_for<n::name>(RepositoryName(name_str)),
-                    value_for<n::root>(FSEntry(root_str))
+                    n::environment() = env,
+                    n::handler() = handler,
+                    n::name() = RepositoryName(name_str),
+                    n::root() = FSEntry(root_str)
                 )));
 }
 
@@ -437,7 +437,7 @@ AccountsRepository::populate_sets() const
 HookResult
 AccountsRepository::perform_hook(const Hook &)
 {
-    return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
+    return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
 bool

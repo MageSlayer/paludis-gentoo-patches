@@ -173,16 +173,16 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
             }
 
             ids->push_back(make_shared_ptr(new UnavailablePackageID(make_named_values<UnavailablePackageIDParams>(
-                                value_for<n::description>((*i).description()),
-                                value_for<n::environment>(env),
-                                value_for<n::from_repositories>(from_repositories),
-                                value_for<n::mask>(mask),
-                                value_for<n::name>((*i).name()),
-                                value_for<n::repository>(_imp->repo),
-                                value_for<n::repository_description>(repository_description),
-                                value_for<n::repository_homepage>(repository_homepage),
-                                value_for<n::slot>((*i).slot()),
-                                value_for<n::version>((*i).version())
+                                n::description() = (*i).description(),
+                                n::environment() = env,
+                                n::from_repositories() = from_repositories,
+                                n::mask() = mask,
+                                n::name() = (*i).name(),
+                                n::repository() = _imp->repo,
+                                n::repository_description() = repository_description,
+                                n::repository_homepage() = repository_homepage,
+                                n::slot() = (*i).slot(),
+                                n::version() = (*i).version()
                             ))));
 
             old_name = (*i).name();
@@ -199,16 +199,16 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
 
         const std::tr1::shared_ptr<UnavailableRepositoryID> id(new UnavailableRepositoryID(
                     make_named_values<UnavailableRepositoryIDParams>(
-                        value_for<n::dependencies>(deps),
-                        value_for<n::description>(repository_description),
-                        value_for<n::environment>(env),
-                        value_for<n::format>(repository_format),
-                        value_for<n::homepage>(repository_homepage),
-                        value_for<n::mask>(repository_sync && repository_format ?
-                            make_null_shared_ptr() : no_configuration_mask),
-                        value_for<n::name>(CategoryNamePart("repository") + PackageNamePart(file.repo_name())),
-                        value_for<n::repository>(_imp->repo),
-                        value_for<n::sync>(repository_sync)
+                        n::dependencies() = deps,
+                        n::description() = repository_description,
+                        n::environment() = env,
+                        n::format() = repository_format,
+                        n::homepage() = repository_homepage,
+                        n::mask() = repository_sync && repository_format ?
+                            make_null_shared_ptr() : no_configuration_mask,
+                        n::name() = CategoryNamePart("repository") + PackageNamePart(file.repo_name()),
+                        n::repository() = _imp->repo,
+                        n::sync() = repository_sync
                         )));
 
         _imp->categories->insert(id->name().category());

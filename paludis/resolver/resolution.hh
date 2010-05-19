@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,9 +31,9 @@ namespace paludis
 {
     namespace n
     {
-        struct constraints;
-        struct decision;
-        struct resolvent;
+        typedef Name<struct constraints_name> constraints;
+        typedef Name<struct decision_name> decision;
+        typedef Name<struct resolvent_name> resolvent;
     }
 
     namespace resolver

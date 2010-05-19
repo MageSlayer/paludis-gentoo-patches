@@ -29,18 +29,18 @@ namespace paludis
 {
     namespace n
     {
-        struct added_by;
-        struct bug_ids;
-        struct comment;
-        struct description;
-        struct environment;
-        struct homepage;
-        struct mask;
-        struct name;
-        struct remote_ids;
-        struct repository;
-        struct slot;
-        struct version;
+        typedef Name<struct added_by_name> added_by;
+        typedef Name<struct bug_ids_name> bug_ids;
+        typedef Name<struct comment_name> comment;
+        typedef Name<struct description_name> description;
+        typedef Name<struct environment_name> environment;
+        typedef Name<struct homepage_name> homepage;
+        typedef Name<struct mask_name> mask;
+        typedef Name<struct name_name> name;
+        typedef Name<struct remote_ids_name> remote_ids;
+        typedef Name<struct repository_name> repository;
+        typedef Name<struct slot_name> slot;
+        typedef Name<struct version_name> version;
     }
 
     namespace unwritten_repository

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,23 +31,23 @@ namespace paludis
 {
     namespace n
     {
-        struct default_buildroot;
-        struct default_distdir;
-        struct default_eapi_when_unknown;
-        struct default_eapi_when_unspecified;
-        struct default_layout;
-        struct default_names_cache;
-        struct default_profile_eapi;
-        struct default_profile_layout;
-        struct default_provides_cache;
-        struct default_write_cache;
-        struct news_directory;
-        struct qa_category_dir_checks;
-        struct qa_eclass_file_contents_checks;
-        struct qa_package_dir_checks;
-        struct qa_package_id_checks;
-        struct qa_package_id_file_contents_checks;
-        struct qa_tree_checks;
+        typedef Name<struct default_buildroot_name> default_buildroot;
+        typedef Name<struct default_distdir_name> default_distdir;
+        typedef Name<struct default_eapi_when_unknown_name> default_eapi_when_unknown;
+        typedef Name<struct default_eapi_when_unspecified_name> default_eapi_when_unspecified;
+        typedef Name<struct default_layout_name> default_layout;
+        typedef Name<struct default_names_cache_name> default_names_cache;
+        typedef Name<struct default_profile_eapi_name> default_profile_eapi;
+        typedef Name<struct default_profile_layout_name> default_profile_layout;
+        typedef Name<struct default_provides_cache_name> default_provides_cache;
+        typedef Name<struct default_write_cache_name> default_write_cache;
+        typedef Name<struct news_directory_name> news_directory;
+        typedef Name<struct qa_category_dir_checks_name> qa_category_dir_checks;
+        typedef Name<struct qa_eclass_file_contents_checks_name> qa_eclass_file_contents_checks;
+        typedef Name<struct qa_package_dir_checks_name> qa_package_dir_checks;
+        typedef Name<struct qa_package_id_checks_name> qa_package_id_checks;
+        typedef Name<struct qa_package_id_file_contents_checks_name> qa_package_id_file_contents_checks;
+        typedef Name<struct qa_tree_checks_name> qa_tree_checks;
     }
 
     namespace erepository

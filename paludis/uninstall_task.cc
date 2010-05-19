@@ -245,9 +245,9 @@ UninstallTask::execute()
     on_build_unmergelist_pre();
 
     UninstallList list(_imp->env, make_named_values<UninstallListOptions>(
-            value_for<n::with_dependencies_as_errors>(_imp->check_safety),
-            value_for<n::with_dependencies_included>(_imp->with_dependencies),
-            value_for<n::with_unused_dependencies>(_imp->with_unused_dependencies)
+            n::with_dependencies_as_errors() = _imp->check_safety,
+            n::with_dependencies_included() = _imp->with_dependencies,
+            n::with_unused_dependencies() = _imp->with_unused_dependencies
             ));
 
     if (_imp->unused)
@@ -382,11 +382,11 @@ UninstallTask::execute()
                     ClientOutputFeatures());
             UninstallAction uninstall_action(
                     make_named_values<UninstallActionOptions>(
-                        value_for<n::config_protect>(""),
-                        value_for<n::if_for_install_id>(make_null_shared_ptr()),
-                        value_for<n::ignore_for_unmerge>(&ignore_nothing),
-                        value_for<n::is_overwrite>(false),
-                        value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder))
+                        n::config_protect() = "",
+                        n::if_for_install_id() = make_null_shared_ptr(),
+                        n::ignore_for_unmerge() = &ignore_nothing,
+                        n::is_overwrite() = false,
+                        n::make_output_manager() = std::tr1::ref(output_manager_holder)
                         ));
             i->package_id()->perform_action(uninstall_action);
 

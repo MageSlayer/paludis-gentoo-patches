@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,7 +38,7 @@ namespace paludis
         static std::tr1::shared_ptr<GemsDistribution> make_data(const std::tr1::shared_ptr<const KeyValueConfigFile> & k)
         {
             return make_shared_ptr(new GemsDistribution(make_named_values<GemsDistribution>(
-                            value_for<n::default_buildroot>(k->get("default_buildroot"))
+                            n::default_buildroot() = k->get("default_buildroot")
                             )));
         }
     };

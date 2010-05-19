@@ -496,12 +496,12 @@ ERepository::ERepository(const ERepositoryParams & p) :
             p.environment(),
             fetch_repo_name(p.location()),
             make_named_values<RepositoryCapabilities>(
-                value_for<n::destination_interface>(p.binary_destination() ? this : 0),
-                value_for<n::environment_variable_interface>(this),
-                value_for<n::make_virtuals_interface>(static_cast<RepositoryMakeVirtualsInterface *>(0)),
-                value_for<n::manifest_interface>(this),
-                value_for<n::provides_interface>(static_cast<RepositoryProvidesInterface *>(0)),
-                value_for<n::virtuals_interface>((*DistributionData::get_instance()->distribution_from_string(p.environment()->distribution())).support_old_style_virtuals() ? this : 0)
+                n::destination_interface() = p.binary_destination() ? this : 0,
+                n::environment_variable_interface() = this,
+                n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
+                n::manifest_interface() = this,
+                n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
+                n::virtuals_interface() = (*DistributionData::get_instance()->distribution_from_string(p.environment()->distribution())).support_old_style_virtuals() ? this : 0
                 )),
     PrivateImplementationPattern<ERepository>(new Implementation<ERepository>(this, p)),
     _imp(PrivateImplementationPattern<ERepository>::_imp)
@@ -749,14 +749,14 @@ ERepository::sync(const std::tr1::shared_ptr<OutputManager> & output_manager) co
             s_end(sync_list.end()) ; s != s_end ; ++s)
     {
         DefaultSyncer syncer(make_named_values<SyncerParams>(
-                    value_for<n::environment>(_imp->params.environment()),
-                    value_for<n::local>(stringify(_imp->params.location())),
-                    value_for<n::remote>(*s)
+                    n::environment() = _imp->params.environment(),
+                    n::local() = stringify(_imp->params.location()),
+                    n::remote() = *s
                 ));
         SyncOptions opts(make_named_values<SyncOptions>(
-                    value_for<n::filter_file>(_imp->layout->sync_filter_file()),
-                    value_for<n::options>(_imp->params.sync_options()),
-                    value_for<n::output_manager>(output_manager)
+                    n::filter_file() = _imp->layout->sync_filter_file(),
+                    n::options() = _imp->params.sync_options(),
+                    n::output_manager() = output_manager
                 ));
         try
         {
@@ -926,8 +926,8 @@ ERepository::virtual_packages() const
     for (Map<QualifiedPackageName, PackageDepSpec>::ConstIterator i(_imp->profile_ptr->virtuals()->begin()),
             i_end(_imp->profile_ptr->virtuals()->end()) ; i != i_end ; ++i)
         result->push_back(make_named_values<RepositoryVirtualsEntry>(
-                    value_for<n::provided_by_spec>(make_shared_copy(i->second)),
-                    value_for<n::virtual_name>(i->first)
+                    n::provided_by_spec() = make_shared_copy(i->second),
+                    n::virtual_name() = i->first
                 ));
 
     return result;
@@ -990,7 +990,7 @@ ERepository::perform_hook(const Hook & hook)
             || hook.name() == "uninstall_all_post")
         update_news();
 
-    return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
+    return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
 std::tr1::shared_ptr<const CategoryNamePartSet>
@@ -1499,37 +1499,37 @@ ERepository::repository_factory_create(
     }
 
     return std::tr1::shared_ptr<ERepository>(new ERepository(make_named_values<ERepositoryParams>(
-                    value_for<n::append_repository_name_to_write_cache>(append_repository_name_to_write_cache),
-                    value_for<n::auto_profiles>(auto_profiles),
-                    value_for<n::binary_destination>(binary_destination),
-                    value_for<n::binary_distdir>(binary_distdir),
-                    value_for<n::binary_keywords>(binary_keywords),
-                    value_for<n::binary_uri_prefix>(binary_uri_prefix),
-                    value_for<n::builddir>(FSEntry(builddir).realpath_if_exists()),
-                    value_for<n::cache>(cache),
-                    value_for<n::distdir>(FSEntry(distdir).realpath_if_exists()),
-                    value_for<n::eapi_when_unknown>(eapi_when_unknown),
-                    value_for<n::eapi_when_unspecified>(eapi_when_unspecified),
-                    value_for<n::eclassdirs>(eclassdirs),
-                    value_for<n::entry_format>("ebuild"),
-                    value_for<n::environment>(env),
-                    value_for<n::ignore_deprecated_profiles>(ignore_deprecated_profiles),
-                    value_for<n::layout>(layout),
-                    value_for<n::location>(FSEntry(location).realpath_if_exists()),
-                    value_for<n::master_repositories>(master_repositories),
-                    value_for<n::names_cache>(FSEntry(names_cache).realpath_if_exists()),
-                    value_for<n::newsdir>(FSEntry(newsdir).realpath_if_exists()),
-                    value_for<n::profile_eapi_when_unspecified>(profile_eapi),
-                    value_for<n::profile_layout>(profile_layout),
-                    value_for<n::profiles>(profiles),
-                    value_for<n::profiles_explicitly_set>(profiles_explicitly_set),
-                    value_for<n::securitydir>(FSEntry(securitydir).realpath_if_exists()),
-                    value_for<n::setsdir>(FSEntry(setsdir).realpath_if_exists()),
-                    value_for<n::sync>(sync),
-                    value_for<n::sync_options>(sync_options),
-                    value_for<n::use_manifest>(use_manifest),
-                    value_for<n::write_bin_uri_prefix>(""),
-                    value_for<n::write_cache>(FSEntry(write_cache).realpath_if_exists())
+                    n::append_repository_name_to_write_cache() = append_repository_name_to_write_cache,
+                    n::auto_profiles() = auto_profiles,
+                    n::binary_destination() = binary_destination,
+                    n::binary_distdir() = binary_distdir,
+                    n::binary_keywords() = binary_keywords,
+                    n::binary_uri_prefix() = binary_uri_prefix,
+                    n::builddir() = FSEntry(builddir).realpath_if_exists(),
+                    n::cache() = cache,
+                    n::distdir() = FSEntry(distdir).realpath_if_exists(),
+                    n::eapi_when_unknown() = eapi_when_unknown,
+                    n::eapi_when_unspecified() = eapi_when_unspecified,
+                    n::eclassdirs() = eclassdirs,
+                    n::entry_format() = "ebuild",
+                    n::environment() = env,
+                    n::ignore_deprecated_profiles() = ignore_deprecated_profiles,
+                    n::layout() = layout,
+                    n::location() = FSEntry(location).realpath_if_exists(),
+                    n::master_repositories() = master_repositories,
+                    n::names_cache() = FSEntry(names_cache).realpath_if_exists(),
+                    n::newsdir() = FSEntry(newsdir).realpath_if_exists(),
+                    n::profile_eapi_when_unspecified() = profile_eapi,
+                    n::profile_layout() = profile_layout,
+                    n::profiles() = profiles,
+                    n::profiles_explicitly_set() = profiles_explicitly_set,
+                    n::securitydir() = FSEntry(securitydir).realpath_if_exists(),
+                    n::setsdir() = FSEntry(setsdir).realpath_if_exists(),
+                    n::sync() = sync,
+                    n::sync_options() = sync_options,
+                    n::use_manifest() = use_manifest,
+                    n::write_bin_uri_prefix() = "",
+                    n::write_cache() = FSEntry(write_cache).realpath_if_exists()
                         )));
 }
 
@@ -2080,41 +2080,40 @@ ERepository::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                     continue;
 
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
-                        value_for<n::builddir>(_imp->params.builddir()),
-                        value_for<n::clearenv>(phase->option("clearenv")),
-                        value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
-                        value_for<n::distdir>(_imp->params.distdir()),
-                        value_for<n::ebuild_dir>(layout()->package_directory(id->name())),
-                        value_for<n::ebuild_file>(id->fs_location_key()->value()),
-                        value_for<n::eclassdirs>(_imp->params.eclassdirs()),
-                        value_for<n::environment>(_imp->params.environment()),
-                        value_for<n::exlibsdirs>(exlibsdirs),
-                        value_for<n::files_dir>(layout()->package_directory(id->name()) / "files"),
-                        value_for<n::maybe_output_manager>(output_manager),
-                        value_for<n::package_builddir>(package_builddir),
-                        value_for<n::package_id>(id),
-                        value_for<n::portdir>(
+                        n::builddir() = _imp->params.builddir(),
+                        n::clearenv() = phase->option("clearenv"),
+                        n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                        n::distdir() = _imp->params.distdir(),
+                        n::ebuild_dir() = layout()->package_directory(id->name()),
+                        n::ebuild_file() = id->fs_location_key()->value(),
+                        n::eclassdirs() = _imp->params.eclassdirs(),
+                        n::environment() = _imp->params.environment(),
+                        n::exlibsdirs() = exlibsdirs,
+                        n::files_dir() = layout()->package_directory(id->name()) / "files",
+                        n::maybe_output_manager() = output_manager,
+                        n::package_builddir() = package_builddir,
+                        n::package_id() = id,
+                        n::portdir() = 
                             (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
-                            (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
-                        value_for<n::root>("/"),
-                        value_for<n::sandbox>(phase->option("sandbox")),
-                        value_for<n::sydbox>(phase->option("sydbox")),
-                        value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
+                            (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location(),
+                        n::root() = "/",
+                        n::sandbox() = phase->option("sandbox"),
+                        n::sydbox() = phase->option("sydbox"),
+                        n::userpriv() = phase->option("userpriv") && userpriv_ok
                         ));
 
-                EbuildFetchExtraCommand fetch_extra_cmd(command_params,
-                        make_named_values<EbuildFetchExtraCommandParams>(
-                        value_for<n::a>(archives),
-                        value_for<n::aa>(all_archives),
-                        value_for<n::expand_vars>(expand_vars),
-                        value_for<n::loadsaveenv_dir>(package_builddir / "temp"),
-                        value_for<n::profiles>(_imp->params.profiles()),
-                        value_for<n::profiles_with_parents>(profile()->profiles_with_parents()),
-                        value_for<n::slot>(id->slot_key() ? stringify(id->slot_key()->value()) : ""),
-                        value_for<n::use>(use),
-                        value_for<n::use_expand>(join(profile()->use_expand()->begin(), profile()->use_expand()->end(), " ")),
-                        value_for<n::use_expand_hidden>(join(profile()->use_expand_hidden()->begin(), profile()->use_expand_hidden()->end(), " "))
-                        ));
+                EbuildFetchExtraCommand fetch_extra_cmd(command_params, make_named_values<EbuildFetchExtraCommandParams>(
+                            n::a() = archives,
+                            n::aa() = all_archives,
+                            n::expand_vars() = expand_vars,
+                            n::loadsaveenv_dir() = package_builddir / "temp",
+                            n::profiles() = _imp->params.profiles(),
+                            n::profiles_with_parents() = profile()->profiles_with_parents(),
+                            n::slot() = id->slot_key() ? stringify(id->slot_key()->value()) : "",
+                            n::use() = use,
+                            n::use_expand() = join(profile()->use_expand()->begin(), profile()->use_expand()->end(), " "),
+                            n::use_expand_hidden() = join(profile()->use_expand_hidden()->begin(), profile()->use_expand_hidden()->end(), " ")
+                            ));
 
                 if (! fetch_extra_cmd())
                     throw ActionFailedError("Fetch of '" + stringify(*id) + "' failed");
@@ -2128,38 +2127,37 @@ ERepository::fetch(const std::tr1::shared_ptr<const ERepositoryID> & id,
                     phase != phase_end ; ++phase)
             {
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
-                        value_for<n::builddir>(_imp->params.builddir()),
-                        value_for<n::clearenv>(phase->option("clearenv")),
-                        value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
-                        value_for<n::distdir>(_imp->params.distdir()),
-                        value_for<n::ebuild_dir>(layout()->package_directory(id->name())),
-                        value_for<n::ebuild_file>(id->fs_location_key()->value()),
-                        value_for<n::eclassdirs>(_imp->params.eclassdirs()),
-                        value_for<n::environment>(_imp->params.environment()),
-                        value_for<n::exlibsdirs>(exlibsdirs),
-                        value_for<n::files_dir>(layout()->package_directory(id->name()) / "files"),
-                        value_for<n::maybe_output_manager>(output_manager),
-                        value_for<n::package_builddir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-nofetch")),
-                        value_for<n::package_id>(id),
-                        value_for<n::portdir>(
-                            (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
-                            (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
-                        value_for<n::root>("/"),
-                        value_for<n::sandbox>(phase->option("sandbox")),
-                        value_for<n::sydbox>(phase->option("sydbox")),
-                        value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
+                        n::builddir() = _imp->params.builddir(),
+                        n::clearenv() = phase->option("clearenv"),
+                        n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                        n::distdir() = _imp->params.distdir(),
+                        n::ebuild_dir() = layout()->package_directory(id->name()),
+                        n::ebuild_file() = id->fs_location_key()->value(),
+                        n::eclassdirs() = _imp->params.eclassdirs(),
+                        n::environment() = _imp->params.environment(),
+                        n::exlibsdirs() = exlibsdirs,
+                        n::files_dir() = layout()->package_directory(id->name()) / "files",
+                        n::maybe_output_manager() = output_manager,
+                        n::package_builddir() = _imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-nofetch"),
+                        n::package_id() = id,
+                        n::portdir() = (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
+                            (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location(),
+                        n::root() = "/",
+                        n::sandbox() = phase->option("sandbox"),
+                        n::sydbox() = phase->option("sydbox"),
+                        n::userpriv() = phase->option("userpriv") && userpriv_ok
                         ));
 
                 EbuildNoFetchCommand nofetch_cmd(command_params,
                         make_named_values<EbuildNoFetchCommandParams>(
-                        value_for<n::a>(archives),
-                        value_for<n::aa>(all_archives),
-                        value_for<n::expand_vars>(expand_vars),
-                        value_for<n::profiles>(_imp->params.profiles()),
-                        value_for<n::profiles_with_parents>(profile()->profiles_with_parents()),
-                        value_for<n::use>(use),
-                        value_for<n::use_expand>(join(profile()->use_expand()->begin(), profile()->use_expand()->end(), " ")),
-                        value_for<n::use_expand_hidden>(join(profile()->use_expand_hidden()->begin(), profile()->use_expand_hidden()->end(), " "))
+                        n::a() = archives,
+                        n::aa() = all_archives,
+                        n::expand_vars() = expand_vars,
+                        n::profiles() = _imp->params.profiles(),
+                        n::profiles_with_parents() = profile()->profiles_with_parents(),
+                        n::use() = use,
+                        n::use_expand() = join(profile()->use_expand()->begin(), profile()->use_expand()->end(), " "),
+                        n::use_expand_hidden() = join(profile()->use_expand_hidden()->begin(), profile()->use_expand_hidden()->end(), " ")
                         ));
 
                 if (! nofetch_cmd())
@@ -2397,16 +2395,16 @@ ERepository::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
             Timestamp build_start_time(FSEntry(package_builddir / "temp" / "build_start_time").mtim());
             (*install_action.options.destination()).destination_interface()->merge(
                     make_named_values<MergeParams>(
-                        value_for<n::build_start_time>(build_start_time),
-                        value_for<n::environment_file>(package_builddir / "temp" / "loadsaveenv"),
-                        value_for<n::image_dir>(package_builddir / "image"),
-                        value_for<n::merged_entries>(merged_entries),
-                        value_for<n::options>(id->eapi()->supported()->merger_options() | extra_merger_options),
-                        value_for<n::output_manager>(output_manager),
-                        value_for<n::package_id>(id),
-                        value_for<n::perform_uninstall>(install_action.options.perform_uninstall()),
-                        value_for<n::used_this_for_config_protect>(std::tr1::bind(
-                                &used_this_for_config_protect, std::tr1::ref(used_config_protect), std::tr1::placeholders::_1))
+                        n::build_start_time() = build_start_time,
+                        n::environment_file() = package_builddir / "temp" / "loadsaveenv",
+                        n::image_dir() = package_builddir / "image",
+                        n::merged_entries() = merged_entries,
+                        n::options() = id->eapi()->supported()->merger_options() | extra_merger_options,
+                        n::output_manager() = output_manager,
+                        n::package_id() = id,
+                        n::perform_uninstall() = install_action.options.perform_uninstall(),
+                        n::used_this_for_config_protect() = std::tr1::bind(
+                                &used_this_for_config_protect, std::tr1::ref(used_config_protect), std::tr1::placeholders::_1)
                         ));
         }
         else if (phase->option("strip"))
@@ -2431,12 +2429,12 @@ ERepository::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                             ELikeSplitChoiceValue::canonical_name_with_prefix()));
 
                 EStripper stripper(make_named_values<EStripperOptions>(
-                        value_for<n::debug_dir>(package_builddir / "image" / "usr" / libdir / "debug"),
-                        value_for<n::image_dir>(package_builddir / "image"),
-                        value_for<n::output_manager>(output_manager),
-                        value_for<n::package_id>(id),
-                        value_for<n::split>(split_choice && split_choice->enabled()),
-                        value_for<n::strip>(strip_choice && strip_choice->enabled())
+                        n::debug_dir() = package_builddir / "image" / "usr" / libdir / "debug",
+                        n::image_dir() = package_builddir / "image",
+                        n::output_manager() = output_manager,
+                        n::package_id() = id,
+                        n::split() = split_choice && split_choice->enabled(),
+                        n::strip() = strip_choice && strip_choice->enabled()
                         ));
                 stripper.strip();
             }
@@ -2474,45 +2472,45 @@ ERepository::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
             }
 
             EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
-                    value_for<n::builddir>(_imp->params.builddir()),
-                    value_for<n::clearenv>(phase->option("clearenv")),
-                    value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
-                    value_for<n::distdir>(_imp->params.distdir()),
-                    value_for<n::ebuild_dir>(layout()->package_directory(id->name())),
-                    value_for<n::ebuild_file>(id->fs_location_key()->value()),
-                    value_for<n::eclassdirs>(_imp->params.eclassdirs()),
-                    value_for<n::environment>(_imp->params.environment()),
-                    value_for<n::exlibsdirs>(exlibsdirs),
-                    value_for<n::files_dir>(layout()->package_directory(id->name()) / "files"),
-                    value_for<n::maybe_output_manager>(output_manager),
-                    value_for<n::package_builddir>(package_builddir),
-                    value_for<n::package_id>(id),
-                    value_for<n::portdir>(
+                    n::builddir() = _imp->params.builddir(),
+                    n::clearenv() = phase->option("clearenv"),
+                    n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                    n::distdir() = _imp->params.distdir(),
+                    n::ebuild_dir() = layout()->package_directory(id->name()),
+                    n::ebuild_file() = id->fs_location_key()->value(),
+                    n::eclassdirs() = _imp->params.eclassdirs(),
+                    n::environment() = _imp->params.environment(),
+                    n::exlibsdirs() = exlibsdirs,
+                    n::files_dir() = layout()->package_directory(id->name()) / "files",
+                    n::maybe_output_manager() = output_manager,
+                    n::package_builddir() = package_builddir,
+                    n::package_id() = id,
+                    n::portdir() = 
                         (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
-                        (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
-                    value_for<n::root>(install_action.options.destination()->installed_root_key() ?
+                        (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location(),
+                    n::root() = install_action.options.destination()->installed_root_key() ?
                         stringify(install_action.options.destination()->installed_root_key()->value()) :
-                        "/"),
-                    value_for<n::sandbox>(phase->option("sandbox")),
-                    value_for<n::sydbox>(phase->option("sydbox")),
-                    value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
+                        "/",
+                    n::sandbox() = phase->option("sandbox"),
+                    n::sydbox() = phase->option("sydbox"),
+                    n::userpriv() = phase->option("userpriv") && userpriv_ok
                     ));
 
             EbuildInstallCommandParams install_params(
                     make_named_values<EbuildInstallCommandParams>(
-                            value_for<n::a>(archives),
-                            value_for<n::aa>(all_archives),
-                            value_for<n::config_protect>(environment_updated_profile_variable("CONFIG_PROTECT")),
-                            value_for<n::config_protect_mask>(environment_updated_profile_variable("CONFIG_PROTECT_MASK")),
-                            value_for<n::expand_vars>(expand_vars),
-                            value_for<n::loadsaveenv_dir>(package_builddir / "temp"),
-                            value_for<n::profiles>(_imp->params.profiles()),
-                            value_for<n::profiles_with_parents>(profile()->profiles_with_parents()),
-                            value_for<n::replacing_ids>(install_action.options.replacing()),
-                            value_for<n::slot>(id->slot_key() ? stringify(id->slot_key()->value()) : ""),
-                            value_for<n::use>(use),
-                            value_for<n::use_expand>(join(profile()->use_expand()->begin(), profile()->use_expand()->end(), " ")),
-                            value_for<n::use_expand_hidden>(join(profile()->use_expand_hidden()->begin(), profile()->use_expand_hidden()->end(), " "))
+                            n::a() = archives,
+                            n::aa() = all_archives,
+                            n::config_protect() = environment_updated_profile_variable("CONFIG_PROTECT"),
+                            n::config_protect_mask() = environment_updated_profile_variable("CONFIG_PROTECT_MASK"),
+                            n::expand_vars() = expand_vars,
+                            n::loadsaveenv_dir() = package_builddir / "temp",
+                            n::profiles() = _imp->params.profiles(),
+                            n::profiles_with_parents() = profile()->profiles_with_parents(),
+                            n::replacing_ids() = install_action.options.replacing(),
+                            n::slot() = id->slot_key() ? stringify(id->slot_key()->value()) : "",
+                            n::use() = use,
+                            n::use_expand() = join(profile()->use_expand()->begin(), profile()->use_expand()->end(), " "),
+                            n::use_expand_hidden() = join(profile()->use_expand_hidden()->begin(), profile()->use_expand_hidden()->end(), " ")
                             ));
 
             EbuildInstallCommand cmd(command_params, install_params);
@@ -2532,12 +2530,12 @@ ERepository::install(const std::tr1::shared_ptr<const ERepositoryID> & id,
                 continue;
 
         UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
-                    value_for<n::config_protect>(used_config_protect),
-                    value_for<n::if_for_install_id>(id),
-                    value_for<n::ignore_for_unmerge>(std::tr1::bind(&ignore_merged, merged_entries,
-                            std::tr1::placeholders::_1)),
-                    value_for<n::is_overwrite>(false),
-                    value_for<n::make_output_manager>(std::tr1::bind(&this_output_manager, output_manager, std::tr1::placeholders::_1))
+                    n::config_protect() = used_config_protect,
+                    n::if_for_install_id() = id,
+                    n::ignore_for_unmerge() = std::tr1::bind(&ignore_merged, merged_entries,
+                            std::tr1::placeholders::_1),
+                    n::is_overwrite() = false,
+                    n::make_output_manager() = std::tr1::bind(&this_output_manager, output_manager, std::tr1::placeholders::_1)
                     ));
         install_action.options.perform_uninstall()(*i, uo);
     }
@@ -2588,40 +2586,40 @@ ERepository::info(const std::tr1::shared_ptr<const ERepositoryID> & id,
             continue;
 
         EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
-                value_for<n::builddir>(_imp->params.builddir()),
-                value_for<n::clearenv>(phase->option("clearenv")),
-                value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
-                value_for<n::distdir>(_imp->params.distdir()),
-                value_for<n::ebuild_dir>(layout()->package_directory(id->name())),
-                value_for<n::ebuild_file>(id->fs_location_key()->value()),
-                value_for<n::eclassdirs>(_imp->params.eclassdirs()),
-                value_for<n::environment>(_imp->params.environment()),
-                value_for<n::exlibsdirs>(exlibsdirs),
-                value_for<n::files_dir>(layout()->package_directory(id->name()) / "files"),
-                value_for<n::maybe_output_manager>(output_manager),
-                value_for<n::package_builddir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-info")),
-                value_for<n::package_id>(id),
-                value_for<n::portdir>(
+                n::builddir() = _imp->params.builddir(),
+                n::clearenv() = phase->option("clearenv"),
+                n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                n::distdir() = _imp->params.distdir(),
+                n::ebuild_dir() = layout()->package_directory(id->name()),
+                n::ebuild_file() = id->fs_location_key()->value(),
+                n::eclassdirs() = _imp->params.eclassdirs(),
+                n::environment() = _imp->params.environment(),
+                n::exlibsdirs() = exlibsdirs,
+                n::files_dir() = layout()->package_directory(id->name()) / "files",
+                n::maybe_output_manager() = output_manager,
+                n::package_builddir() = _imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-info"),
+                n::package_id() = id,
+                n::portdir() =
                     (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
-                    (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
-                value_for<n::root>(stringify(_imp->params.environment()->root())),
-                value_for<n::sandbox>(phase->option("sandbox")),
-                value_for<n::sydbox>(phase->option("sydbox")),
-                value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
+                    (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location(),
+                n::root() = stringify(_imp->params.environment()->root()),
+                n::sandbox() = phase->option("sandbox"),
+                n::sydbox() = phase->option("sydbox"),
+                n::userpriv() = phase->option("userpriv") && userpriv_ok
                 ));
 
         EbuildInfoCommandParams info_params(
                 make_named_values<EbuildInfoCommandParams>(
-                value_for<n::expand_vars>(expand_vars),
-                value_for<n::info_vars>(info_vars_key() ?
-                    info_vars_key()->value() : make_shared_ptr(new const Set<std::string>)),
-                value_for<n::load_environment>(static_cast<const FSEntry *>(0)),
-                value_for<n::profiles>(_imp->params.profiles()),
-                value_for<n::profiles_with_parents>(profile()->profiles_with_parents()),
-                value_for<n::use>(use),
-                value_for<n::use_ebuild_file>(true),
-                value_for<n::use_expand>(join(profile()->use_expand()->begin(), profile()->use_expand()->end(), " ")),
-                value_for<n::use_expand_hidden>(join(profile()->use_expand_hidden()->begin(), profile()->use_expand_hidden()->end(), " "))
+                n::expand_vars() = expand_vars,
+                n::info_vars() = info_vars_key() ?
+                    info_vars_key()->value() : make_shared_ptr(new const Set<std::string>),
+                n::load_environment() = static_cast<const FSEntry *>(0),
+                n::profiles() = _imp->params.profiles(),
+                n::profiles_with_parents() = profile()->profiles_with_parents(),
+                n::use() = use,
+                n::use_ebuild_file() = true,
+                n::use_expand() = join(profile()->use_expand()->begin(), profile()->use_expand()->end(), " "),
+                n::use_expand_hidden() = join(profile()->use_expand_hidden()->begin(), profile()->use_expand_hidden()->end(), " ")
                 ));
 
         EbuildInfoCommand cmd(command_params, info_params);
@@ -2665,26 +2663,26 @@ ERepository::get_environment_variable(
     std::tr1::shared_ptr<const FSEntrySequence> exlibsdirs(layout()->exlibsdirs(id->name()));
 
     EbuildVariableCommand cmd(make_named_values<EbuildCommandParams>(
-            value_for<n::builddir>(_imp->params.builddir()),
-            value_for<n::clearenv>(phases.begin_phases()->option("clearenv")),
-            value_for<n::commands>(join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " ")),
-            value_for<n::distdir>(_imp->params.distdir()),
-            value_for<n::ebuild_dir>(layout()->package_directory(id->name())),
-            value_for<n::ebuild_file>(id->fs_location_key()->value()),
-            value_for<n::eclassdirs>(_imp->params.eclassdirs()),
-            value_for<n::environment>(_imp->params.environment()),
-            value_for<n::exlibsdirs>(exlibsdirs),
-            value_for<n::files_dir>(layout()->package_directory(id->name()) / "files"),
-            value_for<n::maybe_output_manager>(make_null_shared_ptr()),
-            value_for<n::package_builddir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-variable")),
-            value_for<n::package_id>(id),
-            value_for<n::portdir>(
+            n::builddir() = _imp->params.builddir(),
+            n::clearenv() = phases.begin_phases()->option("clearenv"),
+            n::commands() = join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " "),
+            n::distdir() = _imp->params.distdir(),
+            n::ebuild_dir() = layout()->package_directory(id->name()),
+            n::ebuild_file() = id->fs_location_key()->value(),
+            n::eclassdirs() = _imp->params.eclassdirs(),
+            n::environment() = _imp->params.environment(),
+            n::exlibsdirs() = exlibsdirs,
+            n::files_dir() = layout()->package_directory(id->name()) / "files",
+            n::maybe_output_manager() = make_null_shared_ptr(),
+            n::package_builddir() = _imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-variable"),
+            n::package_id() = id,
+            n::portdir() =
                 (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
-                (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
-            value_for<n::root>("/"),
-            value_for<n::sandbox>(phases.begin_phases()->option("sandbox")),
-            value_for<n::sydbox>(phases.begin_phases()->option("sydbox")),
-            value_for<n::userpriv>(phases.begin_phases()->option("userpriv") && userpriv_ok)
+                (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location(),
+            n::root() = "/",
+            n::sandbox() = phases.begin_phases()->option("sandbox"),
+            n::sydbox() = phases.begin_phases()->option("sydbox"),
+            n::userpriv() = phases.begin_phases()->option("userpriv") && userpriv_ok
             ),
 
             var);
@@ -2714,16 +2712,16 @@ ERepository::merge(const MergeParams & m)
 
     WriteBinaryEbuildCommand write_binary_ebuild_command(
             make_named_values<WriteBinaryEbuildCommandParams>(
-            value_for<n::binary_distdir>(_imp->params.binary_distdir()),
-            value_for<n::binary_ebuild_location>(binary_ebuild_location),
-            value_for<n::builddir>(_imp->params.builddir()),
-            value_for<n::destination_repository>(this),
-            value_for<n::environment>(_imp->params.environment()),
-            value_for<n::environment_file>(m.environment_file()),
-            value_for<n::image>(m.image_dir()),
-            value_for<n::maybe_output_manager>(m.output_manager()),
-            value_for<n::merger_options>(std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id())->eapi()->supported()->merger_options()),
-            value_for<n::package_id>(std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id()))
+            n::binary_distdir() = _imp->params.binary_distdir(),
+            n::binary_ebuild_location() = binary_ebuild_location,
+            n::builddir() = _imp->params.builddir(),
+            n::destination_repository() = this,
+            n::environment() = _imp->params.environment(),
+            n::environment_file() = m.environment_file(),
+            n::image() = m.image_dir(),
+            n::maybe_output_manager() = m.output_manager(),
+            n::merger_options() = std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id())->eapi()->supported()->merger_options(),
+            n::package_id() = std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id())
             ));
 
     write_binary_ebuild_command();
@@ -2816,37 +2814,37 @@ ERepository::pretend(
                     output_manager = a.options.make_output_manager()(a);
 
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
-                            value_for<n::builddir>(_imp->params.builddir()),
-                            value_for<n::clearenv>(phase->option("clearenv")),
-                            value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
-                            value_for<n::distdir>(_imp->params.distdir()),
-                            value_for<n::ebuild_dir>(layout()->package_directory(id->name())),
-                            value_for<n::ebuild_file>(id->fs_location_key()->value()),
-                            value_for<n::eclassdirs>(_imp->params.eclassdirs()),
-                            value_for<n::environment>(_imp->params.environment()),
-                            value_for<n::exlibsdirs>(exlibsdirs),
-                            value_for<n::files_dir>(layout()->package_directory(id->name()) / "files"),
-                            value_for<n::maybe_output_manager>(output_manager),
-                            value_for<n::package_builddir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-bad_options")),
-                            value_for<n::package_id>(id),
-                            value_for<n::portdir>(
+                            n::builddir() = _imp->params.builddir(),
+                            n::clearenv() = phase->option("clearenv"),
+                            n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                            n::distdir() = _imp->params.distdir(),
+                            n::ebuild_dir() = layout()->package_directory(id->name()),
+                            n::ebuild_file() = id->fs_location_key()->value(),
+                            n::eclassdirs() = _imp->params.eclassdirs(),
+                            n::environment() = _imp->params.environment(),
+                            n::exlibsdirs() = exlibsdirs,
+                            n::files_dir() = layout()->package_directory(id->name()) / "files",
+                            n::maybe_output_manager() = output_manager,
+                            n::package_builddir() = _imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-bad_options"),
+                            n::package_id() = id,
+                            n::portdir() =
                                 (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
-                                (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
-                            value_for<n::root>(stringify(_imp->params.environment()->root())),
-                            value_for<n::sandbox>(phase->option("sandbox")),
-                            value_for<n::sydbox>(phase->option("sydbox")),
-                            value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
+                                (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location(),
+                            n::root() = stringify(_imp->params.environment()->root()),
+                            n::sandbox() = phase->option("sandbox"),
+                            n::sydbox() = phase->option("sydbox"),
+                            n::userpriv() = phase->option("userpriv") && userpriv_ok
                             ));
 
                 EbuildBadOptionsCommand bad_options_cmd(command_params,
                         make_named_values<EbuildBadOptionsCommandParams>(
-                            value_for<n::expand_vars>(expand_vars),
-                            value_for<n::profiles>(_imp->params.profiles()),
-                            value_for<n::profiles_with_parents>(profile()->profiles_with_parents()),
-                            value_for<n::unmet_requirements>(verifier.unmet_requirements()),
-                            value_for<n::use>(use),
-                            value_for<n::use_expand>(join(profile()->use_expand()->begin(), profile()->use_expand()->end(), " ")),
-                            value_for<n::use_expand_hidden>(join(profile()->use_expand_hidden()->begin(), profile()->use_expand_hidden()->end(), " "))
+                            n::expand_vars() = expand_vars,
+                            n::profiles() = _imp->params.profiles(),
+                            n::profiles_with_parents() = profile()->profiles_with_parents(),
+                            n::unmet_requirements() = verifier.unmet_requirements(),
+                            n::use() = use,
+                            n::use_expand() = join(profile()->use_expand()->begin(), profile()->use_expand()->end(), " "),
+                            n::use_expand_hidden() = join(profile()->use_expand_hidden()->begin(), profile()->use_expand_hidden()->end(), " ")
                             ));
 
                 if (! bad_options_cmd())
@@ -2871,36 +2869,36 @@ ERepository::pretend(
             output_manager = a.options.make_output_manager()(a);
 
         EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
-                value_for<n::builddir>(_imp->params.builddir()),
-                value_for<n::clearenv>(phase->option("clearenv")),
-                value_for<n::commands>(join(phase->begin_commands(), phase->end_commands(), " ")),
-                value_for<n::distdir>(_imp->params.distdir()),
-                value_for<n::ebuild_dir>(layout()->package_directory(id->name())),
-                value_for<n::ebuild_file>(id->fs_location_key()->value()),
-                value_for<n::eclassdirs>(_imp->params.eclassdirs()),
-                value_for<n::environment>(_imp->params.environment()),
-                value_for<n::exlibsdirs>(exlibsdirs),
-                value_for<n::files_dir>(layout()->package_directory(id->name()) / "files"),
-                value_for<n::maybe_output_manager>(output_manager),
-                value_for<n::package_builddir>(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-pretend")),
-                value_for<n::package_id>(id),
-                value_for<n::portdir>(
+                n::builddir() = _imp->params.builddir(),
+                n::clearenv() = phase->option("clearenv"),
+                n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                n::distdir() = _imp->params.distdir(),
+                n::ebuild_dir() = layout()->package_directory(id->name()),
+                n::ebuild_file() = id->fs_location_key()->value(),
+                n::eclassdirs() = _imp->params.eclassdirs(),
+                n::environment() = _imp->params.environment(),
+                n::exlibsdirs() = exlibsdirs,
+                n::files_dir() = layout()->package_directory(id->name()) / "files",
+                n::maybe_output_manager() = output_manager,
+                n::package_builddir() = _imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-pretend"),
+                n::package_id() = id,
+                n::portdir() =
                     (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
-                    (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location()),
-                value_for<n::root>(stringify(_imp->params.environment()->root())),
-                value_for<n::sandbox>(phase->option("sandbox")),
-                value_for<n::sydbox>(phase->option("sydbox")),
-                value_for<n::userpriv>(phase->option("userpriv") && userpriv_ok)
+                    (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location(),
+                n::root() = stringify(_imp->params.environment()->root()),
+                n::sandbox() = phase->option("sandbox"),
+                n::sydbox() = phase->option("sydbox"),
+                n::userpriv() = phase->option("userpriv") && userpriv_ok
                 ));
 
         EbuildPretendCommand pretend_cmd(command_params,
                 make_named_values<EbuildPretendCommandParams>(
-                value_for<n::expand_vars>(expand_vars),
-                value_for<n::profiles>(_imp->params.profiles()),
-                value_for<n::profiles_with_parents>(profile()->profiles_with_parents()),
-                value_for<n::use>(use),
-                value_for<n::use_expand>(join(profile()->use_expand()->begin(), profile()->use_expand()->end(), " ")),
-                value_for<n::use_expand_hidden>(join(profile()->use_expand_hidden()->begin(), profile()->use_expand_hidden()->end(), " "))
+                n::expand_vars() = expand_vars,
+                n::profiles() = _imp->params.profiles(),
+                n::profiles_with_parents() = profile()->profiles_with_parents(),
+                n::use() = use,
+                n::use_expand() = join(profile()->use_expand()->begin(), profile()->use_expand()->end(), " "),
+                n::use_expand_hidden() = join(profile()->use_expand_hidden()->begin(), profile()->use_expand_hidden()->end(), " ")
                 ));
 
         if (! pretend_cmd())

@@ -305,7 +305,7 @@ class EnvironmentImplementationWrapper :
         virtual HookResult perform_hook(const Hook & h) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
-            return make_named_values<HookResult>(value_for<n::max_exit_status>(0), value_for<n::output>(""));
+            return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
         }
 
         virtual std::string distribution() const
@@ -458,16 +458,16 @@ struct NoConfigEnvironmentWrapper :
             const std::string & master_repo_name, const std::tr1::shared_ptr<const FSEntrySequence> & extra_repository_dirs
             ) :
         NoConfigEnvironment(make_named_values<no_config_environment::Params>(
-                    value_for<n::accept_unstable>(false),
-                    value_for<n::disable_metadata_cache>(false),
-                    value_for<n::extra_accept_keywords>(""),
-                    value_for<n::extra_params>(make_null_shared_ptr()),
-                    value_for<n::extra_repository_dirs>(extra_repository_dirs),
-                    value_for<n::master_repository_name>(master_repo_name),
-                    value_for<n::profiles_if_not_auto>(""),
-                    value_for<n::repository_dir>(env_dir),
-                    value_for<n::repository_type>(no_config_environment::ncer_auto),
-                    value_for<n::write_cache>(cache_dir)
+                    n::accept_unstable() = false,
+                    n::disable_metadata_cache() = false,
+                    n::extra_accept_keywords() = "",
+                    n::extra_params() = make_null_shared_ptr(),
+                    n::extra_repository_dirs() = extra_repository_dirs,
+                    n::master_repository_name() = master_repo_name,
+                    n::profiles_if_not_auto() = "",
+                    n::repository_dir() = env_dir,
+                    n::repository_type() = no_config_environment::ncer_auto,
+                    n::write_cache() = cache_dir
                 ))
     {
     }

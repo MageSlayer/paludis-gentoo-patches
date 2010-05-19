@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -109,11 +109,11 @@ Resolvent::Resolvent(
         const PackageDepSpec & spec,
         const SlotName & s,
         const DestinationType t) :
-    destination_type(value_for<n::destination_type>(t)),
-    package(value_for<n::package>(*spec.package_ptr())),
+    destination_type(n::destination_type() = t),
+    package(n::package() = *spec.package_ptr()),
     slot(make_named_values<SlotNameOrNull>(
-                value_for<n::name_or_null>(make_shared_ptr(new SlotName(s))),
-                value_for<n::null_means_unknown>(false)
+                n::name_or_null() = make_shared_ptr(new SlotName(s)),
+                n::null_means_unknown() = false
                 ))
 {
 }
@@ -122,11 +122,11 @@ Resolvent::Resolvent(
         const PackageDepSpec & spec,
         const bool b,
         const DestinationType t) :
-    destination_type(value_for<n::destination_type>(t)),
-    package(value_for<n::package>(*spec.package_ptr())),
+    destination_type(n::destination_type() = t),
+    package(n::package() = *spec.package_ptr()),
     slot(make_named_values<SlotNameOrNull>(
-                value_for<n::name_or_null>(make_null_shared_ptr()),
-                value_for<n::null_means_unknown>(b)
+                n::name_or_null() = make_null_shared_ptr(),
+                n::null_means_unknown() = b
                 ))
 {
 }
@@ -135,11 +135,11 @@ Resolvent::Resolvent(
         const QualifiedPackageName & n,
         const SlotName & s,
         const DestinationType t) :
-    destination_type(value_for<n::destination_type>(t)),
-    package(value_for<n::package>(n)),
+    destination_type(n::destination_type() = t),
+    package(n::package() = n),
     slot(make_named_values<SlotNameOrNull>(
-                value_for<n::name_or_null>(make_shared_ptr(new SlotName(s))),
-                value_for<n::null_means_unknown>(false)
+                n::name_or_null() = make_shared_ptr(new SlotName(s)),
+                n::null_means_unknown() = false
                 ))
 {
 }
@@ -148,8 +148,8 @@ Resolvent::Resolvent(
         const QualifiedPackageName & n,
         const SlotNameOrNull & s,
         const DestinationType t) :
-    destination_type(value_for<n::destination_type>(t)),
-    package(value_for<n::package>(n)),
+    destination_type(n::destination_type() = t),
+    package(n::package() = n),
     slot(s)
 {
 }
@@ -157,13 +157,13 @@ Resolvent::Resolvent(
 Resolvent::Resolvent(
         const std::tr1::shared_ptr<const PackageID> & id,
         const DestinationType t) :
-    destination_type(value_for<n::destination_type>(t)),
+    destination_type(n::destination_type() = t),
     package(id->name()),
     slot(make_named_values<SlotNameOrNull>(
-                value_for<n::name_or_null>(id->slot_key() ?
+                n::name_or_null() = id->slot_key() ?
                     make_shared_ptr(new SlotName(id->slot_key()->value())) :
-                    make_null_shared_ptr()),
-                value_for<n::null_means_unknown>(false)
+                    make_null_shared_ptr(),
+                n::null_means_unknown() = false
                 ))
 {
 }
@@ -247,8 +247,8 @@ SlotNameOrNull::deserialise(Deserialisation & d)
     std::string s(v.member<std::string>("name_or_null"));
 
     return make_named_values<SlotNameOrNull>(
-            value_for<n::name_or_null>(s.empty() ? make_null_shared_ptr() : make_shared_ptr(new SlotName(s))),
-            value_for<n::null_means_unknown>(v.member<bool>("null_means_unknown"))
+            n::name_or_null() = s.empty() ? make_null_shared_ptr() : make_shared_ptr(new SlotName(s)),
+            n::null_means_unknown() = v.member<bool>("null_means_unknown")
             );
 }
 

@@ -1038,13 +1038,13 @@ EInstalledRepositoryID::add_build_options(const std::tr1::shared_ptr<Choices> & 
     if (eapi()->supported())
     {
         std::tr1::shared_ptr<Choice> build_options(new Choice(make_named_values<ChoiceParams>(
-                        value_for<n::consider_added_or_changed>(false),
-                        value_for<n::contains_every_value>(false),
-                        value_for<n::hidden>(false),
-                        value_for<n::human_name>(canonical_build_options_human_name()),
-                        value_for<n::prefix>(canonical_build_options_prefix()),
-                        value_for<n::raw_name>(canonical_build_options_raw_name()),
-                        value_for<n::show_with_no_prefix>(false)
+                        n::consider_added_or_changed() = false,
+                        n::contains_every_value() = false,
+                        n::hidden() = false,
+                        n::human_name() = canonical_build_options_human_name(),
+                        n::prefix() = canonical_build_options_prefix(),
+                        n::raw_name() = canonical_build_options_raw_name(),
+                        n::show_with_no_prefix() = false
                         )));
         choices->add(build_options);
 

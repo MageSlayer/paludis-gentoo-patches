@@ -58,8 +58,8 @@ namespace paludis
 {
     namespace n
     {
-        struct item;
-        struct spec;
+        typedef Name<struct item_name> item;
+        typedef Name<struct spec_name> spec;
     }
 }
 
@@ -253,8 +253,8 @@ namespace
     {
         std::tr1::shared_ptr<A_> spec(new A_);
         stack.push_front(make_named_values<typename ParseStackTypes<T_>::Item>(
-                value_for<n::item>(stack.begin()->item()->append(spec)),
-                value_for<n::spec>(spec)
+                    n::item() = stack.begin()->item()->append(spec),
+                    n::spec() = spec
                 ));
     }
 
@@ -268,8 +268,8 @@ namespace
         std::tr1::shared_ptr<ConditionalDepSpec> spec(new ConditionalDepSpec(parse_elike_conditional_dep_spec(
                         u, env, id, id->repository()->installed_root_key())));
         stack.push_front(make_named_values<typename ParseStackTypes<T_>::Item>(
-                value_for<n::item>(stack.begin()->item()->append(spec)),
-                value_for<n::spec>(spec)
+                    n::item() = stack.begin()->item()->append(spec),
+                    n::spec() = spec
                 ));
     }
 
@@ -325,31 +325,31 @@ paludis::erepository::parse_depend(const std::string & s,
     std::tr1::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::tr1::shared_ptr<DependencySpecTree> top(make_shared_ptr(new DependencySpecTree(spec)));
     stack.push_front(make_named_values<ParseStackTypes<DependencySpecTree>::Item>(
-                value_for<n::item>(top->root()),
-                value_for<n::spec>(spec)
+                n::item() = top->root(),
+                n::spec() = spec
             ));
 
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
-                value_for<n::on_all>(std::tr1::bind(&any_all_handler<DependencySpecTree, AllDepSpec>, std::tr1::ref(stack))),
-                value_for<n::on_annotations>(std::tr1::bind(&set_annotations, std::tr1::ref(thing_to_annotate), _1)),
-                value_for<n::on_any>(std::tr1::bind(&any_all_handler<DependencySpecTree, AnyDepSpec>, std::tr1::ref(stack))),
-                value_for<n::on_arrow>(std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2)),
-                value_for<n::on_error>(std::tr1::bind(&error_handler, s, _1)),
-                value_for<n::on_label>(std::tr1::bind(&dependency_label_handler<DependencySpecTree>,
-                        std::tr1::ref(stack),
-                        ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::tr1::bind(
-                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)),
-                        id, _1, eapi)),
-                value_for<n::on_pop>(std::tr1::bind(&pop_handler<DependencySpecTree>, std::tr1::ref(stack),
-                        ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::tr1::bind(
-                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), s)),
-                value_for<n::on_should_be_empty>(std::tr1::bind(&should_be_empty_handler<DependencySpecTree>, std::tr1::ref(stack), s)),
-                value_for<n::on_string>(std::tr1::bind(&package_or_block_dep_spec_string_handler<DependencySpecTree>, std::tr1::ref(stack),
-                        ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::tr1::bind(
-                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), _1, eapi, id)),
-                value_for<n::on_use>(std::tr1::bind(&use_handler<DependencySpecTree>, std::tr1::ref(stack), _1, env, id)),
-                value_for<n::on_use_under_any>(std::tr1::bind(&use_under_any_handler, s, eapi))
+                n::on_all() = std::tr1::bind(&any_all_handler<DependencySpecTree, AllDepSpec>, std::tr1::ref(stack)),
+                n::on_annotations() = std::tr1::bind(&set_annotations, std::tr1::ref(thing_to_annotate), _1),
+                n::on_any() = std::tr1::bind(&any_all_handler<DependencySpecTree, AnyDepSpec>, std::tr1::ref(stack)),
+                n::on_arrow() = std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2),
+                n::on_error() = std::tr1::bind(&error_handler, s, _1),
+                n::on_label() = std::tr1::bind(&dependency_label_handler<DependencySpecTree>,
+                    std::tr1::ref(stack),
+                    ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::tr1::bind(
+                            &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)),
+                    id, _1, eapi),
+                n::on_pop() = std::tr1::bind(&pop_handler<DependencySpecTree>, std::tr1::ref(stack),
+                    ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::tr1::bind(
+                            &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), s),
+                n::on_should_be_empty() = std::tr1::bind(&should_be_empty_handler<DependencySpecTree>, std::tr1::ref(stack), s),
+                n::on_string() = std::tr1::bind(&package_or_block_dep_spec_string_handler<DependencySpecTree>, std::tr1::ref(stack),
+                    ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::tr1::bind(
+                            &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), _1, eapi, id),
+                n::on_use() = std::tr1::bind(&use_handler<DependencySpecTree>, std::tr1::ref(stack), _1, env, id),
+                n::on_use_under_any() = std::tr1::bind(&use_under_any_handler, s, eapi)
             ));
 
     parse_elike_dependencies(s, callbacks);
@@ -368,27 +368,27 @@ paludis::erepository::parse_provide(const std::string & s,
     std::tr1::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::tr1::shared_ptr<ProvideSpecTree> top(make_shared_ptr(new ProvideSpecTree(spec)));
     stack.push_front(make_named_values<ParseStackTypes<ProvideSpecTree>::Item>(
-                value_for<n::item>(top->root()),
-                value_for<n::spec>(spec)
+                n::item() = top->root(),
+                n::spec() = spec
             ));
 
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
-                value_for<n::on_all>(std::tr1::bind(&any_all_handler<ProvideSpecTree, AllDepSpec>, std::tr1::ref(stack))),
-                value_for<n::on_annotations>(std::tr1::bind(&set_annotations, std::tr1::ref(thing_to_annotate), _1)),
-                value_for<n::on_any>(std::tr1::bind(&any_not_allowed_handler, s)),
-                value_for<n::on_arrow>(std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2)),
-                value_for<n::on_error>(std::tr1::bind(&error_handler, s, _1)),
-                value_for<n::on_label>(std::tr1::bind(&labels_not_allowed_handler, s, _1)),
-                value_for<n::on_pop>(std::tr1::bind(&pop_handler<ProvideSpecTree>, std::tr1::ref(stack),
-                        ParseStackTypes<ProvideSpecTree>::AnnotationsGoHere(std::tr1::bind(
-                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), s)),
-                value_for<n::on_should_be_empty>(std::tr1::bind(&should_be_empty_handler<ProvideSpecTree>, std::tr1::ref(stack), s)),
-                value_for<n::on_string>(std::tr1::bind(&package_dep_spec_string_handler<ProvideSpecTree>, std::tr1::ref(stack),
-                        ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::tr1::bind(
-                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), _1, eapi, id)),
-                value_for<n::on_use>(std::tr1::bind(&use_handler<ProvideSpecTree>, std::tr1::ref(stack), _1, env, id)),
-                value_for<n::on_use_under_any>(std::tr1::bind(&use_under_any_handler, s, eapi))
+                n::on_all() = std::tr1::bind(&any_all_handler<ProvideSpecTree, AllDepSpec>, std::tr1::ref(stack)),
+                n::on_annotations() = std::tr1::bind(&set_annotations, std::tr1::ref(thing_to_annotate), _1),
+                n::on_any() = std::tr1::bind(&any_not_allowed_handler, s),
+                n::on_arrow() = std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2),
+                n::on_error() = std::tr1::bind(&error_handler, s, _1),
+                n::on_label() = std::tr1::bind(&labels_not_allowed_handler, s, _1),
+                n::on_pop() = std::tr1::bind(&pop_handler<ProvideSpecTree>, std::tr1::ref(stack),
+                    ParseStackTypes<ProvideSpecTree>::AnnotationsGoHere(std::tr1::bind(
+                            &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), s),
+                n::on_should_be_empty() = std::tr1::bind(&should_be_empty_handler<ProvideSpecTree>, std::tr1::ref(stack), s),
+                n::on_string() = std::tr1::bind(&package_dep_spec_string_handler<ProvideSpecTree>, std::tr1::ref(stack),
+                    ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::tr1::bind(
+                            &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), _1, eapi, id),
+                n::on_use() = std::tr1::bind(&use_handler<ProvideSpecTree>, std::tr1::ref(stack), _1, env, id),
+                n::on_use_under_any() = std::tr1::bind(&use_under_any_handler, s, eapi)
             ));
 
     parse_elike_dependencies(s, callbacks);
@@ -407,31 +407,31 @@ paludis::erepository::parse_fetchable_uri(const std::string & s,
     std::tr1::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::tr1::shared_ptr<FetchableURISpecTree> top(make_shared_ptr(new FetchableURISpecTree(spec)));
     stack.push_front(make_named_values<ParseStackTypes<FetchableURISpecTree>::Item>(
-                value_for<n::item>(top->root()),
-                value_for<n::spec>(spec)
+                n::item() = top->root(),
+                n::spec() = spec
             ));
 
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
-                value_for<n::on_all>(std::tr1::bind(&any_all_handler<FetchableURISpecTree, AllDepSpec>, std::tr1::ref(stack))),
-                value_for<n::on_annotations>(std::tr1::bind(&set_annotations, std::tr1::ref(thing_to_annotate), _1)),
-                value_for<n::on_any>(std::tr1::bind(&any_not_allowed_handler, s)),
-                value_for<n::on_arrow>(std::tr1::bind(&arrow_handler<FetchableURISpecTree>, std::tr1::ref(stack),
-                        ParseStackTypes<FetchableURISpecTree>::AnnotationsGoHere(std::tr1::bind(
-                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), s, _1, _2, eapi)),
-                value_for<n::on_error>(std::tr1::bind(&error_handler, s, _1)),
-                value_for<n::on_label>(std::tr1::bind(&fetchable_label_handler<FetchableURISpecTree>, std::tr1::ref(stack),
-                        ParseStackTypes<FetchableURISpecTree>::AnnotationsGoHere(std::tr1::bind(
-                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), _1, eapi)),
-                value_for<n::on_pop>(std::tr1::bind(&pop_handler<FetchableURISpecTree>, std::tr1::ref(stack),
-                        ParseStackTypes<FetchableURISpecTree>::AnnotationsGoHere(std::tr1::bind(
-                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), s)),
-                value_for<n::on_should_be_empty>(std::tr1::bind(&should_be_empty_handler<FetchableURISpecTree>, std::tr1::ref(stack), s)),
-                value_for<n::on_string>(std::tr1::bind(&arrow_handler<FetchableURISpecTree>, std::tr1::ref(stack),
-                        ParseStackTypes<FetchableURISpecTree>::AnnotationsGoHere(std::tr1::bind(
-                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), s, _1, "", eapi)),
-                value_for<n::on_use>(std::tr1::bind(&use_handler<FetchableURISpecTree>, std::tr1::ref(stack), _1, env, id)),
-                value_for<n::on_use_under_any>(std::tr1::bind(&use_under_any_handler, s, eapi))
+                n::on_all() = std::tr1::bind(&any_all_handler<FetchableURISpecTree, AllDepSpec>, std::tr1::ref(stack)),
+                n::on_annotations() = std::tr1::bind(&set_annotations, std::tr1::ref(thing_to_annotate), _1),
+                n::on_any() = std::tr1::bind(&any_not_allowed_handler, s),
+                n::on_arrow() = std::tr1::bind(&arrow_handler<FetchableURISpecTree>, std::tr1::ref(stack),
+                    ParseStackTypes<FetchableURISpecTree>::AnnotationsGoHere(std::tr1::bind(
+                            &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), s, _1, _2, eapi),
+                n::on_error() = std::tr1::bind(&error_handler, s, _1),
+                n::on_label() = std::tr1::bind(&fetchable_label_handler<FetchableURISpecTree>, std::tr1::ref(stack),
+                    ParseStackTypes<FetchableURISpecTree>::AnnotationsGoHere(std::tr1::bind(
+                            &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), _1, eapi),
+                n::on_pop() = std::tr1::bind(&pop_handler<FetchableURISpecTree>, std::tr1::ref(stack),
+                    ParseStackTypes<FetchableURISpecTree>::AnnotationsGoHere(std::tr1::bind(
+                            &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), s),
+                n::on_should_be_empty() = std::tr1::bind(&should_be_empty_handler<FetchableURISpecTree>, std::tr1::ref(stack), s),
+                n::on_string() = std::tr1::bind(&arrow_handler<FetchableURISpecTree>, std::tr1::ref(stack),
+                    ParseStackTypes<FetchableURISpecTree>::AnnotationsGoHere(std::tr1::bind(
+                            &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), s, _1, "", eapi),
+                n::on_use() = std::tr1::bind(&use_handler<FetchableURISpecTree>, std::tr1::ref(stack), _1, env, id),
+                n::on_use_under_any() = std::tr1::bind(&use_under_any_handler, s, eapi)
             ));
 
     parse_elike_dependencies(s, callbacks);
@@ -450,27 +450,27 @@ paludis::erepository::parse_simple_uri(const std::string & s,
     std::tr1::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::tr1::shared_ptr<SimpleURISpecTree> top(make_shared_ptr(new SimpleURISpecTree(spec)));
     stack.push_front(make_named_values<ParseStackTypes<SimpleURISpecTree>::Item>(
-                value_for<n::item>(top->root()),
-                value_for<n::spec>(spec)
+                n::item() = top->root(),
+                n::spec() = spec
             ));
 
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
-                value_for<n::on_all>(std::tr1::bind(&any_all_handler<SimpleURISpecTree, AllDepSpec>, std::tr1::ref(stack))),
-                value_for<n::on_annotations>(std::tr1::bind(&set_annotations, std::tr1::ref(thing_to_annotate), _1)),
-                value_for<n::on_any>(std::tr1::bind(&any_not_allowed_handler, s)),
-                value_for<n::on_arrow>(std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2)),
-                value_for<n::on_error>(std::tr1::bind(&error_handler, s, _1)),
-                value_for<n::on_label>(std::tr1::bind(&labels_not_allowed_handler, s, _1)),
-                value_for<n::on_pop>(std::tr1::bind(&pop_handler<SimpleURISpecTree>, std::tr1::ref(stack),
-                        ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::tr1::bind(
-                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), s)),
-                value_for<n::on_should_be_empty>(std::tr1::bind(&should_be_empty_handler<SimpleURISpecTree>, std::tr1::ref(stack), s)),
-                value_for<n::on_string>(std::tr1::bind(&simple_uri_handler<SimpleURISpecTree>, std::tr1::ref(stack),
-                        ParseStackTypes<SimpleURISpecTree>::AnnotationsGoHere(std::tr1::bind(
-                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), _1)),
-                value_for<n::on_use>(std::tr1::bind(&use_handler<SimpleURISpecTree>, std::tr1::ref(stack), _1, env, id)),
-                value_for<n::on_use_under_any>(&do_nothing)
+                n::on_all() = std::tr1::bind(&any_all_handler<SimpleURISpecTree, AllDepSpec>, std::tr1::ref(stack)),
+                n::on_annotations() = std::tr1::bind(&set_annotations, std::tr1::ref(thing_to_annotate), _1),
+                n::on_any() = std::tr1::bind(&any_not_allowed_handler, s),
+                n::on_arrow() = std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2),
+                n::on_error() = std::tr1::bind(&error_handler, s, _1),
+                n::on_label() = std::tr1::bind(&labels_not_allowed_handler, s, _1),
+                n::on_pop() = std::tr1::bind(&pop_handler<SimpleURISpecTree>, std::tr1::ref(stack),
+                    ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::tr1::bind(
+                            &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), s),
+                n::on_should_be_empty() = std::tr1::bind(&should_be_empty_handler<SimpleURISpecTree>, std::tr1::ref(stack), s),
+                n::on_string() = std::tr1::bind(&simple_uri_handler<SimpleURISpecTree>, std::tr1::ref(stack),
+                    ParseStackTypes<SimpleURISpecTree>::AnnotationsGoHere(std::tr1::bind(
+                            &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), _1),
+                n::on_use() = std::tr1::bind(&use_handler<SimpleURISpecTree>, std::tr1::ref(stack), _1, env, id),
+                n::on_use_under_any() = &do_nothing
             ));
 
     parse_elike_dependencies(s, callbacks);
@@ -489,27 +489,27 @@ paludis::erepository::parse_license(const std::string & s,
     std::tr1::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::tr1::shared_ptr<LicenseSpecTree> top(make_shared_ptr(new LicenseSpecTree(spec)));
     stack.push_front(make_named_values<ParseStackTypes<LicenseSpecTree>::Item>(
-                value_for<n::item>(top->root()),
-                value_for<n::spec>(spec)
+                n::item() = top->root(),
+                n::spec() = spec
             ));
 
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
-                value_for<n::on_all>(std::tr1::bind(&any_all_handler<LicenseSpecTree, AllDepSpec>, std::tr1::ref(stack))),
-                value_for<n::on_annotations>(std::tr1::bind(&set_annotations, std::tr1::ref(thing_to_annotate), _1)),
-                value_for<n::on_any>(std::tr1::bind(&any_all_handler<LicenseSpecTree, AnyDepSpec>, std::tr1::ref(stack))),
-                value_for<n::on_arrow>(std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2)),
-                value_for<n::on_error>(std::tr1::bind(&error_handler, s, _1)),
-                value_for<n::on_label>(std::tr1::bind(&labels_not_allowed_handler, s, _1)),
-                value_for<n::on_pop>(std::tr1::bind(&pop_handler<LicenseSpecTree>, std::tr1::ref(stack),
-                        ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::tr1::bind(
-                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), s)),
-                value_for<n::on_should_be_empty>(std::tr1::bind(&should_be_empty_handler<LicenseSpecTree>, std::tr1::ref(stack), s)),
-                value_for<n::on_string>(std::tr1::bind(&license_handler<LicenseSpecTree>, std::tr1::ref(stack),
-                        ParseStackTypes<LicenseSpecTree>::AnnotationsGoHere(std::tr1::bind(
-                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), _1)),
-                value_for<n::on_use>(std::tr1::bind(&use_handler<LicenseSpecTree>, std::tr1::ref(stack), _1, env, id)),
-                value_for<n::on_use_under_any>(std::tr1::bind(&use_under_any_handler, s, eapi))
+                n::on_all() = std::tr1::bind(&any_all_handler<LicenseSpecTree, AllDepSpec>, std::tr1::ref(stack)),
+                n::on_annotations() = std::tr1::bind(&set_annotations, std::tr1::ref(thing_to_annotate), _1),
+                n::on_any() = std::tr1::bind(&any_all_handler<LicenseSpecTree, AnyDepSpec>, std::tr1::ref(stack)),
+                n::on_arrow() = std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2),
+                n::on_error() = std::tr1::bind(&error_handler, s, _1),
+                n::on_label() = std::tr1::bind(&labels_not_allowed_handler, s, _1),
+                n::on_pop() = std::tr1::bind(&pop_handler<LicenseSpecTree>, std::tr1::ref(stack),
+                    ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::tr1::bind(
+                            &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), s),
+                n::on_should_be_empty() = std::tr1::bind(&should_be_empty_handler<LicenseSpecTree>, std::tr1::ref(stack), s),
+                n::on_string() = std::tr1::bind(&license_handler<LicenseSpecTree>, std::tr1::ref(stack),
+                    ParseStackTypes<LicenseSpecTree>::AnnotationsGoHere(std::tr1::bind(
+                            &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), _1),
+                n::on_use() = std::tr1::bind(&use_handler<LicenseSpecTree>, std::tr1::ref(stack), _1, env, id),
+                n::on_use_under_any() = std::tr1::bind(&use_under_any_handler, s, eapi)
             ));
 
     parse_elike_dependencies(s, callbacks);
@@ -528,27 +528,27 @@ paludis::erepository::parse_plain_text(const std::string & s,
     std::tr1::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::tr1::shared_ptr<PlainTextSpecTree> top(make_shared_ptr(new PlainTextSpecTree(spec)));
     stack.push_front(make_named_values<ParseStackTypes<PlainTextSpecTree>::Item>(
-                value_for<n::item>(top->root()),
-                value_for<n::spec>(spec)
+                n::item() = top->root(),
+                n::spec() = spec
             ));
 
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
-                value_for<n::on_all>(std::tr1::bind(&any_all_handler<PlainTextSpecTree, AllDepSpec>, std::tr1::ref(stack))),
-                value_for<n::on_annotations>(std::tr1::bind(&set_annotations, std::tr1::ref(thing_to_annotate), _1)),
-                value_for<n::on_any>(std::tr1::bind(&any_not_allowed_handler, s)),
-                value_for<n::on_arrow>(std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2)),
-                value_for<n::on_error>(std::tr1::bind(&error_handler, s, _1)),
-                value_for<n::on_label>(std::tr1::bind(&labels_not_allowed_handler, s, _1)),
-                value_for<n::on_pop>(std::tr1::bind(&pop_handler<PlainTextSpecTree>, std::tr1::ref(stack),
+                n::on_all() = std::tr1::bind(&any_all_handler<PlainTextSpecTree, AllDepSpec>, std::tr1::ref(stack)),
+                n::on_annotations() = std::tr1::bind(&set_annotations, std::tr1::ref(thing_to_annotate), _1),
+                n::on_any() = std::tr1::bind(&any_not_allowed_handler, s),
+                n::on_arrow() = std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2),
+                n::on_error() = std::tr1::bind(&error_handler, s, _1),
+                n::on_label() = std::tr1::bind(&labels_not_allowed_handler, s, _1),
+                n::on_pop() = std::tr1::bind(&pop_handler<PlainTextSpecTree>, std::tr1::ref(stack),
                         ParseStackTypes<PlainTextSpecTree>::AnnotationsGoHere(std::tr1::bind(
-                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), s)),
-                value_for<n::on_should_be_empty>(std::tr1::bind(&should_be_empty_handler<PlainTextSpecTree>, std::tr1::ref(stack), s)),
-                value_for<n::on_string>(std::tr1::bind(&plain_text_handler<PlainTextSpecTree>, std::tr1::ref(stack),
+                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), s),
+                n::on_should_be_empty() = std::tr1::bind(&should_be_empty_handler<PlainTextSpecTree>, std::tr1::ref(stack), s),
+                n::on_string() = std::tr1::bind(&plain_text_handler<PlainTextSpecTree>, std::tr1::ref(stack),
                         ParseStackTypes<PlainTextSpecTree>::AnnotationsGoHere(std::tr1::bind(
-                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), _1)),
-                value_for<n::on_use>(std::tr1::bind(&use_handler<PlainTextSpecTree>, std::tr1::ref(stack), _1, env, id)),
-                value_for<n::on_use_under_any>(&do_nothing)
+                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), _1),
+                n::on_use() = std::tr1::bind(&use_handler<PlainTextSpecTree>, std::tr1::ref(stack), _1, env, id),
+                n::on_use_under_any() = &do_nothing
             ));
 
     parse_elike_dependencies(s, callbacks);
@@ -567,29 +567,29 @@ paludis::erepository::parse_myoptions(const std::string & s,
     std::tr1::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::tr1::shared_ptr<PlainTextSpecTree> top(make_shared_ptr(new PlainTextSpecTree(spec)));
     stack.push_front(make_named_values<ParseStackTypes<PlainTextSpecTree>::Item>(
-                value_for<n::item>(top->root()),
-                value_for<n::spec>(spec)
+                n::item() = top->root(),
+                n::spec() = spec
             ));
 
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
-                value_for<n::on_all>(std::tr1::bind(&any_all_handler<PlainTextSpecTree, AllDepSpec>, std::tr1::ref(stack))),
-                value_for<n::on_annotations>(std::tr1::bind(&set_annotations, std::tr1::ref(thing_to_annotate), _1)),
-                value_for<n::on_any>(std::tr1::bind(&any_not_allowed_handler, s)),
-                value_for<n::on_arrow>(std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2)),
-                value_for<n::on_error>(std::tr1::bind(&error_handler, s, _1)),
-                value_for<n::on_label>(std::tr1::bind(&plain_text_label_handler<PlainTextSpecTree>, std::tr1::ref(stack),
+                n::on_all() = std::tr1::bind(&any_all_handler<PlainTextSpecTree, AllDepSpec>, std::tr1::ref(stack)),
+                n::on_annotations() = std::tr1::bind(&set_annotations, std::tr1::ref(thing_to_annotate), _1),
+                n::on_any() = std::tr1::bind(&any_not_allowed_handler, s),
+                n::on_arrow() = std::tr1::bind(&arrows_not_allowed_handler, s, _1, _2),
+                n::on_error() = std::tr1::bind(&error_handler, s, _1),
+                n::on_label() = std::tr1::bind(&plain_text_label_handler<PlainTextSpecTree>, std::tr1::ref(stack),
                         ParseStackTypes<PlainTextSpecTree>::AnnotationsGoHere(std::tr1::bind(
-                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), _1)),
-                value_for<n::on_pop>(std::tr1::bind(&pop_handler<PlainTextSpecTree>, std::tr1::ref(stack),
+                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), _1),
+                n::on_pop() = std::tr1::bind(&pop_handler<PlainTextSpecTree>, std::tr1::ref(stack),
                         ParseStackTypes<PlainTextSpecTree>::AnnotationsGoHere(std::tr1::bind(
-                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), s)),
-                value_for<n::on_should_be_empty>(std::tr1::bind(&should_be_empty_handler<PlainTextSpecTree>, std::tr1::ref(stack), s)),
-                value_for<n::on_string>(std::tr1::bind(&plain_text_handler<PlainTextSpecTree>, std::tr1::ref(stack),
+                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), s),
+                n::on_should_be_empty() = std::tr1::bind(&should_be_empty_handler<PlainTextSpecTree>, std::tr1::ref(stack), s),
+                n::on_string() = std::tr1::bind(&plain_text_handler<PlainTextSpecTree>, std::tr1::ref(stack),
                         ParseStackTypes<PlainTextSpecTree>::AnnotationsGoHere(std::tr1::bind(
-                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), _1)),
-                value_for<n::on_use>(std::tr1::bind(&use_handler<PlainTextSpecTree>, std::tr1::ref(stack), _1, env, id)),
-                value_for<n::on_use_under_any>(&do_nothing)
+                                &set_thing_to_annotate, std::tr1::ref(thing_to_annotate), _1)), _1),
+                n::on_use() = std::tr1::bind(&use_handler<PlainTextSpecTree>, std::tr1::ref(stack), _1, env, id),
+                n::on_use_under_any() = &do_nothing
             ));
 
     parse_elike_dependencies(s, callbacks);

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  * Copyright (c) 2007 Piotr Jaroszyński
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -70,9 +70,9 @@ namespace paludis
 
 VDBUnmerger::VDBUnmerger(const VDBUnmergerOptions & o) :
     Unmerger(make_named_values<UnmergerOptions>(
-                value_for<n::environment>(o.environment()),
-                value_for<n::ignore>(o.ignore()),
-                value_for<n::root>(o.root())
+                n::environment() = o.environment(),
+                n::ignore() = o.ignore(),
+                n::root() = o.root()
             )),
     PrivateImplementationPattern<VDBUnmerger>(new Implementation<VDBUnmerger>(o)),
     _imp(PrivateImplementationPattern<VDBUnmerger>::_imp.get())

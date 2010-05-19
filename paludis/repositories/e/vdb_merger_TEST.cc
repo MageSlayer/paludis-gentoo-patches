@@ -80,17 +80,17 @@ namespace
                 root_dir(FSEntry::cwd() / "vdb_merger_TEST_dir" / what / "root"),
                 target(what),
                 merger(make_named_values<VDBMergerParams>(
-                            value_for<n::config_protect>("/protected_file /protected_dir"),
-                            value_for<n::config_protect_mask>("/protected_dir/unprotected_file /protected_dir/unprotected_dir"),
-                            value_for<n::contents_file>(FSEntry::cwd() / "vdb_merger_TEST_dir/CONTENTS" / what),
-                            value_for<n::environment>(&env),
-                            value_for<n::fix_mtimes_before>(Timestamp(0, 0)),
-                            value_for<n::image>(FSEntry::cwd() / "vdb_merger_TEST_dir" / what / "image"),
-                            value_for<n::merged_entries>(make_shared_ptr(new FSEntrySet)),
-                            value_for<n::options>(MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs),
-                            value_for<n::output_manager>(make_shared_ptr(new StandardOutputManager)),
-                            value_for<n::package_id>(std::tr1::shared_ptr<PackageID>()),
-                            value_for<n::root>(root_dir)
+                            n::config_protect() = "/protected_file /protected_dir",
+                            n::config_protect_mask() = "/protected_dir/unprotected_file /protected_dir/unprotected_dir",
+                            n::contents_file() = FSEntry::cwd() / "vdb_merger_TEST_dir/CONTENTS" / what,
+                            n::environment() = &env,
+                            n::fix_mtimes_before() = Timestamp(0, 0),
+                            n::image() = FSEntry::cwd() / "vdb_merger_TEST_dir" / what / "image",
+                            n::merged_entries() = make_shared_ptr(new FSEntrySet),
+                            n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
+                            n::output_manager() = make_shared_ptr(new StandardOutputManager),
+                            n::package_id() = std::tr1::shared_ptr<PackageID>(),
+                            n::root() = root_dir
                         ))
             {
             }

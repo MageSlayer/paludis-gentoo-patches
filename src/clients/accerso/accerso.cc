@@ -116,16 +116,16 @@ main(int argc, char *argv[])
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("distdir", CommandLine::get_instance()->a_download_directory.argument());
             NoConfigEnvironment env(make_named_values<no_config_environment::Params>(
-                    value_for<n::accept_unstable>(true),
-                    value_for<n::disable_metadata_cache>(false),
-                    value_for<n::extra_accept_keywords>(""),
-                    value_for<n::extra_params>(keys),
-                    value_for<n::extra_repository_dirs>(extra_repository_dirs),
-                    value_for<n::master_repository_name>(CommandLine::get_instance()->a_master_repository_name.argument()),
-                    value_for<n::profiles_if_not_auto>(""),
-                    value_for<n::repository_dir>(CommandLine::get_instance()->a_repository_directory.argument()),
-                    value_for<n::repository_type>(no_config_environment::ncer_ebuild),
-                    value_for<n::write_cache>(CommandLine::get_instance()->a_write_cache_dir.argument())
+                    n::accept_unstable() = true,
+                    n::disable_metadata_cache() = false,
+                    n::extra_accept_keywords() = "",
+                    n::extra_params() = keys,
+                    n::extra_repository_dirs() = extra_repository_dirs,
+                    n::master_repository_name() = CommandLine::get_instance()->a_master_repository_name.argument(),
+                    n::profiles_if_not_auto() = "",
+                    n::repository_dir() = CommandLine::get_instance()->a_repository_directory.argument(),
+                    n::repository_type() = no_config_environment::ncer_ebuild,
+                    n::write_cache() = CommandLine::get_instance()->a_write_cache_dir.argument()
                     ));
 
             std::tr1::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(
@@ -144,14 +144,14 @@ main(int argc, char *argv[])
 
                 OutputManagerFromEnvironment output_manager_holder(&env, *i, oe_exclusive, ClientOutputFeatures());
                 FetchAction a(make_named_values<FetchActionOptions>(
-                            value_for<n::errors>(make_shared_ptr(new Sequence<FetchActionFailure>)),
-                            value_for<n::exclude_unmirrorable>(true),
-                            value_for<n::fetch_parts>(FetchParts() + fp_regulars + fp_unneeded),
-                            value_for<n::ignore_not_in_manifest>(false),
-                            value_for<n::ignore_unfetched>(false),
-                            value_for<n::make_output_manager>(std::tr1::ref(output_manager_holder)),
-                            value_for<n::safe_resume>(true),
-                            value_for<n::want_phase>(std::tr1::bind(return_literal_function(wp_yes)))
+                            n::errors() = make_shared_ptr(new Sequence<FetchActionFailure>),
+                            n::exclude_unmirrorable() = true,
+                            n::fetch_parts() = FetchParts() + fp_regulars + fp_unneeded,
+                            n::ignore_not_in_manifest() = false,
+                            n::ignore_unfetched() = false,
+                            n::make_output_manager() = std::tr1::ref(output_manager_holder),
+                            n::safe_resume() = true,
+                            n::want_phase() = std::tr1::bind(return_literal_function(wp_yes))
                             ));
 
                 try

@@ -69,15 +69,15 @@ namespace paludis
 
 NDBAMMerger::NDBAMMerger(const NDBAMMergerParams & p) :
     Merger(make_named_values<MergerParams>(
-                value_for<n::environment>(p.environment()),
-                value_for<n::fix_mtimes_before>(p.fix_mtimes_before()),
-                value_for<n::get_new_ids_or_minus_one>(p.get_new_ids_or_minus_one()),
-                value_for<n::image>(p.image()),
-                value_for<n::install_under>(p.install_under()),
-                value_for<n::merged_entries>(p.merged_entries()),
-                value_for<n::no_chown>(! getenv_with_default("PALUDIS_NO_CHOWN", "").empty()),
-                value_for<n::options>(p.options()),
-                value_for<n::root>(p.root())
+                n::environment() = p.environment(),
+                n::fix_mtimes_before() = p.fix_mtimes_before(),
+                n::get_new_ids_or_minus_one() = p.get_new_ids_or_minus_one(),
+                n::image() = p.image(),
+                n::install_under() = p.install_under(),
+                n::merged_entries() = p.merged_entries(),
+                n::no_chown() = ! getenv_with_default("PALUDIS_NO_CHOWN", "").empty(),
+                n::options() = p.options(),
+                n::root() = p.root()
                 )),
     PrivateImplementationPattern<NDBAMMerger>(new Implementation<NDBAMMerger>(p)),
     _imp(PrivateImplementationPattern<NDBAMMerger>::_imp)

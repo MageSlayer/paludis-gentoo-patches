@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -134,18 +134,18 @@ UnwrittenRepositoryStore::_populate_one(const Environment * const env, const FSE
         }
 
         ids->push_back(make_shared_ptr(new UnwrittenID(make_named_values<UnwrittenIDParams>(
-                            value_for<n::added_by>((*i).added_by()),
-                            value_for<n::bug_ids>((*i).bug_ids()),
-                            value_for<n::comment>((*i).comment()),
-                            value_for<n::description>((*i).description()),
-                            value_for<n::environment>(env),
-                            value_for<n::homepage>((*i).homepage()),
-                            value_for<n::mask>(mask),
-                            value_for<n::name>((*i).name()),
-                            value_for<n::remote_ids>((*i).remote_ids()),
-                            value_for<n::repository>(_imp->repo),
-                            value_for<n::slot>((*i).slot()),
-                            value_for<n::version>((*i).version())
+                            n::added_by() = (*i).added_by(),
+                            n::bug_ids() = (*i).bug_ids(),
+                            n::comment() = (*i).comment(),
+                            n::description() = (*i).description(),
+                            n::environment() = env,
+                            n::homepage() = (*i).homepage(),
+                            n::mask() = mask,
+                            n::name() = (*i).name(),
+                            n::remote_ids() = (*i).remote_ids(),
+                            n::repository() = _imp->repo,
+                            n::slot() = (*i).slot(),
+                            n::version() = (*i).version()
                         ))));
 
         old_name = (*i).name();
