@@ -25,7 +25,7 @@ EXTRA_DIST = \
 	exndbam.html.part \
 	installed_accounts.html.part \
 	installed_unpackaged.html.part \
-	repository.html \
+	repository.html.part \
 	unavailable.html.part \
 	unwritten.html.part \
 	vdb.html.part
