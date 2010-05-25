@@ -20,7 +20,7 @@ GIT_PULL_OPTIONS=( )
 GIT_FETCH_OPTIONS=( )
 
 GIT_BRANCH=
-GIT_USE_RESET=false
+GIT_USE_RESET=true
 
 while [[ $# -gt 0 ]]; do
     case "${1}" in
@@ -42,7 +42,12 @@ while [[ $# -gt 0 ]]; do
             ;;
 
         --reset)
+            ewarn "--reset is now the default for git syncers. It should no longer be specified manually."
             GIT_USE_RESET=true
+            ;;
+
+        --no-reset)
+            GIT_USE_RESET=false
             ;;
 
         --help)
@@ -64,9 +69,9 @@ while [[ $# -gt 0 ]]; do
             echo "    Options:"
             echo "        --branch=BRANCH                 Specify the branch to use"
             echo "        --git-clone-option=OPTION       Pass OPTION to git clone"
-            echo "        --git-pull-option=OPTION        Pass OPTION to git pull"
-            echo "        --git-fetch-option=OPTION       Pass OPTION to git fetch (if --reset)"
-            echo "        --reset                         Use git fetch and git reset --hard instead of pull"
+            echo "        --git-pull-option=OPTION        Pass OPTION to git pull (if --no-reset)"
+            echo "        --git-fetch-option=OPTION       Pass OPTION to git fetch (unless --no-reset)"
+            echo "        --no-reset                      Use git pull instead of git fetch and git reset --hard"
             exit 0
             ;;
 

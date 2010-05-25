@@ -4,6 +4,13 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.48.0:
+    * --reset is now the default for git syncers. If Paludis is used to sync a
+      git repository with modifications, those modifications will be lost. Use
+      --no-reset to stay with the old (git pull) behaviour, but note that it is
+      probably better to change your workflow such that Paludis never directly
+      works with any repository it does not manage.
+
 0.46.0:
     * We can now read environment.bz2 files from VDB created by newer Portage
       versions.
