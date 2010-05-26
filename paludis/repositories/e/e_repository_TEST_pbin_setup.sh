@@ -1,0 +1,155 @@
+#!/usr/bin/env bash
+# vim: set ft=sh sw=4 sts=4 et :
+
+mkdir e_repository_TEST_pbin_dir || exit 1
+cd e_repository_TEST_pbin_dir || exit 1
+
+mkdir -p root/etc
+
+mkdir -p vdb
+touch vdb/THISISTHEVDB
+
+mkdir -p build
+ln -s build symlinked_build
+
+mkdir -p distdir
+
+for e in 0 1 2 3 4 ; do
+    mkdir -p repo${e}/{profiles/profile,metadata,eclass} || exit 1
+    cd repo${e} || exit 1
+    echo "repo${e}" >> profiles/repo_name || exit 1
+    echo "cat" >> profiles/categories || exit 1
+    cat <<END > profiles/profile/virtuals
+END
+    cat <<END > profiles/profile/make.defaults
+ARCH="cheese"
+USERLAND="GNU"
+KERNEL="linux"
+LIBC="glibc"
+CHOST="i286-badger-linux-gnu"
+LINGUAS="enabled_en enabled_en_GB enabled_en_GB@UTF-8"
+USE_EXPAND="LINGUAS USERLAND"
+USE_EXPAND_UNPREFIXED="ARCH"
+USE_EXPAND_IMPLICIT="USERLAND ARCH"
+USE_EXPAND_VALUES_USERLAND="GNU"
+USE_EXPAND_VALUES_ARCH="cheese otherarch"
+IUSE_IMPLICIT="build"
+END
+    mkdir -p "cat/simple"
+    cat <<END > cat/simple/simple-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="${e}"
+S="\${WORKDIR}"
+
+src_unpack() {
+    touch installed-${e}
+}
+
+src_install() {
+    insinto /
+    doins installed-${e}
+}
+END
+
+    cd ..
+
+    mkdir -p binrepo${e}/{profiles/profile,metadata,eclass} || exit 1
+    cd binrepo${e} || exit 1
+    echo "binrepo${e}" >> profiles/repo_name || exit 1
+    echo > profiles/categories || exit 1
+    cat <<END > profiles/profile/virtuals
+END
+    cat <<END > profiles/profile/make.defaults
+ARCH="cheese"
+USERLAND="GNU"
+KERNEL="linux"
+LIBC="glibc"
+CHOST="i286-badger-linux-gnu"
+LINGUAS="enabled_en enabled_en_GB enabled_en_GB@UTF-8"
+USE_EXPAND="LINGUAS USERLAND"
+USE_EXPAND_UNPREFIXED="ARCH"
+USE_EXPAND_IMPLICIT="USERLAND ARCH"
+USE_EXPAND_VALUES_USERLAND="GNU"
+USE_EXPAND_VALUES_ARCH="cheese otherarch"
+IUSE_IMPLICIT="build"
+END
+
+    cd ..
+done
+
+for e in exheres-0 ; do
+    mkdir -p repo${e}/{profiles/profile,metadata,eclass} || exit 1
+    cd repo${e} || exit 1
+    echo "repo${e}" >> profiles/repo_name || exit 1
+    echo "cat" >> profiles/categories || exit 1
+    cat <<END > profiles/profile/virtuals
+END
+    cat <<END > profiles/profile/make.defaults
+ARCH="cheese"
+USERLAND="GNU"
+KERNEL="linux"
+LIBC="glibc"
+CHOST="i286-badger-linux-gnu"
+LINGUAS="enabled_en enabled_en_GB enabled_en_GB@UTF-8"
+USE_EXPAND="LINGUAS USERLAND"
+USE_EXPAND_UNPREFIXED="ARCH"
+USE_EXPAND_IMPLICIT="USERLAND ARCH"
+USE_EXPAND_VALUES_USERLAND="GNU"
+USE_EXPAND_VALUES_ARCH="cheese otherarch"
+IUSE_IMPLICIT="build"
+END
+    mkdir -p "cat/simple"
+    cat <<END > cat/simple/simple-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS=""
+LICENCES="GPL-2"
+PLATFORMS="test"
+EAPI="${e}"
+WORK="\${WORKBASE}"
+
+src_unpack() {
+    touch installed-${e}
+}
+
+src_install() {
+    insinto /
+    doins installed-${e}
+}
+END
+    cd ..
+
+    mkdir -p binrepo${e}/{profiles/profile,metadata,eclass} || exit 1
+    cd binrepo${e} || exit 1
+    echo "binrepo${e}" >> profiles/repo_name || exit 1
+    echo > profiles/categories || exit 1
+    cat <<END > profiles/profile/virtuals
+END
+    cat <<END > profiles/profile/make.defaults
+ARCH="cheese"
+USERLAND="GNU"
+KERNEL="linux"
+LIBC="glibc"
+CHOST="i286-badger-linux-gnu"
+LINGUAS="enabled_en enabled_en_GB enabled_en_GB@UTF-8"
+USE_EXPAND="LINGUAS USERLAND"
+USE_EXPAND_UNPREFIXED="ARCH"
+USE_EXPAND_IMPLICIT="USERLAND ARCH"
+USE_EXPAND_VALUES_USERLAND="GNU"
+USE_EXPAND_VALUES_ARCH="cheese otherarch"
+IUSE_IMPLICIT="build"
+END
+
+    cd ..
+done
+
+cd ..
+

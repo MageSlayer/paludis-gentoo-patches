@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -58,19 +58,41 @@ declare -r EBUILD_KILL_PID
 
 ebuild_load_module()
 {
+    local older= t= d= save_excl= excl_v=
+    if [[ "${1}" == "--older" ]] ; then
+        shift
+        older=true
+        excl_v="EBUILD_MODULES_DIRS_EXCLUDE_${1}"
+        save_excl="${!excl_v}"
+    fi
+
     for d in ${EBUILD_MODULES_DIRS}; do
+        local dx= x=
+        if [[ -n "${older}" ]] ; then
+            for dx in ${!excl_v} ; do
+                [[ "${dx}" == "${d}" ]] && x=true
+            done
+        fi
+        [[ -n "${x}" ]] && continue
+
+        [[ -n "${older}" ]] && export "${excl_v}"="${!excl_v} ${d}"
         if [[ -f "${d}/${1}.bash" ]]; then
             if ! source "${d}/${1}.bash"; then
                 type die &>/dev/null && eval die "\"Error loading module \${1}\""
                 echo "Error loading module ${1}" 1>&2
-                exit 123
+                exit 124
             fi
             return
+        else
+            t="${t:+${t}, }${d}"
         fi
     done
-    type die &>/dev/null && eval die "\"Couldn't find module \${1}\""
-    echo "Couldn't find module ${1}" 1>&2
-    exit 123
+
+    [[ -n "${older}" ]] && export "${excl_v}"="${save_excl}"
+
+    type die &>/dev/null && eval die "\"Couldn't find module \${1} (looked in \${t})\""
+    echo "Couldn't find module ${1} (looked in ${t})" 1>&2
+    exit 125
 }
 
 ebuild_load_module die_functions
