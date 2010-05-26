@@ -157,7 +157,7 @@ ebuild_load_module()
             if ! source "${d}/${1}.bash"; then
                 type die &>/dev/null && eval die "\"Error loading module \${1}\""
                 echo "Error loading module ${1}" 1>&2
-                exit 123
+                exit 124
             fi
             return
         else
@@ -169,7 +169,7 @@ ebuild_load_module()
 
     type die &>/dev/null && eval die "\"Couldn't find module \${1} (looked in \${t})\""
     echo "Couldn't find module ${1} (looked in ${t})" 1>&2
-    exit 123
+    exit 125
 }
 
 ebuild_load_module pipe_functions
@@ -444,7 +444,7 @@ ebuild_load_em_up_dan()
 
     if [[ -e ${ROOT}/etc/profile.env ]] && ! source "${ROOT}"/etc/profile.env; then
         echo "error sourcing ${ROOT}/etc/profile.env" >&2
-        exit 123
+        exit 126
     fi
     ebuild_sanitise_envvars
 

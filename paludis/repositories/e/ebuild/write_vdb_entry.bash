@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -80,7 +80,7 @@ ebuild_load_module()
             if ! source "${d}/${1}.bash"; then
                 type die &>/dev/null && eval die "\"Error loading module \${1}\""
                 echo "Error loading module ${1}" 1>&2
-                exit 123
+                exit 124
             fi
             return
         else
@@ -92,7 +92,7 @@ ebuild_load_module()
 
     type die &>/dev/null && eval die "\"Couldn't find module \${1} (looked in \${t})\""
     echo "Couldn't find module ${1} (looked in ${t})" 1>&2
-    exit 123
+    exit 125
 }
 
 ebuild_load_module die_functions
