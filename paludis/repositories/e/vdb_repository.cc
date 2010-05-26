@@ -966,6 +966,8 @@ VDBRepository::merge(const MergeParams & m)
     if (is_replace)
     {
         /* hack: before we nuke its vdb dir, preload CONTENTS */
+        if (! is_replace->contents_key())
+            throw InternalError(PALUDIS_HERE, "No contents key in " + stringify(*is_replace) + ". How did that happen?");
         is_replace->contents_key()->value();
 
         FSEntry old_vdb_dir(_imp->params.location());
