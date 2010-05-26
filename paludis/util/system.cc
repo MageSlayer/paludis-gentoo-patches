@@ -968,13 +968,6 @@ paludis::run_command(const Command & cmd)
                 }
             }
 
-            if (! pipe_command_buffer.empty())
-                Log::get_instance()->message("util.system.pipe_command_buffer", ll_debug, lc_context) <<
-                    "pipe_command_buffer is '" << pipe_command_buffer << "'";
-            if (! internal_command_buffer.empty())
-                Log::get_instance()->message("util.system.internal_command_buffer", ll_debug, lc_context) <<
-                    "internal_command_buffer is '" << internal_command_buffer << "'";
-
             while (! pipe_command_buffer.empty())
             {
                 std::string::size_type n_p(pipe_command_buffer.find('\0'));
