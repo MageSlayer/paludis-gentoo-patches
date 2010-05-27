@@ -12,9 +12,6 @@ define(`testscriptlist', `')dnl
 define(`selist', `')dnl
 define(`secleanlist', `')dnl
 define(`seheaderlist', `')dnl
-define(`srlist', `')dnl
-define(`srcleanlist', `')dnl
-define(`srheaderlist', `')dnl
 define(`addtest', `define(`testlist', testlist `$1_TEST')dnl
 $1_TEST_SOURCES = $1_TEST.cc
 $1_TEST_LDADD = \
@@ -29,16 +26,6 @@ define(`addfwd', `define(`filelist', filelist `$1-fwd.hh')define(`headerlist', h
 define(`addhhx', `define(`filelist', filelist `$1.hh')')dnl
 define(`addcc', `define(`filelist', filelist `$1.cc')')dnl
 define(`addimpl', `define(`filelist', filelist `$1-impl.hh')define(`headerlist', headerlist `$1-impl.hh')')dnl
-define(`addsr', `define(`srlist', srlist `$1.sr')dnl
-define(`srcleanlist', srcleanlist `$1-sr.hh $1-sr.cc')dnl
-define(`srheaderlist', srheaderlist `$1-sr.hh')dnl
-$1-sr.hh : $1.sr $(top_srcdir)/misc/make_sr.bash
-	if ! $(top_srcdir)/misc/make_sr.bash --header $`'(srcdir)/$1.sr > $`'@ ; then rm -f $`'@ ; exit 1 ; fi
-
-$1-sr.cc : $1.sr $(top_srcdir)/misc/make_sr.bash
-	if ! $(top_srcdir)/misc/make_sr.bash --source $`'(srcdir)/$1.sr > $`'@ ; then rm -f $`'@ ; exit 1 ; fi
-
-')dnl
 define(`addse', `define(`selist', selist `$1.se')dnl
 define(`secleanlist', secleanlist `$1-se.hh $1-se.cc')dnl
 define(`seheaderlist', seheaderlist `$1-se.hh')dnl
@@ -55,7 +42,6 @@ ifelse(`$2', `fwd', `addfwd(`$1')', `')dnl
 ifelse(`$2', `hhx', `addhhx(`$1')', `')dnl
 ifelse(`$2', `cc', `addcc(`$1')', `')dnl
 ifelse(`$2', `impl', `addimpl(`$1')', `')dnl
-ifelse(`$2', `sr', `addsr(`$1')', `')dnl
 ifelse(`$2', `se', `addse(`$1')', `')dnl
 ifelse(`$2', `test', `addtest(`$1')', `')dnl
 ifelse(`$2', `testscript', `addtestscript(`$1')', `')')dnl
@@ -68,12 +54,12 @@ include(`paludis/util/files.m4')
 
 MAINTAINERCLEANFILES += Makefile.am paludis.hh \
 	hashed_containers.hh util.hh echo_functions.bash
-DISTCLEANFILES = srcleanlist secleanlist
-BUILT_SOURCES = srcleanlist secleanlist
+DISTCLEANFILES = secleanlist
+BUILT_SOURCES = secleanlist
 DEFS=\
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\"
-EXTRA_DIST = util.hh.m4 Makefile.am.m4 files.m4 srlist srcleanlist selist secleanlist \
+EXTRA_DIST = util.hh.m4 Makefile.am.m4 files.m4 selist secleanlist \
 	testscriptlist \
 	test_extras.cc \
 	echo_functions.bash.in
@@ -95,7 +81,7 @@ system_TEST_become_child_LDADD = \
 lib_LTLIBRARIES = libpaludisutil_@PALUDIS_PC_SLOT@.la
 
 paludis_util_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/util/
-paludis_util_include_HEADERS = headerlist srheaderlist seheaderlist
+paludis_util_include_HEADERS = headerlist seheaderlist
 
 Makefile.am : Makefile.am.m4 files.m4
 	$(top_srcdir)/misc/do_m4.bash Makefile.am

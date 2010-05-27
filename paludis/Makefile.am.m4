@@ -11,9 +11,6 @@ define(`headerlist', `')dnl
 define(`selist', `')dnl
 define(`secleanlist', `')dnl
 define(`seheaderlist', `')dnl
-define(`srlist', `')dnl
-define(`srcleanlist', `')dnl
-define(`srheaderlist', `')dnl
 define(`testscriptlist', `')dnl
 define(`addtest', `define(`testlist', testlist `$1_TEST')dnl
 $1_TEST_SOURCES = $1_TEST.cc
@@ -31,16 +28,6 @@ define(`addfwd', `define(`filelist', filelist `$1-fwd.hh')define(`headerlist', h
 define(`addhhx', `define(`filelist', filelist `$1.hh')')dnl
 define(`addcc', `define(`filelist', filelist `$1.cc')')dnl
 define(`addimpl', `define(`filelist', filelist `$1-impl.hh')define(`headerlist', headerlist `$1-impl.hh')')dnl
-define(`addsr', `define(`srlist', srlist `$1.sr')dnl
-define(`srcleanlist', srcleanlist `$1-sr.hh $1-sr.cc')dnl
-define(`srheaderlist', srheaderlist `$1-sr.hh')dnl
-$1-sr.hh : $1.sr $(top_srcdir)/misc/make_sr.bash
-	if ! $(top_srcdir)/misc/make_sr.bash --header $`'(srcdir)/$1.sr > $`'@ ; then rm -f $`'@ ; exit 1 ; fi
-
-$1-sr.cc : $1.sr $(top_srcdir)/misc/make_sr.bash
-	if ! $(top_srcdir)/misc/make_sr.bash --source $`'(srcdir)/$1.sr > $`'@ ; then rm -f $`'@ ; exit 1 ; fi
-
-')dnl
 define(`addse', `define(`selist', selist `$1.se')dnl
 define(`secleanlist', secleanlist `$1-se.hh $1-se.cc')dnl
 define(`seheaderlist', seheaderlist `$1-se.hh')dnl
@@ -56,7 +43,6 @@ ifelse(`$2', `hh', `addhh(`$1')', `')dnl
 ifelse(`$2', `fwd', `addfwd(`$1')', `')dnl
 ifelse(`$2', `hhx', `addhhx(`$1')', `')dnl
 ifelse(`$2', `cc', `addcc(`$1')', `')dnl
-ifelse(`$2', `sr', `addsr(`$1')', `')dnl
 ifelse(`$2', `se', `addse(`$1')', `')dnl
 ifelse(`$2', `impl', `addimpl(`$1')', `')dnl
 ifelse(`$2', `test', `addtest(`$1')', `')dnl
@@ -69,7 +55,7 @@ AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@ @
 include(`paludis/files.m4')
 
 MAINTAINERCLEANFILES += Makefile.am about.hh paludis.hh
-DISTCLEANFILES = srcleanlist secleanlist
+DISTCLEANFILES = secleanlist
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
@@ -77,11 +63,11 @@ DEFS= \
 	-DLIBDIR=\"$(libdir)\" \
 	-DPYTHONINSTALLDIR=\"$(PYTHON_INSTALL_DIR)\"
 EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
-	testscriptlist srlist srcleanlist selist secleanlist \
+	testscriptlist selist secleanlist \
 	hooker.bash \
 	stripper_TEST_binary.cc
 SUBDIRS = distributions fetchers syncers util selinux repositories environments . args resolver
-BUILT_SOURCES = srcleanlist secleanlist
+BUILT_SOURCES = secleanlist
 
 libpaludis_@PALUDIS_PC_SLOT@_la_SOURCES = filelist
 libpaludis_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 $(PTHREAD_LIBS)
@@ -178,7 +164,7 @@ lib_LTLIBRARIES += libpaludispythonhooks_@PALUDIS_PC_SLOT@.la
 endif
 
 paludis_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/
-paludis_include_HEADERS = headerlist srheaderlist seheaderlist
+paludis_include_HEADERS = headerlist seheaderlist
 
 Makefile.am : Makefile.am.m4 files.m4
 	$(top_srcdir)/misc/do_m4.bash Makefile.am
