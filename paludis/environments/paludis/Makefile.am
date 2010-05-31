@@ -26,7 +26,9 @@ libpaludispaludisenvironment_la_SOURCES = \
 shareenvpaludisdir = $(datarootdir)/paludis/environments/paludis/
 
 dist_shareenvpaludis_DATA = \
-	default_output.conf \
+	default_output.conf
+
+dist_noinst_DATA = \
 	tests_output.conf
 
 libenvdir = $(libdir)/paludis/environments
