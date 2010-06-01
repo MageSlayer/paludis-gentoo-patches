@@ -799,6 +799,34 @@ namespace
         cout << "-   " << job_name << " " << *id << endl;
     }
 
+    struct NotFixableMask
+    {
+        bool visit(const UserMask &) const
+        {
+            return false;
+        }
+
+        bool visit(const UnacceptedMask &) const
+        {
+            return false;
+        }
+
+        bool visit(const RepositoryMask &) const
+        {
+            return false;
+        }
+
+        bool visit(const UnsupportedMask &) const
+        {
+            return true;
+        }
+
+        bool visit(const AssociationMask &) const
+        {
+            return true;
+        }
+    };
+
     void display_unable_to_make_decision(
             const std::tr1::shared_ptr<Environment> & env,
             const std::tr1::shared_ptr<const Resolution> & resolution,
@@ -820,7 +848,22 @@ namespace
                 u_end(d.unsuitable_candidates()->end()) ;
                 u != u_end ; ++u)
         {
-            cout << "      * " << *u->package_id() << endl;
+            std::string colour;
+            if (! u->unmet_constraints()->empty())
+                colour = c::red();
+            else if (u->package_id()->masked())
+            {
+                NotFixableMask is_not_fixable_mask;
+                if (indirect_iterator(u->package_id()->end_masks()) == std::find_if(
+                            indirect_iterator(u->package_id()->begin_masks()),
+                            indirect_iterator(u->package_id()->end_masks()),
+                            accept_visitor_returning<bool>(is_not_fixable_mask)))
+                    colour = c::bold_red();
+                else
+                    colour = c::red();
+            }
+
+            cout << "      * " << colour << *u->package_id() << c::normal() << endl;
             for (PackageID::MasksConstIterator m(u->package_id()->begin_masks()),
                     m_end(u->package_id()->end_masks()) ;
                     m != m_end ; ++m)
