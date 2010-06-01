@@ -44,7 +44,7 @@ namespace paludis
             public CanFormat<NamedSetDepSpec>,
             public CanFormat<PlainTextLabelDepSpec>,
             public CanFormat<ChoiceValue>,
-            public CanFormat<paludis::FSEntry>,
+            public CanFormat<FSEntry>,
             public CanSpace
         {
             private:
@@ -53,13 +53,13 @@ namespace paludis
             public:
                 ColourFormatter(const int initial_indent);
 
-                std::string format(const paludis::ChoiceValue &, const paludis::format::Plain &) const;
-                std::string format(const paludis::ChoiceValue &, const paludis::format::Enabled &) const;
-                std::string format(const paludis::ChoiceValue &, const paludis::format::Disabled &) const;
-                std::string format(const paludis::ChoiceValue &, const paludis::format::Forced &) const;
-                std::string format(const paludis::ChoiceValue &, const paludis::format::Masked &) const;
-                std::string decorate(const paludis::ChoiceValue &, const std::string &, const paludis::format::Added &) const;
-                std::string decorate(const paludis::ChoiceValue &, const std::string &, const paludis::format::Changed &) const;
+                std::string format(const ChoiceValue &, const format::Plain &) const;
+                std::string format(const ChoiceValue &, const format::Enabled &) const;
+                std::string format(const ChoiceValue &, const format::Disabled &) const;
+                std::string format(const ChoiceValue &, const format::Forced &) const;
+                std::string format(const ChoiceValue &, const format::Masked &) const;
+                std::string decorate(const ChoiceValue &, const std::string &, const format::Added &) const;
+                std::string decorate(const ChoiceValue &, const std::string &, const format::Changed &) const;
 
                 std::string format(const KeywordName &, const format::Plain &) const;
                 std::string format(const KeywordName &, const format::Accepted &) const;
