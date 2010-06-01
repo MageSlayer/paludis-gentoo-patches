@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_SRC_CLIENTS_CAVE_COLOUR_FORMATTER_HH 1
 
 #include <paludis/util/attributes.hh>
+#include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/formatter.hh>
 
 namespace paludis
@@ -43,6 +44,7 @@ namespace paludis
             public CanFormat<NamedSetDepSpec>,
             public CanFormat<PlainTextLabelDepSpec>,
             public CanFormat<ChoiceValue>,
+            public CanFormat<paludis::FSEntry>,
             public CanSpace
         {
             private:
@@ -100,6 +102,8 @@ namespace paludis
                 std::string format(const BlockDepSpec &, const format::Plain &) const;
 
                 std::string format(const NamedSetDepSpec &, const format::Plain &) const;
+
+                std::string format(const FSEntry &, const format::Plain &) const;
 
                 std::string newline() const;
                 std::string indent(const int) const;

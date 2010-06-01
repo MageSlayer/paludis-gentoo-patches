@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -242,6 +242,13 @@ std::string
 ColourFormatter::format(const NamedSetDepSpec & s, const format::Plain &) const
 {
     return format_general_s(f::colour_formatter_named_set_dep_spec_plain(), stringify(s));
+}
+
+
+std::string
+ColourFormatter::format(const FSEntry & s, const format::Plain &) const
+{
+    return format_general_s(f::colour_formatter_fsentry_plain(), stringify(s));
 }
 
 std::string

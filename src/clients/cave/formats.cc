@@ -502,6 +502,12 @@ paludis::cave::f::colour_formatter_named_set_dep_spec_plain()
 }
 
 const std::string
+paludis::cave::f::colour_formatter_fsentry_plain()
+{
+    return "%s";
+}
+
+const std::string
 paludis::cave::f::show_contents_file()
 {
     return "%{if b}%{column 30}%{endif}%r%{if b}\\n%{else} %{endif}";

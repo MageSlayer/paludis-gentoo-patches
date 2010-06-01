@@ -143,6 +143,8 @@ namespace paludis
 
             const std::string colour_formatter_named_set_dep_spec_plain();
 
+            const std::string colour_formatter_fsentry_plain();
+
             const std::string colour_formatter_indent();
 
             const std::string sync_heading();
