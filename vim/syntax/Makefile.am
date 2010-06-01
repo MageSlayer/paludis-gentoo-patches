@@ -9,6 +9,7 @@ vimscripts = \
 	paludis-keywords-conf.vim \
 	paludis-licenses-conf.vim \
 	paludis-mirrors-conf.vim \
+	paludis-output-conf.vim \
 	paludis-package-mask-conf.vim \
 	paludis-repositories-conf.vim \
 	paludis-use-conf.vim

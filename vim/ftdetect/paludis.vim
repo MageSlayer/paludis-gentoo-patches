@@ -80,3 +80,5 @@ au BufNewFile,BufRead **/repositories/*.conf
 au BufNewFile,BufRead **/metadata/repository_mask.conf
     \     set filetype=paludis-package-mask-conf
 
+au BufNewFile,BufRead output.conf
+    \     set filetype=paludis-output-conf
