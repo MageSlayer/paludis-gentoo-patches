@@ -19,6 +19,7 @@ noinst_PROGRAMS = man-cave
 
 command_MANS = \
 	cave-config.1 \
+	cave-contents.1 \
 	cave-display-resolution.1 \
 	cave-execute-resolution.1 \
 	cave-find-candidates.1 \
@@ -88,6 +89,7 @@ libcave_a_SOURCES = \
 	command_line.cc command_line.hh \
 	command_command_line.cc command_command_line.hh \
 	command_factory.cc command_factory.hh \
+	cmd_contents.cc cmd_contents.hh \
 	cmd_config.cc cmd_config.hh \
 	cmd_display_resolution.cc cmd_display_resolution.hh \
 	cmd_execute_resolution.cc cmd_execute_resolution.hh \
@@ -131,7 +133,6 @@ libcave_a_SOURCES = \
 	match_qpns.cc match_qpns.hh \
 	resolve_common.cc resolve_common.hh
 
-#	cmd_contents.cc \
 #	cmd_executables.cc \
 #	cmd_owner.cc \
 #	cmd_print_id_actions.cc \

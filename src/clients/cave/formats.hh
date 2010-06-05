@@ -159,6 +159,11 @@ namespace paludis
             const std::string sync_repo_active();
             const std::string sync_repo_active_quiet();
             const std::string sync_repo_tail();
+
+            const std::string contents_file();
+            const std::string contents_dir();
+            const std::string contents_sym();
+            const std::string contents_other();
         }
     }
 }
