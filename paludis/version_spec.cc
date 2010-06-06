@@ -90,7 +90,7 @@ namespace paludis
     {
         simple_parser::SimpleParserExpression expr(ignore_case ? simple_parser::exact_ignoring_case(text) : simple_parser::exact(text));
         if (flexible_dashes)
-            return simple_parser::any_of("-_") & expr;
+            return -simple_parser::any_of("-_") & expr;
         else
             return simple_parser::exact(strict_dash) & expr;
     }
@@ -169,7 +169,10 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
             first_number = false;
         }
 
-        /* letter */
+        /* letter (but not if it's two letters, since that's 1.23rc4) */
+        if (! parser.lookahead(
+                    simple_parser::any_of("abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ") &
+                    simple_parser::any_of("abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ")))
         {
             std::string l;
             if (parser.consume(simple_parser::any_of("abcdefghijklmnopqrstuvwxyz") >> l))

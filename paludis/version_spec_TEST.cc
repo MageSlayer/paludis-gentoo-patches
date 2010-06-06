@@ -702,6 +702,12 @@ namespace test_cases
             VersionSpec v6("1.2-r3", VersionSpecOptions());
             TEST_CHECK(v5 == v6);
             TEST_CHECK(v5.hash() == v6.hash());
+
+            TEST_CHECK_THROWS(VersionSpec("1.23alpha4rc5", VersionSpecOptions()), BadVersionSpecError);
+            VersionSpec v7("1.23alpha4rc5", VersionSpecOptions() + vso_flexible_dashes);
+            VersionSpec v8("1.23_alpha4_rc5", VersionSpecOptions());
+            TEST_CHECK(v7 == v8);
+            TEST_CHECK(v7.hash() == v8.hash());
         }
     } test_version_spec_flexible_dashes;
 
