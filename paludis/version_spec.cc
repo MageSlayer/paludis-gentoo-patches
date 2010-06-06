@@ -131,6 +131,7 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
     {
         /* numbers... */
         bool first_number(true);
+        std::string number_prefix;
         while (true)
         {
             std::string number_part;
@@ -140,17 +141,30 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
             if (first_number || '0' != number_part[0])
                 _imp->parts.push_back(make_named_values<VersionSpecComponent>(
                             n::number_value() = strip_leading(number_part, "0"),
-                            n::text() = first_number ? number_part : "." + number_part,
+                            n::text() = first_number ? number_part : number_prefix + number_part,
                             n::type() = vsct_number
                             ));
             else
                 _imp->parts.push_back(make_named_values<VersionSpecComponent>(
                             n::number_value() = number_part,
-                            n::text() = "." + number_part,
+                            n::text() = number_prefix + number_part,
                             n::type() = vsct_floatlike
                             ));
 
-            if (! parser.consume(simple_parser::exact(".")))
+            number_prefix.clear();
+            if (parser.consume(simple_parser::exact(".")))
+                number_prefix = ".";
+            else if (options[vso_flexible_dots])
+            {
+                std::string allowed_dot_replacements("-");
+                if (options[vso_flexible_dashes])
+                    allowed_dot_replacements.append("_");
+                if (parser.lookahead(simple_parser::any_of(allowed_dot_replacements) & simple_parser::any_of("0123456789")))
+                    if (! parser.consume(simple_parser::any_of(allowed_dot_replacements) >> number_prefix))
+                        throw InternalError(PALUDIS_HERE, "lookahead worked, parse failed. huh?");
+            }
+
+            if (number_prefix.empty())
                 break;
             first_number = false;
         }

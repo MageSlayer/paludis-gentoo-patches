@@ -705,6 +705,27 @@ namespace test_cases
         }
     } test_version_spec_flexible_dashes;
 
+    struct VersionSpecFlexibleDotsTest : TestCase
+    {
+        VersionSpecFlexibleDotsTest() : TestCase("flexible dots") { }
+
+        void run()
+        {
+            TEST_CHECK_THROWS(VersionSpec("1.2-3_alpha4", VersionSpecOptions()), BadVersionSpecError);
+            VersionSpec v1("1.2-3_alpha4", VersionSpecOptions() + vso_flexible_dots);
+            VersionSpec v2("1.2.3_alpha4", VersionSpecOptions());
+            TEST_CHECK(v1 == v2);
+            TEST_CHECK(v1.hash() == v2.hash());
+
+            TEST_CHECK_THROWS(VersionSpec("1_2-3-4.5", VersionSpecOptions() + vso_flexible_dots), BadVersionSpecError);
+            VersionSpec v3("1_2-3-4.5", VersionSpecOptions() + vso_flexible_dots + vso_flexible_dashes);
+            VersionSpec v4("1.2.3.4.5", VersionSpecOptions());
+            TEST_CHECK(v3 == v4);
+            TEST_CHECK(v3.hash() == v4.hash());
+
+        }
+    } test_version_spec_flexible_dots;
+
     struct VersionSpecLeadingVTest : TestCase
     {
         VersionSpecLeadingVTest() : TestCase("leading v") { }
