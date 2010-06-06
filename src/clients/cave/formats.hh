@@ -70,6 +70,7 @@ namespace paludis
             const std::string show_package_version_unavailable();
             const std::string show_package_best();
             const std::string show_package_slot();
+            const std::string show_package_no_slot();
 
             const std::string show_package_id_heading();
             const std::string show_package_id_masks();

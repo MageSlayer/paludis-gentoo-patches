@@ -882,7 +882,10 @@ namespace
                     cout << format_general_s(f::show_package_best(), "");
             }
 
-            cout << format_general_s(f::show_package_slot(), slot_name);
+            if (slot_name.empty())
+                cout << format_general_s(f::show_package_no_slot(), slot_name);
+            else
+                cout << format_general_s(f::show_package_slot(), slot_name);
             cout << endl;
         }
 
