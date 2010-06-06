@@ -110,6 +110,14 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
     /* parse */
     SimpleParser parser(text);
 
+    if (options[vso_ignore_leading_v] && parser.consume(
+                options[vso_ignore_case] ? simple_parser::exact_ignoring_case("v") : simple_parser::exact("v")))
+        _imp->parts.push_back(make_named_values<VersionSpecComponent>(
+                    n::number_value() = "",
+                    n::text() = "",
+                    n::type() = vsct_ignore
+                    ));
+
     std::string scm_str;
     if (parser.consume((options[vso_ignore_case] ? simple_parser::exact_ignoring_case("scm") : simple_parser::exact("scm")) >> scm_str))
     {
@@ -338,6 +346,18 @@ namespace
             const VersionSpecComponent * const p1(v1 == v1_end ? &end_part : &*v1);
             const VersionSpecComponent * const p2(v2 == v2_end ? &end_part : &*v2);
 
+            if (p1->type() == vsct_ignore)
+            {
+                ++v1;
+                continue;
+            }
+
+            if (p2->type() == vsct_ignore)
+            {
+                ++v2;
+                continue;
+            }
+
             if (&end_part == p1 && &end_part == p2)
             {
                 std::pair<R_, bool> result(comparator(*p1, v1, v1_end, *p2, v2, v2_end, 0));
@@ -492,6 +512,8 @@ VersionSpec::hash() const
                 r != r_end ; ++r)
         {
             if ((*r).number_value() == "0" && (*r).type() == vsct_revision)
+                continue;
+            if ((*r).type() == vsct_ignore)
                 continue;
 
             std::size_t hh(result & h_mask);

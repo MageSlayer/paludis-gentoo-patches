@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -704,5 +704,19 @@ namespace test_cases
             TEST_CHECK(v5.hash() == v6.hash());
         }
     } test_version_spec_flexible_dashes;
+
+    struct VersionSpecLeadingVTest : TestCase
+    {
+        VersionSpecLeadingVTest() : TestCase("leading v") { }
+
+        void run()
+        {
+            TEST_CHECK_THROWS(VersionSpec("v1.2.3", VersionSpecOptions()), BadVersionSpecError);
+            VersionSpec v1("v1.2.3", VersionSpecOptions() + vso_ignore_leading_v);
+            VersionSpec v2("1.2.3", VersionSpecOptions());
+            TEST_CHECK(v1 == v2);
+            TEST_CHECK(v1.hash() == v2.hash());
+        }
+    } test_version_spec_leading_v;
 }
 
