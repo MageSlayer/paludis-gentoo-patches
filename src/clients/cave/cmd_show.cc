@@ -804,7 +804,7 @@ namespace
         if (ids->empty())
             throw NothingMatching(s);
 
-        std::tr1::shared_ptr<const PackageID> best_installable, best_masked_installable;
+        std::tr1::shared_ptr<const PackageID> best_installable, best_masked_installable, best_not_installed;
         std::tr1::shared_ptr<PackageIDSequence> all_installed(new PackageIDSequence);
         std::set<RepositoryName, RepositoryNameComparator> repos;
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
@@ -819,12 +819,16 @@ namespace
                 else
                     best_installable = *i;
             }
+            else
+                best_not_installed = *i;
 
             repos.insert((*i)->repository()->name());
         }
 
         if (! best_installable)
             best_installable = best_masked_installable;
+        if (! best_installable)
+            best_installable = best_not_installed;
 
         for (std::set<RepositoryName, RepositoryNameComparator>::const_iterator r(repos.begin()), r_end(repos.end()) ;
                 r != r_end ; ++r)
