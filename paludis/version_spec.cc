@@ -110,13 +110,16 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
     /* parse */
     SimpleParser parser(text);
 
-    if (options[vso_ignore_leading_v] && parser.consume(
-                options[vso_ignore_case] ? simple_parser::exact_ignoring_case("v") : simple_parser::exact("v")))
-        _imp->parts.push_back(make_named_values<VersionSpecComponent>(
-                    n::number_value() = "",
-                    n::text() = "",
-                    n::type() = vsct_ignore
-                    ));
+    {
+        std::string leading_v_str;
+        if (options[vso_ignore_leading_v] && parser.consume(
+                    (options[vso_ignore_case] ? simple_parser::exact_ignoring_case("v") : simple_parser::exact("v")) >> leading_v_str))
+            _imp->parts.push_back(make_named_values<VersionSpecComponent>(
+                        n::number_value() = "",
+                        n::text() = leading_v_str,
+                        n::type() = vsct_ignore
+                        ));
+    }
 
     std::string scm_str;
     if (parser.consume((options[vso_ignore_case] ? simple_parser::exact_ignoring_case("scm") : simple_parser::exact("scm")) >> scm_str))
@@ -134,6 +137,21 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
         std::string number_prefix;
         while (true)
         {
+            if (first_number && options[vso_allow_leading_dot])
+            {
+                std::string dot_chars(".");
+                if (options[vso_flexible_dots])
+                {
+                    dot_chars.append("-");
+                    if (options[vso_flexible_dashes])
+                        dot_chars.append("_");
+                }
+
+                std::string leading_ick;
+                if (parser.consume(simple_parser::any_of(dot_chars) >> leading_ick))
+                    number_prefix = leading_ick;
+            }
+
             std::string number_part;
             if (! parser.consume(+simple_parser::any_of("0123456789") >> number_part))
                 throw BadVersionSpecError(text, "Expected number part not found at offset " + stringify(parser.offset()));
@@ -141,7 +159,7 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
             if (first_number || '0' != number_part[0])
                 _imp->parts.push_back(make_named_values<VersionSpecComponent>(
                             n::number_value() = strip_leading(number_part, "0"),
-                            n::text() = first_number ? number_part : number_prefix + number_part,
+                            n::text() = number_prefix + number_part,
                             n::type() = vsct_number
                             ));
             else

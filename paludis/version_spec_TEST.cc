@@ -741,8 +741,11 @@ namespace test_cases
             TEST_CHECK_THROWS(VersionSpec("v1.2.3", VersionSpecOptions()), BadVersionSpecError);
             VersionSpec v1("v1.2.3", VersionSpecOptions() + vso_ignore_leading_v);
             VersionSpec v2("1.2.3", VersionSpecOptions());
+            VersionSpec v3("v.1.2.3", VersionSpecOptions() + vso_ignore_leading_v + vso_allow_leading_dot);
             TEST_CHECK(v1 == v2);
             TEST_CHECK(v1.hash() == v2.hash());
+            TEST_CHECK(v2 == v3);
+            TEST_CHECK(v2.hash() == v3.hash());
         }
     } test_version_spec_leading_v;
 }

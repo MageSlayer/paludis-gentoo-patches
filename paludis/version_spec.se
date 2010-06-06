@@ -39,6 +39,7 @@ make_enum_VersionSpecOption()
     key vso_letters_anywhere     "Allow 1a2.3 etc"
     key vso_dotted_suffixes      "Allow 1_alpha2.3"
     key vso_ignore_leading_v     "Allow v1 etc"
+    key vso_allow_leading_dot    "Allow .1.2.3 etc"
 
     want_destringify
 
