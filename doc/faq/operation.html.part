@@ -16,7 +16,7 @@
 
 <p>Paludis ignores build time dependencies (DEPENDs) of already installed packages by default.
 If you need a different behaviour, use the <code>--dl-installed-deps-pre</code>
-option. You may also want to use the <code>everything</code> set rather than
+option. You may also want to use the <code>installed-slots</code> set rather than
 <code>world</code>.</p>
 
 <h2 id="updateworldmissesthings">Updating world misses things</h2>
