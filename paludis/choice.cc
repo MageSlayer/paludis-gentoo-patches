@@ -20,11 +20,12 @@
 #include <paludis/choice.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/validated.hh>
 #include <paludis/util/set-impl.hh>
+#include <paludis/util/wrapped_value-impl.hh>
 #include <list>
 
 using namespace paludis;
@@ -52,8 +53,8 @@ ChoicePrefixNameError::ChoicePrefixNameError(const std::string & n) throw () :
 {
 }
 
-void
-ChoicePrefixNameValidator::validate(const std::string & s)
+bool
+WrappedValueTraits<ChoicePrefixNameTag>::validate(const std::string & s)
 {
     if (! s.empty())
     {
@@ -61,8 +62,7 @@ ChoicePrefixNameValidator::validate(const std::string & s)
         {
             case ':':
             case '_':
-                throw ChoicePrefixNameError(s);
-                break;
+                return false;
         };
 
         switch (s.at(0))
@@ -70,16 +70,17 @@ ChoicePrefixNameValidator::validate(const std::string & s)
             case ':':
             case '_':
             case '-':
-                throw ChoicePrefixNameError(s);
-                break;
+                return false;
         };
 
         if (s[0] >= 'A' && s[0] <= 'Z')
-            throw ChoicePrefixNameError(s);
+            return false;
 
         if (std::string::npos != s.find(" \t\r\n()"))
-            throw ChoicePrefixNameError(s);
+            return false;
     }
+
+    return true;
 }
 
 ChoiceNameWithPrefixError::ChoiceNameWithPrefixError(const std::string & n) throw () :
@@ -87,8 +88,8 @@ ChoiceNameWithPrefixError::ChoiceNameWithPrefixError(const std::string & n) thro
 {
 }
 
-void
-ChoiceNameWithPrefixValidator::validate(const std::string & s)
+bool
+WrappedValueTraits<ChoiceNameWithPrefixTag>::validate(const std::string & s)
 {
     if (s.empty())
         throw ChoiceNameWithPrefixError(s);
@@ -97,8 +98,7 @@ ChoiceNameWithPrefixValidator::validate(const std::string & s)
     {
         case ':':
         case '_':
-            throw ChoiceNameWithPrefixError(s);
-            break;
+            return false;
     };
 
     switch (s.at(0))
@@ -106,12 +106,13 @@ ChoiceNameWithPrefixValidator::validate(const std::string & s)
         case ':':
         case '_':
         case '-':
-            throw ChoiceNameWithPrefixError(s);
-            break;
+            return false;
     };
 
     if (std::string::npos != s.find(" \t\r\n()"))
-        throw ChoiceNameWithPrefixError(s);
+        return false;
+
+    return true;
 }
 
 UnprefixedChoiceNameError::UnprefixedChoiceNameError(const std::string & n) throw () :
@@ -119,17 +120,17 @@ UnprefixedChoiceNameError::UnprefixedChoiceNameError(const std::string & n) thro
 {
 }
 
-void
-UnprefixedChoiceNameValidator::validate(const std::string & s)
+bool
+WrappedValueTraits<UnprefixedChoiceNameTag>::validate(const std::string & s)
 {
     if (s.empty())
-        throw ChoiceNameWithPrefixError(s);
+        return false;
 
     switch (s.at(s.length() - 1))
     {
         case ':':
         case '_':
-            throw ChoiceNameWithPrefixError(s);
+            return false;
             break;
     };
 
@@ -138,12 +139,14 @@ UnprefixedChoiceNameValidator::validate(const std::string & s)
         case ':':
         case '_':
         case '-':
-            throw ChoiceNameWithPrefixError(s);
+            return false;
             break;
     };
 
     if (std::string::npos != s.find(" \t\r\n()"))
-        throw ChoiceNameWithPrefixError(s);
+        return false;
+
+    return true;
 }
 
 namespace paludis
@@ -198,7 +201,7 @@ Choices::find_by_name_with_prefix(const ChoiceNameWithPrefix & f) const
     for (ConstIterator i(begin()), i_end(end()) ;
             i != i_end ; ++i)
     {
-        if (0 != (*i)->prefix().data().compare(0, (*i)->prefix().data().length(), f.data(), 0, (*i)->prefix().data().length()))
+        if (0 != (*i)->prefix().value().compare(0, (*i)->prefix().value().length(), f.value(), 0, (*i)->prefix().value().length()))
             continue;
 
         for (Choice::ConstIterator j((*i)->begin()), j_end((*i)->end()) ;
@@ -216,7 +219,7 @@ Choices::has_matching_contains_every_value_prefix(const ChoiceNameWithPrefix & f
     for (ConstIterator i(begin()), i_end(end()) ;
             i != i_end ; ++i)
     {
-        if (0 != (*i)->prefix().data().compare(0, (*i)->prefix().data().length(), f.data(), 0, (*i)->prefix().data().length()))
+        if (0 != (*i)->prefix().value().compare(0, (*i)->prefix().value().length(), f.value(), 0, (*i)->prefix().value().length()))
             continue;
 
         if ((*i)->contains_every_value())
@@ -320,10 +323,16 @@ template class PrivateImplementationPattern<Choice>;
 template class WrappedForwardIterator<Choices::ConstIteratorTag, const std::tr1::shared_ptr<const Choice> >;
 template class WrappedForwardIterator<Choice::ConstIteratorTag, const std::tr1::shared_ptr<const ChoiceValue> >;
 
-template class Validated<std::string, UnprefixedChoiceNameValidator>;
-template class Validated<std::string, ChoicePrefixNameValidator>;
-template class Validated<std::string, ChoiceNameWithPrefixValidator>;
+template class WrappedValue<UnprefixedChoiceNameTag>;
+template std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<UnprefixedChoiceNameTag> &);
+
+template class WrappedValue<ChoicePrefixNameTag>;
+template std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<ChoicePrefixNameTag> &);
+
+template class WrappedValue<ChoiceNameWithPrefixTag>;
+template std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<ChoiceNameWithPrefixTag> &);
 
 template class Set<UnprefixedChoiceName>;
 template class WrappedForwardIterator<Set<UnprefixedChoiceName>::ConstIteratorTag, const UnprefixedChoiceName>;
+template class WrappedOutputIterator<Set<UnprefixedChoiceName>::InserterTag, UnprefixedChoiceName>;
 

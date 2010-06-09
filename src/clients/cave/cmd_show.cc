@@ -806,7 +806,7 @@ namespace
 
         std::tr1::shared_ptr<const PackageID> best_installable, best_masked_installable, best_not_installed;
         std::tr1::shared_ptr<PackageIDSequence> all_installed(new PackageIDSequence);
-        std::set<RepositoryName, RepositoryNameComparator> repos;
+        std::set<RepositoryName> repos;
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
         {
@@ -830,7 +830,7 @@ namespace
         if (! best_installable)
             best_installable = best_not_installed;
 
-        for (std::set<RepositoryName, RepositoryNameComparator>::const_iterator r(repos.begin()), r_end(repos.end()) ;
+        for (std::set<RepositoryName>::const_iterator r(repos.begin()), r_end(repos.end()) ;
                 r != r_end ; ++r)
         {
             cout << format_general_s(f::show_package_repository(), stringify(*r));

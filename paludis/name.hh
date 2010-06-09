@@ -22,9 +22,8 @@
 
 #include <paludis/name-fwd.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/validated.hh>
-#include <paludis/util/named_value.hh>
+#include <paludis/util/wrapped_value.hh>
+#include <paludis/util/operators.hh>
 
 #include <string>
 #include <iosfwd>
@@ -41,12 +40,6 @@
 
 namespace paludis
 {
-    namespace n
-    {
-        typedef Name<struct category_name> category;
-        typedef Name<struct package_name> package;
-    }
-
     /**
      * A PackageNamePartError is thrown if an invalid value is assigned to
      * a PackageNamePart.
@@ -64,20 +57,14 @@ namespace paludis
             PackageNamePartError(const std::string & name) throw ();
     };
 
-    /**
-     * A PackageNamePartValidator handles validation rules for the value
-     * of a PackageNamePart.
-     *
-     * \ingroup g_names
-     */
-    struct PALUDIS_VISIBLE PackageNamePartValidator :
-        private InstantiationPolicy<PackageNamePartValidator, instantiation_method::NonInstantiableTag>
+    template <>
+    struct PALUDIS_VISIBLE WrappedValueTraits<PackageNamePartTag>
     {
-        /**
-         * If the parameter is not a valid value for a PackageNamePart,
-         * throw a PackageNamePartError.
-         */
-        static void validate(const std::string &);
+        typedef std::string UnderlyingType;
+        typedef void ValidationParamsType;
+        typedef PackageNamePartError ExceptionType;
+
+        static bool validate(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -97,20 +84,14 @@ namespace paludis
             CategoryNamePartError(const std::string & name) throw ();
     };
 
-    /**
-     * A CategoryNamePartValidator handles validation rules for the value
-     * of a CategoryNamePart.
-     *
-     * \ingroup g_names
-     */
-    struct PALUDIS_VISIBLE CategoryNamePartValidator :
-        private InstantiationPolicy<CategoryNamePartValidator, instantiation_method::NonInstantiableTag>
+    template <>
+    struct PALUDIS_VISIBLE WrappedValueTraits<CategoryNamePartTag>
     {
-        /**
-         * If the parameter is not a valid value for a CategoryNamePart,
-         * throw a CategoryNamePartError.
-         */
-        static void validate(const std::string &);
+        typedef std::string UnderlyingType;
+        typedef void ValidationParamsType;
+        typedef CategoryNamePartError ExceptionType;
+
+        static bool validate(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -119,36 +100,31 @@ namespace paludis
      * \ingroup g_names
      * \nosubgrouping
      */
-    struct PALUDIS_VISIBLE QualifiedPackageName :
-        relational_operators::HasRelationalOperators
+    class PALUDIS_VISIBLE QualifiedPackageName :
+        public relational_operators::HasRelationalOperators
     {
-        NamedValue<n::category, CategoryNamePart> category;
-        NamedValue<n::package, PackageNamePart> package;
+        private:
+            CategoryNamePart _cat;
+            PackageNamePart _pkg;
 
-        QualifiedPackageName(const CategoryNamePart &, const PackageNamePart &);
-        explicit QualifiedPackageName(const std::string &);
-
-        std::size_t hash() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-        bool operator< (const QualifiedPackageName &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-        bool operator== (const QualifiedPackageName &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
-
-    /**
-     * A QualifiedPackageNameError may be thrown if an invalid name is
-     * assigned to a QualifiedPackageName (alternatively, the exception
-     * raised may be a PackageNamePartError or a CategoryNamePartError).
-     *
-     * \ingroup g_names
-     * \ingroup g_exceptions
-     */
-    class PALUDIS_VISIBLE QualifiedPackageNameError : public NameError
-    {
         public:
-            /**
-             * Constructor.
-             */
-            QualifiedPackageNameError(const std::string &) throw ();
+            QualifiedPackageName(const CategoryNamePart &, const PackageNamePart &);
+            explicit QualifiedPackageName(const std::string &);
+
+            std::size_t hash() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            bool operator< (const QualifiedPackageName &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool operator== (const QualifiedPackageName &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            const CategoryNamePart category() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return _cat;
+            }
+
+            const PackageNamePart package() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return _pkg;
+            }
     };
 
     inline const QualifiedPackageName
@@ -173,20 +149,14 @@ namespace paludis
             SlotNameError(const std::string & name) throw ();
     };
 
-    /**
-     * A SlotNameValidator handles validation rules for the value of a
-     * SlotName.
-     *
-     * \ingroup g_names
-     */
-    struct PALUDIS_VISIBLE SlotNameValidator :
-        private InstantiationPolicy<SlotNameValidator, instantiation_method::NonInstantiableTag>
+    template <>
+    struct PALUDIS_VISIBLE WrappedValueTraits<SlotNameTag>
     {
-        /**
-         * If the parameter is not a valid value for a SlotName,
-         * throw a SlotNameError.
-         */
-        static void validate(const std::string &);
+        typedef std::string UnderlyingType;
+        typedef void ValidationParamsType;
+        typedef SlotNameError ExceptionType;
+
+        static bool validate(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -205,52 +175,14 @@ namespace paludis
             RepositoryNameError(const std::string & name) throw ();
     };
 
-    /**
-     * A RepositoryNameValidator handles validation rules for the value
-     * of a RepositoryName.
-     *
-     * \ingroup g_names
-     */
-    struct PALUDIS_VISIBLE RepositoryNameValidator :
-        private InstantiationPolicy<RepositoryNameValidator, instantiation_method::NonInstantiableTag>
+    template <>
+    struct PALUDIS_VISIBLE WrappedValueTraits<RepositoryNameTag>
     {
-        /**
-         * If the parameter is not a valid value for a RepositoryName,
-         * throw a RepositoryNameError.
-         */
-        static void validate(const std::string &);
-    };
+        typedef std::string UnderlyingType;
+        typedef void ValidationParamsType;
+        typedef RepositoryNameError ExceptionType;
 
-    /**
-     * Arbitrary useless comparator for RepositoryName.
-     *
-     * \ingroup g_names
-     */
-    struct PALUDIS_VISIBLE RepositoryNameComparator
-    {
-        /**
-         * Perform the comparison.
-         */
-        bool operator() (const RepositoryName & lhs, const RepositoryName & rhs) const
-        {
-            return lhs.data() < rhs.data();
-        }
-    };
-
-    /**
-     * A KeywordNameValidator handles validation rules for the value of a
-     * KeywordName.
-     *
-     * \ingroup g_names
-     */
-    struct PALUDIS_VISIBLE KeywordNameValidator :
-        private InstantiationPolicy<KeywordNameValidator, instantiation_method::NonInstantiableTag>
-    {
-        /**
-         * If the parameter is not a valid value for a KeywordName,
-         * throw a KeywordNameError.
-         */
-        static void validate(const std::string &);
+        static bool validate(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -269,35 +201,14 @@ namespace paludis
             KeywordNameError(const std::string & name) throw ();
     };
 
-    /**
-     * Comparator for a KeywordName.
-     *
-     * \ingroup g_names
-     * \since 0.26
-     */
-    class PALUDIS_VISIBLE KeywordNameComparator
+    template <>
+    struct PALUDIS_VISIBLE WrappedValueTraits<KeywordNameTag>
     {
-        public:
-            /**
-             * Perform a less-than comparison.
-             */
-            bool operator() (const std::string &, const std::string &) const;
-    };
+        typedef std::string UnderlyingType;
+        typedef void ValidationParamsType;
+        typedef KeywordNameError ExceptionType;
 
-    /**
-     * A SetNameValidator handles validation rules for the value of a
-     * SetName.
-     *
-     * \ingroup g_exceptions
-     */
-    struct PALUDIS_VISIBLE SetNameValidator :
-        private InstantiationPolicy<SetNameValidator, instantiation_method::NonInstantiableTag>
-    {
-        /**
-         * If the parameter is not a valid value for a SetName,
-         * throw a SetNameError.
-         */
-        static void validate(const std::string &);
+        static bool validate(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -314,6 +225,16 @@ namespace paludis
              * Constructor.
              */
             SetNameError(const std::string & name) throw ();
+    };
+
+    template <>
+    struct PALUDIS_VISIBLE WrappedValueTraits<SetNameTag>
+    {
+        typedef std::string UnderlyingType;
+        typedef void ValidationParamsType;
+        typedef SetNameError ExceptionType;
+
+        static bool validate(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

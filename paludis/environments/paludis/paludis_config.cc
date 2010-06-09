@@ -588,9 +588,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         }
 
         /* work out order for repository creation */
-        DirectedGraph<RepositoryName, bool, RepositoryNameComparator> repository_deps;
+        DirectedGraph<RepositoryName, bool> repository_deps;
         std::for_each(first_iterator(repo_configs.begin()), first_iterator(repo_configs.end()),
-                std::tr1::bind(std::tr1::mem_fn(&DirectedGraph<RepositoryName, bool, RepositoryNameComparator>::add_node), &repository_deps, _1));
+                std::tr1::bind(std::tr1::mem_fn(&DirectedGraph<RepositoryName, bool>::add_node), &repository_deps, _1));
 
         for (std::tr1::unordered_map<RepositoryName, std::tr1::function<std::string (const std::string &)>, Hash<RepositoryName> >::const_iterator
                 r(repo_configs.begin()), r_end(repo_configs.end()) ; r != r_end ; ++r)

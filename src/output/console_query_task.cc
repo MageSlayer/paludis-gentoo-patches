@@ -206,14 +206,14 @@ ConsoleQueryTask::display_versions_by_repository(const PackageDepSpec &,
         const std::tr1::shared_ptr<const PackageID> & display_entry) const
 {
     /* find all repository names. */
-    RepositoryNameSequence repo_names;
+    std::list<RepositoryName> repo_names;
     PackageIDSequence::ConstIterator e(entries->begin()), e_end(entries->end());
     for ( ; e != e_end ; ++e)
         if (repo_names.end() == std::find(repo_names.begin(), repo_names.end(), (*e)->repository()->name()))
             repo_names.push_back((*e)->repository()->name());
 
     /* display versions, by repository. */
-    RepositoryNameSequence::ConstIterator r(repo_names.begin()), r_end(repo_names.end());
+    std::list<RepositoryName>::const_iterator r(repo_names.begin()), r_end(repo_names.end());
     for ( ; r != r_end ; ++r)
     {
         output_left_column(stringify(*r) + ":");

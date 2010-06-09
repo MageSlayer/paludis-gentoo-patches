@@ -146,7 +146,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
                         k != k_end ; ++k)
                     if (*k == KeywordName("-*")
                             || *k == target_keyword
-                            || k->data().substr(1) == stringify(target_arch))
+                            || k->value().substr(1) == stringify(target_arch))
                         current.append(stringify(*k) + " ");
             }
 

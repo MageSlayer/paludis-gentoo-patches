@@ -118,7 +118,7 @@ FindCandidatesCommand::run(
     return EXIT_SUCCESS;
 }
 
-typedef std::set<RepositoryName, RepositoryNameComparator> RepositoryNames;
+typedef std::set<RepositoryName> RepositoryNames;
 typedef std::set<CategoryNamePart> CategoryNames;
 typedef std::set<QualifiedPackageName> QualifiedPackageNames;
 

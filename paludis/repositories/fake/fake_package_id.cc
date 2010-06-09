@@ -523,7 +523,7 @@ namespace
 
         virtual const ChoiceNameWithPrefix name_with_prefix() const
         {
-            return ChoiceNameWithPrefix((choice->prefix().data().empty() ? "" : stringify(choice->prefix()) + "*") + stringify(value_name));
+            return ChoiceNameWithPrefix((choice->prefix().value().empty() ? "" : stringify(choice->prefix()) + "*") + stringify(value_name));
         }
 
         virtual bool enabled() const
@@ -994,7 +994,7 @@ FakePackageID::set_slot(const SlotName & s)
 bool
 FakePackageID::arbitrary_less_than_comparison(const PackageID & other) const
 {
-    return slot_key()->value().data() < (other.slot_key() ? stringify(other.slot_key()->value()) : "");
+    return slot_key()->value().value() < (other.slot_key() ? stringify(other.slot_key()->value()) : "");
 }
 
 void

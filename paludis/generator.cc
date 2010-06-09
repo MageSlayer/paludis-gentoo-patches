@@ -491,8 +491,7 @@ namespace
             std::set_intersection(
                     r1->begin(), r1->end(),
                     r2->begin(), r2->end(),
-                    result->inserter(),
-                    RepositoryNameComparator());
+                    result->inserter());
             return result;
         }
 
@@ -586,8 +585,7 @@ namespace
             std::set_union(
                     r1->begin(), r1->end(),
                     r2->begin(), r2->end(),
-                    result->inserter(),
-                    RepositoryNameComparator());
+                    result->inserter());
             return result;
         }
 

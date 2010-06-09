@@ -19,7 +19,7 @@
 
 #include <python/paludis_python.hh>
 #include <python/exception.hh>
-#include <python/validated.hh>
+#include <python/wrapped_value.hh>
 #include <python/iterable.hh>
 #include <python/options.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -41,10 +41,6 @@ void expose_name()
     ExceptionRegister::get_instance()->add_exception<CategoryNamePartError>
         ("CategoryNamePartError", "NameError",
          "Thrown if an invalid value is assigned to a CategoryNamePart.");
-    ExceptionRegister::get_instance()->add_exception<QualifiedPackageNameError>
-        ("QualifiedPackageNameError", "NameError",
-         "May be thrown if an invalid name is assigned to a QualifiedPackageName "
-         "(alternatively, the exception raised may be a PackageNamePartError or a CategoryNamePartError).");
     ExceptionRegister::get_instance()->add_exception<SlotNameError>
         ("SlotNameError", "NameError",
          "Thrown if an invalid value is assigned to a SlotName.");
@@ -62,7 +58,7 @@ void expose_name()
      * PackageNamePart
      */
     register_shared_ptrs_to_python<PackageNamePart>();
-    class_validated<PackageNamePart>
+    class_wrapped_value<PackageNamePart>
         (
          "PackageNamePart",
          "Holds a string that is a valid name for the package part of a QualifiedPackageName."
@@ -81,7 +77,7 @@ void expose_name()
      * CategoryNamePart
      */
     register_shared_ptrs_to_python<CategoryNamePart>();
-    class_validated<CategoryNamePart>
+    class_wrapped_value<CategoryNamePart>
         (
          "CategoryNamePart",
          "Holds a string that is a valid name for the category part of a QualifiedPackageName."
@@ -104,7 +100,7 @@ void expose_name()
      * SlotName
      */
     register_shared_ptrs_to_python<SlotName>();
-    class_validated<SlotName>
+    class_wrapped_value<SlotName>
         (
          "SlotName",
          "Holds a string that is a valid name for a SLOT."
@@ -114,26 +110,16 @@ void expose_name()
      * RepositoryName
      */
     register_shared_ptrs_to_python<RepositoryName>();
-    class_validated<RepositoryName>
+    class_wrapped_value<RepositoryName>
         (
          "RepositoryName",
          "Holds a string that is a valid name for a Repository."
         );
 
     /**
-     * RepositoryNameIterable
-     */
-    class_iterable<RepositoryNameSequence>
-        (
-         "RepositoryNameIterable",
-         "Iterable of RepositoryName",
-         true
-        );
-
-    /**
      * KeywordName
      */
-    class_validated<KeywordName>
+    class_wrapped_value<KeywordName>
         (
          "KeywordName",
          "Holds a string that is a valid name for a KEYWORD."
@@ -152,7 +138,7 @@ void expose_name()
     /**
      * SetName
      */
-    class_validated<SetName>
+    class_wrapped_value<SetName>
         (
          "SetName",
          "Holds a string that is a valid name for a set."
@@ -192,15 +178,13 @@ void expose_name()
         .def(bp::init<const CategoryNamePart &, const PackageNamePart &>())
 
         .add_property("category",
-                &named_values_getter<QualifiedPackageName, n::category, CategoryNamePart, &QualifiedPackageName::category>,
-                &named_values_setter<QualifiedPackageName, n::category, CategoryNamePart, &QualifiedPackageName::category>,
-                "[rw] CategoryNamePart"
+                &QualifiedPackageName::category,
+                "[ro] CategoryNamePart"
                 )
 
         .add_property("package",
-                &named_values_getter<QualifiedPackageName, n::package, PackageNamePart, &QualifiedPackageName::package>,
-                &named_values_setter<QualifiedPackageName, n::package, PackageNamePart, &QualifiedPackageName::package>,
-                "[rw] PackageNamePart"
+                &QualifiedPackageName::package,
+                "[ro] PackageNamePart"
                 )
 
         .def("__cmp__", &py_cmp<QualifiedPackageName>)

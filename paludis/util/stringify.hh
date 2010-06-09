@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_STRINGIFY_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <paludis/util/validated-fwd.hh>
+#include <paludis/util/wrapped_value-fwd.hh>
 #include <tr1/memory>
 #include <sstream>
 #include <string>
@@ -147,11 +147,11 @@ namespace paludis
             return std::string(item);
         }
 
-        template <typename D_, typename V_, bool c_, typename C_>
+        template <typename Tag_>
         inline std::string
-        real_stringify(const Validated<D_, V_, c_, C_> & v)
+        real_stringify(const WrappedValue<Tag_> & v)
         {
-            return stringify(v.data());
+            return stringify(v.value());
         }
     }
 

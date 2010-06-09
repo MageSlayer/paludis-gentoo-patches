@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
 # Copyright (c) 2008 Richard Brown
 #
 # This file is part of the Paludis package manager. Paludis is free software;
@@ -78,20 +78,6 @@ module Paludis
 
             assert_equal cat, qpn.category
             assert_equal pkg, qpn.package
-        end
-
-        def test_setters
-            cat = 'foo-bar'
-            pkg = 'baz'
-            cat_new = 'foo-baz'
-            pkg_new = 'bar'
-            qpn = QualifiedPackageName.new(cat,pkg)
-
-            qpn.category = cat_new
-            assert_equal cat_new, qpn.category
-
-            qpn.package = pkg_new
-            assert_equal pkg_new, qpn.package
         end
 
         def test_to_value_type_error

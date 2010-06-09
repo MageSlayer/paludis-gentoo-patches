@@ -56,7 +56,7 @@ using std::endl;
 
 namespace
 {
-    typedef std::set<RepositoryName, RepositoryNameComparator> Repos;
+    typedef std::set<RepositoryName> Repos;
 
     struct SyncCommandLine :
         CaveCommandCommandLine

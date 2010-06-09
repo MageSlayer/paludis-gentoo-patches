@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,9 +19,8 @@
 
 #include <python/paludis_python.hh>
 #include <python/exception.hh>
-#include <python/validated.hh>
+#include <python/wrapped_value.hh>
 
-#include <paludis/util/validated.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/choice.hh>
 
@@ -133,7 +132,7 @@ void expose_choices()
          "Thrown if an invalid value is assigned to a ChoiceNameWithPrefix.");
 
     register_shared_ptrs_to_python<ChoiceNameWithPrefix>();
-    class_validated<ChoiceNameWithPrefix>
+    class_wrapped_value<ChoiceNameWithPrefix>
         (
          "ChoiceNameWithPrefix",
          "A choice name, including prefix and delim."
@@ -144,7 +143,7 @@ void expose_choices()
          "Thrown if an invalid value is assigned to a ChoicePrefixName.");
 
     register_shared_ptrs_to_python<ChoicePrefixName>();
-    class_validated<ChoicePrefixName>
+    class_wrapped_value<ChoicePrefixName>
         (
          "ChoicePrefixName",
          "A choice prefix name."
@@ -155,7 +154,7 @@ void expose_choices()
          "Thrown if an invalid value is assigned to an UnprefixedChoiceName.");
 
     register_shared_ptrs_to_python<UnprefixedChoiceName>();
-    class_validated<UnprefixedChoiceName>
+    class_wrapped_value<UnprefixedChoiceName>
         (
          "UnprefixedChoiceName",
          "A choice name, without prefix."

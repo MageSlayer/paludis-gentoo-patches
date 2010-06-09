@@ -119,7 +119,7 @@ namespace
             std::string lower_s;
             std::transform(s.begin(), s.end(), std::back_inserter(lower_s), &::tolower);
             lower_s.append(delim);
-            return (0 == flag.data().compare(0, lower_s.length(), lower_s, 0, lower_s.length()));
+            return (0 == flag.value().compare(0, lower_s.length(), lower_s, 0, lower_s.length()));
         }
     };
 
@@ -540,7 +540,7 @@ EChoicesKey::populate_iuse() const
             for (std::map<ChoiceNameWithPrefix, ChoiceOptions>::const_iterator i(i_values.begin()), i_end(i_values.end()) ;
                     i != i_end ; ++i)
                 if (IsExpand(i->first, delim)(*u))
-                    values.insert(UnprefixedChoiceName(i->first.data().substr(u->length() + delim.length())));
+                    values.insert(UnprefixedChoiceName(i->first.value().substr(u->length() + delim.length())));
 
             for (std::set<UnprefixedChoiceName>::const_iterator v(values.begin()), v_end(values.end()) ;
                     v != v_end ; ++v)

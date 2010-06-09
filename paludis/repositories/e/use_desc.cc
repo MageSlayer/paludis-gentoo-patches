@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -97,12 +97,12 @@ UseDesc::describe(
     std::tr1::unordered_map<QualifiedPackageName, UseDescs, Hash<QualifiedPackageName> >::const_iterator i(_imp->local_descs.find(id));
     if (i != _imp->local_descs.end())
     {
-        UseDescs::const_iterator j(i->second.find(make_pair(prefix, flag)));
+        UseDescs::const_iterator j(i->second.find(std::make_pair(prefix, flag)));
         if (j != i->second.end())
             return j->second;
     }
 
-    UseDescs::const_iterator j(_imp->global_descs.find(make_pair(prefix, flag)));
+    UseDescs::const_iterator j(_imp->global_descs.find(std::make_pair(prefix, flag)));
     if (j != _imp->global_descs.end())
         return j->second;
 

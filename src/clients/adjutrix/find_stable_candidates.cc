@@ -92,7 +92,7 @@ namespace
     {
         bool operator() (const KeywordName & k) const
         {
-            return std::string::npos == std::string("-~").find(k.data().at(0));
+            return std::string::npos == std::string("-~").find(k.value().at(0));
         }
     };
 

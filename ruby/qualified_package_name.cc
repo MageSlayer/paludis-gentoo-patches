@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
  * Copyright (c) 2008 Richard Brown
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -80,14 +80,6 @@ namespace
      * Fetch the category part of the QualifiedPackageName.
      */
     /*
-     * Document-method: category=
-     *
-     * call-seq:
-     *     category=
-     *
-     * Set the category.
-     */
-    /*
      * Document-method: package
      *
      * call-seq:
@@ -95,15 +87,7 @@ namespace
      *
      * Fetch the package name part of the QualifiedPackageName.
      */
-    /*
-     * Document-method: package=
-     *
-     * call-seq:
-     *     package=
-     *
-     * Set the package name.
-     */
-    template <typename T_, typename M_, NamedValue<M_, T_> QualifiedPackageName::* m_>
+    template <typename T_, typename M_, const M_ (QualifiedPackageName::* m_)() const>
     struct QPNMember
     {
         static VALUE
@@ -168,13 +152,9 @@ namespace
         rb_define_method(c_qualified_package_name, "hash", RUBY_FUNC_CAST(&Common<QualifiedPackageName>::hash), 0);
         rb_define_method(c_qualified_package_name, "eql?", RUBY_FUNC_CAST(&Common<QualifiedPackageName>::equal), 1);
         rb_define_method(c_qualified_package_name, "category",
-                RUBY_FUNC_CAST((&QPNMember<CategoryNamePart, n::category, &QualifiedPackageName::category>::fetch)), 0);
-        rb_define_method(c_qualified_package_name, "category=",
-                RUBY_FUNC_CAST((&QPNMember<CategoryNamePart, n::category, &QualifiedPackageName::category>::set)), 1);
+                RUBY_FUNC_CAST((&QPNMember<CategoryNamePart, CategoryNamePart, &QualifiedPackageName::category>::fetch)), 0);
         rb_define_method(c_qualified_package_name, "package",
-                RUBY_FUNC_CAST((&QPNMember<PackageNamePart, n::package, &QualifiedPackageName::package>::fetch)), 0);
-        rb_define_method(c_qualified_package_name, "package=",
-                RUBY_FUNC_CAST((&QPNMember<PackageNamePart, n::package, &QualifiedPackageName::package>::set)), 1);
+                RUBY_FUNC_CAST((&QPNMember<PackageNamePart, PackageNamePart, &QualifiedPackageName::package>::fetch)), 0);
     }
 }
 

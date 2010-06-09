@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -150,10 +150,10 @@ PackageIDSetComparator::operator() (const std::tr1::shared_ptr<const PackageID> 
     if (a->version() > b->version())
         return false;
 
-    if (a->repository()->name().data() < b->repository()->name().data())
+    if (a->repository()->name().value() < b->repository()->name().value())
         return true;
 
-    if (a->repository()->name().data() > b->repository()->name().data())
+    if (a->repository()->name().value() > b->repository()->name().value())
         return false;
 
     return a->arbitrary_less_than_comparison(*b);

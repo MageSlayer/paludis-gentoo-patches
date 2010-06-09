@@ -26,7 +26,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/named_value.hh>
-#include <paludis/util/validated.hh>
+#include <paludis/util/wrapped_value.hh>
 #include <tr1/memory>
 #include <string>
 
@@ -96,52 +96,34 @@ namespace paludis
             UnprefixedChoiceNameError(const std::string &) throw ();
     };
 
-    /**
-     * A ChoicePrefixNameValidator handles validation for ChoicePrefixName.
-     *
-     * \ingroup g_choices
-     * \since 0.32
-     */
-    struct PALUDIS_VISIBLE ChoicePrefixNameValidator :
-        private InstantiationPolicy<ChoicePrefixNameValidator, instantiation_method::NonInstantiableTag>
+    template <>
+    struct WrappedValueTraits<ChoicePrefixNameTag>
     {
-        /**
-         * If the parameter is not a valid value for a ChoicePrefixName, throw
-         * a ChoicePrefixNameError.
-         */
-        static void validate(const std::string &);
+        typedef std::string UnderlyingType;
+        typedef void ValidationParamsType;
+        typedef ChoicePrefixNameError ExceptionType;
+
+        static bool validate(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    /**
-     * A ChoiceNameWithPrefixValidator handles validation for ChoicePrefixName.
-     *
-     * \ingroup g_choices
-     * \since 0.32
-     */
-    struct PALUDIS_VISIBLE ChoiceNameWithPrefixValidator :
-        private InstantiationPolicy<ChoiceNameWithPrefixValidator, instantiation_method::NonInstantiableTag>
+    template <>
+    struct WrappedValueTraits<UnprefixedChoiceNameTag>
     {
-        /**
-         * If the parameter is not a valid value for a ChoiceNameWithPrefix, throw
-         * a ChoiceNameWithPrefixError.
-         */
-        static void validate(const std::string &);
+        typedef std::string UnderlyingType;
+        typedef void ValidationParamsType;
+        typedef UnprefixedChoiceNameError ExceptionType;
+
+        static bool validate(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    /**
-     * A UnprefixedChoiceNameValidator handles validation for ChoicePrefixName.
-     *
-     * \ingroup g_choices
-     * \since 0.32
-     */
-    struct PALUDIS_VISIBLE UnprefixedChoiceNameValidator :
-        private InstantiationPolicy<UnprefixedChoiceNameValidator, instantiation_method::NonInstantiableTag>
+    template <>
+    struct WrappedValueTraits<ChoiceNameWithPrefixTag>
     {
-        /**
-         * If the parameter is not a valid value for a UnprefixedChoiceName, throw
-         * a UnprefixedChoiceNameError.
-         */
-        static void validate(const std::string &);
+        typedef std::string UnderlyingType;
+        typedef void ValidationParamsType;
+        typedef ChoiceNameWithPrefixError ExceptionType;
+
+        static bool validate(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**

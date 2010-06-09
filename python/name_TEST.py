@@ -36,7 +36,7 @@ class TestCase_Names(unittest.TestCase):
     def test_2_create_error(self):
         self.assertRaises(PackageNamePartError, PackageNamePart, ":bad")
         self.assertRaises(CategoryNamePartError, CategoryNamePart, ":bad")
-        self.assertRaises(QualifiedPackageNameError, QualifiedPackageName, ":bad")
+        self.assertRaises(CategoryNamePartError, QualifiedPackageName, ":bad")
         self.assertRaises(SlotNameError, SlotName, ":bad")
         self.assertRaises(RepositoryNameError, RepositoryName, ":bad")
         self.assertRaises(KeywordNameError, KeywordName, ":bad")
@@ -44,7 +44,6 @@ class TestCase_Names(unittest.TestCase):
         self.assertRaises(Exception, PackageNamePartIterable)
         self.assertRaises(Exception, CategoryNamePartIterable)
         self.assertRaises(Exception, QualifiedPackageNameIterable)
-        self.assertRaises(Exception, RepositoryNameIterable)
 
     def test_3_str(self):
         self.test_1_create()
@@ -58,10 +57,6 @@ class TestCase_Names(unittest.TestCase):
         qpn = QualifiedPackageName("cat/foo")
         self.assertEqual(str(qpn.category), "cat")
         self.assertEqual(str(qpn.package), "foo")
-        qpn.category = "blah"
-        qpn.package = "bar"
-        self.assertEqual(str(qpn.category), "blah")
-        self.assertEqual(str(qpn.package), "bar")
 
 if __name__ == "__main__":
     unittest.main()

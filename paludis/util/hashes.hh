@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_HASHES_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <paludis/util/validated-fwd.hh>
+#include <paludis/util/wrapped_value-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <cstddef>
 #include <utility>
@@ -83,12 +83,12 @@ namespace paludis
         }
     };
 
-    template <typename D_, typename V_, bool b_, typename C_>
-    struct Hash<Validated<D_, V_, b_, C_> >
+    template <typename Tag_>
+    struct Hash<WrappedValue<Tag_> >
     {
-        std::size_t operator() (const Validated<D_, V_, b_, C_> & v) const
+        std::size_t operator() (const WrappedValue<Tag_> & v) const
         {
-            return Hash<D_>()(v.data());
+            return Hash<typename WrappedValueTraits<Tag_>::UnderlyingType>()(v.value());
         }
     };
 

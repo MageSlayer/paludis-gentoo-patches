@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -86,11 +86,9 @@ CommandLine::CommandLine() :
     tree_args(main_options_section(), "Tree action options",
             "Options which are relevant for tree actions."),
     a_category(&tree_args,   "category",   'C',
-            "Matches with this category name only (may be specified multiple times)",
-            paludis::args::StringSetArg::StringSetArgOptions(), &paludis::CategoryNamePartValidator::validate),
+            "Matches with this category name only (may be specified multiple times)"),
     a_package(&tree_args,    "package",    'P',
-            "Matches with this package name only (may be specified multiple times)",
-            paludis::args::StringSetArg::StringSetArgOptions(), &paludis::PackageNamePartValidator::validate),
+            "Matches with this package name only (may be specified multiple times)"),
 
     profile_args(main_options_section(), "Profile action options",
             "Options which are relevant for profile actions."),

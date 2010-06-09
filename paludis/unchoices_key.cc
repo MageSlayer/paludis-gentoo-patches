@@ -20,7 +20,6 @@
 #include <paludis/unchoices_key.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/choice.hh>
-#include <paludis/util/validated.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>

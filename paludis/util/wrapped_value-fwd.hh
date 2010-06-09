@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,28 +17,28 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_UTIL_VALIDATED_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_UTIL_VALIDATED_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_UTIL_WRAPPED_VALUE_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_UTIL_WRAPPED_VALUE_FWD_HH 1
 
+#include <paludis/util/attributes.hh>
 #include <iosfwd>
-
-/** \file
- * Forward declarations for paludis/util/validated.hh .
- *
- * \ingroup g_data_structures
- */
 
 namespace paludis
 {
-    template <typename T_>
-    struct DefaultValidatedComparator;
+    template <typename Tag_>
+    struct WrappedValue;
 
-    template <typename D_, typename, bool = true, typename = DefaultValidatedComparator<D_> >
-    class Validated;
+    template <typename Tag_>
+    struct WrappedValueTraits;
 
-    template <typename D_, typename V_, bool c_, typename C_>
-    std::ostream &
-    operator<< (std::ostream & s, const Validated<D_, V_, c_, C_> & v);
+    template <typename Type_>
+    struct WrappedValueDevoid;
+
+    template <typename Tag_, typename Extra_>
+    struct WrappedValueValidate;
+
+    template <typename Tag_>
+    std::ostream & operator<< (std::ostream &, const WrappedValue<Tag_> &) PALUDIS_VISIBLE;
 }
 
 #endif

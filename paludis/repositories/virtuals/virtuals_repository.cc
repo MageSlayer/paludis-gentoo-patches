@@ -252,7 +252,7 @@ VirtualsRepository::need_ids() const
 std::tr1::shared_ptr<const PackageIDSequence>
 VirtualsRepository::package_ids(const QualifiedPackageName & q) const
 {
-    if (q.category().data() != "virtual")
+    if (q.category().value() != "virtual")
         return std::tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
 
     need_ids();
@@ -267,7 +267,7 @@ VirtualsRepository::package_ids(const QualifiedPackageName & q) const
 std::tr1::shared_ptr<const QualifiedPackageNameSet>
 VirtualsRepository::package_names(const CategoryNamePart & c) const
 {
-    if (c.data() != "virtual")
+    if (c.value() != "virtual")
         return std::tr1::shared_ptr<QualifiedPackageNameSet>(new QualifiedPackageNameSet);
 
     need_ids();
@@ -290,7 +290,7 @@ VirtualsRepository::category_names() const
 bool
 VirtualsRepository::has_package_named(const QualifiedPackageName & q) const
 {
-    if (q.category().data() != "virtual")
+    if (q.category().value() != "virtual")
         return false;
 
     need_names();
@@ -308,7 +308,7 @@ VirtualsRepository::has_package_named(const QualifiedPackageName & q) const
 bool
 VirtualsRepository::has_category_named(const CategoryNamePart & c) const
 {
-    return (c.data() == "virtual");
+    return (c.value() == "virtual");
 }
 
 void
@@ -333,7 +333,7 @@ const std::tr1::shared_ptr<const PackageID>
 VirtualsRepository::make_virtual_package_id(
         const QualifiedPackageName & virtual_name, const std::tr1::shared_ptr<const PackageID> & provider) const
 {
-    if (virtual_name.category().data() != "virtual")
+    if (virtual_name.category().value() != "virtual")
         throw InternalError(PALUDIS_HERE, "tried to make a virtual package id using '" + stringify(virtual_name) + "', '"
                 + stringify(*provider) + "'");
 

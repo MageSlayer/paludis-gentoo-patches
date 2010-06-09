@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -108,15 +108,11 @@ CommandLine::CommandLine() :
 
     list_args(main_options_section(), "List options",
             "Options relevant for one or more of the --list actions."),
-    a_repository(&list_args, "repository", '\0', "Matches with this repository name only",
-            paludis::args::StringSetArg::StringSetArgOptions(), &paludis::RepositoryNameValidator::validate),
+    a_repository(&list_args, "repository", '\0', "Matches with this repository name only"),
     a_repository_format(&list_args, "repository-format", '\0', "Matches with this repository format only"),
-    a_category(&list_args,   "category",   '\0', "Matches with this category name only",
-            paludis::args::StringSetArg::StringSetArgOptions(), &paludis::CategoryNamePartValidator::validate),
-    a_package(&list_args,    "package",    '\0', "Matches with this package name only",
-            paludis::args::StringSetArg::StringSetArgOptions(), &paludis::PackageNamePartValidator::validate),
-    a_set(&list_args,        "set",        '\0', "Matches with this package set name only",
-            paludis::args::StringSetArg::StringSetArgOptions(), &paludis::SetNameValidator::validate),
+    a_category(&list_args,   "category",   '\0', "Matches with this category name only"),
+    a_package(&list_args,    "package",    '\0', "Matches with this package name only"),
+    a_set(&list_args,        "set",        '\0', "Matches with this package set name only"),
 
     owner_args(main_options_section(), "Owner options",
             "Options relevant for the --owner actions."),

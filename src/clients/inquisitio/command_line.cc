@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -60,13 +60,10 @@ CommandLine::CommandLine() :
     filter_args(main_options_section(), "Filter options",
             "Options that control whether or not a package is considered for matching."),
 
-    a_repository(&filter_args, "repository", 'r', "Matches with this repository name only",
-            paludis::args::StringSetArg::StringSetArgOptions(), &paludis::RepositoryNameValidator::validate),
+    a_repository(&filter_args, "repository", 'r', "Matches with this repository name only"),
     a_repository_format(&filter_args, "repository-format", '\0', "Matches with this repository format only"),
-    a_category(&filter_args,   "category",   '\0', "Matches with this category name only",
-            paludis::args::StringSetArg::StringSetArgOptions(), &paludis::CategoryNamePartValidator::validate),
-    a_package(&filter_args,    "package",    '\0', "Matches with this package name only",
-            paludis::args::StringSetArg::StringSetArgOptions(), &paludis::PackageNamePartValidator::validate),
+    a_category(&filter_args,   "category",   '\0', "Matches with this category name only"),
+    a_package(&filter_args,    "package",    '\0', "Matches with this package name only"),
     a_visible_only(&filter_args, "visible-only", 'v', "Only consider visible packages", true),
     a_all_versions(&filter_args, "all-versions", 'a', "Check all versions, rather than only one (slower)", true),
     a_kind(&filter_args, "kind", 'K', "Packages of this kind only",

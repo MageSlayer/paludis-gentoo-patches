@@ -20,7 +20,6 @@
 #include <paludis/paludislike_options_conf.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/hashes.hh>
-#include <paludis/util/validated.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/config_file.hh>

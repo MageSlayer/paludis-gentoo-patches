@@ -512,7 +512,7 @@ Decider::_find_replacing(
     Context context("When working out what is replaced by '" + stringify(*id) +
             "' when it is installed to '" + stringify(repo->name()) + "':");
 
-    std::set<RepositoryName, RepositoryNameComparator> repos;
+    std::set<RepositoryName> repos;
 
     if (repo->installed_root_key())
     {
@@ -527,7 +527,7 @@ Decider::_find_replacing(
         repos.insert(repo->name());
 
     std::tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
-    for (std::set<RepositoryName, RepositoryNameComparator>::const_iterator r(repos.begin()),
+    for (std::set<RepositoryName>::const_iterator r(repos.begin()),
             r_end(repos.end()) ;
             r != r_end ; ++r)
     {

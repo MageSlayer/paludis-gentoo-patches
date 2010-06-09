@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,6 +27,7 @@
 #include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/wrapped_value-impl.hh>
 #include <ostream>
 #include <utility>
 
@@ -35,9 +36,9 @@ using namespace paludis;
 template struct Sequence<RepositoryName>;
 template struct WrappedForwardIterator<Sequence<RepositoryName>::ConstIteratorTag, const RepositoryName>;
 
-template struct Set<RepositoryName, RepositoryNameComparator>;
-template struct WrappedForwardIterator<Set<RepositoryName, RepositoryNameComparator>::ConstIteratorTag, const RepositoryName>;
-template struct WrappedOutputIterator<Set<RepositoryName, RepositoryNameComparator>::InserterTag, RepositoryName>;
+template struct Set<RepositoryName>;
+template struct WrappedForwardIterator<Set<RepositoryName>::ConstIteratorTag, const RepositoryName>;
+template struct WrappedOutputIterator<Set<RepositoryName>::InserterTag, RepositoryName>;
 
 template struct Set<PackageNamePart>;
 template struct WrappedForwardIterator<Set<PackageNamePart>::ConstIteratorTag, const PackageNamePart>;
@@ -63,10 +64,23 @@ template struct Set<std::string>;
 template struct WrappedForwardIterator<Set<std::string>::ConstIteratorTag, const std::string>;
 template struct WrappedOutputIterator<Set<std::string>::InserterTag, std::string>;
 
-QualifiedPackageNameError::QualifiedPackageNameError(const std::string & s) throw () :
-    NameError(s, "qualified package name")
-{
-}
+template struct WrappedValue<RepositoryNameTag>;
+template std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<RepositoryNameTag> &);
+
+template struct WrappedValue<CategoryNamePartTag>;
+template std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<CategoryNamePartTag> &);
+
+template struct WrappedValue<PackageNamePartTag>;
+template std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<PackageNamePartTag> &);
+
+template struct WrappedValue<SlotNameTag>;
+template std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<SlotNameTag> &);
+
+template struct WrappedValue<KeywordNameTag>;
+template std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<KeywordNameTag> &);
+
+template struct WrappedValue<SetNameTag>;
+template std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<SetNameTag> &);
 
 std::ostream &
 paludis::operator<< (std::ostream & s, const QualifiedPackageName & q)
@@ -80,32 +94,24 @@ SlotNameError::SlotNameError(const std::string & name) throw () :
 {
 }
 
-void
-SlotNameValidator::validate(const std::string & s)
+bool
+WrappedValueTraits<SlotNameTag>::validate(const std::string & s)
 {
     static const std::string allowed_chars(
             "abcdefghijklmnopqrstuvwxyz"
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
             "0123456789-+_.");
 
-    do
-    {
-        if (s.empty())
-            break;
+    if (s.empty())
+        return false;
 
-        if ('-' == s[0] || '.' == s[0])
-            break;
+    if ('-' == s[0] || '.' == s[0])
+        return false;
 
-        if (std::string::npos != s.find_first_not_of(allowed_chars))
-            break;
+    if (std::string::npos != s.find_first_not_of(allowed_chars))
+        return false;
 
-        return;
-
-    } while (false);
-
-    Context c("When validating slot name '" + s + "':");
-
-    throw SlotNameError(s);
+    return true;
 }
 
 PackageNamePartError::PackageNamePartError(const std::string & name) throw () :
@@ -113,11 +119,9 @@ PackageNamePartError::PackageNamePartError(const std::string & name) throw () :
 {
 }
 
-void
-PackageNamePartValidator::validate(const std::string & s)
+bool
+WrappedValueTraits<PackageNamePartTag>::validate(const std::string & s)
 {
-    /* this gets called a lot, make it fast */
-
     static const std::string allowed_chars(
             "abcdefghijklmnopqrstuvwxyz"
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -127,31 +131,25 @@ PackageNamePartValidator::validate(const std::string & s)
             "0123456789");
 
     if (s.empty() || '-' == s[0])
-    {
-        Context c("When validating package name part '" + s + "':");
-        throw PackageNamePartError(s);
-    }
+        return false;
 
     for (std::string::size_type p(0) ; p < s.length() ; ++p)
     {
         if (std::string::npos == allowed_chars.find(s[p]))
-        {
-            Context c("When validating package name part '" + s + "':");
-            throw PackageNamePartError(s);
-        }
+            return false;
 
         if ((p + 1 < s.length()) && (s[p] == '-') &&
                 (std::string::npos != number_chars.find(s[p + 1])))
             if (std::string::npos == s.find_first_not_of(number_chars, p + 1))
-                throw PackageNamePartError(s);
+                return false;
     }
+
+    return true;
 }
 
-void
-CategoryNamePartValidator::validate(const std::string & s)
+bool
+WrappedValueTraits<CategoryNamePartTag>::validate(const std::string & s)
 {
-    /* this gets called a lot, make it fast */
-
     // Allow . because crossdev can create, for example,
     // cross-i686-unknown-freebsd6.0   --spb
     static const std::string allowed_chars(
@@ -159,23 +157,16 @@ CategoryNamePartValidator::validate(const std::string & s)
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
             "0123456789-+_.");
 
-    do
-    {
-        if (s.empty())
-            break;
+    if (s.empty())
+        return false;
 
-        if ('-' == s[0] || '.' == s[0])
-            break;
+    if ('-' == s[0] || '.' == s[0])
+        return false;
 
-        if (std::string::npos != s.find_first_not_of(allowed_chars))
-            break;
+    if (std::string::npos != s.find_first_not_of(allowed_chars))
+        return false;
 
-        return;
-
-    } while (false);
-
-    Context c("When validating category name '" + s + "':");
-    throw CategoryNamePartError(s);
+    return true;
 }
 
 CategoryNamePartError::CategoryNamePartError(const std::string & name) throw () :
@@ -183,31 +174,24 @@ CategoryNamePartError::CategoryNamePartError(const std::string & name) throw () 
 {
 }
 
-void
-RepositoryNameValidator::validate(const std::string & s)
+bool
+WrappedValueTraits<RepositoryNameTag>::validate(const std::string & s)
 {
     static const std::string allowed_chars(
             "abcdefghijklmnopqrstuvwxyz"
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
             "0123456789-_");
 
-    do
-    {
-        if (s.empty())
-            break;
+    if (s.empty())
+        return false;
 
-        if ('-' == s[0])
-            break;
+    if ('-' == s[0])
+        return false;
 
-        if (std::string::npos != s.find_first_not_of(allowed_chars))
-            break;
+    if (std::string::npos != s.find_first_not_of(allowed_chars))
+        return false;
 
-        return;
-
-    } while (false);
-
-    Context c("When validating repository name '" + s + "':");
-    throw RepositoryNameError(s);
+    return true;
 }
 
 RepositoryNameError::RepositoryNameError(const std::string & name) throw () :
@@ -220,63 +204,36 @@ KeywordNameError::KeywordNameError(const std::string & name) throw () :
 {
 }
 
-void
-KeywordNameValidator::validate(const std::string & s)
+bool
+WrappedValueTraits<KeywordNameTag>::validate(const std::string & s)
 {
     static const std::string allowed_chars(
             "abcdefghijklmnopqrstuvwxyz"
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
             "0123456789-_");
 
-    do
+    switch (s.length())
     {
-        switch (s.length())
-        {
-            case 0:
-                continue;
+        case 0:
+            return false;;
 
-            case 1:
-                if ("*" == s)
-                    return;
-                continue;
+        case 1:
+            if ("*" == s)
+                return true;
+            return false;
 
-            case 2:
-                if ("-*" == s)
-                    return;
+        case 2:
+            if ("-*" == s)
+                return true;
 
-                /* fall through */
-            default:
-                if (std::string::npos != s.find_first_not_of(allowed_chars,
-                            ('~' == s[0] ? 1 : 0)))
-                    continue;
-        }
-
-        return;
-
-    } while (false);
-
-    Context c("When validating keyword name '" + s + "':");
-    throw KeywordNameError(s);
-}
-
-bool
-KeywordNameComparator::operator() (const std::string & a, const std::string & b) const
-{
-    char a_prefix('~' == a[0] || '-' == a[0] ? a[0] : '\0');
-    char b_prefix('~' == b[0] || '-' == b[0] ? b[0] : '\0');
-    const std::string a_keyword(a_prefix ? a.substr(1) : a);
-    const std::string b_keyword(b_prefix ? b.substr(1) : b);
-
-    if (a_keyword == b_keyword)
-    {
-        if ('\0' == a_prefix && '\0' != b_prefix)
-            return true;
-        if ('~' == a_prefix && '-' == b_prefix)
-            return true;
-        return false;
+            /* fall through */
+        default:
+            if (std::string::npos != s.find_first_not_of(allowed_chars,
+                        ('~' == s[0] ? 1 : 0)))
+                return false;
     }
-    else
-        return a_keyword < b_keyword;
+
+    return true;
 }
 
 namespace
@@ -288,7 +245,7 @@ namespace
 
         std::string::size_type p(s.find('/'));
         if (std::string::npos == p)
-            throw QualifiedPackageNameError(s);
+            throw CategoryNamePartError("/" + s);
 
         return CategoryNamePart(s.substr(0, p));
 
@@ -301,7 +258,7 @@ namespace
 
         std::string::size_type p(s.find('/'));
         if (std::string::npos == p)
-            throw QualifiedPackageNameError(s);
+            throw PackageNamePartError("/" + s);
 
         return PackageNamePart(s.substr(p + 1));
 
@@ -309,14 +266,14 @@ namespace
 }
 
 QualifiedPackageName::QualifiedPackageName(const std::string & s) :
-    category(get_category_name_part(s)),
-    package(get_package_name_part(s))
+    _cat(get_category_name_part(s)),
+    _pkg(get_package_name_part(s))
 {
 }
 
 QualifiedPackageName::QualifiedPackageName(const CategoryNamePart & c, const PackageNamePart & p) :
-    category(c),
-    package(p)
+    _cat(c),
+    _pkg(p)
 {
 }
 
@@ -337,52 +294,44 @@ QualifiedPackageName::operator== (const QualifiedPackageName & other) const
     return category() == other.category() && package() == other.package();
 }
 
-void
-SetNameValidator::validate(const std::string & s)
+bool
+WrappedValueTraits<SetNameTag>::validate(const std::string & s)
 {
     static const std::string allowed_chars(
             "abcdefghijklmnopqrstuvwxyz"
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
             "0123456789-+_:");
 
-    do
+    if (s.empty())
+        return false;
+
+    if (s.length() > 1 && '*' == s[s.length() - 1] && '*' != s[s.length() - 2])
     {
-        if (s.empty())
-            break;
+        Context c("When validating set name '" + s + "':");
+        return validate(s.substr(0, s.length() - 1));
+    }
 
-        if (s.length() > 1 && '*' == s[s.length() - 1] && '*' != s[s.length() - 2])
-        {
-            Context c("When validating set name '" + s + "':");
-            validate(s.substr(0, s.length() - 1));
-            return;
-        }
+    if ('-' == s[0] || '.' == s[0])
+        return false;
 
-        if ('-' == s[0] || '.' == s[0])
-            break;
+    if (std::string::npos != s.find_first_not_of(allowed_chars))
+        return false;
 
-        if (std::string::npos != s.find_first_not_of(allowed_chars))
-            break;
+    std::string::size_type p(s.find(':'));
+    if (std::string::npos != p)
+    {
+        if (++p >= s.length())
+            return false;
+        if (s[p] != ':')
+            return false;
 
-        std::string::size_type p(s.find(':'));
-        if (std::string::npos != p)
-        {
-            if (++p >= s.length())
-                break;
-            if (s[p] != ':')
-                break;
+        if (++p >= s.length())
+            return false;
+        if (std::string::npos != s.find(':', p))
+            return false;
+    }
 
-            if (++p >= s.length())
-                break;
-            if (std::string::npos != s.find(':', p))
-                break;
-        }
-
-        return;
-
-    } while (false);
-
-    Context c("When validating set name '" + s + "':");
-    throw SetNameError(s);
+    return true;
 }
 
 SetNameError::SetNameError(const std::string & name) throw () :

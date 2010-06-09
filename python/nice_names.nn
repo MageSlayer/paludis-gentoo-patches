@@ -55,7 +55,6 @@ make_nn_NiceNames() {
     name "QualifiedPackageNameSet"
     name "SlotName"
     name "RepositoryName"
-    name "RepositoryNameSequence"
     name "KeywordName"
     name "KeywordNameSet"
     name "SetName"

@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
 # Copyright (c) 2006, 2007, 2008 Richard Brown
 #
 # This file is part of the Paludis package manager. Paludis is free software;
@@ -318,7 +318,7 @@ module Paludis
 
             assert_raise TypeError do f.add_package(42) end
 
-            assert_raise NameError do f.add_package('test') end
+            assert_raise CategoryNamePartError do f.add_package('test') end
             assert_raise CategoryNamePartError do f.add_package('f o o/bar') end
             assert_raise PackageNamePartError do f.add_package('foo/b a r') end
         end
@@ -362,7 +362,7 @@ module Paludis
             assert_raise TypeError do f.add_version('foo-bar', {}, '9') end
             assert_raise TypeError do f.add_version('foo-bar', 'baz', Paludis) end
 
-            assert_raise NameError do f.add_version('foo', '42') end
+            assert_raise CategoryNamePartError do f.add_version('foo', '42') end
             assert_raise CategoryNamePartError do f.add_version('f o o/bar', '42') end
             assert_raise PackageNamePartError do f.add_version('foo/b a r' , '42') end
             assert_raise BadVersionSpecError do f.add_version('foo/bar', 'abc') end

@@ -99,7 +99,7 @@ FixCacheCommand::run(
     if (cmdline.begin_parameters() != cmdline.end_parameters())
         throw args::DoHelp("fix-cache takes no parameters");
 
-    std::set<RepositoryName, RepositoryNameComparator> repository_names;
+    std::set<RepositoryName> repository_names;
 
     bool all(true);
 
@@ -138,7 +138,7 @@ FixCacheCommand::run(
                 r != r_end; ++r)
             repository_names.insert(r->name());
 
-    for (std::set<RepositoryName, RepositoryNameComparator>::const_iterator r(repository_names.begin()), r_end(repository_names.end()) ;
+    for (std::set<RepositoryName>::const_iterator r(repository_names.begin()), r_end(repository_names.end()) ;
             r != r_end; ++r)
     {
         cout << format_general_s(f::fix_cache_fixing(), stringify(*r));

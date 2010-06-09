@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2009 Kim Højgaard-Hansen
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -59,11 +59,9 @@ CommandLine::CommandLine() :
     tree_args(main_options_section(), "Tree action options",
                 "Options which are relevant for tree actions."),
     a_category(&tree_args,   "category",   'C',
-            "Matches with this category name only (may be specified multiple times)",
-            args::StringSetArg::StringSetArgOptions(), &CategoryNamePartValidator::validate),
+            "Matches with this category name only (may be specified multiple times)"),
     a_package(&tree_args,    "package",    'P',
-            "Matches with this package name only (may be specified multiple times)",
-            args::StringSetArg::StringSetArgOptions(), &PackageNamePartValidator::validate)
+            "Matches with this package name only (may be specified multiple times)")
 {
     add_usage_line("--manifest");
 

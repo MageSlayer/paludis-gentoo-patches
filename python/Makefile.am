@@ -53,7 +53,7 @@ IF_PYTHON_SOURCES = \
 	paludis_python.hh \
 	options.hh \
 	iterable.hh \
-	validated.hh \
+	wrapped_value.hh \
 	about.cc \
 	action.cc \
 	choices.cc \

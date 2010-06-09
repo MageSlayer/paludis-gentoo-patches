@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,11 +20,11 @@
 #ifndef PALUDIS_GUARD_PALUDIS_NAME_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_NAME_FWD_HH 1
 
-#include <paludis/util/validated-fwd.hh>
+#include <paludis/util/wrapped_value-fwd.hh>
 #include <paludis/util/set-fwd.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <string>
+#include <iosfwd>
 
 /** \file
  * Forward declarations for paludis/name.hh .
@@ -34,8 +34,9 @@
 
 namespace paludis
 {
+    class PackageNamePartTag;
     class PackageNamePartError;
-    class PackageNamePartValidator;
+    template <> struct WrappedValueTraits<PackageNamePartTag>;
 
     /**
      * A PackageNamePart holds a std::string that is a valid name for the
@@ -43,17 +44,13 @@ namespace paludis
      *
      * \ingroup g_names
      */
-    typedef Validated<std::string, PackageNamePartValidator> PackageNamePart;
+    typedef WrappedValue<PackageNamePartTag> PackageNamePart;
 
-    /**
-     * Holds a set of PackageNamePart instances.
-     *
-     * \ingroup g_names
-     */
     typedef Set<PackageNamePart> PackageNamePartSet;
 
+    class CategoryNamePartTag;
     class CategoryNamePartError;
-    class CategoryNamePartValidator;
+    template <> struct WrappedValueTraits<CategoryNamePartTag>;
 
     /**
      * A CategoryNamePart holds a std::string that is a valid name for the
@@ -61,13 +58,8 @@ namespace paludis
      *
      * \ingroup g_names
      */
-    typedef Validated<std::string, CategoryNamePartValidator> CategoryNamePart;
+    typedef WrappedValue<CategoryNamePartTag> CategoryNamePart;
 
-    /**
-     * Holds a set of CategoryNamePart instances.
-     *
-     * \ingroup g_names
-     */
     typedef Set<CategoryNamePart> CategoryNamePartSet;
 
     class QualifiedPackageName;
@@ -80,15 +72,6 @@ namespace paludis
     std::ostream & operator<< (std::ostream &, const QualifiedPackageName &) PALUDIS_VISIBLE;
 
     /**
-     * Holds a collection of QualifiedPackageName instances.
-     *
-     * \ingroup g_names
-     */
-    typedef Set<QualifiedPackageName> QualifiedPackageNameSet;
-
-    class QualifiedPackageNameError;
-
-    /**
      * A CategoryNamePart plus a PackageNamePart is a QualifiedPackageName.
      *
      * \ingroup g_names
@@ -96,18 +79,22 @@ namespace paludis
     inline const QualifiedPackageName
     operator+ (const CategoryNamePart & c, const PackageNamePart & p) PALUDIS_ATTRIBUTE((warn_unused_result));
 
+    class SlotNameTag;
     class SlotNameError;
-    class SlotNameValidator;
+    template <> struct WrappedValueTraits<SlotNameTag>;
+
+    typedef Set<QualifiedPackageName> QualifiedPackageNameSet;
 
     /**
      * A SlotName holds a std::string that is a valid name for a SLOT.
      *
      * \ingroup g_names
      */
-    typedef Validated<std::string, SlotNameValidator> SlotName;
+    typedef WrappedValue<SlotNameTag> SlotName;
 
+    class RepositoryNameTag;
     class RepositoryNameError;
-    class RepositoryNameValidator;
+    template <> struct WrappedValueTraits<RepositoryNameTag>;
 
     /**
      * A RepositoryName holds a std::string that is a valid name for a
@@ -115,57 +102,34 @@ namespace paludis
      *
      * \ingroup g_names
      */
-    typedef Validated<std::string, RepositoryNameValidator, false> RepositoryName;
+    typedef WrappedValue<RepositoryNameTag> RepositoryName;
 
-    /**
-     * Holds a collection of RepositoryName instances.
-     *
-     * \ingroup g_names
-     */
-    typedef Sequence<RepositoryName> RepositoryNameSequence;
+    typedef Set<RepositoryName> RepositoryNameSet;
 
-    class RepositoryNameComparator;
-
-    /**
-     * Holds an arbitrarily ordered collection of RepositoryName instances.
-     *
-     * \ingroup g_names
-     */
-    typedef Set<RepositoryName, RepositoryNameComparator> RepositoryNameSet;
-
-    class KeywordNameValidator;
+    class KeywordNameTag;
     class KeywordNameError;
-    class KeywordNameComparator;
+    template <> struct WrappedValueTraits<KeywordNameTag>;
 
     /**
      * A KeywordName holds a std::string that is a valid name for a KEYWORD.
      *
      * \ingroup g_names
      */
-    typedef Validated<std::string, KeywordNameValidator, true, KeywordNameComparator> KeywordName;
+    typedef WrappedValue<KeywordNameTag> KeywordName;
 
-    /**
-     * Holds a collection of KeywordName instances.
-     *
-     * \ingroup g_names
-     */
     typedef Set<KeywordName> KeywordNameSet;
 
-    class SetNameValidator;
+    class SetNameTag;
     class SetNameError;
+    template <> struct WrappedValueTraits<SetNameTag>;
 
     /**
      * A SetName holds a std::string that is a valid name for a set.
      *
      * \ingroup g_names
      */
-    typedef Validated<std::string, SetNameValidator> SetName;
+    typedef WrappedValue<SetNameTag> SetName;
 
-    /**
-     * A collection of set names.
-     *
-     * \ingroup g_names
-     */
     typedef Set<SetName> SetNameSet;
 }
 

@@ -25,7 +25,6 @@
 
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/validated.hh>
 #include <tr1/type_traits>
 
 namespace paludis
@@ -38,10 +37,10 @@ namespace paludis
             static const bool value = std::tr1::is_convertible<From_, To_>::value;
         };
 
-        template <typename From_, typename ValidatedDataType_, typename Validator_, bool full_comparison_, typename Comparator_>
-        struct IsConvertible<From_, Validated<ValidatedDataType_, Validator_, full_comparison_, Comparator_> >
+        template <typename From_, typename Tag_>
+        struct IsConvertible<From_, WrappedValue<Tag_> >
         {
-            static const bool value = std::tr1::is_convertible<From_, ValidatedDataType_>::value;
+            static const bool value = std::tr1::is_convertible<From_, typename WrappedValueTraits<Tag_>::UnderlyingType>::value;
         };
 
         template <typename To_, typename From_, typename C_, bool>

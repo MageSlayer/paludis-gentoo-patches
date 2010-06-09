@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,12 +18,6 @@
  */
 
 #include <paludis/environment.hh>
-#include <paludis/util/exception.hh>
-#include <paludis/util/stringify.hh>
-#include <paludis/util/sequence-impl.hh>
-#include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/wrapped_output_iterator-impl.hh>
-#include <paludis/util/set-impl.hh>
 
 using namespace paludis;
 
@@ -31,6 +25,3 @@ Environment::~Environment()
 {
 }
 
-template class Set<UnprefixedChoiceName>;
-template class WrappedForwardIterator<Set<UnprefixedChoiceName>::ConstIteratorTag, const UnprefixedChoiceName>;
-template class WrappedOutputIterator<Set<UnprefixedChoiceName>::InserterTag, UnprefixedChoiceName>;

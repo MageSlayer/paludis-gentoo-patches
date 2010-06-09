@@ -204,7 +204,7 @@ namespace
         {
             if (a.first != b.first)
                 return a.first < b.first;
-            return RepositoryNameComparator()(a.second, b.second);
+            return a.second < b.second;
         }
     };
 

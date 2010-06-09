@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -68,11 +68,9 @@ namespace
             g_filters(main_options_section(), "Filters", "Filter the output. Each filter may be specified more than once. The object "
                     "specified by the filter does not have to exist."),
             a_containing(&g_filters, "containing", '\0', "Show only categories containing this package name. If specified "
-                    "multiple times, categories containing any of these package names are selected.",
-                    args::StringSetArg::StringSetArgOptions(), &PackageNamePartValidator::validate),
+                    "multiple times, categories containing any of these package names are selected."),
             a_repository(&g_filters, "repository", '\0', "Show only categories in this repository. If specified multiple "
-                    "times, categories in any of these repositories are selected.",
-                    args::StringSetArg::StringSetArgOptions(), &RepositoryNameValidator::validate)
+                    "times, categories in any of these repositories are selected.")
         {
             add_usage_line("[ --containing pkgname ] [ --repository reponame ]");
         }

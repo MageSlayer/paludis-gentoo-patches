@@ -102,11 +102,11 @@ ERepositorySets::package_set(const SetName & ss) const
 {
     using namespace std::tr1::placeholders;
 
-    if ("system" == ss.data())
+    if ("system" == ss.value())
         throw InternalError(PALUDIS_HERE, "system set should've been handled by ERepository");
-    else if ("security" == ss.data())
+    else if ("security" == ss.value())
         return security_set(false);
-    else if ("insecurity" == ss.data())
+    else if ("insecurity" == ss.value())
         return security_set(true);
 
     std::pair<SetName, SetFileSetOperatorMode> s(find_base_set_name_and_suffix_mode(ss));

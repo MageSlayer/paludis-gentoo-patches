@@ -24,7 +24,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/validated.hh>
 #include <paludis/choice.hh>
 #include <set>
 

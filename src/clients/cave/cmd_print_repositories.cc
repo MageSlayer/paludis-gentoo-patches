@@ -93,7 +93,7 @@ PrintRepositoriesCommand::run(
     if (cmdline.begin_parameters() != cmdline.end_parameters())
         throw args::DoHelp("print-repositories takes no parameters");
 
-    std::set<RepositoryName, RepositoryNameComparator> repository_names;
+    std::set<RepositoryName> repository_names;
 
     for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
             r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories());

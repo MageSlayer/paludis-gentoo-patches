@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_CHOICE_FWD_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <paludis/util/validated-fwd.hh>
+#include <paludis/util/wrapped_value-fwd.hh>
 
 /** \file
  * Forward declarations for paludis/choice.hh .
@@ -39,9 +39,13 @@ namespace paludis
 
     class ChoiceParams;
 
-    struct ChoicePrefixNameValidator;
-    struct ChoiceNameWithPrefixValidator;
-    struct UnprefixedChoiceNameValidator;
+    struct ChoicePrefixNameTag;
+    struct ChoiceNameWithPrefixTag;
+    struct UnprefixedChoiceNameTag;
+
+    template <> struct WrappedValueTraits<ChoicePrefixNameTag>;
+    template <> struct WrappedValueTraits<ChoiceNameWithPrefixTag>;
+    template <> struct WrappedValueTraits<UnprefixedChoiceNameTag>;
 
     /**
      * A prefix for a choice name ('' for USE, 'linguas' for LINGUAS etc).
@@ -49,7 +53,7 @@ namespace paludis
      * \ingroup g_choices
      * \since 0.32
      */
-    typedef Validated<std::string, ChoicePrefixNameValidator> ChoicePrefixName;
+    typedef WrappedValue<ChoicePrefixNameTag> ChoicePrefixName;
 
     /**
      * A choice name, including prefix and delim ('nls' for USE, 'linguas_en' for LINGUAS etc).
@@ -57,7 +61,7 @@ namespace paludis
      * \ingroup g_choices
      * \since 0.32
      */
-    typedef Validated<std::string, ChoiceNameWithPrefixValidator> ChoiceNameWithPrefix;
+    typedef WrappedValue<ChoiceNameWithPrefixTag> ChoiceNameWithPrefix;
 
     /**
      * A choice name, without prefix or delim ('nls' for USE, 'en' for LINGUAS etc).
@@ -65,7 +69,7 @@ namespace paludis
      * \ingroup g_choices
      * \since 0.32
      */
-    typedef Validated<std::string, UnprefixedChoiceNameValidator> UnprefixedChoiceName;
+    typedef WrappedValue<UnprefixedChoiceNameTag> UnprefixedChoiceName;
 }
 
 #endif

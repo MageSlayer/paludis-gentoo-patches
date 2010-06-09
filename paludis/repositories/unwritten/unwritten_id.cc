@@ -184,7 +184,7 @@ UnwrittenID::breaks_portage() const
 bool
 UnwrittenID::arbitrary_less_than_comparison(const PackageID & other) const
 {
-    return slot_key()->value().data() < (other.slot_key() ? stringify(other.slot_key()->value()) : "");
+    return slot_key()->value().value() < (other.slot_key() ? stringify(other.slot_key()->value()) : "");
 }
 
 std::size_t
