@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -49,6 +49,10 @@ Thread::thread_func(void * r)
     try
     {
         static_cast<Thread *>(r)->_func();
+    }
+    catch (const Exception & e)
+    {
+        static_cast<Thread *>(r)->_exception = e.backtrace(": ") + e.message() + " (" + e.what() + ")";
     }
     catch (const std::exception & e)
     {
