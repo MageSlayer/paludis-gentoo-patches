@@ -22,11 +22,13 @@
 
 #include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/resolver/destination_types-fwd.hh>
-#include <paludis/serialise-fwd.hh>
+#include <paludis/resolver/destination_types-fwd.hh>
+#include <paludis/resolver/slot_name_or_null.hh>
 #include <paludis/util/named_value.hh>
-#include <paludis/name.hh>
+#include <paludis/serialise-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/name.hh>
 #include <tr1/memory>
 
 namespace paludis
@@ -34,25 +36,12 @@ namespace paludis
     namespace n
     {
         typedef Name<struct destination_type_name> destination_type;
-        typedef Name<struct name_or_null_name> name_or_null;
-        typedef Name<struct null_means_unknown_name> null_means_unknown;
         typedef Name<struct package_name> package;
         typedef Name<struct slot_name> slot;
     }
 
     namespace resolver
     {
-        struct SlotNameOrNull
-        {
-            NamedValue<n::name_or_null, std::tr1::shared_ptr<const SlotName> > name_or_null;
-            NamedValue<n::null_means_unknown, bool> null_means_unknown;
-
-            void serialise(Serialiser &) const;
-            static const SlotNameOrNull deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            std::size_t hash() const PALUDIS_ATTRIBUTE((warn_unused_result));
-        };
-
         struct Resolvent
         {
             NamedValue<n::destination_type, DestinationType> destination_type;

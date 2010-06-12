@@ -75,21 +75,6 @@ paludis::resolver::operator== (const Resolvent & a, const Resolvent & b)
     return true;
 }
 
-bool
-paludis::resolver::operator== (const SlotNameOrNull & a, const SlotNameOrNull & b)
-{
-    if ((!! a.name_or_null()) != (!! b.name_or_null()))
-        return false;
-
-    if ((a.name_or_null()) && (*a.name_or_null() != *b.name_or_null()))
-        return false;
-
-    if ((! a.name_or_null()) && (a.null_means_unknown() != b.null_means_unknown()))
-        return false;
-
-    return true;
-}
-
 #ifdef PALUDIS_HAVE_DEFAULT_DELETED
 
 Resolvent::Resolvent(const Resolvent &) = default;
@@ -212,53 +197,10 @@ paludis::resolver::make_slot_filter(const Resolvent & r)
 }
 
 std::ostream &
-paludis::resolver::operator<< (std::ostream & s, const SlotNameOrNull & n)
-{
-    if (n.name_or_null())
-        s << ":" << *n.name_or_null();
-    else if (n.null_means_unknown())
-        s << ":(unknown)";
-    else
-        s << ":(no slot)";
-    return s;
-}
-
-std::ostream &
 paludis::resolver::operator<< (std::ostream & s, const Resolvent & r)
 {
     s << r.package() << r.slot() << "::(" << r.destination_type() << ")";
     return s;
-}
-
-void
-SlotNameOrNull::serialise(Serialiser & s) const
-{
-    s.object("SlotNameOrNull")
-        .member(SerialiserFlags<>(), "name_or_null", name_or_null() ? stringify(*name_or_null()) : "")
-        .member(SerialiserFlags<>(), "null_means_unknown", null_means_unknown())
-        ;
-}
-
-const SlotNameOrNull
-SlotNameOrNull::deserialise(Deserialisation & d)
-{
-    Deserialisator v(d, "SlotNameOrNull");
-
-    std::string s(v.member<std::string>("name_or_null"));
-
-    return make_named_values<SlotNameOrNull>(
-            n::name_or_null() = s.empty() ? make_null_shared_ptr() : make_shared_ptr(new SlotName(s)),
-            n::null_means_unknown() = v.member<bool>("null_means_unknown")
-            );
-}
-
-std::size_t
-SlotNameOrNull::hash() const
-{
-    if (name_or_null())
-        return Hash<SlotName>()(*name_or_null());
-    else
-        return 0xdeadbeef;
 }
 
 template class Sequence<Resolvent>;

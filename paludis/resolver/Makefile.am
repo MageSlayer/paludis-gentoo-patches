@@ -29,15 +29,15 @@ noinst_HEADERS = \
 	arrow.hh arrow-fwd.hh \
 	change_type.hh change_type-fwd.hh change_type-se.hh \
 	constraint.hh constraint-fwd.hh \
-	job.hh job-fwd.hh \
-	job_id.hh job_id-fwd.hh \
-	job_state.hh job_state-fwd.hh \
-	jobs.hh jobs-fwd.hh \
 	decider.hh decider-fwd.hh \
 	decision.hh decision-fwd.hh \
 	destination.hh destination-fwd.hh \
 	destination_types.hh destination_types-fwd.hh destination_types-se.hh \
 	failure_kinds.hh failure_kinds-fwd.hh failure_kinds-se.hh \
+	job.hh job-fwd.hh \
+	job_id.hh job_id-fwd.hh \
+	job_state.hh job_state-fwd.hh \
+	jobs.hh jobs-fwd.hh \
 	orderer.hh orderer-fwd.hh \
 	reason.hh reason-fwd.hh \
 	required_confirmations.hh required_confirmations-fwd.hh \
@@ -48,6 +48,7 @@ noinst_HEADERS = \
 	resolver_functions.hh resolver_functions-fwd.hh \
 	resolver_lists.hh resolver_lists-fwd.hh \
 	sanitised_dependencies.hh sanitised_dependencies-fwd.hh \
+	slot_name_or_null.hh slot_name_or_null-fwd.hh \
 	spec_rewriter.hh spec_rewriter-fwd.hh \
 	suggest_restart.hh suggest_restart-fwd.hh \
 	unsuitable_candidates.hh unsuitable_candidates-fwd.hh \
@@ -77,6 +78,7 @@ libpaludisresolver_a_SOURCES = \
 	resolver_functions.cc \
 	resolver_lists.cc \
 	sanitised_dependencies.cc \
+	slot_name_or_null.cc \
 	spec_rewriter.cc \
 	suggest_restart.cc \
 	unsuitable_candidates.cc \
