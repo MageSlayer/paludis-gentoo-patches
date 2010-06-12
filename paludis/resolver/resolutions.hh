@@ -30,14 +30,6 @@
 
 namespace paludis
 {
-    namespace n
-    {
-        typedef Name<struct all_name> all;
-        typedef Name<struct errors_name> errors;
-        typedef Name<struct ordered_name> ordered;
-        typedef Name<struct untaken_name> untaken;
-    }
-
     namespace resolver
     {
         class PALUDIS_VISIBLE Resolutions :

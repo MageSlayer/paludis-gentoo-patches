@@ -36,6 +36,7 @@
 #include <paludis/resolver/resolver-fwd.hh>
 #include <paludis/resolver/any_child_score-fwd.hh>
 #include <paludis/resolver/change_type-fwd.hh>
+#include <paludis/resolver/package_or_block_dep_spec-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/dep_spec-fwd.hh>

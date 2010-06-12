@@ -23,6 +23,7 @@
 #include <paludis/resolver/spec_rewriter-fwd.hh>
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
 #include <paludis/resolver/resolvent-fwd.hh>
+#include <paludis/resolver/package_or_block_dep_spec-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/sequence-fwd.hh>

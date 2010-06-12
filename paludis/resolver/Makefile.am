@@ -39,6 +39,7 @@ noinst_HEADERS = \
 	job_state.hh job_state-fwd.hh \
 	jobs.hh jobs-fwd.hh \
 	orderer.hh orderer-fwd.hh \
+	package_or_block_dep_spec.hh package_or_block_dep_spec-fwd.hh \
 	reason.hh reason-fwd.hh \
 	required_confirmations.hh required_confirmations-fwd.hh \
 	resolution.hh resolution-fwd.hh \
@@ -69,6 +70,7 @@ libpaludisresolver_a_SOURCES = \
 	job_state.cc \
 	jobs.cc \
 	orderer.cc \
+	package_or_block_dep_spec.cc \
 	reason.cc \
 	required_confirmations.cc \
 	resolution.cc \

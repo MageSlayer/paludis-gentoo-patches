@@ -28,6 +28,7 @@
 #include <paludis/resolver/resolutions-fwd.hh>
 #include <paludis/resolver/resolver_lists-fwd.hh>
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
+#include <paludis/resolver/package_or_block_dep_spec-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
