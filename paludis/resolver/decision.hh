@@ -91,8 +91,13 @@ namespace paludis
                 virtual void serialise(Serialiser &) const;
         };
 
+        class PALUDIS_VISIBLE ChangeOrRemoveDecision :
+            public Decision
+        {
+        };
+
         class PALUDIS_VISIBLE ChangesToMakeDecision :
-            public Decision,
+            public ChangeOrRemoveDecision,
             public ImplementAcceptMethods<Decision, ChangesToMakeDecision>,
             private PrivateImplementationPattern<ChangesToMakeDecision>,
             public std::tr1::enable_shared_from_this<ChangesToMakeDecision>
@@ -131,7 +136,7 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE RemoveDecision :
-            public Decision,
+            public ChangeOrRemoveDecision,
             public ImplementAcceptMethods<Decision, RemoveDecision>,
             private PrivateImplementationPattern<RemoveDecision>,
             public std::tr1::enable_shared_from_this<RemoveDecision>

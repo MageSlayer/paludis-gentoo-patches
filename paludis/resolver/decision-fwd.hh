@@ -28,11 +28,12 @@ namespace paludis
     namespace resolver
     {
         class Decision;
+        class ChangeOrRemoveDecision;
 
         class NothingNoChangeDecision;
         class ExistingNoChangeDecision;
-        class ChangesToMakeDecision;
         class UnableToMakeDecision;
+        class ChangesToMakeDecision;
         class RemoveDecision;
     }
 }
