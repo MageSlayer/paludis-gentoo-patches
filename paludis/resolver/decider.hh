@@ -220,7 +220,7 @@ namespace paludis
             public:
                 Decider(const Environment * const,
                         const ResolverFunctions &,
-                        const std::tr1::shared_ptr<ResolverLists> &);
+                        const std::tr1::shared_ptr<Resolutions> &);
                 ~Decider();
 
                 void resolve();

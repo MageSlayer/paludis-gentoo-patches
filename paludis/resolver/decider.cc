@@ -77,22 +77,21 @@ namespace paludis
         SpecRewriter rewriter;
 
         ResolutionsByResolventMap resolutions_by_resolvent;
-
-        const std::tr1::shared_ptr<ResolverLists> lists;
+        const std::tr1::shared_ptr<Resolutions> all_resolutions;
 
         Implementation(const Environment * const e, const ResolverFunctions & f,
-                const std::tr1::shared_ptr<ResolverLists> & l) :
+                const std::tr1::shared_ptr<Resolutions> & l) :
             env(e),
             fns(f),
             rewriter(env),
-            lists(l)
+            all_resolutions(l)
         {
         }
     };
 }
 
 Decider::Decider(const Environment * const e, const ResolverFunctions & f,
-        const std::tr1::shared_ptr<ResolverLists> & l) :
+        const std::tr1::shared_ptr<Resolutions> & l) :
     PrivateImplementationPattern<Decider>(new Implementation<Decider>(e, f, l))
 {
 }
@@ -574,7 +573,7 @@ Decider::_resolution_for_resolvent(const Resolvent & r, const bool create)
         {
             std::tr1::shared_ptr<Resolution> resolution(_create_resolution_for_resolvent(r));
             i = _imp->resolutions_by_resolvent.insert(std::make_pair(r, resolution)).first;
-            _imp->lists->all_resolutions()->append(resolution);
+            _imp->all_resolutions->append(resolution);
         }
         else
             throw InternalError(PALUDIS_HERE, "resolver bug: expected resolution for "

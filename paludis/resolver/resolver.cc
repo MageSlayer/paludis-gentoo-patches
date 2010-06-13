@@ -22,12 +22,14 @@
 #include <paludis/resolver/resolver_lists.hh>
 #include <paludis/resolver/spec_rewriter.hh>
 #include <paludis/resolver/decider.hh>
-#include <paludis/resolver/orderer.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/resolutions.hh>
 #include <paludis/resolver/jobs.hh>
 #include <paludis/resolver/job_id.hh>
+#include <paludis/resolver/orderer.hh>
+#include <paludis/resolver/lineariser.hh>
+#include <paludis/resolver/decisions.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
@@ -55,9 +57,11 @@ namespace paludis
         const ResolverFunctions fns;
 
         const std::tr1::shared_ptr<ResolverLists> lists;
+        const std::tr1::shared_ptr<Resolved> resolved;
 
         const std::tr1::shared_ptr<Decider> decider;
         const std::tr1::shared_ptr<Orderer> orderer;
+        const std::tr1::shared_ptr<Lineariser> lineariser;
 
         Implementation(const Environment * const e, const ResolverFunctions & f) :
             env(e),
@@ -71,8 +75,16 @@ namespace paludis
                             n::untaken_error_job_ids() = make_shared_ptr(new JobIDSequence),
                             n::untaken_job_ids() = make_shared_ptr(new JobIDSequence)
                             ))),
-            decider(new Decider(e, f, lists)),
-            orderer(new Orderer(e, f, decider, lists))
+            resolved(new Resolved(make_named_values<Resolved>(
+                            n::display_change_or_remove_decisions() = make_shared_ptr(new Decisions<ChangeOrRemoveDecision>),
+                            n::resolutions() = lists->all_resolutions(),
+                            n::taken_unable_to_make_decisions() = make_shared_ptr(new Decisions<UnableToMakeDecision>),
+                            n::untaken_change_or_remove_decisions() = make_shared_ptr(new Decisions<ChangeOrRemoveDecision>),
+                            n::untaken_unable_to_make_decisions() = make_shared_ptr(new Decisions<UnableToMakeDecision>)
+                            ))),
+            decider(new Decider(e, f, resolved->resolutions())),
+            orderer(new Orderer(e, f, decider, lists)),
+            lineariser(new Lineariser(resolved))
         {
         }
     };
@@ -161,6 +173,7 @@ Resolver::resolve()
 {
     _imp->decider->resolve();
     _imp->orderer->resolve();
+    _imp->lineariser->resolve();
 }
 
 const std::tr1::shared_ptr<const ResolverLists>

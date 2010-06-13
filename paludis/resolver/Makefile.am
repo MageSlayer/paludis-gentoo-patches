@@ -53,7 +53,10 @@ noinst_HEADERS = \
 	spec_rewriter.hh spec_rewriter-fwd.hh \
 	suggest_restart.hh suggest_restart-fwd.hh \
 	unsuitable_candidates.hh unsuitable_candidates-fwd.hh \
-	use_existing.hh use_existing-fwd.hh use_existing-se.hh
+	use_existing.hh use_existing-fwd.hh use_existing-se.hh \
+	resolved.hh resolved-fwd.hh \
+	decisions.hh decisions-fwd.hh \
+	lineariser.hh lineariser-fwd.hh
 
 libpaludisresolver_a_SOURCES = \
 	any_child_score.cc \
@@ -84,7 +87,10 @@ libpaludisresolver_a_SOURCES = \
 	spec_rewriter.cc \
 	suggest_restart.cc \
 	unsuitable_candidates.cc \
-	use_existing.cc
+	use_existing.cc \
+	resolved.cc \
+	decisions.cc \
+	lineariser.cc
 
 if ENABLE_VIRTUALS_REPOSITORY
 virtuals_tests = resolver_TEST_virtuals
