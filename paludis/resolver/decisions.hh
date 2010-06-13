@@ -23,18 +23,24 @@
 #include <paludis/resolver/decisions-fwd.hh>
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <tr1/memory>
 
 namespace paludis
 {
     namespace resolver
     {
-        template <typename D_>
+        template <typename Decision_>
         class PALUDIS_VISIBLE Decisions :
-            private PrivateImplementationPattern<Decisions<D_> >
+            private PrivateImplementationPattern<Decisions<Decision_> >
         {
+            using PrivateImplementationPattern<Decisions<Decision_> >::_imp;
+
             public:
                 Decisions();
                 ~Decisions();
+
+                void push_back(const std::tr1::shared_ptr<const Decision_> &);
+                void cast_push_back(const std::tr1::shared_ptr<const Decision> &);
         };
 
         extern template class Decisions<UnableToMakeDecision>;

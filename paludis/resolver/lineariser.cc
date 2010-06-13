@@ -18,7 +18,13 @@
  */
 
 #include <paludis/resolver/lineariser.hh>
+#include <paludis/resolver/decision.hh>
+#include <paludis/resolver/decisions.hh>
+#include <paludis/resolver/resolutions.hh>
+#include <paludis/resolver/resolution.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/util/stringify.hh>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -46,8 +52,64 @@ Lineariser::~Lineariser()
 {
 }
 
+namespace
+{
+    struct DecisionDispatcher
+    {
+        const std::tr1::shared_ptr<Resolved> resolved;
+        const std::tr1::shared_ptr<const Decision> decision;
+
+        DecisionDispatcher(
+                const std::tr1::shared_ptr<Resolved> & r,
+                const std::tr1::shared_ptr<const Decision> & d) :
+            resolved(r),
+            decision(d)
+        {
+        }
+
+        void visit(const UnableToMakeDecision &)
+        {
+            if (decision->taken())
+                resolved->taken_unable_to_make_decisions()->cast_push_back(decision);
+            else
+                resolved->untaken_unable_to_make_decisions()->cast_push_back(decision);
+        }
+
+        void visit(const NothingNoChangeDecision &)
+        {
+        }
+
+        void visit(const ExistingNoChangeDecision &)
+        {
+        }
+
+        void visit(const ChangesToMakeDecision &)
+        {
+            if (decision->taken())
+                resolved->display_change_or_remove_decisions()->cast_push_back(decision);
+            else
+                resolved->untaken_change_or_remove_decisions()->cast_push_back(decision);
+        }
+
+        void visit(const RemoveDecision &)
+        {
+            if (decision->taken())
+                resolved->display_change_or_remove_decisions()->cast_push_back(decision);
+            else
+                throw InternalError(PALUDIS_HERE, "untaken RemoveDecision");
+        }
+    };
+}
+
 void
 Lineariser::resolve()
 {
+    for (Resolutions::ConstIterator r(_imp->resolved->resolutions()->begin()),
+            r_end(_imp->resolved->resolutions()->end()) ;
+            r != r_end ; ++r)
+    {
+        DecisionDispatcher decision_dispatcher(_imp->resolved, (*r)->decision());
+        (*r)->decision()->accept(decision_dispatcher);
+    }
 }
 

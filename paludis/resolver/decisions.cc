@@ -18,7 +18,12 @@
  */
 
 #include <paludis/resolver/decisions.hh>
+#include <paludis/resolver/decision.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/util/stringify.hh>
+#include <list>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -28,21 +33,38 @@ namespace paludis
 #ifdef PALUDIS_NO_DOUBLE_TEMPLATE
     template <>
 #endif
-    template <typename D_>
-    struct Implementation<Decisions<D_> >
+    template <typename Decision_>
+    struct Implementation<Decisions<Decision_> >
     {
+        std::list<std::tr1::shared_ptr<const Decision_> > values;
     };
 }
 
-template <typename D_>
-Decisions<D_>::Decisions() :
-    PrivateImplementationPattern<Decisions<D_> >(new Implementation<Decisions<D_> >)
+template <typename Decision_>
+Decisions<Decision_>::Decisions() :
+    PrivateImplementationPattern<Decisions<Decision_> >(new Implementation<Decisions<Decision_> >)
 {
 }
 
-template <typename D_>
-Decisions<D_>::~Decisions()
+template <typename Decision_>
+Decisions<Decision_>::~Decisions()
 {
+}
+
+template <typename Decision_>
+void
+Decisions<Decision_>::push_back(const std::tr1::shared_ptr<const Decision_> & d)
+{
+    _imp->values.push_back(d);
+}
+
+template <typename Decision_>
+void
+Decisions<Decision_>::cast_push_back(const std::tr1::shared_ptr<const Decision> & d)
+{
+    if (! simple_visitor_cast<const Decision_>(*d))
+        throw InternalError(PALUDIS_HERE, "Wrong Decision type");
+    push_back(std::tr1::static_pointer_cast<const Decision_>(d));
 }
 
 template class Decisions<UnableToMakeDecision>;
