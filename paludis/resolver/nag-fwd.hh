@@ -17,33 +17,14 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_LINEARISER_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_LINEARISER_HH 1
-
-#include <paludis/resolver/lineariser-fwd.hh>
-#include <paludis/resolver/resolved-fwd.hh>
-#include <paludis/resolver/decision-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/environment-fwd.hh>
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_NAG_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_NAG_FWD_HH 1
 
 namespace paludis
 {
     namespace resolver
     {
-        class PALUDIS_VISIBLE Lineariser :
-            private PrivateImplementationPattern<Lineariser>
-        {
-            private:
-                void schedule(const std::tr1::shared_ptr<const ChangeOrRemoveDecision> &);
-
-            public:
-                Lineariser(
-                        const Environment * const,
-                        const std::tr1::shared_ptr<Resolved> &);
-                ~Lineariser();
-
-                void resolve();
-        };
+        struct NAG;
     }
 }
 

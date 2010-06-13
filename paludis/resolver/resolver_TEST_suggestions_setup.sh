@@ -50,7 +50,7 @@ END
 mkdir -p 'packages/unmeetable-suggestion/unmeetable-dep'
 cat <<END > packages/unmeetable-suggestion/unmeetable-dep/unmeetable-dep-1.exheres-0
 SUMMARY="unmeetable dep"
-PLATFORMS="test"
+PLATFORMS=""
 SLOT="0"
 END
 

@@ -35,6 +35,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/make_shared_copy.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/package_database.hh>
@@ -72,32 +73,21 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("unable-to-decide-then-more/target"));
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("unable-to-decide-then-more/target"));
 
-            {
-                TestMessageSuffix s("taken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
-                        .kind("unable_to_make_decision", QualifiedPackageName("unable-to-decide-then-more/pkg-a"))
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("untaken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-
-            {
-                TestMessageSuffix s("ordered");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
-                        .qpn(QualifiedPackageName("unable-to-decide-then-more/pkg-b"))
-                        .qpn(QualifiedPackageName("unable-to-decide-then-more/target"))
-                        .finished()
-                        );
-            }
+            check_resolved(resolved,
+                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("unable-to-decide-then-more/pkg-b"))
+                        .change(QualifiedPackageName("unable-to-decide-then-more/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .unable(QualifiedPackageName("unable-to-decide-then-more/pkg-a"))
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
         }
     } test_unable_to_decide_then_more;
 }

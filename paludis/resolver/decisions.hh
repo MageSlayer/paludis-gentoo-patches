@@ -23,12 +23,16 @@
 #include <paludis/resolver/decisions-fwd.hh>
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <tr1/memory>
 
 namespace paludis
 {
     namespace resolver
     {
+        template <typename Decision_>
+        struct DecisionsConstIteratorTag;
+
         template <typename Decision_>
         class PALUDIS_VISIBLE Decisions :
             private PrivateImplementationPattern<Decisions<Decision_> >
@@ -41,12 +45,24 @@ namespace paludis
 
                 void push_back(const std::tr1::shared_ptr<const Decision_> &);
                 void cast_push_back(const std::tr1::shared_ptr<const Decision> &);
+
+                typedef DecisionsConstIteratorTag<Decision_> ConstIteratorTag;
+                typedef WrappedForwardIterator<ConstIteratorTag, const std::tr1::shared_ptr<const Decision_> > ConstIterator;
+                ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         extern template class Decisions<UnableToMakeDecision>;
         extern template class Decisions<ChangesToMakeDecision>;
         extern template class Decisions<ChangeOrRemoveDecision>;
     }
+
+    extern template class WrappedForwardIterator<resolver::DecisionsConstIteratorTag<resolver::UnableToMakeDecision>,
+           const std::tr1::shared_ptr<const resolver::UnableToMakeDecision> >;
+    extern template class WrappedForwardIterator<resolver::DecisionsConstIteratorTag<resolver::ChangesToMakeDecision>,
+           const std::tr1::shared_ptr<const resolver::ChangesToMakeDecision> >;
+    extern template class WrappedForwardIterator<resolver::DecisionsConstIteratorTag<resolver::ChangeOrRemoveDecision>,
+           const std::tr1::shared_ptr<const resolver::ChangeOrRemoveDecision> >;
 }
 
 #endif

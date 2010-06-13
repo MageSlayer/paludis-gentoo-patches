@@ -25,6 +25,8 @@
 #include <paludis/resolver/destination_types-fwd.hh>
 #include <paludis/resolver/slot_name_or_null.hh>
 #include <paludis/util/named_value.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/serialise-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -64,6 +66,9 @@ namespace paludis
             std::size_t hash() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
+
+    extern template class Sequence<resolver::Resolvent>;
+    extern template class WrappedForwardIterator<Sequence<resolver::Resolvent>::ConstIteratorTag, const resolver::Resolvent>;
 }
 
 #endif

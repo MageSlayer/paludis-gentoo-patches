@@ -35,6 +35,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/make_shared_copy.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/package_database.hh>
@@ -72,37 +73,20 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("virtuals/target"));
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("virtuals/target"));
 
-            {
-                TestMessageSuffix s("taken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("untaken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("ordered");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
-                        .qpn(QualifiedPackageName("cat/foo-a"))
-                        .qpn(QualifiedPackageName("virtuals/target"))
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("untaken");
-                check_resolution_list(resolutions->jobs(), resolutions->untaken_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
+            check_resolved(resolved,
+                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("cat/foo-a"))
+                        .change(QualifiedPackageName("virtuals/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
         }
     } test_virtuals;
 
@@ -112,36 +96,19 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("virtual/virtual-target"));
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("virtual/virtual-target"));
 
-            {
-                TestMessageSuffix s("taken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("untaken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("ordered");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
-                        .qpn(QualifiedPackageName("cat/real-target"))
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("untaken");
-                check_resolution_list(resolutions->jobs(), resolutions->untaken_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
+            check_resolved(resolved,
+                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("cat/real-target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
         }
     } test_virtuals_target;
 }

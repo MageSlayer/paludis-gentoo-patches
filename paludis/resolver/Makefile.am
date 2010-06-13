@@ -56,7 +56,9 @@ noinst_HEADERS = \
 	use_existing.hh use_existing-fwd.hh use_existing-se.hh \
 	resolved.hh resolved-fwd.hh \
 	decisions.hh decisions-fwd.hh \
-	lineariser.hh lineariser-fwd.hh
+	lineariser.hh lineariser-fwd.hh \
+	nag.hh nag-fwd.hh \
+	strongly_connected_component.hh strongly_connected_component-fwd.hh
 
 libpaludisresolver_a_SOURCES = \
 	any_child_score.cc \
@@ -90,7 +92,9 @@ libpaludisresolver_a_SOURCES = \
 	use_existing.cc \
 	resolved.cc \
 	decisions.cc \
-	lineariser.cc
+	lineariser.cc \
+	nag.cc \
+	strongly_connected_component.cc
 
 if ENABLE_VIRTUALS_REPOSITORY
 virtuals_tests = resolver_TEST_virtuals

@@ -35,6 +35,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/make_shared_copy.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/package_database.hh>
@@ -94,31 +95,23 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("no-changes/target"));
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("no-changes/target"));
 
-            {
-                TestMessageSuffix s("taken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("untaken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("ordered");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
-                        .qpn(QualifiedPackageName("no-changes/target"))
-                        .finished()
-                        );
-            }
+            check_resolved(resolved,
+                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("no-changes/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
         }
     } test_no_changes;
+
+#if 0
 
     struct TestExistingUsable : ResolverCyclesTestCase
     {
@@ -130,30 +123,20 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("existing-usable/target"));
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("existing-usable/target"));
 
-            {
-                TestMessageSuffix s("taken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("untaken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("ordered");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
-                        .qpn(QualifiedPackageName("existing-usable/target"))
-                        .qpn(QualifiedPackageName("existing-usable/dep"))
-                        .finished()
-                        );
-            }
+            check_resolved(resolved,
+                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("existing-usable/target"))
+                        .change(QualifiedPackageName("existing-usable/dep"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
         }
     } test_existing_usable;
 
@@ -163,34 +146,26 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("mutual-run-deps/target"));
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("mutual-run-deps/target"));
 
-            {
-                TestMessageSuffix s("taken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("untaken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("ordered");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
-                        .qpn(QualifiedPackageName("mutual-run-deps/dep-a"))
-                        .qpn(QualifiedPackageName("mutual-run-deps/dep-b"))
-                        .qpn(QualifiedPackageName("mutual-run-deps/dep-c"))
-                        .qpn(QualifiedPackageName("mutual-run-deps/target"))
-                        .finished()
-                        );
-            }
+            check_resolved(resolved,
+                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("mutual-run-deps/dep-a"))
+                        .change(QualifiedPackageName("mutual-run-deps/dep-b"))
+                        .change(QualifiedPackageName("mutual-run-deps/dep-c"))
+                        .change(QualifiedPackageName("mutual-run-deps/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
         }
     } test_mutual_run_deps;
+
+#endif
 
     struct TestMutualBuildDeps : ResolverCyclesTestCase
     {
@@ -198,7 +173,7 @@ namespace test_cases
 
         void run()
         {
-            TEST_CHECK_THROWS(get_resolutions("mutual-build-deps/target"), Exception);
+            TEST_CHECK_THROWS(get_resolved("mutual-build-deps/target"), Exception);
         }
     } test_mutual_build_deps;
 }

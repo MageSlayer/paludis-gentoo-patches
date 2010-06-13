@@ -84,7 +84,7 @@ namespace paludis
                             ))),
             decider(new Decider(e, f, resolved->resolutions())),
             orderer(new Orderer(e, f, decider, lists)),
-            lineariser(new Lineariser(resolved))
+            lineariser(new Lineariser(e, resolved))
         {
         }
     };
@@ -180,5 +180,11 @@ const std::tr1::shared_ptr<const ResolverLists>
 Resolver::lists() const
 {
     return _imp->lists;
+}
+
+const std::tr1::shared_ptr<const Resolved>
+Resolver::resolved() const
+{
+    return _imp->resolved;
 }
 

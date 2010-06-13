@@ -23,6 +23,7 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <list>
 
 using namespace paludis;
@@ -37,6 +38,15 @@ namespace paludis
     struct Implementation<Decisions<Decision_> >
     {
         std::list<std::tr1::shared_ptr<const Decision_> > values;
+    };
+
+#ifdef PALUDIS_NO_DOUBLE_TEMPLATE
+    template <>
+#endif
+    template <typename Decision_>
+    struct WrappedForwardIteratorTraits<DecisionsConstIteratorTag<Decision_> >
+    {
+        typedef typename std::list<std::tr1::shared_ptr<const Decision_> >::const_iterator UnderlyingIterator;
     };
 }
 
@@ -67,7 +77,28 @@ Decisions<Decision_>::cast_push_back(const std::tr1::shared_ptr<const Decision> 
     push_back(std::tr1::static_pointer_cast<const Decision_>(d));
 }
 
+template <typename Decision_>
+typename Decisions<Decision_>::ConstIterator
+Decisions<Decision_>::begin() const
+{
+    return ConstIterator(_imp->values.begin());
+}
+
+template <typename Decision_>
+typename Decisions<Decision_>::ConstIterator
+Decisions<Decision_>::end() const
+{
+    return ConstIterator(_imp->values.end());
+}
+
 template class Decisions<UnableToMakeDecision>;
 template class Decisions<ChangesToMakeDecision>;
 template class Decisions<ChangeOrRemoveDecision>;
+
+template class WrappedForwardIterator<DecisionsConstIteratorTag<UnableToMakeDecision>,
+         const std::tr1::shared_ptr<const UnableToMakeDecision> >;
+template class WrappedForwardIterator<DecisionsConstIteratorTag<ChangesToMakeDecision>,
+         const std::tr1::shared_ptr<const ChangesToMakeDecision> >;
+template class WrappedForwardIterator<DecisionsConstIteratorTag<ChangeOrRemoveDecision>,
+         const std::tr1::shared_ptr<const ChangeOrRemoveDecision> >;
 

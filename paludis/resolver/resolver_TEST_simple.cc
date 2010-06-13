@@ -35,6 +35,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/make_shared_copy.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/package_database.hh>
@@ -72,30 +73,18 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("no-deps/target"));
-
-            {
-                TestMessageSuffix s("taken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("untaken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-
-            {
-                TestMessageSuffix s("ordered");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
-                        .qpn(QualifiedPackageName("no-deps/target"))
-                        .finished()
-                        );
-            }
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("no-deps/target"));
+            check_resolved(resolved,
+                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("no-deps/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
         }
     } test_no_deps;
 
@@ -105,33 +94,22 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("build-deps/target"));
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("build-deps/target"));
 
-            {
-                TestMessageSuffix s("taken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("untaken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-
-            {
-                TestMessageSuffix s("ordered");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
-                        .qpn(QualifiedPackageName("build-deps/a-dep"))
-                        .qpn(QualifiedPackageName("build-deps/b-dep"))
-                        .qpn(QualifiedPackageName("build-deps/z-dep"))
-                        .qpn(QualifiedPackageName("build-deps/target"))
-                        .finished()
-                        );
-            }
+            check_resolved(resolved,
+                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("build-deps/a-dep"))
+                        .change(QualifiedPackageName("build-deps/b-dep"))
+                        .change(QualifiedPackageName("build-deps/z-dep"))
+                        .change(QualifiedPackageName("build-deps/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
         }
     } test_build_deps;
 }

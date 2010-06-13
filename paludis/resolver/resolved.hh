@@ -25,6 +25,7 @@
 #include <paludis/resolver/resolutions-fwd.hh>
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/util/named_value.hh>
+#include <paludis/serialise-fwd.hh>
 #include <tr1/memory>
 
 namespace paludis
@@ -47,6 +48,9 @@ namespace paludis
             NamedValue<n::taken_unable_to_make_decisions, std::tr1::shared_ptr<Decisions<UnableToMakeDecision> > > taken_unable_to_make_decisions;
             NamedValue<n::untaken_change_or_remove_decisions, std::tr1::shared_ptr<Decisions<ChangeOrRemoveDecision> > > untaken_change_or_remove_decisions;
             NamedValue<n::untaken_unable_to_make_decisions, std::tr1::shared_ptr<Decisions<UnableToMakeDecision> > > untaken_unable_to_make_decisions;
+
+            static const Resolved deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
+            void serialise(Serialiser &) const;
         };
     }
 }

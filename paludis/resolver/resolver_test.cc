@@ -26,6 +26,7 @@
 #include <paludis/resolver/resolver_functions.hh>
 #include <paludis/resolver/suggest_restart.hh>
 #include <paludis/resolver/decision.hh>
+#include <paludis/resolver/decisions.hh>
 #include <paludis/resolver/decider.hh>
 #include <paludis/resolver/orderer.hh>
 #include <paludis/resolver/job.hh>
@@ -41,6 +42,7 @@
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/tribool.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/package_database.hh>
@@ -398,8 +400,8 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             );
 }
 
-const std::tr1::shared_ptr<const ResolverLists>
-ResolverTestCase::get_resolutions(const PackageOrBlockDepSpec & target)
+const std::tr1::shared_ptr<const Resolved>
+ResolverTestCase::get_resolved(const PackageOrBlockDepSpec & target)
 {
     InitialConstraints initial_constraints;
 
@@ -410,7 +412,7 @@ ResolverTestCase::get_resolutions(const PackageOrBlockDepSpec & target)
             Resolver resolver(&env, get_resolver_functions(initial_constraints));
             resolver.add_target(target);
             resolver.resolve();
-            return resolver.lists();
+            return resolver.resolved();
         }
         catch (const SuggestRestart & e)
         {
@@ -419,168 +421,71 @@ ResolverTestCase::get_resolutions(const PackageOrBlockDepSpec & target)
     }
 }
 
-const std::tr1::shared_ptr<const ResolverLists>
-ResolverTestCase::get_resolutions(const std::string & target)
+const std::tr1::shared_ptr<const Resolved>
+ResolverTestCase::get_resolved(const std::string & target)
 {
     PackageDepSpec target_spec(parse_user_package_dep_spec(target, &env, UserPackageDepSpecOptions()));
-    return get_resolutions(target_spec);
+    return get_resolved(target_spec);
 }
 
-namespace
+template <typename Decisions_>
+void
+ResolverTestCase::check_resolved_one(
+        const std::tr1::shared_ptr<Decisions_> & decisions,
+        const std::tr1::shared_ptr<const DecisionChecks> & decision_checks)
 {
-    struct ChosenIDVisitor
+    DecisionChecks::List::const_iterator decision_check(decision_checks->checks.begin()), decision_check_end(decision_checks->checks.end());
+    typename Decisions_::ConstIterator decision(decisions->begin()), decision_end(decisions->end());
+
+    while (true)
     {
-        const std::tr1::shared_ptr<const PackageID> visit(const ChangesToMakeDecision & decision) const
-        {
-            return decision.origin_id();
-        }
+        if (decision_check == decision_check_end)
+            break;
 
-        const std::tr1::shared_ptr<const PackageID> visit(const ExistingNoChangeDecision & decision) const
-        {
-            return decision.existing_id();
-        }
+        std::tr1::shared_ptr<const Decision> d;
+        if (decision != decision_end)
+            d = *decision++;
 
-        const std::tr1::shared_ptr<const PackageID> visit(const RemoveDecision &) const
-        {
-            return make_null_shared_ptr();
-        }
+        TEST_CHECK_MESSAGE(decision_check->first(d), decision_check->second(d));
+        ++decision_check;
+    }
 
-        const std::tr1::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
-        {
-            return make_null_shared_ptr();
-        }
+    TEST_CHECK(decision_check == decision_check_end);
+    TEST_CHECK(decision == decision_end);
+}
 
-        const std::tr1::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
-        {
-            return make_null_shared_ptr();
-        }
-    };
-
-    struct KindNameVisitor
+void
+ResolverTestCase::check_resolved(
+        const std::tr1::shared_ptr<const Resolved> & resolved,
+        const NamedValue<n::display_change_or_remove_decisions, const std::tr1::shared_ptr<const DecisionChecks> > & display_change_or_remove_decisions,
+        const NamedValue<n::taken_unable_to_make_decisions, const std::tr1::shared_ptr<const DecisionChecks> > & taken_unable_to_make_decisions,
+        const NamedValue<n::untaken_change_or_remove_decisions, const std::tr1::shared_ptr<const DecisionChecks> > & untaken_change_or_remove_decisions,
+        const NamedValue<n::untaken_unable_to_make_decisions, const std::tr1::shared_ptr<const DecisionChecks> > & untaken_unable_to_make_decisions
+        )
+{
     {
-        const std::string visit(const UnableToMakeDecision &) const
-        {
-            return "unable_to_make_decision";
-        }
+        TestMessageSuffix s("display change or remove");
+        check_resolved_one(resolved->display_change_or_remove_decisions(), display_change_or_remove_decisions());
+    }
 
-        const std::string visit(const RemoveDecision &) const
-        {
-            return "remove_decision";
-        }
+    {
+        TestMessageSuffix s("taken unable to make");
+        check_resolved_one(resolved->taken_unable_to_make_decisions(), taken_unable_to_make_decisions());
+    }
 
-        const std::string visit(const NothingNoChangeDecision &) const
-        {
-            return "nothing_no_change";
-        }
+    {
+        TestMessageSuffix s("untaken change or remove");
+        check_resolved_one(resolved->untaken_change_or_remove_decisions(), untaken_change_or_remove_decisions());
+    }
 
-        const std::string visit(const ExistingNoChangeDecision &) const
-        {
-            return "existing_no_change";
-        }
-
-        const std::string visit(const ChangesToMakeDecision &) const
-        {
-            return "changes_to_make";
-        }
-    };
+    {
+        TestMessageSuffix s("untaken unable to make");
+        check_resolved_one(resolved->untaken_unable_to_make_decisions(), untaken_unable_to_make_decisions());
+    }
 }
 
-bool
-ResolverTestCase::ResolutionListChecks::check_qpn(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Resolution> & r)
-{
-    if ((! r) || (! r->decision()))
-        return false;
-
-    const std::tr1::shared_ptr<const PackageID> id(r->decision()->accept_returning<
-            std::tr1::shared_ptr<const PackageID> >(ChosenIDVisitor()));
-    if (! id)
-        return false;
-
-    return id->name() == q;
-}
-
-bool
-ResolverTestCase::ResolutionListChecks::check_kind(const std::string & k,
-        const QualifiedPackageName & q, const std::tr1::shared_ptr<const Resolution> & r)
-{
-    if ((! r) || (! r->decision()))
-        return false;
-
-    return r->decision()->accept_returning<std::string>(KindNameVisitor()) == k && r->resolvent().package() == q;
-}
-
-std::string
-ResolverTestCase::ResolutionListChecks::check_kind_msg(const std::string & k,
-        const QualifiedPackageName & q, const std::tr1::shared_ptr<const Resolution> & r)
-{
-    if (! r)
-        return "Expected " + stringify(k) + " " + stringify(q) + " but got finished";
-    else if (! r->decision())
-        return "Expected " + stringify(k) + " " + stringify(q) + " but got undecided for " + stringify(r->resolvent());
-    else
-        return "Expected " + stringify(k) + " " + stringify(q) + " but got "
-            + r->decision()->accept_returning<std::string>(KindNameVisitor()) + " "
-            + stringify(r->resolvent().package());
-}
-
-std::string
-ResolverTestCase::ResolutionListChecks::check_generic_msg(const std::string & q, const std::tr1::shared_ptr<const Resolution> & r)
-{
-    if (! r)
-        return "Expected " + stringify(q) + " but got finished";
-    else if (! r->decision())
-        return "Expected " + stringify(q) + " but got undecided for " + stringify(r->resolvent());
-    else if (! r->decision()->accept_returning<std::tr1::shared_ptr<const PackageID> >(ChosenIDVisitor()))
-        return "Expected " + stringify(q) + " but got decided nothing (kind "
-            + stringify(r->decision()->accept_returning<std::string>(KindNameVisitor())) + ") for "
-            + stringify(r->resolvent());
-    else
-        return "Expected " + stringify(q) + " but got " + stringify(
-                r->decision()->accept_returning<std::tr1::shared_ptr<const PackageID> >(
-                    ChosenIDVisitor())->name()) + " for "
-            + stringify(r->resolvent());
-}
-
-std::string
-ResolverTestCase::ResolutionListChecks::check_qpn_msg(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Resolution> & r)
-{
-    return check_generic_msg(stringify(q), r);
-}
-
-bool
-ResolverTestCase::ResolutionListChecks::check_finished(const std::tr1::shared_ptr<const Resolution> & r)
-{
-    return ! r;
-}
-
-std::string
-ResolverTestCase::ResolutionListChecks::check_finished_msg(const std::tr1::shared_ptr<const Resolution> & r)
-{
-    return check_generic_msg("finished", r);
-}
-
-ResolverTestCase::ResolutionListChecks &
-ResolverTestCase::ResolutionListChecks::qpn(const QualifiedPackageName & q)
-{
-    checks.push_back(std::make_pair(
-                std::tr1::bind(&check_qpn, q, std::tr1::placeholders::_1),
-                std::tr1::bind(&check_qpn_msg, q, std::tr1::placeholders::_1)
-                ));
-    return *this;
-}
-
-ResolverTestCase::ResolutionListChecks &
-ResolverTestCase::ResolutionListChecks::kind(const std::string & k, const QualifiedPackageName & q)
-{
-    checks.push_back(std::make_pair(
-                std::tr1::bind(&check_kind, k, q, std::tr1::placeholders::_1),
-                std::tr1::bind(&check_kind_msg, k, q, std::tr1::placeholders::_1)
-                ));
-    return *this;
-}
-
-ResolverTestCase::ResolutionListChecks &
-ResolverTestCase::ResolutionListChecks::finished()
+ResolverTestCase::DecisionChecks &
+ResolverTestCase::DecisionChecks::finished()
 {
     checks.push_back(std::make_pair(
                 &check_finished,
@@ -589,94 +494,131 @@ ResolverTestCase::ResolutionListChecks::finished()
     return *this;
 }
 
+ResolverTestCase::DecisionChecks &
+ResolverTestCase::DecisionChecks::change(const QualifiedPackageName & q)
+{
+    checks.push_back(std::make_pair(
+                std::tr1::bind(&check_change, q, std::tr1::placeholders::_1),
+                std::tr1::bind(&check_change_msg, q, std::tr1::placeholders::_1)
+                ));
+    return *this;
+}
+
+ResolverTestCase::DecisionChecks &
+ResolverTestCase::DecisionChecks::remove(const QualifiedPackageName & q)
+{
+    checks.push_back(std::make_pair(
+                std::tr1::bind(&check_remove, q, std::tr1::placeholders::_1),
+                std::tr1::bind(&check_remove_msg, q, std::tr1::placeholders::_1)
+                ));
+    return *this;
+}
+
+ResolverTestCase::DecisionChecks &
+ResolverTestCase::DecisionChecks::unable(const QualifiedPackageName & q)
+{
+    checks.push_back(std::make_pair(
+                std::tr1::bind(&check_unable, q, std::tr1::placeholders::_1),
+                std::tr1::bind(&check_unable_msg, q, std::tr1::placeholders::_1)
+                ));
+    return *this;
+}
+
+bool
+ResolverTestCase::DecisionChecks::check_finished(const std::tr1::shared_ptr<const Decision> & r)
+{
+    return ! r;
+}
+
+std::string
+ResolverTestCase::DecisionChecks::check_finished_msg(const std::tr1::shared_ptr<const Decision> & r)
+{
+    return check_generic_msg("finished", r);
+}
+
+bool
+ResolverTestCase::DecisionChecks::check_change(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Decision> & d)
+{
+    if (! d)
+        return false;
+
+    return simple_visitor_cast<const ChangesToMakeDecision>(*d) && d->resolvent().package() == q;
+}
+
+bool
+ResolverTestCase::DecisionChecks::check_remove(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Decision> & d)
+{
+    if (! d)
+        return false;
+
+    return simple_visitor_cast<const RemoveDecision>(*d) && d->resolvent().package() == q;
+}
+
+bool
+ResolverTestCase::DecisionChecks::check_unable(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Decision> & d)
+{
+    if (! d)
+        return false;
+
+    return simple_visitor_cast<const UnableToMakeDecision>(*d) && d->resolvent().package() == q;
+}
+
+std::string
+ResolverTestCase::DecisionChecks::check_change_msg(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Decision> & r)
+{
+    return check_generic_msg(stringify(q), r);
+}
+
+std::string
+ResolverTestCase::DecisionChecks::check_remove_msg(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Decision> & r)
+{
+    return check_generic_msg("remove " + stringify(q), r);
+}
+
+std::string
+ResolverTestCase::DecisionChecks::check_unable_msg(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Decision> & r)
+{
+    return check_generic_msg("unable " + stringify(q), r);
+}
+
 namespace
 {
-    template <typename T_>
-    struct CheckLists;
-
-    template <>
-    struct CheckLists<std::tr1::shared_ptr<Resolutions> >
+    struct DecisionStringifier
     {
-        typedef Resolutions Type;
-
-        static const std::tr1::shared_ptr<const Resolution> get_resolution(
-                const std::tr1::shared_ptr<const Jobs> &,
-                const std::tr1::shared_ptr<const Resolution> & r)
+        std::string visit(const NothingNoChangeDecision &) const
         {
-            return r;
-        }
-    };
-
-    struct InstallJobResolution
-    {
-        std::tr1::shared_ptr<const Resolution> visit(const UsableJob &) const
-        {
-            return make_null_shared_ptr();
+            return "NothingNoChangeDecision";
         }
 
-        std::tr1::shared_ptr<const Resolution> visit(const UsableGroupJob &) const
+        std::string visit(const UnableToMakeDecision & d) const
         {
-            return make_null_shared_ptr();
+            return "UnableToMakeDecision(" + stringify(d.resolvent()) + ")";
         }
 
-        std::tr1::shared_ptr<const Resolution> visit(const FetchJob &) const
+        std::string visit(const ChangesToMakeDecision & d) const
         {
-            return make_null_shared_ptr();
+            return "ChangesToMakeDecision(" + stringify(*d.origin_id()) + ")";
         }
 
-        std::tr1::shared_ptr<const Resolution> visit(const ErrorJob & j) const
+        std::string visit(const ExistingNoChangeDecision &) const
         {
-            return j.resolution();
+            return "ExistingNoChangeDecision";
         }
 
-        std::tr1::shared_ptr<const Resolution> visit(const SimpleInstallJob & j) const
+        std::string visit(const RemoveDecision &) const
         {
-            return j.resolution();
-        }
-
-        std::tr1::shared_ptr<const Resolution> visit(const UninstallJob & j) const
-        {
-            return j.resolution();
-        }
-    };
-
-    template <>
-    struct CheckLists<std::tr1::shared_ptr<JobIDSequence> >
-    {
-        typedef JobIDSequence Type;
-
-        static const std::tr1::shared_ptr<const Resolution> get_resolution(
-                const std::tr1::shared_ptr<const Jobs> & jobs,
-                const JobID & j)
-        {
-            return jobs->fetch(j)->accept_returning<std::tr1::shared_ptr<const Resolution> >(InstallJobResolution());
+            return "RemoveDecision";
         }
     };
 }
 
-template <typename List_>
-void
-ResolverTestCase::check_resolution_list(
-        const std::tr1::shared_ptr<const Jobs> & jobs,
-        const List_ & list, const ResolutionListChecks & checks)
+std::string
+ResolverTestCase::DecisionChecks::check_generic_msg(const std::string & q, const std::tr1::shared_ptr<const Decision> & r)
 {
-    typename CheckLists<List_>::Type::ConstIterator r(list->begin()), r_end(list->end());
-    ResolutionListChecks::List::const_iterator c(checks.checks.begin()), c_end(checks.checks.end());
-    while (true)
-    {
-        std::tr1::shared_ptr<const Resolution> rn;
-        while ((! rn) && (r != r_end))
-            rn = CheckLists<List_>::get_resolution(jobs, *r++);
-
-        if (c == c_end)
-            break;
-
-        TEST_CHECK_MESSAGE(c->first(rn), c->second(rn));
-        ++c;
-    }
-
-    TEST_CHECK(r == r_end);
-    TEST_CHECK(c == c_end);
+    if (! r)
+        return "Expected " + stringify(q) + " but got finished";
+    else
+        return "Expected " + stringify(q) + " but got " + r->accept_returning<std::string>(DecisionStringifier());
 }
 
 const std::tr1::shared_ptr<FakePackageID>
@@ -684,9 +626,4 @@ ResolverTestCase::install(const std::string & c, const std::string & p, const st
 {
     return fake_inst_repo->add_version(c, p, v);
 }
-
-template void ResolverTestCase::check_resolution_list(const std::tr1::shared_ptr<const Jobs> &,
-        const std::tr1::shared_ptr<Resolutions> &, const ResolutionListChecks &);
-template void ResolverTestCase::check_resolution_list(const std::tr1::shared_ptr<const Jobs> &,
-        const std::tr1::shared_ptr<JobIDSequence> &, const ResolutionListChecks &);
 
