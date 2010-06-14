@@ -112,5 +112,55 @@ namespace test_cases
                     );
         }
     } test_build_deps;
+
+    struct TestRunDeps : ResolverSimpleTestCase
+    {
+        TestRunDeps() : ResolverSimpleTestCase("run-deps") { }
+
+        void run()
+        {
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("run-deps/target"));
+
+            check_resolved(resolved,
+                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("run-deps/a-dep"))
+                        .change(QualifiedPackageName("run-deps/b-dep"))
+                        .change(QualifiedPackageName("run-deps/z-dep"))
+                        .change(QualifiedPackageName("run-deps/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
+        }
+    } test_run_deps;
+
+    struct TestPostDeps : ResolverSimpleTestCase
+    {
+        TestPostDeps() : ResolverSimpleTestCase("post-deps") { }
+
+        void run()
+        {
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("post-deps/target"));
+
+            check_resolved(resolved,
+                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("post-deps/a-dep"))
+                        .change(QualifiedPackageName("post-deps/b-dep"))
+                        .change(QualifiedPackageName("post-deps/target"))
+                        .change(QualifiedPackageName("post-deps/z-dep"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
+        }
+    } test_post_deps;
 }
 

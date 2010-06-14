@@ -60,5 +60,75 @@ SLOT="0"
 DEPENDENCIES=""
 END
 
+# run-deps
+echo 'run-deps' >> metadata/categories.conf
+
+mkdir -p 'packages/run-deps/target'
+cat <<END > packages/run-deps/target/target-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="run: run-deps/a-dep run-deps/b-dep run-deps/z-dep"
+END
+
+mkdir -p 'packages/run-deps/a-dep'
+cat <<END > packages/run-deps/a-dep/a-dep-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES=""
+END
+
+mkdir -p 'packages/run-deps/b-dep'
+cat <<END > packages/run-deps/b-dep/b-dep-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES=""
+END
+
+mkdir -p 'packages/run-deps/z-dep'
+cat <<END > packages/run-deps/z-dep/z-dep-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES=""
+END
+
+# post-deps
+echo 'post-deps' >> metadata/categories.conf
+
+mkdir -p 'packages/post-deps/target'
+cat <<END > packages/post-deps/target/target-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="post: post-deps/a-dep post-deps/b-dep post-deps/z-dep"
+END
+
+mkdir -p 'packages/post-deps/a-dep'
+cat <<END > packages/post-deps/a-dep/a-dep-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES=""
+END
+
+mkdir -p 'packages/post-deps/b-dep'
+cat <<END > packages/post-deps/b-dep/b-dep-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES=""
+END
+
+mkdir -p 'packages/post-deps/z-dep'
+cat <<END > packages/post-deps/z-dep/z-dep-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES=""
+END
+
 cd ..
 

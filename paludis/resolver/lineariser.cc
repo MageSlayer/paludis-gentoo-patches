@@ -155,6 +155,65 @@ namespace
         }
     };
 
+    struct LabelsClassifier
+    {
+        bool build;
+        bool run;
+        bool post;
+
+        LabelsClassifier() :
+            build(false),
+            run(false),
+            post(false)
+        {
+        }
+
+        void visit(const DependenciesBuildLabel &)
+        {
+            build = true;
+        }
+
+        void visit(const DependenciesInstallLabel &)
+        {
+            build = true;
+        }
+
+        void visit(const DependenciesFetchLabel &)
+        {
+            build = true;
+        }
+
+        void visit(const DependenciesRunLabel &)
+        {
+            run = true;
+        }
+
+        void visit(const DependenciesTestLabel &)
+        {
+            build = true;
+        }
+
+        void visit(const DependenciesPostLabel &)
+        {
+            post = true;
+        }
+
+        void visit(const DependenciesSuggestionLabel &)
+        {
+            post = true;
+        }
+
+        void visit(const DependenciesRecommendationLabel &)
+        {
+            post = true;
+        }
+
+        void visit(const DependenciesCompileAgainstLabel &)
+        {
+            build = true;
+        }
+    };
+
     struct EdgesFromReasonVisitor
     {
         const std::tr1::shared_ptr<NAG> nag;
@@ -175,8 +234,26 @@ namespace
         {
             /* we may be constrained by a dep from a package that was changed
              * from a non error decision to an unable to make decision */
-            if (ignore_dependencies_from_resolvents.end() == ignore_dependencies_from_resolvents.find(r.from_resolvent()))
+            if (ignore_dependencies_from_resolvents.end() != ignore_dependencies_from_resolvents.find(r.from_resolvent()))
+                return;
+
+            /* what sort of dep are we? */
+            LabelsClassifier classifier;
+            for (DependenciesLabelSequence::ConstIterator l(r.sanitised_dependency().active_dependency_labels()->begin()),
+                    l_end(r.sanitised_dependency().active_dependency_labels()->end()) ;
+                    l != l_end ; ++l)
+                (*l)->accept(classifier);
+
+            if (classifier.build || classifier.run)
                 nag->add_edge(r.from_resolvent(), resolvent);
+            else if (classifier.post)
+            {
+                /* we won't add a backwards edge, since most post deps dep upon
+                 * the thing requiring them anyway */
+                // nag->add_edge(resolvent, r.from_resolvent());
+            }
+            else
+                throw InternalError(PALUDIS_HERE, "No classification");
         }
 
         void visit(const SetReason & r)
