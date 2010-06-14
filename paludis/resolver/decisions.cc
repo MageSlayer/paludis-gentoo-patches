@@ -91,6 +91,13 @@ Decisions<Decision_>::end() const
     return ConstIterator(_imp->values.end());
 }
 
+template <typename Decision_>
+bool
+Decisions<Decision_>::empty() const
+{
+    return _imp->values.empty();
+}
+
 template class Decisions<UnableToMakeDecision>;
 template class Decisions<ChangesToMakeDecision>;
 template class Decisions<ChangeOrRemoveDecision>;
