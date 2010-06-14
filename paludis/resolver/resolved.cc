@@ -34,6 +34,7 @@ Resolved::serialise(Serialiser & s) const
         .member(SerialiserFlags<serialise::might_be_null>(), "resolutions_by_resolvent", resolutions_by_resolvent())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "taken_change_or_remove_decisions", taken_change_or_remove_decisions())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "taken_unable_to_make_decisions", taken_unable_to_make_decisions())
+        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "taken_unconfirmed_change_or_remove_decisions", taken_unconfirmed_change_or_remove_decisions())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "untaken_change_or_remove_decisions", untaken_change_or_remove_decisions())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "untaken_unable_to_make_decisions", untaken_unable_to_make_decisions())
         ;
@@ -49,6 +50,13 @@ Resolved::deserialise(Deserialisation & d)
         Deserialisator vv(*v.find_remove_member("taken_change_or_remove_decisions"), "c");
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
             taken_change_or_remove_decisions->push_back(vv.member<std::tr1::shared_ptr<ChangeOrRemoveDecision> >(stringify(n)));
+    }
+
+    std::tr1::shared_ptr<Decisions<ChangeOrRemoveDecision> > taken_unconfirmed_change_or_remove_decisions(new Decisions<ChangeOrRemoveDecision>);
+    {
+        Deserialisator vv(*v.find_remove_member("taken_unconfirmed_change_or_remove_decisions"), "c");
+        for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
+            taken_unconfirmed_change_or_remove_decisions->push_back(vv.member<std::tr1::shared_ptr<ChangeOrRemoveDecision> >(stringify(n)));
     }
 
     std::tr1::shared_ptr<Decisions<UnableToMakeDecision> > taken_unable_to_make_decisions(new Decisions<UnableToMakeDecision>);
@@ -76,6 +84,7 @@ Resolved::deserialise(Deserialisation & d)
             n::resolutions_by_resolvent() = v.member<std::tr1::shared_ptr<ResolutionsByResolvent> >("resolutions_by_resolvent"),
             n::taken_change_or_remove_decisions() = taken_change_or_remove_decisions,
             n::taken_unable_to_make_decisions() = taken_unable_to_make_decisions,
+            n::taken_unconfirmed_change_or_remove_decisions() = taken_unconfirmed_change_or_remove_decisions,
             n::untaken_change_or_remove_decisions() = untaken_change_or_remove_decisions,
             n::untaken_unable_to_make_decisions() = untaken_unable_to_make_decisions
             );

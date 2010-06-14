@@ -465,5 +465,7 @@ void
 Lineariser::schedule(const std::tr1::shared_ptr<const ChangeOrRemoveDecision> & d)
 {
     _imp->resolved->taken_change_or_remove_decisions()->push_back(d);
+    if (d->required_confirmations_if_any())
+        _imp->resolved->taken_unconfirmed_change_or_remove_decisions()->push_back(d);
 }
 

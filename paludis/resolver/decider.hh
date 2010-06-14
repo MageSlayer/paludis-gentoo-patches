@@ -132,6 +132,7 @@ namespace paludis
                 void _resolve_decide_with_dependencies();
                 bool _resolve_dependents() PALUDIS_ATTRIBUTE((warn_unused_result));
                 void _resolve_destinations();
+                void _resolve_confirmations();
 
                 const std::tr1::shared_ptr<Destination> _make_destination_for(
                         const std::tr1::shared_ptr<const Resolution> & resolution,
@@ -211,6 +212,8 @@ namespace paludis
                         const std::tr1::shared_ptr<const PackageID> &,
                         const std::tr1::shared_ptr<const PackageIDSequence> &,
                         const std::tr1::shared_ptr<const PackageIDSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                void _confirm(const std::tr1::shared_ptr<const Resolution> & resolution);
 
             public:
                 Decider(const Environment * const,

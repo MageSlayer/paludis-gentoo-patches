@@ -31,6 +31,7 @@
 #include <paludis/resolver/unsuitable_candidates.hh>
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/resolver_lists.hh>
+#include <paludis/resolver/required_confirmations.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
@@ -40,6 +41,7 @@
 #include <paludis/util/enum_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/tribool.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/repository.hh>
@@ -370,6 +372,17 @@ Decider::_resolve_destinations()
             i_end(_imp->resolutions_by_resolvent->end()) ;
             i != i_end ; ++i)
         _do_destination_if_necessary(*i);
+}
+
+void
+Decider::_resolve_confirmations()
+{
+    Context context("When resolving confirmations:");
+
+    for (ResolutionsByResolvent::ConstIterator i(_imp->resolutions_by_resolvent->begin()),
+            i_end(_imp->resolutions_by_resolvent->end()) ;
+            i != i_end ; ++i)
+        _confirm(*i);
 }
 
 namespace
@@ -1766,6 +1779,9 @@ Decider::resolve()
 
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Finding Destinations"));
     _resolve_destinations();
+
+    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Confirming"));
+    _resolve_confirmations();
 }
 
 bool
@@ -1782,4 +1798,28 @@ Decider::_already_met(const SanitisedDependency & dep) const
     else
         return dep.spec().if_package();
 }
+
+void
+Decider::_confirm(
+        const std::tr1::shared_ptr<const Resolution> & resolution)
+{
+    ChangesToMakeDecision * const changes_to_make_decision(simple_visitor_cast<ChangesToMakeDecision>(*resolution->decision()));
+    if (! changes_to_make_decision)
+        return;
+
+    if (! changes_to_make_decision->best())
+    {
+        const std::tr1::shared_ptr<RequiredConfirmation> c(new NotBestConfirmation);
+        if (! _imp->fns.confirm_fn()(resolution, c))
+            changes_to_make_decision->add_required_confirmation(c);
+    }
+
+    if (ct_downgrade == changes_to_make_decision->change_type())
+    {
+        const std::tr1::shared_ptr<DowngradeConfirmation> c(new DowngradeConfirmation);
+        if (! _imp->fns.confirm_fn()(resolution, c))
+            changes_to_make_decision->add_required_confirmation(c);
+    }
+}
+
 
