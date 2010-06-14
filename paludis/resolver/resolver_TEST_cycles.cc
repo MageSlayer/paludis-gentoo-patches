@@ -111,8 +111,6 @@ namespace test_cases
         }
     } test_no_changes;
 
-#if 0
-
     struct TestExistingUsable : ResolverCyclesTestCase
     {
         TestExistingUsable() :
@@ -165,8 +163,6 @@ namespace test_cases
         }
     } test_mutual_run_deps;
 
-#endif
-
     struct TestMutualBuildDeps : ResolverCyclesTestCase
     {
         TestMutualBuildDeps() : ResolverCyclesTestCase("mutual-build-deps") { }
@@ -176,5 +172,65 @@ namespace test_cases
             TEST_CHECK_THROWS(get_resolved("mutual-build-deps/target"), Exception);
         }
     } test_mutual_build_deps;
+
+    struct TestTriangle : ResolverCyclesTestCase
+    {
+        const bool b_installed;
+        const bool c_installed;
+
+        TestTriangle(bool b, bool c) :
+            ResolverCyclesTestCase("triangle " + stringify(b) + " " + stringify(c)),
+            b_installed(b),
+            c_installed(c)
+        {
+            if (b_installed)
+                install("triangle", "dep-b", "1");
+            if (c_installed)
+                install("triangle", "dep-c", "1");
+        }
+
+        void run()
+        {
+            if ((! b_installed) && (! c_installed))
+            {
+                TEST_CHECK_THROWS(get_resolved("triangle/target"), Exception);
+                return;
+            }
+
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("triangle/target"));
+            std::tr1::shared_ptr<DecisionChecks> checks;
+
+            if (b_installed)
+            {
+                checks = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("triangle/dep-c"))
+                        .change(QualifiedPackageName("triangle/dep-a"))
+                        .change(QualifiedPackageName("triangle/dep-b"))
+                        .change(QualifiedPackageName("triangle/target"))
+                        .finished());
+            }
+            else if (c_installed)
+            {
+                checks = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("triangle/dep-a"))
+                        .change(QualifiedPackageName("triangle/dep-b"))
+                        .change(QualifiedPackageName("triangle/dep-c"))
+                        .change(QualifiedPackageName("triangle/target"))
+                        .finished());
+            }
+            else
+                TEST_CHECK(false);
+
+            check_resolved(resolved,
+                    n::display_change_or_remove_decisions() = checks,
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
+        }
+    } test_triangle_none(false, false), test_triangle_b(true, false), test_triangle_c(false, true);
 }
 

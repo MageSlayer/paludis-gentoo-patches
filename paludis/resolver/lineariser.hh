@@ -23,6 +23,8 @@
 #include <paludis/resolver/lineariser-fwd.hh>
 #include <paludis/resolver/resolved-fwd.hh>
 #include <paludis/resolver/decision-fwd.hh>
+#include <paludis/resolver/strongly_connected_component-fwd.hh>
+#include <paludis/resolver/nag-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/environment-fwd.hh>
 
@@ -35,6 +37,11 @@ namespace paludis
         {
             private:
                 void schedule(const std::tr1::shared_ptr<const ChangeOrRemoveDecision> &);
+
+                void linearise_sub_ssccs(
+                        const NAG &,
+                        const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> & sub_ssccs,
+                        const bool can_recurse);
 
             public:
                 Lineariser(

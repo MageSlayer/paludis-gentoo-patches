@@ -130,5 +130,40 @@ SLOT="0"
 DEPENDENCIES="build: mutual-build-deps/dep-b"
 END
 
+# triangle
+echo 'triangle' >> metadata/categories.conf
+
+mkdir -p 'packages/triangle/target'
+cat <<END > packages/triangle/target/target-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="triangle/dep-c"
+END
+
+mkdir -p 'packages/triangle/dep-a'
+cat <<END > packages/triangle/dep-a/dep-a-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="run: triangle/dep-b build: triangle/dep-c"
+END
+
+mkdir -p 'packages/triangle/dep-b'
+cat <<END > packages/triangle/dep-b/dep-b-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="run: triangle/dep-a build: triangle/dep-c"
+END
+
+mkdir -p 'packages/triangle/dep-c'
+cat <<END > packages/triangle/dep-c/dep-c-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="run: triangle/dep-b"
+END
+
 cd ..
 

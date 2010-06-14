@@ -41,6 +41,8 @@
 using namespace paludis;
 using namespace paludis::resolver;
 
+typedef std::tr1::unordered_map<Resolvent, std::tr1::shared_ptr<const ChangeOrRemoveDecision>, Hash<Resolvent> > ChangeOrRemoveResolvents;
+
 namespace paludis
 {
     template <>
@@ -49,6 +51,7 @@ namespace paludis
         const Environment * const env;
         const std::tr1::shared_ptr<Resolved> resolved;
         const std::tr1::shared_ptr<NAG> nag;
+        ChangeOrRemoveResolvents change_or_remove_resolvents;
 
         Implementation(
                 const Environment * const e,
@@ -75,7 +78,6 @@ Lineariser::~Lineariser()
 namespace
 {
     typedef std::tr1::unordered_set<Resolvent, Hash<Resolvent> > ResolventsSet;
-    typedef std::tr1::unordered_map<Resolvent, std::tr1::shared_ptr<const ChangeOrRemoveDecision>, Hash<Resolvent> > ChangeOrRemoveResolvents;
 
     struct DecisionDispatcher
     {
@@ -248,7 +250,9 @@ namespace
             if (classifier.build || classifier.run)
                 nag->add_edge(r.from_resolvent(), resolvent, make_named_values<NAGEdgeProperties>(
                             n::build() = classifier.build,
-                            n::run() = classifier.run
+                            n::build_all_met() = r.already_met() || ! classifier.build,
+                            n::run() = classifier.run,
+                            n::run_all_met() = r.already_met() || ! classifier.run
                             ));
             else if (classifier.post)
             {
@@ -278,6 +282,20 @@ namespace
         {
         }
     };
+
+    bool no_build_dependencies(
+            const Set<Resolvent> & resolvents,
+            const NAG & nag)
+    {
+        for (Set<Resolvent>::ConstIterator r(resolvents.begin()), r_end(resolvents.end()) ;
+                r != r_end ; ++r)
+            for (NAG::EdgesFromConstIterator e(nag.begin_edges_from(*r)), e_end(nag.end_edges_from(*r)) ;
+                    e != e_end ; ++e)
+                if (e->second.build())
+                    return false;
+
+        return true;
+    }
 }
 
 void
@@ -286,7 +304,6 @@ Lineariser::resolve()
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Nodifying Decisions"));
 
     ResolventsSet ignore_dependencies_from_resolvents, ignore_edges_from_resolvents;
-    ChangeOrRemoveResolvents change_or_remove_resolvents;
     for (Resolutions::ConstIterator r(_imp->resolved->resolutions()->begin()),
             r_end(_imp->resolved->resolutions()->end()) ;
             r != r_end ; ++r)
@@ -295,7 +312,7 @@ Lineariser::resolve()
                 _imp->resolved,
                 _imp->nag,
                 ignore_dependencies_from_resolvents,
-                change_or_remove_resolvents,
+                _imp->change_or_remove_resolvents,
                 (*r)->resolvent(),
                 (*r)->decision());
         if (! (*r)->decision()->accept_returning<bool>(decision_dispatcher))
@@ -336,7 +353,7 @@ Lineariser::resolve()
 
         for (Set<Resolvent>::ConstIterator r(scc->nodes()->begin()), r_end(scc->nodes()->end()) ;
                 r != r_end ; ++r)
-            if (change_or_remove_resolvents.end() != change_or_remove_resolvents.find(*r))
+            if (_imp->change_or_remove_resolvents.end() != _imp->change_or_remove_resolvents.find(*r))
                 changes_in_scc.insert(*r);
 
         if (changes_in_scc.empty())
@@ -348,7 +365,7 @@ Lineariser::resolve()
         {
             /* there's only one real package in the component, so there's no
              * need to try anything clever */
-            schedule(change_or_remove_resolvents.find(*changes_in_scc.begin())->second);
+            schedule(_imp->change_or_remove_resolvents.find(*changes_in_scc.begin())->second);
         }
         else
         {
@@ -371,28 +388,67 @@ Lineariser::resolve()
 
             /* now we try again, hopefully with lots of small SCCs now */
             const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> sub_ssccs(scc_nag.sorted_strongly_connected_components());
-            for (SortedStronglyConnectedComponents::ConstIterator sub_scc(sub_ssccs->begin()), sub_scc_end(sub_ssccs->end()) ;
-                    sub_scc != sub_scc_end ; ++sub_scc)
+            linearise_sub_ssccs(scc_nag, sub_ssccs, true);
+        }
+    }
+}
+
+void
+Lineariser::linearise_sub_ssccs(
+        const NAG & scc_nag,
+        const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> & sub_ssccs,
+        const bool can_recurse)
+{
+    for (SortedStronglyConnectedComponents::ConstIterator sub_scc(sub_ssccs->begin()), sub_scc_end(sub_ssccs->end()) ;
+            sub_scc != sub_scc_end ; ++sub_scc)
+    {
+        if (sub_scc->nodes()->size() == 1)
+        {
+            /* yay. it's all on its own. */
+            schedule(_imp->change_or_remove_resolvents.find(*sub_scc->nodes()->begin())->second);
+        }
+        else if (no_build_dependencies(*sub_scc->nodes(), scc_nag))
+        {
+            /* what's that, timmy? we have directly codependent nodes?
+             * well i'm jolly glad that's because they're run
+             * dependency cycles which we can order however we like! */
+            for (Set<Resolvent>::ConstIterator r(sub_scc->nodes()->begin()), r_end(sub_scc->nodes()->end()) ;
+                    r != r_end ; ++r)
+                schedule(_imp->change_or_remove_resolvents.find(*r)->second);
+        }
+        else if (can_recurse)
+        {
+            /* no, at least one of the deps is a build dep. let's try
+             * this whole mess again, except without any edges for
+             * dependencies that're already met */
+            NAG scc_nag_without_met_deps;
+            for (Set<Resolvent>::ConstIterator r(sub_scc->nodes()->begin()), r_end(sub_scc->nodes()->end()) ;
+                    r != r_end ; ++r)
             {
-                if (sub_scc->nodes()->size() == 1)
-                {
-                    /* yay. it's all on its own. */
-                    schedule(change_or_remove_resolvents.find(*sub_scc->nodes()->begin())->second);
-                }
-                else
-                {
-                    /* what's that, timmy? we have directly codependent nodes? well i
-                     * sure do hope that's because they're run dependency cycles! */
-
-                    /* no, at least one of the deps is a build dep. do we have something
-                     * installed? */
-
-                    /* all that effort was wasted. there's incest and there's nothing we
-                     * can do to fix it. */
-                    throw InternalError(PALUDIS_HERE, "circular dependencies we're not smart enough to solve yet: { "
-                            + join(sub_scc->nodes()->begin(), sub_scc->nodes()->end(), ", ") + " }");
-                }
+                scc_nag_without_met_deps.add_node(*r);
+                for (NAG::EdgesFromConstIterator e(scc_nag.begin_edges_from(*r)), e_end(scc_nag.end_edges_from(*r)) ;
+                        e != e_end ; ++e)
+                    if ((! e->second.build_all_met()) || (! e->second.run_all_met()))
+                        scc_nag_without_met_deps.add_edge(*r, e->first, make_named_values<NAGEdgeProperties>(
+                                    n::build() = e->second.build() && ! e->second.build_all_met(),
+                                    n::build_all_met() = e->second.build_all_met(),
+                                    n::run() = e->second.run() && ! e->second.run_all_met(),
+                                    n::run_all_met() = e->second.run_all_met()
+                                    ));
             }
+
+            scc_nag_without_met_deps.verify_edges();
+
+            const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> sub_ssccs_without_met_deps(
+                    scc_nag_without_met_deps.sorted_strongly_connected_components());
+            linearise_sub_ssccs(scc_nag_without_met_deps, sub_ssccs_without_met_deps, false);
+        }
+        else
+        {
+            /* all that effort was wasted. there's incest and there's nothing we
+             * can do to fix it. */
+            throw InternalError(PALUDIS_HERE, "circular dependencies we're not smart enough to solve yet: { "
+                    + join(sub_scc->nodes()->begin(), sub_scc->nodes()->end(), ", ") + " }");
         }
     }
 }
