@@ -97,7 +97,7 @@ namespace test_cases
             std::tr1::shared_ptr<const Resolved> resolved(get_resolved("no-changes/target"));
 
             check_resolved(resolved,
-                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("no-changes/target"))
                         .finished()),
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
@@ -123,7 +123,7 @@ namespace test_cases
             std::tr1::shared_ptr<const Resolved> resolved(get_resolved("existing-usable/target"));
 
             check_resolved(resolved,
-                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("existing-usable/target"))
                         .change(QualifiedPackageName("existing-usable/dep"))
                         .finished()),
@@ -146,7 +146,7 @@ namespace test_cases
             std::tr1::shared_ptr<const Resolved> resolved(get_resolved("mutual-run-deps/target"));
 
             check_resolved(resolved,
-                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("mutual-run-deps/dep-a"))
                         .change(QualifiedPackageName("mutual-run-deps/dep-b"))
                         .change(QualifiedPackageName("mutual-run-deps/dep-c"))
@@ -221,7 +221,7 @@ namespace test_cases
                 TEST_CHECK(false);
 
             check_resolved(resolved,
-                    n::display_change_or_remove_decisions() = checks,
+                    n::taken_change_or_remove_decisions() = checks,
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()

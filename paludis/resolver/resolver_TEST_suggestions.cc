@@ -75,7 +75,7 @@ namespace test_cases
             std::tr1::shared_ptr<const Resolved> resolved(get_resolved("suggestion/target"));
 
             check_resolved(resolved,
-                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("suggestion/target"))
                         .finished()),
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
@@ -98,7 +98,7 @@ namespace test_cases
             std::tr1::shared_ptr<const Resolved> resolved(get_resolved("unmeetable-suggestion/target"));
 
             check_resolved(resolved,
-                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("unmeetable-suggestion/target"))
                         .finished()),
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
@@ -121,7 +121,7 @@ namespace test_cases
             std::tr1::shared_ptr<const Resolved> resolved(get_resolved("suggestion-then-dependency/target"));
 
             check_resolved(resolved,
-                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("suggestion-then-dependency/a-suggested-dep"))
                         .change(QualifiedPackageName("suggestion-then-dependency/hard-dep"))
                         .change(QualifiedPackageName("suggestion-then-dependency/target"))

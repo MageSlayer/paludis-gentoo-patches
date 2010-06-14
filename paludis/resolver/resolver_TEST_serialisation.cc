@@ -88,7 +88,7 @@ namespace test_cases
             }
 
             check_resolved(resolved,
-                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("serialisation/dep"))
                         .change(QualifiedPackageName("serialisation/target"))
                         .finished()),

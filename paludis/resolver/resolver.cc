@@ -76,8 +76,8 @@ namespace paludis
                             n::untaken_job_ids() = make_shared_ptr(new JobIDSequence)
                             ))),
             resolved(new Resolved(make_named_values<Resolved>(
-                            n::display_change_or_remove_decisions() = make_shared_ptr(new Decisions<ChangeOrRemoveDecision>),
                             n::resolutions_by_resolvent() = lists->resolutions_by_resolvent(),
+                            n::taken_change_or_remove_decisions() = make_shared_ptr(new Decisions<ChangeOrRemoveDecision>),
                             n::taken_unable_to_make_decisions() = make_shared_ptr(new Decisions<UnableToMakeDecision>),
                             n::untaken_change_or_remove_decisions() = make_shared_ptr(new Decisions<ChangeOrRemoveDecision>),
                             n::untaken_unable_to_make_decisions() = make_shared_ptr(new Decisions<UnableToMakeDecision>)

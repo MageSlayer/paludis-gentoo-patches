@@ -464,6 +464,6 @@ Lineariser::linearise_sub_ssccs(
 void
 Lineariser::schedule(const std::tr1::shared_ptr<const ChangeOrRemoveDecision> & d)
 {
-    _imp->resolved->display_change_or_remove_decisions()->push_back(d);
+    _imp->resolved->taken_change_or_remove_decisions()->push_back(d);
 }
 

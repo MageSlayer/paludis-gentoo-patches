@@ -74,7 +74,7 @@ namespace test_cases
         {
             std::tr1::shared_ptr<const Resolved> resolved(get_resolved("no-deps/target"));
             check_resolved(resolved,
-                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("no-deps/target"))
                         .finished()),
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
@@ -96,7 +96,7 @@ namespace test_cases
             std::tr1::shared_ptr<const Resolved> resolved(get_resolved("build-deps/target"));
 
             check_resolved(resolved,
-                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("build-deps/a-dep"))
                         .change(QualifiedPackageName("build-deps/b-dep"))
                         .change(QualifiedPackageName("build-deps/z-dep"))
@@ -121,7 +121,7 @@ namespace test_cases
             std::tr1::shared_ptr<const Resolved> resolved(get_resolved("run-deps/target"));
 
             check_resolved(resolved,
-                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("run-deps/a-dep"))
                         .change(QualifiedPackageName("run-deps/b-dep"))
                         .change(QualifiedPackageName("run-deps/z-dep"))
@@ -146,7 +146,7 @@ namespace test_cases
             std::tr1::shared_ptr<const Resolved> resolved(get_resolved("post-deps/target"));
 
             check_resolved(resolved,
-                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("post-deps/a-dep"))
                         .change(QualifiedPackageName("post-deps/b-dep"))
                         .change(QualifiedPackageName("post-deps/target"))

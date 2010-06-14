@@ -452,15 +452,15 @@ ResolverTestCase::check_resolved_one(
 void
 ResolverTestCase::check_resolved(
         const std::tr1::shared_ptr<const Resolved> & resolved,
-        const NamedValue<n::display_change_or_remove_decisions, const std::tr1::shared_ptr<const DecisionChecks> > & display_change_or_remove_decisions,
+        const NamedValue<n::taken_change_or_remove_decisions, const std::tr1::shared_ptr<const DecisionChecks> > & taken_change_or_remove_decisions,
         const NamedValue<n::taken_unable_to_make_decisions, const std::tr1::shared_ptr<const DecisionChecks> > & taken_unable_to_make_decisions,
         const NamedValue<n::untaken_change_or_remove_decisions, const std::tr1::shared_ptr<const DecisionChecks> > & untaken_change_or_remove_decisions,
         const NamedValue<n::untaken_unable_to_make_decisions, const std::tr1::shared_ptr<const DecisionChecks> > & untaken_unable_to_make_decisions
         )
 {
     {
-        TestMessageSuffix s("display change or remove");
-        check_resolved_one(resolved->display_change_or_remove_decisions(), display_change_or_remove_decisions());
+        TestMessageSuffix s("taken change or remove");
+        check_resolved_one(resolved->taken_change_or_remove_decisions(), taken_change_or_remove_decisions());
     }
 
     {

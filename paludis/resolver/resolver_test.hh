@@ -166,7 +166,7 @@ namespace paludis
 
                 void check_resolved(
                         const std::tr1::shared_ptr<const Resolved> &,
-                        const NamedValue<n::display_change_or_remove_decisions, const std::tr1::shared_ptr<const DecisionChecks> > &,
+                        const NamedValue<n::taken_change_or_remove_decisions, const std::tr1::shared_ptr<const DecisionChecks> > &,
                         const NamedValue<n::taken_unable_to_make_decisions, const std::tr1::shared_ptr<const DecisionChecks> > &,
                         const NamedValue<n::untaken_change_or_remove_decisions, const std::tr1::shared_ptr<const DecisionChecks> > &,
                         const NamedValue<n::untaken_unable_to_make_decisions, const std::tr1::shared_ptr<const DecisionChecks> > &

@@ -75,7 +75,7 @@ namespace test_cases
             std::tr1::shared_ptr<const Resolved> resolved(get_resolved("unable-to-decide-then-more/target"));
 
             check_resolved(resolved,
-                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("unable-to-decide-then-more/pkg-b"))
                         .change(QualifiedPackageName("unable-to-decide-then-more/target"))
                         .finished()),

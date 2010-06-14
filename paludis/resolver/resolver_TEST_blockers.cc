@@ -82,7 +82,7 @@ namespace test_cases
         {
             std::tr1::shared_ptr<const Resolved> resolved(get_resolved("hard/target"));
             check_resolved(resolved,
-                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("hard/a-pkg"))
                         .change(QualifiedPackageName("hard/z-pkg"))
                         .change(QualifiedPackageName("hard/target"))
@@ -112,7 +112,7 @@ namespace test_cases
         {
             std::tr1::shared_ptr<const Resolved> resolved(get_resolved("unfixable/target"));
             check_resolved(resolved,
-                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("unfixable/target"))
                         .finished()),
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
@@ -142,7 +142,7 @@ namespace test_cases
         {
             std::tr1::shared_ptr<const Resolved> resolved(get_resolved("remove/target"));
             check_resolved(resolved,
-                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .remove(QualifiedPackageName("remove/a-pkg"))
                         .change(QualifiedPackageName("remove/target"))
                         .finished()),
@@ -178,7 +178,7 @@ namespace test_cases
                             false)));
 
             check_resolved(resolved,
-                    n::display_change_or_remove_decisions() = exists ? make_shared_copy(DecisionChecks()
+                    n::taken_change_or_remove_decisions() = exists ? make_shared_copy(DecisionChecks()
                         .remove(QualifiedPackageName("target/target"))
                         .finished()) : make_shared_copy(DecisionChecks()
                         .finished()),
@@ -216,7 +216,7 @@ namespace test_cases
             std::tr1::shared_ptr<const Resolved> resolved(get_resolved("blocked-and-dep/target"));
 
             check_resolved(resolved,
-                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("blocked-and-dep/target"))
                         .finished()),
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
@@ -246,7 +246,7 @@ namespace test_cases
             std::tr1::shared_ptr<const Resolved> resolved(get_resolved("block-and-dep-cycle/target"));
 
             check_resolved(resolved,
-                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("block-and-dep-cycle/dep"))
                         .change(QualifiedPackageName("block-and-dep-cycle/target"))
                         .finished()),

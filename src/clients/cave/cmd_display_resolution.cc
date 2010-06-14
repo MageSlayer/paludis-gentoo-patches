@@ -1181,7 +1181,7 @@ namespace
             const DisplayResolutionCommandLine & cmdline,
             ChoicesToExplain & choices_to_explain)
     {
-        display_a_changes_and_removes(env, resolved, resolved->display_change_or_remove_decisions(),
+        display_a_changes_and_removes(env, resolved, resolved->taken_change_or_remove_decisions(),
                 cmdline, choices_to_explain, false, false);
     }
 
