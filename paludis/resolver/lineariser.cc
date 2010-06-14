@@ -31,6 +31,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <tr1/unordered_set>
@@ -245,7 +246,10 @@ namespace
                 (*l)->accept(classifier);
 
             if (classifier.build || classifier.run)
-                nag->add_edge(r.from_resolvent(), resolvent);
+                nag->add_edge(r.from_resolvent(), resolvent, make_named_values<NAGEdgeProperties>(
+                            n::build() = classifier.build,
+                            n::run() = classifier.run
+                            ));
             else if (classifier.post)
             {
                 /* we won't add a backwards edge, since most post deps dep upon
@@ -359,8 +363,8 @@ Lineariser::resolve()
                  * change or remove nodes */
                 for (NAG::EdgesFromConstIterator e(_imp->nag->begin_edges_from(*r)), e_end(_imp->nag->end_edges_from(*r)) ;
                         e != e_end ; ++e)
-                    if (changes_in_scc.end() != changes_in_scc.find(*e))
-                        scc_nag.add_edge(*r, *e);
+                    if (changes_in_scc.end() != changes_in_scc.find(e->first))
+                        scc_nag.add_edge(*r, e->first, e->second);
             }
 
             scc_nag.verify_edges();

@@ -40,7 +40,9 @@ using namespace paludis;
 using namespace paludis::resolver;
 
 typedef std::tr1::unordered_set<Resolvent, Hash<Resolvent> > Nodes;
-typedef std::tr1::unordered_map<Resolvent, Nodes, Hash<Resolvent> > Edges;
+typedef std::tr1::unordered_map<Resolvent, NAGEdgeProperties, Hash<Resolvent> > NodesWithProperties;
+typedef std::tr1::unordered_map<Resolvent, NodesWithProperties, Hash<Resolvent> > Edges;
+typedef std::tr1::unordered_map<Resolvent, Nodes, Hash<Resolvent> > PlainEdges;
 
 namespace paludis
 {
@@ -55,12 +57,13 @@ namespace paludis
     {
         Nodes nodes;
         Edges edges;
+        const NodesWithProperties empty_nodes_with_properties;
     };
 
     template <>
     struct WrappedForwardIteratorTraits<NAG::EdgesFromConstIteratorTag>
     {
-        typedef Nodes::const_iterator UnderlyingIterator;
+        typedef NodesWithProperties::const_iterator UnderlyingIterator;
     };
 }
 
@@ -80,9 +83,9 @@ NAG::add_node(const Resolvent & r)
 }
 
 void
-NAG::add_edge(const Resolvent & a, const Resolvent & b)
+NAG::add_edge(const Resolvent & a, const Resolvent & b, const NAGEdgeProperties & p)
 {
-    _imp->edges.insert(std::make_pair(a, Nodes())).first->second.insert(b);
+    _imp->edges.insert(std::make_pair(a, NodesWithProperties())).first->second.insert(std::make_pair(b, p)).first->second |= p;
 }
 
 void
@@ -94,10 +97,10 @@ NAG::verify_edges() const
         if (_imp->nodes.end() == _imp->nodes.find(e->first))
             throw InternalError(PALUDIS_HERE, "Missing node for edge " + stringify(e->first));
 
-        for (Nodes::const_iterator f(e->second.begin()), f_end(e->second.end()) ;
+        for (NodesWithProperties::const_iterator f(e->second.begin()), f_end(e->second.end()) ;
                 f != f_end ; ++f)
-            if (_imp->nodes.end() == _imp->nodes.find(*f))
-                throw InternalError(PALUDIS_HERE, "Missing node for edge " + stringify(e->first) + " -> " + stringify(*f));
+            if (_imp->nodes.end() == _imp->nodes.find(f->first))
+                throw InternalError(PALUDIS_HERE, "Missing node for edge " + stringify(e->first) + " -> " + stringify(f->first));
     }
 }
 
@@ -129,16 +132,16 @@ namespace
         Edges::const_iterator e(edges.find(node));
         if (e != edges.end())
         {
-            for (Nodes::const_iterator n(e->second.begin()), n_end(e->second.end()) ;
+            for (NodesWithProperties::const_iterator n(e->second.begin()), n_end(e->second.end()) ;
                     n != n_end ; ++n)
             {
-                TarjanDataMap::iterator n_data(data.find(*n));
+                TarjanDataMap::iterator n_data(data.find(n->first));
                 if (data.end() == n_data)
                 {
-                    n_data = tarjan(*n, edges, data, stack, index, result);
+                    n_data = tarjan(n->first, edges, data, stack, index, result);
                     node_data->second.lowlink() = std::min(node_data->second.lowlink(), n_data->second.lowlink());
                 }
-                else if (stack.end() != std::find(stack.begin(), stack.end(), *n))
+                else if (stack.end() != std::find(stack.begin(), stack.end(), n->first))
                     node_data->second.lowlink() = std::min(node_data->second.lowlink(), n_data->second.index());
             }
         }
@@ -164,14 +167,14 @@ namespace
     void dfs(
             const StronglyConnectedComponentsByRepresentative & sccs,
             const Resolvent & node,
-            const Edges & edges,
+            const PlainEdges & edges,
             Nodes & done,
             std::tr1::shared_ptr<SortedStronglyConnectedComponents> & result)
     {
         if (done.end() != done.find(node))
             return;
 
-        Edges::const_iterator e(edges.find(node));
+        PlainEdges::const_iterator e(edges.find(node));
         std::set<Resolvent> consistently_ordered_edges;
         if (e != edges.end())
             std::copy(e->second.begin(), e->second.end(), std::inserter(consistently_ordered_edges, consistently_ordered_edges.begin()));
@@ -213,15 +216,15 @@ NAG::sorted_strongly_connected_components() const
         throw InternalError(PALUDIS_HERE, "mismatch");
 
     /* build edges between SCCs */
-    Edges scc_edges;
+    PlainEdges scc_edges;
     for (Edges::const_iterator e(_imp->edges.begin()), e_end(_imp->edges.end()) ;
             e != e_end ; ++e)
     {
         RepresentativeNodes::const_iterator from(representative_nodes.find(e->first));
-        for (Nodes::const_iterator n(e->second.begin()), n_end(e->second.end()) ;
+        for (NodesWithProperties::const_iterator n(e->second.begin()), n_end(e->second.end()) ;
                 n != n_end ; ++n)
         {
-            RepresentativeNodes::const_iterator to(representative_nodes.find(*n));
+            RepresentativeNodes::const_iterator to(representative_nodes.find(n->first));
             if (! (to->second == from->second))
                 scc_edges.insert(std::make_pair(from->second, Nodes())).first->second.insert(to->second);
         }
@@ -250,7 +253,7 @@ NAG::begin_edges_from(const Resolvent & r) const
 {
     Edges::const_iterator e(_imp->edges.find(r));
     if (e == _imp->edges.end())
-        return EdgesFromConstIterator(_imp->nodes.end());
+        return EdgesFromConstIterator(_imp->empty_nodes_with_properties.end());
     else
         return EdgesFromConstIterator(e->second.begin());
 }
@@ -260,10 +263,18 @@ NAG::end_edges_from(const Resolvent & r) const
 {
     Edges::const_iterator e(_imp->edges.find(r));
     if (e == _imp->edges.end())
-        return EdgesFromConstIterator(_imp->nodes.end());
+        return EdgesFromConstIterator(_imp->empty_nodes_with_properties.end());
     else
         return EdgesFromConstIterator(e->second.end());
 }
 
-template class WrappedForwardIterator<NAG::EdgesFromConstIteratorTag, const Resolvent>;
+NAGEdgeProperties &
+NAGEdgeProperties::operator|= (const NAGEdgeProperties & other)
+{
+    build() |= other.build();
+    run() |= other.run();
+    return *this;
+}
+
+template class WrappedForwardIterator<NAG::EdgesFromConstIteratorTag, const std::pair<const Resolvent, NAGEdgeProperties> >;
 

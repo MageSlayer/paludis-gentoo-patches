@@ -25,12 +25,27 @@
 #include <paludis/resolver/strongly_connected_component-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/named_value.hh>
 #include <tr1/memory>
 
 namespace paludis
 {
+    namespace n
+    {
+        typedef Name<struct build_name> build;
+        typedef Name<struct run_name> run;
+    }
+
     namespace resolver
     {
+        struct NAGEdgeProperties
+        {
+            NamedValue<n::build, bool> build;
+            NamedValue<n::run, bool> run;
+
+            NAGEdgeProperties & operator|= (const NAGEdgeProperties &);
+        };
+
         class NAG :
             private PrivateImplementationPattern<NAG>
         {
@@ -39,7 +54,7 @@ namespace paludis
                 ~NAG();
 
                 void add_node(const Resolvent &);
-                void add_edge(const Resolvent &, const Resolvent &);
+                void add_edge(const Resolvent &, const Resolvent &, const NAGEdgeProperties &);
 
                 void verify_edges() const;
 
@@ -47,13 +62,14 @@ namespace paludis
                     sorted_strongly_connected_components() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 struct EdgesFromConstIteratorTag;
-                typedef WrappedForwardIterator<EdgesFromConstIteratorTag, const Resolvent> EdgesFromConstIterator;
+                typedef WrappedForwardIterator<EdgesFromConstIteratorTag, const std::pair<const Resolvent, NAGEdgeProperties> > EdgesFromConstIterator;
                 EdgesFromConstIterator begin_edges_from(const Resolvent &) const PALUDIS_ATTRIBUTE((warn_unused_result));
                 EdgesFromConstIterator end_edges_from(const Resolvent &) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 
-    extern template class WrappedForwardIterator<resolver::NAG::EdgesFromConstIteratorTag, const resolver::Resolvent>;
+    extern template class WrappedForwardIterator<resolver::NAG::EdgesFromConstIteratorTag,
+           const std::pair<const resolver::Resolvent, resolver::NAGEdgeProperties> >;
 }
 
 #endif

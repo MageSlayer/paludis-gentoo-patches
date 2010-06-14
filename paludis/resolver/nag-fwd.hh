@@ -25,6 +25,7 @@ namespace paludis
     namespace resolver
     {
         struct NAG;
+        struct NAGEdgeProperties;
     }
 }
 
