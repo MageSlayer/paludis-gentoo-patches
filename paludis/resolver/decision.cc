@@ -79,6 +79,21 @@ Decision::deserialise(Deserialisation & d)
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 }
 
+const std::tr1::shared_ptr<ChangeOrRemoveDecision>
+ChangeOrRemoveDecision::deserialise(Deserialisation & d)
+{
+    if (d.class_name() == "ChangesToMakeDecision")
+    {
+        return ChangesToMakeDecision::deserialise(d);
+    }
+    else if (d.class_name() == "RemoveDecision")
+    {
+        return RemoveDecision::deserialise(d);
+    }
+    else
+        throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
+}
+
 const std::tr1::shared_ptr<ChangesToMakeDecision>
 ChangesToMakeDecision::deserialise(Deserialisation & d)
 {

@@ -100,6 +100,9 @@ namespace paludis
         class PALUDIS_VISIBLE ChangeOrRemoveDecision :
             public Decision
         {
+            public:
+                static const std::tr1::shared_ptr<ChangeOrRemoveDecision> deserialise(
+                        Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class PALUDIS_VISIBLE ChangesToMakeDecision :
