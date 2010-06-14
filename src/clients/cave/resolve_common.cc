@@ -1188,9 +1188,16 @@ namespace
         ser_stream.nothing_more_to_write();
     }
 
+    void serialise_resolved(StringListStream & ser_stream, const Resolved & resolved)
+    {
+        Serialiser ser(ser_stream);
+        resolved.serialise(ser);
+        ser_stream.nothing_more_to_write();
+    }
+
     int display_resolution(
             const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<const ResolverLists> & resolution_lists,
+            const std::tr1::shared_ptr<const Resolved> & resolved,
             const ResolveCommandLineResolutionOptions &,
             const ResolveCommandLineDisplayOptions & display_options,
             const ResolveCommandLineProgramOptions & program_options,
@@ -1200,9 +1207,9 @@ namespace
         Context context("When displaying chosen resolution:");
 
         StringListStream ser_stream;
-        Thread ser_thread(std::tr1::bind(&ser_thread_func,
+        Thread ser_thread(std::tr1::bind(&serialise_resolved,
                     std::tr1::ref(ser_stream),
-                    std::tr1::cref(*resolution_lists)));
+                    std::tr1::cref(*resolved)));
 
         std::tr1::shared_ptr<Sequence<std::string> > args(new Sequence<std::string>);
 
@@ -1246,7 +1253,7 @@ namespace
             return run_command(cmd);
         }
         else
-            return DisplayResolutionCommand().run(env, args, resolution_lists);
+            return DisplayResolutionCommand().run(env, args, resolved);
     }
 
     int perform_resolution(
@@ -1670,7 +1677,7 @@ paludis::cave::resolve_common(
 
         dump_if_requested(env, resolver, resolution_options);
 
-        retcode |= display_resolution(env, resolver->lists(), resolution_options,
+        retcode |= display_resolution(env, resolver->resolved(), resolution_options,
                 display_options, program_options, keys_if_import, targets);
 
         if (! resolver->lists()->taken_error_job_ids()->empty())
