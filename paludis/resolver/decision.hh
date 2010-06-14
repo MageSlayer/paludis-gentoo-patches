@@ -24,6 +24,7 @@
 #include <paludis/resolver/destination-fwd.hh>
 #include <paludis/resolver/unsuitable_candidates-fwd.hh>
 #include <paludis/resolver/change_type-fwd.hh>
+#include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
@@ -42,6 +43,8 @@ namespace paludis
             public:
                 virtual ~Decision() = 0;
 
+                virtual const Resolvent resolvent() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
                 virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 virtual void serialise(Serialiser &) const = 0;
@@ -56,9 +59,10 @@ namespace paludis
             private PrivateImplementationPattern<NothingNoChangeDecision>
         {
             public:
-                NothingNoChangeDecision(const bool);
+                NothingNoChangeDecision(const Resolvent &, const bool);
                 ~NothingNoChangeDecision();
 
+                virtual const Resolvent resolvent() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;
@@ -71,6 +75,7 @@ namespace paludis
         {
             public:
                 ExistingNoChangeDecision(
+                        const Resolvent &,
                         const std::tr1::shared_ptr<const PackageID> &,
                         const bool is_same,
                         const bool is_same_version,
@@ -86,6 +91,7 @@ namespace paludis
                 bool is_same_version() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 bool is_transient() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
+                virtual const Resolvent resolvent() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;
@@ -104,6 +110,7 @@ namespace paludis
         {
             public:
                 ChangesToMakeDecision(
+                        const Resolvent &,
                         const std::tr1::shared_ptr<const PackageID> &,
                         const bool best,
                         const ChangeType,
@@ -127,6 +134,7 @@ namespace paludis
 
                 void set_change_type(ChangeType);
 
+                virtual const Resolvent resolvent() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;
@@ -143,10 +151,12 @@ namespace paludis
         {
             public:
                 RemoveDecision(
+                        const Resolvent &,
                         const std::tr1::shared_ptr<const PackageIDSequence> &,
                         const bool taken);
                 ~RemoveDecision();
 
+                virtual const Resolvent resolvent() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::tr1::shared_ptr<const PackageIDSequence> ids() const
@@ -166,10 +176,12 @@ namespace paludis
         {
             public:
                 UnableToMakeDecision(
+                        const Resolvent &,
                         const std::tr1::shared_ptr<const UnsuitableCandidates> &,
                         const bool taken);
                 ~UnableToMakeDecision();
 
+                virtual const Resolvent resolvent() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;

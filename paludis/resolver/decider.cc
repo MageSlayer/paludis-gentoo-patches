@@ -1371,6 +1371,7 @@ Decider::_try_to_find_decision_for(
         {
             /* nothing existing, but nothing's ok */
             return make_shared_ptr(new NothingNoChangeDecision(
+                        resolvent,
                         ! resolution->constraints()->all_untaken()
                         ));
         }
@@ -1381,6 +1382,7 @@ Decider::_try_to_find_decision_for(
         /* there's nothing suitable existing. we fix the last_ct when we do
          * destinations. */
         return make_shared_ptr(new ChangesToMakeDecision(
+                    resolvent,
                     installable_id,
                     best,
                     last_ct,
@@ -1414,6 +1416,7 @@ Decider::_try_to_find_decision_for(
         }
 
         return make_shared_ptr(new ExistingNoChangeDecision(
+                    resolvent,
                     existing_id,
                     true,
                     true,
@@ -1428,6 +1431,7 @@ Decider::_try_to_find_decision_for(
          * able to remove things. */
         if (resolution->constraints()->nothing_is_fine_too() && _installed_but_allowed_to_remove(resolvent))
             return make_shared_ptr(new RemoveDecision(
+                        resolvent,
                         _installed_ids(resolvent),
                         ! resolution->constraints()->all_untaken()
                         ));
@@ -1494,6 +1498,7 @@ Decider::_try_to_find_decision_for(
 
         /* we've got existing and installable. do we have any reason not to pick the existing id? */
         const std::tr1::shared_ptr<Decision> existing(new ExistingNoChangeDecision(
+                    resolvent,
                     existing_id,
                     is_same,
                     is_same_version,
@@ -1501,6 +1506,7 @@ Decider::_try_to_find_decision_for(
                     ! resolution->constraints()->all_untaken()
                     ));
         const std::tr1::shared_ptr<Decision> changes_to_make(new ChangesToMakeDecision(
+                    resolvent,
                     installable_id,
                     best,
                     last_ct,
@@ -1513,6 +1519,7 @@ Decider::_try_to_find_decision_for(
             case ue_only_if_transient:
             case ue_never:
                 return make_shared_ptr(new ChangesToMakeDecision(
+                            resolvent,
                             installable_id,
                             best,
                             last_ct,
@@ -1560,6 +1567,7 @@ Decider::_cannot_decide_for(
         unsuitable_candidates->push_back(_make_unsuitable_candidate(resolvent, resolution, *i, false));
 
     return make_shared_ptr(new UnableToMakeDecision(
+                resolvent,
                 unsuitable_candidates,
                 ! resolution->constraints()->all_untaken()
                 ));
@@ -1694,15 +1702,17 @@ Decider::_get_unmatching_constraints(
             bool is_transient(id->behaviours_key() && id->behaviours_key()->value()->end() !=
                     id->behaviours_key()->value()->find("transient"));
             decision.reset(new ExistingNoChangeDecision(
-                    id,
-                    true,
-                    true,
-                    is_transient,
-                    ! (*c)->untaken()
-                    ));
+                        resolvent,
+                        id,
+                        true,
+                        true,
+                        is_transient,
+                        ! (*c)->untaken()
+                        ));
         }
         else
             decision.reset(new ChangesToMakeDecision(
+                        resolvent,
                         id,
                         false,
                         last_ct,

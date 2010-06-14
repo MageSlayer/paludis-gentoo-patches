@@ -20,6 +20,7 @@
 #include <paludis/resolver/decision.hh>
 #include <paludis/resolver/destination.hh>
 #include <paludis/resolver/unsuitable_candidates.hh>
+#include <paludis/resolver/resolvent.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -46,6 +47,7 @@ Decision::deserialise(Deserialisation & d)
     {
         Deserialisator v(d, "NothingNoChangeDecision");
         return make_shared_ptr(new NothingNoChangeDecision(
+                    v.member<Resolvent>("resolvent"),
                     v.member<bool>("taken")
                     ));
     }
@@ -53,6 +55,7 @@ Decision::deserialise(Deserialisation & d)
     {
         Deserialisator v(d, "ExistingNoChangeDecision");
         return make_shared_ptr(new ExistingNoChangeDecision(
+                    v.member<Resolvent>("resolvent"),
                     v.member<std::tr1::shared_ptr<const PackageID> >("existing_id"),
                     v.member<bool>("is_same"),
                     v.member<bool>("is_same_version"),
@@ -81,6 +84,7 @@ ChangesToMakeDecision::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "ChangesToMakeDecision");
     return make_shared_ptr(new ChangesToMakeDecision(
+                v.member<Resolvent>("resolvent"),
                 v.member<std::tr1::shared_ptr<const PackageID> >("origin_id"),
                 v.member<bool>("best"),
                 destringify<ChangeType>(v.member<std::string>("change_type")),
@@ -100,6 +104,7 @@ UnableToMakeDecision::deserialise(Deserialisation & d)
         unsuitable_candidates->push_back(vv.member<UnsuitableCandidate>(stringify(n)));
 
     return make_shared_ptr(new UnableToMakeDecision(
+                v.member<Resolvent>("resolvent"),
                 unsuitable_candidates,
                 v.member<bool>("taken")
                 ));
@@ -116,6 +121,7 @@ RemoveDecision::deserialise(Deserialisation & d)
         ids->push_back(vv.member<std::tr1::shared_ptr<const PackageID> >(stringify(n)));
 
     return make_shared_ptr(new RemoveDecision(
+                v.member<Resolvent>("resolvent"),
                 ids,
                 v.member<bool>("taken")
                 ));
@@ -126,17 +132,19 @@ namespace paludis
     template <>
     struct Implementation<NothingNoChangeDecision>
     {
+        const Resolvent resolvent;
         const bool taken;
 
-        Implementation(const bool t) :
+        Implementation(const Resolvent & r, const bool t) :
+            resolvent(r),
             taken(t)
         {
         }
     };
 }
 
-NothingNoChangeDecision::NothingNoChangeDecision(const bool t) :
-    PrivateImplementationPattern<NothingNoChangeDecision>(new Implementation<NothingNoChangeDecision>(t))
+NothingNoChangeDecision::NothingNoChangeDecision(const Resolvent & r, const bool t) :
+    PrivateImplementationPattern<NothingNoChangeDecision>(new Implementation<NothingNoChangeDecision>(r, t))
 {
 }
 
@@ -148,6 +156,12 @@ NothingNoChangeDecision::~NothingNoChangeDecision()
 }
 #endif
 
+const Resolvent
+NothingNoChangeDecision::resolvent() const
+{
+    return _imp->resolvent;
+}
+
 bool
 NothingNoChangeDecision::taken() const
 {
@@ -158,6 +172,7 @@ void
 NothingNoChangeDecision::serialise(Serialiser & s) const
 {
     s.object("NothingNoChangeDecision")
+        .member(SerialiserFlags<>(), "resolvent", resolvent())
         .member(SerialiserFlags<>(), "taken", taken())
         ;
 }
@@ -167,14 +182,17 @@ namespace paludis
     template <>
     struct Implementation<ExistingNoChangeDecision>
     {
+        const Resolvent resolvent;
         const std::tr1::shared_ptr<const PackageID> existing_id;
         const bool is_same;
         const bool is_same_version;
         const bool is_transient;
         const bool taken;
 
-        Implementation(const std::tr1::shared_ptr<const PackageID> & e,
+        Implementation(const Resolvent & l,
+                const std::tr1::shared_ptr<const PackageID> & e,
                 const bool s, const bool v, const bool r, const bool t) :
+            resolvent(l),
             existing_id(e),
             is_same(s),
             is_same_version(v),
@@ -185,10 +203,10 @@ namespace paludis
     };
 }
 
-ExistingNoChangeDecision::ExistingNoChangeDecision(const std::tr1::shared_ptr<const PackageID> & e,
+ExistingNoChangeDecision::ExistingNoChangeDecision(const Resolvent & l, const std::tr1::shared_ptr<const PackageID> & e,
         const bool s, const bool v, const bool r, const bool t) :
     PrivateImplementationPattern<ExistingNoChangeDecision>(new Implementation<ExistingNoChangeDecision>(
-                e, s, v, r, t))
+                l, e, s, v, r, t))
 {
 }
 
@@ -224,6 +242,12 @@ ExistingNoChangeDecision::is_transient() const
     return _imp->is_transient;
 }
 
+const Resolvent
+ExistingNoChangeDecision::resolvent() const
+{
+    return _imp->resolvent;
+}
+
 bool
 ExistingNoChangeDecision::taken() const
 {
@@ -234,6 +258,7 @@ void
 ExistingNoChangeDecision::serialise(Serialiser & s) const
 {
     s.object("ExistingNoChangeDecision")
+        .member(SerialiserFlags<>(), "resolvent", resolvent())
         .member(SerialiserFlags<serialise::might_be_null>(), "existing_id", existing_id())
         .member(SerialiserFlags<>(), "is_same", is_same())
         .member(SerialiserFlags<>(), "is_same_version", is_same_version())
@@ -247,6 +272,7 @@ namespace paludis
     template <>
     struct Implementation<ChangesToMakeDecision>
     {
+        const Resolvent resolvent;
         const std::tr1::shared_ptr<const PackageID> origin_id;
         const bool best;
         ChangeType change_type;
@@ -254,11 +280,13 @@ namespace paludis
         std::tr1::shared_ptr<const Destination> destination;
 
         Implementation(
+                const Resolvent & l,
                 const std::tr1::shared_ptr<const PackageID> & o,
                 const bool b,
                 const ChangeType c,
                 const bool t,
                 const std::tr1::shared_ptr<const Destination> & d) :
+            resolvent(l),
             origin_id(o),
             best(b),
             change_type(c),
@@ -270,12 +298,13 @@ namespace paludis
 }
 
 ChangesToMakeDecision::ChangesToMakeDecision(
+        const Resolvent & r,
         const std::tr1::shared_ptr<const PackageID> & o,
         const bool b,
         const ChangeType c,
         const bool t,
         const std::tr1::shared_ptr<const Destination> & d) :
-    PrivateImplementationPattern<ChangesToMakeDecision>(new Implementation<ChangesToMakeDecision>(o, b, c, t, d))
+    PrivateImplementationPattern<ChangesToMakeDecision>(new Implementation<ChangesToMakeDecision>(r, o, b, c, t, d))
 {
 }
 
@@ -323,6 +352,12 @@ ChangesToMakeDecision::best() const
     return _imp->best;
 }
 
+const Resolvent
+ChangesToMakeDecision::resolvent() const
+{
+    return _imp->resolvent;
+}
+
 bool
 ChangesToMakeDecision::taken() const
 {
@@ -333,6 +368,7 @@ void
 ChangesToMakeDecision::serialise(Serialiser & s) const
 {
     s.object("ChangesToMakeDecision")
+        .member(SerialiserFlags<>(), "resolvent", resolvent())
         .member(SerialiserFlags<serialise::might_be_null>(), "origin_id", origin_id())
         .member(SerialiserFlags<>(), "best", best())
         .member(SerialiserFlags<>(), "change_type", stringify(change_type()))
@@ -346,10 +382,13 @@ namespace paludis
     template <>
     struct Implementation<UnableToMakeDecision>
     {
+        const Resolvent resolvent;
         const std::tr1::shared_ptr<const UnsuitableCandidates> unsuitable_candidates;
         const bool taken;
 
-        Implementation(const std::tr1::shared_ptr<const UnsuitableCandidates> & u, const bool t) :
+        Implementation(const Resolvent & l,
+                const std::tr1::shared_ptr<const UnsuitableCandidates> & u, const bool t) :
+            resolvent(l),
             unsuitable_candidates(u),
             taken(t)
         {
@@ -358,9 +397,10 @@ namespace paludis
 }
 
 UnableToMakeDecision::UnableToMakeDecision(
+        const Resolvent & l,
         const std::tr1::shared_ptr<const UnsuitableCandidates> & u,
         const bool t) :
-    PrivateImplementationPattern<UnableToMakeDecision>(new Implementation<UnableToMakeDecision>(u, t))
+    PrivateImplementationPattern<UnableToMakeDecision>(new Implementation<UnableToMakeDecision>(l, u, t))
 {
 }
 
@@ -378,6 +418,12 @@ UnableToMakeDecision::unsuitable_candidates() const
     return _imp->unsuitable_candidates;
 }
 
+const Resolvent
+UnableToMakeDecision::resolvent() const
+{
+    return _imp->resolvent;
+}
+
 bool
 UnableToMakeDecision::taken() const
 {
@@ -388,6 +434,7 @@ void
 UnableToMakeDecision::serialise(Serialiser & s) const
 {
     s.object("UnableToMakeDecision")
+        .member(SerialiserFlags<>(), "resolvent", resolvent())
         .member(SerialiserFlags<>(), "taken", taken())
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "unsuitable_candidates", unsuitable_candidates())
         ;
@@ -398,10 +445,12 @@ namespace paludis
     template <>
     struct Implementation<RemoveDecision>
     {
+        const Resolvent resolvent;
         const std::tr1::shared_ptr<const PackageIDSequence> ids;
         const bool taken;
 
-        Implementation(const std::tr1::shared_ptr<const PackageIDSequence> & i, const bool t) :
+        Implementation(const Resolvent & l, const std::tr1::shared_ptr<const PackageIDSequence> & i, const bool t) :
+            resolvent(l),
             ids(i),
             taken(t)
         {
@@ -409,8 +458,8 @@ namespace paludis
     };
 }
 
-RemoveDecision::RemoveDecision(const std::tr1::shared_ptr<const PackageIDSequence> & i, const bool t) :
-    PrivateImplementationPattern<RemoveDecision>(new Implementation<RemoveDecision>(i, t))
+RemoveDecision::RemoveDecision(const Resolvent & l, const std::tr1::shared_ptr<const PackageIDSequence> & i, const bool t) :
+    PrivateImplementationPattern<RemoveDecision>(new Implementation<RemoveDecision>(l, i, t))
 {
 }
 
@@ -421,6 +470,12 @@ RemoveDecision::~RemoveDecision()
 {
 }
 #endif
+
+const Resolvent
+RemoveDecision::resolvent() const
+{
+    return _imp->resolvent;
+}
 
 bool
 RemoveDecision::taken() const
@@ -438,6 +493,7 @@ void
 RemoveDecision::serialise(Serialiser & s) const
 {
     s.object("RemoveDecision")
+        .member(SerialiserFlags<>(), "resolvent", resolvent())
         .member(SerialiserFlags<>(), "taken", taken())
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "ids", ids())
         ;
