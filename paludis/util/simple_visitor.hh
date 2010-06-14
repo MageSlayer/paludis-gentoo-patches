@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -125,6 +125,7 @@ namespace paludis
 
         public:
             typedef VisitableTypeList_ VisitableTypeList;
+            typedef BaseClass_ VisitableBaseClass;
 
             template <typename UnwrappedVisitor_>
             void accept(UnwrappedVisitor_ & v)
