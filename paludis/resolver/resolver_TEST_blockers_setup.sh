@@ -14,6 +14,11 @@ cd repo
 echo "repo" > profiles/repo_name
 : > metadata/categories.conf
 
+: > profiles/categories
+cat <<'END' > profiles/profile/make.defaults
+ARCH=test
+END
+
 # hard
 echo 'hard' >> metadata/categories.conf
 
@@ -99,6 +104,56 @@ cat <<END > packages/blocked-and-dep/both/both-1.exheres-0
 SUMMARY="dep"
 PLATFORMS="test"
 SLOT="0"
+END
+
+# block-and-dep-cycle
+echo 'block-and-dep-cycle' >> metadata/categories.conf
+
+mkdir -p 'packages/block-and-dep-cycle/target'
+cat <<END > packages/block-and-dep-cycle/target/target-1.ebuild
+EAPI="2"
+DESCRIPTION="target"
+KEYWORDS="test"
+SLOT="0"
+DEPEND="
+    block-and-dep-cycle/dep
+    "
+END
+
+mkdir -p 'packages/block-and-dep-cycle/dep'
+cat <<END > packages/block-and-dep-cycle/dep/dep-1.ebuild
+EAPI="2"
+DESCRIPTION="dep"
+KEYWORDS="test"
+SLOT="0"
+DEPEND="
+    !=block-and-dep-cycle/target-0
+    "
+END
+
+# hard-block-and-dep-cycle
+echo 'hard-block-and-dep-cycle' >> metadata/categories.conf
+
+mkdir -p 'packages/hard-block-and-dep-cycle/target'
+cat <<END > packages/hard-block-and-dep-cycle/target/target-1.ebuild
+EAPI="2"
+DESCRIPTION="target"
+KEYWORDS="test"
+SLOT="0"
+DEPEND="
+    hard-block-and-dep-cycle/dep
+    "
+END
+
+mkdir -p 'packages/hard-block-and-dep-cycle/dep'
+cat <<END > packages/hard-block-and-dep-cycle/dep/dep-1.ebuild
+EAPI="2"
+DESCRIPTION="dep"
+KEYWORDS="test"
+SLOT="0"
+DEPEND="
+    !!=hard-block-and-dep-cycle/target-0
+    "
 END
 
 cd ..

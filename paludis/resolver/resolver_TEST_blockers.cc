@@ -57,8 +57,8 @@ namespace
 {
     struct ResolverBlockersTestCase : ResolverTestCase
     {
-        ResolverBlockersTestCase(const std::string & s) :
-            ResolverTestCase("blockers", s, "exheres-0", "exheres")
+        ResolverBlockersTestCase(const std::string & s, const std::string & e = "exheres-0") :
+            ResolverTestCase("blockers", s, e, "exheres")
         {
         }
     };
@@ -232,5 +232,46 @@ namespace test_cases
         test_blocked_and_dep_exists(true, false),
         test_blocked_and_dep_allowed(false, true),
         test_blocked_and_dep_exists_allowed(true, true);
+
+    struct BlockAndDepCycle : ResolverBlockersTestCase
+    {
+        BlockAndDepCycle() :
+            ResolverBlockersTestCase("block and dep cycle", "0")
+        {
+            install("block-and-dep-cycle", "target", "0");
+        }
+
+        void run()
+        {
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("block-and-dep-cycle/target"));
+
+            check_resolved(resolved,
+                    n::display_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("block-and-dep-cycle/dep"))
+                        .change(QualifiedPackageName("block-and-dep-cycle/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
+        }
+    } test_block_and_dep_cycle;
+
+    struct HardBlockAndDepCycle : ResolverBlockersTestCase
+    {
+        HardBlockAndDepCycle() :
+            ResolverBlockersTestCase("hard block and dep cycle", "0")
+        {
+            install("hard-block-and-dep-cycle", "target", "0");
+        }
+
+        void run()
+        {
+            TEST_CHECK_THROWS(get_resolved("hard-block-and-dep-cycle/target"), Exception);
+        }
+    } test_hard_block_and_dep_cycle;
 }
 

@@ -248,12 +248,20 @@ namespace
                 (*l)->accept(classifier);
 
             if (classifier.build || classifier.run)
-                nag->add_edge(r.from_resolvent(), resolvent, make_named_values<NAGEdgeProperties>(
-                            n::build() = classifier.build,
-                            n::build_all_met() = r.already_met() || ! classifier.build,
-                            n::run() = classifier.run,
-                            n::run_all_met() = r.already_met() || ! classifier.run
-                            ));
+            {
+                bool arrow(true);
+                if (r.sanitised_dependency().spec().if_block())
+                    if (! r.sanitised_dependency().spec().if_block()->strong())
+                        arrow = false;
+
+                if (arrow)
+                    nag->add_edge(r.from_resolvent(), resolvent, make_named_values<NAGEdgeProperties>(
+                                n::build() = classifier.build,
+                                n::build_all_met() = r.already_met() || ! classifier.build,
+                                n::run() = classifier.run,
+                                n::run_all_met() = r.already_met() || ! classifier.run
+                                ));
+            }
             else if (classifier.post)
             {
                 /* we won't add a backwards edge, since most post deps dep upon
