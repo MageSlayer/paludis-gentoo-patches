@@ -217,7 +217,7 @@ paludis::resolver::resolver_test::is_just_suggestion(const SanitisedDependency &
 
 SpecInterest
 paludis::resolver::resolver_test::interest_in_spec_fn(
-        const Resolvent &, const std::tr1::shared_ptr<const Resolution> &, const SanitisedDependency & dep)
+        const std::tr1::shared_ptr<const Resolution> &, const SanitisedDependency & dep)
 {
     if (is_just_suggestion(dep))
         return si_untaken;
@@ -237,7 +237,6 @@ paludis::resolver::resolver_test::get_use_existing_fn(
 const std::tr1::shared_ptr<const Repository>
 paludis::resolver::resolver_test::find_repository_for_fn(
         const Environment * const env,
-        const Resolvent &,
         const std::tr1::shared_ptr<const Resolution> &,
         const ChangesToMakeDecision &)
 {
@@ -282,7 +281,6 @@ paludis::resolver::resolver_test::prefer_or_avoid_fn(
 
 bool
 paludis::resolver::resolver_test::confirm_fn(
-        const Resolvent &,
         const std::tr1::shared_ptr<const Resolution> &,
         const std::tr1::shared_ptr<const RequiredConfirmation> &)
 {
@@ -291,7 +289,6 @@ paludis::resolver::resolver_test::confirm_fn(
 
 const std::tr1::shared_ptr<ConstraintSequence>
 paludis::resolver::resolver_test::get_constraints_for_dependent_fn(
-        const Resolvent &,
         const std::tr1::shared_ptr<const Resolution> &,
         const std::tr1::shared_ptr<const PackageID> & id,
         const std::tr1::shared_ptr<const PackageIDSequence> & ids)
@@ -381,8 +378,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
                     allowed_to_remove_names, std::tr1::placeholders::_1),
             n::confirm_fn() = &confirm_fn,
             n::find_repository_for_fn() = std::tr1::bind(&find_repository_for_fn,
-                    &env, std::tr1::placeholders::_1, std::tr1::placeholders::_2,
-                    std::tr1::placeholders::_3),
+                    &env, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
             n::get_constraints_for_dependent_fn() = &get_constraints_for_dependent_fn,
             n::get_destination_types_for_fn() = &get_destination_types_for_fn,
             n::get_initial_constraints_for_fn() = 

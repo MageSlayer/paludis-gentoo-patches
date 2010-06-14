@@ -59,7 +59,6 @@ namespace paludis
             typedef std::map<Resolvent, std::tr1::shared_ptr<Constraints> > InitialConstraints;
 
             SpecInterest interest_in_spec_fn(
-                    const Resolvent &,
                     const std::tr1::shared_ptr<const Resolution> &,
                     const SanitisedDependency &);
 
@@ -69,7 +68,6 @@ namespace paludis
 
             const std::tr1::shared_ptr<ConstraintSequence>
             get_constraints_for_dependent_fn(
-                    const Resolvent &,
                     const std::tr1::shared_ptr<const Resolution> &,
                     const std::tr1::shared_ptr<const PackageID> & id,
                     const std::tr1::shared_ptr<const PackageIDSequence> & ids);
@@ -87,7 +85,6 @@ namespace paludis
 
             const std::tr1::shared_ptr<const Repository> find_repository_for_fn(
                     const Environment * const,
-                    const Resolvent &,
                     const std::tr1::shared_ptr<const Resolution> &,
                     const ChangesToMakeDecision &);
 
@@ -114,7 +111,6 @@ namespace paludis
                         const QualifiedPackageName &);
 
             bool confirm_fn(
-                    const Resolvent &,
                     const std::tr1::shared_ptr<const Resolution> &,
                     const std::tr1::shared_ptr<const RequiredConfirmation> &);
 

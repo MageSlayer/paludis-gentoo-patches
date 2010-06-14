@@ -194,7 +194,7 @@ Decider::_make_constraints_for_dependent(
         const std::tr1::shared_ptr<const PackageID> & id,
         const std::tr1::shared_ptr<const PackageIDSequence> & r) const
 {
-    return _imp->fns.get_constraints_for_dependent_fn()(resolution->resolvent(), resolution, id, r);
+    return _imp->fns.get_constraints_for_dependent_fn()(resolution, id, r);
 }
 
 namespace
@@ -487,7 +487,7 @@ Decider::_find_repository_for(
         const std::tr1::shared_ptr<const Resolution> & resolution,
         const ChangesToMakeDecision & decision) const
 {
-    return _imp->fns.find_repository_for_fn()(resolution->resolvent(), resolution, decision);
+    return _imp->fns.find_repository_for_fn()(resolution, decision);
 }
 
 FilteredGenerator
@@ -1043,7 +1043,7 @@ Decider::_add_dependencies_if_necessary(
 SpecInterest
 Decider::_interest_in_spec(const std::tr1::shared_ptr<const Resolution> & resolution, const SanitisedDependency & dep) const
 {
-    return _imp->fns.interest_in_spec_fn()(resolution->resolvent(), resolution, dep);
+    return _imp->fns.interest_in_spec_fn()(resolution, dep);
 }
 
 const std::tr1::shared_ptr<Constraints>

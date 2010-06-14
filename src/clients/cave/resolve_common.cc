@@ -839,7 +839,6 @@ namespace
             const PackageDepSpecList & ignore_from,
             const PackageDepSpecList & no_blockers_from,
             const PackageDepSpecList & no_dependencies_from,
-            const Resolvent & resolvent,
             const std::tr1::shared_ptr<const Resolution> & resolution,
             const SanitisedDependency & dep)
     {
@@ -862,7 +861,7 @@ namespace
             for (PackageDepSpecList::const_iterator l(take_from.begin()), l_end(take_from.end()) ;
                     l != l_end ; ++l)
             {
-                if (match_qpns(*env, *l, resolvent.package()))
+                if (match_qpns(*env, *l, resolution->resolvent().package()))
                     return si_take;
             }
 
@@ -877,7 +876,7 @@ namespace
             for (PackageDepSpecList::const_iterator l(ignore_from.begin()), l_end(ignore_from.end()) ;
                     l != l_end ; ++l)
             {
-                if (match_qpns(*env, *l, resolvent.package()))
+                if (match_qpns(*env, *l, resolution->resolvent().package()))
                     return si_ignore;
             }
 
@@ -917,8 +916,7 @@ namespace
     const std::tr1::shared_ptr<const Repository>
     find_repository_for_fn(const Environment * const env,
             const ResolveCommandLineResolutionOptions &,
-            const Resolvent & resolvent,
-            const std::tr1::shared_ptr<const Resolution> &,
+            const std::tr1::shared_ptr<const Resolution> & resolution,
             const ChangesToMakeDecision & decision)
     {
         std::tr1::shared_ptr<const Repository> result;
@@ -926,7 +924,7 @@ namespace
                 r_end(env->package_database()->end_repositories()) ;
                 r != r_end ; ++r)
         {
-            switch (resolvent.destination_type())
+            switch (resolution->resolvent().destination_type())
             {
                 case dt_install_to_slash:
                     if ((! (*r)->installed_root_key()) || ((*r)->installed_root_key()->value() != FSEntry("/")))
@@ -947,7 +945,7 @@ namespace
             {
                 if (result)
                     throw ConfigurationError("For '" + stringify(*decision.origin_id())
-                            + "' with destination type " + stringify(resolvent.destination_type())
+                            + "' with destination type " + stringify(resolution->resolvent().destination_type())
                             + ", don't know whether to install to ::" + stringify(result->name())
                             + " or ::" + stringify((*r)->name()));
                 else
@@ -957,7 +955,7 @@ namespace
 
         if (! result)
             throw ConfigurationError("No repository suitable for '" + stringify(*decision.origin_id())
-                    + "' with destination type " + stringify(resolvent.destination_type()) + " has been configured");
+                    + "' with destination type " + stringify(resolution->resolvent().destination_type()) + " has been configured");
         return result;
     }
 
@@ -1135,7 +1133,6 @@ namespace
             const ResolveCommandLineResolutionOptions & resolution_options,
             const PackageDepSpecList & permit_downgrade,
             const PackageDepSpecList & permit_old_version,
-            const Resolvent &,
             const std::tr1::shared_ptr<const Resolution> & r,
             const std::tr1::shared_ptr<const RequiredConfirmation> & c)
     {
@@ -1147,7 +1144,6 @@ namespace
     const std::tr1::shared_ptr<ConstraintSequence> get_constraints_for_dependent_fn(
             const Environment * const env,
             const PackageDepSpecList & list,
-            const Resolvent &,
             const std::tr1::shared_ptr<const Resolution> &,
             const std::tr1::shared_ptr<const PackageID> & id,
             const std::tr1::shared_ptr<const PackageIDSequence> & ids)
@@ -1605,11 +1601,11 @@ paludis::cave::resolve_common(
                         env.get(), std::tr1::cref(allowed_to_remove_specs), _1),
                 n::confirm_fn() = std::tr1::bind(&confirm_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::cref(permit_downgrade),
-                        std::tr1::cref(permit_old_version), _1, _2, _3),
+                        std::tr1::cref(permit_old_version), _1, _2),
                 n::find_repository_for_fn() = std::tr1::bind(&find_repository_for_fn,
-                        env.get(), std::tr1::cref(resolution_options), _1, _2, _3),
+                        env.get(), std::tr1::cref(resolution_options), _1, _2),
                 n::get_constraints_for_dependent_fn() = std::tr1::bind(&get_constraints_for_dependent_fn,
-                        env.get(), std::tr1::cref(less_restrictive_remove_blockers_specs), _1, _2, _3, _4),
+                        env.get(), std::tr1::cref(less_restrictive_remove_blockers_specs), _1, _2, _3),
                 n::get_destination_types_for_fn() = std::tr1::bind(&get_destination_types_for_fn,
                         env.get(), std::tr1::cref(resolution_options), _1, _2, _3),
                 n::get_initial_constraints_for_fn() = std::tr1::bind(&initial_constraints_for_fn,
@@ -1622,7 +1618,7 @@ paludis::cave::resolve_common(
                 n::interest_in_spec_fn() = std::tr1::bind(&interest_in_spec_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::cref(take), std::tr1::cref(take_from),
                         std::tr1::cref(ignore), std::tr1::cref(ignore_from), std::tr1::cref(no_blockers_from),
-                        std::tr1::cref(no_dependencies_from), _1, _2, _3),
+                        std::tr1::cref(no_dependencies_from), _1, _2),
                 n::make_destination_filtered_generator_fn() = std::tr1::bind(&make_destination_filtered_generator,
                         env.get(), std::tr1::cref(resolution_options), all_binary_repos_generator, _1, _2),
                 n::prefer_or_avoid_fn() = std::tr1::bind(&prefer_or_avoid_fn,

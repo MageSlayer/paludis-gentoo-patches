@@ -296,14 +296,14 @@ Orderer::_confirm(
     if (! decision.best())
     {
         const std::tr1::shared_ptr<RequiredConfirmation> c(new NotBestConfirmation);
-        if (! _imp->fns.confirm_fn()(resolution->resolvent(), resolution, c))
+        if (! _imp->fns.confirm_fn()(resolution, c))
             job->required_confirmations()->push_back(c);
     }
 
     if (ct_downgrade == decision.change_type())
     {
         const std::tr1::shared_ptr<DowngradeConfirmation> c(new DowngradeConfirmation);
-        if (! _imp->fns.confirm_fn()(resolution->resolvent(), resolution, c))
+        if (! _imp->fns.confirm_fn()(resolution, c))
             job->required_confirmations()->push_back(c);
     }
 
