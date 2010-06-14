@@ -55,6 +55,7 @@
 #include <paludis/resolver/jobs.hh>
 #include <paludis/resolver/job_id.hh>
 #include <paludis/resolver/decisions.hh>
+#include <paludis/resolver/required_confirmations.hh>
 #include <paludis/package_id.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -636,32 +637,32 @@ namespace
         cout << endl;
     }
 
-//    struct DisplayConfirmationVisitor
-//    {
-//        std::string visit(const DowngradeConfirmation &) const
-//        {
-//            return "--permit-downgrade";
-//        }
-//
-//        std::string visit(const NotBestConfirmation &) const
-//        {
-//            return "--permit-old-version";
-//        }
-//    };
-//
-//    std::string stringify_confirmation(const RequiredConfirmation & c)
-//    {
-//        return c.accept_returning<std::string>(DisplayConfirmationVisitor());
-//    }
-//
-//    void display_confirmations(
-//            const Job & job)
-//    {
-//        const std::tr1::shared_ptr<const RequiredConfirmations> r(job.required_confirmations());
-//        if (! r->empty())
-//            cout << c::bold_red() << "    Cannot proceed without: " << c::normal() <<
-//                join(indirect_iterator(r->begin()), indirect_iterator(r->end()), ", ", stringify_confirmation) << endl;
-//    }
+    struct DisplayConfirmationVisitor
+    {
+        std::string visit(const DowngradeConfirmation &) const
+        {
+            return "--permit-downgrade";
+        }
+
+        std::string visit(const NotBestConfirmation &) const
+        {
+            return "--permit-old-version";
+        }
+    };
+
+    std::string stringify_confirmation(const RequiredConfirmation & c)
+    {
+        return c.accept_returning<std::string>(DisplayConfirmationVisitor());
+    }
+
+    void display_confirmations(
+            const ChangesToMakeDecision & decision)
+    {
+        const std::tr1::shared_ptr<const RequiredConfirmations> r(decision.required_confirmations_if_any());
+        if (r && ! r->empty())
+            cout << c::bold_red() << "    Cannot proceed without: " << c::normal() <<
+                join(indirect_iterator(r->begin()), indirect_iterator(r->end()), ", ", stringify_confirmation) << endl;
+    }
 
     void display_one_installish(
             const std::tr1::shared_ptr<Environment> & env,
@@ -669,6 +670,7 @@ namespace
             const ChangesToMakeDecision & decision,
             const std::tr1::shared_ptr<const Resolution> & resolution,
             const bool more_annotations,
+            const bool confirmations,
             const bool untaken,
             ChoicesToExplain & choices_to_explain)
     {
@@ -742,8 +744,8 @@ namespace
         display_one_description(env, cmdline, decision.origin_id(), ! old_id);
         display_choices(env, cmdline, decision.origin_id(), old_id, choices_to_explain);
         display_reasons(resolution, more_annotations);
-        // if (confirmations)
-        //    display_confirmations(job);
+        if (confirmations)
+            display_confirmations(decision);
     }
 
     void display_one_uninstall(
@@ -773,8 +775,6 @@ namespace
 
         cout << endl;
         display_reasons(resolution, more_annotations);
-//        if (confirmations)
-//            display_confirmations(job);
     }
 
     struct NotFixableMask
@@ -1043,35 +1043,6 @@ namespace
         }
     }
 
-
-//    void display_confirmation_jobs(
-//            const std::tr1::shared_ptr<Environment> & env,
-//            const ResolverLists & lists,
-//            const DisplayResolutionCommandLine & cmdline)
-//    {
-//        Context context("When displaying jobs requiring confirmation:");
-//
-//        if (lists.job_ids_needing_confirmation()->empty())
-//            return;
-//
-//        cout << "I cannot proceed without being permitted to do the following:" << endl << endl;
-//
-//        for (JobIDSequence::ConstIterator i(lists.job_ids_needing_confirmation()->begin()),
-//                i_end(lists.job_ids_needing_confirmation()->end()) ;
-//                i != i_end ; ++i)
-//        {
-//            const std::tr1::shared_ptr<const Job> job(lists.jobs()->fetch(*i));
-//            ChoicesToExplain ignore_choices_to_explain;
-//            ShowJobsDisplayer d(env, cmdline, lists, cmdline.display_options.a_show_all_jobs.specified() ||
-//                    ! job->used_existing_packages_when_ordering()->empty(), true, true, false,
-//                    ignore_choices_to_explain);
-//            if (! job->accept_returning<bool>(d))
-//                throw InternalError(PALUDIS_HERE, "why didn't we get true?");
-//        }
-//
-//        cout << endl;
-//    }
-
     void display_choices_to_explain(
             const std::tr1::shared_ptr<Environment> &,
             const DisplayResolutionCommandLine &,
@@ -1126,12 +1097,15 @@ namespace
             const DisplayResolutionCommandLine & cmdline,
             ChoicesToExplain & choices_to_explain,
             const bool more_annotations,
+            const bool unconfirmed,
             const bool untaken)
     {
         Context context("When displaying changes and removes:");
 
         if (untaken)
             cout << "I did not take the following:" << endl << endl;
+        else if (unconfirmed)
+            cout << "I cannot proceed without being permitted to do the following:" << endl << endl;
         else
             cout << "These are the actions I will take, in order:" << endl << endl;
 
@@ -1152,6 +1126,7 @@ namespace
                         *changes_to_make_decision,
                         *resolved->resolutions_by_resolvent()->find(changes_to_make_decision->resolvent()),
                         more_annotations,
+                        unconfirmed,
                         untaken,
                         choices_to_explain);
             }
@@ -1182,7 +1157,7 @@ namespace
             ChoicesToExplain & choices_to_explain)
     {
         display_a_changes_and_removes(env, resolved, resolved->taken_change_or_remove_decisions(),
-                cmdline, choices_to_explain, false, false);
+                cmdline, choices_to_explain, false, false, false);
     }
 
     void display_untaken_changes_and_removes(
@@ -1193,7 +1168,7 @@ namespace
     {
         if (! resolved->untaken_change_or_remove_decisions()->empty())
             display_a_changes_and_removes(env, resolved, resolved->untaken_change_or_remove_decisions(),
-                    cmdline, choices_to_explain, true, true);
+                    cmdline, choices_to_explain, true, false, true);
     }
 
     void display_an_errors(
@@ -1244,6 +1219,17 @@ namespace
         if (! resolved->untaken_unable_to_make_decisions()->empty())
             display_an_errors(env, resolved, resolved->untaken_unable_to_make_decisions(), cmdline, true);
     }
+
+    void display_taken_changes_requiring_confirmation(
+            const std::tr1::shared_ptr<Environment> & env,
+            const std::tr1::shared_ptr<const Resolved> & resolved,
+            const DisplayResolutionCommandLine & cmdline)
+    {
+        ChoicesToExplain ignore_choices_to_explain;
+        if (! resolved->taken_unconfirmed_change_or_remove_decisions()->empty())
+            display_a_changes_and_removes(env, resolved, resolved->taken_unconfirmed_change_or_remove_decisions(),
+                    cmdline, ignore_choices_to_explain, true, true, false);
+    }
 }
 
 bool
@@ -1290,6 +1276,7 @@ DisplayResolutionCommand::run(
     display_choices_to_explain(env, cmdline, choices_to_explain);
     display_taken_errors(env, resolved, cmdline);
     display_untaken_errors(env, resolved, cmdline);
+    display_taken_changes_requiring_confirmation(env, resolved, cmdline);
     display_explanations(env, resolved, cmdline);
 
     return 0;
