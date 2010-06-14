@@ -22,7 +22,6 @@
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/resolution.hh>
-#include <paludis/resolver/resolutions.hh>
 #include <paludis/resolver/resolver_functions.hh>
 #include <paludis/resolver/suggest_restart.hh>
 #include <paludis/resolver/decision.hh>

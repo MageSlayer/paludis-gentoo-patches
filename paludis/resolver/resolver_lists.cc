@@ -18,7 +18,7 @@
  */
 
 #include <paludis/resolver/resolver_lists.hh>
-#include <paludis/resolver/resolutions.hh>
+#include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/jobs.hh>
 #include <paludis/resolver/job_id.hh>
 #include <paludis/util/sequence.hh>
@@ -33,9 +33,9 @@ void
 ResolverLists::serialise(Serialiser & s) const
 {
     s.object("ResolverLists")
-        .member(SerialiserFlags<serialise::might_be_null>(), "all_resolutions", all_resolutions())
         .member(SerialiserFlags<serialise::might_be_null>(), "jobs", jobs())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "job_ids_needing_confirmation", job_ids_needing_confirmation())
+        .member(SerialiserFlags<serialise::might_be_null>(), "resolutions_by_resolvent", resolutions_by_resolvent())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "taken_error_job_ids", taken_error_job_ids())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "taken_job_ids", taken_job_ids())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "untaken_error_job_ids", untaken_error_job_ids())
@@ -84,9 +84,9 @@ ResolverLists::deserialise(Deserialisation & d)
     }
 
     return make_named_values<ResolverLists>(
-            n::all_resolutions() = v.member<std::tr1::shared_ptr<Resolutions> >("all_resolutions"),
             n::job_ids_needing_confirmation() = job_ids_needing_confirmation,
             n::jobs() = v.member<std::tr1::shared_ptr<Jobs> >("jobs"),
+            n::resolutions_by_resolvent() = v.member<std::tr1::shared_ptr<ResolutionsByResolvent> >("resolutions_by_resolvent"),
             n::taken_error_job_ids() = taken_error_job_ids,
             n::taken_job_ids() = taken_job_ids,
             n::untaken_error_job_ids() = untaken_error_job_ids,

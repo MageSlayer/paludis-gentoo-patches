@@ -40,7 +40,7 @@
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/type_list.hh>
-#include <paludis/resolver/resolutions.hh>
+#include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/resolution.hh>

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,17 +17,14 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLUTIONS_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLUTIONS_FWD_HH 1
-
-#include <paludis/util/attributes.hh>
-#include <paludis/serialise-fwd.hh>
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLUTIONS_BY_RESOLVENT_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLUTIONS_BY_RESOLVENT_FWD_HH 1
 
 namespace paludis
 {
     namespace resolver
     {
-        struct Resolutions;
+        struct ResolutionsByResolvent;
     }
 }
 

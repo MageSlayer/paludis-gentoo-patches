@@ -31,12 +31,12 @@
 #include <paludis/resolver/destination-fwd.hh>
 #include <paludis/resolver/unsuitable_candidates-fwd.hh>
 #include <paludis/resolver/spec_rewriter-fwd.hh>
-#include <paludis/resolver/resolutions-fwd.hh>
 #include <paludis/resolver/resolver_functions-fwd.hh>
 #include <paludis/resolver/resolver-fwd.hh>
 #include <paludis/resolver/any_child_score-fwd.hh>
 #include <paludis/resolver/change_type-fwd.hh>
 #include <paludis/resolver/package_or_block_dep_spec-fwd.hh>
+#include <paludis/resolver/resolutions_by_resolvent-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/dep_spec-fwd.hh>
@@ -220,7 +220,7 @@ namespace paludis
             public:
                 Decider(const Environment * const,
                         const ResolverFunctions &,
-                        const std::tr1::shared_ptr<Resolutions> &);
+                        const std::tr1::shared_ptr<ResolutionsByResolvent> &);
                 ~Decider();
 
                 void resolve();

@@ -50,7 +50,7 @@
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
-#include <paludis/resolver/resolutions.hh>
+#include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/resolver_lists.hh>
 #include <paludis/resolver/required_confirmations.hh>
 #include <paludis/user_dep_spec.hh>

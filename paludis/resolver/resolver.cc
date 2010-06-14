@@ -24,7 +24,7 @@
 #include <paludis/resolver/decider.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/reason.hh>
-#include <paludis/resolver/resolutions.hh>
+#include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/jobs.hh>
 #include <paludis/resolver/job_id.hh>
 #include <paludis/resolver/orderer.hh>
@@ -67,9 +67,9 @@ namespace paludis
             env(e),
             fns(f),
             lists(new ResolverLists(make_named_values<ResolverLists>(
-                            n::all_resolutions() = make_shared_ptr(new Resolutions),
                             n::job_ids_needing_confirmation() = make_shared_ptr(new JobIDSequence),
                             n::jobs() = make_shared_ptr(new Jobs),
+                            n::resolutions_by_resolvent() = make_shared_ptr(new ResolutionsByResolvent),
                             n::taken_error_job_ids() = make_shared_ptr(new JobIDSequence),
                             n::taken_job_ids() = make_shared_ptr(new JobIDSequence),
                             n::untaken_error_job_ids() = make_shared_ptr(new JobIDSequence),
@@ -77,12 +77,12 @@ namespace paludis
                             ))),
             resolved(new Resolved(make_named_values<Resolved>(
                             n::display_change_or_remove_decisions() = make_shared_ptr(new Decisions<ChangeOrRemoveDecision>),
-                            n::resolutions() = lists->all_resolutions(),
+                            n::resolutions_by_resolvent() = lists->resolutions_by_resolvent(),
                             n::taken_unable_to_make_decisions() = make_shared_ptr(new Decisions<UnableToMakeDecision>),
                             n::untaken_change_or_remove_decisions() = make_shared_ptr(new Decisions<ChangeOrRemoveDecision>),
                             n::untaken_unable_to_make_decisions() = make_shared_ptr(new Decisions<UnableToMakeDecision>)
                             ))),
-            decider(new Decider(e, f, resolved->resolutions())),
+            decider(new Decider(e, f, resolved->resolutions_by_resolvent())),
             orderer(new Orderer(e, f, decider, lists)),
             lineariser(new Lineariser(e, resolved))
         {

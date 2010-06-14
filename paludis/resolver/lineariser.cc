@@ -20,12 +20,12 @@
 #include <paludis/resolver/lineariser.hh>
 #include <paludis/resolver/decision.hh>
 #include <paludis/resolver/decisions.hh>
-#include <paludis/resolver/resolutions.hh>
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/nag.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/strongly_connected_component.hh>
+#include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
@@ -304,8 +304,8 @@ Lineariser::resolve()
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Nodifying Decisions"));
 
     ResolventsSet ignore_dependencies_from_resolvents, ignore_edges_from_resolvents;
-    for (Resolutions::ConstIterator r(_imp->resolved->resolutions()->begin()),
-            r_end(_imp->resolved->resolutions()->end()) ;
+    for (ResolutionsByResolvent::ConstIterator r(_imp->resolved->resolutions_by_resolvent()->begin()),
+            r_end(_imp->resolved->resolutions_by_resolvent()->end()) ;
             r != r_end ; ++r)
     {
         DecisionDispatcher decision_dispatcher(
@@ -321,8 +321,8 @@ Lineariser::resolve()
 
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Building NAG Edges"));
 
-    for (Resolutions::ConstIterator r(_imp->resolved->resolutions()->begin()),
-            r_end(_imp->resolved->resolutions()->end()) ;
+    for (ResolutionsByResolvent::ConstIterator r(_imp->resolved->resolutions_by_resolvent()->begin()),
+            r_end(_imp->resolved->resolutions_by_resolvent()->end()) ;
             r != r_end ; ++r)
     {
         if (ignore_dependencies_from_resolvents.end() != ignore_edges_from_resolvents.find((*r)->resolvent()))

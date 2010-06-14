@@ -40,7 +40,7 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/pretty_print.hh>
-#include <paludis/resolver/resolutions.hh>
+#include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/resolution.hh>
@@ -414,7 +414,8 @@ namespace
         {
             bool any(false);
             PackageDepSpec spec(parse_user_package_dep_spec(*i, env.get(), UserPackageDepSpecOptions() + updso_allow_wildcards));
-            for (Resolutions::ConstIterator r(lists.all_resolutions()->begin()), r_end(lists.all_resolutions()->end()) ;
+            for (ResolutionsByResolvent::ConstIterator r(lists.resolutions_by_resolvent()->begin()),
+                    r_end(lists.resolutions_by_resolvent()->end()) ;
                     r != r_end ; ++r)
             {
                 if (! decision_matches_spec(env, (*r)->resolvent(), *(*r)->decision(), spec))

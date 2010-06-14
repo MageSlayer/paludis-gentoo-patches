@@ -25,7 +25,7 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/decision.hh>
 #include <paludis/resolver/destination.hh>
-#include <paludis/resolver/resolutions.hh>
+#include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/suggest_restart.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/unsuitable_candidates.hh>
@@ -65,8 +65,6 @@
 using namespace paludis;
 using namespace paludis::resolver;
 
-typedef std::map<Resolvent, std::tr1::shared_ptr<Resolution> > ResolutionsByResolventMap;
-
 namespace paludis
 {
     template <>
@@ -76,22 +74,21 @@ namespace paludis
         const ResolverFunctions fns;
         SpecRewriter rewriter;
 
-        ResolutionsByResolventMap resolutions_by_resolvent;
-        const std::tr1::shared_ptr<Resolutions> all_resolutions;
+        const std::tr1::shared_ptr<ResolutionsByResolvent> resolutions_by_resolvent;
 
         Implementation(const Environment * const e, const ResolverFunctions & f,
-                const std::tr1::shared_ptr<Resolutions> & l) :
+                const std::tr1::shared_ptr<ResolutionsByResolvent> & l) :
             env(e),
             fns(f),
             rewriter(env),
-            all_resolutions(l)
+            resolutions_by_resolvent(l)
         {
         }
     };
 }
 
 Decider::Decider(const Environment * const e, const ResolverFunctions & f,
-        const std::tr1::shared_ptr<Resolutions> & l) :
+        const std::tr1::shared_ptr<ResolutionsByResolvent> & l) :
     PrivateImplementationPattern<Decider>(new Implementation<Decider>(e, f, l))
 {
 }
@@ -115,26 +112,26 @@ Decider::_resolve_decide_with_dependencies()
             break;
 
         changed = false;
-        for (ResolutionsByResolventMap::iterator i(_imp->resolutions_by_resolvent.begin()),
-                i_end(_imp->resolutions_by_resolvent.end()) ;
+        for (ResolutionsByResolvent::ConstIterator i(_imp->resolutions_by_resolvent->begin()),
+                i_end(_imp->resolutions_by_resolvent->end()) ;
                 i != i_end ; ++i)
         {
             /* we've already decided */
-            if (i->second->decision())
+            if ((*i)->decision())
                 continue;
 
             /* we're only being suggested. don't do this on the first pass, so
              * we don't have to do restarts for suggestions later becoming hard
              * deps. */
-            if (state == deciding_non_suggestions && i->second->constraints()->all_untaken())
+            if (state == deciding_non_suggestions && (*i)->constraints()->all_untaken())
                 continue;
 
             _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
             changed = true;
-            _decide(i->first, i->second);
+            _decide((*i)->resolvent(), *i);
 
-            _add_dependencies_if_necessary(i->first, i->second);
+            _add_dependencies_if_necessary((*i)->resolvent(), *i);
         }
     }
 }
@@ -172,7 +169,7 @@ Decider::_resolve_dependents()
             Resolvent resolvent(*s, dt_install_to_slash);
 
             /* we've changed things if we've not already done anything for this resolvent */
-            if (_imp->resolutions_by_resolvent.end() == _imp->resolutions_by_resolvent.find(resolvent))
+            if (_imp->resolutions_by_resolvent->end() == _imp->resolutions_by_resolvent->find(resolvent))
                 changed = true;
 
             const std::tr1::shared_ptr<Resolution> resolution(_resolution_for_resolvent(resolvent, true));
@@ -340,11 +337,11 @@ Decider::_collect_changing() const
 {
     ChangingCollector c;
 
-    for (ResolutionsByResolventMap::const_iterator i(_imp->resolutions_by_resolvent.begin()),
-            i_end(_imp->resolutions_by_resolvent.end()) ;
+    for (ResolutionsByResolvent::ConstIterator i(_imp->resolutions_by_resolvent->begin()),
+            i_end(_imp->resolutions_by_resolvent->end()) ;
             i != i_end ; ++i)
-        if (i->second->decision())
-            i->second->decision()->accept(c);
+        if ((*i)->decision())
+            (*i)->decision()->accept(c);
 
     return std::make_pair(c.going_away, c.newly_available);
 }
@@ -370,10 +367,10 @@ Decider::_resolve_destinations()
 {
     Context context("When resolving destinations:");
 
-    for (ResolutionsByResolventMap::iterator i(_imp->resolutions_by_resolvent.begin()),
-            i_end(_imp->resolutions_by_resolvent.end()) ;
+    for (ResolutionsByResolvent::ConstIterator i(_imp->resolutions_by_resolvent->begin()),
+            i_end(_imp->resolutions_by_resolvent->end()) ;
             i != i_end ; ++i)
-        _do_destination_if_necessary(i->first, i->second);
+        _do_destination_if_necessary((*i)->resolvent(), *i);
 }
 
 namespace
@@ -566,32 +563,31 @@ Decider::_create_resolution_for_resolvent(const Resolvent & r) const
 const std::tr1::shared_ptr<Resolution>
 Decider::_resolution_for_resolvent(const Resolvent & r, const bool create)
 {
-    ResolutionsByResolventMap::iterator i(_imp->resolutions_by_resolvent.find(r));
-    if (_imp->resolutions_by_resolvent.end() == i)
+    ResolutionsByResolvent::ConstIterator i(_imp->resolutions_by_resolvent->find(r));
+    if (_imp->resolutions_by_resolvent->end() == i)
     {
         if (create)
         {
             std::tr1::shared_ptr<Resolution> resolution(_create_resolution_for_resolvent(r));
-            i = _imp->resolutions_by_resolvent.insert(std::make_pair(r, resolution)).first;
-            _imp->all_resolutions->append(resolution);
+            i = _imp->resolutions_by_resolvent->insert_new(resolution);
         }
         else
             throw InternalError(PALUDIS_HERE, "resolver bug: expected resolution for "
                     + stringify(r) + " to exist, but it doesn't");
     }
 
-    return i->second;
+    return *i;
 }
 
 const std::tr1::shared_ptr<Resolution>
 Decider::resolution_for_resolvent(const Resolvent & r) const
 {
-    ResolutionsByResolventMap::const_iterator i(_imp->resolutions_by_resolvent.find(r));
-    if (_imp->resolutions_by_resolvent.end() == i)
+    ResolutionsByResolvent::ConstIterator i(_imp->resolutions_by_resolvent->find(r));
+    if (_imp->resolutions_by_resolvent->end() == i)
         throw InternalError(PALUDIS_HERE, "resolver bug: expected resolution for "
                 + stringify(r) + " to exist, but it doesn't");
 
-    return i->second;
+    return *i;
 }
 
 const std::tr1::shared_ptr<ConstraintSequence>
@@ -1213,8 +1209,8 @@ Decider::find_any_score(const Resolvent & our_resolvent, const SanitisedDependen
         for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
                 r != r_end ; ++r)
         {
-            ResolutionsByResolventMap::const_iterator i(_imp->resolutions_by_resolvent.find(*r));
-            if (i != _imp->resolutions_by_resolvent.end())
+            ResolutionsByResolvent::ConstIterator i(_imp->resolutions_by_resolvent->find(*r));
+            if (i != _imp->resolutions_by_resolvent->end())
                 return std::make_pair(acs_will_be_installing, operator_bias);
         }
     }

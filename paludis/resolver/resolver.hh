@@ -24,7 +24,6 @@
 #include <paludis/resolver/reason-fwd.hh>
 #include <paludis/resolver/resolver_functions-fwd.hh>
 #include <paludis/resolver/decider-fwd.hh>
-#include <paludis/resolver/resolutions-fwd.hh>
 #include <paludis/resolver/resolver_lists-fwd.hh>
 #include <paludis/resolver/resolved-fwd.hh>
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>

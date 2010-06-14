@@ -25,7 +25,7 @@
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/arrow.hh>
 #include <paludis/resolver/decision.hh>
-#include <paludis/resolver/resolutions.hh>
+#include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/resolver_lists.hh>
 #include <paludis/resolver/job.hh>
@@ -276,8 +276,8 @@ namespace
 void
 Orderer::_resolve_jobs()
 {
-    for (Resolutions::ConstIterator i(_imp->lists->all_resolutions()->begin()),
-            i_end(_imp->lists->all_resolutions()->end()) ;
+    for (ResolutionsByResolvent::ConstIterator i(_imp->lists->resolutions_by_resolvent()->begin()),
+            i_end(_imp->lists->resolutions_by_resolvent()->end()) ;
             i != i_end ; ++i)
     {
         DecisionHandler d(*i, _imp->lists, _imp->to_order, std::tr1::bind(

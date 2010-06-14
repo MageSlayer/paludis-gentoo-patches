@@ -20,7 +20,7 @@
 #include <paludis/resolver/resolved.hh>
 #include <paludis/resolver/decisions.hh>
 #include <paludis/resolver/decision.hh>
-#include <paludis/resolver/resolutions.hh>
+#include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/serialise-impl.hh>
 
@@ -32,7 +32,7 @@ Resolved::serialise(Serialiser & s) const
 {
     s.object("Resolved")
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "display_change_or_remove_decisions", display_change_or_remove_decisions())
-        .member(SerialiserFlags<serialise::might_be_null>(), "resolutions", resolutions())
+        .member(SerialiserFlags<serialise::might_be_null>(), "resolutions_by_resolvent", resolutions_by_resolvent())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "taken_unable_to_make_decisions", taken_unable_to_make_decisions())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "untaken_change_or_remove_decisions", untaken_change_or_remove_decisions())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "untaken_unable_to_make_decisions", untaken_unable_to_make_decisions())
@@ -74,7 +74,7 @@ Resolved::deserialise(Deserialisation & d)
 
     return make_named_values<Resolved>(
             n::display_change_or_remove_decisions() = display_change_or_remove_decisions,
-            n::resolutions() = v.member<std::tr1::shared_ptr<Resolutions> >("resolutions"),
+            n::resolutions_by_resolvent() = v.member<std::tr1::shared_ptr<ResolutionsByResolvent> >("resolutions_by_resolvent"),
             n::taken_unable_to_make_decisions() = taken_unable_to_make_decisions,
             n::untaken_change_or_remove_decisions() = untaken_change_or_remove_decisions,
             n::untaken_unable_to_make_decisions() = untaken_unable_to_make_decisions

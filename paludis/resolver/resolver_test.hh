@@ -26,7 +26,6 @@
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
 #include <paludis/resolver/reason-fwd.hh>
 #include <paludis/resolver/use_existing-fwd.hh>
-#include <paludis/resolver/resolutions-fwd.hh>
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/resolver/destination_types-fwd.hh>
 #include <paludis/resolver/resolver-fwd.hh>

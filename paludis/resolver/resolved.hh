@@ -22,7 +22,7 @@
 
 #include <paludis/resolver/resolved-fwd.hh>
 #include <paludis/resolver/decisions-fwd.hh>
-#include <paludis/resolver/resolutions-fwd.hh>
+#include <paludis/resolver/resolutions_by_resolvent-fwd.hh>
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/serialise-fwd.hh>
@@ -33,7 +33,7 @@ namespace paludis
     namespace n
     {
         typedef Name<struct display_change_or_remove_decisions_name> display_change_or_remove_decisions;
-        typedef Name<struct resolutions_name> resolutions;
+        typedef Name<struct resolutions_by_resolvent_name> resolutions_by_resolvent;
         typedef Name<struct taken_unable_to_make_decisions_name> taken_unable_to_make_decisions;
         typedef Name<struct untaken_change_or_remove_decisions_name> untaken_change_or_remove_decisions;
         typedef Name<struct untaken_unable_to_make_decisions_name> untaken_unable_to_make_decisions;
@@ -44,7 +44,7 @@ namespace paludis
         struct Resolved
         {
             NamedValue<n::display_change_or_remove_decisions, std::tr1::shared_ptr<Decisions<ChangeOrRemoveDecision> > > display_change_or_remove_decisions;
-            NamedValue<n::resolutions, std::tr1::shared_ptr<Resolutions> > resolutions;
+            NamedValue<n::resolutions_by_resolvent, std::tr1::shared_ptr<ResolutionsByResolvent> > resolutions_by_resolvent;
             NamedValue<n::taken_unable_to_make_decisions, std::tr1::shared_ptr<Decisions<UnableToMakeDecision> > > taken_unable_to_make_decisions;
             NamedValue<n::untaken_change_or_remove_decisions, std::tr1::shared_ptr<Decisions<ChangeOrRemoveDecision> > > untaken_change_or_remove_decisions;
             NamedValue<n::untaken_unable_to_make_decisions, std::tr1::shared_ptr<Decisions<UnableToMakeDecision> > > untaken_unable_to_make_decisions;

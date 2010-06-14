@@ -23,7 +23,6 @@
 #include <paludis/resolver/orderer-fwd.hh>
 #include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/resolver/resolution-fwd.hh>
-#include <paludis/resolver/resolutions-fwd.hh>
 #include <paludis/resolver/constraint-fwd.hh>
 #include <paludis/resolver/reason-fwd.hh>
 #include <paludis/resolver/resolver_functions-fwd.hh>

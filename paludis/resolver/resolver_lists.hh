@@ -21,9 +21,9 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLVER_LISTS_HH 1
 
 #include <paludis/resolver/resolver_lists-fwd.hh>
-#include <paludis/resolver/resolutions-fwd.hh>
 #include <paludis/resolver/job_id-fwd.hh>
 #include <paludis/resolver/jobs-fwd.hh>
+#include <paludis/resolver/resolutions_by_resolvent-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/serialise.hh>
 #include <tr1/memory>
@@ -32,9 +32,9 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct all_resolutions_name> all_resolutions;
         typedef Name<struct job_ids_needing_confirmation_name> job_ids_needing_confirmation;
         typedef Name<struct jobs_name> jobs;
+        typedef Name<struct resolutions_by_resolvent_name> resolutions_by_resolvent;
         typedef Name<struct taken_error_job_ids_name> taken_error_job_ids;
         typedef Name<struct taken_job_ids_name> taken_job_ids;
         typedef Name<struct untaken_error_job_ids_name> untaken_error_job_ids;
@@ -45,9 +45,9 @@ namespace paludis
     {
         struct ResolverLists
         {
-            NamedValue<n::all_resolutions, std::tr1::shared_ptr<Resolutions> > all_resolutions;
             NamedValue<n::job_ids_needing_confirmation, std::tr1::shared_ptr<JobIDSequence> > job_ids_needing_confirmation;
             NamedValue<n::jobs, std::tr1::shared_ptr<Jobs> > jobs;
+            NamedValue<n::resolutions_by_resolvent, std::tr1::shared_ptr<ResolutionsByResolvent> > resolutions_by_resolvent;
             NamedValue<n::taken_error_job_ids, std::tr1::shared_ptr<JobIDSequence> > taken_error_job_ids;
             NamedValue<n::taken_job_ids, std::tr1::shared_ptr<JobIDSequence> > taken_job_ids;
             NamedValue<n::untaken_error_job_ids, std::tr1::shared_ptr<JobIDSequence> > untaken_error_job_ids;

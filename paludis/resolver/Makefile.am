@@ -43,7 +43,7 @@ noinst_HEADERS = \
 	reason.hh reason-fwd.hh \
 	required_confirmations.hh required_confirmations-fwd.hh \
 	resolution.hh resolution-fwd.hh \
-	resolutions.hh resolutions-fwd.hh \
+	resolutions_by_resolvent.hh resolutions_by_resolvent-fwd.hh \
 	resolvent.hh resolvent-fwd.hh \
 	resolver.hh resolver-fwd.hh \
 	resolver_functions.hh resolver_functions-fwd.hh \
@@ -79,7 +79,7 @@ libpaludisresolver_a_SOURCES = \
 	reason.cc \
 	required_confirmations.cc \
 	resolution.cc \
-	resolutions.cc \
+	resolutions_by_resolvent.cc \
 	resolvent.cc \
 	resolver.cc \
 	resolver_functions.cc \
