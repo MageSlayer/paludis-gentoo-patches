@@ -79,7 +79,7 @@ namespace paludis
             bool is_just_suggestion(const SanitisedDependency & dep);
 
             UseExisting get_use_existing_fn(
-                    const Resolvent &,
+                    const std::tr1::shared_ptr<const Resolution> &,
                     const PackageDepSpec &,
                     const std::tr1::shared_ptr<const Reason> &);
 

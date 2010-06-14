@@ -575,20 +575,9 @@ Decider::_resolution_for_resolvent(const Resolvent & r, const bool create)
     return *i;
 }
 
-const std::tr1::shared_ptr<Resolution>
-Decider::resolution_for_resolvent(const Resolvent & r) const
-{
-    ResolutionsByResolvent::ConstIterator i(_imp->resolutions_by_resolvent->find(r));
-    if (_imp->resolutions_by_resolvent->end() == i)
-        throw InternalError(PALUDIS_HERE, "resolver bug: expected resolution for "
-                + stringify(r) + " to exist, but it doesn't");
-
-    return *i;
-}
-
 const std::tr1::shared_ptr<ConstraintSequence>
 Decider::_make_constraints_from_target(
-        const Resolvent & resolvent,
+        const std::tr1::shared_ptr<const Resolution> & resolution,
         const PackageOrBlockDepSpec & spec,
         const std::tr1::shared_ptr<const Reason> & reason) const
 {
@@ -596,23 +585,25 @@ Decider::_make_constraints_from_target(
     {
         const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
         result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                            n::destination_type() = resolvent.destination_type(),
+                            n::destination_type() = resolution->resolvent().destination_type(),
                             n::nothing_is_fine_too() = false,
                             n::reason() = reason,
                             n::spec() = spec,
                             n::untaken() = false,
-                            n::use_existing() = _imp->fns.get_use_existing_fn()(resolvent, *spec.if_package(), reason)
+                            n::use_existing() = _imp->fns.get_use_existing_fn()(resolution, *spec.if_package(), reason)
                             ))));
         return result;
     }
     else if (spec.if_block())
-        return _make_constraints_from_blocker(resolvent, *spec.if_block(), reason);
+        return _make_constraints_from_blocker(resolution, *spec.if_block(), reason);
     else
         throw InternalError(PALUDIS_HERE, "resolver bug: huh? it's not a block and it's not a package");
 }
 
 const std::tr1::shared_ptr<ConstraintSequence>
-Decider::_make_constraints_from_dependency(const Resolvent & resolvent, const SanitisedDependency & dep,
+Decider::_make_constraints_from_dependency(
+        const std::tr1::shared_ptr<const Resolution> & resolution,
+        const SanitisedDependency & dep,
         const std::tr1::shared_ptr<const Reason> & reason,
         const SpecInterest interest) const
 {
@@ -620,25 +611,24 @@ Decider::_make_constraints_from_dependency(const Resolvent & resolvent, const Sa
     {
         const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
         result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
-                            n::destination_type() = resolvent.destination_type(),
+                            n::destination_type() = resolution->resolvent().destination_type(),
                             n::nothing_is_fine_too() = false,
                             n::reason() = reason,
                             n::spec() = *dep.spec().if_package(),
                             n::untaken() = si_untaken == interest,
-                            n::use_existing() = _imp->fns.get_use_existing_fn()(
-                                    resolvent, *dep.spec().if_package(), reason)
+                            n::use_existing() = _imp->fns.get_use_existing_fn()(resolution, *dep.spec().if_package(), reason)
                             ))));
         return result;
     }
     else if (dep.spec().if_block())
-        return _make_constraints_from_blocker(resolvent, *dep.spec().if_block(), reason);
+        return _make_constraints_from_blocker(resolution, *dep.spec().if_block(), reason);
     else
         throw InternalError(PALUDIS_HERE, "resolver bug: huh? it's not a block and it's not a package");
 }
 
 const std::tr1::shared_ptr<ConstraintSequence>
 Decider::_make_constraints_from_blocker(
-        const Resolvent &,
+        const std::tr1::shared_ptr<const Resolution> &,
         const BlockDepSpec & spec,
         const std::tr1::shared_ptr<const Reason> & reason) const
 {
@@ -986,7 +976,7 @@ Decider::_add_dependencies_if_necessary(
             + stringify(*package_id) + "':");
 
     const std::tr1::shared_ptr<SanitisedDependencies> deps(new SanitisedDependencies);
-    deps->populate(*this, our_resolution->resolvent(), package_id);
+    deps->populate(*this, our_resolution, package_id);
 
     for (SanitisedDependencies::ConstIterator s(deps->begin()), s_end(deps->end()) ;
             s != s_end ; ++s)
@@ -1030,8 +1020,7 @@ Decider::_add_dependencies_if_necessary(
                 r != r_end ; ++r)
         {
             const std::tr1::shared_ptr<Resolution> dep_resolution(_resolution_for_resolvent(*r, true));
-            const std::tr1::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_dependency(
-                        our_resolution->resolvent(), *s, reason, interest));
+            const std::tr1::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_dependency(our_resolution, *s, reason, interest));
 
             for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                     c != c_end ; ++c)
@@ -1084,10 +1073,10 @@ namespace
 }
 
 std::pair<AnyChildScore, OperatorScore>
-Decider::find_any_score(const Resolvent & our_resolvent, const SanitisedDependency & dep) const
+Decider::find_any_score(const std::tr1::shared_ptr<const Resolution> & our_resolution, const SanitisedDependency & dep) const
 {
     Context context("When working out whether we'd like '" + stringify(dep.spec()) + "' because of '"
-            + stringify(our_resolvent) + "':");
+            + stringify(our_resolution->resolvent()) + "':");
 
     if (dep.spec().if_block())
         throw InternalError(PALUDIS_HERE, "unimplemented: blockers inside || blocks are horrid");
@@ -1187,13 +1176,12 @@ Decider::find_any_score(const Resolvent & our_resolvent, const SanitisedDependen
             return std::make_pair(acs_wrong_options_installed, operator_bias);
     }
 
-    const std::tr1::shared_ptr<const PackageID> id(resolution_for_resolvent(
-                our_resolvent)->decision()->accept_returning<std::tr1::shared_ptr<const PackageID> >(
-                    ChosenIDVisitor()));
+    const std::tr1::shared_ptr<const PackageID> id(
+            our_resolution->decision()->accept_returning<std::tr1::shared_ptr<const PackageID> >(ChosenIDVisitor()));
     if (! id)
         throw InternalError(PALUDIS_HERE, "resolver bug: why don't we have an id?");
 
-    const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(id, our_resolvent, dep, _already_met(dep)));
+    const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(id, our_resolution->resolvent(), dep, _already_met(dep)));
     const std::tr1::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(spec, reason));
 
     /* next: will already be installing */
@@ -1214,7 +1202,7 @@ Decider::find_any_score(const Resolvent & our_resolvent, const SanitisedDependen
         {
             const std::tr1::shared_ptr<Resolution> resolution(_create_resolution_for_resolvent(*r));
             const std::tr1::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_dependency(
-                        our_resolvent, dep, reason, si_take));
+                        our_resolution, dep, reason, si_take));
             for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                     c != c_end ; ++c)
                 resolution->constraints()->add(*c);
@@ -1566,7 +1554,7 @@ Decider::_make_unsuitable_candidate(
 {
     return make_named_values<UnsuitableCandidate>(
             n::package_id() = id,
-            n::unmet_constraints() = _get_unmatching_constraints(resolution->resolvent(), id, existing)
+            n::unmet_constraints() = _get_unmatching_constraints(resolution, id, existing)
             );
 }
 
@@ -1668,11 +1656,10 @@ Decider::_find_id_for_from(
 
 const std::tr1::shared_ptr<const Constraints>
 Decider::_get_unmatching_constraints(
-        const Resolvent & resolvent,
+        const std::tr1::shared_ptr<const Resolution> & resolution,
         const std::tr1::shared_ptr<const PackageID> & id,
         const bool existing) const
 {
-    const std::tr1::shared_ptr<const Resolution> resolution(resolution_for_resolvent(resolvent));
     const std::tr1::shared_ptr<Constraints> result(new Constraints);
 
     for (Constraints::ConstIterator c(resolution->constraints()->begin()),
@@ -1686,7 +1673,7 @@ Decider::_get_unmatching_constraints(
             bool is_transient(id->behaviours_key() && id->behaviours_key()->value()->end() !=
                     id->behaviours_key()->value()->find("transient"));
             decision.reset(new ExistingNoChangeDecision(
-                        resolvent,
+                        resolution->resolvent(),
                         id,
                         true,
                         true,
@@ -1696,7 +1683,7 @@ Decider::_get_unmatching_constraints(
         }
         else
             decision.reset(new ChangesToMakeDecision(
-                        resolvent,
+                        resolution->resolvent(),
                         id,
                         false,
                         last_ct,
@@ -1756,7 +1743,7 @@ Decider::add_target_with_reason(const PackageOrBlockDepSpec & spec, const std::t
                     + stringify(*r) + "':");
 
             const std::tr1::shared_ptr<Resolution> dep_resolution(_resolution_for_resolvent(*r, true));
-            const std::tr1::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_target(*r, spec, reason));
+            const std::tr1::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_target(dep_resolution, spec, reason));
 
             for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                     c != c_end ; ++c)

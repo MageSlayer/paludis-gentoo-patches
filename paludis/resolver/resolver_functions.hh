@@ -103,7 +103,7 @@ namespace paludis
                 )> GetResolventsForFunction;
 
         typedef std::tr1::function<UseExisting (
-                const Resolvent &,
+                const std::tr1::shared_ptr<const Resolution> &,
                 const PackageDepSpec &,
                 const std::tr1::shared_ptr<const Reason> &
                 )> GetUseExistingFunction;

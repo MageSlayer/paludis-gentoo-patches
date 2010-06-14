@@ -227,7 +227,7 @@ paludis::resolver::resolver_test::interest_in_spec_fn(
 
 UseExisting
 paludis::resolver::resolver_test::get_use_existing_fn(
-        const Resolvent &,
+        const std::tr1::shared_ptr<const Resolution> &,
         const PackageDepSpec &,
         const std::tr1::shared_ptr<const Reason> &)
 {

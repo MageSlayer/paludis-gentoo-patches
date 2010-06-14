@@ -74,17 +74,19 @@ namespace paludis
                             const std::tr1::shared_ptr<const Reason> & reason) const;
 
                 const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_from_target(
-                        const Resolvent &,
+                        const std::tr1::shared_ptr<const Resolution> &,
                         const PackageOrBlockDepSpec &,
                         const std::tr1::shared_ptr<const Reason> &) const;
 
                 const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_from_dependency(
-                        const Resolvent &, const SanitisedDependency &,
+                        const std::tr1::shared_ptr<const Resolution> &,
+                        const SanitisedDependency &,
                         const std::tr1::shared_ptr<const Reason> &,
                         const SpecInterest) const;
 
                 const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_from_blocker(
-                        const Resolvent & resolvent, const BlockDepSpec & dep,
+                        const std::tr1::shared_ptr<const Resolution> &,
+                        const BlockDepSpec & dep,
                         const std::tr1::shared_ptr<const Reason> & reason) const;
 
                 const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_for_dependent(
@@ -176,7 +178,7 @@ namespace paludis
                         const std::tr1::shared_ptr<const PackageIDSequence> &) const;
 
                 const std::tr1::shared_ptr<const Constraints> _get_unmatching_constraints(
-                        const Resolvent &,
+                        const std::tr1::shared_ptr<const Resolution> &,
                         const std::tr1::shared_ptr<const PackageID> &,
                         const bool existing) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -220,12 +222,11 @@ namespace paludis
 
                 void add_target_with_reason(const PackageOrBlockDepSpec &, const std::tr1::shared_ptr<const Reason> &);
 
-                std::pair<AnyChildScore, OperatorScore> find_any_score(const Resolvent &, const SanitisedDependency &) const;
+                std::pair<AnyChildScore, OperatorScore> find_any_score(
+                        const std::tr1::shared_ptr<const Resolution> &, const SanitisedDependency &) const;
 
                 const std::tr1::shared_ptr<const RewrittenSpec> rewrite_if_special(const PackageOrBlockDepSpec &,
                         const std::tr1::shared_ptr<const Resolvent> & maybe_from) const;
-
-                const std::tr1::shared_ptr<Resolution> resolution_for_resolvent(const Resolvent &) const;
         };
     }
 }

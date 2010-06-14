@@ -65,7 +65,7 @@ namespace
 
     UseExisting
     use_existing_if_same(
-            const Resolvent &,
+            const std::tr1::shared_ptr<const Resolution> &,
             const PackageDepSpec &,
             const std::tr1::shared_ptr<const Reason> &)
     {

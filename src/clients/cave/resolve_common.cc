@@ -486,7 +486,7 @@ namespace
             const ResolveCommandLineResolutionOptions & resolution_options,
             const PackageDepSpecList & without,
             const PackageDepSpecList & with,
-            const Resolvent &,
+            const std::tr1::shared_ptr<const Resolution> &,
             const PackageDepSpec & spec,
             const std::tr1::shared_ptr<const Reason> & reason)
     {
