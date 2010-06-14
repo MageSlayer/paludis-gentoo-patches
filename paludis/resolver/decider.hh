@@ -88,34 +88,32 @@ namespace paludis
                         const std::tr1::shared_ptr<const Reason> & reason) const;
 
                 const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_for_dependent(
-                        const Resolvent &,
                         const std::tr1::shared_ptr<const Resolution> & resolution,
                         const std::tr1::shared_ptr<const PackageID> &,
                         const std::tr1::shared_ptr<const PackageIDSequence> &) const;
 
-                void _apply_resolution_constraint(const Resolvent &,
+                void _apply_resolution_constraint(
                         const std::tr1::shared_ptr<Resolution> &,
                         const std::tr1::shared_ptr<const Constraint> &);
 
-                bool _check_constraint(const Resolvent &,
+                bool _check_constraint(
                         const std::tr1::shared_ptr<const Constraint> & constraint,
                         const std::tr1::shared_ptr<const Decision> & decision) const;
 
-                bool _verify_new_constraint(const Resolvent &,
+                bool _verify_new_constraint(
                         const std::tr1::shared_ptr<const Resolution> &,
                         const std::tr1::shared_ptr<const Constraint> &);
 
-                void _made_wrong_decision(const Resolvent &,
+                void _made_wrong_decision(
                         const std::tr1::shared_ptr<Resolution> & resolution,
                         const std::tr1::shared_ptr<const Constraint> & constraint);
 
-                void _suggest_restart_with(const Resolvent &,
+                void _suggest_restart_with(
                         const std::tr1::shared_ptr<const Resolution> & resolution,
                         const std::tr1::shared_ptr<const Constraint> & constraint,
                         const std::tr1::shared_ptr<const Decision> & decision) const PALUDIS_ATTRIBUTE((noreturn));
 
                 const std::tr1::shared_ptr<const Constraint> _make_constraint_for_preloading(
-                        const Resolvent &,
                         const std::tr1::shared_ptr<const Decision> & d,
                         const std::tr1::shared_ptr<const Constraint> & c) const;
 
@@ -126,7 +124,6 @@ namespace paludis
                         const std::tr1::shared_ptr<const Repository> &) const;
 
                 const std::tr1::shared_ptr<const Repository> _find_repository_for(
-                        const Resolvent &,
                         const std::tr1::shared_ptr<const Resolution> &,
                         const ChangesToMakeDecision &) const;
 
@@ -135,33 +132,30 @@ namespace paludis
                 void _resolve_destinations();
 
                 const std::tr1::shared_ptr<Destination> _make_destination_for(
-                        const Resolvent & resolvent,
                         const std::tr1::shared_ptr<const Resolution> & resolution,
                         const ChangesToMakeDecision &) const;
 
                 const ChangeType _make_change_type_for(
-                        const Resolvent & resolvent,
                         const std::tr1::shared_ptr<const Resolution> & resolution,
                         const ChangesToMakeDecision &) const;
 
                 FilteredGenerator _make_destination_filtered_generator(const Generator &, const Resolvent & resolvent) const;
 
-                void _decide(const Resolvent &, const std::tr1::shared_ptr<Resolution> & resolution);
+                void _decide(const std::tr1::shared_ptr<Resolution> & resolution);
 
                 const std::tr1::shared_ptr<Decision> _try_to_find_decision_for(
-                        const Resolvent &, const std::tr1::shared_ptr<const Resolution> & resolution) const;
+                        const std::tr1::shared_ptr<const Resolution> & resolution) const;
 
                 const std::tr1::shared_ptr<Decision> _cannot_decide_for(
-                        const Resolvent &, const std::tr1::shared_ptr<const Resolution> & resolution) const;
+                        const std::tr1::shared_ptr<const Resolution> & resolution) const;
 
-                void _do_destination_if_necessary(const Resolvent & our_resolvent,
+                void _do_destination_if_necessary(
                         const std::tr1::shared_ptr<Resolution> & our_resolution);
 
-                void _add_dependencies_if_necessary(const Resolvent & our_resolvent,
+                void _add_dependencies_if_necessary(
                         const std::tr1::shared_ptr<Resolution> & our_resolution);
 
                 SpecInterest _interest_in_spec(
-                        const Resolvent &,
                         const std::tr1::shared_ptr<const Resolution> &,
                         const SanitisedDependency &) const;
 
@@ -171,14 +165,14 @@ namespace paludis
                         const std::tr1::shared_ptr<const PackageID> & b) const;
 
                 const std::tr1::shared_ptr<const PackageID> _find_existing_id_for(
-                        const Resolvent &, const std::tr1::shared_ptr<const Resolution> &) const;
+                        const std::tr1::shared_ptr<const Resolution> &) const;
                 const std::tr1::shared_ptr<const PackageIDSequence> _find_installable_id_candidates_for(
-                        const Resolvent &, const std::tr1::shared_ptr<const Resolution> &,
+                        const std::tr1::shared_ptr<const Resolution> &,
                         const bool include_errors) const;
                 const std::pair<const std::tr1::shared_ptr<const PackageID>, bool> _find_installable_id_for(
-                        const Resolvent &, const std::tr1::shared_ptr<const Resolution> &) const;
+                        const std::tr1::shared_ptr<const Resolution> &) const;
                 const std::pair<const std::tr1::shared_ptr<const PackageID>, bool> _find_id_for_from(
-                        const Resolvent &, const std::tr1::shared_ptr<const Resolution> &,
+                        const std::tr1::shared_ptr<const Resolution> &,
                         const std::tr1::shared_ptr<const PackageIDSequence> &) const;
 
                 const std::tr1::shared_ptr<const Constraints> _get_unmatching_constraints(
@@ -187,7 +181,6 @@ namespace paludis
                         const bool existing) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 UnsuitableCandidate _make_unsuitable_candidate(
-                        const Resolvent &,
                         const std::tr1::shared_ptr<const Resolution> &,
                         const std::tr1::shared_ptr<const PackageID> &,
                         const bool existing) const;

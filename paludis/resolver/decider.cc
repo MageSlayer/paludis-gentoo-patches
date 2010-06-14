@@ -129,9 +129,9 @@ Decider::_resolve_decide_with_dependencies()
             _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
             changed = true;
-            _decide((*i)->resolvent(), *i);
+            _decide(*i);
 
-            _add_dependencies_if_necessary((*i)->resolvent(), *i);
+            _add_dependencies_if_necessary(*i);
         }
     }
 }
@@ -174,10 +174,10 @@ Decider::_resolve_dependents()
 
             const std::tr1::shared_ptr<Resolution> resolution(_resolution_for_resolvent(resolvent, true));
             const std::tr1::shared_ptr<const ConstraintSequence> constraints(_make_constraints_for_dependent(
-                        resolvent, resolution, *s, dependent_upon));
+                        resolution, *s, dependent_upon));
             for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                     c != c_end ; ++c)
-                _apply_resolution_constraint(resolvent, resolution, *c);
+                _apply_resolution_constraint(resolution, *c);
         }
         else
         {
@@ -190,12 +190,11 @@ Decider::_resolve_dependents()
 
 const std::tr1::shared_ptr<ConstraintSequence>
 Decider::_make_constraints_for_dependent(
-        const Resolvent & resolvent,
         const std::tr1::shared_ptr<const Resolution> & resolution,
         const std::tr1::shared_ptr<const PackageID> & id,
         const std::tr1::shared_ptr<const PackageIDSequence> & r) const
 {
-    return _imp->fns.get_constraints_for_dependent_fn()(resolvent, resolution, id, r);
+    return _imp->fns.get_constraints_for_dependent_fn()(resolution->resolvent(), resolution, id, r);
 }
 
 namespace
@@ -370,7 +369,7 @@ Decider::_resolve_destinations()
     for (ResolutionsByResolvent::ConstIterator i(_imp->resolutions_by_resolvent->begin()),
             i_end(_imp->resolutions_by_resolvent->end()) ;
             i != i_end ; ++i)
-        _do_destination_if_necessary((*i)->resolvent(), *i);
+        _do_destination_if_necessary(*i);
 }
 
 namespace
@@ -420,23 +419,21 @@ namespace
 
 void
 Decider::_do_destination_if_necessary(
-        const Resolvent & resolvent,
         const std::tr1::shared_ptr<Resolution> & resolution)
 {
     DoDestinationIfNecessaryVisitor v(
-            std::tr1::bind(&Decider::_make_destination_for, this, resolvent, resolution, std::tr1::placeholders::_1),
-            std::tr1::bind(&Decider::_make_change_type_for, this, resolvent, resolution, std::tr1::placeholders::_1)
+            std::tr1::bind(&Decider::_make_destination_for, this, resolution, std::tr1::placeholders::_1),
+            std::tr1::bind(&Decider::_make_change_type_for, this, resolution, std::tr1::placeholders::_1)
             );
     resolution->decision()->accept(v);
 }
 
 const std::tr1::shared_ptr<Destination>
 Decider::_make_destination_for(
-        const Resolvent & resolvent,
         const std::tr1::shared_ptr<const Resolution> & resolution,
         const ChangesToMakeDecision & decision) const
 {
-    const std::tr1::shared_ptr<const Repository> repo(_find_repository_for(resolvent, resolution, decision));
+    const std::tr1::shared_ptr<const Repository> repo(_find_repository_for(resolution, decision));
     if ((! repo->destination_interface()) ||
             (! repo->destination_interface()->is_suitable_destination_for(*decision.origin_id())))
         throw InternalError(PALUDIS_HERE, stringify(repo->name()) + " is not a suitable destination for "
@@ -450,7 +447,6 @@ Decider::_make_destination_for(
 
 const ChangeType
 Decider::_make_change_type_for(
-        const Resolvent &,
         const std::tr1::shared_ptr<const Resolution> &,
         const ChangesToMakeDecision & decision) const
 {
@@ -487,11 +483,11 @@ Decider::_make_change_type_for(
 }
 
 const std::tr1::shared_ptr<const Repository>
-Decider::_find_repository_for(const Resolvent & resolvent,
+Decider::_find_repository_for(
         const std::tr1::shared_ptr<const Resolution> & resolution,
         const ChangesToMakeDecision & decision) const
 {
-    return _imp->fns.find_repository_for_fn()(resolvent, resolution, decision);
+    return _imp->fns.find_repository_for_fn()(resolution->resolvent(), resolution, decision);
 }
 
 FilteredGenerator
@@ -665,13 +661,12 @@ Decider::_make_constraints_from_blocker(
 
 void
 Decider::_apply_resolution_constraint(
-        const Resolvent & resolvent,
         const std::tr1::shared_ptr<Resolution> & resolution,
         const std::tr1::shared_ptr<const Constraint> & constraint)
 {
     if (resolution->decision())
-        if (! _verify_new_constraint(resolvent, resolution, constraint))
-            _made_wrong_decision(resolvent, resolution, constraint);
+        if (! _verify_new_constraint(resolution, constraint))
+            _made_wrong_decision(resolution, constraint);
 
     resolution->constraints()->add(constraint);
 }
@@ -794,7 +789,7 @@ namespace
 }
 
 bool
-Decider::_check_constraint(const Resolvent &,
+Decider::_check_constraint(
         const std::tr1::shared_ptr<const Constraint> & constraint,
         const std::tr1::shared_ptr<const Decision> & decision) const
 {
@@ -814,11 +809,11 @@ Decider::_check_constraint(const Resolvent &,
 }
 
 bool
-Decider::_verify_new_constraint(const Resolvent & resolvent,
+Decider::_verify_new_constraint(
         const std::tr1::shared_ptr<const Resolution> & resolution,
         const std::tr1::shared_ptr<const Constraint> & constraint)
 {
-    return _check_constraint(resolvent, constraint, resolution->decision());
+    return _check_constraint(constraint, resolution->decision());
 }
 
 namespace
@@ -860,7 +855,7 @@ namespace
 }
 
 void
-Decider::_made_wrong_decision(const Resolvent & resolvent,
+Decider::_made_wrong_decision(
         const std::tr1::shared_ptr<Resolution> & resolution,
         const std::tr1::shared_ptr<const Constraint> & constraint)
 {
@@ -868,30 +863,29 @@ Decider::_made_wrong_decision(const Resolvent & resolvent,
     std::tr1::shared_ptr<Resolution> adapted_resolution(make_shared_ptr(new Resolution(*resolution)));
     adapted_resolution->constraints()->add(constraint);
 
-    const std::tr1::shared_ptr<Decision> decision(_try_to_find_decision_for(resolvent, adapted_resolution));
+    const std::tr1::shared_ptr<Decision> decision(_try_to_find_decision_for(adapted_resolution));
     if (decision)
     {
         resolution->decision()->accept(WrongDecisionVisitor(std::tr1::bind(
-                        &Decider::_suggest_restart_with, this, resolvent, resolution, constraint, decision)));
+                        &Decider::_suggest_restart_with, this, resolution, constraint, decision)));
         resolution->decision() = decision;
     }
     else
-        resolution->decision() = _cannot_decide_for(resolvent, adapted_resolution);
+        resolution->decision() = _cannot_decide_for(adapted_resolution);
 }
 
 void
-Decider::_suggest_restart_with(const Resolvent & resolvent,
+Decider::_suggest_restart_with(
         const std::tr1::shared_ptr<const Resolution> & resolution,
         const std::tr1::shared_ptr<const Constraint> & constraint,
         const std::tr1::shared_ptr<const Decision> & decision) const
 {
-    throw SuggestRestart(resolvent, resolution->decision(), constraint, decision,
-            _make_constraint_for_preloading(resolvent, decision, constraint));
+    throw SuggestRestart(resolution->resolvent(), resolution->decision(), constraint, decision,
+            _make_constraint_for_preloading(decision, constraint));
 }
 
 const std::tr1::shared_ptr<const Constraint>
 Decider::_make_constraint_for_preloading(
-        const Resolvent &,
         const std::tr1::shared_ptr<const Decision> &,
         const std::tr1::shared_ptr<const Constraint> & c) const
 {
@@ -930,15 +924,15 @@ Decider::_make_spec_for_preloading(const PackageDepSpec & spec) const
 }
 
 void
-Decider::_decide(const Resolvent & resolvent, const std::tr1::shared_ptr<Resolution> & resolution)
+Decider::_decide(const std::tr1::shared_ptr<Resolution> & resolution)
 {
-    Context context("When deciding upon an origin ID to use for '" + stringify(resolvent) + "':");
+    Context context("When deciding upon an origin ID to use for '" + stringify(resolution->resolvent()) + "':");
 
-    std::tr1::shared_ptr<Decision> decision(_try_to_find_decision_for(resolvent, resolution));
+    std::tr1::shared_ptr<Decision> decision(_try_to_find_decision_for(resolution));
     if (decision)
         resolution->decision() = decision;
     else
-        resolution->decision() = _cannot_decide_for(resolvent, resolution);
+        resolution->decision() = _cannot_decide_for(resolution);
 }
 
 namespace
@@ -980,7 +974,6 @@ namespace
 
 void
 Decider::_add_dependencies_if_necessary(
-        const Resolvent & our_resolvent,
         const std::tr1::shared_ptr<Resolution> & our_resolution)
 {
     const std::tr1::shared_ptr<const PackageID> package_id(
@@ -989,18 +982,18 @@ Decider::_add_dependencies_if_necessary(
     if (! package_id)
         return;
 
-    Context context("When adding dependencies for '" + stringify(our_resolvent) + "' with '"
+    Context context("When adding dependencies for '" + stringify(our_resolution->resolvent()) + "' with '"
             + stringify(*package_id) + "':");
 
     const std::tr1::shared_ptr<SanitisedDependencies> deps(new SanitisedDependencies);
-    deps->populate(*this, our_resolvent, package_id);
+    deps->populate(*this, our_resolution->resolvent(), package_id);
 
     for (SanitisedDependencies::ConstIterator s(deps->begin()), s_end(deps->end()) ;
             s != s_end ; ++s)
     {
         Context context_2("When handling dependency '" + stringify(s->spec()) + "':");
 
-        SpecInterest interest(_interest_in_spec(our_resolvent, our_resolution, *s));
+        SpecInterest interest(_interest_in_spec(our_resolution, *s));
 
         switch (interest)
         {
@@ -1014,7 +1007,7 @@ Decider::_add_dependencies_if_necessary(
         }
 
         const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(
-                    package_id, our_resolvent, *s, _already_met(*s)));
+                    package_id, our_resolution->resolvent(), *s, _already_met(*s)));
 
         std::tr1::shared_ptr<const Resolvents> resolvents;
 
@@ -1038,20 +1031,19 @@ Decider::_add_dependencies_if_necessary(
         {
             const std::tr1::shared_ptr<Resolution> dep_resolution(_resolution_for_resolvent(*r, true));
             const std::tr1::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_dependency(
-                        our_resolvent, *s, reason, interest));
+                        our_resolution->resolvent(), *s, reason, interest));
 
             for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                     c != c_end ; ++c)
-                _apply_resolution_constraint(*r, dep_resolution, *c);
+                _apply_resolution_constraint(dep_resolution, *c);
         }
     }
 }
 
 SpecInterest
-Decider::_interest_in_spec(const Resolvent & resolvent,
-        const std::tr1::shared_ptr<const Resolution> & resolution, const SanitisedDependency & dep) const
+Decider::_interest_in_spec(const std::tr1::shared_ptr<const Resolution> & resolution, const SanitisedDependency & dep) const
 {
-    return _imp->fns.interest_in_spec_fn()(resolvent, resolution, dep);
+    return _imp->fns.interest_in_spec_fn()(resolution->resolvent(), resolution, dep);
 }
 
 const std::tr1::shared_ptr<Constraints>
@@ -1226,7 +1218,7 @@ Decider::find_any_score(const Resolvent & our_resolvent, const SanitisedDependen
             for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                     c != c_end ; ++c)
                 resolution->constraints()->add(*c);
-            const std::tr1::shared_ptr<Decision> decision(_try_to_find_decision_for(*r, resolution));
+            const std::tr1::shared_ptr<Decision> decision(_try_to_find_decision_for(resolution));
             if (decision)
                 return std::make_pair(acs_could_install, operator_bias);
         }
@@ -1351,22 +1343,21 @@ Decider::_get_error_resolvents_for(
 
 const std::tr1::shared_ptr<Decision>
 Decider::_try_to_find_decision_for(
-        const Resolvent & resolvent,
         const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
-    const std::tr1::shared_ptr<const PackageID> existing_id(_find_existing_id_for(resolvent, resolution));
-    std::pair<const std::tr1::shared_ptr<const PackageID>, bool> installable_id_best(_find_installable_id_for(resolvent, resolution));
+    const std::tr1::shared_ptr<const PackageID> existing_id(_find_existing_id_for(resolution));
+    std::pair<const std::tr1::shared_ptr<const PackageID>, bool> installable_id_best(_find_installable_id_for(resolution));
     const std::tr1::shared_ptr<const PackageID> installable_id(installable_id_best.first);
     bool best(installable_id_best.second);
 
     if (resolution->constraints()->nothing_is_fine_too())
     {
-        const std::tr1::shared_ptr<const PackageIDSequence> existing_resolvent_ids(_installed_ids(resolvent));
+        const std::tr1::shared_ptr<const PackageIDSequence> existing_resolvent_ids(_installed_ids(resolution->resolvent()));
         if (existing_resolvent_ids->empty())
         {
             /* nothing existing, but nothing's ok */
             return make_shared_ptr(new NothingNoChangeDecision(
-                        resolvent,
+                        resolution->resolvent(),
                         ! resolution->constraints()->all_untaken()
                         ));
         }
@@ -1377,7 +1368,7 @@ Decider::_try_to_find_decision_for(
         /* there's nothing suitable existing. we fix the last_ct when we do
          * destinations. */
         return make_shared_ptr(new ChangesToMakeDecision(
-                    resolvent,
+                    resolution->resolvent(),
                     installable_id,
                     best,
                     last_ct,
@@ -1411,7 +1402,7 @@ Decider::_try_to_find_decision_for(
         }
 
         return make_shared_ptr(new ExistingNoChangeDecision(
-                    resolvent,
+                    resolution->resolvent(),
                     existing_id,
                     true,
                     true,
@@ -1424,10 +1415,10 @@ Decider::_try_to_find_decision_for(
         /* we can't stick with our existing id, if there is one, and we can't
          * fix it by installing things. this might be an error, or we might be
          * able to remove things. */
-        if (resolution->constraints()->nothing_is_fine_too() && _installed_but_allowed_to_remove(resolvent))
+        if (resolution->constraints()->nothing_is_fine_too() && _installed_but_allowed_to_remove(resolution->resolvent()))
             return make_shared_ptr(new RemoveDecision(
-                        resolvent,
-                        _installed_ids(resolvent),
+                        resolution->resolvent(),
+                        _installed_ids(resolution->resolvent()),
                         ! resolution->constraints()->all_untaken()
                         ));
         else
@@ -1493,7 +1484,7 @@ Decider::_try_to_find_decision_for(
 
         /* we've got existing and installable. do we have any reason not to pick the existing id? */
         const std::tr1::shared_ptr<Decision> existing(new ExistingNoChangeDecision(
-                    resolvent,
+                    resolution->resolvent(),
                     existing_id,
                     is_same,
                     is_same_version,
@@ -1501,7 +1492,7 @@ Decider::_try_to_find_decision_for(
                     ! resolution->constraints()->all_untaken()
                     ));
         const std::tr1::shared_ptr<Decision> changes_to_make(new ChangesToMakeDecision(
-                    resolvent,
+                    resolution->resolvent(),
                     installable_id,
                     best,
                     last_ct,
@@ -1514,7 +1505,7 @@ Decider::_try_to_find_decision_for(
             case ue_only_if_transient:
             case ue_never:
                 return make_shared_ptr(new ChangesToMakeDecision(
-                            resolvent,
+                            resolution->resolvent(),
                             installable_id,
                             best,
                             last_ct,
@@ -1547,22 +1538,21 @@ Decider::_try_to_find_decision_for(
 
 const std::tr1::shared_ptr<Decision>
 Decider::_cannot_decide_for(
-        const Resolvent & resolvent,
         const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
     const std::tr1::shared_ptr<UnsuitableCandidates> unsuitable_candidates(new UnsuitableCandidates);
 
-    const std::tr1::shared_ptr<const PackageID> existing_id(_find_existing_id_for(resolvent, resolution));
+    const std::tr1::shared_ptr<const PackageID> existing_id(_find_existing_id_for(resolution));
     if (existing_id)
-        unsuitable_candidates->push_back(_make_unsuitable_candidate(resolvent, resolution, existing_id, true));
+        unsuitable_candidates->push_back(_make_unsuitable_candidate(resolution, existing_id, true));
 
-    const std::tr1::shared_ptr<const PackageIDSequence> installable_ids(_find_installable_id_candidates_for(resolvent, resolution, true));
+    const std::tr1::shared_ptr<const PackageIDSequence> installable_ids(_find_installable_id_candidates_for(resolution, true));
     for (PackageIDSequence::ConstIterator i(installable_ids->begin()), i_end(installable_ids->end()) ;
             i != i_end ; ++i)
-        unsuitable_candidates->push_back(_make_unsuitable_candidate(resolvent, resolution, *i, false));
+        unsuitable_candidates->push_back(_make_unsuitable_candidate(resolution, *i, false));
 
     return make_shared_ptr(new UnableToMakeDecision(
-                resolvent,
+                resolution->resolvent(),
                 unsuitable_candidates,
                 ! resolution->constraints()->all_untaken()
                 ));
@@ -1570,22 +1560,21 @@ Decider::_cannot_decide_for(
 
 UnsuitableCandidate
 Decider::_make_unsuitable_candidate(
-        const Resolvent & resolvent,
-        const std::tr1::shared_ptr<const Resolution> &,
+        const std::tr1::shared_ptr<const Resolution> & resolution,
         const std::tr1::shared_ptr<const PackageID> & id,
         const bool existing) const
 {
     return make_named_values<UnsuitableCandidate>(
             n::package_id() = id,
-            n::unmet_constraints() = _get_unmatching_constraints(resolvent, id, existing)
+            n::unmet_constraints() = _get_unmatching_constraints(resolution->resolvent(), id, existing)
             );
 }
 
 const std::tr1::shared_ptr<const PackageID>
-Decider::_find_existing_id_for(const Resolvent & resolvent, const std::tr1::shared_ptr<const Resolution> & resolution) const
+Decider::_find_existing_id_for(const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
-    const std::tr1::shared_ptr<const PackageIDSequence> ids(_installed_ids(resolvent));
-    return _find_id_for_from(resolvent, resolution, ids).first;
+    const std::tr1::shared_ptr<const PackageIDSequence> ids(_installed_ids(resolution->resolvent()));
+    return _find_id_for_from(resolution, ids).first;
 }
 
 bool
@@ -1627,27 +1616,27 @@ Decider::_installed_ids(const Resolvent & resolvent) const
 }
 
 const std::tr1::shared_ptr<const PackageIDSequence>
-Decider::_find_installable_id_candidates_for(const Resolvent & resolvent,
-        const std::tr1::shared_ptr<const Resolution> &,
+Decider::_find_installable_id_candidates_for(
+        const std::tr1::shared_ptr<const Resolution> & resolution,
         const bool include_errors) const
 {
     return (*_imp->env)[selection::AllVersionsSorted(
-            generator::Package(resolvent.package()) |
-            make_slot_filter(resolvent) |
+            generator::Package(resolution->resolvent().package()) |
+            make_slot_filter(resolution->resolvent()) |
             filter::SupportsAction<InstallAction>() |
             ((! include_errors) ? Filter(filter::NotMasked()) : Filter(filter::All()))
             )];
 }
 
 const std::pair<const std::tr1::shared_ptr<const PackageID>, bool>
-Decider::_find_installable_id_for(const Resolvent & resolvent, const std::tr1::shared_ptr<const Resolution> & resolution) const
+Decider::_find_installable_id_for(const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
-    return _find_id_for_from(resolvent, resolution, _find_installable_id_candidates_for(resolvent, resolution, false));
+    return _find_id_for_from(resolution, _find_installable_id_candidates_for(resolution, false));
 }
 
 const std::pair<const std::tr1::shared_ptr<const PackageID>, bool>
 Decider::_find_id_for_from(
-        const Resolvent &, const std::tr1::shared_ptr<const Resolution> & resolution,
+        const std::tr1::shared_ptr<const Resolution> & resolution,
         const std::tr1::shared_ptr<const PackageIDSequence> & ids) const
 {
     bool best(true);
@@ -1714,7 +1703,7 @@ Decider::_get_unmatching_constraints(
                         ! (*c)->untaken(),
                         make_null_shared_ptr()
                         ));
-        if (! _check_constraint(resolvent, *c, decision))
+        if (! _check_constraint(*c, decision))
             result->add(*c);
     }
 
@@ -1771,7 +1760,7 @@ Decider::add_target_with_reason(const PackageOrBlockDepSpec & spec, const std::t
 
             for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                     c != c_end ; ++c)
-                _apply_resolution_constraint(*r, dep_resolution, *c);
+                _apply_resolution_constraint(dep_resolution, *c);
         }
     }
 }
