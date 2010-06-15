@@ -29,6 +29,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <tr1/type_traits>
+#include <tr1/unordered_set>
 #include <vector>
 #include <list>
 #include <ostream>
@@ -151,6 +152,12 @@ namespace paludis
     struct SerialiserConstIteratorType<std::vector<T_> >
     {
         typedef typename std::vector<T_>::const_iterator Type;
+    };
+
+    template <typename T_, typename H_>
+    struct SerialiserConstIteratorType<std::tr1::unordered_set<T_, H_> >
+    {
+        typedef typename std::tr1::unordered_set<T_, H_>::const_iterator Type;
     };
 
     template <
