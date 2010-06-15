@@ -25,10 +25,8 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/decision.hh>
 #include <paludis/resolver/reason.hh>
-#include <paludis/resolver/arrow.hh>
 #include <paludis/resolver/destination.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
-#include <paludis/resolver/resolver_lists.hh>
 #include <paludis/util/enum_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/join.hh>
@@ -191,25 +189,10 @@ namespace
         return s;
     }
 
-    std::ostream &
-    operator<< (std::ostream & s, const Arrow & a)
-    {
-        s << "Arrow(-> " << a.comes_after().string_id();
-        s << ")";
-        return s;
-    }
-
     std::string stringify_constraint(const Constraint & c)
     {
         std::stringstream s;
         s << c;
-        return s.str();
-    }
-
-    std::string stringify_arrow(const Arrow & a)
-    {
-        std::stringstream s;
-        s << a;
         return s.str();
     }
 
@@ -237,8 +220,8 @@ namespace
     {
         std::cout << "Dumping resolutions by QPN:S:" << std::endl << std::endl;
 
-        for (ResolutionsByResolvent::ConstIterator c(resolver->lists()->resolutions_by_resolvent()->begin()),
-                c_end(resolver->lists()->resolutions_by_resolvent()->end()) ;
+        for (ResolutionsByResolvent::ConstIterator c(resolver->resolved()->resolutions_by_resolvent()->begin()),
+                c_end(resolver->resolved()->resolutions_by_resolvent()->end()) ;
                 c != c_end ; ++c)
         {
             std::cout << (*c)->resolvent() << std::endl;

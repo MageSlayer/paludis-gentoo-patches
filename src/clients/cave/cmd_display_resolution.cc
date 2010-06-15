@@ -50,7 +50,6 @@
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/destination.hh>
 #include <paludis/resolver/unsuitable_candidates.hh>
-#include <paludis/resolver/resolver_lists.hh>
 #include <paludis/resolver/decisions.hh>
 #include <paludis/resolver/required_confirmations.hh>
 #include <paludis/package_id.hh>

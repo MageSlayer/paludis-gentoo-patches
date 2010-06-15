@@ -29,7 +29,6 @@
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/resolver/destination_types-fwd.hh>
 #include <paludis/resolver/resolver-fwd.hh>
-#include <paludis/resolver/jobs-fwd.hh>
 #include <paludis/resolver/resolver_functions-fwd.hh>
 #include <paludis/resolver/required_confirmations-fwd.hh>
 #include <paludis/resolver/package_or_block_dep_spec-fwd.hh>

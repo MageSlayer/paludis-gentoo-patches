@@ -24,7 +24,6 @@
 #include <paludis/resolver/reason-fwd.hh>
 #include <paludis/resolver/resolver_functions-fwd.hh>
 #include <paludis/resolver/decider-fwd.hh>
-#include <paludis/resolver/resolver_lists-fwd.hh>
 #include <paludis/resolver/resolved-fwd.hh>
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
 #include <paludis/resolver/package_or_block_dep_spec-fwd.hh>
@@ -57,7 +56,6 @@ namespace paludis
 
                 void resolve();
 
-                const std::tr1::shared_ptr<const ResolverLists> lists() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 const std::tr1::shared_ptr<const Resolved> resolved() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }

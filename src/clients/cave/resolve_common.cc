@@ -51,9 +51,9 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
-#include <paludis/resolver/resolver_lists.hh>
 #include <paludis/resolver/required_confirmations.hh>
 #include <paludis/resolver/work_lists.hh>
+#include <paludis/resolver/decisions.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/generator.hh>
@@ -1681,10 +1681,10 @@ paludis::cave::resolve_common(
         retcode |= display_resolution(env, resolver->resolved(), resolution_options,
                 display_options, program_options, keys_if_import, targets);
 
-        if (! resolver->lists()->taken_error_job_ids()->empty())
+        if (! resolver->resolved()->taken_unable_to_make_decisions()->empty())
             retcode |= 1;
 
-        if (! resolver->lists()->job_ids_needing_confirmation()->empty())
+        if (! resolver->resolved()->taken_unconfirmed_change_or_remove_decisions()->empty())
             retcode |= 3;
 
         if (0 == retcode)

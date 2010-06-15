@@ -49,12 +49,6 @@
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/destination.hh>
-#include <paludis/resolver/resolver_lists.hh>
-#include <paludis/resolver/jobs.hh>
-#include <paludis/resolver/job.hh>
-#include <paludis/resolver/job_id.hh>
-#include <paludis/resolver/job_state.hh>
-#include <paludis/resolver/arrow.hh>
 #include <paludis/resolver/work_lists.hh>
 #include <paludis/resolver/work_list.hh>
 #include <paludis/resolver/work_item.hh>

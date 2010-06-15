@@ -27,10 +27,6 @@
 #include <paludis/resolver/decision.hh>
 #include <paludis/resolver/decisions.hh>
 #include <paludis/resolver/decider.hh>
-#include <paludis/resolver/orderer.hh>
-#include <paludis/resolver/job.hh>
-#include <paludis/resolver/jobs.hh>
-#include <paludis/resolver/job_id.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_shared_ptr.hh>

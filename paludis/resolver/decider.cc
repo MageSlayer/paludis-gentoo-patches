@@ -30,7 +30,6 @@
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/unsuitable_candidates.hh>
 #include <paludis/resolver/resolver.hh>
-#include <paludis/resolver/resolver_lists.hh>
 #include <paludis/resolver/required_confirmations.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>

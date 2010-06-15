@@ -19,15 +19,11 @@
 
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/resolver_functions.hh>
-#include <paludis/resolver/resolver_lists.hh>
 #include <paludis/resolver/spec_rewriter.hh>
 #include <paludis/resolver/decider.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
-#include <paludis/resolver/jobs.hh>
-#include <paludis/resolver/job_id.hh>
-#include <paludis/resolver/orderer.hh>
 #include <paludis/resolver/lineariser.hh>
 #include <paludis/resolver/decisions.hh>
 #include <paludis/resolver/work_list.hh>
@@ -58,27 +54,16 @@ namespace paludis
         const Environment * const env;
         const ResolverFunctions fns;
 
-        const std::tr1::shared_ptr<ResolverLists> lists;
         const std::tr1::shared_ptr<Resolved> resolved;
 
         const std::tr1::shared_ptr<Decider> decider;
-        const std::tr1::shared_ptr<Orderer> orderer;
         const std::tr1::shared_ptr<Lineariser> lineariser;
 
         Implementation(const Environment * const e, const ResolverFunctions & f) :
             env(e),
             fns(f),
-            lists(new ResolverLists(make_named_values<ResolverLists>(
-                            n::job_ids_needing_confirmation() = make_shared_ptr(new JobIDSequence),
-                            n::jobs() = make_shared_ptr(new Jobs),
-                            n::resolutions_by_resolvent() = make_shared_ptr(new ResolutionsByResolvent),
-                            n::taken_error_job_ids() = make_shared_ptr(new JobIDSequence),
-                            n::taken_job_ids() = make_shared_ptr(new JobIDSequence),
-                            n::untaken_error_job_ids() = make_shared_ptr(new JobIDSequence),
-                            n::untaken_job_ids() = make_shared_ptr(new JobIDSequence)
-                            ))),
             resolved(new Resolved(make_named_values<Resolved>(
-                            n::resolutions_by_resolvent() = lists->resolutions_by_resolvent(),
+                            n::resolutions_by_resolvent() = make_shared_ptr(new ResolutionsByResolvent),
                             n::taken_change_or_remove_decisions() = make_shared_ptr(new Decisions<ChangeOrRemoveDecision>),
                             n::taken_unable_to_make_decisions() = make_shared_ptr(new Decisions<UnableToMakeDecision>),
                             n::taken_unconfirmed_change_or_remove_decisions() = make_shared_ptr(new Decisions<ChangeOrRemoveDecision>),
@@ -90,7 +75,6 @@ namespace paludis
                                     ))
                             ))),
             decider(new Decider(e, f, resolved->resolutions_by_resolvent())),
-            orderer(new Orderer(e, f, decider, lists)),
             lineariser(new Lineariser(e, resolved))
         {
         }
@@ -179,14 +163,7 @@ void
 Resolver::resolve()
 {
     _imp->decider->resolve();
-    _imp->orderer->resolve();
     _imp->lineariser->resolve();
-}
-
-const std::tr1::shared_ptr<const ResolverLists>
-Resolver::lists() const
-{
-    return _imp->lists;
 }
 
 const std::tr1::shared_ptr<const Resolved>
