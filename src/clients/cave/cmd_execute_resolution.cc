@@ -301,13 +301,13 @@ namespace
     bool do_install(
             const std::tr1::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
-            const std::tr1::shared_ptr<const Resolution> & resolution,
             const ChangesToMakeDecision & decision,
+            const DestinationType & destination_type,
             const int x, const int y,
             std::tr1::shared_ptr<OutputManager> & output_manager_goes_here)
     {
         std::string destination_string, action_string;
-        switch (resolution->resolvent().destination_type())
+        switch (destination_type)
         {
             case dt_install_to_slash:
                 destination_string = "installing to /";
@@ -402,7 +402,6 @@ namespace
     bool do_uninstall(
             const std::tr1::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
-            const std::tr1::shared_ptr<const Resolution> &,
             const std::tr1::shared_ptr<const PackageID> & id,
             const int x, const int y,
             std::tr1::shared_ptr<OutputManager> & output_manager_goes_here)
@@ -560,8 +559,8 @@ namespace
                 return false;
             }
 
-            if (! do_install(env, cmdline, job.resolution(),
-                        *job.changes_to_make_decision(), counts.x_installs, counts.y_installs, install_output_manager_goes_here))
+            if (! do_install(env, cmdline, *job.changes_to_make_decision(), job.resolution()->resolvent().destination_type(),
+                        counts.x_installs, counts.y_installs, install_output_manager_goes_here))
             {
                 std::tr1::shared_ptr<JobFailedState> failed_state(new JobFailedState(state->job()));
                 if (fetch_output_manager_goes_here)
@@ -595,8 +594,8 @@ namespace
                     i != i_end ; ++i)
             {
                 std::tr1::shared_ptr<OutputManager> uninstall_output_manager_goes_here;
-                if (! do_uninstall(env, cmdline, job.resolution(),
-                            *i, counts.x_installs, counts.y_installs, uninstall_output_manager_goes_here))
+                if (! do_uninstall(env, cmdline, *i,
+                            counts.x_installs, counts.y_installs, uninstall_output_manager_goes_here))
                     failed = true;
                 if (uninstall_output_manager_goes_here)
                     output_managers.push_back(uninstall_output_manager_goes_here);
