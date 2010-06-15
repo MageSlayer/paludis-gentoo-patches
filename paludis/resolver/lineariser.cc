@@ -38,6 +38,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
@@ -380,7 +381,10 @@ Lineariser::resolve()
         {
             /* there's only one real package in the component, so there's no
              * need to try anything clever */
-            schedule(_imp->change_or_remove_resolvents.find(*changes_in_scc.begin())->second);
+            schedule(_imp->change_or_remove_resolvents.find(*changes_in_scc.begin())->second,
+                    make_shared_copy(make_named_values<LineariserNotes>(
+                            n::cycle_breaking() = ""
+                            )));
         }
         else
         {
@@ -403,14 +407,23 @@ Lineariser::resolve()
 
             /* now we try again, hopefully with lots of small SCCs now */
             const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> sub_ssccs(scc_nag.sorted_strongly_connected_components());
-            linearise_sub_ssccs(scc_nag, sub_ssccs, true);
+            linearise_sub_ssccs(scc_nag, *scc, sub_ssccs, true);
         }
+    }
+}
+
+namespace
+{
+    std::string nice_resolvent(const Resolvent & r)
+    {
+        return stringify(r.package()) + stringify(r.slot());
     }
 }
 
 void
 Lineariser::linearise_sub_ssccs(
         const NAG & scc_nag,
+        const StronglyConnectedComponent & top_scc,
         const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> & sub_ssccs,
         const bool can_recurse)
 {
@@ -420,7 +433,12 @@ Lineariser::linearise_sub_ssccs(
         if (sub_scc->nodes()->size() == 1)
         {
             /* yay. it's all on its own. */
-            schedule(_imp->change_or_remove_resolvents.find(*sub_scc->nodes()->begin())->second);
+            schedule(_imp->change_or_remove_resolvents.find(*sub_scc->nodes()->begin())->second,
+                    make_shared_copy(make_named_values<LineariserNotes>(
+                            n::cycle_breaking() = (can_recurse ?
+                                "In dependency cycle with existing packages: " :
+                                "In dependency cycle with: ") + join(top_scc.nodes()->begin(), top_scc.nodes()->end(), ", ", nice_resolvent)
+                            )));
         }
         else if (no_build_dependencies(*sub_scc->nodes(), scc_nag))
         {
@@ -429,7 +447,12 @@ Lineariser::linearise_sub_ssccs(
              * dependency cycles which we can order however we like! */
             for (Set<Resolvent>::ConstIterator r(sub_scc->nodes()->begin()), r_end(sub_scc->nodes()->end()) ;
                     r != r_end ; ++r)
-                schedule(_imp->change_or_remove_resolvents.find(*r)->second);
+                schedule(_imp->change_or_remove_resolvents.find(*r)->second,
+                    make_shared_copy(make_named_values<LineariserNotes>(
+                            n::cycle_breaking() = "In run dependency cycle with: " + join(
+                                sub_scc->nodes()->begin(), sub_scc->nodes()->end(), ", ", nice_resolvent) + (can_recurse ?
+                                " in dependency cycle with " + join(top_scc.nodes()->begin(), top_scc.nodes()->end(), ", ", nice_resolvent) : "")
+                            )));
         }
         else if (can_recurse)
         {
@@ -456,22 +479,24 @@ Lineariser::linearise_sub_ssccs(
 
             const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> sub_ssccs_without_met_deps(
                     scc_nag_without_met_deps.sorted_strongly_connected_components());
-            linearise_sub_ssccs(scc_nag_without_met_deps, sub_ssccs_without_met_deps, false);
+            linearise_sub_ssccs(scc_nag_without_met_deps, top_scc, sub_ssccs_without_met_deps, false);
         }
         else
         {
             /* all that effort was wasted. there's incest and there's nothing we
              * can do to fix it. */
             throw InternalError(PALUDIS_HERE, "circular dependencies we're not smart enough to solve yet: { "
-                    + join(sub_scc->nodes()->begin(), sub_scc->nodes()->end(), ", ") + " }");
+                    + join(sub_scc->nodes()->begin(), sub_scc->nodes()->end(), ", ", nice_resolvent) + " }");
         }
     }
 }
 
 void
-Lineariser::schedule(const std::tr1::shared_ptr<const ChangeOrRemoveDecision> & d)
+Lineariser::schedule(
+        const std::tr1::shared_ptr<const ChangeOrRemoveDecision> & d,
+        const std::tr1::shared_ptr<const LineariserNotes> & n)
 {
-    _imp->resolved->taken_change_or_remove_decisions()->push_back(d, make_shared_ptr(new LineariserNotes));
+    _imp->resolved->taken_change_or_remove_decisions()->push_back(d, n);
     if (d->required_confirmations_if_any())
         _imp->resolved->taken_unconfirmed_change_or_remove_decisions()->push_back(d);
 

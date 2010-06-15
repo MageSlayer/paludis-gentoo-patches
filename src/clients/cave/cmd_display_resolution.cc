@@ -52,6 +52,7 @@
 #include <paludis/resolver/unsuitable_candidates.hh>
 #include <paludis/resolver/decisions.hh>
 #include <paludis/resolver/required_confirmations.hh>
+#include <paludis/resolver/lineariser_notes.hh>
 #include <paludis/package_id.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -668,6 +669,7 @@ namespace
             const bool more_annotations,
             const bool confirmations,
             const bool untaken,
+            const std::string & notes,
             ChoicesToExplain & choices_to_explain)
     {
         std::string x("X");
@@ -742,6 +744,8 @@ namespace
         display_reasons(resolution, more_annotations);
         if (confirmations)
             display_confirmations(decision);
+        if (! notes.empty())
+            cout << "    " << c::bold_normal() << notes << c::normal() << endl;
     }
 
     void display_one_uninstall(
@@ -1140,6 +1144,7 @@ namespace
                         more_annotations,
                         unconfirmed,
                         untaken,
+                        star_i.second ? star_i.second->cycle_breaking() : "",
                         choices_to_explain);
             }
             else if (remove_decision)

@@ -19,6 +19,7 @@
 
 #include <paludis/resolver/lineariser_notes.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/serialise-impl.hh>
 
 using namespace paludis;
@@ -28,6 +29,7 @@ void
 LineariserNotes::serialise(Serialiser & s) const
 {
     s.object("LineariserNotes")
+        .member(SerialiserFlags<>(), "cycle_breaking", cycle_breaking())
         ;
 }
 
@@ -36,6 +38,8 @@ LineariserNotes::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "LineariserNotes");
 
-    return make_shared_ptr(new LineariserNotes);
+    return make_shared_ptr(new LineariserNotes(make_named_values<LineariserNotes>(
+                    n::cycle_breaking() = v.member<std::string>("cycle_breaking")
+                    )));
 }
 

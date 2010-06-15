@@ -22,15 +22,23 @@
 
 #include <paludis/resolver/lineariser_notes-fwd.hh>
 #include <paludis/util/attributes.hh>
+#include <paludis/util/named_value.hh>
 #include <paludis/serialise-fwd.hh>
 #include <tr1/memory>
 
 namespace paludis
 {
+    namespace n
+    {
+        typedef Name<struct cycle_breaking_name> cycle_breaking;
+    }
+
     namespace resolver
     {
         struct LineariserNotes
         {
+            NamedValue<n::cycle_breaking, std::string> cycle_breaking;
+
             void serialise(Serialiser &) const;
             static const std::tr1::shared_ptr<LineariserNotes> deserialise(
                     Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
