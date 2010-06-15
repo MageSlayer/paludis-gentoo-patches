@@ -58,14 +58,18 @@ namespace paludis
                 void serialise(Serialiser &) const;
         };
 
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
         extern template class WorkList<PretendWorkItem>;
         extern template class WorkList<ExecuteWorkItem>;
+#endif
     }
 
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class WrappedForwardIterator<resolver::WorkListConstIteratorTag<resolver::PretendWorkItem>,
            const std::tr1::shared_ptr<resolver::PretendWorkItem> >;
     extern template class WrappedForwardIterator<resolver::WorkListConstIteratorTag<resolver::ExecuteWorkItem>,
            const std::tr1::shared_ptr<resolver::ExecuteWorkItem> >;
+#endif
 }
 
 #endif

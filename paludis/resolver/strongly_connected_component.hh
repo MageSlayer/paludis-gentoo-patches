@@ -46,12 +46,14 @@ namespace paludis
         };
     }
 
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class Set<resolver::Resolvent>;
     extern template class WrappedForwardIterator<Set<resolver::Resolvent>::ConstIteratorTag, const resolver::Resolvent>;
     extern template class WrappedOutputIterator<Set<resolver::Resolvent>::InserterTag, resolver::Resolvent>;
 
     extern template class Sequence<resolver::StronglyConnectedComponent>;
     extern template class WrappedForwardIterator<Sequence<resolver::StronglyConnectedComponent>::ConstIteratorTag, const resolver::StronglyConnectedComponent>;
+#endif
 }
 
 #endif

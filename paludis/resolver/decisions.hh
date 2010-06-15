@@ -54,17 +54,21 @@ namespace paludis
                 bool empty() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
         extern template class Decisions<UnableToMakeDecision>;
         extern template class Decisions<ChangesToMakeDecision>;
         extern template class Decisions<ChangeOrRemoveDecision>;
+#endif
     }
 
+#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class WrappedForwardIterator<resolver::DecisionsConstIteratorTag<resolver::UnableToMakeDecision>,
            const std::tr1::shared_ptr<const resolver::UnableToMakeDecision> >;
     extern template class WrappedForwardIterator<resolver::DecisionsConstIteratorTag<resolver::ChangesToMakeDecision>,
            const std::tr1::shared_ptr<const resolver::ChangesToMakeDecision> >;
     extern template class WrappedForwardIterator<resolver::DecisionsConstIteratorTag<resolver::ChangeOrRemoveDecision>,
            const std::tr1::shared_ptr<const resolver::ChangeOrRemoveDecision> >;
+#endif
 }
 
 #endif
