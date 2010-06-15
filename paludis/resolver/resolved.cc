@@ -21,6 +21,7 @@
 #include <paludis/resolver/decisions.hh>
 #include <paludis/resolver/decision.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
+#include <paludis/resolver/work_lists.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/serialise-impl.hh>
 
@@ -37,6 +38,7 @@ Resolved::serialise(Serialiser & s) const
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "taken_unconfirmed_change_or_remove_decisions", taken_unconfirmed_change_or_remove_decisions())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "untaken_change_or_remove_decisions", untaken_change_or_remove_decisions())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "untaken_unable_to_make_decisions", untaken_unable_to_make_decisions())
+        .member(SerialiserFlags<serialise::might_be_null>(), "work_lists", work_lists())
         ;
 }
 
@@ -86,7 +88,8 @@ Resolved::deserialise(Deserialisation & d)
             n::taken_unable_to_make_decisions() = taken_unable_to_make_decisions,
             n::taken_unconfirmed_change_or_remove_decisions() = taken_unconfirmed_change_or_remove_decisions,
             n::untaken_change_or_remove_decisions() = untaken_change_or_remove_decisions,
-            n::untaken_unable_to_make_decisions() = untaken_unable_to_make_decisions
+            n::untaken_unable_to_make_decisions() = untaken_unable_to_make_decisions,
+            n::work_lists() = v.member<std::tr1::shared_ptr<WorkLists> >("work_lists")
             );
 }
 

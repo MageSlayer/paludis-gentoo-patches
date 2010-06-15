@@ -26,12 +26,18 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/strongly_connected_component.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
+#include <paludis/resolver/work_lists.hh>
+#include <paludis/resolver/work_list.hh>
+#include <paludis/resolver/work_item.hh>
+#include <paludis/resolver/destination.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <tr1/unordered_set>
@@ -467,5 +473,32 @@ Lineariser::schedule(const std::tr1::shared_ptr<const ChangeOrRemoveDecision> & 
     _imp->resolved->taken_change_or_remove_decisions()->push_back(d);
     if (d->required_confirmations_if_any())
         _imp->resolved->taken_unconfirmed_change_or_remove_decisions()->push_back(d);
+
+    const ChangesToMakeDecision * const changes_to_make_decision(simple_visitor_cast<const ChangesToMakeDecision>(*d));
+    const RemoveDecision * const remove_decision(simple_visitor_cast<const RemoveDecision>(*d));
+
+    if (changes_to_make_decision)
+    {
+        _imp->resolved->work_lists()->pretend_work_list()->append(make_shared_ptr(new PretendWorkItem(
+                        changes_to_make_decision->origin_id())));
+
+        _imp->resolved->work_lists()->execute_work_list()->append(make_shared_ptr(new FetchWorkItem(
+                        changes_to_make_decision->origin_id())));
+
+        _imp->resolved->work_lists()->execute_work_list()->append(make_shared_ptr(new InstallWorkItem(
+                        changes_to_make_decision->origin_id(),
+                        changes_to_make_decision->destination()->repository(),
+                        changes_to_make_decision->resolvent().destination_type(),
+                        changes_to_make_decision->destination()->replacing()
+                        )));
+    }
+    else if (remove_decision)
+    {
+        _imp->resolved->work_lists()->execute_work_list()->append(make_shared_ptr(new UninstallWorkItem(
+                        remove_decision->ids()
+                        )));
+    }
+    else
+        throw InternalError(PALUDIS_HERE, "huh?");
 }
 

@@ -53,6 +53,7 @@
 #include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/resolver_lists.hh>
 #include <paludis/resolver/required_confirmations.hh>
+#include <paludis/resolver/work_lists.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/generator.hh>
@@ -1181,13 +1182,6 @@ namespace
         return result;
     }
 
-    void ser_thread_func(StringListStream & ser_stream, const ResolverLists & resolution_lists)
-    {
-        Serialiser ser(ser_stream);
-        resolution_lists.serialise(ser);
-        ser_stream.nothing_more_to_write();
-    }
-
     void serialise_resolved(StringListStream & ser_stream, const Resolved & resolved)
     {
         Serialiser ser(ser_stream);
@@ -1256,9 +1250,16 @@ namespace
             return DisplayResolutionCommand().run(env, args, resolved);
     }
 
+    void serialise_work_lists(StringListStream & ser_stream, const WorkLists & work_lists)
+    {
+        Serialiser ser(ser_stream);
+        work_lists.serialise(ser);
+        ser_stream.nothing_more_to_write();
+    }
+
     int perform_resolution(
             const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<const ResolverLists> & resolution_lists,
+            const std::tr1::shared_ptr<const Resolved> & resolved,
             const ResolveCommandLineResolutionOptions & resolution_options,
             const ResolveCommandLineExecutionOptions & execution_options,
             const ResolveCommandLineProgramOptions & program_options,
@@ -1310,7 +1311,7 @@ namespace
              * be a fun exercise for someone with way too much time on their hands.
              * */
             StringListStream ser_stream;
-            ser_thread_func(ser_stream, *resolution_lists);
+            serialise_work_lists(ser_stream, *resolved->work_lists());
 
             std::string command;
             if (program_options.a_execute_resolution_program.specified())
@@ -1338,7 +1339,7 @@ namespace
             become_command(cmd);
         }
         else
-            return ExecuteResolutionCommand().run(env, args, resolution_lists);
+            return ExecuteResolutionCommand().run(env, args, resolved->work_lists());
     }
 
     struct KindNameVisitor
@@ -1687,7 +1688,7 @@ paludis::cave::resolve_common(
             retcode |= 3;
 
         if (0 == retcode)
-            return perform_resolution(env, resolver->lists(), resolution_options,
+            return perform_resolution(env, resolver->resolved(), resolution_options,
                     execution_options, program_options, keys_if_import, targets, is_set);
     }
     catch (...)

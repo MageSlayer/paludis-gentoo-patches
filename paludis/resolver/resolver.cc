@@ -30,6 +30,8 @@
 #include <paludis/resolver/orderer.hh>
 #include <paludis/resolver/lineariser.hh>
 #include <paludis/resolver/decisions.hh>
+#include <paludis/resolver/work_list.hh>
+#include <paludis/resolver/work_lists.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
@@ -81,7 +83,11 @@ namespace paludis
                             n::taken_unable_to_make_decisions() = make_shared_ptr(new Decisions<UnableToMakeDecision>),
                             n::taken_unconfirmed_change_or_remove_decisions() = make_shared_ptr(new Decisions<ChangeOrRemoveDecision>),
                             n::untaken_change_or_remove_decisions() = make_shared_ptr(new Decisions<ChangeOrRemoveDecision>),
-                            n::untaken_unable_to_make_decisions() = make_shared_ptr(new Decisions<UnableToMakeDecision>)
+                            n::untaken_unable_to_make_decisions() = make_shared_ptr(new Decisions<UnableToMakeDecision>),
+                            n::work_lists() = make_shared_copy(make_named_values<WorkLists>(
+                                    n::execute_work_list() = make_shared_ptr(new WorkList<ExecuteWorkItem>),
+                                    n::pretend_work_list() = make_shared_ptr(new WorkList<PretendWorkItem>)
+                                    ))
                             ))),
             decider(new Decider(e, f, resolved->resolutions_by_resolvent())),
             orderer(new Orderer(e, f, decider, lists)),
