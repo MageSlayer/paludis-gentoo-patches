@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,6 +29,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <tr1/type_traits>
+#include <vector>
 #include <list>
 #include <ostream>
 #include <istream>
@@ -144,6 +145,12 @@ namespace paludis
     struct SerialiserConstIteratorType<std::list<T_> >
     {
         typedef typename std::list<T_>::const_iterator Type;
+    };
+
+    template <typename T_>
+    struct SerialiserConstIteratorType<std::vector<T_> >
+    {
+        typedef typename std::vector<T_>::const_iterator Type;
     };
 
     template <
