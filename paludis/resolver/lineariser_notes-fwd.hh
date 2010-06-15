@@ -17,22 +17,14 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_DECISIONS_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_DECISIONS_FWD_HH 1
-
-#include <paludis/util/no_type.hh>
-#include <paludis/resolver/lineariser_notes-fwd.hh>
-#include <paludis/resolver/decision-fwd.hh>
-#include <tr1/memory>
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_LINEARISER_NOTES_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_LINEARISER_NOTES_FWD_HH 1
 
 namespace paludis
 {
     namespace resolver
     {
-        template <typename Decision_, typename Notes_ = NoType<0u> *>
-        struct Decisions;
-
-        typedef Decisions<ChangeOrRemoveDecision, std::tr1::shared_ptr<const LineariserNotes> > ChangeOrRemoveDecisionsWithNotes;
+        struct LineariserNotes;
     }
 }
 

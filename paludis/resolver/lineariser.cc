@@ -30,6 +30,7 @@
 #include <paludis/resolver/work_list.hh>
 #include <paludis/resolver/work_item.hh>
 #include <paludis/resolver/destination.hh>
+#include <paludis/resolver/lineariser_notes.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
@@ -470,7 +471,7 @@ Lineariser::linearise_sub_ssccs(
 void
 Lineariser::schedule(const std::tr1::shared_ptr<const ChangeOrRemoveDecision> & d)
 {
-    _imp->resolved->taken_change_or_remove_decisions()->push_back(d);
+    _imp->resolved->taken_change_or_remove_decisions()->push_back(d, make_shared_ptr(new LineariserNotes));
     if (d->required_confirmations_if_any())
         _imp->resolved->taken_unconfirmed_change_or_remove_decisions()->push_back(d);
 

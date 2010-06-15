@@ -33,11 +33,11 @@ Resolved::serialise(Serialiser & s) const
 {
     s.object("Resolved")
         .member(SerialiserFlags<serialise::might_be_null>(), "resolutions_by_resolvent", resolutions_by_resolvent())
-        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "taken_change_or_remove_decisions", taken_change_or_remove_decisions())
-        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "taken_unable_to_make_decisions", taken_unable_to_make_decisions())
-        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "taken_unconfirmed_change_or_remove_decisions", taken_unconfirmed_change_or_remove_decisions())
-        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "untaken_change_or_remove_decisions", untaken_change_or_remove_decisions())
-        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "untaken_unable_to_make_decisions", untaken_unable_to_make_decisions())
+        .member(SerialiserFlags<serialise::might_be_null>(), "taken_change_or_remove_decisions", taken_change_or_remove_decisions())
+        .member(SerialiserFlags<serialise::might_be_null>(), "taken_unable_to_make_decisions", taken_unable_to_make_decisions())
+        .member(SerialiserFlags<serialise::might_be_null>(), "taken_unconfirmed_change_or_remove_decisions", taken_unconfirmed_change_or_remove_decisions())
+        .member(SerialiserFlags<serialise::might_be_null>(), "untaken_change_or_remove_decisions", untaken_change_or_remove_decisions())
+        .member(SerialiserFlags<serialise::might_be_null>(), "untaken_unable_to_make_decisions", untaken_unable_to_make_decisions())
         .member(SerialiserFlags<serialise::might_be_null>(), "work_lists", work_lists())
         ;
 }
@@ -47,49 +47,21 @@ Resolved::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "Resolved");
 
-    std::tr1::shared_ptr<Decisions<ChangeOrRemoveDecision> > taken_change_or_remove_decisions(new Decisions<ChangeOrRemoveDecision>);
-    {
-        Deserialisator vv(*v.find_remove_member("taken_change_or_remove_decisions"), "c");
-        for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
-            taken_change_or_remove_decisions->push_back(vv.member<std::tr1::shared_ptr<ChangeOrRemoveDecision> >(stringify(n)));
-    }
-
-    std::tr1::shared_ptr<Decisions<ChangeOrRemoveDecision> > taken_unconfirmed_change_or_remove_decisions(new Decisions<ChangeOrRemoveDecision>);
-    {
-        Deserialisator vv(*v.find_remove_member("taken_unconfirmed_change_or_remove_decisions"), "c");
-        for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
-            taken_unconfirmed_change_or_remove_decisions->push_back(vv.member<std::tr1::shared_ptr<ChangeOrRemoveDecision> >(stringify(n)));
-    }
-
-    std::tr1::shared_ptr<Decisions<UnableToMakeDecision> > taken_unable_to_make_decisions(new Decisions<UnableToMakeDecision>);
-    {
-        Deserialisator vv(*v.find_remove_member("taken_unable_to_make_decisions"), "c");
-        for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
-            taken_unable_to_make_decisions->push_back(vv.member<std::tr1::shared_ptr<UnableToMakeDecision> >(stringify(n)));
-    }
-
-    std::tr1::shared_ptr<Decisions<ChangeOrRemoveDecision> > untaken_change_or_remove_decisions(new Decisions<ChangeOrRemoveDecision>);
-    {
-        Deserialisator vv(*v.find_remove_member("untaken_change_or_remove_decisions"), "c");
-        for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
-            untaken_change_or_remove_decisions->push_back(vv.member<std::tr1::shared_ptr<ChangeOrRemoveDecision> >(stringify(n)));
-    }
-
-    std::tr1::shared_ptr<Decisions<UnableToMakeDecision> > untaken_unable_to_make_decisions(new Decisions<UnableToMakeDecision>);
-    {
-        Deserialisator vv(*v.find_remove_member("untaken_unable_to_make_decisions"), "c");
-        for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
-            untaken_unable_to_make_decisions->push_back(vv.member<std::tr1::shared_ptr<UnableToMakeDecision> >(stringify(n)));
-    }
-
     return make_named_values<Resolved>(
-            n::resolutions_by_resolvent() = v.member<std::tr1::shared_ptr<ResolutionsByResolvent> >("resolutions_by_resolvent"),
-            n::taken_change_or_remove_decisions() = taken_change_or_remove_decisions,
-            n::taken_unable_to_make_decisions() = taken_unable_to_make_decisions,
-            n::taken_unconfirmed_change_or_remove_decisions() = taken_unconfirmed_change_or_remove_decisions,
-            n::untaken_change_or_remove_decisions() = untaken_change_or_remove_decisions,
-            n::untaken_unable_to_make_decisions() = untaken_unable_to_make_decisions,
-            n::work_lists() = v.member<std::tr1::shared_ptr<WorkLists> >("work_lists")
+            n::resolutions_by_resolvent() =
+                v.member<std::tr1::shared_ptr<ResolutionsByResolvent> >("resolutions_by_resolvent"),
+            n::taken_change_or_remove_decisions() =
+                v.member<std::tr1::shared_ptr<ChangeOrRemoveDecisionsWithNotes> >("taken_change_or_remove_decisions"),
+            n::taken_unable_to_make_decisions() =
+                v.member<std::tr1::shared_ptr<Decisions<UnableToMakeDecision> > >("taken_unable_to_make_decisions"),
+            n::taken_unconfirmed_change_or_remove_decisions() =
+                v.member<std::tr1::shared_ptr<Decisions<ChangeOrRemoveDecision> > >("taken_unconfirmed_change_or_remove_decisions"),
+            n::untaken_change_or_remove_decisions() =
+                v.member<std::tr1::shared_ptr<Decisions<ChangeOrRemoveDecision> > >("untaken_change_or_remove_decisions"),
+            n::untaken_unable_to_make_decisions() =
+                v.member<std::tr1::shared_ptr<Decisions<UnableToMakeDecision> > >("untaken_unable_to_make_decisions"),
+            n::work_lists() =
+                v.member<std::tr1::shared_ptr<WorkLists> >("work_lists")
             );
 }
 

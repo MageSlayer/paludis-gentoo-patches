@@ -419,6 +419,21 @@ ResolverTestCase::get_resolved(const std::string & target)
     return get_resolved(target_spec);
 }
 
+namespace
+{
+    template <typename T_>
+    std::tr1::shared_ptr<T_> get_decision(const std::tr1::shared_ptr<T_> & d)
+    {
+        return d;
+    }
+
+    template <typename T_, typename N_>
+    std::tr1::shared_ptr<T_> get_decision(const std::pair<std::tr1::shared_ptr<T_>, N_> & d)
+    {
+        return d.first;
+    }
+}
+
 template <typename Decisions_>
 void
 ResolverTestCase::check_resolved_one(
@@ -435,7 +450,7 @@ ResolverTestCase::check_resolved_one(
 
         std::tr1::shared_ptr<const Decision> d;
         if (decision != decision_end)
-            d = *decision++;
+            d = get_decision(*decision++);
 
         TEST_CHECK_MESSAGE(decision_check->first(d), decision_check->second(d));
         ++decision_check;

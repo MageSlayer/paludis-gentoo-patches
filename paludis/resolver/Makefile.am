@@ -31,6 +31,7 @@ noinst_HEADERS = \
 	destination.hh destination-fwd.hh \
 	destination_types.hh destination_types-fwd.hh destination_types-se.hh \
 	lineariser.hh lineariser-fwd.hh \
+	lineariser_notes.hh lineariser_notes-fwd.hh \
 	nag.hh nag-fwd.hh \
 	package_or_block_dep_spec.hh package_or_block_dep_spec-fwd.hh \
 	reason.hh reason-fwd.hh \
@@ -62,6 +63,7 @@ libpaludisresolver_a_SOURCES = \
 	destination.cc \
 	destination_types.cc \
 	lineariser.cc \
+	lineariser_notes.cc \
 	nag.cc \
 	package_or_block_dep_spec.cc \
 	reason.cc \

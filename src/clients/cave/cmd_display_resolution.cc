@@ -1086,10 +1086,23 @@ namespace
         }
     }
 
+    std::pair<std::tr1::shared_ptr<const ChangeOrRemoveDecision>, std::tr1::shared_ptr<const LineariserNotes> >
+    get_decision_and_notes(const std::tr1::shared_ptr<const ChangeOrRemoveDecision> & d)
+    {
+        return std::make_pair(d, make_null_shared_ptr());
+    }
+
+    std::pair<std::tr1::shared_ptr<const ChangeOrRemoveDecision>, std::tr1::shared_ptr<const LineariserNotes> >
+    get_decision_and_notes(const std::pair<std::tr1::shared_ptr<const ChangeOrRemoveDecision>, std::tr1::shared_ptr<const LineariserNotes> > & d)
+    {
+        return d;
+    }
+
+    template <typename Decisions_>
     void display_a_changes_and_removes(
             const std::tr1::shared_ptr<Environment> & env,
             const std::tr1::shared_ptr<const Resolved> & resolved,
-            const std::tr1::shared_ptr<const Decisions<ChangeOrRemoveDecision> > & decisions,
+            const std::tr1::shared_ptr<Decisions_> & decisions,
             const DisplayResolutionCommandLine & cmdline,
             ChoicesToExplain & choices_to_explain,
             const bool more_annotations,
@@ -1106,14 +1119,17 @@ namespace
             cout << "These are the actions I will take, in order:" << endl << endl;
 
         bool any(false);
-        for (Decisions<ChangeOrRemoveDecision>::ConstIterator i(decisions->begin()),
-                i_end(decisions->end()) ;
+        for (typename Decisions_::ConstIterator i(decisions->begin()), i_end(decisions->end()) ;
                 i != i_end ; ++i)
         {
             any = true;
 
-            const ChangesToMakeDecision * const changes_to_make_decision(simple_visitor_cast<const ChangesToMakeDecision>(**i));
-            const RemoveDecision * const remove_decision(simple_visitor_cast<const RemoveDecision>(**i));
+            const std::pair<
+                std::tr1::shared_ptr<const ChangeOrRemoveDecision>,
+                std::tr1::shared_ptr<const LineariserNotes> > star_i(get_decision_and_notes(*i));
+
+            const ChangesToMakeDecision * const changes_to_make_decision(simple_visitor_cast<const ChangesToMakeDecision>(*star_i.first));
+            const RemoveDecision * const remove_decision(simple_visitor_cast<const RemoveDecision>(*star_i.first));
             if (changes_to_make_decision)
             {
                 display_one_installish(

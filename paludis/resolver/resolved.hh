@@ -47,7 +47,7 @@ namespace paludis
         struct Resolved
         {
             NamedValue<n::resolutions_by_resolvent, std::tr1::shared_ptr<ResolutionsByResolvent> > resolutions_by_resolvent;
-            NamedValue<n::taken_change_or_remove_decisions, std::tr1::shared_ptr<Decisions<ChangeOrRemoveDecision> > > taken_change_or_remove_decisions;
+            NamedValue<n::taken_change_or_remove_decisions, std::tr1::shared_ptr<ChangeOrRemoveDecisionsWithNotes> > taken_change_or_remove_decisions;
             NamedValue<n::taken_unable_to_make_decisions, std::tr1::shared_ptr<Decisions<UnableToMakeDecision> > > taken_unable_to_make_decisions;
             NamedValue<n::taken_unconfirmed_change_or_remove_decisions, std::tr1::shared_ptr<Decisions<ChangeOrRemoveDecision> > > taken_unconfirmed_change_or_remove_decisions;
             NamedValue<n::untaken_change_or_remove_decisions, std::tr1::shared_ptr<Decisions<ChangeOrRemoveDecision> > > untaken_change_or_remove_decisions;

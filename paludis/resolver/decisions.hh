@@ -22,52 +22,82 @@
 
 #include <paludis/resolver/decisions-fwd.hh>
 #include <paludis/resolver/decision-fwd.hh>
+#include <paludis/resolver/lineariser_notes-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/no_type.hh>
+#include <paludis/serialise-fwd.hh>
 #include <tr1/memory>
 
 namespace paludis
 {
     namespace resolver
     {
-        template <typename Decision_>
+        template <typename Decision_, typename Notes_>
         struct DecisionsConstIteratorTag;
 
-        template <typename Decision_>
-        class PALUDIS_VISIBLE Decisions :
-            private PrivateImplementationPattern<Decisions<Decision_> >
+        template <typename Decision_, typename Notes_>
+        struct DecisionsIteratorValueType
         {
-            using PrivateImplementationPattern<Decisions<Decision_> >::_imp;
+            typedef const std::pair<std::tr1::shared_ptr<const Decision_>, Notes_> Type;
+        };
+
+        template <typename Decision_>
+        struct DecisionsIteratorValueType<Decision_, NoType<0u> *>
+        {
+            typedef const std::tr1::shared_ptr<const Decision_> Type;
+        };
+
+        template <typename Decision_, typename Notes_>
+        class PALUDIS_VISIBLE Decisions :
+            private PrivateImplementationPattern<Decisions<Decision_, Notes_> >
+        {
+            using PrivateImplementationPattern<Decisions<Decision_, Notes_> >::_imp;
 
             public:
                 Decisions();
                 ~Decisions();
 
-                void push_back(const std::tr1::shared_ptr<const Decision_> &);
-                void cast_push_back(const std::tr1::shared_ptr<const Decision> &);
+                void push_back(
+                        const std::tr1::shared_ptr<const Decision_> &,
+                        const Notes_ & = static_cast<NoType<0u> *>(0));
 
-                typedef DecisionsConstIteratorTag<Decision_> ConstIteratorTag;
-                typedef WrappedForwardIterator<ConstIteratorTag, const std::tr1::shared_ptr<const Decision_> > ConstIterator;
+                void cast_push_back(
+                        const std::tr1::shared_ptr<const Decision> &,
+                        const Notes_ & = static_cast<NoType<0u> *>(0));
+
+                typedef DecisionsConstIteratorTag<Decision_, Notes_> ConstIteratorTag;
+                typedef WrappedForwardIterator<ConstIteratorTag,
+                        typename DecisionsIteratorValueType<Decision_, Notes_>::Type> ConstIterator;
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 bool empty() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                void serialise(Serialiser &) const;
+                static const std::tr1::shared_ptr<Decisions> deserialise(Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
         extern template class Decisions<UnableToMakeDecision>;
         extern template class Decisions<ChangesToMakeDecision>;
         extern template class Decisions<ChangeOrRemoveDecision>;
+        extern template class Decisions<ChangeOrRemoveDecision, std::tr1::shared_ptr<const LineariserNotes> >;
 #endif
     }
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
-    extern template class WrappedForwardIterator<resolver::DecisionsConstIteratorTag<resolver::UnableToMakeDecision>,
+    extern template class WrappedForwardIterator<resolver::Decisions<resolver::UnableToMakeDecision>::ConstIteratorTag,
            const std::tr1::shared_ptr<const resolver::UnableToMakeDecision> >;
-    extern template class WrappedForwardIterator<resolver::DecisionsConstIteratorTag<resolver::ChangesToMakeDecision>,
+    extern template class WrappedForwardIterator<resolver::Decisions<resolver::ChangesToMakeDecision>::ConstIteratorTag,
            const std::tr1::shared_ptr<const resolver::ChangesToMakeDecision> >;
-    extern template class WrappedForwardIterator<resolver::DecisionsConstIteratorTag<resolver::ChangeOrRemoveDecision>,
+    extern template class WrappedForwardIterator<resolver::Decisions<resolver::ChangeOrRemoveDecision>::ConstIteratorTag,
            const std::tr1::shared_ptr<const resolver::ChangeOrRemoveDecision> >;
+    extern template class WrappedForwardIterator<resolver::Decisions<resolver::ChangeOrRemoveDecision,
+           std::tr1::shared_ptr<const resolver::LineariserNotes> >::ConstIteratorTag,
+           const std::pair<
+               std::tr1::shared_ptr<const resolver::ChangeOrRemoveDecision>,
+               std::tr1::shared_ptr<const resolver::LineariserNotes> > >;
 #endif
 }
 
