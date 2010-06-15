@@ -28,6 +28,7 @@
 #include <paludis/resolver/decisions.hh>
 #include <paludis/resolver/work_list.hh>
 #include <paludis/resolver/work_lists.hh>
+#include <paludis/resolver/nag.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
@@ -63,6 +64,7 @@ namespace paludis
             env(e),
             fns(f),
             resolved(new Resolved(make_named_values<Resolved>(
+                            n::nag() = make_shared_ptr(new NAG),
                             n::resolutions_by_resolvent() = make_shared_ptr(new ResolutionsByResolvent),
                             n::taken_change_or_remove_decisions() = make_shared_ptr(new ChangeOrRemoveDecisionsWithNotes),
                             n::taken_unable_to_make_decisions() = make_shared_ptr(new Decisions<UnableToMakeDecision>),

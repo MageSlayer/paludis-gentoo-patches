@@ -58,15 +58,13 @@ namespace paludis
     {
         const Environment * const env;
         const std::tr1::shared_ptr<Resolved> resolved;
-        const std::tr1::shared_ptr<NAG> nag;
         ChangeOrRemoveResolvents change_or_remove_resolvents;
 
         Implementation(
                 const Environment * const e,
                 const std::tr1::shared_ptr<Resolved> & r) :
             env(e),
-            resolved(r),
-            nag(new NAG)
+            resolved(r)
         {
         }
     };
@@ -90,7 +88,6 @@ namespace
     struct DecisionDispatcher
     {
         const std::tr1::shared_ptr<Resolved> resolved;
-        const std::tr1::shared_ptr<NAG> nag;
         ResolventsSet & ignore_dependencies_from_resolvents;
         ChangeOrRemoveResolvents & change_or_remove_resolvents;
         const Resolvent resolvent;
@@ -98,13 +95,11 @@ namespace
 
         DecisionDispatcher(
                 const std::tr1::shared_ptr<Resolved> & r,
-                const std::tr1::shared_ptr<NAG> & n,
                 ResolventsSet & i,
                 ChangeOrRemoveResolvents & c,
                 const Resolvent & v,
                 const std::tr1::shared_ptr<const Decision> & d) :
             resolved(r),
-            nag(n),
             ignore_dependencies_from_resolvents(i),
             change_or_remove_resolvents(c),
             resolvent(v),
@@ -126,13 +121,13 @@ namespace
 
         bool visit(const NothingNoChangeDecision &)
         {
-            nag->add_node(resolvent);
+            resolved->nag()->add_node(resolvent);
             return true;
         }
 
         bool visit(const ExistingNoChangeDecision &)
         {
-            nag->add_node(resolvent);
+            resolved->nag()->add_node(resolvent);
             return true;
         }
 
@@ -140,7 +135,7 @@ namespace
         {
             if (decision->taken())
             {
-                nag->add_node(resolvent);
+                resolved->nag()->add_node(resolvent);
                 change_or_remove_resolvents.insert(std::make_pair(resolvent,
                             std::tr1::static_pointer_cast<const ChangeOrRemoveDecision>(decision)));
                 return true;
@@ -156,7 +151,7 @@ namespace
         {
             if (decision->taken())
             {
-                nag->add_node(resolvent);
+                resolved->nag()->add_node(resolvent);
                 change_or_remove_resolvents.insert(std::make_pair(resolvent,
                             std::tr1::static_pointer_cast<const ChangeOrRemoveDecision>(decision)));
                 return true;
@@ -326,7 +321,6 @@ Lineariser::resolve()
     {
         DecisionDispatcher decision_dispatcher(
                 _imp->resolved,
-                _imp->nag,
                 ignore_dependencies_from_resolvents,
                 _imp->change_or_remove_resolvents,
                 (*r)->resolvent(),
@@ -344,17 +338,17 @@ Lineariser::resolve()
         if (ignore_dependencies_from_resolvents.end() != ignore_edges_from_resolvents.find((*r)->resolvent()))
             continue;
 
-        EdgesFromReasonVisitor edges_from_reason_visitor(_imp->nag, ignore_dependencies_from_resolvents, (*r)->resolvent());
+        EdgesFromReasonVisitor edges_from_reason_visitor(_imp->resolved->nag(), ignore_dependencies_from_resolvents, (*r)->resolvent());
         for (Constraints::ConstIterator c((*r)->constraints()->begin()),
                 c_end((*r)->constraints()->end()) ;
                 c != c_end ; ++c)
             (*c)->reason()->accept(edges_from_reason_visitor);
     }
 
-    _imp->nag->verify_edges();
+    _imp->resolved->nag()->verify_edges();
 
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Finding NAG SCCs"));
-    const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> ssccs(_imp->nag->sorted_strongly_connected_components());
+    const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> ssccs(_imp->resolved->nag()->sorted_strongly_connected_components());
 
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Linearising SCCs"));
     for (SortedStronglyConnectedComponents::ConstIterator scc(ssccs->begin()), scc_end(ssccs->end()) ;
@@ -397,7 +391,7 @@ Lineariser::resolve()
                 scc_nag.add_node(*r);
                 /* we only need edges inside our SCC, and only those to other
                  * change or remove nodes */
-                for (NAG::EdgesFromConstIterator e(_imp->nag->begin_edges_from(*r)), e_end(_imp->nag->end_edges_from(*r)) ;
+                for (NAG::EdgesFromConstIterator e(_imp->resolved->nag()->begin_edges_from(*r)), e_end(_imp->resolved->nag()->end_edges_from(*r)) ;
                         e != e_end ; ++e)
                     if (changes_in_scc.end() != changes_in_scc.find(e->first))
                         scc_nag.add_edge(*r, e->first, e->second);

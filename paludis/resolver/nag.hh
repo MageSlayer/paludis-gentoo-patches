@@ -26,6 +26,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/named_value.hh>
+#include <paludis/serialise-fwd.hh>
 #include <tr1/memory>
 
 namespace paludis
@@ -48,6 +49,9 @@ namespace paludis
             NamedValue<n::run_all_met, bool> run_all_met;
 
             NAGEdgeProperties & operator|= (const NAGEdgeProperties &);
+
+            void serialise(Serialiser &) const;
+            static const NAGEdgeProperties deserialise(Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class NAG :
@@ -69,6 +73,9 @@ namespace paludis
                 typedef WrappedForwardIterator<EdgesFromConstIteratorTag, const std::pair<const Resolvent, NAGEdgeProperties> > EdgesFromConstIterator;
                 EdgesFromConstIterator begin_edges_from(const Resolvent &) const PALUDIS_ATTRIBUTE((warn_unused_result));
                 EdgesFromConstIterator end_edges_from(const Resolvent &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                void serialise(Serialiser &) const;
+                static const std::tr1::shared_ptr<NAG> deserialise(Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 

@@ -22,6 +22,7 @@
 #include <paludis/resolver/decision.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/work_lists.hh>
+#include <paludis/resolver/nag.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/serialise-impl.hh>
 
@@ -32,6 +33,7 @@ void
 Resolved::serialise(Serialiser & s) const
 {
     s.object("Resolved")
+        .member(SerialiserFlags<serialise::might_be_null>(), "nag", nag())
         .member(SerialiserFlags<serialise::might_be_null>(), "resolutions_by_resolvent", resolutions_by_resolvent())
         .member(SerialiserFlags<serialise::might_be_null>(), "taken_change_or_remove_decisions", taken_change_or_remove_decisions())
         .member(SerialiserFlags<serialise::might_be_null>(), "taken_unable_to_make_decisions", taken_unable_to_make_decisions())
@@ -48,6 +50,8 @@ Resolved::deserialise(Deserialisation & d)
     Deserialisator v(d, "Resolved");
 
     return make_named_values<Resolved>(
+            n::nag() =
+                v.member<std::tr1::shared_ptr<NAG> >("nag"),
             n::resolutions_by_resolvent() =
                 v.member<std::tr1::shared_ptr<ResolutionsByResolvent> >("resolutions_by_resolvent"),
             n::taken_change_or_remove_decisions() =

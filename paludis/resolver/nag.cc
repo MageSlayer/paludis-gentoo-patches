@@ -30,6 +30,7 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/member_iterator-impl.hh>
+#include <paludis/serialise-impl.hh>
 #include <tr1/unordered_set>
 #include <tr1/unordered_map>
 #include <algorithm>
@@ -268,12 +269,82 @@ NAG::end_edges_from(const Resolvent & r) const
         return EdgesFromConstIterator(e->second.end());
 }
 
+void
+NAG::serialise(Serialiser & s) const
+{
+    SerialiserObjectWriter w(s.object("NAG"));
+    w.member(SerialiserFlags<serialise::container>(), "nodes", _imp->nodes);
+
+    int c(0);
+    for (Edges::const_iterator e(_imp->edges.begin()), e_end(_imp->edges.end()) ;
+            e != e_end ; ++e)
+    {
+        for (NodesWithProperties::const_iterator n(e->second.begin()), n_end(e->second.end()) ;
+                n != n_end ; ++n)
+        {
+            ++c;
+            w.member(SerialiserFlags<>(), "edge." + stringify(c) + ".f", e->first);
+            w.member(SerialiserFlags<>(), "edge." + stringify(c) + ".t", n->first);
+            w.member(SerialiserFlags<>(), "edge." + stringify(c) + ".p", n->second);
+        }
+    }
+
+    w.member(SerialiserFlags<>(), "edge.count", stringify(c));
+}
+
+const std::tr1::shared_ptr<NAG>
+NAG::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "NAG");
+    std::tr1::shared_ptr<NAG> result(new NAG);
+
+    {
+        Deserialisator vv(*v.find_remove_member("nodes"), "c");
+        for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
+            result->add_node(vv.member<Resolvent>(stringify(n)));
+    }
+
+    for (int n(1), n_end(v.member<int>("edge.count") + 1) ; n != n_end ; ++n)
+        result->add_edge(
+                v.member<Resolvent>("edge." + stringify(n) + ".f"),
+                v.member<Resolvent>("edge." + stringify(n) + ".t"),
+                v.member<NAGEdgeProperties>("edge." + stringify(n) + ".p")
+                );
+
+    result->verify_edges();
+    return result;
+}
+
 NAGEdgeProperties &
 NAGEdgeProperties::operator|= (const NAGEdgeProperties & other)
 {
     build() |= other.build();
     run() |= other.run();
     return *this;
+}
+
+void
+NAGEdgeProperties::serialise(Serialiser & s) const
+{
+    s.object("NAGEdgeProperties")
+        .member(SerialiserFlags<>(), "build", build())
+        .member(SerialiserFlags<>(), "build_all_met", build_all_met())
+        .member(SerialiserFlags<>(), "run", run())
+        .member(SerialiserFlags<>(), "run_all_met", run_all_met())
+        ;
+}
+
+const NAGEdgeProperties
+NAGEdgeProperties::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "NAGEdgeProperties");
+
+    return make_named_values<NAGEdgeProperties>(
+            n::build() = v.member<bool>("build"),
+            n::build_all_met() = v.member<bool>("build_all_met"),
+            n::run() = v.member<bool>("run"),
+            n::run_all_met() = v.member<bool>("run_all_met")
+            );
 }
 
 template class WrappedForwardIterator<NAG::EdgesFromConstIteratorTag, const std::pair<const Resolvent, NAGEdgeProperties> >;

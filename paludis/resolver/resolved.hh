@@ -25,6 +25,7 @@
 #include <paludis/resolver/resolutions_by_resolvent-fwd.hh>
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/resolver/work_lists-fwd.hh>
+#include <paludis/resolver/nag-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/serialise-fwd.hh>
 #include <tr1/memory>
@@ -33,6 +34,7 @@ namespace paludis
 {
     namespace n
     {
+        typedef Name<struct nag_name> nag;
         typedef Name<struct resolutions_by_resolvent_name> resolutions_by_resolvent;
         typedef Name<struct taken_change_or_remove_decisions_name> taken_change_or_remove_decisions;
         typedef Name<struct taken_unable_to_make_decisions_name> taken_unable_to_make_decisions;
@@ -46,6 +48,7 @@ namespace paludis
     {
         struct Resolved
         {
+            NamedValue<n::nag, std::tr1::shared_ptr<NAG> > nag;
             NamedValue<n::resolutions_by_resolvent, std::tr1::shared_ptr<ResolutionsByResolvent> > resolutions_by_resolvent;
             NamedValue<n::taken_change_or_remove_decisions, std::tr1::shared_ptr<ChangeOrRemoveDecisionsWithNotes> > taken_change_or_remove_decisions;
             NamedValue<n::taken_unable_to_make_decisions, std::tr1::shared_ptr<Decisions<UnableToMakeDecision> > > taken_unable_to_make_decisions;
