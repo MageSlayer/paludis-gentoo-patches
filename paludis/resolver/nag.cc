@@ -66,6 +66,12 @@ namespace paludis
     {
         typedef NodesWithProperties::const_iterator UnderlyingIterator;
     };
+
+    template <>
+    struct WrappedForwardIteratorTraits<NAG::NodesConstIteratorTag>
+    {
+        typedef Nodes::const_iterator UnderlyingIterator;
+    };
 }
 
 NAG::NAG() :
@@ -269,6 +275,18 @@ NAG::end_edges_from(const Resolvent & r) const
         return EdgesFromConstIterator(e->second.end());
 }
 
+NAG::NodesConstIterator
+NAG::begin_nodes() const
+{
+    return NodesConstIterator(_imp->nodes.begin());
+}
+
+NAG::NodesConstIterator
+NAG::end_nodes() const
+{
+    return NodesConstIterator(_imp->nodes.end());
+}
+
 void
 NAG::serialise(Serialiser & s) const
 {
@@ -348,4 +366,5 @@ NAGEdgeProperties::deserialise(Deserialisation & d)
 }
 
 template class WrappedForwardIterator<NAG::EdgesFromConstIteratorTag, const std::pair<const Resolvent, NAGEdgeProperties> >;
+template class WrappedForwardIterator<NAG::NodesConstIteratorTag, const Resolvent>;
 
