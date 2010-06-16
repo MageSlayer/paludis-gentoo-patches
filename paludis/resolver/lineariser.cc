@@ -430,8 +430,8 @@ Lineariser::linearise_sub_ssccs(
             schedule(_imp->change_or_remove_resolvents.find(*sub_scc->nodes()->begin())->second,
                     make_shared_copy(make_named_values<LineariserNotes>(
                             n::cycle_breaking() = (can_recurse ?
-                                "In dependency cycle with existing packages: " :
-                                "In dependency cycle with: ") + join(top_scc.nodes()->begin(), top_scc.nodes()->end(), ", ", nice_resolvent)
+                                "In dependency cycle with existing packages: " + join(scc_nag.begin_nodes(), scc_nag.end_nodes(), ", ", nice_resolvent) :
+                                "In dependency cycle with: " + join(top_scc.nodes()->begin(), top_scc.nodes()->end(), ", ", nice_resolvent))
                             )));
         }
         else if (no_build_dependencies(*sub_scc->nodes(), scc_nag))
