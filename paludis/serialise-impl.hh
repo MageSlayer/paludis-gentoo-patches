@@ -265,7 +265,7 @@ namespace paludis
         {
             Options<T_> result;
             std::list<std::string> tokens;
-            tokenise<delim_kind::AnyOfTag, delim_mode::BoundaryTag>(v.string_value(),
+            tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(v.string_value(),
                     ",", "", std::back_inserter(tokens));
 
             for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
