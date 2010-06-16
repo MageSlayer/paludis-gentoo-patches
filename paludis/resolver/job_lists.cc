@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/resolver/work_lists.hh>
-#include <paludis/resolver/work_list.hh>
+#include <paludis/resolver/job_lists.hh>
+#include <paludis/resolver/job_list.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/serialise-impl.hh>
@@ -27,21 +27,22 @@ using namespace paludis;
 using namespace paludis::resolver;
 
 void
-WorkLists::serialise(Serialiser & s) const
+JobLists::serialise(Serialiser & s) const
 {
-    s.object("WorkLists")
-        .member(SerialiserFlags<serialise::might_be_null>(), "execute_work_list", execute_work_list())
-        .member(SerialiserFlags<serialise::might_be_null>(), "pretend_work_list", pretend_work_list())
+    s.object("JobLists")
+        .member(SerialiserFlags<serialise::might_be_null>(), "execute_job_list", execute_job_list())
+        .member(SerialiserFlags<serialise::might_be_null>(), "pretend_job_list", pretend_job_list())
         ;
 }
 
-const std::tr1::shared_ptr<WorkLists>
-WorkLists::deserialise(Deserialisation & d)
+const std::tr1::shared_ptr<JobLists>
+JobLists::deserialise(Deserialisation & d)
 {
-    Deserialisator v(d, "WorkLists");
+    Deserialisator v(d, "JobLists");
 
-    return make_shared_copy(make_named_values<WorkLists>(
-            n::execute_work_list() = v.member<std::tr1::shared_ptr<WorkList<ExecuteWorkItem> > >("execute_work_list"),
-            n::pretend_work_list() = v.member<std::tr1::shared_ptr<WorkList<PretendWorkItem> > >("pretend_work_list")
+    return make_shared_copy(make_named_values<JobLists>(
+            n::execute_job_list() = v.member<std::tr1::shared_ptr<JobList<ExecuteJob> > >("execute_job_list"),
+            n::pretend_job_list() = v.member<std::tr1::shared_ptr<JobList<PretendJob> > >("pretend_job_list")
             ));
 }
+

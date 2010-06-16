@@ -17,29 +17,33 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/resolver/lineariser_notes.hh>
-#include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/make_named_values.hh>
-#include <paludis/serialise-impl.hh>
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_ORDERER_NOTES_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_ORDERER_NOTES_HH 1
 
-using namespace paludis;
-using namespace paludis::resolver;
+#include <paludis/resolver/orderer_notes-fwd.hh>
+#include <paludis/util/attributes.hh>
+#include <paludis/util/named_value.hh>
+#include <paludis/serialise-fwd.hh>
+#include <tr1/memory>
 
-void
-LineariserNotes::serialise(Serialiser & s) const
+namespace paludis
 {
-    s.object("LineariserNotes")
-        .member(SerialiserFlags<>(), "cycle_breaking", cycle_breaking())
-        ;
+    namespace n
+    {
+        typedef Name<struct cycle_breaking_name> cycle_breaking;
+    }
+
+    namespace resolver
+    {
+        struct OrdererNotes
+        {
+            NamedValue<n::cycle_breaking, std::string> cycle_breaking;
+
+            void serialise(Serialiser &) const;
+            static const std::tr1::shared_ptr<OrdererNotes> deserialise(
+                    Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+    }
 }
 
-const std::tr1::shared_ptr<LineariserNotes>
-LineariserNotes::deserialise(Deserialisation & d)
-{
-    Deserialisator v(d, "LineariserNotes");
-
-    return make_shared_ptr(new LineariserNotes(make_named_values<LineariserNotes>(
-                    n::cycle_breaking() = v.member<std::string>("cycle_breaking")
-                    )));
-}
-
+#endif

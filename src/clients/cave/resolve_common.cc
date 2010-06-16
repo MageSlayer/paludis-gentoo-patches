@@ -52,7 +52,7 @@
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/required_confirmations.hh>
-#include <paludis/resolver/work_lists.hh>
+#include <paludis/resolver/job_lists.hh>
 #include <paludis/resolver/decisions.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
@@ -1250,10 +1250,10 @@ namespace
             return DisplayResolutionCommand().run(env, args, resolved);
     }
 
-    void serialise_work_lists(StringListStream & ser_stream, const WorkLists & work_lists)
+    void serialise_job_lists(StringListStream & ser_stream, const JobLists & job_lists)
     {
         Serialiser ser(ser_stream);
-        work_lists.serialise(ser);
+        job_lists.serialise(ser);
         ser_stream.nothing_more_to_write();
     }
 
@@ -1311,7 +1311,7 @@ namespace
              * be a fun exercise for someone with way too much time on their hands.
              * */
             StringListStream ser_stream;
-            serialise_work_lists(ser_stream, *resolved->work_lists());
+            serialise_job_lists(ser_stream, *resolved->job_lists());
 
             std::string command;
             if (program_options.a_execute_resolution_program.specified())
@@ -1339,7 +1339,7 @@ namespace
             become_command(cmd);
         }
         else
-            return ExecuteResolutionCommand().run(env, args, resolved->work_lists());
+            return ExecuteResolutionCommand().run(env, args, resolved->job_lists());
     }
 
     struct KindNameVisitor

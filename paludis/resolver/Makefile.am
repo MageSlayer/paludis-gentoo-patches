@@ -30,9 +30,12 @@ noinst_HEADERS = \
 	decisions.hh decisions-fwd.hh \
 	destination.hh destination-fwd.hh \
 	destination_types.hh destination_types-fwd.hh destination_types-se.hh \
-	lineariser.hh lineariser-fwd.hh \
-	lineariser_notes.hh lineariser_notes-fwd.hh \
+	job.hh job-fwd.hh \
+	job_list.hh job_list-fwd.hh \
+	job_lists.hh job_lists-fwd.hh \
 	nag.hh nag-fwd.hh \
+	orderer.hh orderer-fwd.hh \
+	orderer_notes.hh orderer_notes-fwd.hh \
 	package_or_block_dep_spec.hh package_or_block_dep_spec-fwd.hh \
 	reason.hh reason-fwd.hh \
 	required_confirmations.hh required_confirmations-fwd.hh \
@@ -48,10 +51,7 @@ noinst_HEADERS = \
 	strongly_connected_component.hh strongly_connected_component-fwd.hh \
 	suggest_restart.hh suggest_restart-fwd.hh \
 	unsuitable_candidates.hh unsuitable_candidates-fwd.hh \
-	use_existing.hh use_existing-fwd.hh use_existing-se.hh \
-	work_item.hh work_item-fwd.hh \
-	work_list.hh work_list-fwd.hh \
-	work_lists.hh work_lists-fwd.hh
+	use_existing.hh use_existing-fwd.hh use_existing-se.hh
 
 libpaludisresolver_a_SOURCES = \
 	any_child_score.cc \
@@ -62,9 +62,12 @@ libpaludisresolver_a_SOURCES = \
 	decisions.cc \
 	destination.cc \
 	destination_types.cc \
-	lineariser.cc \
-	lineariser_notes.cc \
+	job.cc \
+	job_list.cc \
+	job_lists.cc \
 	nag.cc \
+	orderer.cc \
+	orderer_notes.cc \
 	package_or_block_dep_spec.cc \
 	reason.cc \
 	required_confirmations.cc \
@@ -80,10 +83,7 @@ libpaludisresolver_a_SOURCES = \
 	strongly_connected_component.cc \
 	suggest_restart.cc \
 	unsuitable_candidates.cc \
-	use_existing.cc \
-	work_item.cc \
-	work_list.cc \
-	work_lists.cc
+	use_existing.cc
 
 if ENABLE_VIRTUALS_REPOSITORY
 virtuals_tests = resolver_TEST_virtuals

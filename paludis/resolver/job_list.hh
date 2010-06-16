@@ -17,11 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_WORK_LIST_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_WORK_LIST_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_LIST_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_LIST_HH 1
 
-#include <paludis/resolver/work_list-fwd.hh>
-#include <paludis/resolver/work_item-fwd.hh>
+#include <paludis/resolver/job_list-fwd.hh>
+#include <paludis/resolver/job-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/serialise-fwd.hh>
@@ -31,44 +31,44 @@ namespace paludis
 {
     namespace resolver
     {
-        template <typename WorkItem_>
-        struct WorkListConstIteratorTag;
+        template <typename Job_>
+        struct JobListConstIteratorTag;
 
-        template <typename WorkItem_>
-        class PALUDIS_VISIBLE WorkList :
-            private PrivateImplementationPattern<WorkList<WorkItem_> >
+        template <typename Job_>
+        class PALUDIS_VISIBLE JobList :
+            private PrivateImplementationPattern<JobList<Job_> >
         {
             private:
-                using PrivateImplementationPattern<WorkList<WorkItem_> >::_imp;
+                using PrivateImplementationPattern<JobList<Job_> >::_imp;
 
             public:
-                WorkList();
-                ~WorkList();
+                JobList();
+                ~JobList();
 
-                WorkListIndex append(const std::tr1::shared_ptr<WorkItem_> &);
+                JobListIndex append(const std::tr1::shared_ptr<Job_> &);
 
                 int length() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                typedef WorkListConstIteratorTag<WorkItem_> ConstIteratorTag;
-                typedef WrappedForwardIterator<ConstIteratorTag, const std::tr1::shared_ptr<WorkItem_> > ConstIterator;
+                typedef JobListConstIteratorTag<Job_> ConstIteratorTag;
+                typedef WrappedForwardIterator<ConstIteratorTag, const std::tr1::shared_ptr<Job_> > ConstIterator;
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                static const std::tr1::shared_ptr<WorkList<WorkItem_> > deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
+                static const std::tr1::shared_ptr<JobList<Job_> > deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
                 void serialise(Serialiser &) const;
         };
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
-        extern template class WorkList<PretendWorkItem>;
-        extern template class WorkList<ExecuteWorkItem>;
+        extern template class JobList<PretendJob>;
+        extern template class JobList<ExecuteJob>;
 #endif
     }
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
-    extern template class WrappedForwardIterator<resolver::WorkListConstIteratorTag<resolver::PretendWorkItem>,
-           const std::tr1::shared_ptr<resolver::PretendWorkItem> >;
-    extern template class WrappedForwardIterator<resolver::WorkListConstIteratorTag<resolver::ExecuteWorkItem>,
-           const std::tr1::shared_ptr<resolver::ExecuteWorkItem> >;
+    extern template class WrappedForwardIterator<resolver::JobListConstIteratorTag<resolver::PretendJob>,
+           const std::tr1::shared_ptr<resolver::PretendJob> >;
+    extern template class WrappedForwardIterator<resolver::JobListConstIteratorTag<resolver::ExecuteJob>,
+           const std::tr1::shared_ptr<resolver::ExecuteJob> >;
 #endif
 }
 

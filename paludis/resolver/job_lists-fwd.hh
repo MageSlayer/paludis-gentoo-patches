@@ -17,14 +17,14 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_LINEARISER_NOTES_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_LINEARISER_NOTES_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_LISTS_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_LISTS_FWD_HH 1
 
 namespace paludis
 {
     namespace resolver
     {
-        struct LineariserNotes;
+        struct JobLists;
     }
 }
 

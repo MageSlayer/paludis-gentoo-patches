@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/resolver/work_item.hh>
+#include <paludis/resolver/job.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
@@ -31,7 +31,7 @@ using namespace paludis::resolver;
 namespace paludis
 {
     template <>
-    struct Implementation<PretendWorkItem>
+    struct Implementation<PretendJob>
     {
         const std::tr1::shared_ptr<const PackageID> origin_id;
 
@@ -42,51 +42,51 @@ namespace paludis
     };
 }
 
-PretendWorkItem::PretendWorkItem(const std::tr1::shared_ptr<const PackageID> & o) :
-    PrivateImplementationPattern<PretendWorkItem>(new Implementation<PretendWorkItem>(o))
+PretendJob::PretendJob(const std::tr1::shared_ptr<const PackageID> & o) :
+    PrivateImplementationPattern<PretendJob>(new Implementation<PretendJob>(o))
 {
 }
 
-PretendWorkItem::~PretendWorkItem()
+PretendJob::~PretendJob()
 {
 }
 
 const std::tr1::shared_ptr<const PackageID>
-PretendWorkItem::origin_id() const
+PretendJob::origin_id() const
 {
     return _imp->origin_id;
 }
 
-const std::tr1::shared_ptr<PretendWorkItem>
-PretendWorkItem::deserialise(Deserialisation & d)
+const std::tr1::shared_ptr<PretendJob>
+PretendJob::deserialise(Deserialisation & d)
 {
-    Deserialisator v(d, "PretendWorkItem");
-    return make_shared_ptr(new PretendWorkItem(
+    Deserialisator v(d, "PretendJob");
+    return make_shared_ptr(new PretendJob(
                 v.member<std::tr1::shared_ptr<const PackageID> >("origin_id")
                 ));
 }
 
 void
-PretendWorkItem::serialise(Serialiser & s) const
+PretendJob::serialise(Serialiser & s) const
 {
-    s.object("PretendWorkItem")
+    s.object("PretendJob")
         .member(SerialiserFlags<serialise::might_be_null>(), "origin_id", origin_id())
         ;
 }
 
-ExecuteWorkItem::~ExecuteWorkItem()
+ExecuteJob::~ExecuteJob()
 {
 }
 
-const std::tr1::shared_ptr<ExecuteWorkItem>
-ExecuteWorkItem::deserialise(Deserialisation & d)
+const std::tr1::shared_ptr<ExecuteJob>
+ExecuteJob::deserialise(Deserialisation & d)
 {
-    if (d.class_name() == "FetchWorkItem")
-        return FetchWorkItem::deserialise(d);
-    else if (d.class_name() == "InstallWorkItem")
-        return InstallWorkItem::deserialise(d);
-    else if (d.class_name() == "UninstallWorkItem")
-        return UninstallWorkItem::deserialise(d);
+    if (d.class_name() == "FetchJob")
+        return FetchJob::deserialise(d);
+    else if (d.class_name() == "InstallJob")
+        return InstallJob::deserialise(d);
+    else if (d.class_name() == "UninstallJob")
+        return UninstallJob::deserialise(d);
     else
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 }
@@ -94,7 +94,7 @@ ExecuteWorkItem::deserialise(Deserialisation & d)
 namespace paludis
 {
     template <>
-    struct Implementation<FetchWorkItem>
+    struct Implementation<FetchJob>
     {
         const std::tr1::shared_ptr<const PackageID> origin_id;
 
@@ -105,34 +105,34 @@ namespace paludis
     };
 }
 
-FetchWorkItem::FetchWorkItem(const std::tr1::shared_ptr<const PackageID> & o) :
-    PrivateImplementationPattern<FetchWorkItem>(new Implementation<FetchWorkItem>(o))
+FetchJob::FetchJob(const std::tr1::shared_ptr<const PackageID> & o) :
+    PrivateImplementationPattern<FetchJob>(new Implementation<FetchJob>(o))
 {
 }
 
-FetchWorkItem::~FetchWorkItem()
+FetchJob::~FetchJob()
 {
 }
 
 const std::tr1::shared_ptr<const PackageID>
-FetchWorkItem::origin_id() const
+FetchJob::origin_id() const
 {
     return _imp->origin_id;
 }
 
-const std::tr1::shared_ptr<FetchWorkItem>
-FetchWorkItem::deserialise(Deserialisation & d)
+const std::tr1::shared_ptr<FetchJob>
+FetchJob::deserialise(Deserialisation & d)
 {
-    Deserialisator v(d, "FetchWorkItem");
-    return make_shared_ptr(new FetchWorkItem(
+    Deserialisator v(d, "FetchJob");
+    return make_shared_ptr(new FetchJob(
                 v.member<std::tr1::shared_ptr<const PackageID> >("origin_id")
                 ));
 }
 
 void
-FetchWorkItem::serialise(Serialiser & s) const
+FetchJob::serialise(Serialiser & s) const
 {
-    s.object("FetchWorkItem")
+    s.object("FetchJob")
         .member(SerialiserFlags<serialise::might_be_null>(), "origin_id", origin_id())
         ;
 }
@@ -140,7 +140,7 @@ FetchWorkItem::serialise(Serialiser & s) const
 namespace paludis
 {
     template <>
-    struct Implementation<InstallWorkItem>
+    struct Implementation<InstallJob>
     {
         const std::tr1::shared_ptr<const PackageID> origin_id;
         const RepositoryName destination_repository_name;
@@ -162,48 +162,48 @@ namespace paludis
     };
 }
 
-InstallWorkItem::InstallWorkItem(
+InstallJob::InstallJob(
         const std::tr1::shared_ptr<const PackageID> & o,
         const RepositoryName & d,
         const DestinationType t,
         const std::tr1::shared_ptr<const PackageIDSequence> & r
         ) :
-    PrivateImplementationPattern<InstallWorkItem>(new Implementation<InstallWorkItem>(o, d, t, r))
+    PrivateImplementationPattern<InstallJob>(new Implementation<InstallJob>(o, d, t, r))
 {
 }
 
-InstallWorkItem::~InstallWorkItem()
+InstallJob::~InstallJob()
 {
 }
 
 const std::tr1::shared_ptr<const PackageID>
-InstallWorkItem::origin_id() const
+InstallJob::origin_id() const
 {
     return _imp->origin_id;
 }
 
 const RepositoryName
-InstallWorkItem::destination_repository_name() const
+InstallJob::destination_repository_name() const
 {
     return _imp->destination_repository_name;
 }
 
 DestinationType
-InstallWorkItem::destination_type() const
+InstallJob::destination_type() const
 {
     return _imp->destination_type;
 }
 
 const std::tr1::shared_ptr<const PackageIDSequence>
-InstallWorkItem::replacing() const
+InstallJob::replacing() const
 {
     return _imp->replacing;
 }
 
-const std::tr1::shared_ptr<InstallWorkItem>
-InstallWorkItem::deserialise(Deserialisation & d)
+const std::tr1::shared_ptr<InstallJob>
+InstallJob::deserialise(Deserialisation & d)
 {
-    Deserialisator v(d, "InstallWorkItem");
+    Deserialisator v(d, "InstallJob");
 
     std::tr1::shared_ptr<PackageIDSequence> replacing(new PackageIDSequence);
     {
@@ -212,7 +212,7 @@ InstallWorkItem::deserialise(Deserialisation & d)
             replacing->push_back(vv.member<std::tr1::shared_ptr<const PackageID> >(stringify(n)));
     }
 
-    return make_shared_ptr(new InstallWorkItem(
+    return make_shared_ptr(new InstallJob(
                 v.member<std::tr1::shared_ptr<const PackageID> >("origin_id"),
                 RepositoryName(v.member<std::string>("destination_repository_name")),
                 destringify<DestinationType>(v.member<std::string>("destination_type")),
@@ -221,9 +221,9 @@ InstallWorkItem::deserialise(Deserialisation & d)
 }
 
 void
-InstallWorkItem::serialise(Serialiser & s) const
+InstallJob::serialise(Serialiser & s) const
 {
-    s.object("InstallWorkItem")
+    s.object("InstallJob")
         .member(SerialiserFlags<serialise::might_be_null>(), "origin_id", origin_id())
         .member(SerialiserFlags<>(), "destination_repository_name", stringify(destination_repository_name()))
         .member(SerialiserFlags<>(), "destination_type", stringify(destination_type()))
@@ -234,7 +234,7 @@ InstallWorkItem::serialise(Serialiser & s) const
 namespace paludis
 {
     template <>
-    struct Implementation<UninstallWorkItem>
+    struct Implementation<UninstallJob>
     {
         const std::tr1::shared_ptr<const PackageIDSequence> ids_to_remove;
 
@@ -247,27 +247,27 @@ namespace paludis
     };
 }
 
-UninstallWorkItem::UninstallWorkItem(
+UninstallJob::UninstallJob(
         const std::tr1::shared_ptr<const PackageIDSequence> & r
         ) :
-    PrivateImplementationPattern<UninstallWorkItem>(new Implementation<UninstallWorkItem>(r))
+    PrivateImplementationPattern<UninstallJob>(new Implementation<UninstallJob>(r))
 {
 }
 
-UninstallWorkItem::~UninstallWorkItem()
+UninstallJob::~UninstallJob()
 {
 }
 
 const std::tr1::shared_ptr<const PackageIDSequence>
-UninstallWorkItem::ids_to_remove() const
+UninstallJob::ids_to_remove() const
 {
     return _imp->ids_to_remove;
 }
 
-const std::tr1::shared_ptr<UninstallWorkItem>
-UninstallWorkItem::deserialise(Deserialisation & d)
+const std::tr1::shared_ptr<UninstallJob>
+UninstallJob::deserialise(Deserialisation & d)
 {
-    Deserialisator v(d, "UninstallWorkItem");
+    Deserialisator v(d, "UninstallJob");
 
     std::tr1::shared_ptr<PackageIDSequence> ids_to_remove(new PackageIDSequence);
     {
@@ -276,15 +276,15 @@ UninstallWorkItem::deserialise(Deserialisation & d)
             ids_to_remove->push_back(vv.member<std::tr1::shared_ptr<const PackageID> >(stringify(n)));
     }
 
-    return make_shared_ptr(new UninstallWorkItem(
+    return make_shared_ptr(new UninstallJob(
                 ids_to_remove
                 ));
 }
 
 void
-UninstallWorkItem::serialise(Serialiser & s) const
+UninstallJob::serialise(Serialiser & s) const
 {
-    s.object("UninstallWorkItem")
+    s.object("UninstallJob")
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "ids_to_remove", ids_to_remove())
         ;
 }

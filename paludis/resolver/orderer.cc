@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/resolver/lineariser.hh>
+#include <paludis/resolver/orderer.hh>
 #include <paludis/resolver/decision.hh>
 #include <paludis/resolver/decisions.hh>
 #include <paludis/resolver/resolution.hh>
@@ -26,11 +26,11 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/strongly_connected_component.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
-#include <paludis/resolver/work_lists.hh>
-#include <paludis/resolver/work_list.hh>
-#include <paludis/resolver/work_item.hh>
+#include <paludis/resolver/job_lists.hh>
+#include <paludis/resolver/job_list.hh>
+#include <paludis/resolver/job.hh>
 #include <paludis/resolver/destination.hh>
-#include <paludis/resolver/lineariser_notes.hh>
+#include <paludis/resolver/orderer_notes.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
@@ -54,7 +54,7 @@ typedef std::tr1::unordered_map<Resolvent, std::tr1::shared_ptr<const ChangeOrRe
 namespace paludis
 {
     template <>
-    struct Implementation<Lineariser>
+    struct Implementation<Orderer>
     {
         const Environment * const env;
         const std::tr1::shared_ptr<Resolved> resolved;
@@ -70,14 +70,14 @@ namespace paludis
     };
 }
 
-Lineariser::Lineariser(
+Orderer::Orderer(
         const Environment * const e,
         const std::tr1::shared_ptr<Resolved> & r) :
-    PrivateImplementationPattern<Lineariser>(new Implementation<Lineariser>(e, r))
+    PrivateImplementationPattern<Orderer>(new Implementation<Orderer>(e, r))
 {
 }
 
-Lineariser::~Lineariser()
+Orderer::~Orderer()
 {
 }
 
@@ -310,7 +310,7 @@ namespace
 }
 
 void
-Lineariser::resolve()
+Orderer::resolve()
 {
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Nodifying Decisions"));
 
@@ -350,7 +350,7 @@ Lineariser::resolve()
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Finding NAG SCCs"));
     const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> ssccs(_imp->resolved->nag()->sorted_strongly_connected_components());
 
-    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Linearising SCCs"));
+    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Ordering SCCs"));
     for (SortedStronglyConnectedComponents::ConstIterator scc(ssccs->begin()), scc_end(ssccs->end()) ;
             scc != scc_end ; ++scc)
     {
@@ -375,8 +375,8 @@ Lineariser::resolve()
         {
             /* there's only one real package in the component, so there's no
              * need to try anything clever */
-            schedule(_imp->change_or_remove_resolvents.find(*changes_in_scc.begin())->second,
-                    make_shared_copy(make_named_values<LineariserNotes>(
+            _schedule(_imp->change_or_remove_resolvents.find(*changes_in_scc.begin())->second,
+                    make_shared_copy(make_named_values<OrdererNotes>(
                             n::cycle_breaking() = ""
                             )));
         }
@@ -401,7 +401,7 @@ Lineariser::resolve()
 
             /* now we try again, hopefully with lots of small SCCs now */
             const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> sub_ssccs(scc_nag.sorted_strongly_connected_components());
-            linearise_sub_ssccs(scc_nag, *scc, sub_ssccs, true);
+            _order_sub_ssccs(scc_nag, *scc, sub_ssccs, true);
         }
     }
 }
@@ -415,7 +415,7 @@ namespace
 }
 
 void
-Lineariser::linearise_sub_ssccs(
+Orderer::_order_sub_ssccs(
         const NAG & scc_nag,
         const StronglyConnectedComponent & top_scc,
         const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> & sub_ssccs,
@@ -427,8 +427,8 @@ Lineariser::linearise_sub_ssccs(
         if (sub_scc->nodes()->size() == 1)
         {
             /* yay. it's all on its own. */
-            schedule(_imp->change_or_remove_resolvents.find(*sub_scc->nodes()->begin())->second,
-                    make_shared_copy(make_named_values<LineariserNotes>(
+            _schedule(_imp->change_or_remove_resolvents.find(*sub_scc->nodes()->begin())->second,
+                    make_shared_copy(make_named_values<OrdererNotes>(
                             n::cycle_breaking() = (can_recurse ?
                                 "In dependency cycle with existing packages: " + join(scc_nag.begin_nodes(), scc_nag.end_nodes(), ", ", nice_resolvent) :
                                 "In dependency cycle with: " + join(top_scc.nodes()->begin(), top_scc.nodes()->end(), ", ", nice_resolvent))
@@ -441,8 +441,8 @@ Lineariser::linearise_sub_ssccs(
              * dependency cycles which we can order however we like! */
             for (Set<Resolvent>::ConstIterator r(sub_scc->nodes()->begin()), r_end(sub_scc->nodes()->end()) ;
                     r != r_end ; ++r)
-                schedule(_imp->change_or_remove_resolvents.find(*r)->second,
-                    make_shared_copy(make_named_values<LineariserNotes>(
+                _schedule(_imp->change_or_remove_resolvents.find(*r)->second,
+                    make_shared_copy(make_named_values<OrdererNotes>(
                             n::cycle_breaking() = "In run dependency cycle with: " + join(
                                 sub_scc->nodes()->begin(), sub_scc->nodes()->end(), ", ", nice_resolvent) + (can_recurse ?
                                 " in dependency cycle with " + join(top_scc.nodes()->begin(), top_scc.nodes()->end(), ", ", nice_resolvent) : "")
@@ -473,7 +473,7 @@ Lineariser::linearise_sub_ssccs(
 
             const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> sub_ssccs_without_met_deps(
                     scc_nag_without_met_deps.sorted_strongly_connected_components());
-            linearise_sub_ssccs(scc_nag_without_met_deps, top_scc, sub_ssccs_without_met_deps, false);
+            _order_sub_ssccs(scc_nag_without_met_deps, top_scc, sub_ssccs_without_met_deps, false);
         }
         else
         {
@@ -486,9 +486,9 @@ Lineariser::linearise_sub_ssccs(
 }
 
 void
-Lineariser::schedule(
+Orderer::_schedule(
         const std::tr1::shared_ptr<const ChangeOrRemoveDecision> & d,
-        const std::tr1::shared_ptr<const LineariserNotes> & n)
+        const std::tr1::shared_ptr<const OrdererNotes> & n)
 {
     _imp->resolved->taken_change_or_remove_decisions()->push_back(d, n);
     if (d->required_confirmations_if_any())
@@ -499,13 +499,13 @@ Lineariser::schedule(
 
     if (changes_to_make_decision)
     {
-        _imp->resolved->work_lists()->pretend_work_list()->append(make_shared_ptr(new PretendWorkItem(
+        _imp->resolved->job_lists()->pretend_job_list()->append(make_shared_ptr(new PretendJob(
                         changes_to_make_decision->origin_id())));
 
-        _imp->resolved->work_lists()->execute_work_list()->append(make_shared_ptr(new FetchWorkItem(
+        _imp->resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new FetchJob(
                         changes_to_make_decision->origin_id())));
 
-        _imp->resolved->work_lists()->execute_work_list()->append(make_shared_ptr(new InstallWorkItem(
+        _imp->resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new InstallJob(
                         changes_to_make_decision->origin_id(),
                         changes_to_make_decision->destination()->repository(),
                         changes_to_make_decision->resolvent().destination_type(),
@@ -514,7 +514,7 @@ Lineariser::schedule(
     }
     else if (remove_decision)
     {
-        _imp->resolved->work_lists()->execute_work_list()->append(make_shared_ptr(new UninstallWorkItem(
+        _imp->resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new UninstallJob(
                         remove_decision->ids()
                         )));
     }

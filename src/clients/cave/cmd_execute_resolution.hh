@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_EXECUTE_RESOLUTION_HH 1
 
 #include "command.hh"
-#include <paludis/resolver/work_lists-fwd.hh>
+#include <paludis/resolver/job_lists-fwd.hh>
 
 namespace paludis
 {
@@ -41,7 +41,7 @@ namespace paludis
                 int run(
                         const std::tr1::shared_ptr<Environment> &,
                         const std::tr1::shared_ptr<const Sequence<std::string > > & args,
-                        const std::tr1::shared_ptr<resolver::WorkLists> & maybe_work_lists);
+                        const std::tr1::shared_ptr<resolver::JobLists> & maybe_job_lists);
 
                 std::tr1::shared_ptr<args::ArgsHandler> make_doc_cmdline();
         };

@@ -17,10 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_WORK_ITEM_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_WORK_ITEM_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_HH 1
 
-#include <paludis/resolver/work_item-fwd.hh>
+#include <paludis/resolver/job-fwd.hh>
 #include <paludis/resolver/destination_types-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/simple_visitor.hh>
@@ -34,85 +34,85 @@ namespace paludis
 {
     namespace resolver
     {
-        class PALUDIS_VISIBLE PretendWorkItem :
-            private PrivateImplementationPattern<PretendWorkItem>
+        class PALUDIS_VISIBLE PretendJob :
+            private PrivateImplementationPattern<PretendJob>
         {
             public:
-                PretendWorkItem(
+                PretendJob(
                         const std::tr1::shared_ptr<const PackageID> &
                         );
-                ~PretendWorkItem();
+                ~PretendJob();
 
                 const std::tr1::shared_ptr<const PackageID> origin_id() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                static const std::tr1::shared_ptr<PretendWorkItem> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
+                static const std::tr1::shared_ptr<PretendJob> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
                 void serialise(Serialiser &) const;
         };
 
-        class PALUDIS_VISIBLE ExecuteWorkItem :
-            public virtual DeclareAbstractAcceptMethods<ExecuteWorkItem, MakeTypeList<
-                FetchWorkItem, InstallWorkItem, UninstallWorkItem>::Type>
+        class PALUDIS_VISIBLE ExecuteJob :
+            public virtual DeclareAbstractAcceptMethods<ExecuteJob, MakeTypeList<
+                FetchJob, InstallJob, UninstallJob>::Type>
         {
             public:
-                virtual ~ExecuteWorkItem();
+                virtual ~ExecuteJob();
 
-                static const std::tr1::shared_ptr<ExecuteWorkItem> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
+                static const std::tr1::shared_ptr<ExecuteJob> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void serialise(Serialiser &) const = 0;
         };
 
-        class PALUDIS_VISIBLE FetchWorkItem :
-            private PrivateImplementationPattern<FetchWorkItem>,
-            public ExecuteWorkItem,
-            public ImplementAcceptMethods<ExecuteWorkItem, FetchWorkItem>
+        class PALUDIS_VISIBLE FetchJob :
+            private PrivateImplementationPattern<FetchJob>,
+            public ExecuteJob,
+            public ImplementAcceptMethods<ExecuteJob, FetchJob>
         {
             public:
-                FetchWorkItem(
+                FetchJob(
                         const std::tr1::shared_ptr<const PackageID> &
                         );
-                ~FetchWorkItem();
+                ~FetchJob();
 
                 const std::tr1::shared_ptr<const PackageID> origin_id() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                static const std::tr1::shared_ptr<FetchWorkItem> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
+                static const std::tr1::shared_ptr<FetchJob> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void serialise(Serialiser &) const;
         };
 
-        class PALUDIS_VISIBLE InstallWorkItem :
-            private PrivateImplementationPattern<InstallWorkItem>,
-            public ExecuteWorkItem,
-            public ImplementAcceptMethods<ExecuteWorkItem, InstallWorkItem>
+        class PALUDIS_VISIBLE InstallJob :
+            private PrivateImplementationPattern<InstallJob>,
+            public ExecuteJob,
+            public ImplementAcceptMethods<ExecuteJob, InstallJob>
         {
             public:
-                InstallWorkItem(
+                InstallJob(
                         const std::tr1::shared_ptr<const PackageID> &,
                         const RepositoryName &,
                         const DestinationType,
                         const std::tr1::shared_ptr<const PackageIDSequence> &);
-                ~InstallWorkItem();
+                ~InstallJob();
 
                 const std::tr1::shared_ptr<const PackageID> origin_id() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 const RepositoryName destination_repository_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 DestinationType destination_type() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 const std::tr1::shared_ptr<const PackageIDSequence> replacing() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                static const std::tr1::shared_ptr<InstallWorkItem> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
+                static const std::tr1::shared_ptr<InstallJob> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void serialise(Serialiser &) const;
         };
 
-        class PALUDIS_VISIBLE UninstallWorkItem :
-            private PrivateImplementationPattern<UninstallWorkItem>,
-            public ExecuteWorkItem,
-            public ImplementAcceptMethods<ExecuteWorkItem, UninstallWorkItem>
+        class PALUDIS_VISIBLE UninstallJob :
+            private PrivateImplementationPattern<UninstallJob>,
+            public ExecuteJob,
+            public ImplementAcceptMethods<ExecuteJob, UninstallJob>
         {
             public:
-                UninstallWorkItem(
+                UninstallJob(
                         const std::tr1::shared_ptr<const PackageIDSequence> &
                         );
-                ~UninstallWorkItem();
+                ~UninstallJob();
 
                 const std::tr1::shared_ptr<const PackageIDSequence> ids_to_remove() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                static const std::tr1::shared_ptr<UninstallWorkItem> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
+                static const std::tr1::shared_ptr<UninstallJob> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void serialise(Serialiser &) const;
         };
     }

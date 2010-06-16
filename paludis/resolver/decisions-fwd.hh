@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_DECISIONS_FWD_HH 1
 
 #include <paludis/util/no_type.hh>
-#include <paludis/resolver/lineariser_notes-fwd.hh>
+#include <paludis/resolver/orderer_notes-fwd.hh>
 #include <paludis/resolver/decision-fwd.hh>
 #include <tr1/memory>
 
@@ -32,7 +32,7 @@ namespace paludis
         template <typename Decision_, typename Notes_ = NoType<0u> *>
         struct Decisions;
 
-        typedef Decisions<ChangeOrRemoveDecision, std::tr1::shared_ptr<const LineariserNotes> > ChangeOrRemoveDecisionsWithNotes;
+        typedef Decisions<ChangeOrRemoveDecision, std::tr1::shared_ptr<const OrdererNotes> > OrderedChangeOrRemoveDecisions;
     }
 }
 

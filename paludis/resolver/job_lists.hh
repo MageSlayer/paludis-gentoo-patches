@@ -17,12 +17,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_WORK_LISTS_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_WORK_LISTS_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_LISTS_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_LISTS_HH 1
 
-#include <paludis/resolver/work_lists-fwd.hh>
-#include <paludis/resolver/work_list-fwd.hh>
-#include <paludis/resolver/work_item-fwd.hh>
+#include <paludis/resolver/job_lists-fwd.hh>
+#include <paludis/resolver/job_list-fwd.hh>
+#include <paludis/resolver/job-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/serialise-fwd.hh>
 #include <tr1/memory>
@@ -31,18 +31,18 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct execute_work_list_name> execute_work_list;
-        typedef Name<struct pretend_work_list_name> pretend_work_list;
+        typedef Name<struct execute_job_list_name> execute_job_list;
+        typedef Name<struct pretend_job_list_name> pretend_job_list;
     }
 
     namespace resolver
     {
-        struct WorkLists
+        struct JobLists
         {
-            NamedValue<n::execute_work_list, std::tr1::shared_ptr<WorkList<ExecuteWorkItem> > > execute_work_list;
-            NamedValue<n::pretend_work_list, std::tr1::shared_ptr<WorkList<PretendWorkItem> > > pretend_work_list;
+            NamedValue<n::execute_job_list, std::tr1::shared_ptr<JobList<ExecuteJob> > > execute_job_list;
+            NamedValue<n::pretend_job_list, std::tr1::shared_ptr<JobList<PretendJob> > > pretend_job_list;
 
-            static const std::tr1::shared_ptr<WorkLists> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
+            static const std::tr1::shared_ptr<JobLists> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
             void serialise(Serialiser &) const;
         };
     }

@@ -21,7 +21,7 @@
 #include <paludis/resolver/decisions.hh>
 #include <paludis/resolver/decision.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
-#include <paludis/resolver/work_lists.hh>
+#include <paludis/resolver/job_lists.hh>
 #include <paludis/resolver/nag.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/serialise-impl.hh>
@@ -33,6 +33,7 @@ void
 Resolved::serialise(Serialiser & s) const
 {
     s.object("Resolved")
+        .member(SerialiserFlags<serialise::might_be_null>(), "job_lists", job_lists())
         .member(SerialiserFlags<serialise::might_be_null>(), "nag", nag())
         .member(SerialiserFlags<serialise::might_be_null>(), "resolutions_by_resolvent", resolutions_by_resolvent())
         .member(SerialiserFlags<serialise::might_be_null>(), "taken_change_or_remove_decisions", taken_change_or_remove_decisions())
@@ -40,7 +41,6 @@ Resolved::serialise(Serialiser & s) const
         .member(SerialiserFlags<serialise::might_be_null>(), "taken_unconfirmed_change_or_remove_decisions", taken_unconfirmed_change_or_remove_decisions())
         .member(SerialiserFlags<serialise::might_be_null>(), "untaken_change_or_remove_decisions", untaken_change_or_remove_decisions())
         .member(SerialiserFlags<serialise::might_be_null>(), "untaken_unable_to_make_decisions", untaken_unable_to_make_decisions())
-        .member(SerialiserFlags<serialise::might_be_null>(), "work_lists", work_lists())
         ;
 }
 
@@ -50,12 +50,14 @@ Resolved::deserialise(Deserialisation & d)
     Deserialisator v(d, "Resolved");
 
     return make_named_values<Resolved>(
+            n::job_lists() =
+                v.member<std::tr1::shared_ptr<JobLists> >("job_lists"),
             n::nag() =
                 v.member<std::tr1::shared_ptr<NAG> >("nag"),
             n::resolutions_by_resolvent() =
                 v.member<std::tr1::shared_ptr<ResolutionsByResolvent> >("resolutions_by_resolvent"),
             n::taken_change_or_remove_decisions() =
-                v.member<std::tr1::shared_ptr<ChangeOrRemoveDecisionsWithNotes> >("taken_change_or_remove_decisions"),
+                v.member<std::tr1::shared_ptr<OrderedChangeOrRemoveDecisions> >("taken_change_or_remove_decisions"),
             n::taken_unable_to_make_decisions() =
                 v.member<std::tr1::shared_ptr<Decisions<UnableToMakeDecision> > >("taken_unable_to_make_decisions"),
             n::taken_unconfirmed_change_or_remove_decisions() =
@@ -63,9 +65,7 @@ Resolved::deserialise(Deserialisation & d)
             n::untaken_change_or_remove_decisions() =
                 v.member<std::tr1::shared_ptr<Decisions<ChangeOrRemoveDecision> > >("untaken_change_or_remove_decisions"),
             n::untaken_unable_to_make_decisions() =
-                v.member<std::tr1::shared_ptr<Decisions<UnableToMakeDecision> > >("untaken_unable_to_make_decisions"),
-            n::work_lists() =
-                v.member<std::tr1::shared_ptr<WorkLists> >("work_lists")
+                v.member<std::tr1::shared_ptr<Decisions<UnableToMakeDecision> > >("untaken_unable_to_make_decisions")
             );
 }
 

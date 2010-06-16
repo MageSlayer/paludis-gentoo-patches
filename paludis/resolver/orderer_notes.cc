@@ -17,15 +17,29 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_WORK_LISTS_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_WORK_LISTS_FWD_HH 1
+#include <paludis/resolver/orderer_notes.hh>
+#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/make_named_values.hh>
+#include <paludis/serialise-impl.hh>
 
-namespace paludis
+using namespace paludis;
+using namespace paludis::resolver;
+
+void
+OrdererNotes::serialise(Serialiser & s) const
 {
-    namespace resolver
-    {
-        struct WorkLists;
-    }
+    s.object("OrdererNotes")
+        .member(SerialiserFlags<>(), "cycle_breaking", cycle_breaking())
+        ;
 }
 
-#endif
+const std::tr1::shared_ptr<OrdererNotes>
+OrdererNotes::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "OrdererNotes");
+
+    return make_shared_ptr(new OrdererNotes(make_named_values<OrdererNotes>(
+                    n::cycle_breaking() = v.member<std::string>("cycle_breaking")
+                    )));
+}
+

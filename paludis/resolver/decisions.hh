@@ -22,7 +22,7 @@
 
 #include <paludis/resolver/decisions-fwd.hh>
 #include <paludis/resolver/decision-fwd.hh>
-#include <paludis/resolver/lineariser_notes-fwd.hh>
+#include <paludis/resolver/orderer_notes-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/no_type.hh>
@@ -82,7 +82,7 @@ namespace paludis
         extern template class Decisions<UnableToMakeDecision>;
         extern template class Decisions<ChangesToMakeDecision>;
         extern template class Decisions<ChangeOrRemoveDecision>;
-        extern template class Decisions<ChangeOrRemoveDecision, std::tr1::shared_ptr<const LineariserNotes> >;
+        extern template class Decisions<ChangeOrRemoveDecision, std::tr1::shared_ptr<const OrdererNotes> >;
 #endif
     }
 
@@ -94,10 +94,10 @@ namespace paludis
     extern template class WrappedForwardIterator<resolver::Decisions<resolver::ChangeOrRemoveDecision>::ConstIteratorTag,
            const std::tr1::shared_ptr<const resolver::ChangeOrRemoveDecision> >;
     extern template class WrappedForwardIterator<resolver::Decisions<resolver::ChangeOrRemoveDecision,
-           std::tr1::shared_ptr<const resolver::LineariserNotes> >::ConstIteratorTag,
+           std::tr1::shared_ptr<const resolver::OrdererNotes> >::ConstIteratorTag,
            const std::pair<
                std::tr1::shared_ptr<const resolver::ChangeOrRemoveDecision>,
-               std::tr1::shared_ptr<const resolver::LineariserNotes> > >;
+               std::tr1::shared_ptr<const resolver::OrdererNotes> > >;
 #endif
 }
 

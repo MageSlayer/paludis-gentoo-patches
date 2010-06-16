@@ -17,11 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_LINEARISER_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_LINEARISER_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_ORDERER_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_ORDERER_HH 1
 
-#include <paludis/resolver/lineariser-fwd.hh>
-#include <paludis/resolver/lineariser_notes-fwd.hh>
+#include <paludis/resolver/orderer-fwd.hh>
+#include <paludis/resolver/orderer_notes-fwd.hh>
 #include <paludis/resolver/resolved-fwd.hh>
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/resolver/strongly_connected_component-fwd.hh>
@@ -33,25 +33,25 @@ namespace paludis
 {
     namespace resolver
     {
-        class PALUDIS_VISIBLE Lineariser :
-            private PrivateImplementationPattern<Lineariser>
+        class PALUDIS_VISIBLE Orderer :
+            private PrivateImplementationPattern<Orderer>
         {
             private:
-                void schedule(
+                void _schedule(
                         const std::tr1::shared_ptr<const ChangeOrRemoveDecision> &,
-                        const std::tr1::shared_ptr<const LineariserNotes> &);
+                        const std::tr1::shared_ptr<const OrdererNotes> &);
 
-                void linearise_sub_ssccs(
+                void _order_sub_ssccs(
                         const NAG &,
                         const StronglyConnectedComponent & top_scc,
                         const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> & sub_ssccs,
                         const bool can_recurse);
 
             public:
-                Lineariser(
+                Orderer(
                         const Environment * const,
                         const std::tr1::shared_ptr<Resolved> &);
-                ~Lineariser();
+                ~Orderer();
 
                 void resolve();
         };

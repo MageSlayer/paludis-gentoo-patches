@@ -19,7 +19,7 @@
 
 #include <paludis/resolver/decisions.hh>
 #include <paludis/resolver/decision.hh>
-#include <paludis/resolver/lineariser_notes.hh>
+#include <paludis/resolver/orderer_notes.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/exception.hh>
@@ -196,7 +196,7 @@ Decisions<Decision_, Notes_>::deserialise(Deserialisation & d)
 template class Decisions<UnableToMakeDecision>;
 template class Decisions<ChangesToMakeDecision>;
 template class Decisions<ChangeOrRemoveDecision>;
-template class Decisions<ChangeOrRemoveDecision, std::tr1::shared_ptr<const LineariserNotes> >;
+template class Decisions<ChangeOrRemoveDecision, std::tr1::shared_ptr<const OrdererNotes> >;
 
 template class WrappedForwardIterator<Decisions<UnableToMakeDecision>::ConstIteratorTag,
          const std::tr1::shared_ptr<const UnableToMakeDecision> >;
@@ -204,8 +204,8 @@ template class WrappedForwardIterator<Decisions<ChangesToMakeDecision>::ConstIte
          const std::tr1::shared_ptr<const ChangesToMakeDecision> >;
 template class WrappedForwardIterator<Decisions<ChangeOrRemoveDecision>::ConstIteratorTag,
          const std::tr1::shared_ptr<const ChangeOrRemoveDecision> >;
-template class WrappedForwardIterator<Decisions<ChangeOrRemoveDecision, std::tr1::shared_ptr<const LineariserNotes> >::ConstIteratorTag,
+template class WrappedForwardIterator<Decisions<ChangeOrRemoveDecision, std::tr1::shared_ptr<const OrdererNotes> >::ConstIteratorTag,
          const std::pair<
              std::tr1::shared_ptr<const ChangeOrRemoveDecision>,
-             std::tr1::shared_ptr<const LineariserNotes> > >;
+             std::tr1::shared_ptr<const OrdererNotes> > >;
 

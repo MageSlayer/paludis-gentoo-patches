@@ -24,10 +24,10 @@
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
-#include <paludis/resolver/lineariser.hh>
+#include <paludis/resolver/orderer.hh>
 #include <paludis/resolver/decisions.hh>
-#include <paludis/resolver/work_list.hh>
-#include <paludis/resolver/work_lists.hh>
+#include <paludis/resolver/job_list.hh>
+#include <paludis/resolver/job_lists.hh>
 #include <paludis/resolver/nag.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
@@ -58,26 +58,26 @@ namespace paludis
         const std::tr1::shared_ptr<Resolved> resolved;
 
         const std::tr1::shared_ptr<Decider> decider;
-        const std::tr1::shared_ptr<Lineariser> lineariser;
+        const std::tr1::shared_ptr<Orderer> orderer;
 
         Implementation(const Environment * const e, const ResolverFunctions & f) :
             env(e),
             fns(f),
             resolved(new Resolved(make_named_values<Resolved>(
+                            n::job_lists() = make_shared_copy(make_named_values<JobLists>(
+                                    n::execute_job_list() = make_shared_ptr(new JobList<ExecuteJob>),
+                                    n::pretend_job_list() = make_shared_ptr(new JobList<PretendJob>)
+                                    )),
                             n::nag() = make_shared_ptr(new NAG),
                             n::resolutions_by_resolvent() = make_shared_ptr(new ResolutionsByResolvent),
-                            n::taken_change_or_remove_decisions() = make_shared_ptr(new ChangeOrRemoveDecisionsWithNotes),
+                            n::taken_change_or_remove_decisions() = make_shared_ptr(new OrderedChangeOrRemoveDecisions),
                             n::taken_unable_to_make_decisions() = make_shared_ptr(new Decisions<UnableToMakeDecision>),
                             n::taken_unconfirmed_change_or_remove_decisions() = make_shared_ptr(new Decisions<ChangeOrRemoveDecision>),
                             n::untaken_change_or_remove_decisions() = make_shared_ptr(new Decisions<ChangeOrRemoveDecision>),
-                            n::untaken_unable_to_make_decisions() = make_shared_ptr(new Decisions<UnableToMakeDecision>),
-                            n::work_lists() = make_shared_copy(make_named_values<WorkLists>(
-                                    n::execute_work_list() = make_shared_ptr(new WorkList<ExecuteWorkItem>),
-                                    n::pretend_work_list() = make_shared_ptr(new WorkList<PretendWorkItem>)
-                                    ))
+                            n::untaken_unable_to_make_decisions() = make_shared_ptr(new Decisions<UnableToMakeDecision>)
                             ))),
             decider(new Decider(e, f, resolved->resolutions_by_resolvent())),
-            lineariser(new Lineariser(e, resolved))
+            orderer(new Orderer(e, resolved))
         {
         }
     };
@@ -165,7 +165,7 @@ void
 Resolver::resolve()
 {
     _imp->decider->resolve();
-    _imp->lineariser->resolve();
+    _imp->orderer->resolve();
 }
 
 const std::tr1::shared_ptr<const Resolved>

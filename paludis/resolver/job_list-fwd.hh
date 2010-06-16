@@ -17,32 +17,17 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_LINEARISER_NOTES_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_LINEARISER_NOTES_HH 1
-
-#include <paludis/resolver/lineariser_notes-fwd.hh>
-#include <paludis/util/attributes.hh>
-#include <paludis/util/named_value.hh>
-#include <paludis/serialise-fwd.hh>
-#include <tr1/memory>
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_LIST_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_LIST_FWD_HH 1
 
 namespace paludis
 {
-    namespace n
-    {
-        typedef Name<struct cycle_breaking_name> cycle_breaking;
-    }
-
     namespace resolver
     {
-        struct LineariserNotes
-        {
-            NamedValue<n::cycle_breaking, std::string> cycle_breaking;
+        template <typename Job_>
+        struct JobList;
 
-            void serialise(Serialiser &) const;
-            static const std::tr1::shared_ptr<LineariserNotes> deserialise(
-                    Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
-        };
+        typedef int JobListIndex;
     }
 }
 

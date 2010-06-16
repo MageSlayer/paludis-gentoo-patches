@@ -17,19 +17,14 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_WORK_ITEM_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_WORK_ITEM_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_LINEARISER_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_LINEARISER_FWD_HH 1
 
 namespace paludis
 {
     namespace resolver
     {
-        class PretendWorkItem;
-
-        class ExecuteWorkItem;
-        class FetchWorkItem;
-        class InstallWorkItem;
-        class UninstallWorkItem;
+        struct Orderer;
     }
 }
 

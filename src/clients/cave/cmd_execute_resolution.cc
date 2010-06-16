@@ -49,9 +49,9 @@
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/destination.hh>
-#include <paludis/resolver/work_lists.hh>
-#include <paludis/resolver/work_list.hh>
-#include <paludis/resolver/work_item.hh>
+#include <paludis/resolver/job_lists.hh>
+#include <paludis/resolver/job_list.hh>
+#include <paludis/resolver/job.hh>
 #include <paludis/package_id.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -581,19 +581,19 @@ namespace
 
     int execute_pretends(
             const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<WorkLists> & lists,
+            const std::tr1::shared_ptr<JobLists> & lists,
             const ExecuteResolutionCommandLine & cmdline)
     {
         bool failed(false);
-        int x(0), y(lists->pretend_work_list()->length()), last_x(0);
+        int x(0), y(lists->pretend_job_list()->length()), last_x(0);
 
         if (0 != env->perform_hook(Hook("pretend_all_pre")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
                     ).max_exit_status())
             throw ActionAbortedError("Aborted by hook");
 
-        for (WorkList<PretendWorkItem>::ConstIterator c(lists->pretend_work_list()->begin()),
-                c_end(lists->pretend_work_list()->end()) ;
+        for (JobList<PretendJob>::ConstIterator c(lists->pretend_job_list()->begin()),
+                c_end(lists->pretend_job_list()->end()) ;
                 c != c_end ; ++c)
         {
             if (++x == 1)
@@ -639,7 +639,7 @@ namespace
         {
         }
 
-        int visit(InstallWorkItem & install_item)
+        int visit(InstallJob & install_item)
         {
             ++x_install;
 
@@ -656,7 +656,7 @@ namespace
             return 0;
         }
 
-        int visit(UninstallWorkItem & uninstall_item)
+        int visit(UninstallJob & uninstall_item)
         {
             /* we treat uninstalls as installs for counts. if you're reading
              * this it's probably because you think that that's silly, which
@@ -673,7 +673,7 @@ namespace
             return 0;
         }
 
-        int visit(FetchWorkItem & fetch_item)
+        int visit(FetchJob & fetch_item)
         {
             ++x_fetch;
             std::tr1::shared_ptr<OutputManager> output_manager_goes_here;
@@ -687,20 +687,20 @@ namespace
 
     int execute_executions(
             const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<WorkLists> & lists,
+            const std::tr1::shared_ptr<JobLists> & lists,
             const ExecuteResolutionCommandLine & cmdline,
             Summary &)
     {
         int retcode(0);
-        int x_fetch(0), x_install(0), y(lists->pretend_work_list()->length());
+        int x_fetch(0), x_install(0), y(lists->pretend_job_list()->length());
 
         if (0 != env->perform_hook(Hook("install_all_pre")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
                     ).max_exit_status())
             throw ActionAbortedError("Aborted by hook");
 
-        for (WorkList<ExecuteWorkItem>::ConstIterator c(lists->execute_work_list()->begin()),
-                c_end(lists->execute_work_list()->end()) ;
+        for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),
+                c_end(lists->execute_job_list()->end()) ;
                 c != c_end ; ++c)
         {
             ExecuteOneVisitor execute(env, cmdline, x_fetch, x_install, y);
@@ -720,7 +720,7 @@ namespace
 
     int execute_resolution_main(
             const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<WorkLists> & lists,
+            const std::tr1::shared_ptr<JobLists> & lists,
             const ExecuteResolutionCommandLine & cmdline,
             Summary & summary)
     {
@@ -741,7 +741,7 @@ namespace
     }
 
     void display_summary(
-            const std::tr1::shared_ptr<WorkLists> &,
+            const std::tr1::shared_ptr<JobLists> &,
             Summary &,
             const bool)
     {
@@ -749,7 +749,7 @@ namespace
 
     int execute_resolution(
             const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<WorkLists> & lists,
+            const std::tr1::shared_ptr<JobLists> & lists,
             const ExecuteResolutionCommandLine & cmdline)
     {
         Context context("When executing chosen resolution:");
@@ -802,7 +802,7 @@ int
 ExecuteResolutionCommand::run(
         const std::tr1::shared_ptr<Environment> & env,
         const std::tr1::shared_ptr<const Sequence<std::string > > & args,
-        const std::tr1::shared_ptr<WorkLists> & maybe_lists
+        const std::tr1::shared_ptr<JobLists> & maybe_lists
         )
 {
     ExecuteResolutionCommandLine cmdline;
@@ -816,7 +816,7 @@ ExecuteResolutionCommand::run(
 
     cmdline.import_options.apply(env);
 
-    std::tr1::shared_ptr<WorkLists> lists(maybe_lists);
+    std::tr1::shared_ptr<JobLists> lists(maybe_lists);
     if (! lists)
     {
         if (getenv_with_default("PALUDIS_SERIALISED_RESOLUTION_FD", "").empty())
@@ -825,8 +825,8 @@ ExecuteResolutionCommand::run(
         int fd(destringify<int>(getenv_with_default("PALUDIS_SERIALISED_RESOLUTION_FD", "")));
         SafeIFStream deser_stream(fd);
         Deserialiser deserialiser(env.get(), deser_stream);
-        Deserialisation deserialisation("WorkLists", deserialiser);
-        lists = WorkLists::deserialise(deserialisation);
+        Deserialisation deserialisation("JobLists", deserialiser);
+        lists = JobLists::deserialise(deserialisation);
         close(fd);
     }
 

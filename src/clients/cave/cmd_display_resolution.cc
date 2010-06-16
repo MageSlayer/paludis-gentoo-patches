@@ -52,7 +52,7 @@
 #include <paludis/resolver/unsuitable_candidates.hh>
 #include <paludis/resolver/decisions.hh>
 #include <paludis/resolver/required_confirmations.hh>
-#include <paludis/resolver/lineariser_notes.hh>
+#include <paludis/resolver/orderer_notes.hh>
 #include <paludis/package_id.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -1090,14 +1090,14 @@ namespace
         }
     }
 
-    std::pair<std::tr1::shared_ptr<const ChangeOrRemoveDecision>, std::tr1::shared_ptr<const LineariserNotes> >
+    std::pair<std::tr1::shared_ptr<const ChangeOrRemoveDecision>, std::tr1::shared_ptr<const OrdererNotes> >
     get_decision_and_notes(const std::tr1::shared_ptr<const ChangeOrRemoveDecision> & d)
     {
         return std::make_pair(d, make_null_shared_ptr());
     }
 
-    std::pair<std::tr1::shared_ptr<const ChangeOrRemoveDecision>, std::tr1::shared_ptr<const LineariserNotes> >
-    get_decision_and_notes(const std::pair<std::tr1::shared_ptr<const ChangeOrRemoveDecision>, std::tr1::shared_ptr<const LineariserNotes> > & d)
+    std::pair<std::tr1::shared_ptr<const ChangeOrRemoveDecision>, std::tr1::shared_ptr<const OrdererNotes> >
+    get_decision_and_notes(const std::pair<std::tr1::shared_ptr<const ChangeOrRemoveDecision>, std::tr1::shared_ptr<const OrdererNotes> > & d)
     {
         return d;
     }
@@ -1130,7 +1130,7 @@ namespace
 
             const std::pair<
                 std::tr1::shared_ptr<const ChangeOrRemoveDecision>,
-                std::tr1::shared_ptr<const LineariserNotes> > star_i(get_decision_and_notes(*i));
+                std::tr1::shared_ptr<const OrdererNotes> > star_i(get_decision_and_notes(*i));
 
             const ChangesToMakeDecision * const changes_to_make_decision(simple_visitor_cast<const ChangesToMakeDecision>(*star_i.first));
             const RemoveDecision * const remove_decision(simple_visitor_cast<const RemoveDecision>(*star_i.first));
