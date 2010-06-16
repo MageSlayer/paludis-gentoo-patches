@@ -33,6 +33,7 @@ noinst_HEADERS = \
 	job.hh job-fwd.hh \
 	job_list.hh job_list-fwd.hh \
 	job_lists.hh job_lists-fwd.hh \
+	job_state.hh job_state-fwd.hh \
 	nag.hh nag-fwd.hh \
 	orderer.hh orderer-fwd.hh \
 	orderer_notes.hh orderer_notes-fwd.hh \
@@ -65,6 +66,7 @@ libpaludisresolver_a_SOURCES = \
 	job.cc \
 	job_list.cc \
 	job_lists.cc \
+	job_state.cc \
 	nag.cc \
 	orderer.cc \
 	orderer_notes.cc \

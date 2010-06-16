@@ -1,0 +1,94 @@
+/* vim: set sw=4 sts=4 et foldmethod=syntax : */
+
+/*
+ * Copyright (c) 2010 Ciaran McCreesh
+ *
+ * This file is part of the Paludis package manager. Paludis is free software;
+ * you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License version 2, as published by the Free Software Foundation.
+ *
+ * Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_STATE_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_STATE_HH 1
+
+#include <paludis/resolver/job_state-fwd.hh>
+#include <paludis/util/simple_visitor.hh>
+#include <paludis/util/type_list.hh>
+#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/output_manager-fwd.hh>
+#include <tr1/memory>
+
+namespace paludis
+{
+    namespace resolver
+    {
+        class PALUDIS_VISIBLE JobState :
+            public virtual DeclareAbstractAcceptMethods<JobState, MakeTypeList<
+                JobPendingState, JobActiveState, JobSucceededState, JobFailedState, JobSkippedState>::Type>
+        {
+            public:
+                virtual ~JobState() = 0;
+        };
+
+        class PALUDIS_VISIBLE JobPendingState :
+            public JobState,
+            public ImplementAcceptMethods<JobState, JobPendingState>
+        {
+        };
+
+        class PALUDIS_VISIBLE JobActiveState :
+            private PrivateImplementationPattern<JobActiveState>,
+            public JobState,
+            public ImplementAcceptMethods<JobState, JobActiveState>
+        {
+            public:
+                JobActiveState();
+                ~JobActiveState();
+
+                void set_output_manager(const std::tr1::shared_ptr<OutputManager> &);
+                const std::tr1::shared_ptr<JobSucceededState> succeeded() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::tr1::shared_ptr<JobFailedState> failed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+
+        class PALUDIS_VISIBLE JobSucceededState :
+            private PrivateImplementationPattern<JobSucceededState>,
+            public JobState,
+            public ImplementAcceptMethods<JobState, JobSucceededState>
+        {
+            public:
+                JobSucceededState(const std::tr1::shared_ptr<OutputManager> &);
+                ~JobSucceededState();
+
+                const std::tr1::shared_ptr<OutputManager> output_manager() const PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+
+        class PALUDIS_VISIBLE JobFailedState :
+            private PrivateImplementationPattern<JobFailedState>,
+            public JobState,
+            public ImplementAcceptMethods<JobState, JobFailedState>
+        {
+            public:
+                JobFailedState(const std::tr1::shared_ptr<OutputManager> &);
+                ~JobFailedState();
+
+                const std::tr1::shared_ptr<OutputManager> output_manager() const PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+
+        class PALUDIS_VISIBLE JobSkippedState :
+            public JobState,
+            public ImplementAcceptMethods<JobState, JobSkippedState>
+        {
+        };
+    }
+}
+
+#endif

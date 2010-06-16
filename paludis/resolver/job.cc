@@ -97,6 +97,7 @@ namespace paludis
     struct Implementation<FetchJob>
     {
         const std::tr1::shared_ptr<const PackageID> origin_id;
+        std::tr1::shared_ptr<JobState> state;
 
         Implementation(const std::tr1::shared_ptr<const PackageID> & o) :
             origin_id(o)
@@ -118,6 +119,18 @@ const std::tr1::shared_ptr<const PackageID>
 FetchJob::origin_id() const
 {
     return _imp->origin_id;
+}
+
+const std::tr1::shared_ptr<JobState>
+FetchJob::state() const
+{
+    return _imp->state;
+}
+
+void
+FetchJob::set_state(const std::tr1::shared_ptr<JobState> & s)
+{
+    _imp->state = s;
 }
 
 const std::tr1::shared_ptr<FetchJob>
@@ -146,6 +159,8 @@ namespace paludis
         const RepositoryName destination_repository_name;
         const DestinationType destination_type;
         const std::tr1::shared_ptr<const PackageIDSequence> replacing;
+
+        std::tr1::shared_ptr<JobState> state;
 
         Implementation(
                 const std::tr1::shared_ptr<const PackageID> & o,
@@ -200,6 +215,18 @@ InstallJob::replacing() const
     return _imp->replacing;
 }
 
+const std::tr1::shared_ptr<JobState>
+InstallJob::state() const
+{
+    return _imp->state;
+}
+
+void
+InstallJob::set_state(const std::tr1::shared_ptr<JobState> & s)
+{
+    _imp->state = s;
+}
+
 const std::tr1::shared_ptr<InstallJob>
 InstallJob::deserialise(Deserialisation & d)
 {
@@ -238,6 +265,8 @@ namespace paludis
     {
         const std::tr1::shared_ptr<const PackageIDSequence> ids_to_remove;
 
+        std::tr1::shared_ptr<JobState> state;
+
         Implementation(
                 const std::tr1::shared_ptr<const PackageIDSequence> & r
                 ) :
@@ -262,6 +291,18 @@ const std::tr1::shared_ptr<const PackageIDSequence>
 UninstallJob::ids_to_remove() const
 {
     return _imp->ids_to_remove;
+}
+
+const std::tr1::shared_ptr<JobState>
+UninstallJob::state() const
+{
+    return _imp->state;
+}
+
+void
+UninstallJob::set_state(const std::tr1::shared_ptr<JobState> & s)
+{
+    _imp->state = s;
 }
 
 const std::tr1::shared_ptr<UninstallJob>

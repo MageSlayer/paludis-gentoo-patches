@@ -40,6 +40,7 @@
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/type_list.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
@@ -52,6 +53,7 @@
 #include <paludis/resolver/job_lists.hh>
 #include <paludis/resolver/job_list.hh>
 #include <paludis/resolver/job.hh>
+#include <paludis/resolver/job_state.hh>
 #include <paludis/package_id.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -221,7 +223,7 @@ namespace
             const ExecuteResolutionCommandLine & cmdline,
             const std::tr1::shared_ptr<const PackageID> & id,
             const int x, const int y, bool normal_only,
-            std::tr1::shared_ptr<OutputManager> & output_manager_goes_here)
+            JobActiveState & active_state)
     {
         Context context("When fetching for '" + stringify(*id) + "':");
 
@@ -285,7 +287,7 @@ namespace
         if (output_manager)
         {
             output_manager->nothing_more_to_come();
-            output_manager_goes_here = output_manager;
+            active_state.set_output_manager(output_manager);
         }
 
         done_action("fetch (" + std::string(normal_only ? "regular parts" : "extra parts") + ")", id, 0 == retcode);
@@ -300,7 +302,7 @@ namespace
             const std::tr1::shared_ptr<const PackageIDSequence> & replacing,
             const DestinationType & destination_type,
             const int x, const int y,
-            std::tr1::shared_ptr<OutputManager> & output_manager_goes_here)
+            JobActiveState & active_state)
     {
         std::string destination_string, action_string;
         switch (destination_type)
@@ -387,7 +389,7 @@ namespace
         if (output_manager)
         {
             output_manager->nothing_more_to_come();
-            output_manager_goes_here = output_manager;
+            active_state.set_output_manager(output_manager);
         }
 
         done_action(action_string, id, 0 == retcode);
@@ -399,7 +401,7 @@ namespace
             const ExecuteResolutionCommandLine & cmdline,
             const std::tr1::shared_ptr<const PackageID> & id,
             const int x, const int y,
-            std::tr1::shared_ptr<OutputManager> & output_manager_goes_here)
+            JobActiveState & active_state)
     {
         Context context("When removing '" + stringify(*id) + "':");
 
@@ -461,7 +463,7 @@ namespace
         if (output_manager)
         {
             output_manager->nothing_more_to_come();
-            output_manager_goes_here = output_manager;
+            active_state.set_output_manager(output_manager);
         }
 
         done_action("remove", id, 0 == retcode);
@@ -615,10 +617,6 @@ namespace
         return failed ? 1 : 0;
     }
 
-    struct Summary
-    {
-    };
-
     struct ExecuteOneVisitor
     {
         const std::tr1::shared_ptr<Environment> env;
@@ -643,16 +641,24 @@ namespace
         {
             ++x_install;
 
-            std::tr1::shared_ptr<OutputManager> output_manager_goes_here;
+            const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
+            install_item.set_state(active_state);
 
-            if (! do_fetch(env, cmdline, install_item.origin_id(), x_install, y, false, output_manager_goes_here))
+            if (! do_fetch(env, cmdline, install_item.origin_id(), x_install, y, false, *active_state))
+            {
+                install_item.set_state(active_state->failed());
                 return 1;
+            }
 
             if (! do_install(env, cmdline, install_item.origin_id(), install_item.destination_repository_name(),
                         install_item.replacing(), install_item.destination_type(),
-                        x_install, y, output_manager_goes_here))
+                        x_install, y, *active_state))
+            {
+                install_item.set_state(active_state->failed());
                 return 1;
+            }
 
+            install_item.set_state(active_state->succeeded());
             return 0;
         }
 
@@ -663,24 +669,36 @@ namespace
              * means you get to change it. */
             ++x_install;
 
-            std::tr1::shared_ptr<OutputManager> output_manager_goes_here;
+            const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
+            uninstall_item.set_state(active_state);
+
             for (PackageIDSequence::ConstIterator i(uninstall_item.ids_to_remove()->begin()),
                     i_end(uninstall_item.ids_to_remove()->end()) ;
                     i != i_end ; ++i)
-                if (! do_uninstall(env, cmdline, *i, x_install, y, output_manager_goes_here))
+                if (! do_uninstall(env, cmdline, *i, x_install, y, *active_state))
+                {
+                    uninstall_item.set_state(active_state->failed());
                     return 1;
+                }
 
+            uninstall_item.set_state(active_state->succeeded());
             return 0;
         }
 
         int visit(FetchJob & fetch_item)
         {
             ++x_fetch;
-            std::tr1::shared_ptr<OutputManager> output_manager_goes_here;
 
-            if (! do_fetch(env, cmdline, fetch_item.origin_id(), x_fetch, y, true, output_manager_goes_here))
+            const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
+            fetch_item.set_state(active_state);
+
+            if (! do_fetch(env, cmdline, fetch_item.origin_id(), x_fetch, y, true, *active_state))
+            {
+                fetch_item.set_state(active_state->failed());
                 return 1;
+            }
 
+            fetch_item.set_state(active_state->succeeded());
             return 0;
         }
     };
@@ -688,8 +706,7 @@ namespace
     int execute_executions(
             const std::tr1::shared_ptr<Environment> & env,
             const std::tr1::shared_ptr<JobLists> & lists,
-            const ExecuteResolutionCommandLine & cmdline,
-            Summary &)
+            const ExecuteResolutionCommandLine & cmdline)
     {
         int retcode(0);
         int x_fetch(0), x_install(0), y(lists->pretend_job_list()->length());
@@ -703,11 +720,13 @@ namespace
                 c_end(lists->execute_job_list()->end()) ;
                 c != c_end ; ++c)
         {
-            ExecuteOneVisitor execute(env, cmdline, x_fetch, x_install, y);
-            retcode |= (*c)->accept_returning<int>(execute);
-
-            if (0 != retcode)
-                break;
+            if (0 == retcode)
+            {
+                ExecuteOneVisitor execute(env, cmdline, x_fetch, x_install, y);
+                retcode |= (*c)->accept_returning<int>(execute);
+            }
+            else
+                (*c)->set_state(make_shared_ptr(new JobSkippedState));
         }
 
         if (0 != env->perform_hook(Hook("install_all_post")
@@ -721,16 +740,20 @@ namespace
     int execute_resolution_main(
             const std::tr1::shared_ptr<Environment> & env,
             const std::tr1::shared_ptr<JobLists> & lists,
-            const ExecuteResolutionCommandLine & cmdline,
-            Summary & summary)
+            const ExecuteResolutionCommandLine & cmdline)
     {
+        for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),
+                c_end(lists->execute_job_list()->end()) ;
+                c != c_end ; ++c)
+            (*c)->set_state(make_shared_ptr(new JobPendingState));
+
         int retcode(0);
 
         retcode |= execute_pretends(env, lists, cmdline);
         if (0 != retcode || cmdline.a_pretend.specified())
             return retcode;
 
-        retcode |= execute_executions(env, lists, cmdline, summary);
+        retcode |= execute_executions(env, lists, cmdline);
 
         if (0 != retcode)
             return retcode;
@@ -740,11 +763,98 @@ namespace
         return retcode;
     }
 
-    void display_summary(
-            const std::tr1::shared_ptr<JobLists> &,
-            Summary &,
-            const bool)
+    struct SummaryNameVisitor
     {
+        std::string visit(const FetchJob & j) const
+        {
+            return "fetch " + stringify(*j.origin_id());
+        }
+
+        std::string visit(const InstallJob & j) const
+        {
+            return "install " + stringify(*j.origin_id()) + " to " + stringify(j.destination_repository_name());
+        }
+
+        std::string visit(const UninstallJob & j) const
+        {
+            return "uninstall " + join(indirect_iterator(j.ids_to_remove()->begin()), indirect_iterator(j.ids_to_remove()->end()), ", ");
+        }
+
+    };
+
+    struct SummaryDisplayer
+    {
+        const std::tr1::shared_ptr<const ExecuteJob> job;
+        const bool something_failed;
+        bool & done_heading;
+
+        SummaryDisplayer(const std::tr1::shared_ptr<const ExecuteJob> & j, const bool s, bool & b) :
+            job(j),
+            something_failed(s),
+            done_heading(b)
+        {
+        }
+
+        void need_heading() const
+        {
+            if (! done_heading)
+            {
+                done_heading = true;
+                cout << endl << c::bold_blue() << "Summary:" << c::normal() << endl << endl;
+            }
+        }
+
+        void visit(const JobActiveState &) const
+        {
+            need_heading();
+            cout << c::bold_yellow() << "pending:   " << job->accept_returning<std::string>(SummaryNameVisitor()) << c::normal() << endl;
+        }
+
+        void visit(const JobPendingState &) const
+        {
+            need_heading();
+            cout << c::bold_yellow() << "pending:   " << job->accept_returning<std::string>(SummaryNameVisitor()) << c::normal() << endl;
+        }
+
+        void visit(const JobSucceededState & s) const
+        {
+            if ((s.output_manager() && s.output_manager()->want_to_flush())
+                    || (something_failed && ! simple_visitor_cast<const FetchJob>(*job)))
+            {
+                need_heading();
+                cout << c::bold_green() << "succeeded: " << job->accept_returning<std::string>(SummaryNameVisitor()) << c::normal() << endl;
+            }
+        }
+
+        void visit(const JobFailedState &) const
+        {
+            need_heading();
+            cout << c::bold_red() << "failed:    " << job->accept_returning<std::string>(SummaryNameVisitor()) << c::normal() << endl;
+        }
+
+        void visit(const JobSkippedState &) const
+        {
+            if (! simple_visitor_cast<const FetchJob>(*job))
+            {
+                need_heading();
+                cout << c::bold_yellow() << "skipped:   " << job->accept_returning<std::string>(SummaryNameVisitor()) << c::normal() << endl;
+            }
+        }
+    };
+
+    void display_summary(
+            const std::tr1::shared_ptr<JobLists> & lists,
+            const bool something_failed)
+    {
+        bool done_heading(false);
+
+        for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),
+                c_end(lists->execute_job_list()->end()) ;
+                c != c_end ; ++c)
+        {
+            (*c)->state()->accept(SummaryDisplayer(*c, something_failed, done_heading));
+            (*c)->set_state(make_null_shared_ptr());
+        }
     }
 
     int execute_resolution(
@@ -760,15 +870,13 @@ namespace
                     ).max_exit_status())
             throw ActionAbortedError("Aborted by hook");
 
-        Summary summary;
-
         try
         {
-            retcode = execute_resolution_main(env, lists, cmdline, summary);
+            retcode = execute_resolution_main(env, lists, cmdline);
         }
         catch (...)
         {
-            display_summary(lists, summary, 0 != retcode);
+            display_summary(lists, 0 != retcode);
 
             if (0 != env->perform_hook(Hook("install_task_execute_post")
                         ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
@@ -779,7 +887,7 @@ namespace
             throw;
         }
 
-        display_summary(lists, summary, 0 != retcode);
+        display_summary(lists, 0 != retcode);
 
         if (0 != env->perform_hook(Hook("install_task_execute_post")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
