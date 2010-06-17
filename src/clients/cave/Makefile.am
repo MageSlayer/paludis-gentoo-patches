@@ -144,11 +144,13 @@ libcave_a_SOURCES = \
 #	cmd_uninstall.cc \
 #	cmd_uninstall_unused.cc
 
-TESTS =
+TESTS = \
+	continue_on_failure_TEST
 
 EXTRA_DIST = \
 	$(man_MANS) \
-	$(TESTS)
+	$(TESTS) \
+	continue_on_failure_TEST_setup.sh continue_on_failure_TEST_cleanup.sh
 
 DISTCLEANFILES = $(man_MANS) $(noinst_DATA)
 
