@@ -40,7 +40,6 @@
 #include <paludis/util/enum_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/tribool.hh>
-#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/repository.hh>
@@ -1784,35 +1783,69 @@ Decider::_already_met(const SanitisedDependency & dep) const
         return dep.spec().if_package();
 }
 
+namespace
+{
+    struct ConfirmVisitor
+    {
+        const ResolverFunctions & fns;
+        const std::tr1::shared_ptr<const Resolution> resolution;
+
+        ConfirmVisitor(
+                const ResolverFunctions & f,
+                const std::tr1::shared_ptr<const Resolution> & r) :
+            fns(f),
+            resolution(r)
+        {
+        }
+
+        void visit(ChangesToMakeDecision & changes_to_make_decision) const
+        {
+            if (! changes_to_make_decision.best())
+            {
+                const std::tr1::shared_ptr<RequiredConfirmation> c(new NotBestConfirmation);
+                if (! fns.confirm_fn()(resolution, c))
+                    changes_to_make_decision.add_required_confirmation(c);
+            }
+
+            if (ct_downgrade == changes_to_make_decision.change_type())
+            {
+                const std::tr1::shared_ptr<DowngradeConfirmation> c(new DowngradeConfirmation);
+                if (! fns.confirm_fn()(resolution, c))
+                    changes_to_make_decision.add_required_confirmation(c);
+            }
+        }
+
+        void visit(BreakDecision & break_decision) const
+        {
+            const std::tr1::shared_ptr<BreakConfirmation> c(new BreakConfirmation);
+            if (! fns.confirm_fn()(resolution, c))
+                break_decision.add_required_confirmation(c);
+        }
+
+        void visit(UnableToMakeDecision &) const
+        {
+        }
+
+        void visit(ExistingNoChangeDecision &) const
+        {
+        }
+
+        void visit(NothingNoChangeDecision &) const
+        {
+        }
+
+        void visit(RemoveDecision &) const
+        {
+            /* remove confirms are done elsewhere */
+        }
+    };
+}
+
 void
 Decider::_confirm(
         const std::tr1::shared_ptr<const Resolution> & resolution)
 {
-    ChangesToMakeDecision * const changes_to_make_decision(simple_visitor_cast<ChangesToMakeDecision>(*resolution->decision()));
-    BreakDecision * const break_decision(simple_visitor_cast<BreakDecision>(*resolution->decision()));
-
-    if (changes_to_make_decision)
-    {
-        if (! changes_to_make_decision->best())
-        {
-            const std::tr1::shared_ptr<RequiredConfirmation> c(new NotBestConfirmation);
-            if (! _imp->fns.confirm_fn()(resolution, c))
-                changes_to_make_decision->add_required_confirmation(c);
-        }
-
-        if (ct_downgrade == changes_to_make_decision->change_type())
-        {
-            const std::tr1::shared_ptr<DowngradeConfirmation> c(new DowngradeConfirmation);
-            if (! _imp->fns.confirm_fn()(resolution, c))
-                changes_to_make_decision->add_required_confirmation(c);
-        }
-    }
-    else if (break_decision)
-    {
-        const std::tr1::shared_ptr<BreakConfirmation> c(new BreakConfirmation);
-        if (! _imp->fns.confirm_fn()(resolution, c))
-            break_decision->add_required_confirmation(c);
-    }
+    resolution->decision()->accept(ConfirmVisitor(_imp->fns, resolution));
 }
 
 

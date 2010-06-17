@@ -32,7 +32,6 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/sequence-impl.hh>
-#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/map.hh>
 #include <paludis/spec_tree.hh>

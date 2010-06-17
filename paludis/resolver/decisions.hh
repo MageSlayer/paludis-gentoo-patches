@@ -62,10 +62,6 @@ namespace paludis
                         const std::tr1::shared_ptr<const Decision_> &,
                         const Notes_ & = static_cast<NoType<0u> *>(0));
 
-                void cast_push_back(
-                        const std::tr1::shared_ptr<const Decision> &,
-                        const Notes_ & = static_cast<NoType<0u> *>(0));
-
                 typedef DecisionsConstIteratorTag<Decision_, Notes_> ConstIteratorTag;
                 typedef WrappedForwardIterator<ConstIteratorTag,
                         typename DecisionsIteratorValueType<Decision_, Notes_>::Type> ConstIterator;

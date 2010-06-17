@@ -137,17 +137,6 @@ Decisions<Decision_, Notes_>::push_back(
 }
 
 template <typename Decision_, typename Notes_>
-void
-Decisions<Decision_, Notes_>::cast_push_back(
-        const std::tr1::shared_ptr<const Decision> & d,
-        const Notes_ & n)
-{
-    if (! simple_visitor_cast<const Decision_>(*d))
-        throw InternalError(PALUDIS_HERE, "Wrong Decision type");
-    push_back(std::tr1::static_pointer_cast<const Decision_>(d), n);
-}
-
-template <typename Decision_, typename Notes_>
 typename Decisions<Decision_, Notes_>::ConstIterator
 Decisions<Decision_, Notes_>::begin() const
 {

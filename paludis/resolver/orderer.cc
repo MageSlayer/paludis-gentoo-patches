@@ -113,9 +113,11 @@ namespace
         bool visit(const UnableToMakeDecision &)
         {
             if (decision->taken())
-                resolved->taken_unable_to_make_decisions()->cast_push_back(decision);
+                resolved->taken_unable_to_make_decisions()->push_back(
+                        std::tr1::static_pointer_cast<const UnableToMakeDecision>(decision));
             else
-                resolved->untaken_unable_to_make_decisions()->cast_push_back(decision);
+                resolved->untaken_unable_to_make_decisions()->push_back(
+                        std::tr1::static_pointer_cast<const UnableToMakeDecision>(decision));
 
             ignore_dependencies_from_resolvents.insert(resolvent);
 
@@ -145,7 +147,8 @@ namespace
             }
             else
             {
-                resolved->untaken_change_or_remove_decisions()->cast_push_back(decision);
+                resolved->untaken_change_or_remove_decisions()->push_back(
+                        std::tr1::static_pointer_cast<const ChangesToMakeDecision>(decision));
                 return false;
             }
         }
@@ -166,7 +169,8 @@ namespace
         bool visit(const BreakDecision & d)
         {
             if (d.required_confirmations_if_any())
-                resolved->taken_unconfirmed_decisions()->cast_push_back(decision);
+                resolved->taken_unconfirmed_decisions()->push_back(
+                        std::tr1::static_pointer_cast<const BreakDecision>(decision));
             return false;
         }
     };
