@@ -186,9 +186,10 @@ namespace paludis
 
         mutable Mutex mutex;
         std::tr1::shared_ptr<OutputManager> output_manager;
-        std::tr1::shared_ptr<Thread> copy_thread;
 
         Pipe stdout_pipe, stderr_pipe, finished_pipe;
+
+        std::tr1::shared_ptr<Thread> copy_thread;
 
         Implementation(const Environment * const e, const OutputExclusivity x,
                 const std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)> & c) :
