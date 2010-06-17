@@ -166,6 +166,7 @@ Resolver::resolve()
 {
     _imp->decider->resolve();
     _imp->orderer->resolve();
+    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Done"));
 }
 
 const std::tr1::shared_ptr<const Resolved>
