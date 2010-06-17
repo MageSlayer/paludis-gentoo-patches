@@ -322,6 +322,8 @@ Orderer::resolve()
             r_end(_imp->resolved->resolutions_by_resolvent()->end()) ;
             r != r_end ; ++r)
     {
+        _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
+
         DecisionDispatcher decision_dispatcher(
                 _imp->resolved,
                 ignore_dependencies_from_resolvents,
@@ -338,6 +340,8 @@ Orderer::resolve()
             r_end(_imp->resolved->resolutions_by_resolvent()->end()) ;
             r != r_end ; ++r)
     {
+        _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
+
         if (ignore_dependencies_from_resolvents.end() != ignore_edges_from_resolvents.find((*r)->resolvent()))
             continue;
 
@@ -357,6 +361,8 @@ Orderer::resolve()
     for (SortedStronglyConnectedComponents::ConstIterator scc(ssccs->begin()), scc_end(ssccs->end()) ;
             scc != scc_end ; ++scc)
     {
+        _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
+
         /* some (or none, or all) of the nodes in our SCC are change or remove
          * nodes. this matters for cycle resolution. we identify them now, even
          * though our scc might just contain a single install, rather than
@@ -428,6 +434,8 @@ Orderer::_order_sub_ssccs(
     for (SortedStronglyConnectedComponents::ConstIterator sub_scc(sub_ssccs->begin()), sub_scc_end(sub_ssccs->end()) ;
             sub_scc != sub_scc_end ; ++sub_scc)
     {
+        _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
+
         if (sub_scc->nodes()->size() == 1)
         {
             /* yay. it's all on its own. */
