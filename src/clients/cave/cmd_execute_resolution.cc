@@ -464,6 +464,7 @@ namespace
         if (output_manager)
         {
             output_manager->nothing_more_to_come();
+            output_manager->succeeded();
             active_state.set_output_manager(output_manager);
         }
 
