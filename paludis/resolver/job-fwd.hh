@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,14 +24,14 @@ namespace paludis
 {
     namespace resolver
     {
-        struct Job;
+        class PretendJob;
 
-        struct SimpleInstallJob;
-        struct UninstallJob;
-        struct FetchJob;
-        struct UsableJob;
-        struct UsableGroupJob;
-        struct ErrorJob;
+        class ExecuteJob;
+        class FetchJob;
+        class InstallJob;
+        class UninstallJob;
+
+        class JobID;
     }
 }
 

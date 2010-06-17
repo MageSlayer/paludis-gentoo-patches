@@ -25,6 +25,7 @@
 #include <paludis/resolver/unsuitable_candidates-fwd.hh>
 #include <paludis/resolver/change_type-fwd.hh>
 #include <paludis/resolver/resolvent-fwd.hh>
+#include <paludis/resolver/required_confirmations-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
@@ -100,6 +101,11 @@ namespace paludis
         class PALUDIS_VISIBLE ChangeOrRemoveDecision :
             public Decision
         {
+            public:
+                static const std::tr1::shared_ptr<ChangeOrRemoveDecision> deserialise(
+                        Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<const RequiredConfirmations> required_confirmations_if_any() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
         };
 
         class PALUDIS_VISIBLE ChangesToMakeDecision :
@@ -137,6 +143,9 @@ namespace paludis
                 virtual const Resolvent resolvent() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
+                virtual const std::tr1::shared_ptr<const RequiredConfirmations> required_confirmations_if_any() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                void add_required_confirmation(const std::tr1::shared_ptr<const RequiredConfirmation> &);
+
                 virtual void serialise(Serialiser &) const;
 
                 static const std::tr1::shared_ptr<ChangesToMakeDecision> deserialise(
@@ -161,6 +170,9 @@ namespace paludis
 
                 const std::tr1::shared_ptr<const PackageIDSequence> ids() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<const RequiredConfirmations> required_confirmations_if_any() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                void add_required_confirmation(const std::tr1::shared_ptr<const RequiredConfirmation> &);
 
                 virtual void serialise(Serialiser &) const;
 

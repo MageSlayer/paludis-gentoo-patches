@@ -21,16 +21,15 @@
 #include <paludis/resolver/resolver_functions.hh>
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/decision.hh>
-#include <paludis/resolver/resolutions.hh>
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/suggest_restart.hh>
-#include <paludis/resolver/resolver_lists.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -74,50 +73,33 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolverLists> resolutions;
+            std::tr1::shared_ptr<const Resolved> resolved;
             {
-                std::tr1::shared_ptr<const ResolverLists> orig_resolutions(get_resolutions("serialisation/target"));
+                std::tr1::shared_ptr<const Resolved> orig_resolved(get_resolved("serialisation/target"));
                 StringListStream str;
                 Serialiser ser(str);
-                orig_resolutions->serialise(ser);
+                orig_resolved->serialise(ser);
                 str.nothing_more_to_write();
 
                 Deserialiser deser(&env, str);
                 Deserialisation desern("ResolverLists", deser);
-                resolutions = make_shared_ptr(new ResolverLists(ResolverLists::deserialise(desern)));
+                resolved = make_shared_ptr(new Resolved(Resolved::deserialise(desern)));
             }
 
-            {
-                TestMessageSuffix s("taken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
-                        .kind("unable_to_make_decision", QualifiedPackageName("serialisation/error"))
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("untaken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("ordered");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
-                        .qpn(QualifiedPackageName("serialisation/dep"))
-                        .qpn(QualifiedPackageName("serialisation/target"))
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("untaken");
-                check_resolution_list(resolutions->jobs(), resolutions->untaken_job_ids(), ResolutionListChecks()
-                        .qpn(QualifiedPackageName("serialisation/suggestion"))
-                        .finished()
-                        );
-            }
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("serialisation/dep"))
+                        .change(QualifiedPackageName("serialisation/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .unable(QualifiedPackageName("serialisation/error"))
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("serialisation/suggestion"))
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
         }
     } test_serialisation;
 }

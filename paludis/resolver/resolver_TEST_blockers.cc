@@ -21,11 +21,9 @@
 #include <paludis/resolver/resolver_functions.hh>
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/decision.hh>
-#include <paludis/resolver/resolutions.hh>
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/suggest_restart.hh>
-#include <paludis/resolver/resolver_lists.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/options.hh>
@@ -35,6 +33,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/make_shared_copy.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/package_database.hh>
@@ -57,8 +56,8 @@ namespace
 {
     struct ResolverBlockersTestCase : ResolverTestCase
     {
-        ResolverBlockersTestCase(const std::string & s) :
-            ResolverTestCase("blockers", s, "exheres-0", "exheres")
+        ResolverBlockersTestCase(const std::string & s, const std::string & e = "exheres-0") :
+            ResolverTestCase("blockers", s, e, "exheres")
         {
         }
     };
@@ -80,31 +79,20 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("hard/target"));
-
-            {
-                TestMessageSuffix s("taken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("untaken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("ordered");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
-                        .qpn(QualifiedPackageName("hard/a-pkg"))
-                        .qpn(QualifiedPackageName("hard/z-pkg"))
-                        .qpn(QualifiedPackageName("hard/target"))
-                        .finished()
-                        );
-            }
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("hard/target"));
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("hard/a-pkg"))
+                        .change(QualifiedPackageName("hard/z-pkg"))
+                        .change(QualifiedPackageName("hard/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
         }
     } test_hard_blocker(false), test_hard_blocker_transient(true);
 
@@ -121,30 +109,19 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("unfixable/target"));
-
-            {
-                TestMessageSuffix s("taken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
-                        .kind("unable_to_make_decision", QualifiedPackageName("unfixable/a-pkg"))
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("untaken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("ordered");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
-                        .qpn(QualifiedPackageName("unfixable/target"))
-                        .finished()
-                        );
-            }
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("unfixable/target"));
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("unfixable/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .unable(QualifiedPackageName("unfixable/a-pkg"))
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
         }
     } test_unfixable_blocker(false), test_unfixable_blocker_transient(true);
 
@@ -162,30 +139,19 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("remove/target"));
-
-            {
-                TestMessageSuffix s("taken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("untaken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("ordered");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
-                        .kind("remove_decision", QualifiedPackageName("remove/a-pkg"))
-                        .qpn(QualifiedPackageName("remove/target"))
-                        .finished()
-                        );
-            }
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("remove/target"));
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .remove(QualifiedPackageName("remove/a-pkg"))
+                        .change(QualifiedPackageName("remove/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
         }
     } test_remove_blocker(false), test_remove_blocker_transient(true);
 
@@ -205,38 +171,23 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions(BlockDepSpec(
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved(BlockDepSpec(
                             "!target/target",
                             parse_user_package_dep_spec("target/target", &env, UserPackageDepSpecOptions()),
                             false)));
 
-            {
-                TestMessageSuffix s("taken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("untaken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("ordered");
-
-                if (exists)
-                    check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
-                            .kind("remove_decision", QualifiedPackageName("target/target"))
-                            .finished()
-                            );
-                else
-                    check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
-                            .finished()
-                            );
-            }
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = exists ? make_shared_copy(DecisionChecks()
+                        .remove(QualifiedPackageName("target/target"))
+                        .finished()) : make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
         }
     } test_target(false), test_target_exists(true);
 
@@ -261,27 +212,65 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("blocked-and-dep/target"));
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("blocked-and-dep/target"));
 
-            {
-                TestMessageSuffix s("taken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
-                        .kind("unable_to_make_decision", QualifiedPackageName("blocked-and-dep/both"))
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("ordered");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
-                        .kind("changes_to_make", QualifiedPackageName("blocked-and-dep/target"))
-                        .finished()
-                        );
-            }
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("blocked-and-dep/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .unable(QualifiedPackageName("blocked-and-dep/both"))
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
         }
     } test_blocked_and_dep(false, false),
         test_blocked_and_dep_exists(true, false),
         test_blocked_and_dep_allowed(false, true),
         test_blocked_and_dep_exists_allowed(true, true);
+
+    struct BlockAndDepCycle : ResolverBlockersTestCase
+    {
+        BlockAndDepCycle() :
+            ResolverBlockersTestCase("block and dep cycle", "0")
+        {
+            install("block-and-dep-cycle", "target", "0");
+        }
+
+        void run()
+        {
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("block-and-dep-cycle/target"));
+
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("block-and-dep-cycle/dep"))
+                        .change(QualifiedPackageName("block-and-dep-cycle/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
+        }
+    } test_block_and_dep_cycle;
+
+    struct HardBlockAndDepCycle : ResolverBlockersTestCase
+    {
+        HardBlockAndDepCycle() :
+            ResolverBlockersTestCase("hard block and dep cycle", "0")
+        {
+            install("hard-block-and-dep-cycle", "target", "0");
+        }
+
+        void run()
+        {
+            TEST_CHECK_THROWS(get_resolved("hard-block-and-dep-cycle/target"), Exception);
+        }
+    } test_hard_block_and_dep_cycle;
 }
 

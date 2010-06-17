@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,22 +21,14 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_ORDERER_HH 1
 
 #include <paludis/resolver/orderer-fwd.hh>
-#include <paludis/resolver/resolvent-fwd.hh>
-#include <paludis/resolver/resolution-fwd.hh>
-#include <paludis/resolver/resolutions-fwd.hh>
-#include <paludis/resolver/constraint-fwd.hh>
-#include <paludis/resolver/reason-fwd.hh>
-#include <paludis/resolver/resolver_functions-fwd.hh>
-#include <paludis/resolver/sanitised_dependencies-fwd.hh>
-#include <paludis/resolver/decider-fwd.hh>
-#include <paludis/resolver/resolver-fwd.hh>
-#include <paludis/resolver/job_id-fwd.hh>
-#include <paludis/resolver/job-fwd.hh>
+#include <paludis/resolver/orderer_notes-fwd.hh>
+#include <paludis/resolver/resolved-fwd.hh>
 #include <paludis/resolver/decision-fwd.hh>
-#include <paludis/util/attributes.hh>
+#include <paludis/resolver/strongly_connected_component-fwd.hh>
+#include <paludis/resolver/nag-fwd.hh>
+#include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/environment.hh>
-#include <tr1/memory>
+#include <paludis/environment-fwd.hh>
 
 namespace paludis
 {
@@ -46,29 +38,21 @@ namespace paludis
             private PrivateImplementationPattern<Orderer>
         {
             private:
-                void _resolve_jobs();
-                void _resolve_jobs_dep_arrows();
-                void _resolve_order();
+                void _schedule(
+                        const Resolvent &,
+                        const std::tr1::shared_ptr<const ChangeOrRemoveDecision> &,
+                        const std::tr1::shared_ptr<const OrdererNotes> &);
 
-                bool _can_order(const JobID &, const bool desperate) const PALUDIS_ATTRIBUTE((warn_unused_result));
-                void _mark_already_ordered(const JobID &);
-                void _order_this(const JobID &, const bool inside_something_else);
-
-                bool _order_some(const bool desperate, const bool installs_only) PALUDIS_ATTRIBUTE((warn_unused_result));
-                bool _remove_usable_cycles() PALUDIS_ATTRIBUTE((warn_unused_result));
-                void _cycle_error() PALUDIS_ATTRIBUTE((noreturn));
-
-                void _confirm(
-                        const std::tr1::shared_ptr<const Resolution> &,
-                        const ChangesToMakeDecision &,
-                        const std::tr1::shared_ptr<SimpleInstallJob> &);
+                void _order_sub_ssccs(
+                        const NAG &,
+                        const StronglyConnectedComponent & top_scc,
+                        const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> & sub_ssccs,
+                        const bool can_recurse);
 
             public:
                 Orderer(
                         const Environment * const,
-                        const ResolverFunctions &,
-                        const std::tr1::shared_ptr<const Decider> &,
-                        const std::tr1::shared_ptr<ResolverLists> &);
+                        const std::tr1::shared_ptr<Resolved> &);
                 ~Orderer();
 
                 void resolve();

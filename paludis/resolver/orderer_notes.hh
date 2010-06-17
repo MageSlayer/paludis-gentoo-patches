@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,17 +17,32 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLUTIONS_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLUTIONS_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_ORDERER_NOTES_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_ORDERER_NOTES_HH 1
 
+#include <paludis/resolver/orderer_notes-fwd.hh>
 #include <paludis/util/attributes.hh>
+#include <paludis/util/named_value.hh>
 #include <paludis/serialise-fwd.hh>
+#include <tr1/memory>
 
 namespace paludis
 {
+    namespace n
+    {
+        typedef Name<struct cycle_breaking_name> cycle_breaking;
+    }
+
     namespace resolver
     {
-        struct Resolutions;
+        struct OrdererNotes
+        {
+            NamedValue<n::cycle_breaking, std::string> cycle_breaking;
+
+            void serialise(Serialiser &) const;
+            static const std::tr1::shared_ptr<OrdererNotes> deserialise(
+                    Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
     }
 }
 

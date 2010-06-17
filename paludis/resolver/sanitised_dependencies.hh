@@ -22,7 +22,7 @@
 
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
 #include <paludis/resolver/decider-fwd.hh>
-#include <paludis/resolver/resolvent-fwd.hh>
+#include <paludis/resolver/resolution-fwd.hh>
 #include <paludis/resolver/package_or_block_dep_spec.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/dep_label-fwd.hh>
@@ -67,7 +67,7 @@ namespace paludis
             private:
                 void _populate_one(
                         const Decider &,
-                        const Resolvent &,
+                        const std::tr1::shared_ptr<const Resolution> &,
                         const std::tr1::shared_ptr<const PackageID> &,
                         const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > (PackageID::* const) () const
                         );
@@ -78,7 +78,7 @@ namespace paludis
 
                 void populate(
                         const Decider &,
-                        const Resolvent &,
+                        const std::tr1::shared_ptr<const Resolution> &,
                         const std::tr1::shared_ptr<const PackageID> &);
 
                 void add(const SanitisedDependency & d);

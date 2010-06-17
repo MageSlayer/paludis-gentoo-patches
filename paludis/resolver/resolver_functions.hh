@@ -71,19 +71,16 @@ namespace paludis
                 )> AllowedToRemoveFunction;
 
         typedef std::tr1::function<bool (
-                const Resolvent &,
                 const std::tr1::shared_ptr<const Resolution> &,
                 const std::tr1::shared_ptr<const RequiredConfirmation> &
                 )> ConfirmFunction;
 
         typedef std::tr1::function<const std::tr1::shared_ptr<const Repository> (
-                const Resolvent &,
                 const std::tr1::shared_ptr<const Resolution> &,
                 const ChangesToMakeDecision &
                 )> FindRepositoryForFunction;
 
         typedef std::tr1::function<std::tr1::shared_ptr<ConstraintSequence> (
-                const Resolvent &,
                 const std::tr1::shared_ptr<const Resolution> &,
                 const std::tr1::shared_ptr<const PackageID> &,
                 const std::tr1::shared_ptr<const PackageIDSequence> &
@@ -106,13 +103,12 @@ namespace paludis
                 )> GetResolventsForFunction;
 
         typedef std::tr1::function<UseExisting (
-                const Resolvent &,
+                const std::tr1::shared_ptr<const Resolution> &,
                 const PackageDepSpec &,
                 const std::tr1::shared_ptr<const Reason> &
                 )> GetUseExistingFunction;
 
         typedef std::tr1::function<SpecInterest (
-                const Resolvent &,
                 const std::tr1::shared_ptr<const Resolution> &,
                 const SanitisedDependency &
                 )> InterestInSpecFunction;

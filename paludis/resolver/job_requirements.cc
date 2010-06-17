@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,51 +17,40 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/resolver/job_id.hh>
-#include <paludis/util/hashes.hh>
-#include <paludis/util/make_named_values.hh>
+#include <paludis/resolver/job_requirements.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/sequence-impl.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/serialise-impl.hh>
+#include <istream>
+#include <ostream>
 
 using namespace paludis;
 using namespace paludis::resolver;
 
-bool
-paludis::resolver::operator== (const JobID & a, const JobID & b)
-{
-    return a.string_id() == b.string_id();
-}
+#include <paludis/resolver/job_requirements-se.cc>
 
-std::size_t
-JobID::hash() const
+const JobRequirement
+JobRequirement::deserialise(Deserialisation & d)
 {
-    return Hash<std::string>()(string_id());
-}
-
-bool
-JobID::operator< (const JobID & other) const
-{
-    return string_id() < other.string_id();
-}
-
-void
-JobID::serialise(Serialiser & s) const
-{
-    s.object("JobID")
-        .member(SerialiserFlags<>(), "string_id", string_id())
-        ;
-}
-
-const JobID
-JobID::deserialise(Deserialisation & d)
-{
-    Deserialisator v(d, "JobID");
-    return make_named_values<JobID>(
-            n::string_id() = v.member<std::string>("string_id")
+    Deserialisator v(d, "JobRequirement");
+    return make_named_values<JobRequirement>(
+            n::job_number() = v.member<JobNumber>("job_number"),
+            n::required_if() = v.member<JobRequirementIfs>("required_if")
             );
 }
 
-template class Sequence<JobID>;
-template class WrappedForwardIterator<JobIDSequence::ConstIteratorTag, const JobID>;
+void
+JobRequirement::serialise(Serialiser & s) const
+{
+    s.object("JobRequirement")
+        .member(SerialiserFlags<>(), "job_number", job_number())
+        .member(SerialiserFlags<>(), "required_if", required_if())
+        ;
+}
+
+template class Sequence<JobRequirement>;
+template class WrappedForwardIterator<Sequence<JobRequirement>::ConstIteratorTag, const JobRequirement>;
 

@@ -40,7 +40,8 @@
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/type_list.hh>
-#include <paludis/resolver/resolutions.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/resolution.hh>
@@ -49,12 +50,11 @@
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/destination.hh>
-#include <paludis/resolver/resolver_lists.hh>
-#include <paludis/resolver/jobs.hh>
+#include <paludis/resolver/job_lists.hh>
+#include <paludis/resolver/job_list.hh>
 #include <paludis/resolver/job.hh>
-#include <paludis/resolver/job_id.hh>
 #include <paludis/resolver/job_state.hh>
-#include <paludis/resolver/arrow.hh>
+#include <paludis/resolver/job_requirements.hh>
 #include <paludis/package_id.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -128,15 +128,15 @@ namespace
     bool do_pretend(
             const std::tr1::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
-            const ChangesToMakeDecision & decision,
+            const std::tr1::shared_ptr<const PackageID> & origin_id,
             const int x, const int y, const int last_x,
             std::tr1::shared_ptr<OutputManager> & output_manager_goes_here)
     {
-        Context context("When pretending for '" + stringify(*decision.origin_id()) + "':");
+        Context context("When pretending for '" + stringify(*origin_id) + "':");
 
         if (0 != last_x)
-            std::cout << std::string(stringify(last_x).length() + stringify(y).length() + 4, '\010');
-        std::cout << x << " of " << y << std::flush;
+            cout << std::string(stringify(last_x).length() + stringify(y).length() + 4, '\010');
+        cout << x << " of " << y << std::flush;
 
         std::tr1::shared_ptr<Sequence<std::string> > args(new Sequence<std::string>);
 
@@ -145,7 +145,7 @@ namespace
         args->push_back("--if-supported");
         args->push_back("--x-of-y");
         args->push_back(stringify(x) + " of " + stringify(y));
-        args->push_back(stringify(decision.origin_id()->uniquely_identifying_spec()));
+        args->push_back(stringify(origin_id->uniquely_identifying_spec()));
 
         int retcode;
 
@@ -222,15 +222,13 @@ namespace
     bool do_fetch(
             const std::tr1::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
-            const ChangesToMakeDecision & decision,
+            const std::tr1::shared_ptr<const PackageID> & id,
             const int x, const int y, bool normal_only,
-            std::tr1::shared_ptr<OutputManager> & output_manager_goes_here)
+            JobActiveState & active_state)
     {
-        const std::tr1::shared_ptr<const PackageID> id(decision.origin_id());
         Context context("When fetching for '" + stringify(*id) + "':");
 
-        starting_action("fetch (" + std::string(normal_only ? "regular parts" : "extra parts") + ")",
-                decision.origin_id(), x, y);
+        starting_action("fetch (" + std::string(normal_only ? "regular parts" : "extra parts") + ")", id, x, y);
 
         std::string command(cmdline.program_options.a_perform_program.argument());
         if (command.empty())
@@ -290,24 +288,25 @@ namespace
         if (output_manager)
         {
             output_manager->nothing_more_to_come();
-            output_manager_goes_here = output_manager;
+            active_state.set_output_manager(output_manager);
         }
 
-        done_action("fetch (" + std::string(normal_only ? "regular parts" : "extra parts") + ")",
-                decision.origin_id(), 0 == retcode);
+        done_action("fetch (" + std::string(normal_only ? "regular parts" : "extra parts") + ")", id, 0 == retcode);
         return 0 == retcode;
     }
 
     bool do_install(
             const std::tr1::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
-            const std::tr1::shared_ptr<const Resolution> & resolution,
-            const ChangesToMakeDecision & decision,
+            const std::tr1::shared_ptr<const PackageID> & id,
+            const RepositoryName & destination_repository_name,
+            const std::tr1::shared_ptr<const PackageIDSequence> & replacing,
+            const DestinationType & destination_type,
             const int x, const int y,
-            std::tr1::shared_ptr<OutputManager> & output_manager_goes_here)
+            JobActiveState & active_state)
     {
         std::string destination_string, action_string;
-        switch (resolution->resolvent().destination_type())
+        switch (destination_type)
         {
             case dt_install_to_slash:
                 destination_string = "installing to /";
@@ -326,10 +325,9 @@ namespace
         if (destination_string.empty())
             throw InternalError(PALUDIS_HERE, "unhandled dt");
 
-        const std::tr1::shared_ptr<const PackageID> id(decision.origin_id());
         Context context("When " + destination_string + " for '" + stringify(*id) + "':");
 
-        starting_action(action_string, decision.origin_id(), x, y);
+        starting_action(action_string, id, x, y);
 
         std::string command(cmdline.program_options.a_perform_program.argument());
         if (command.empty())
@@ -337,9 +335,9 @@ namespace
 
         command.append(" install --hooks --managed-output ");
         command.append(stringify(id->uniquely_identifying_spec()));
-        command.append(" --destination " + stringify(decision.destination()->repository()));
-        for (PackageIDSequence::ConstIterator i(decision.destination()->replacing()->begin()),
-                i_end(decision.destination()->replacing()->end()) ;
+        command.append(" --destination " + stringify(destination_repository_name));
+        for (PackageIDSequence::ConstIterator i(replacing->begin()),
+                i_end(replacing->end()) ;
                 i != i_end ; ++i)
             command.append(" --replacing " + stringify((*i)->uniquely_identifying_spec()));
 
@@ -392,20 +390,19 @@ namespace
         if (output_manager)
         {
             output_manager->nothing_more_to_come();
-            output_manager_goes_here = output_manager;
+            active_state.set_output_manager(output_manager);
         }
 
-        done_action(action_string, decision.origin_id(), 0 == retcode);
+        done_action(action_string, id, 0 == retcode);
         return 0 == retcode;
     }
 
     bool do_uninstall(
             const std::tr1::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
-            const std::tr1::shared_ptr<const Resolution> &,
             const std::tr1::shared_ptr<const PackageID> & id,
             const int x, const int y,
-            std::tr1::shared_ptr<OutputManager> & output_manager_goes_here)
+            JobActiveState & active_state)
     {
         Context context("When removing '" + stringify(*id) + "':");
 
@@ -467,302 +464,13 @@ namespace
         if (output_manager)
         {
             output_manager->nothing_more_to_come();
-            output_manager_goes_here = output_manager;
+            output_manager->succeeded();
+            active_state.set_output_manager(output_manager);
         }
 
         done_action("remove", id, 0 == retcode);
         return 0 == retcode;
     }
-
-    struct JobCounts
-    {
-        int x_fetches, y_fetches, x_installs, y_installs;
-
-        JobCounts() :
-            x_fetches(0),
-            y_fetches(0),
-            x_installs(0),
-            y_installs(0)
-        {
-        }
-
-        void visit(const SimpleInstallJob &)
-        {
-            ++y_installs;
-        }
-
-        void visit(const UninstallJob &)
-        {
-            /* we'll count uninstalls as installs for now. this might be
-             * confusing, or it might make most sense. if you're reading this,
-             * chances are you think it's the wrong thing to do. */
-            ++y_installs;
-        }
-
-        void visit(const FetchJob &)
-        {
-            ++y_fetches;
-        }
-
-        void visit(const UsableJob &)
-        {
-        }
-
-        void visit(const UsableGroupJob &)
-        {
-        }
-
-        void visit(const ErrorJob &)
-        {
-        }
-    };
-
-    typedef std::tr1::unordered_map<JobID, std::tr1::shared_ptr<JobState>, Hash<JobID> > JobStateMap;
-    typedef std::list<std::tr1::shared_ptr<JobPendingState> > PendingJobsList;
-    typedef std::list<std::tr1::shared_ptr<JobState> > Summary;
-
-    struct DoOneTakenVisitor
-    {
-        const std::tr1::shared_ptr<Environment> env;
-        const ExecuteResolutionCommandLine & cmdline;
-        JobCounts & counts;
-        std::tr1::shared_ptr<JobState> & state;
-        JobStateMap & job_state_map;
-
-        DoOneTakenVisitor(
-                const std::tr1::shared_ptr<Environment> & e,
-                const ExecuteResolutionCommandLine & c,
-                JobCounts & k,
-                std::tr1::shared_ptr<JobState> & s,
-                JobStateMap & m) :
-            env(e),
-            cmdline(c),
-            counts(k),
-            state(s),
-            job_state_map(m)
-        {
-        }
-
-        bool visit(const SimpleInstallJob & job)
-        {
-            std::tr1::shared_ptr<OutputManager> fetch_output_manager_goes_here, install_output_manager_goes_here;
-
-            ++counts.x_installs;
-
-            /* not all of the fetch is done in the background */
-            if (! do_fetch(env, cmdline, *job.changes_to_make_decision(), counts.x_installs, counts.y_installs,
-                        false, fetch_output_manager_goes_here))
-            {
-                std::tr1::shared_ptr<JobFailedState> failed_state(new JobFailedState(state->job()));
-                if (fetch_output_manager_goes_here)
-                    failed_state->add_output_manager(fetch_output_manager_goes_here);
-                state = failed_state;
-                return false;
-            }
-
-            if (! do_install(env, cmdline, job.resolution(),
-                        *job.changes_to_make_decision(), counts.x_installs, counts.y_installs, install_output_manager_goes_here))
-            {
-                std::tr1::shared_ptr<JobFailedState> failed_state(new JobFailedState(state->job()));
-                if (fetch_output_manager_goes_here)
-                    failed_state->add_output_manager(fetch_output_manager_goes_here);
-                if (install_output_manager_goes_here)
-                    failed_state->add_output_manager(install_output_manager_goes_here);
-                state = failed_state;
-                return false;
-            }
-            else
-            {
-                std::tr1::shared_ptr<JobSucceededState> succeeded_state(new JobSucceededState(state->job()));
-                if (fetch_output_manager_goes_here)
-                    succeeded_state->add_output_manager(fetch_output_manager_goes_here);
-                if (install_output_manager_goes_here)
-                    succeeded_state->add_output_manager(install_output_manager_goes_here);
-                state = succeeded_state;
-                return true;
-            }
-        }
-
-        bool visit(const UninstallJob & job)
-        {
-            std::list<std::tr1::shared_ptr<OutputManager> > output_managers;
-
-            ++counts.x_installs;
-
-            bool failed(false);
-            for (PackageIDSequence::ConstIterator i(job.remove_decision()->ids()->begin()),
-                    i_end(job.remove_decision()->ids()->end()) ;
-                    i != i_end ; ++i)
-            {
-                std::tr1::shared_ptr<OutputManager> uninstall_output_manager_goes_here;
-                if (! do_uninstall(env, cmdline, job.resolution(),
-                            *i, counts.x_installs, counts.y_installs, uninstall_output_manager_goes_here))
-                    failed = true;
-                if (uninstall_output_manager_goes_here)
-                    output_managers.push_back(uninstall_output_manager_goes_here);
-            }
-
-            if (failed)
-            {
-                std::tr1::shared_ptr<JobFailedState> failed_state(new JobFailedState(state->job()));
-                std::for_each(output_managers.begin(), output_managers.end(),
-                        std::tr1::bind(&JobFailedState::add_output_manager, failed_state, std::tr1::placeholders::_1));
-                state = failed_state;
-                return false;
-            }
-            else
-            {
-                std::tr1::shared_ptr<JobSucceededState> succeeded_state(new JobSucceededState(state->job()));
-
-                /* uninstalls don't mark success themselves, to avoid confusing
-                 * things when called as part of an install. maybe we should
-                 * mark success individually rather than all together if we're
-                 * uninstalling multiple things. */
-                std::for_each(output_managers.begin(), output_managers.end(),
-                        std::tr1::bind(&OutputManager::succeeded, std::tr1::placeholders::_1));
-
-                std::for_each(output_managers.begin(), output_managers.end(),
-                        std::tr1::bind(&JobSucceededState::add_output_manager, succeeded_state, std::tr1::placeholders::_1));
-                state = succeeded_state;
-                return true;
-            }
-        }
-
-        bool visit(const FetchJob & job)
-        {
-            std::tr1::shared_ptr<OutputManager> output_manager_goes_here;
-
-            ++counts.x_fetches;
-            if (! do_fetch(env, cmdline, *job.changes_to_make_decision(), counts.x_fetches, counts.y_fetches,
-                        true, output_manager_goes_here))
-            {
-                std::tr1::shared_ptr<JobFailedState> failed_state(new JobFailedState(state->job()));
-                if (output_manager_goes_here)
-                    failed_state->add_output_manager(output_manager_goes_here);
-                state = failed_state;
-                return false;
-            }
-            else
-            {
-                std::tr1::shared_ptr<JobSucceededState> succeeded_state(new JobSucceededState(state->job()));
-                if (output_manager_goes_here)
-                    succeeded_state->add_output_manager(output_manager_goes_here);
-                state = succeeded_state;
-                return true;
-            }
-        }
-
-        bool visit(const ErrorJob &)
-        {
-            state.reset(new JobFailedState(state->job()));
-            return false;
-        }
-
-        bool visit(const UsableJob &)
-        {
-            state.reset(new JobSucceededState(state->job()));
-            return true;
-        }
-
-        bool visit(const UsableGroupJob & job)
-        {
-            bool result(true);
-
-            for (JobIDSequence::ConstIterator i(job.job_ids()->begin()), i_end(job.job_ids()->end()) ;
-                    i != i_end ; ++i)
-            {
-                JobStateMap::iterator s(job_state_map.find(*i));
-                if (s == job_state_map.end())
-                    throw InternalError(PALUDIS_HERE, "missing state");
-
-                DoOneTakenVisitor v(env, cmdline, counts, s->second, job_state_map);
-                result = s->second->job()->accept_returning<bool>(v) && result;
-            }
-
-            state.reset(new JobSucceededState(state->job()));
-            return result;
-        }
-    };
-
-    struct DoOneSkippedVisitor
-    {
-        const std::tr1::shared_ptr<Environment> env;
-        const ExecuteResolutionCommandLine & cmdline;
-        JobCounts & counts;
-        std::tr1::shared_ptr<JobState> & state;
-        JobStateMap & job_state_map;
-
-        DoOneSkippedVisitor(
-                const std::tr1::shared_ptr<Environment> & e,
-                const ExecuteResolutionCommandLine & c,
-                JobCounts & k,
-                std::tr1::shared_ptr<JobState> & s,
-                JobStateMap & m) :
-            env(e),
-            cmdline(c),
-            counts(k),
-            state(s),
-            job_state_map(m)
-        {
-        }
-
-        void visit(const SimpleInstallJob & job)
-        {
-            ++counts.x_installs;
-
-            cout << endl;
-            cout << c::bold_blue() << counts.x_installs << " of " << counts.y_installs << ": Skipping install of "
-                << *job.changes_to_make_decision()->origin_id() << c::normal() << endl;
-            cout << endl;
-
-            state.reset(new JobSkippedState(state->job()));
-        }
-
-        void visit(const UninstallJob & job)
-        {
-            ++counts.x_installs;
-
-            cout << endl;
-            cout << c::bold_blue() << counts.x_installs << " of " << counts.y_installs << ": Skipping uninstall of "
-                << job.resolution()->resolvent() << c::normal() << endl;
-            cout << endl;
-
-            state.reset(new JobSkippedState(state->job()));
-        }
-
-        void visit(const FetchJob &)
-        {
-            ++counts.x_fetches;
-
-            state.reset(new JobSkippedState(state->job()));
-        }
-
-        void visit(const ErrorJob &)
-        {
-            state.reset(new JobSkippedState(state->job()));
-        }
-
-        void visit(const UsableJob &)
-        {
-            state.reset(new JobSkippedState(state->job()));
-        }
-
-        void visit(const UsableGroupJob & job)
-        {
-            for (JobIDSequence::ConstIterator i(job.job_ids()->begin()), i_end(job.job_ids()->end()) ;
-                    i != i_end ; ++i)
-            {
-                JobStateMap::iterator s(job_state_map.find(*i));
-                if (s == job_state_map.end())
-                    throw InternalError(PALUDIS_HERE, "missing state");
-
-                DoOneSkippedVisitor v(env, cmdline, counts, s->second, job_state_map);
-                s->second->job()->accept(v);
-            }
-
-            state.reset(new JobSkippedState(state->job()));
-        }
-    };
 
     void update_world(
             const std::tr1::shared_ptr<Environment> & env,
@@ -864,7 +572,6 @@ namespace
 
     void execute_update_world(
             const std::tr1::shared_ptr<Environment> & env,
-            const ResolverLists &,
             const ExecuteResolutionCommandLine & cmdline)
     {
         if (cmdline.execution_options.a_preserve_world.specified())
@@ -876,274 +583,30 @@ namespace
         update_world(env, cmdline, false);
     }
 
-    struct Populator
-    {
-        const std::tr1::shared_ptr<const Job> job;
-        const ResolverLists & lists;
-        JobStateMap & job_state_map;
-        PendingJobsList * const pending;
-
-        Populator(
-                const std::tr1::shared_ptr<const Job> & j,
-                const ResolverLists & l,
-                JobStateMap & s,
-                PendingJobsList * const p) :
-            job(j),
-            lists(l),
-            job_state_map(s),
-            pending(p)
-        {
-        }
-
-        void common() const
-        {
-            const std::tr1::shared_ptr<JobPendingState> state(new JobPendingState(job));
-            if (! job_state_map.insert(std::make_pair(job->id(), state)).second)
-                throw InternalError(PALUDIS_HERE, "duplicate id");
-
-            if (pending)
-                pending->push_back(state);
-        }
-
-        void visit(const SimpleInstallJob &) const
-        {
-            common();
-        }
-
-        void visit(const UninstallJob &) const
-        {
-            common();
-        }
-
-        void visit(const UsableJob &) const
-        {
-            common();
-        }
-
-        void visit(const FetchJob &) const
-        {
-            common();
-        }
-
-        void visit(const ErrorJob &) const
-        {
-            common();
-        }
-
-        void visit(const UsableGroupJob & j) const
-        {
-            common();
-
-            for (JobIDSequence::ConstIterator i(j.job_ids()->begin()), i_end(j.job_ids()->end()) ;
-                    i != i_end ; ++i)
-            {
-                const std::tr1::shared_ptr<const Job> k(lists.jobs()->fetch(*i));
-                k->accept(Populator(k, lists, job_state_map, 0));
-            }
-        }
-    };
-
-    struct JobStateChecker
-    {
-        bool visit(const JobPendingState &) const PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw InternalError(PALUDIS_HERE, "still pending");
-        }
-
-        bool visit(const JobFailedState &) const
-        {
-            return false;
-        }
-
-        bool visit(const JobSkippedState &) const
-        {
-            return false;
-        }
-
-        bool visit(const JobSucceededState &) const
-        {
-            return true;
-        }
-    };
-
-    int execute_taken(
-            const std::tr1::shared_ptr<Environment> & env,
-            const ResolverLists & lists,
-            const ExecuteResolutionCommandLine & cmdline,
-            Summary & summary)
-    {
-        int retcode(0);
-
-        JobCounts counts;
-        JobStateMap job_state_map;
-        PendingJobsList pending;
-
-        for (JobIDSequence::ConstIterator c(lists.taken_job_ids()->begin()),
-                c_end(lists.taken_job_ids()->end()) ;
-                c != c_end ; ++c)
-        {
-            const std::tr1::shared_ptr<const Job> job(lists.jobs()->fetch(*c));
-            job->accept(counts);
-            job->accept(Populator(job, lists, job_state_map, &pending));
-        }
-
-        if (0 != env->perform_hook(Hook("install_all_pre")
-                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
-                    ).max_exit_status())
-            throw ActionAbortedError("Aborted by hook");
-
-        for (PendingJobsList::iterator p(pending.begin()), p_next(p), p_end(pending.end()) ;
-                p != p_end ; p = p_next)
-        {
-            ++p_next;
-
-            std::tr1::shared_ptr<const Job> skipped_because_of;
-            for (ArrowSequence::ConstIterator a((*p)->job()->arrows()->begin()), a_end((*p)->job()->arrows()->end()) ;
-                    a != a_end ; ++a)
-            {
-                const std::tr1::shared_ptr<const Job> after_job(lists.jobs()->fetch(a->comes_after()));
-                JobStateMap::const_iterator s(job_state_map.find(after_job->id()));
-                if (s == job_state_map.end())
-                    throw InternalError(PALUDIS_HERE, "missing arrow: " + stringify(after_job->id().string_id()));
-
-                if ((*p)->job()->used_existing_packages_when_ordering()->end() != std::find(
-                            (*p)->job()->used_existing_packages_when_ordering()->begin(),
-                            (*p)->job()->used_existing_packages_when_ordering()->end(),
-                            a->comes_after()))
-                {
-                    if (! simple_visitor_cast<const JobPendingState>(*s->second))
-                        throw InternalError(PALUDIS_HERE, "not pending: " + stringify((*p)->job()->id().string_id()) + " -> "
-                                + stringify(a->comes_after().string_id()) + " " + s->second->state_name());
-                }
-                else
-                {
-                    bool ignorable(false);
-
-                    if (cmdline.execution_options.a_continue_on_failure.argument() == "if-satisfied")
-                        ignorable = a->failure_kinds()[fk_ignorable_if_satisfied];
-                    else if (cmdline.execution_options.a_continue_on_failure.argument() == "always")
-                        ignorable = true;
-
-                    if ((! ignorable) && (! s->second->accept_returning<bool>(JobStateChecker())))
-                    {
-                        skipped_because_of = after_job;
-                        break;
-                    }
-                }
-            }
-
-            JobStateMap::iterator s(job_state_map.find((*p)->job()->id()));
-            if (s == job_state_map.end())
-                throw InternalError(PALUDIS_HERE, "missing state");
-            pending.erase(p);
-
-            if (skipped_because_of)
-            {
-                DoOneSkippedVisitor v(env, cmdline, counts, s->second, job_state_map);
-                s->second->job()->accept(v);
-                retcode |= 1;
-            }
-            else
-            {
-                DoOneTakenVisitor v(env, cmdline, counts, s->second, job_state_map);
-                if (! s->second->job()->accept_returning<bool>(v))
-                    retcode |= 1;
-            }
-
-            summary.push_back(s->second);
-
-            if ((0 != retcode) && (cmdline.execution_options.a_continue_on_failure.argument() == "never"))
-                break;
-        }
-
-        if (0 != env->perform_hook(Hook("install_all_post")
-                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
-                    ).max_exit_status())
-            throw ActionAbortedError("Aborted by hook");
-
-        return retcode;
-    }
-
-    struct DoOnePretendVisitor
-    {
-        const std::tr1::shared_ptr<Environment> env;
-        const ExecuteResolutionCommandLine & cmdline;
-        JobCounts & counts;
-        int & last_x;
-
-        DoOnePretendVisitor(
-                const std::tr1::shared_ptr<Environment> & e,
-                const ExecuteResolutionCommandLine & c,
-                JobCounts & k,
-                int & l) :
-            env(e),
-            cmdline(c),
-            counts(k),
-            last_x(l)
-        {
-        }
-
-        bool visit(const SimpleInstallJob & c) const
-        {
-            if (0 == last_x)
-                std::cout << "Executing pretend actions: " << std::flush;
-
-            std::tr1::shared_ptr<OutputManager> output_manager_goes_here;
-            return do_pretend(env, cmdline, *c.changes_to_make_decision(), ++counts.x_installs, counts.y_installs,
-                    last_x++, output_manager_goes_here);
-        }
-
-        bool visit(const UninstallJob &) const
-        {
-            ++counts.x_installs;
-            return true;
-        }
-
-        bool visit(const ErrorJob &) const
-        {
-            return true;
-        }
-
-        bool visit(const FetchJob &) const
-        {
-            return true;
-        }
-
-        bool visit(const UsableJob &) const
-        {
-            return true;
-        }
-
-        bool visit(const UsableGroupJob &) const
-        {
-            return true;
-        }
-    };
-
     int execute_pretends(
             const std::tr1::shared_ptr<Environment> & env,
-            const ResolverLists & lists,
+            const std::tr1::shared_ptr<JobLists> & lists,
             const ExecuteResolutionCommandLine & cmdline)
     {
         bool failed(false);
-        JobCounts counts;
-        int last_x(0);
-
-        for (JobIDSequence::ConstIterator c(lists.taken_job_ids()->begin()),
-                c_end(lists.taken_job_ids()->end()) ;
-                c != c_end ; ++c)
-            lists.jobs()->fetch(*c)->accept(counts);
+        int x(0), y(lists->pretend_job_list()->length()), last_x(0);
 
         if (0 != env->perform_hook(Hook("pretend_all_pre")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
                     ).max_exit_status())
             throw ActionAbortedError("Aborted by hook");
 
-        for (JobIDSequence::ConstIterator c(lists.taken_job_ids()->begin()),
-                c_end(lists.taken_job_ids()->end()) ;
+        for (JobList<PretendJob>::ConstIterator c(lists->pretend_job_list()->begin()),
+                c_end(lists->pretend_job_list()->end()) ;
                 c != c_end ; ++c)
-            failed = failed || ! lists.jobs()->fetch(*c)->accept_returning<bool>(DoOnePretendVisitor(
-                        env, cmdline, counts, last_x));
+        {
+            if (++x == 1)
+                cout << "Executing pretend actions: " << std::flush;
+
+            std::tr1::shared_ptr<OutputManager> output_manager_goes_here;
+            failed = failed || ! do_pretend(env, cmdline, (*c)->origin_id(), x, y, last_x, output_manager_goes_here);
+            last_x = x;
+        }
 
         if (0 != last_x)
             cout << endl;
@@ -1156,162 +619,307 @@ namespace
         return failed ? 1 : 0;
     }
 
+    struct ExecuteOneVisitor
+    {
+        const std::tr1::shared_ptr<Environment> env;
+        const ExecuteResolutionCommandLine & cmdline;
+        int & x;
+        const int y;
+
+        ExecuteOneVisitor(
+                const std::tr1::shared_ptr<Environment> & e,
+                const ExecuteResolutionCommandLine & c,
+                int & xx, int yy) :
+            env(e),
+            cmdline(c),
+            x(xx),
+            y(yy)
+        {
+        }
+
+        int visit(InstallJob & install_item)
+        {
+            ++x;
+
+            const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
+            install_item.set_state(active_state);
+
+            if (! do_fetch(env, cmdline, install_item.origin_id(), x, y, false, *active_state))
+            {
+                install_item.set_state(active_state->failed());
+                return 1;
+            }
+
+            if (! do_install(env, cmdline, install_item.origin_id(), install_item.destination_repository_name(),
+                        install_item.replacing(), install_item.destination_type(),
+                        x, y, *active_state))
+            {
+                install_item.set_state(active_state->failed());
+                return 1;
+            }
+
+            install_item.set_state(active_state->succeeded());
+            return 0;
+        }
+
+        int visit(UninstallJob & uninstall_item)
+        {
+            ++x;
+
+            const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
+            uninstall_item.set_state(active_state);
+
+            for (PackageIDSequence::ConstIterator i(uninstall_item.ids_to_remove()->begin()),
+                    i_end(uninstall_item.ids_to_remove()->end()) ;
+                    i != i_end ; ++i)
+                if (! do_uninstall(env, cmdline, *i, x, y, *active_state))
+                {
+                    uninstall_item.set_state(active_state->failed());
+                    return 1;
+                }
+
+            uninstall_item.set_state(active_state->succeeded());
+            return 0;
+        }
+
+        int visit(FetchJob & fetch_item)
+        {
+            ++x;
+
+            const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
+            fetch_item.set_state(active_state);
+
+            if (! do_fetch(env, cmdline, fetch_item.origin_id(), x, y, true, *active_state))
+            {
+                fetch_item.set_state(active_state->failed());
+                return 1;
+            }
+
+            fetch_item.set_state(active_state->succeeded());
+            return 0;
+        }
+    };
+
+    struct ContinueAfterState
+    {
+        bool visit(const JobPendingState &) const
+        {
+            /* it's still pending because it's a circular dep that we ended up ignoring */
+            return true;
+        }
+
+        bool visit(const JobActiveState &) const PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "still active? how did that happen?");
+        }
+
+        bool visit(const JobSucceededState &) const
+        {
+            return true;
+        }
+
+        bool visit(const JobFailedState &) const
+        {
+            return false;
+        }
+
+        bool visit(const JobSkippedState &) const
+        {
+            return false;
+        }
+    };
+
+    int execute_executions(
+            const std::tr1::shared_ptr<Environment> & env,
+            const std::tr1::shared_ptr<JobLists> & lists,
+            const ExecuteResolutionCommandLine & cmdline)
+    {
+        int retcode(0);
+        int x(0), y(lists->execute_job_list()->length());
+
+        if (0 != env->perform_hook(Hook("install_all_pre")
+                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
+                    ).max_exit_status())
+            throw ActionAbortedError("Aborted by hook");
+
+        JobRequirementIf require_if(last_jri);
+        if (cmdline.execution_options.a_continue_on_failure.argument() == "always")
+            require_if = jri_require_always;
+        else if (cmdline.execution_options.a_continue_on_failure.argument() == "if-satisfied")
+            require_if = jri_require_for_satisfied;
+        else if (cmdline.execution_options.a_continue_on_failure.argument() == "if-independent")
+            require_if = jri_require_for_independent;
+        else if (cmdline.execution_options.a_continue_on_failure.argument() == "never")
+            require_if = last_jri;
+        else
+            throw args::DoHelp("Don't understand argument '"
+                    + cmdline.execution_options.a_continue_on_failure.argument() + "' to '--"
+                    + cmdline.execution_options.a_continue_on_failure.long_name() + "'");
+
+        for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),
+                c_end(lists->execute_job_list()->end()) ;
+                c != c_end ; ++c)
+        {
+            bool want(true);
+
+            if (0 != retcode)
+            {
+                if (last_jri == require_if)
+                    want = false;
+                else
+                {
+                    for (JobRequirements::ConstIterator r((*c)->requirements()->begin()), r_end((*c)->requirements()->end()) ;
+                            r != r_end && want ; ++r)
+                    {
+                        if (! r->required_if()[require_if])
+                            continue;
+
+                        const std::tr1::shared_ptr<const ExecuteJob> req(*lists->execute_job_list()->fetch(r->job_number()));
+                        want = want && req->state()->accept_returning<bool>(ContinueAfterState());
+                    }
+                }
+            }
+
+            if (want)
+            {
+                ExecuteOneVisitor execute(env, cmdline, x, y);
+                retcode |= (*c)->accept_returning<int>(execute);
+            }
+            else
+                (*c)->set_state(make_shared_ptr(new JobSkippedState));
+        }
+
+        if (0 != env->perform_hook(Hook("install_all_post")
+                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
+                    ).max_exit_status())
+            throw ActionAbortedError("Aborted by hook");
+
+        return retcode;
+    }
+
     int execute_resolution_main(
             const std::tr1::shared_ptr<Environment> & env,
-            const ResolverLists & lists,
-            const ExecuteResolutionCommandLine & cmdline,
-            Summary & summary)
+            const std::tr1::shared_ptr<JobLists> & lists,
+            const ExecuteResolutionCommandLine & cmdline)
     {
+        for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),
+                c_end(lists->execute_job_list()->end()) ;
+                c != c_end ; ++c)
+            (*c)->set_state(make_shared_ptr(new JobPendingState));
+
         int retcode(0);
 
         retcode |= execute_pretends(env, lists, cmdline);
         if (0 != retcode || cmdline.a_pretend.specified())
             return retcode;
 
-        retcode |= execute_taken(env, lists, cmdline, summary);
+        retcode |= execute_executions(env, lists, cmdline);
 
         if (0 != retcode)
             return retcode;
 
-        execute_update_world(env, lists, cmdline);
+        execute_update_world(env, cmdline);
+
         return retcode;
     }
 
-    struct SummaryJobNameDisplayer
+    struct SummaryNameVisitor
     {
-        const ResolverLists & lists;
-        const std::string colour;
-        const std::string state;
-        const bool want_to_flush;
-        const bool this_failed;
-        const bool something_failed;
-        bool & done_summary;
-
-        SummaryJobNameDisplayer(
-                const ResolverLists & l,
-                const std::string & c,
-                const std::string & s,
-                const bool w,
-                const bool t,
-                const bool f,
-                bool & d
-                ) :
-            lists(l),
-            colour(c),
-            state(s),
-            want_to_flush(w),
-            this_failed(t),
-            something_failed(f),
-            done_summary(d)
+        std::string visit(const FetchJob & j) const
         {
+            return "fetch " + stringify(*j.origin_id());
         }
 
-        void summary() const
+        std::string visit(const InstallJob & j) const
         {
-            if (! done_summary)
-                cout << endl << c::bold_blue() << "Summary:" << c::normal() << endl << endl;
-            done_summary = true;
+            return "install " + stringify(*j.origin_id()) + " to " + stringify(j.destination_repository_name());
         }
 
-        void visit(const SimpleInstallJob & job) const
+        std::string visit(const UninstallJob & j) const
         {
-            if (want_to_flush || something_failed)
-            {
-                summary();
-                cout << colour << state << c::normal() << *job.changes_to_make_decision()->origin_id()
-                    << " to " << job.changes_to_make_decision()->destination()->repository() << endl;
-            }
+            return "uninstall " + join(indirect_iterator(j.ids_to_remove()->begin()), indirect_iterator(j.ids_to_remove()->end()), ", ");
         }
 
-        void visit(const UninstallJob & job) const
-        {
-            if (want_to_flush || something_failed)
-            {
-                summary();
-                cout << colour << state << c::normal() << "uninstall " << job.resolution()->resolvent() << endl;
-            }
-        }
-
-        void visit(const FetchJob & job) const
-        {
-            if (want_to_flush || this_failed)
-            {
-                summary();
-                cout << colour << state << c::normal() << "fetch " << *job.changes_to_make_decision()->origin_id() << endl;
-            }
-        }
-
-        void visit(const ErrorJob &) const PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw InternalError(PALUDIS_HERE, "ErrorJob?");
-        }
-
-        void visit(const UsableJob &) const
-        {
-        }
-
-        void visit(const UsableGroupJob &) const
-        {
-        }
     };
 
-    struct SummaryStateDisplayer
+    struct SummaryDisplayer
     {
-        const ResolverLists & lists;
+        const std::tr1::shared_ptr<const ExecuteJob> job;
         const bool something_failed;
-        bool & done_summary;
+        bool & done_heading;
 
-        SummaryStateDisplayer(const ResolverLists & l, const bool s, bool & d) :
-            lists(l),
+        SummaryDisplayer(const std::tr1::shared_ptr<const ExecuteJob> & j, const bool s, bool & b) :
+            job(j),
             something_failed(s),
-            done_summary(d)
+            done_heading(b)
         {
         }
 
-        void visit(const JobPendingState & state) const
+        void need_heading() const
         {
-            state.job()->accept(SummaryJobNameDisplayer(lists, c::bold_normal(), "pending:    ",
-                        false, false, something_failed, done_summary));
+            if (! done_heading)
+            {
+                done_heading = true;
+                cout << endl << c::bold_blue() << "Summary:" << c::normal() << endl << endl;
+            }
         }
 
-        void visit(const JobSucceededState & state) const
+        void visit(const JobActiveState &) const
         {
-            state.job()->accept(SummaryJobNameDisplayer(lists, c::bold_green(), "succeeded:  ",
-                        state.any_output_manager_wants_to_flush(), false, something_failed, done_summary));
+            need_heading();
+            cout << c::bold_yellow() << "pending:   " << job->accept_returning<std::string>(SummaryNameVisitor()) << c::normal() << endl;
         }
 
-        void visit(const JobSkippedState & state) const
+        void visit(const JobPendingState &) const
         {
-            state.job()->accept(SummaryJobNameDisplayer(lists, c::bold_yellow(), "skipped:    ",
-                        false, false, something_failed, done_summary));
+            need_heading();
+            cout << c::bold_yellow() << "pending:   " << job->accept_returning<std::string>(SummaryNameVisitor()) << c::normal() << endl;
         }
 
-        void visit(const JobFailedState & state) const
+        void visit(const JobSucceededState & s) const
         {
-            state.job()->accept(SummaryJobNameDisplayer(lists, c::bold_red(), "failed:     ",
-                        state.any_output_manager_wants_to_flush(), true, something_failed, done_summary));
+            if ((s.output_manager() && s.output_manager()->want_to_flush())
+                    || (something_failed && ! simple_visitor_cast<const FetchJob>(*job)))
+            {
+                need_heading();
+                cout << c::bold_green() << "succeeded: " << job->accept_returning<std::string>(SummaryNameVisitor()) << c::normal() << endl;
+            }
+        }
+
+        void visit(const JobFailedState &) const
+        {
+            need_heading();
+            cout << c::bold_red() << "failed:    " << job->accept_returning<std::string>(SummaryNameVisitor()) << c::normal() << endl;
+        }
+
+        void visit(const JobSkippedState &) const
+        {
+            if (! simple_visitor_cast<const FetchJob>(*job))
+            {
+                need_heading();
+                cout << c::bold_yellow() << "skipped:   " << job->accept_returning<std::string>(SummaryNameVisitor()) << c::normal() << endl;
+            }
         }
     };
 
     void display_summary(
-            const ResolverLists & lists,
-            Summary & summary,
+            const std::tr1::shared_ptr<JobLists> & lists,
             const bool something_failed)
     {
-        bool done_summary(false);
-        for (Summary::iterator s(summary.begin()), s_end(summary.end()) ;
-                s != s_end ; )
-        {
-            const std::tr1::shared_ptr<JobState> state(*s);
-            summary.erase(s++);
+        bool done_heading(false);
 
-            state->accept(SummaryStateDisplayer(lists, something_failed, done_summary));
+        for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),
+                c_end(lists->execute_job_list()->end()) ;
+                c != c_end ; ++c)
+        {
+            (*c)->state()->accept(SummaryDisplayer(*c, something_failed, done_heading));
+            (*c)->set_state(make_null_shared_ptr());
         }
     }
 
     int execute_resolution(
             const std::tr1::shared_ptr<Environment> & env,
-            const ResolverLists & lists,
+            const std::tr1::shared_ptr<JobLists> & lists,
             const ExecuteResolutionCommandLine & cmdline)
     {
         Context context("When executing chosen resolution:");
@@ -1322,15 +930,14 @@ namespace
                     ).max_exit_status())
             throw ActionAbortedError("Aborted by hook");
 
-        Summary summary;
-
         try
         {
-            retcode = execute_resolution_main(env, lists, cmdline, summary);
+            retcode = execute_resolution_main(env, lists, cmdline);
         }
         catch (...)
         {
-            display_summary(lists, summary, 0 != retcode);
+            if (! cmdline.a_pretend.specified())
+                display_summary(lists, 0 != retcode);
 
             if (0 != env->perform_hook(Hook("install_task_execute_post")
                         ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
@@ -1341,7 +948,8 @@ namespace
             throw;
         }
 
-        display_summary(lists, summary, 0 != retcode);
+        if (! cmdline.a_pretend.specified())
+            display_summary(lists, 0 != retcode);
 
         if (0 != env->perform_hook(Hook("install_task_execute_post")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
@@ -1364,7 +972,7 @@ int
 ExecuteResolutionCommand::run(
         const std::tr1::shared_ptr<Environment> & env,
         const std::tr1::shared_ptr<const Sequence<std::string > > & args,
-        const std::tr1::shared_ptr<const ResolverLists> & maybe_lists
+        const std::tr1::shared_ptr<JobLists> & maybe_lists
         )
 {
     ExecuteResolutionCommandLine cmdline;
@@ -1378,7 +986,7 @@ ExecuteResolutionCommand::run(
 
     cmdline.import_options.apply(env);
 
-    std::tr1::shared_ptr<const ResolverLists> lists(maybe_lists);
+    std::tr1::shared_ptr<JobLists> lists(maybe_lists);
     if (! lists)
     {
         if (getenv_with_default("PALUDIS_SERIALISED_RESOLUTION_FD", "").empty())
@@ -1387,12 +995,12 @@ ExecuteResolutionCommand::run(
         int fd(destringify<int>(getenv_with_default("PALUDIS_SERIALISED_RESOLUTION_FD", "")));
         SafeIFStream deser_stream(fd);
         Deserialiser deserialiser(env.get(), deser_stream);
-        Deserialisation deserialisation("ResolverLists", deserialiser);
-        lists = make_shared_copy(ResolverLists::deserialise(deserialisation));
+        Deserialisation deserialisation("JobLists", deserialiser);
+        lists = JobLists::deserialise(deserialisation);
         close(fd);
     }
 
-    return execute_resolution(env, *lists, cmdline);
+    return execute_resolution(env, lists, cmdline);
 }
 
 int

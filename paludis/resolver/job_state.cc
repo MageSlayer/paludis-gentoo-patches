@@ -19,40 +19,26 @@
 
 #include <paludis/resolver/job_state.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/output_manager.hh>
-#include <list>
-#include <algorithm>
-#include <tr1/functional>
+#include <paludis/util/make_shared_ptr.hh>
 
 using namespace paludis;
 using namespace paludis::resolver;
 
-JobState::~JobState()
-{
-}
-
 namespace paludis
 {
     template <>
-    struct Implementation<JobPendingState>
+    struct Implementation<JobActiveState>
     {
-        const std::tr1::shared_ptr<const Job> job;
-
-        Implementation(const std::tr1::shared_ptr<const Job> & j) :
-            job(j)
-        {
-        }
+        std::tr1::shared_ptr<OutputManager> output_manager;
     };
 
     template <>
     struct Implementation<JobSucceededState>
     {
-        const std::tr1::shared_ptr<const Job> job;
-        std::list<std::tr1::shared_ptr<OutputManager> > output_managers;
+        const std::tr1::shared_ptr<OutputManager> output_manager;
 
-        Implementation(const std::tr1::shared_ptr<const Job> & j) :
-            job(j)
+        Implementation(const std::tr1::shared_ptr<OutputManager> & m) :
+            output_manager(m)
         {
         }
     };
@@ -60,50 +46,48 @@ namespace paludis
     template <>
     struct Implementation<JobFailedState>
     {
-        const std::tr1::shared_ptr<const Job> job;
-        std::list<std::tr1::shared_ptr<OutputManager> > output_managers;
+        const std::tr1::shared_ptr<OutputManager> output_manager;
 
-        Implementation(const std::tr1::shared_ptr<const Job> & j) :
-            job(j)
-        {
-        }
-    };
-
-    template <>
-    struct Implementation<JobSkippedState>
-    {
-        const std::tr1::shared_ptr<const Job> job;
-
-        Implementation(const std::tr1::shared_ptr<const Job> & j) :
-            job(j)
+        Implementation(const std::tr1::shared_ptr<OutputManager> & m) :
+            output_manager(m)
         {
         }
     };
 }
 
-JobPendingState::JobPendingState(const std::tr1::shared_ptr<const Job> & j) :
-    PrivateImplementationPattern<JobPendingState>(new Implementation<JobPendingState>(j))
+JobState::~JobState()
 {
 }
 
-JobPendingState::~JobPendingState()
+JobActiveState::JobActiveState() :
+    PrivateImplementationPattern<JobActiveState>(new Implementation<JobActiveState>)
 {
 }
 
-const std::tr1::shared_ptr<const Job>
-JobPendingState::job() const
+JobActiveState::~JobActiveState()
 {
-    return _imp->job;
 }
 
-const std::string
-JobPendingState::state_name() const
+void
+JobActiveState::set_output_manager(const std::tr1::shared_ptr<OutputManager> & m)
 {
-    return "pending";
+    _imp->output_manager = m;
 }
 
-JobSucceededState::JobSucceededState(const std::tr1::shared_ptr<const Job> & j) :
-    PrivateImplementationPattern<JobSucceededState>(new Implementation<JobSucceededState>(j))
+const std::tr1::shared_ptr<JobSucceededState>
+JobActiveState::succeeded() const
+{
+    return make_shared_ptr(new JobSucceededState(_imp->output_manager));
+}
+
+const std::tr1::shared_ptr<JobFailedState>
+JobActiveState::failed() const
+{
+    return make_shared_ptr(new JobFailedState(_imp->output_manager));
+}
+
+JobSucceededState::JobSucceededState(const std::tr1::shared_ptr<OutputManager> & m) :
+    PrivateImplementationPattern<JobSucceededState>(new Implementation<JobSucceededState>(m))
 {
 }
 
@@ -111,35 +95,14 @@ JobSucceededState::~JobSucceededState()
 {
 }
 
-const std::tr1::shared_ptr<const Job>
-JobSucceededState::job() const
+const std::tr1::shared_ptr<OutputManager>
+JobSucceededState::output_manager() const
 {
-    return _imp->job;
+    return _imp->output_manager;
 }
 
-const std::string
-JobSucceededState::state_name() const
-{
-    return "succeeded";
-}
-
-void
-JobSucceededState::add_output_manager(const std::tr1::shared_ptr<OutputManager> & o)
-{
-    _imp->output_managers.push_back(o);
-}
-
-bool
-JobSucceededState::any_output_manager_wants_to_flush() const
-{
-    return indirect_iterator(_imp->output_managers.end()) != std::find_if(
-            indirect_iterator(_imp->output_managers.begin()),
-            indirect_iterator(_imp->output_managers.end()),
-            std::tr1::bind(&OutputManager::want_to_flush, std::tr1::placeholders::_1));
-}
-
-JobFailedState::JobFailedState(const std::tr1::shared_ptr<const Job> & j) :
-    PrivateImplementationPattern<JobFailedState>(new Implementation<JobFailedState>(j))
+JobFailedState::JobFailedState(const std::tr1::shared_ptr<OutputManager> & m) :
+    PrivateImplementationPattern<JobFailedState>(new Implementation<JobFailedState>(m))
 {
 }
 
@@ -147,56 +110,9 @@ JobFailedState::~JobFailedState()
 {
 }
 
-const std::tr1::shared_ptr<const Job>
-JobFailedState::job() const
+const std::tr1::shared_ptr<OutputManager>
+JobFailedState::output_manager() const
 {
-    return _imp->job;
+    return _imp->output_manager;
 }
-
-void
-JobFailedState::add_output_manager(const std::tr1::shared_ptr<OutputManager> & o)
-{
-    _imp->output_managers.push_back(o);
-}
-
-bool
-JobFailedState::any_output_manager_wants_to_flush() const
-{
-    return indirect_iterator(_imp->output_managers.end()) != std::find_if(
-            indirect_iterator(_imp->output_managers.begin()),
-            indirect_iterator(_imp->output_managers.end()),
-            std::tr1::bind(&OutputManager::want_to_flush, std::tr1::placeholders::_1));
-}
-
-const std::string
-JobFailedState::state_name() const
-{
-    return "failed";
-}
-
-JobSkippedState::JobSkippedState(const std::tr1::shared_ptr<const Job> & j) :
-    PrivateImplementationPattern<JobSkippedState>(new Implementation<JobSkippedState>(j))
-{
-}
-
-JobSkippedState::~JobSkippedState()
-{
-}
-
-const std::tr1::shared_ptr<const Job>
-JobSkippedState::job() const
-{
-    return _imp->job;
-}
-
-const std::string
-JobSkippedState::state_name() const
-{
-    return "skipped";
-}
-
-template class PrivateImplementationPattern<JobPendingState>;
-template class PrivateImplementationPattern<JobSucceededState>;
-template class PrivateImplementationPattern<JobFailedState>;
-template class PrivateImplementationPattern<JobSkippedState>;
 

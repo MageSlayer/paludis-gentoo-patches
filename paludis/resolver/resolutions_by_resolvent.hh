@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,48 +17,45 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLUTIONS_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLUTIONS_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLUTIONS_BY_RESOLVENT_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_RESOLUTIONS_BY_RESOLVENT_HH 1
 
-#include <paludis/resolver/resolutions-fwd.hh>
+#include <paludis/resolver/resolutions_by_resolvent-fwd.hh>
 #include <paludis/resolver/resolution-fwd.hh>
+#include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/attributes.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/named_value.hh>
+#include <paludis/serialise-fwd.hh>
 #include <tr1/memory>
 
 namespace paludis
 {
     namespace resolver
     {
-        class PALUDIS_VISIBLE Resolutions :
-            private PrivateImplementationPattern<Resolutions>
+        class PALUDIS_VISIBLE ResolutionsByResolvent :
+            private PrivateImplementationPattern<ResolutionsByResolvent>
         {
             public:
-                Resolutions();
-                ~Resolutions();
-
-                void append(const std::tr1::shared_ptr<Resolution> &);
+                ResolutionsByResolvent();
+                ~ResolutionsByResolvent();
 
                 struct ConstIteratorTag;
-                typedef WrappedForwardIterator<ConstIteratorTag,
-                        const std::tr1::shared_ptr<Resolution> > ConstIterator;
+                typedef WrappedForwardIterator<ConstIteratorTag, const std::tr1::shared_ptr<Resolution> > ConstIterator;
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                ConstIterator find(const Resolvent &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                bool empty() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                ConstIterator insert_new(const std::tr1::shared_ptr<Resolution> &);
 
                 void serialise(Serialiser &) const;
 
-                static const std::tr1::shared_ptr<Resolutions> deserialise(
+                static const std::tr1::shared_ptr<ResolutionsByResolvent> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
-    extern template class PrivateImplementationPattern<resolver::Resolutions>;
-    extern template class WrappedForwardIterator<resolver::Resolutions::ConstIteratorTag,
+    extern template class WrappedForwardIterator<resolver::ResolutionsByResolvent::ConstIteratorTag,
            const std::tr1::shared_ptr<resolver::Resolution> >;
 #endif
 }

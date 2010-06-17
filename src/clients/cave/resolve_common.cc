@@ -50,9 +50,10 @@
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
-#include <paludis/resolver/resolutions.hh>
-#include <paludis/resolver/resolver_lists.hh>
+#include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/required_confirmations.hh>
+#include <paludis/resolver/job_lists.hh>
+#include <paludis/resolver/decisions.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/generator.hh>
@@ -486,7 +487,7 @@ namespace
             const ResolveCommandLineResolutionOptions & resolution_options,
             const PackageDepSpecList & without,
             const PackageDepSpecList & with,
-            const Resolvent &,
+            const std::tr1::shared_ptr<const Resolution> &,
             const PackageDepSpec & spec,
             const std::tr1::shared_ptr<const Reason> & reason)
     {
@@ -839,7 +840,6 @@ namespace
             const PackageDepSpecList & ignore_from,
             const PackageDepSpecList & no_blockers_from,
             const PackageDepSpecList & no_dependencies_from,
-            const Resolvent & resolvent,
             const std::tr1::shared_ptr<const Resolution> & resolution,
             const SanitisedDependency & dep)
     {
@@ -862,7 +862,7 @@ namespace
             for (PackageDepSpecList::const_iterator l(take_from.begin()), l_end(take_from.end()) ;
                     l != l_end ; ++l)
             {
-                if (match_qpns(*env, *l, resolvent.package()))
+                if (match_qpns(*env, *l, resolution->resolvent().package()))
                     return si_take;
             }
 
@@ -877,7 +877,7 @@ namespace
             for (PackageDepSpecList::const_iterator l(ignore_from.begin()), l_end(ignore_from.end()) ;
                     l != l_end ; ++l)
             {
-                if (match_qpns(*env, *l, resolvent.package()))
+                if (match_qpns(*env, *l, resolution->resolvent().package()))
                     return si_ignore;
             }
 
@@ -917,8 +917,7 @@ namespace
     const std::tr1::shared_ptr<const Repository>
     find_repository_for_fn(const Environment * const env,
             const ResolveCommandLineResolutionOptions &,
-            const Resolvent & resolvent,
-            const std::tr1::shared_ptr<const Resolution> &,
+            const std::tr1::shared_ptr<const Resolution> & resolution,
             const ChangesToMakeDecision & decision)
     {
         std::tr1::shared_ptr<const Repository> result;
@@ -926,7 +925,7 @@ namespace
                 r_end(env->package_database()->end_repositories()) ;
                 r != r_end ; ++r)
         {
-            switch (resolvent.destination_type())
+            switch (resolution->resolvent().destination_type())
             {
                 case dt_install_to_slash:
                     if ((! (*r)->installed_root_key()) || ((*r)->installed_root_key()->value() != FSEntry("/")))
@@ -947,7 +946,7 @@ namespace
             {
                 if (result)
                     throw ConfigurationError("For '" + stringify(*decision.origin_id())
-                            + "' with destination type " + stringify(resolvent.destination_type())
+                            + "' with destination type " + stringify(resolution->resolvent().destination_type())
                             + ", don't know whether to install to ::" + stringify(result->name())
                             + " or ::" + stringify((*r)->name()));
                 else
@@ -957,7 +956,7 @@ namespace
 
         if (! result)
             throw ConfigurationError("No repository suitable for '" + stringify(*decision.origin_id())
-                    + "' with destination type " + stringify(resolvent.destination_type()) + " has been configured");
+                    + "' with destination type " + stringify(resolution->resolvent().destination_type()) + " has been configured");
         return result;
     }
 
@@ -1135,7 +1134,6 @@ namespace
             const ResolveCommandLineResolutionOptions & resolution_options,
             const PackageDepSpecList & permit_downgrade,
             const PackageDepSpecList & permit_old_version,
-            const Resolvent &,
             const std::tr1::shared_ptr<const Resolution> & r,
             const std::tr1::shared_ptr<const RequiredConfirmation> & c)
     {
@@ -1147,7 +1145,6 @@ namespace
     const std::tr1::shared_ptr<ConstraintSequence> get_constraints_for_dependent_fn(
             const Environment * const env,
             const PackageDepSpecList & list,
-            const Resolvent &,
             const std::tr1::shared_ptr<const Resolution> &,
             const std::tr1::shared_ptr<const PackageID> & id,
             const std::tr1::shared_ptr<const PackageIDSequence> & ids)
@@ -1185,16 +1182,16 @@ namespace
         return result;
     }
 
-    void ser_thread_func(StringListStream & ser_stream, const ResolverLists & resolution_lists)
+    void serialise_resolved(StringListStream & ser_stream, const Resolved & resolved)
     {
         Serialiser ser(ser_stream);
-        resolution_lists.serialise(ser);
+        resolved.serialise(ser);
         ser_stream.nothing_more_to_write();
     }
 
     int display_resolution(
             const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<const ResolverLists> & resolution_lists,
+            const std::tr1::shared_ptr<const Resolved> & resolved,
             const ResolveCommandLineResolutionOptions &,
             const ResolveCommandLineDisplayOptions & display_options,
             const ResolveCommandLineProgramOptions & program_options,
@@ -1204,9 +1201,9 @@ namespace
         Context context("When displaying chosen resolution:");
 
         StringListStream ser_stream;
-        Thread ser_thread(std::tr1::bind(&ser_thread_func,
+        Thread ser_thread(std::tr1::bind(&serialise_resolved,
                     std::tr1::ref(ser_stream),
-                    std::tr1::cref(*resolution_lists)));
+                    std::tr1::cref(*resolved)));
 
         std::tr1::shared_ptr<Sequence<std::string> > args(new Sequence<std::string>);
 
@@ -1250,12 +1247,19 @@ namespace
             return run_command(cmd);
         }
         else
-            return DisplayResolutionCommand().run(env, args, resolution_lists);
+            return DisplayResolutionCommand().run(env, args, resolved);
+    }
+
+    void serialise_job_lists(StringListStream & ser_stream, const JobLists & job_lists)
+    {
+        Serialiser ser(ser_stream);
+        job_lists.serialise(ser);
+        ser_stream.nothing_more_to_write();
     }
 
     int perform_resolution(
             const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<const ResolverLists> & resolution_lists,
+            const std::tr1::shared_ptr<const Resolved> & resolved,
             const ResolveCommandLineResolutionOptions & resolution_options,
             const ResolveCommandLineExecutionOptions & execution_options,
             const ResolveCommandLineProgramOptions & program_options,
@@ -1307,7 +1311,7 @@ namespace
              * be a fun exercise for someone with way too much time on their hands.
              * */
             StringListStream ser_stream;
-            ser_thread_func(ser_stream, *resolution_lists);
+            serialise_job_lists(ser_stream, *resolved->job_lists());
 
             std::string command;
             if (program_options.a_execute_resolution_program.specified())
@@ -1335,7 +1339,7 @@ namespace
             become_command(cmd);
         }
         else
-            return ExecuteResolutionCommand().run(env, args, resolution_lists);
+            return ExecuteResolutionCommand().run(env, args, resolved->job_lists());
     }
 
     struct KindNameVisitor
@@ -1605,11 +1609,11 @@ paludis::cave::resolve_common(
                         env.get(), std::tr1::cref(allowed_to_remove_specs), _1),
                 n::confirm_fn() = std::tr1::bind(&confirm_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::cref(permit_downgrade),
-                        std::tr1::cref(permit_old_version), _1, _2, _3),
+                        std::tr1::cref(permit_old_version), _1, _2),
                 n::find_repository_for_fn() = std::tr1::bind(&find_repository_for_fn,
-                        env.get(), std::tr1::cref(resolution_options), _1, _2, _3),
+                        env.get(), std::tr1::cref(resolution_options), _1, _2),
                 n::get_constraints_for_dependent_fn() = std::tr1::bind(&get_constraints_for_dependent_fn,
-                        env.get(), std::tr1::cref(less_restrictive_remove_blockers_specs), _1, _2, _3, _4),
+                        env.get(), std::tr1::cref(less_restrictive_remove_blockers_specs), _1, _2, _3),
                 n::get_destination_types_for_fn() = std::tr1::bind(&get_destination_types_for_fn,
                         env.get(), std::tr1::cref(resolution_options), _1, _2, _3),
                 n::get_initial_constraints_for_fn() = std::tr1::bind(&initial_constraints_for_fn,
@@ -1622,7 +1626,7 @@ paludis::cave::resolve_common(
                 n::interest_in_spec_fn() = std::tr1::bind(&interest_in_spec_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::cref(take), std::tr1::cref(take_from),
                         std::tr1::cref(ignore), std::tr1::cref(ignore_from), std::tr1::cref(no_blockers_from),
-                        std::tr1::cref(no_dependencies_from), _1, _2, _3),
+                        std::tr1::cref(no_dependencies_from), _1, _2),
                 n::make_destination_filtered_generator_fn() = std::tr1::bind(&make_destination_filtered_generator,
                         env.get(), std::tr1::cref(resolution_options), all_binary_repos_generator, _1, _2),
                 n::prefer_or_avoid_fn() = std::tr1::bind(&prefer_or_avoid_fn,
@@ -1674,17 +1678,17 @@ paludis::cave::resolve_common(
 
         dump_if_requested(env, resolver, resolution_options);
 
-        retcode |= display_resolution(env, resolver->lists(), resolution_options,
+        retcode |= display_resolution(env, resolver->resolved(), resolution_options,
                 display_options, program_options, keys_if_import, targets);
 
-        if (! resolver->lists()->taken_error_job_ids()->empty())
+        if (! resolver->resolved()->taken_unable_to_make_decisions()->empty())
             retcode |= 1;
 
-        if (! resolver->lists()->job_ids_needing_confirmation()->empty())
+        if (! resolver->resolved()->taken_unconfirmed_change_or_remove_decisions()->empty())
             retcode |= 3;
 
         if (0 == retcode)
-            return perform_resolution(env, resolver->lists(), resolution_options,
+            return perform_resolution(env, resolver->resolved(), resolution_options,
                     execution_options, program_options, keys_if_import, targets, is_set);
     }
     catch (...)

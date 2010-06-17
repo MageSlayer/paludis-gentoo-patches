@@ -22,11 +22,9 @@
 #include <paludis/resolver/resolver_functions.hh>
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/decision.hh>
-#include <paludis/resolver/resolutions.hh>
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/suggest_restart.hh>
-#include <paludis/resolver/resolver_lists.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/options.hh>
@@ -37,6 +35,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/tribool.hh>
+#include <paludis/util/make_shared_copy.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/package_database.hh>
@@ -74,30 +73,19 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("test/target"));
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("test/target"));
 
-            {
-                TestMessageSuffix s("taken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("untaken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-
-            {
-                TestMessageSuffix s("ordered");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
-                        .qpn(QualifiedPackageName("test/target"))
-                        .finished()
-                        );
-            }
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("test/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
         }
     } test_empty_alternative;
 
@@ -111,30 +99,20 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("test/target"));
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("test/target"));
 
-            {
-                TestMessageSuffix s("taken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("untaken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("ordered");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
-                        .qpn(QualifiedPackageName("test/dep"))
-                        .qpn(QualifiedPackageName("test/target"))
-                        .finished()
-                        );
-            }
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("test/dep"))
+                        .change(QualifiedPackageName("test/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
         }
     } test_empty_alternative_with_upgrade;
 
@@ -148,29 +126,19 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("test/target"));
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("test/target"));
 
-            {
-                TestMessageSuffix s("taken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("untaken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-            {
-                TestMessageSuffix s("ordered");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
-                        .qpn(QualifiedPackageName("test/target"))
-                        .finished()
-                        );
-            }
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("test/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
         }
     } test_empty_alternative_with_untaken_upgrade;
 
@@ -191,52 +159,48 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const ResolverLists> resolutions(get_resolutions("preferences/target"));
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("preferences/target"));
 
+            std::tr1::shared_ptr<DecisionChecks> checks;
+
+            if (a.is_true())
             {
-                TestMessageSuffix s("taken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->taken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
+                checks = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("preferences/dep-a"))
+                        .change(QualifiedPackageName("preferences/target"))
+                        .finished());
+            }
+            else if (b.is_true())
+            {
+                checks = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("preferences/dep-b"))
+                        .change(QualifiedPackageName("preferences/target"))
+                        .finished());
+            }
+            else if (a.is_false())
+            {
+                checks = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("preferences/dep-middle"))
+                        .change(QualifiedPackageName("preferences/target"))
+                        .finished());
+            }
+            else
+            {
+                checks = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("preferences/dep-a"))
+                        .change(QualifiedPackageName("preferences/target"))
+                        .finished());
             }
 
-            {
-                TestMessageSuffix s("untaken errors");
-                check_resolution_list(resolutions->jobs(), resolutions->untaken_error_job_ids(), ResolutionListChecks()
-                        .finished()
-                        );
-            }
-
-
-            {
-                if (a.is_true())
-                {
-                    TestMessageSuffix s("ordered");
-                    check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
-                            .qpn(QualifiedPackageName("preferences/dep-a"))
-                            .qpn(QualifiedPackageName("preferences/target"))
-                            .finished()
-                            );
-                }
-                else if (b.is_true())
-                {
-                    TestMessageSuffix s("ordered");
-                    check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
-                            .qpn(QualifiedPackageName("preferences/dep-b"))
-                            .qpn(QualifiedPackageName("preferences/target"))
-                            .finished()
-                            );
-                }
-                else if (a.is_false())
-                {
-                    TestMessageSuffix s("ordered");
-                    check_resolution_list(resolutions->jobs(), resolutions->taken_job_ids(), ResolutionListChecks()
-                            .qpn(QualifiedPackageName("preferences/dep-middle"))
-                            .qpn(QualifiedPackageName("preferences/target"))
-                            .finished()
-                            );
-                }
-            }
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = checks,
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
         }
     } test_empty_preferences_tt(true, true),
            test_empty_preferences_ti(true, indeterminate), test_empty_preferences_tf(true, false),

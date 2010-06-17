@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,37 +17,33 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_ARROW_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_ARROW_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_LISTS_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_LISTS_HH 1
 
-#include <paludis/resolver/arrow-fwd.hh>
-#include <paludis/resolver/resolvent.hh>
-#include <paludis/resolver/reason-fwd.hh>
-#include <paludis/resolver/job_id.hh>
-#include <paludis/resolver/failure_kinds-fwd.hh>
-#include <paludis/serialise-fwd.hh>
+#include <paludis/resolver/job_lists-fwd.hh>
+#include <paludis/resolver/job_list-fwd.hh>
+#include <paludis/resolver/job-fwd.hh>
 #include <paludis/util/named_value.hh>
+#include <paludis/serialise-fwd.hh>
+#include <tr1/memory>
 
 namespace paludis
 {
     namespace n
     {
-        typedef Name<struct comes_after_name> comes_after;
-        typedef Name<struct failure_kinds_name> failure_kinds;
-        typedef Name<struct maybe_reason_name> maybe_reason;
+        typedef Name<struct execute_job_list_name> execute_job_list;
+        typedef Name<struct pretend_job_list_name> pretend_job_list;
     }
 
     namespace resolver
     {
-        struct Arrow
+        struct JobLists
         {
-            NamedValue<n::comes_after, JobID> comes_after;
-            NamedValue<n::failure_kinds, FailureKinds> failure_kinds;
-            NamedValue<n::maybe_reason, std::tr1::shared_ptr<const Reason> > maybe_reason;
+            NamedValue<n::execute_job_list, std::tr1::shared_ptr<JobList<ExecuteJob> > > execute_job_list;
+            NamedValue<n::pretend_job_list, std::tr1::shared_ptr<JobList<PretendJob> > > pretend_job_list;
 
+            static const std::tr1::shared_ptr<JobLists> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
             void serialise(Serialiser &) const;
-
-            static const Arrow deserialise(Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

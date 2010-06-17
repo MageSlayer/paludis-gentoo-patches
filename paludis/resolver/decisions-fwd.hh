@@ -17,20 +17,22 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_STATE_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_STATE_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_DECISIONS_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_DECISIONS_FWD_HH 1
+
+#include <paludis/util/no_type.hh>
+#include <paludis/resolver/orderer_notes-fwd.hh>
+#include <paludis/resolver/decision-fwd.hh>
+#include <tr1/memory>
 
 namespace paludis
 {
     namespace resolver
     {
-        struct JobState;
+        template <typename Decision_, typename Notes_ = NoType<0u> *>
+        struct Decisions;
 
-        struct JobPendingState;
-        struct JobActiveState;
-        struct JobSucceededState;
-        struct JobFailedState;
-        struct JobSkippedState;
+        typedef Decisions<ChangeOrRemoveDecision, std::tr1::shared_ptr<const OrdererNotes> > OrderedChangeOrRemoveDecisions;
     }
 }
 

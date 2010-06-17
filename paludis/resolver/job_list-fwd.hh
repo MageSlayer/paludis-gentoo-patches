@@ -17,20 +17,17 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_STATE_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_STATE_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_LIST_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_LIST_FWD_HH 1
 
 namespace paludis
 {
     namespace resolver
     {
-        struct JobState;
+        template <typename Job_>
+        struct JobList;
 
-        struct JobPendingState;
-        struct JobActiveState;
-        struct JobSucceededState;
-        struct JobFailedState;
-        struct JobSkippedState;
+        typedef int JobNumber;
     }
 }
 

@@ -21,6 +21,7 @@
 #include <paludis/resolver/destination.hh>
 #include <paludis/resolver/unsuitable_candidates.hh>
 #include <paludis/resolver/resolvent.hh>
+#include <paludis/resolver/required_confirmations.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -79,11 +80,26 @@ Decision::deserialise(Deserialisation & d)
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 }
 
+const std::tr1::shared_ptr<ChangeOrRemoveDecision>
+ChangeOrRemoveDecision::deserialise(Deserialisation & d)
+{
+    if (d.class_name() == "ChangesToMakeDecision")
+    {
+        return ChangesToMakeDecision::deserialise(d);
+    }
+    else if (d.class_name() == "RemoveDecision")
+    {
+        return RemoveDecision::deserialise(d);
+    }
+    else
+        throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
+}
+
 const std::tr1::shared_ptr<ChangesToMakeDecision>
 ChangesToMakeDecision::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "ChangesToMakeDecision");
-    return make_shared_ptr(new ChangesToMakeDecision(
+    std::tr1::shared_ptr<ChangesToMakeDecision> result(new ChangesToMakeDecision(
                 v.member<Resolvent>("resolvent"),
                 v.member<std::tr1::shared_ptr<const PackageID> >("origin_id"),
                 v.member<bool>("best"),
@@ -91,6 +107,18 @@ ChangesToMakeDecision::deserialise(Deserialisation & d)
                 v.member<bool>("taken"),
                 v.member<std::tr1::shared_ptr<const Destination> >("destination")
                 ));
+
+    {
+        const std::tr1::shared_ptr<Deserialisation> dn(v.find_remove_member("required_confirmations_if_any"));
+        if (! dn->null())
+        {
+            Deserialisator vv(*dn, "c");
+            for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
+                result->add_required_confirmation(vv.member<std::tr1::shared_ptr<RequiredConfirmation> >(stringify(n)));
+        }
+    }
+
+    return result;
 }
 
 const std::tr1::shared_ptr<UnableToMakeDecision>
@@ -116,15 +144,29 @@ RemoveDecision::deserialise(Deserialisation & d)
     Deserialisator v(d, "RemoveDecision");
 
     std::tr1::shared_ptr<PackageIDSequence> ids(new PackageIDSequence);
-    Deserialisator vv(*v.find_remove_member("ids"), "c");
-    for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
-        ids->push_back(vv.member<std::tr1::shared_ptr<const PackageID> >(stringify(n)));
+    {
+        Deserialisator vv(*v.find_remove_member("ids"), "c");
+        for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
+            ids->push_back(vv.member<std::tr1::shared_ptr<const PackageID> >(stringify(n)));
+    }
 
-    return make_shared_ptr(new RemoveDecision(
+    const std::tr1::shared_ptr<RemoveDecision> result(new RemoveDecision(
                 v.member<Resolvent>("resolvent"),
                 ids,
                 v.member<bool>("taken")
                 ));
+
+    {
+        const std::tr1::shared_ptr<Deserialisation> dn(v.find_remove_member("required_confirmations_if_any"));
+        if (! dn->null())
+        {
+            Deserialisator vv(*dn, "c");
+            for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
+                result->add_required_confirmation(vv.member<std::tr1::shared_ptr<RequiredConfirmation> >(stringify(n)));
+        }
+    }
+
+    return result;
 }
 
 namespace paludis
@@ -278,6 +320,7 @@ namespace paludis
         ChangeType change_type;
         const bool taken;
         std::tr1::shared_ptr<const Destination> destination;
+        std::tr1::shared_ptr<RequiredConfirmations> required_confirmations;
 
         Implementation(
                 const Resolvent & l,
@@ -328,6 +371,20 @@ ChangesToMakeDecision::set_destination(const std::tr1::shared_ptr<const Destinat
     _imp->destination = d;
 }
 
+const std::tr1::shared_ptr<const RequiredConfirmations>
+ChangesToMakeDecision::required_confirmations_if_any() const
+{
+    return _imp->required_confirmations;
+}
+
+void
+ChangesToMakeDecision::add_required_confirmation(const std::tr1::shared_ptr<const RequiredConfirmation> & r)
+{
+    if (! _imp->required_confirmations)
+        _imp->required_confirmations.reset(new RequiredConfirmations);
+    _imp->required_confirmations->push_back(r);
+}
+
 const std::tr1::shared_ptr<const PackageID>
 ChangesToMakeDecision::origin_id() const
 {
@@ -374,6 +431,7 @@ ChangesToMakeDecision::serialise(Serialiser & s) const
         .member(SerialiserFlags<>(), "change_type", stringify(change_type()))
         .member(SerialiserFlags<serialise::might_be_null>(), "destination", destination())
         .member(SerialiserFlags<>(), "taken", taken())
+        .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "required_confirmations_if_any", required_confirmations_if_any())
         ;
 }
 
@@ -448,6 +506,7 @@ namespace paludis
         const Resolvent resolvent;
         const std::tr1::shared_ptr<const PackageIDSequence> ids;
         const bool taken;
+        std::tr1::shared_ptr<RequiredConfirmations> required_confirmations;
 
         Implementation(const Resolvent & l, const std::tr1::shared_ptr<const PackageIDSequence> & i, const bool t) :
             resolvent(l),
@@ -489,6 +548,20 @@ RemoveDecision::ids() const
     return _imp->ids;
 }
 
+const std::tr1::shared_ptr<const RequiredConfirmations>
+RemoveDecision::required_confirmations_if_any() const
+{
+    return _imp->required_confirmations;
+}
+
+void
+RemoveDecision::add_required_confirmation(const std::tr1::shared_ptr<const RequiredConfirmation> & r)
+{
+    if (! _imp->required_confirmations)
+        _imp->required_confirmations.reset(new RequiredConfirmations);
+    _imp->required_confirmations->push_back(r);
+}
+
 void
 RemoveDecision::serialise(Serialiser & s) const
 {
@@ -496,6 +569,7 @@ RemoveDecision::serialise(Serialiser & s) const
         .member(SerialiserFlags<>(), "resolvent", resolvent())
         .member(SerialiserFlags<>(), "taken", taken())
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "ids", ids())
+        .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "required_confirmations_if_any", required_confirmations_if_any())
         ;
 }
 

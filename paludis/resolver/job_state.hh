@@ -21,13 +21,11 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_STATE_HH 1
 
 #include <paludis/resolver/job_state-fwd.hh>
-#include <paludis/resolver/job-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <tr1/memory>
-#include <string>
 
 namespace paludis
 {
@@ -35,82 +33,62 @@ namespace paludis
     {
         class PALUDIS_VISIBLE JobState :
             public virtual DeclareAbstractAcceptMethods<JobState, MakeTypeList<
-                JobPendingState, JobSucceededState, JobFailedState, JobSkippedState>::Type>
+                JobPendingState, JobActiveState, JobSucceededState, JobFailedState, JobSkippedState>::Type>
         {
             public:
                 virtual ~JobState() = 0;
-
-                virtual const std::tr1::shared_ptr<const Job> job() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-                virtual const std::string state_name() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
         };
 
         class PALUDIS_VISIBLE JobPendingState :
             public JobState,
-            public ImplementAcceptMethods<JobState, JobPendingState>,
-            private PrivateImplementationPattern<JobPendingState>
+            public ImplementAcceptMethods<JobState, JobPendingState>
+        {
+        };
+
+        class PALUDIS_VISIBLE JobActiveState :
+            private PrivateImplementationPattern<JobActiveState>,
+            public JobState,
+            public ImplementAcceptMethods<JobState, JobActiveState>
         {
             public:
-                JobPendingState(const std::tr1::shared_ptr<const Job> &);
-                ~JobPendingState();
+                JobActiveState();
+                ~JobActiveState();
 
-                virtual const std::tr1::shared_ptr<const Job> job() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::string state_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                void set_output_manager(const std::tr1::shared_ptr<OutputManager> &);
+                const std::tr1::shared_ptr<JobSucceededState> succeeded() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::tr1::shared_ptr<JobFailedState> failed() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class PALUDIS_VISIBLE JobSucceededState :
+            private PrivateImplementationPattern<JobSucceededState>,
             public JobState,
-            public ImplementAcceptMethods<JobState, JobSucceededState>,
-            private PrivateImplementationPattern<JobSucceededState>
+            public ImplementAcceptMethods<JobState, JobSucceededState>
         {
             public:
-                JobSucceededState(const std::tr1::shared_ptr<const Job> &);
+                JobSucceededState(const std::tr1::shared_ptr<OutputManager> &);
                 ~JobSucceededState();
 
-                virtual const std::tr1::shared_ptr<const Job> job() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::string state_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                void add_output_manager(const std::tr1::shared_ptr<OutputManager> &);
-                bool any_output_manager_wants_to_flush() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::tr1::shared_ptr<OutputManager> output_manager() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class PALUDIS_VISIBLE JobFailedState :
+            private PrivateImplementationPattern<JobFailedState>,
             public JobState,
-            public ImplementAcceptMethods<JobState, JobFailedState>,
-            private PrivateImplementationPattern<JobFailedState>
+            public ImplementAcceptMethods<JobState, JobFailedState>
         {
             public:
-                JobFailedState(const std::tr1::shared_ptr<const Job> &);
+                JobFailedState(const std::tr1::shared_ptr<OutputManager> &);
                 ~JobFailedState();
 
-                virtual const std::tr1::shared_ptr<const Job> job() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::string state_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                void add_output_manager(const std::tr1::shared_ptr<OutputManager> &);
-                bool any_output_manager_wants_to_flush() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::tr1::shared_ptr<OutputManager> output_manager() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class PALUDIS_VISIBLE JobSkippedState :
             public JobState,
-            public ImplementAcceptMethods<JobState, JobSkippedState>,
-            private PrivateImplementationPattern<JobSkippedState>
+            public ImplementAcceptMethods<JobState, JobSkippedState>
         {
-            public:
-                JobSkippedState(const std::tr1::shared_ptr<const Job> &);
-                ~JobSkippedState();
-
-                virtual const std::tr1::shared_ptr<const Job> job() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::string state_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
-
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
-    extern template class PrivateImplementationPattern<resolver::JobPendingState>;
-    extern template class PrivateImplementationPattern<resolver::JobSucceededState>;
-    extern template class PrivateImplementationPattern<resolver::JobFailedState>;
-    extern template class PrivateImplementationPattern<resolver::JobSkippedState>;
-#endif
 }
 
 #endif

@@ -19,7 +19,6 @@
 
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/constraint.hh>
-#include <paludis/resolver/arrow.hh>
 #include <paludis/resolver/decision.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/join.hh>
