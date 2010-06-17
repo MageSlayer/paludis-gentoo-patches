@@ -601,7 +601,7 @@ namespace
         {
             result->add(make_shared_ptr(new Constraint(make_named_values<Constraint>(
                                 n::destination_type() = resolvent.destination_type(),
-                                n::nothing_is_fine_too() = false,
+                                n::nothing_is_fine_too() = true,
                                 n::reason() = make_shared_ptr(new PresetReason("is scm", make_null_shared_ptr())),
                                 n::spec() = make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(resolvent.package()),
                                 n::untaken() = false,
