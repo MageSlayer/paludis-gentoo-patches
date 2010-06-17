@@ -72,7 +72,7 @@ namespace paludis
                             n::resolutions_by_resolvent() = make_shared_ptr(new ResolutionsByResolvent),
                             n::taken_change_or_remove_decisions() = make_shared_ptr(new OrderedChangeOrRemoveDecisions),
                             n::taken_unable_to_make_decisions() = make_shared_ptr(new Decisions<UnableToMakeDecision>),
-                            n::taken_unconfirmed_change_or_remove_decisions() = make_shared_ptr(new Decisions<ChangeOrRemoveDecision>),
+                            n::taken_unconfirmed_decisions() = make_shared_ptr(new Decisions<ConfirmableDecision>),
                             n::untaken_change_or_remove_decisions() = make_shared_ptr(new Decisions<ChangeOrRemoveDecision>),
                             n::untaken_unable_to_make_decisions() = make_shared_ptr(new Decisions<UnableToMakeDecision>)
                             ))),

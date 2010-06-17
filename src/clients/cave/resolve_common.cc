@@ -818,6 +818,11 @@ namespace
             throw InternalError(PALUDIS_HERE, "RemoveDecision shouldn't have deps");
         }
 
+        bool visit(const BreakDecision &) const PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "BreakDecision shouldn't have deps");
+        }
+
         bool visit(const ChangesToMakeDecision & decision) const
         {
             if (ignore_dep_from(env, resolution_options, no_blockers_from,
@@ -990,14 +995,6 @@ namespace
         return false;
     }
 
-    bool allowed_to_break_fn(
-            const Environment * const env,
-            const PackageDepSpecList & list,
-            const std::tr1::shared_ptr<const PackageID> & i)
-    {
-        return match_any(env, list, i);
-    }
-
     bool allowed_to_remove_fn(
             const Environment * const env,
             const PackageDepSpecList & list,
@@ -1060,6 +1057,11 @@ namespace
             return decision.origin_id();
         }
 
+        const std::tr1::shared_ptr<const PackageID> visit(const BreakDecision & decision) const
+        {
+            return decision.existing_id();
+        }
+
         const std::tr1::shared_ptr<const PackageID> visit(const ExistingNoChangeDecision & decision) const
         {
             return decision.existing_id();
@@ -1087,17 +1089,20 @@ namespace
         const ResolveCommandLineResolutionOptions & resolution_options;
         const PackageDepSpecList & permit_downgrade;
         const PackageDepSpecList & permit_old_version;
+        const PackageDepSpecList & allowed_to_break_specs;
         const std::tr1::shared_ptr<const PackageID> id;
 
         ConfirmFnVisitor(const Environment * const e,
                 const ResolveCommandLineResolutionOptions & r,
                 const PackageDepSpecList & d,
                 const PackageDepSpecList & o,
+                const PackageDepSpecList & a,
                 const std::tr1::shared_ptr<const PackageID> & i) :
             env(e),
             resolution_options(r),
             permit_downgrade(d),
             permit_old_version(o),
+            allowed_to_break_specs(a),
             id(i)
         {
         }
@@ -1127,6 +1132,19 @@ namespace
 
             return false;
         }
+
+        bool visit(const BreakConfirmation &) const
+        {
+            if (id)
+                for (PackageDepSpecList::const_iterator l(allowed_to_break_specs.begin()), l_end(allowed_to_break_specs.end()) ;
+                        l != l_end ; ++l)
+                {
+                    if (match_package(*env, *l, *id, MatchPackageOptions()))
+                        return true;
+                }
+
+            return false;
+        }
     };
 
     bool confirm_fn(
@@ -1134,10 +1152,11 @@ namespace
             const ResolveCommandLineResolutionOptions & resolution_options,
             const PackageDepSpecList & permit_downgrade,
             const PackageDepSpecList & permit_old_version,
+            const PackageDepSpecList & allowed_to_break_specs,
             const std::tr1::shared_ptr<const Resolution> & r,
             const std::tr1::shared_ptr<const RequiredConfirmation> & c)
     {
-        return c->accept_returning<bool>(ConfirmFnVisitor(env, resolution_options, permit_downgrade, permit_old_version,
+        return c->accept_returning<bool>(ConfirmFnVisitor(env, resolution_options, permit_downgrade, permit_old_version, allowed_to_break_specs,
                     r->decision()->accept_returning<std::tr1::shared_ptr<const PackageID> >(ChosenIDVisitor())
                     ));
     }
@@ -1347,6 +1366,11 @@ namespace
         const std::string visit(const RemoveDecision &) const
         {
             return "remove_decision";
+        }
+
+        const std::string visit(const BreakDecision &) const
+        {
+            return "break_decision";
         }
 
         const std::string visit(const UnableToMakeDecision &) const
@@ -1603,13 +1627,11 @@ paludis::cave::resolve_common(
     using std::tr1::placeholders::_4;
 
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
-                n::allowed_to_break_fn() = std::tr1::bind(&allowed_to_break_fn,
-                        env.get(), std::tr1::cref(allowed_to_break_specs), _1),
                 n::allowed_to_remove_fn() = std::tr1::bind(&allowed_to_remove_fn,
                         env.get(), std::tr1::cref(allowed_to_remove_specs), _1),
                 n::confirm_fn() = std::tr1::bind(&confirm_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::cref(permit_downgrade),
-                        std::tr1::cref(permit_old_version), _1, _2),
+                        std::tr1::cref(permit_old_version), std::tr1::cref(allowed_to_break_specs), _1, _2),
                 n::find_repository_for_fn() = std::tr1::bind(&find_repository_for_fn,
                         env.get(), std::tr1::cref(resolution_options), _1, _2),
                 n::get_constraints_for_dependent_fn() = std::tr1::bind(&get_constraints_for_dependent_fn,
@@ -1684,7 +1706,7 @@ paludis::cave::resolve_common(
         if (! resolver->resolved()->taken_unable_to_make_decisions()->empty())
             retcode |= 1;
 
-        if (! resolver->resolved()->taken_unconfirmed_change_or_remove_decisions()->empty())
+        if (! resolver->resolved()->taken_unconfirmed_decisions()->empty())
             retcode |= 3;
 
         if (0 == retcode)

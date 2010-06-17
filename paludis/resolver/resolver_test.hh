@@ -93,10 +93,6 @@ namespace paludis
                     const std::tr1::shared_ptr<const PackageID> &,
                     const std::tr1::shared_ptr<const Reason> &);
 
-            bool allowed_to_break_fn(
-                    const std::tr1::shared_ptr<const QualifiedPackageNameSet> &,
-                    const std::tr1::shared_ptr<const PackageID> &);
-
             bool allowed_to_remove_fn(
                     const std::tr1::shared_ptr<const QualifiedPackageNameSet> &,
                     const std::tr1::shared_ptr<const PackageID> &);
@@ -118,7 +114,6 @@ namespace paludis
                 TestEnvironment env;
                 std::tr1::shared_ptr<Repository> repo, inst_repo;
                 std::tr1::shared_ptr<FakeInstalledRepository> fake_inst_repo;
-                std::tr1::shared_ptr<QualifiedPackageNameSet> allowed_to_break_names;
                 std::tr1::shared_ptr<QualifiedPackageNameSet> allowed_to_remove_names;
                 std::tr1::shared_ptr<QualifiedPackageNameSet> remove_if_dependent_names;
                 std::tr1::shared_ptr<Map<QualifiedPackageName, bool> > prefer_or_avoid_names;
@@ -149,12 +144,16 @@ namespace paludis
                     static bool check_unable(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Decision> & r);
                     static std::string check_unable_msg(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Decision> & r);
 
+                    static bool check_breaking(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Decision> & r);
+                    static std::string check_breaking_msg(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Decision> & r);
+
                     static bool check_finished(const std::tr1::shared_ptr<const Decision> & r);
                     static std::string check_finished_msg(const std::tr1::shared_ptr<const Decision> & r);
 
                     DecisionChecks & change(const QualifiedPackageName & q);
                     DecisionChecks & remove(const QualifiedPackageName & q);
                     DecisionChecks & unable(const QualifiedPackageName & q);
+                    DecisionChecks & breaking(const QualifiedPackageName & q);
                     DecisionChecks & finished();
                 };
 
@@ -167,6 +166,7 @@ namespace paludis
                         const std::tr1::shared_ptr<const Resolved> &,
                         const NamedValue<n::taken_change_or_remove_decisions, const std::tr1::shared_ptr<const DecisionChecks> > &,
                         const NamedValue<n::taken_unable_to_make_decisions, const std::tr1::shared_ptr<const DecisionChecks> > &,
+                        const NamedValue<n::taken_unconfirmed_decisions, const std::tr1::shared_ptr<const DecisionChecks> > &,
                         const NamedValue<n::untaken_change_or_remove_decisions, const std::tr1::shared_ptr<const DecisionChecks> > &,
                         const NamedValue<n::untaken_unable_to_make_decisions, const std::tr1::shared_ptr<const DecisionChecks> > &
                         );

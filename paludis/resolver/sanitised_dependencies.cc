@@ -109,6 +109,7 @@ namespace
     {
         const Decider & decider;
         const std::tr1::shared_ptr<const Resolution> our_resolution;
+        const std::tr1::shared_ptr<const PackageID> our_id;
         const std::tr1::function<SanitisedDependency (const PackageOrBlockDepSpec &)> parent_make_sanitised;
 
         bool super_complicated, nested;
@@ -119,9 +120,11 @@ namespace
         bool seen_any;
 
         AnyDepSpecChildHandler(const Decider & r, const std::tr1::shared_ptr<const Resolution> & q,
+                const std::tr1::shared_ptr<const PackageID> & o,
                 const std::tr1::function<SanitisedDependency (const PackageOrBlockDepSpec &)> & f) :
             decider(r),
             our_resolution(q),
+            our_id(o),
             parent_make_sanitised(f),
             super_complicated(false),
             nested(false),
@@ -210,7 +213,7 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
         {
-            AnyDepSpecChildHandler h(decider, our_resolution, parent_make_sanitised);
+            AnyDepSpecChildHandler h(decider, our_resolution, our_id, parent_make_sanitised);
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(h));
             std::list<SanitisedDependency> l;
             h.commit(
@@ -271,7 +274,7 @@ namespace
                             h != h_end ; ++h)
                     {
                         std::pair<AnyChildScore, OperatorScore> score(
-                                decider.find_any_score(our_resolution, make_sanitised(PackageOrBlockDepSpec(*h))));
+                                decider.find_any_score(our_resolution, our_id, make_sanitised(PackageOrBlockDepSpec(*h))));
                         if (score < worst_score)
                             worst_score = score;
                     }
@@ -296,6 +299,7 @@ namespace
     {
         const Decider & decider;
         const std::tr1::shared_ptr<const Resolution> our_resolution;
+        const std::tr1::shared_ptr<const PackageID> & our_id;
         SanitisedDependencies & sanitised_dependencies;
         const std::string raw_name;
         const std::string human_name;
@@ -305,6 +309,7 @@ namespace
         Finder(
                 const Decider & r,
                 const std::tr1::shared_ptr<const Resolution> & q,
+                const std::tr1::shared_ptr<const PackageID> & f,
                 SanitisedDependencies & s,
                 const std::tr1::shared_ptr<const DependenciesLabelSequence> & l,
                 const std::string & rn,
@@ -312,6 +317,7 @@ namespace
                 const std::string & a) :
             decider(r),
             our_resolution(q),
+            our_id(f),
             sanitised_dependencies(s),
             raw_name(rn),
             human_name(hn),
@@ -386,7 +392,8 @@ namespace
                 original_specs_as_string = "|| (" + v.result + " )";
             }
 
-            AnyDepSpecChildHandler h(decider, our_resolution, std::tr1::bind(&Finder::make_sanitised, this, std::tr1::placeholders::_1));
+            AnyDepSpecChildHandler h(decider, our_resolution, our_id,
+                    std::tr1::bind(&Finder::make_sanitised, this, std::tr1::placeholders::_1));
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(h));
             h.commit(
                     std::tr1::bind(&Finder::make_sanitised, this, std::tr1::placeholders::_1),
@@ -442,7 +449,7 @@ SanitisedDependencies::_populate_one(
 {
     Context context("When finding dependencies for '" + stringify(*id) + "' from key '" + ((*id).*pmf)()->raw_name() + "':");
 
-    Finder f(decider, resolution, *this, ((*id).*pmf)()->initial_labels(), ((*id).*pmf)()->raw_name(),
+    Finder f(decider, resolution, id, *this, ((*id).*pmf)()->initial_labels(), ((*id).*pmf)()->raw_name(),
             ((*id).*pmf)()->human_name(), "");
     ((*id).*pmf)()->value()->root()->accept(f);
 }

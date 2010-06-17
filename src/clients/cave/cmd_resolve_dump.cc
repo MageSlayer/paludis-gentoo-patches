@@ -100,6 +100,11 @@ namespace
                 + " destination: " + stringify_if_not_null(d.destination())
                 + ")";
         }
+
+        const std::string visit(const BreakDecision & d) const
+        {
+            return "BreakDecision(taken: " + stringify(d.taken()) + " existing_id: " + stringify(*d.existing_id()) + ")";
+        }
     };
 
     std::ostream &

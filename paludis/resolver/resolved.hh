@@ -39,7 +39,7 @@ namespace paludis
         typedef Name<struct resolutions_by_resolvent_name> resolutions_by_resolvent;
         typedef Name<struct taken_change_or_remove_decisions_name> taken_change_or_remove_decisions;
         typedef Name<struct taken_unable_to_make_decisions_name> taken_unable_to_make_decisions;
-        typedef Name<struct taken_unconfirmed_change_or_remove_decisions_name> taken_unconfirmed_change_or_remove_decisions;
+        typedef Name<struct taken_unconfirmed_decisions_name> taken_unconfirmed_decisions;
         typedef Name<struct untaken_change_or_remove_decisions_name> untaken_change_or_remove_decisions;
         typedef Name<struct untaken_unable_to_make_decisions_name> untaken_unable_to_make_decisions;
     }
@@ -53,7 +53,7 @@ namespace paludis
             NamedValue<n::resolutions_by_resolvent, std::tr1::shared_ptr<ResolutionsByResolvent> > resolutions_by_resolvent;
             NamedValue<n::taken_change_or_remove_decisions, std::tr1::shared_ptr<OrderedChangeOrRemoveDecisions> > taken_change_or_remove_decisions;
             NamedValue<n::taken_unable_to_make_decisions, std::tr1::shared_ptr<Decisions<UnableToMakeDecision> > > taken_unable_to_make_decisions;
-            NamedValue<n::taken_unconfirmed_change_or_remove_decisions, std::tr1::shared_ptr<Decisions<ChangeOrRemoveDecision> > > taken_unconfirmed_change_or_remove_decisions;
+            NamedValue<n::taken_unconfirmed_decisions, std::tr1::shared_ptr<Decisions<ConfirmableDecision> > > taken_unconfirmed_decisions;
             NamedValue<n::untaken_change_or_remove_decisions, std::tr1::shared_ptr<Decisions<ChangeOrRemoveDecision> > > untaken_change_or_remove_decisions;
             NamedValue<n::untaken_unable_to_make_decisions, std::tr1::shared_ptr<Decisions<UnableToMakeDecision> > > untaken_unable_to_make_decisions;
 

@@ -45,7 +45,6 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct allowed_to_break_fn_name> allowed_to_break_fn;
         typedef Name<struct allowed_to_remove_fn_name> allowed_to_remove_fn;
         typedef Name<struct confirm_fn_name> confirm_fn;
         typedef Name<struct find_repository_for_fn_name> find_repository_for_fn;
@@ -62,10 +61,6 @@ namespace paludis
 
     namespace resolver
     {
-        typedef std::tr1::function<bool (
-                const std::tr1::shared_ptr<const PackageID> &
-                )> AllowedToBreakFunction;
-
         typedef std::tr1::function<bool (
                 const std::tr1::shared_ptr<const PackageID> &
                 )> AllowedToRemoveFunction;
@@ -128,7 +123,6 @@ namespace paludis
 
         struct ResolverFunctions
         {
-            NamedValue<n::allowed_to_break_fn, AllowedToBreakFunction> allowed_to_break_fn;
             NamedValue<n::allowed_to_remove_fn, AllowedToRemoveFunction> allowed_to_remove_fn;
             NamedValue<n::confirm_fn, ConfirmFunction> confirm_fn;
             NamedValue<n::find_repository_for_fn, FindRepositoryForFunction> find_repository_for_fn;

@@ -196,6 +196,7 @@ Decisions<Decision_, Notes_>::deserialise(Deserialisation & d)
 template class Decisions<UnableToMakeDecision>;
 template class Decisions<ChangesToMakeDecision>;
 template class Decisions<ChangeOrRemoveDecision>;
+template class Decisions<ConfirmableDecision>;
 template class Decisions<ChangeOrRemoveDecision, std::tr1::shared_ptr<const OrdererNotes> >;
 
 template class WrappedForwardIterator<Decisions<UnableToMakeDecision>::ConstIteratorTag,
@@ -204,6 +205,8 @@ template class WrappedForwardIterator<Decisions<ChangesToMakeDecision>::ConstIte
          const std::tr1::shared_ptr<const ChangesToMakeDecision> >;
 template class WrappedForwardIterator<Decisions<ChangeOrRemoveDecision>::ConstIteratorTag,
          const std::tr1::shared_ptr<const ChangeOrRemoveDecision> >;
+template class WrappedForwardIterator<Decisions<ConfirmableDecision>::ConstIteratorTag,
+         const std::tr1::shared_ptr<const ConfirmableDecision> >;
 template class WrappedForwardIterator<Decisions<ChangeOrRemoveDecision, std::tr1::shared_ptr<const OrdererNotes> >::ConstIteratorTag,
          const std::pair<
              std::tr1::shared_ptr<const ChangeOrRemoveDecision>,

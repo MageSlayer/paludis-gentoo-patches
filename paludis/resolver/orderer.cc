@@ -162,6 +162,13 @@ namespace
             else
                 throw InternalError(PALUDIS_HERE, "untaken RemoveDecision");
         }
+
+        bool visit(const BreakDecision & d)
+        {
+            if (d.required_confirmations_if_any())
+                resolved->taken_unconfirmed_decisions()->cast_push_back(decision);
+            return false;
+        }
     };
 
     struct LabelsClassifier
@@ -551,7 +558,7 @@ Orderer::_schedule(
 {
     _imp->resolved->taken_change_or_remove_decisions()->push_back(d, n);
     if (d->required_confirmations_if_any())
-        _imp->resolved->taken_unconfirmed_change_or_remove_decisions()->push_back(d);
+        _imp->resolved->taken_unconfirmed_decisions()->push_back(d);
 
     const ChangesToMakeDecision * const changes_to_make_decision(simple_visitor_cast<const ChangesToMakeDecision>(*d));
     const RemoveDecision * const remove_decision(simple_visitor_cast<const RemoveDecision>(*d));

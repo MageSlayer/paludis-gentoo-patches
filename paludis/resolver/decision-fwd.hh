@@ -28,6 +28,7 @@ namespace paludis
     namespace resolver
     {
         class Decision;
+        class ConfirmableDecision;
         class ChangeOrRemoveDecision;
 
         class NothingNoChangeDecision;
@@ -35,6 +36,7 @@ namespace paludis
         class UnableToMakeDecision;
         class ChangesToMakeDecision;
         class RemoveDecision;
+        class BreakDecision;
     }
 }
 

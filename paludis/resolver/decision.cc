@@ -76,6 +76,29 @@ Decision::deserialise(Deserialisation & d)
     {
         return RemoveDecision::deserialise(d);
     }
+    else if (d.class_name() == "BreakDecision")
+    {
+        return BreakDecision::deserialise(d);
+    }
+    else
+        throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
+}
+
+const std::tr1::shared_ptr<ConfirmableDecision>
+ConfirmableDecision::deserialise(Deserialisation & d)
+{
+    if (d.class_name() == "ChangesToMakeDecision")
+    {
+        return ChangesToMakeDecision::deserialise(d);
+    }
+    else if (d.class_name() == "RemoveDecision")
+    {
+        return RemoveDecision::deserialise(d);
+    }
+    else if (d.class_name() == "BreakDecision")
+    {
+        return BreakDecision::deserialise(d);
+    }
     else
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 }
@@ -573,9 +596,110 @@ RemoveDecision::serialise(Serialiser & s) const
         ;
 }
 
+namespace paludis
+{
+    template <>
+    struct Implementation<BreakDecision>
+    {
+        const Resolvent resolvent;
+        const std::tr1::shared_ptr<const PackageID> existing_id;
+        const bool taken;
+        std::tr1::shared_ptr<RequiredConfirmations> required_confirmations;
+
+        Implementation(const Resolvent & l,
+                const std::tr1::shared_ptr<const PackageID> & e,
+                const bool t) :
+            resolvent(l),
+            existing_id(e),
+            taken(t)
+        {
+        }
+    };
+}
+
+BreakDecision::BreakDecision(const Resolvent & l, const std::tr1::shared_ptr<const PackageID> & e, const bool t) :
+    PrivateImplementationPattern<BreakDecision>(new Implementation<BreakDecision>(
+                l, e, t))
+{
+}
+
+#ifdef PALUDIS_HAVE_DEFAULT_DELETED
+BreakDecision::~BreakDecision() = default;
+#else
+BreakDecision::~BreakDecision()
+{
+}
+#endif
+
+const std::tr1::shared_ptr<const PackageID>
+BreakDecision::existing_id() const
+{
+    return _imp->existing_id;
+}
+
+const Resolvent
+BreakDecision::resolvent() const
+{
+    return _imp->resolvent;
+}
+
+bool
+BreakDecision::taken() const
+{
+    return _imp->taken;
+}
+
+const std::tr1::shared_ptr<const RequiredConfirmations>
+BreakDecision::required_confirmations_if_any() const
+{
+    return _imp->required_confirmations;
+}
+
+void
+BreakDecision::add_required_confirmation(const std::tr1::shared_ptr<const RequiredConfirmation> & r)
+{
+    if (! _imp->required_confirmations)
+        _imp->required_confirmations.reset(new RequiredConfirmations);
+    _imp->required_confirmations->push_back(r);
+}
+
+void
+BreakDecision::serialise(Serialiser & s) const
+{
+    s.object("BreakDecision")
+        .member(SerialiserFlags<serialise::might_be_null>(), "existing_id", existing_id())
+        .member(SerialiserFlags<>(), "taken", taken())
+        .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "required_confirmations_if_any", required_confirmations_if_any())
+        ;
+}
+
+const std::tr1::shared_ptr<BreakDecision>
+BreakDecision::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "BreakDecision");
+    std::tr1::shared_ptr<BreakDecision> result(new BreakDecision(
+                v.member<Resolvent>("resolvent"),
+                v.member<std::tr1::shared_ptr<const PackageID> >("existing_id"),
+                v.member<bool>("taken")
+                ));
+
+    {
+        const std::tr1::shared_ptr<Deserialisation> dn(v.find_remove_member("required_confirmations_if_any"));
+        if (! dn->null())
+        {
+            Deserialisator vv(*dn, "c");
+            for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
+                result->add_required_confirmation(vv.member<std::tr1::shared_ptr<RequiredConfirmation> >(stringify(n)));
+        }
+    }
+
+    return result;
+}
+
 template class PrivateImplementationPattern<NothingNoChangeDecision>;
 template class PrivateImplementationPattern<ExistingNoChangeDecision>;
 template class PrivateImplementationPattern<ChangesToMakeDecision>;
 template class PrivateImplementationPattern<UnableToMakeDecision>;
 template class PrivateImplementationPattern<RemoveDecision>;
+template class PrivateImplementationPattern<BreakDecision>;
 

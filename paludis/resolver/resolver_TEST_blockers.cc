@@ -88,6 +88,8 @@ namespace test_cases
                         .finished()),
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
+                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
                     n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
@@ -116,6 +118,8 @@ namespace test_cases
                         .finished()),
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
                         .unable(QualifiedPackageName("unfixable/a-pkg"))
+                        .finished()),
+                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
@@ -146,6 +150,8 @@ namespace test_cases
                         .change(QualifiedPackageName("remove/target"))
                         .finished()),
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
@@ -182,6 +188,8 @@ namespace test_cases
                         .finished()) : make_shared_copy(DecisionChecks()
                         .finished()),
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
@@ -221,6 +229,8 @@ namespace test_cases
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
                         .unable(QualifiedPackageName("blocked-and-dep/both"))
                         .finished()),
+                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
                     n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
@@ -250,6 +260,8 @@ namespace test_cases
                         .change(QualifiedPackageName("block-and-dep-cycle/target"))
                         .finished()),
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),

@@ -197,8 +197,6 @@ namespace paludis
 
                 bool _allowed_to_remove(const std::tr1::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                bool _allowed_to_break(const std::tr1::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-
                 bool _remove_if_dependent(const std::tr1::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::pair<
@@ -226,7 +224,9 @@ namespace paludis
                 void add_target_with_reason(const PackageOrBlockDepSpec &, const std::tr1::shared_ptr<const Reason> &);
 
                 std::pair<AnyChildScore, OperatorScore> find_any_score(
-                        const std::tr1::shared_ptr<const Resolution> &, const SanitisedDependency &) const;
+                        const std::tr1::shared_ptr<const Resolution> &,
+                        const std::tr1::shared_ptr<const PackageID> &,
+                        const SanitisedDependency &) const;
 
                 const std::tr1::shared_ptr<const RewrittenSpec> rewrite_if_special(const PackageOrBlockDepSpec &,
                         const std::tr1::shared_ptr<const Resolvent> & maybe_from) const;

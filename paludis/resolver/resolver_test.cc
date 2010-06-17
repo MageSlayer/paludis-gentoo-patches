@@ -240,14 +240,6 @@ paludis::resolver::resolver_test::find_repository_for_fn(
 }
 
 bool
-paludis::resolver::resolver_test::allowed_to_break_fn(
-        const std::tr1::shared_ptr<const QualifiedPackageNameSet> & s,
-        const std::tr1::shared_ptr<const PackageID> & i)
-{
-    return s->end() != s->find(i->name());
-}
-
-bool
 paludis::resolver::resolver_test::allowed_to_remove_fn(
         const std::tr1::shared_ptr<const QualifiedPackageNameSet> & s,
         const std::tr1::shared_ptr<const PackageID> & i)
@@ -319,7 +311,6 @@ paludis::resolver::resolver_test::get_constraints_for_dependent_fn(
 ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s, const std::string & e,
         const std::string & l) :
     TestCase(s),
-    allowed_to_break_names(new QualifiedPackageNameSet),
     allowed_to_remove_names(new QualifiedPackageNameSet),
     remove_if_dependent_names(new QualifiedPackageNameSet),
     prefer_or_avoid_names(new Map<QualifiedPackageName, bool>)
@@ -368,8 +359,6 @@ ResolverFunctions
 ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraints)
 {
     return make_named_values<ResolverFunctions>(
-            n::allowed_to_break_fn() = std::tr1::bind(&allowed_to_break_fn,
-                    allowed_to_break_names, std::tr1::placeholders::_1),
             n::allowed_to_remove_fn() = std::tr1::bind(&allowed_to_remove_fn,
                     allowed_to_remove_names, std::tr1::placeholders::_1),
             n::confirm_fn() = &confirm_fn,
@@ -465,6 +454,7 @@ ResolverTestCase::check_resolved(
         const std::tr1::shared_ptr<const Resolved> & resolved,
         const NamedValue<n::taken_change_or_remove_decisions, const std::tr1::shared_ptr<const DecisionChecks> > & taken_change_or_remove_decisions,
         const NamedValue<n::taken_unable_to_make_decisions, const std::tr1::shared_ptr<const DecisionChecks> > & taken_unable_to_make_decisions,
+        const NamedValue<n::taken_unconfirmed_decisions, const std::tr1::shared_ptr<const DecisionChecks> > & taken_unconfirmed_decisions,
         const NamedValue<n::untaken_change_or_remove_decisions, const std::tr1::shared_ptr<const DecisionChecks> > & untaken_change_or_remove_decisions,
         const NamedValue<n::untaken_unable_to_make_decisions, const std::tr1::shared_ptr<const DecisionChecks> > & untaken_unable_to_make_decisions
         )
@@ -477,6 +467,11 @@ ResolverTestCase::check_resolved(
     {
         TestMessageSuffix s("taken unable to make");
         check_resolved_one(resolved->taken_unable_to_make_decisions(), taken_unable_to_make_decisions());
+    }
+
+    {
+        TestMessageSuffix s("taken unconfirmed");
+        check_resolved_one(resolved->taken_unconfirmed_decisions(), taken_unconfirmed_decisions());
     }
 
     {
@@ -496,6 +491,16 @@ ResolverTestCase::DecisionChecks::finished()
     checks.push_back(std::make_pair(
                 &check_finished,
                 &check_finished_msg
+                ));
+    return *this;
+}
+
+ResolverTestCase::DecisionChecks &
+ResolverTestCase::DecisionChecks::breaking(const QualifiedPackageName & q)
+{
+    checks.push_back(std::make_pair(
+                std::tr1::bind(&check_breaking, q, std::tr1::placeholders::_1),
+                std::tr1::bind(&check_breaking_msg, q, std::tr1::placeholders::_1)
                 ));
     return *this;
 }
@@ -552,6 +557,15 @@ ResolverTestCase::DecisionChecks::check_change(const QualifiedPackageName & q, c
 }
 
 bool
+ResolverTestCase::DecisionChecks::check_breaking(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Decision> & d)
+{
+    if (! d)
+        return false;
+
+    return simple_visitor_cast<const BreakDecision>(*d) && d->resolvent().package() == q;
+}
+
+bool
 ResolverTestCase::DecisionChecks::check_remove(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Decision> & d)
 {
     if (! d)
@@ -573,6 +587,12 @@ std::string
 ResolverTestCase::DecisionChecks::check_change_msg(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Decision> & r)
 {
     return check_generic_msg(stringify(q), r);
+}
+
+std::string
+ResolverTestCase::DecisionChecks::check_breaking_msg(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Decision> & r)
+{
+    return check_generic_msg("break " + stringify(q), r);
 }
 
 std::string
@@ -609,6 +629,11 @@ namespace
         std::string visit(const ExistingNoChangeDecision &) const
         {
             return "ExistingNoChangeDecision";
+        }
+
+        std::string visit(const BreakDecision &) const
+        {
+            return "BreakDecision";
         }
 
         std::string visit(const RemoveDecision &) const

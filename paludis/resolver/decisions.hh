@@ -82,6 +82,7 @@ namespace paludis
         extern template class Decisions<UnableToMakeDecision>;
         extern template class Decisions<ChangesToMakeDecision>;
         extern template class Decisions<ChangeOrRemoveDecision>;
+        extern template class Decisions<ConfirmableDecision>;
         extern template class Decisions<ChangeOrRemoveDecision, std::tr1::shared_ptr<const OrdererNotes> >;
 #endif
     }
@@ -93,6 +94,8 @@ namespace paludis
            const std::tr1::shared_ptr<const resolver::ChangesToMakeDecision> >;
     extern template class WrappedForwardIterator<resolver::Decisions<resolver::ChangeOrRemoveDecision>::ConstIteratorTag,
            const std::tr1::shared_ptr<const resolver::ChangeOrRemoveDecision> >;
+    extern template class WrappedForwardIterator<resolver::Decisions<resolver::ConfirmableDecision>::ConstIteratorTag,
+           const std::tr1::shared_ptr<const resolver::ConfirmableDecision> >;
     extern template class WrappedForwardIterator<resolver::Decisions<resolver::ChangeOrRemoveDecision,
            std::tr1::shared_ptr<const resolver::OrdererNotes> >::ConstIteratorTag,
            const std::pair<

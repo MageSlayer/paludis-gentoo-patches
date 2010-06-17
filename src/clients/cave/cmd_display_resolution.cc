@@ -235,6 +235,11 @@ namespace
             return d.existing_id();
         }
 
+        const std::tr1::shared_ptr<const PackageID> visit(const BreakDecision & d) const
+        {
+            return d.existing_id();
+        }
+
         const std::tr1::shared_ptr<const PackageID> visit(const ChangesToMakeDecision & d) const
         {
             return d.origin_id();
@@ -386,6 +391,14 @@ namespace
                 cout << "    No decision could be made" << endl;
             else
                 cout << "    No decision could be made, but none was necessary" << endl;
+        }
+
+        void visit(const BreakDecision & d) const
+        {
+            if (d.taken())
+                cout << "    The decision made was to break " << *d.existing_id() << endl;
+            else
+                cout << "    The decision made would be to break " << *d.existing_id() << endl;
         }
     };
 
@@ -645,6 +658,11 @@ namespace
         {
             return "--permit-old-version";
         }
+
+        std::string visit(const BreakConfirmation &) const
+        {
+            return "--uninstalls-may-break or --remove-if-dependent";
+        }
     };
 
     std::string stringify_confirmation(const RequiredConfirmation & c)
@@ -653,7 +671,7 @@ namespace
     }
 
     void display_confirmations(
-            const ChangesToMakeDecision & decision)
+            const ConfirmableDecision & decision)
     {
         const std::tr1::shared_ptr<const RequiredConfirmations> r(decision.required_confirmations_if_any());
         if (r && ! r->empty())
@@ -1090,16 +1108,35 @@ namespace
         }
     }
 
-    std::pair<std::tr1::shared_ptr<const ChangeOrRemoveDecision>, std::tr1::shared_ptr<const OrdererNotes> >
-    get_decision_and_notes(const std::tr1::shared_ptr<const ChangeOrRemoveDecision> & d)
+    std::pair<std::tr1::shared_ptr<const ConfirmableDecision>, std::tr1::shared_ptr<const OrdererNotes> >
+    get_decision_and_notes(const std::tr1::shared_ptr<const ConfirmableDecision> & d)
     {
         return std::make_pair(d, make_null_shared_ptr());
     }
 
-    std::pair<std::tr1::shared_ptr<const ChangeOrRemoveDecision>, std::tr1::shared_ptr<const OrdererNotes> >
-    get_decision_and_notes(const std::pair<std::tr1::shared_ptr<const ChangeOrRemoveDecision>, std::tr1::shared_ptr<const OrdererNotes> > & d)
+    std::pair<std::tr1::shared_ptr<const ConfirmableDecision>, std::tr1::shared_ptr<const OrdererNotes> >
+    get_decision_and_notes(const std::pair<std::tr1::shared_ptr<const ConfirmableDecision>, std::tr1::shared_ptr<const OrdererNotes> > & d)
     {
         return d;
+    }
+
+    void display_one_break(
+            const std::tr1::shared_ptr<Environment> &,
+            const DisplayResolutionCommandLine &,
+            const std::tr1::shared_ptr<const Resolution> & resolution,
+            const BreakDecision & decision,
+            const bool more_annotations,
+            const bool untaken)
+    {
+        if (untaken)
+            cout << "(X) " << c::bold_red() << decision.resolvent().package() << c::normal() << " ";
+        else
+            cout << "X   " << c::bold_red() << decision.resolvent().package() << c::normal() << " ";
+
+        cout << decision.existing_id()->canonical_form(idcf_no_name) << endl;
+        cout << "    Will be broken by uninstalls:" << endl;
+        display_reasons(resolution, more_annotations);
+        display_confirmations(decision);
     }
 
     template <typename Decisions_>
@@ -1129,11 +1166,12 @@ namespace
             any = true;
 
             const std::pair<
-                std::tr1::shared_ptr<const ChangeOrRemoveDecision>,
+                std::tr1::shared_ptr<const ConfirmableDecision>,
                 std::tr1::shared_ptr<const OrdererNotes> > star_i(get_decision_and_notes(*i));
 
             const ChangesToMakeDecision * const changes_to_make_decision(simple_visitor_cast<const ChangesToMakeDecision>(*star_i.first));
             const RemoveDecision * const remove_decision(simple_visitor_cast<const RemoveDecision>(*star_i.first));
+            const BreakDecision * const break_decision(simple_visitor_cast<const BreakDecision>(*star_i.first));
             if (changes_to_make_decision)
             {
                 display_one_installish(
@@ -1154,6 +1192,16 @@ namespace
                         cmdline,
                         *resolved->resolutions_by_resolvent()->find(remove_decision->resolvent()),
                         *remove_decision,
+                        more_annotations,
+                        untaken);
+            }
+            else if (break_decision)
+            {
+                display_one_break(
+                        env,
+                        cmdline,
+                        *resolved->resolutions_by_resolvent()->find(break_decision->resolvent()),
+                        *break_decision,
                         more_annotations,
                         untaken);
             }
@@ -1243,8 +1291,8 @@ namespace
             const DisplayResolutionCommandLine & cmdline)
     {
         ChoicesToExplain ignore_choices_to_explain;
-        if (! resolved->taken_unconfirmed_change_or_remove_decisions()->empty())
-            display_a_changes_and_removes(env, resolved, resolved->taken_unconfirmed_change_or_remove_decisions(),
+        if (! resolved->taken_unconfirmed_decisions()->empty())
+            display_a_changes_and_removes(env, resolved, resolved->taken_unconfirmed_decisions(),
                     cmdline, ignore_choices_to_explain, true, true, false);
     }
 }

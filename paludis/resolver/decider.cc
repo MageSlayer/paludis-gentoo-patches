@@ -157,33 +157,32 @@ Decider::_resolve_dependents()
     {
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-        if (_allowed_to_break(*s))
-            continue;
-
         const std::tr1::shared_ptr<const PackageIDSequence> dependent_upon(_dependent_upon(
                     *s, changing.first, changing.second));
         if (dependent_upon->empty())
             continue;
 
-        if (_remove_if_dependent(*s))
-        {
-            Resolvent resolvent(*s, dt_install_to_slash);
+        Resolvent resolvent(*s, dt_install_to_slash);
+        bool remove(_remove_if_dependent(*s));
 
-            /* we've changed things if we've not already done anything for this resolvent */
-            if (_imp->resolutions_by_resolvent->end() == _imp->resolutions_by_resolvent->find(resolvent))
-                changed = true;
+        /* we've changed things if we've not already done anything for this
+         * resolvent, but only if we're going to remove it rather than mark it
+         * as broken */
+        if (remove && _imp->resolutions_by_resolvent->end() == _imp->resolutions_by_resolvent->find(resolvent))
+            changed = true;
 
-            const std::tr1::shared_ptr<Resolution> resolution(_resolution_for_resolvent(resolvent, true));
-            const std::tr1::shared_ptr<const ConstraintSequence> constraints(_make_constraints_for_dependent(
-                        resolution, *s, dependent_upon));
-            for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
-                    c != c_end ; ++c)
-                _apply_resolution_constraint(resolution, *c);
-        }
-        else
-        {
-            throw InternalError(PALUDIS_HERE, "unsafe " + stringify(**s));
-        }
+        const std::tr1::shared_ptr<Resolution> resolution(_resolution_for_resolvent(resolvent, true));
+        const std::tr1::shared_ptr<const ConstraintSequence> constraints(_make_constraints_for_dependent(
+                    resolution, *s, dependent_upon));
+        for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
+                c != c_end ; ++c)
+            _apply_resolution_constraint(resolution, *c);
+
+        if ((! remove) && (! resolution->decision()))
+            resolution->decision() = make_shared_ptr(new BreakDecision(
+                        resolvent,
+                        *s,
+                        true));
     }
 
     return changed;
@@ -327,6 +326,10 @@ namespace
         void visit(const UnableToMakeDecision &)
         {
         }
+
+        void visit(const BreakDecision &)
+        {
+        }
     };
 }
 
@@ -415,6 +418,10 @@ namespace
         }
 
         void visit(UnableToMakeDecision &)
+        {
+        }
+
+        void visit(BreakDecision &)
         {
         }
 
@@ -727,6 +734,11 @@ namespace
         {
             return constraint.nothing_is_fine_too();
         }
+
+        bool visit(const BreakDecision &) const
+        {
+            return true;
+        }
     };
 
     struct CheckUseExistingVisitor
@@ -784,6 +796,11 @@ namespace
         }
 
         bool visit(const RemoveDecision &) const
+        {
+            return true;
+        }
+
+        bool visit(const BreakDecision &) const
         {
             return true;
         }
@@ -852,6 +869,11 @@ namespace
         void visit(const ExistingNoChangeDecision &) const
         {
             restart();
+        }
+
+        void visit(const BreakDecision &) const PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "why are we trying to go from a BreakDecision to something else?");
         }
     };
 }
@@ -971,6 +993,11 @@ namespace
             else
                 return make_null_shared_ptr();
         }
+
+        const std::tr1::shared_ptr<const PackageID> visit(const BreakDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
     };
 }
 
@@ -1053,39 +1080,11 @@ Decider::_initial_constraints_for(const Resolvent & r) const
     return _imp->fns.get_initial_constraints_for_fn()(r);
 }
 
-namespace
-{
-    struct ChosenIDVisitor
-    {
-        const std::tr1::shared_ptr<const PackageID> visit(const ChangesToMakeDecision & decision) const
-        {
-            return decision.origin_id();
-        }
-
-        const std::tr1::shared_ptr<const PackageID> visit(const ExistingNoChangeDecision & decision) const
-        {
-            return decision.existing_id();
-        }
-
-        const std::tr1::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
-        {
-            return make_null_shared_ptr();
-        }
-
-        const std::tr1::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
-        {
-            return make_null_shared_ptr();
-        }
-
-        const std::tr1::shared_ptr<const PackageID> visit(const RemoveDecision &) const
-        {
-            return make_null_shared_ptr();
-        }
-    };
-}
-
 std::pair<AnyChildScore, OperatorScore>
-Decider::find_any_score(const std::tr1::shared_ptr<const Resolution> & our_resolution, const SanitisedDependency & dep) const
+Decider::find_any_score(
+        const std::tr1::shared_ptr<const Resolution> & our_resolution,
+        const std::tr1::shared_ptr<const PackageID> & our_id,
+        const SanitisedDependency & dep) const
 {
     Context context("When working out whether we'd like '" + stringify(dep.spec()) + "' because of '"
             + stringify(our_resolution->resolvent()) + "':");
@@ -1188,12 +1187,8 @@ Decider::find_any_score(const std::tr1::shared_ptr<const Resolution> & our_resol
             return std::make_pair(acs_wrong_options_installed, operator_bias);
     }
 
-    const std::tr1::shared_ptr<const PackageID> id(
-            our_resolution->decision()->accept_returning<std::tr1::shared_ptr<const PackageID> >(ChosenIDVisitor()));
-    if (! id)
-        throw InternalError(PALUDIS_HERE, "resolver bug: why don't we have an id?");
-
-    const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(id, our_resolution->resolvent(), dep, _already_met(dep)));
+    const std::tr1::shared_ptr<DependencyReason> reason(new DependencyReason(
+                our_id, our_resolution->resolvent(), dep, _already_met(dep)));
     const std::tr1::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(spec, reason));
 
     /* next: will already be installing */
@@ -1595,12 +1590,6 @@ Decider::_allowed_to_remove(const std::tr1::shared_ptr<const PackageID> & id) co
 }
 
 bool
-Decider::_allowed_to_break(const std::tr1::shared_ptr<const PackageID> & id) const
-{
-    return _imp->fns.allowed_to_break_fn()(id);
-}
-
-bool
 Decider::_remove_if_dependent(const std::tr1::shared_ptr<const PackageID> & id) const
 {
     return _imp->fns.remove_if_dependent_fn()(id);
@@ -1803,21 +1792,29 @@ Decider::_confirm(
         const std::tr1::shared_ptr<const Resolution> & resolution)
 {
     ChangesToMakeDecision * const changes_to_make_decision(simple_visitor_cast<ChangesToMakeDecision>(*resolution->decision()));
-    if (! changes_to_make_decision)
-        return;
+    BreakDecision * const break_decision(simple_visitor_cast<BreakDecision>(*resolution->decision()));
 
-    if (! changes_to_make_decision->best())
+    if (changes_to_make_decision)
     {
-        const std::tr1::shared_ptr<RequiredConfirmation> c(new NotBestConfirmation);
-        if (! _imp->fns.confirm_fn()(resolution, c))
-            changes_to_make_decision->add_required_confirmation(c);
+        if (! changes_to_make_decision->best())
+        {
+            const std::tr1::shared_ptr<RequiredConfirmation> c(new NotBestConfirmation);
+            if (! _imp->fns.confirm_fn()(resolution, c))
+                changes_to_make_decision->add_required_confirmation(c);
+        }
+
+        if (ct_downgrade == changes_to_make_decision->change_type())
+        {
+            const std::tr1::shared_ptr<DowngradeConfirmation> c(new DowngradeConfirmation);
+            if (! _imp->fns.confirm_fn()(resolution, c))
+                changes_to_make_decision->add_required_confirmation(c);
+        }
     }
-
-    if (ct_downgrade == changes_to_make_decision->change_type())
+    else if (break_decision)
     {
-        const std::tr1::shared_ptr<DowngradeConfirmation> c(new DowngradeConfirmation);
+        const std::tr1::shared_ptr<BreakConfirmation> c(new BreakConfirmation);
         if (! _imp->fns.confirm_fn()(resolution, c))
-            changes_to_make_decision->add_required_confirmation(c);
+            break_decision->add_required_confirmation(c);
     }
 }
 

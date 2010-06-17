@@ -34,6 +34,8 @@ RequiredConfirmation::deserialise(Deserialisation & d)
         return DowngradeConfirmation::deserialise(d);
     else if (d.class_name() == "NotBestConfirmation")
         return NotBestConfirmation::deserialise(d);
+    else if (d.class_name() == "BreakConfirmation")
+        return BreakConfirmation::deserialise(d);
     else
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 
@@ -65,6 +67,20 @@ void
 NotBestConfirmation::serialise(Serialiser & s) const
 {
     s.object("NotBestConfirmation")
+        ;
+}
+
+const std::tr1::shared_ptr<BreakConfirmation>
+BreakConfirmation::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "BreakConfirmation");
+    return make_shared_ptr(new BreakConfirmation);
+}
+
+void
+BreakConfirmation::serialise(Serialiser & s) const
+{
+    s.object("BreakConfirmation")
         ;
 }
 

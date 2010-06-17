@@ -39,7 +39,7 @@ namespace paludis
         class PALUDIS_VISIBLE Decision :
             public virtual DeclareAbstractAcceptMethods<Decision, MakeTypeList<
                 NothingNoChangeDecision, ExistingNoChangeDecision, ChangesToMakeDecision,
-                RemoveDecision, UnableToMakeDecision>::Type>
+                RemoveDecision, UnableToMakeDecision, BreakDecision>::Type>
         {
             public:
                 virtual ~Decision() = 0;
@@ -98,21 +98,29 @@ namespace paludis
                 virtual void serialise(Serialiser &) const;
         };
 
-        class PALUDIS_VISIBLE ChangeOrRemoveDecision :
+        class PALUDIS_VISIBLE ConfirmableDecision :
             public Decision
+        {
+            public:
+                static const std::tr1::shared_ptr<ConfirmableDecision> deserialise(
+                        Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<const RequiredConfirmations>
+                    required_confirmations_if_any() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+        };
+
+        class PALUDIS_VISIBLE ChangeOrRemoveDecision :
+            public ConfirmableDecision
         {
             public:
                 static const std::tr1::shared_ptr<ChangeOrRemoveDecision> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual const std::tr1::shared_ptr<const RequiredConfirmations> required_confirmations_if_any() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
         };
 
         class PALUDIS_VISIBLE ChangesToMakeDecision :
             public ChangeOrRemoveDecision,
             public ImplementAcceptMethods<Decision, ChangesToMakeDecision>,
-            private PrivateImplementationPattern<ChangesToMakeDecision>,
-            public std::tr1::enable_shared_from_this<ChangesToMakeDecision>
+            private PrivateImplementationPattern<ChangesToMakeDecision>
         {
             public:
                 ChangesToMakeDecision(
@@ -155,8 +163,7 @@ namespace paludis
         class PALUDIS_VISIBLE RemoveDecision :
             public ChangeOrRemoveDecision,
             public ImplementAcceptMethods<Decision, RemoveDecision>,
-            private PrivateImplementationPattern<RemoveDecision>,
-            public std::tr1::enable_shared_from_this<RemoveDecision>
+            private PrivateImplementationPattern<RemoveDecision>
         {
             public:
                 RemoveDecision(
@@ -183,8 +190,7 @@ namespace paludis
         class PALUDIS_VISIBLE UnableToMakeDecision :
             public Decision,
             public ImplementAcceptMethods<Decision, UnableToMakeDecision>,
-            private PrivateImplementationPattern<UnableToMakeDecision>,
-            public std::tr1::enable_shared_from_this<UnableToMakeDecision>
+            private PrivateImplementationPattern<UnableToMakeDecision>
         {
             public:
                 UnableToMakeDecision(
@@ -203,6 +209,32 @@ namespace paludis
                 static const std::tr1::shared_ptr<UnableToMakeDecision> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
+
+        class PALUDIS_VISIBLE BreakDecision :
+            public ConfirmableDecision,
+            public ImplementAcceptMethods<Decision, BreakDecision>,
+            private PrivateImplementationPattern<BreakDecision>
+        {
+            public:
+                BreakDecision(
+                        const Resolvent &,
+                        const std::tr1::shared_ptr<const PackageID> &,
+                        const bool taken);
+                ~BreakDecision();
+
+                const std::tr1::shared_ptr<const PackageID> existing_id() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const Resolvent resolvent() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::tr1::shared_ptr<const RequiredConfirmations> required_confirmations_if_any() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                void add_required_confirmation(const std::tr1::shared_ptr<const RequiredConfirmation> &);
+
+                virtual void serialise(Serialiser &) const;
+
+                static const std::tr1::shared_ptr<BreakDecision> deserialise(
+                        Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
     }
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
@@ -211,6 +243,7 @@ namespace paludis
     extern template class PrivateImplementationPattern<resolver::ChangesToMakeDecision>;
     extern template class PrivateImplementationPattern<resolver::UnableToMakeDecision>;
     extern template class PrivateImplementationPattern<resolver::RemoveDecision>;
+    extern template class PrivateImplementationPattern<resolver::BreakDecision>;
 #endif
 
 }

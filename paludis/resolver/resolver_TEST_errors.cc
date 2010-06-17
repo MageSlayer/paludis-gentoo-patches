@@ -81,6 +81,8 @@ namespace test_cases
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
                         .unable(QualifiedPackageName("unable-to-decide-then-more/pkg-a"))
                         .finished()),
+                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
                     n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
