@@ -622,30 +622,28 @@ namespace
     {
         const std::tr1::shared_ptr<Environment> env;
         const ExecuteResolutionCommandLine & cmdline;
-        int & x_fetch;
-        int & x_install;
+        int & x;
         const int y;
 
         ExecuteOneVisitor(
                 const std::tr1::shared_ptr<Environment> & e,
                 const ExecuteResolutionCommandLine & c,
-                int & xf, int & xi, int yy) :
+                int & xx, int yy) :
             env(e),
             cmdline(c),
-            x_fetch(xf),
-            x_install(xi),
+            x(xx),
             y(yy)
         {
         }
 
         int visit(InstallJob & install_item)
         {
-            ++x_install;
+            ++x;
 
             const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
             install_item.set_state(active_state);
 
-            if (! do_fetch(env, cmdline, install_item.origin_id(), x_install, y, false, *active_state))
+            if (! do_fetch(env, cmdline, install_item.origin_id(), x, y, false, *active_state))
             {
                 install_item.set_state(active_state->failed());
                 return 1;
@@ -653,7 +651,7 @@ namespace
 
             if (! do_install(env, cmdline, install_item.origin_id(), install_item.destination_repository_name(),
                         install_item.replacing(), install_item.destination_type(),
-                        x_install, y, *active_state))
+                        x, y, *active_state))
             {
                 install_item.set_state(active_state->failed());
                 return 1;
@@ -665,10 +663,7 @@ namespace
 
         int visit(UninstallJob & uninstall_item)
         {
-            /* we treat uninstalls as installs for counts. if you're reading
-             * this it's probably because you think that that's silly, which
-             * means you get to change it. */
-            ++x_install;
+            ++x;
 
             const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
             uninstall_item.set_state(active_state);
@@ -676,7 +671,7 @@ namespace
             for (PackageIDSequence::ConstIterator i(uninstall_item.ids_to_remove()->begin()),
                     i_end(uninstall_item.ids_to_remove()->end()) ;
                     i != i_end ; ++i)
-                if (! do_uninstall(env, cmdline, *i, x_install, y, *active_state))
+                if (! do_uninstall(env, cmdline, *i, x, y, *active_state))
                 {
                     uninstall_item.set_state(active_state->failed());
                     return 1;
@@ -688,12 +683,12 @@ namespace
 
         int visit(FetchJob & fetch_item)
         {
-            ++x_fetch;
+            ++x;
 
             const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
             fetch_item.set_state(active_state);
 
-            if (! do_fetch(env, cmdline, fetch_item.origin_id(), x_fetch, y, true, *active_state))
+            if (! do_fetch(env, cmdline, fetch_item.origin_id(), x, y, true, *active_state))
             {
                 fetch_item.set_state(active_state->failed());
                 return 1;
@@ -739,7 +734,7 @@ namespace
             const ExecuteResolutionCommandLine & cmdline)
     {
         int retcode(0);
-        int x_fetch(0), x_install(0), y(lists->pretend_job_list()->length());
+        int x(0), y(lists->execute_job_list()->length());
 
         if (0 != env->perform_hook(Hook("install_all_pre")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
@@ -786,7 +781,7 @@ namespace
 
             if (want)
             {
-                ExecuteOneVisitor execute(env, cmdline, x_fetch, x_install, y);
+                ExecuteOneVisitor execute(env, cmdline, x, y);
                 retcode |= (*c)->accept_returning<int>(execute);
             }
             else
@@ -940,7 +935,8 @@ namespace
         }
         catch (...)
         {
-            display_summary(lists, 0 != retcode);
+            if (! cmdline.a_pretend.specified())
+                display_summary(lists, 0 != retcode);
 
             if (0 != env->perform_hook(Hook("install_task_execute_post")
                         ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
@@ -951,7 +947,8 @@ namespace
             throw;
         }
 
-        display_summary(lists, 0 != retcode);
+        if (! cmdline.a_pretend.specified())
+            display_summary(lists, 0 != retcode);
 
         if (0 != env->perform_hook(Hook("install_task_execute_post")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
