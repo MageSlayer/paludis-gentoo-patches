@@ -1139,6 +1139,90 @@ namespace
         display_confirmations(decision);
     }
 
+    struct DisplayAVisitor
+    {
+        const std::tr1::shared_ptr<Environment> env;
+        const DisplayResolutionCommandLine & cmdline;
+        const std::tr1::shared_ptr<const Resolution> resolution;
+        const bool more_annotations;
+        const bool unconfirmed;
+        const bool untaken;
+        const std::string cycle_breaking;
+        ChoicesToExplain & choices_to_explain;
+
+        DisplayAVisitor(
+                const std::tr1::shared_ptr<Environment> & e,
+                const DisplayResolutionCommandLine & c,
+                const std::tr1::shared_ptr<const Resolution> & r,
+                bool m,
+                bool uc,
+                bool ut,
+                const std::string & s,
+                ChoicesToExplain & x) :
+            env(e),
+            cmdline(c),
+            resolution(r),
+            more_annotations(m),
+            unconfirmed(uc),
+            untaken(ut),
+            cycle_breaking(s),
+            choices_to_explain(x)
+        {
+        }
+
+        void visit(const ChangesToMakeDecision & changes_to_make_decision)
+        {
+            display_one_installish(
+                    env,
+                    cmdline,
+                    changes_to_make_decision,
+                    resolution,
+                    more_annotations,
+                    unconfirmed,
+                    untaken,
+                    cycle_breaking,
+                    choices_to_explain);
+        }
+
+
+        void visit(const RemoveDecision & remove_decision)
+        {
+            display_one_uninstall(
+                    env,
+                    cmdline,
+                    resolution,
+                    remove_decision,
+                    more_annotations,
+                    untaken);
+        }
+
+        void visit(const BreakDecision & break_decision)
+        {
+            display_one_break(
+                    env,
+                    cmdline,
+                    resolution,
+                    break_decision,
+                    more_annotations,
+                    untaken);
+        }
+
+        void visit(const NothingNoChangeDecision &) PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "not allowed");
+        }
+
+        void visit(const ExistingNoChangeDecision &) PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "not allowed");
+        }
+
+        void visit(const UnableToMakeDecision &) PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "not allowed");
+        }
+    };
+
     template <typename Decisions_>
     void display_a_changes_and_removes(
             const std::tr1::shared_ptr<Environment> & env,
@@ -1169,44 +1253,16 @@ namespace
                 std::tr1::shared_ptr<const ConfirmableDecision>,
                 std::tr1::shared_ptr<const OrdererNotes> > star_i(get_decision_and_notes(*i));
 
-            const ChangesToMakeDecision * const changes_to_make_decision(simple_visitor_cast<const ChangesToMakeDecision>(*star_i.first));
-            const RemoveDecision * const remove_decision(simple_visitor_cast<const RemoveDecision>(*star_i.first));
-            const BreakDecision * const break_decision(simple_visitor_cast<const BreakDecision>(*star_i.first));
-            if (changes_to_make_decision)
-            {
-                display_one_installish(
-                        env,
-                        cmdline,
-                        *changes_to_make_decision,
-                        *resolved->resolutions_by_resolvent()->find(changes_to_make_decision->resolvent()),
-                        more_annotations,
-                        unconfirmed,
-                        untaken,
-                        star_i.second ? star_i.second->cycle_breaking() : "",
-                        choices_to_explain);
-            }
-            else if (remove_decision)
-            {
-                display_one_uninstall(
-                        env,
-                        cmdline,
-                        *resolved->resolutions_by_resolvent()->find(remove_decision->resolvent()),
-                        *remove_decision,
-                        more_annotations,
-                        untaken);
-            }
-            else if (break_decision)
-            {
-                display_one_break(
-                        env,
-                        cmdline,
-                        *resolved->resolutions_by_resolvent()->find(break_decision->resolvent()),
-                        *break_decision,
-                        more_annotations,
-                        untaken);
-            }
-            else
-                throw InternalError(PALUDIS_HERE, "huh?");
+            DisplayAVisitor v(
+                    env,
+                    cmdline,
+                    *resolved->resolutions_by_resolvent()->find(star_i.first->resolvent()),
+                    more_annotations,
+                    unconfirmed,
+                    untaken,
+                    star_i.second ? star_i.second->cycle_breaking() : "",
+                    choices_to_explain);
+            star_i.first->accept(v);
         }
 
         if (! any)
