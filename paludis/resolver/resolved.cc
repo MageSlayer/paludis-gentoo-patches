@@ -39,6 +39,7 @@ Resolved::serialise(Serialiser & s) const
         .member(SerialiserFlags<serialise::might_be_null>(), "taken_change_or_remove_decisions", taken_change_or_remove_decisions())
         .member(SerialiserFlags<serialise::might_be_null>(), "taken_unable_to_make_decisions", taken_unable_to_make_decisions())
         .member(SerialiserFlags<serialise::might_be_null>(), "taken_unconfirmed_decisions", taken_unconfirmed_decisions())
+        .member(SerialiserFlags<serialise::might_be_null>(), "taken_unorderable_decisions", taken_unorderable_decisions())
         .member(SerialiserFlags<serialise::might_be_null>(), "untaken_change_or_remove_decisions", untaken_change_or_remove_decisions())
         .member(SerialiserFlags<serialise::might_be_null>(), "untaken_unable_to_make_decisions", untaken_unable_to_make_decisions())
         ;
@@ -62,6 +63,8 @@ Resolved::deserialise(Deserialisation & d)
                 v.member<std::tr1::shared_ptr<Decisions<UnableToMakeDecision> > >("taken_unable_to_make_decisions"),
             n::taken_unconfirmed_decisions() =
                 v.member<std::tr1::shared_ptr<Decisions<ConfirmableDecision> > >("taken_unconfirmed_decisions"),
+            n::taken_unorderable_decisions() =
+                v.member<std::tr1::shared_ptr<OrderedChangeOrRemoveDecisions> >("taken_unorderable_decisions"),
             n::untaken_change_or_remove_decisions() =
                 v.member<std::tr1::shared_ptr<Decisions<ChangeOrRemoveDecision> > >("untaken_change_or_remove_decisions"),
             n::untaken_unable_to_make_decisions() =

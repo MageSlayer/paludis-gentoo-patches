@@ -90,6 +90,8 @@ namespace test_cases
                         .finished()),
                     n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
                     n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
@@ -120,6 +122,8 @@ namespace test_cases
                         .unable(QualifiedPackageName("unfixable/a-pkg"))
                         .finished()),
                     n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
@@ -152,6 +156,8 @@ namespace test_cases
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
@@ -190,6 +196,8 @@ namespace test_cases
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
@@ -231,6 +239,8 @@ namespace test_cases
                         .finished()),
                     n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
                     n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
@@ -263,6 +273,8 @@ namespace test_cases
                         .finished()),
                     n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
                     n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
@@ -281,7 +293,24 @@ namespace test_cases
 
         void run()
         {
-            TEST_CHECK_THROWS(get_resolved("hard-block-and-dep-cycle/target"), Exception);
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("hard-block-and-dep-cycle/target"));
+
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("hard-block-and-dep-cycle/dep"))
+                        .change(QualifiedPackageName("hard-block-and-dep-cycle/target"))
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
         }
     } test_hard_block_and_dep_cycle;
 }

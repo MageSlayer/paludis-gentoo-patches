@@ -455,6 +455,7 @@ ResolverTestCase::check_resolved(
         const NamedValue<n::taken_change_or_remove_decisions, const std::tr1::shared_ptr<const DecisionChecks> > & taken_change_or_remove_decisions,
         const NamedValue<n::taken_unable_to_make_decisions, const std::tr1::shared_ptr<const DecisionChecks> > & taken_unable_to_make_decisions,
         const NamedValue<n::taken_unconfirmed_decisions, const std::tr1::shared_ptr<const DecisionChecks> > & taken_unconfirmed_decisions,
+        const NamedValue<n::taken_unorderable_decisions, const std::tr1::shared_ptr<const DecisionChecks> > & taken_unorderable_decisions,
         const NamedValue<n::untaken_change_or_remove_decisions, const std::tr1::shared_ptr<const DecisionChecks> > & untaken_change_or_remove_decisions,
         const NamedValue<n::untaken_unable_to_make_decisions, const std::tr1::shared_ptr<const DecisionChecks> > & untaken_unable_to_make_decisions
         )
@@ -472,6 +473,11 @@ ResolverTestCase::check_resolved(
     {
         TestMessageSuffix s("taken unconfirmed");
         check_resolved_one(resolved->taken_unconfirmed_decisions(), taken_unconfirmed_decisions());
+    }
+
+    {
+        TestMessageSuffix s("taken unorderable");
+        check_resolved_one(resolved->taken_unorderable_decisions(), taken_unorderable_decisions());
     }
 
     {

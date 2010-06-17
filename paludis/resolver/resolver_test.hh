@@ -167,6 +167,7 @@ namespace paludis
                         const NamedValue<n::taken_change_or_remove_decisions, const std::tr1::shared_ptr<const DecisionChecks> > &,
                         const NamedValue<n::taken_unable_to_make_decisions, const std::tr1::shared_ptr<const DecisionChecks> > &,
                         const NamedValue<n::taken_unconfirmed_decisions, const std::tr1::shared_ptr<const DecisionChecks> > &,
+                        const NamedValue<n::taken_unorderable_decisions, const std::tr1::shared_ptr<const DecisionChecks> > &,
                         const NamedValue<n::untaken_change_or_remove_decisions, const std::tr1::shared_ptr<const DecisionChecks> > &,
                         const NamedValue<n::untaken_unable_to_make_decisions, const std::tr1::shared_ptr<const DecisionChecks> > &
                         );

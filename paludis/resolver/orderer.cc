@@ -502,10 +502,13 @@ Orderer::_order_sub_ssccs(
         }
         else
         {
-            /* all that effort was wasted. there's incest and there's nothing we
-             * can do to fix it. */
-            throw InternalError(PALUDIS_HERE, "circular dependencies we're not smart enough to solve yet: { "
-                    + join(sub_scc->nodes()->begin(), sub_scc->nodes()->end(), ", ", nice_resolvent) + " }");
+            for (Set<Resolvent>::ConstIterator r(sub_scc->nodes()->begin()), r_end(sub_scc->nodes()->end()) ;
+                    r != r_end ; ++r)
+                _imp->resolved->taken_unorderable_decisions()->push_back(
+                        _imp->change_or_remove_resolvents.find(*r)->second,
+                        make_shared_copy(make_named_values<OrdererNotes>(
+                                n::cycle_breaking() = "In unsolvable cycle with " + join(
+                                    top_scc.nodes()->begin(), top_scc.nodes()->end(), ", ", nice_resolvent))));
         }
     }
 }

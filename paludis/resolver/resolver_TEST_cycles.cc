@@ -103,6 +103,8 @@ namespace test_cases
                         .finished()),
                     n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
                     n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
@@ -132,6 +134,8 @@ namespace test_cases
                         .finished()),
                     n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
                     n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
@@ -159,6 +163,8 @@ namespace test_cases
                         .finished()),
                     n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
                     n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
@@ -173,7 +179,26 @@ namespace test_cases
 
         void run()
         {
-            TEST_CHECK_THROWS(get_resolved("mutual-build-deps/target"), Exception);
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("mutual-build-deps/target"));
+
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("mutual-build-deps/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("mutual-build-deps/dep-a"))
+                        .change(QualifiedPackageName("mutual-build-deps/dep-b"))
+                        .change(QualifiedPackageName("mutual-build-deps/dep-c"))
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
         }
     } test_mutual_build_deps;
 
@@ -195,14 +220,8 @@ namespace test_cases
 
         void run()
         {
-            if ((! b_installed) && (! c_installed))
-            {
-                TEST_CHECK_THROWS(get_resolved("triangle/target"), Exception);
-                return;
-            }
-
             std::tr1::shared_ptr<const Resolved> resolved(get_resolved("triangle/target"));
-            std::tr1::shared_ptr<DecisionChecks> checks;
+            std::tr1::shared_ptr<DecisionChecks> checks, u_checks;
 
             if (b_installed)
             {
@@ -211,6 +230,8 @@ namespace test_cases
                         .change(QualifiedPackageName("triangle/dep-a"))
                         .change(QualifiedPackageName("triangle/dep-b"))
                         .change(QualifiedPackageName("triangle/target"))
+                        .finished());
+                u_checks = make_shared_copy(DecisionChecks()
                         .finished());
             }
             else if (c_installed)
@@ -221,9 +242,20 @@ namespace test_cases
                         .change(QualifiedPackageName("triangle/dep-c"))
                         .change(QualifiedPackageName("triangle/target"))
                         .finished());
+                u_checks = make_shared_copy(DecisionChecks()
+                        .finished());
             }
             else
-                TEST_CHECK(false);
+            {
+                checks = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("triangle/target"))
+                        .finished());
+                u_checks = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("triangle/dep-a"))
+                        .change(QualifiedPackageName("triangle/dep-b"))
+                        .change(QualifiedPackageName("triangle/dep-c"))
+                        .finished());
+            }
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = checks,
@@ -231,6 +263,7 @@ namespace test_cases
                         .finished()),
                     n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
+                    n::taken_unorderable_decisions() = u_checks,
                     n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()

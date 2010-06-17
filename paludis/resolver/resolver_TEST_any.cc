@@ -83,6 +83,8 @@ namespace test_cases
                         .finished()),
                     n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
                     n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
@@ -112,6 +114,8 @@ namespace test_cases
                         .finished()),
                     n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
                     n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
@@ -139,6 +143,8 @@ namespace test_cases
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
@@ -203,6 +209,8 @@ namespace test_cases
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
                     n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),

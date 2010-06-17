@@ -96,6 +96,8 @@ namespace test_cases
                         .finished()),
                     n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
                     n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("serialisation/suggestion"))
                         .finished()),

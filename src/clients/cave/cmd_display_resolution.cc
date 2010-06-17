@@ -1232,7 +1232,8 @@ namespace
             ChoicesToExplain & choices_to_explain,
             const bool more_annotations,
             const bool unconfirmed,
-            const bool untaken)
+            const bool untaken,
+            const bool unorderable)
     {
         Context context("When displaying changes and removes:");
 
@@ -1240,6 +1241,8 @@ namespace
             cout << "I did not take the following:" << endl << endl;
         else if (unconfirmed)
             cout << "I cannot proceed without being permitted to do the following:" << endl << endl;
+        else if (unorderable)
+            cout << "I cannot provide a legal ordering for the following:" << endl << endl;
         else
             cout << "These are the actions I will take, in order:" << endl << endl;
 
@@ -1278,7 +1281,18 @@ namespace
             ChoicesToExplain & choices_to_explain)
     {
         display_a_changes_and_removes(env, resolved, resolved->taken_change_or_remove_decisions(),
-                cmdline, choices_to_explain, false, false, false);
+                cmdline, choices_to_explain, false, false, false, false);
+    }
+
+    void display_unorderable_changes_and_removed(
+            const std::tr1::shared_ptr<Environment> & env,
+            const std::tr1::shared_ptr<const Resolved> & resolved,
+            const DisplayResolutionCommandLine & cmdline,
+            ChoicesToExplain & choices_to_explain)
+    {
+        if (! resolved->taken_unorderable_decisions()->empty())
+            display_a_changes_and_removes(env, resolved, resolved->taken_unorderable_decisions(),
+                    cmdline, choices_to_explain, false, false, false, true);
     }
 
     void display_untaken_changes_and_removes(
@@ -1289,7 +1303,7 @@ namespace
     {
         if (! resolved->untaken_change_or_remove_decisions()->empty())
             display_a_changes_and_removes(env, resolved, resolved->untaken_change_or_remove_decisions(),
-                    cmdline, choices_to_explain, true, false, true);
+                    cmdline, choices_to_explain, true, false, true, false);
     }
 
     void display_an_errors(
@@ -1349,7 +1363,7 @@ namespace
         ChoicesToExplain ignore_choices_to_explain;
         if (! resolved->taken_unconfirmed_decisions()->empty())
             display_a_changes_and_removes(env, resolved, resolved->taken_unconfirmed_decisions(),
-                    cmdline, ignore_choices_to_explain, true, true, false);
+                    cmdline, ignore_choices_to_explain, true, true, false, false);
     }
 }
 
@@ -1393,6 +1407,7 @@ DisplayResolutionCommand::run(
 
     ChoicesToExplain choices_to_explain;
     display_changes_and_removes(env, resolved, cmdline, choices_to_explain);
+    display_unorderable_changes_and_removed(env, resolved, cmdline, choices_to_explain);
     display_untaken_changes_and_removes(env, resolved, cmdline, choices_to_explain);
     display_choices_to_explain(env, cmdline, choices_to_explain);
     display_taken_errors(env, resolved, cmdline);
