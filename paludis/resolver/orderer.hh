@@ -26,6 +26,7 @@
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/resolver/strongly_connected_component-fwd.hh>
 #include <paludis/resolver/nag-fwd.hh>
+#include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/environment-fwd.hh>
 
@@ -38,6 +39,7 @@ namespace paludis
         {
             private:
                 void _schedule(
+                        const Resolvent &,
                         const std::tr1::shared_ptr<const ChangeOrRemoveDecision> &,
                         const std::tr1::shared_ptr<const OrdererNotes> &);
 

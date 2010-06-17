@@ -54,6 +54,7 @@
 #include <paludis/resolver/job_list.hh>
 #include <paludis/resolver/job.hh>
 #include <paludis/resolver/job_state.hh>
+#include <paludis/resolver/job_requirements.hh>
 #include <paludis/package_id.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -703,6 +704,35 @@ namespace
         }
     };
 
+    struct ContinueAfterState
+    {
+        bool visit(const JobPendingState &) const
+        {
+            /* it's still pending because it's a circular dep that we ended up ignoring */
+            return true;
+        }
+
+        bool visit(const JobActiveState &) const PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "still active? how did that happen?");
+        }
+
+        bool visit(const JobSucceededState &) const
+        {
+            return true;
+        }
+
+        bool visit(const JobFailedState &) const
+        {
+            return false;
+        }
+
+        bool visit(const JobSkippedState &) const
+        {
+            return false;
+        }
+    };
+
     int execute_executions(
             const std::tr1::shared_ptr<Environment> & env,
             const std::tr1::shared_ptr<JobLists> & lists,
@@ -716,11 +746,45 @@ namespace
                     ).max_exit_status())
             throw ActionAbortedError("Aborted by hook");
 
+        JobRequirementIf require_if(last_jri);
+        if (cmdline.execution_options.a_continue_on_failure.argument() == "always")
+            require_if = jri_require_always;
+        else if (cmdline.execution_options.a_continue_on_failure.argument() == "if-satisfied")
+            require_if = jri_require_for_satisfied;
+        else if (cmdline.execution_options.a_continue_on_failure.argument() == "if-independent")
+            require_if = jri_require_for_independent;
+        else if (cmdline.execution_options.a_continue_on_failure.argument() == "never")
+            require_if = last_jri;
+        else
+            throw args::DoHelp("Don't understand argument '"
+                    + cmdline.execution_options.a_continue_on_failure.argument() + "' to '--"
+                    + cmdline.execution_options.a_continue_on_failure.long_name() + "'");
+
         for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),
                 c_end(lists->execute_job_list()->end()) ;
                 c != c_end ; ++c)
         {
-            if (0 == retcode)
+            bool want(true);
+
+            if (0 != retcode)
+            {
+                if (last_jri == require_if)
+                    want = false;
+                else
+                {
+                    for (JobRequirements::ConstIterator r((*c)->requirements()->begin()), r_end((*c)->requirements()->end()) ;
+                            r != r_end && want ; ++r)
+                    {
+                        if (! r->required_if()[require_if])
+                            continue;
+
+                        const std::tr1::shared_ptr<const ExecuteJob> req(*lists->execute_job_list()->fetch(r->job_number()));
+                        want = want && req->state()->accept_returning<bool>(ContinueAfterState());
+                    }
+                }
+            }
+
+            if (want)
             {
                 ExecuteOneVisitor execute(env, cmdline, x_fetch, x_install, y);
                 retcode |= (*c)->accept_returning<int>(execute);

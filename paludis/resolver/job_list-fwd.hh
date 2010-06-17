@@ -27,7 +27,7 @@ namespace paludis
         template <typename Job_>
         struct JobList;
 
-        typedef int JobListIndex;
+        typedef int JobNumber;
     }
 }
 

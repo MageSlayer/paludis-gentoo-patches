@@ -29,6 +29,7 @@
 #include <paludis/resolver/job_lists.hh>
 #include <paludis/resolver/job_list.hh>
 #include <paludis/resolver/job.hh>
+#include <paludis/resolver/job_requirements.hh>
 #include <paludis/resolver/destination.hh>
 #include <paludis/resolver/orderer_notes.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -50,6 +51,7 @@ using namespace paludis;
 using namespace paludis::resolver;
 
 typedef std::tr1::unordered_map<Resolvent, std::tr1::shared_ptr<const ChangeOrRemoveDecision>, Hash<Resolvent> > ChangeOrRemoveResolvents;
+typedef std::tr1::unordered_map<Resolvent, JobNumber, Hash<Resolvent> > InstallJobNumbers;
 
 namespace paludis
 {
@@ -59,6 +61,7 @@ namespace paludis
         const Environment * const env;
         const std::tr1::shared_ptr<Resolved> resolved;
         ChangeOrRemoveResolvents change_or_remove_resolvents;
+        InstallJobNumbers install_job_numbers;
 
         Implementation(
                 const Environment * const e,
@@ -375,7 +378,8 @@ Orderer::resolve()
         {
             /* there's only one real package in the component, so there's no
              * need to try anything clever */
-            _schedule(_imp->change_or_remove_resolvents.find(*changes_in_scc.begin())->second,
+            _schedule(*changes_in_scc.begin(),
+                    _imp->change_or_remove_resolvents.find(*changes_in_scc.begin())->second,
                     make_shared_copy(make_named_values<OrdererNotes>(
                             n::cycle_breaking() = ""
                             )));
@@ -427,7 +431,8 @@ Orderer::_order_sub_ssccs(
         if (sub_scc->nodes()->size() == 1)
         {
             /* yay. it's all on its own. */
-            _schedule(_imp->change_or_remove_resolvents.find(*sub_scc->nodes()->begin())->second,
+            _schedule(*sub_scc->nodes()->begin(),
+                    _imp->change_or_remove_resolvents.find(*sub_scc->nodes()->begin())->second,
                     make_shared_copy(make_named_values<OrdererNotes>(
                             n::cycle_breaking() = (can_recurse ?
                                 "In dependency cycle with existing packages: " + join(scc_nag.begin_nodes(), scc_nag.end_nodes(), ", ", nice_resolvent) :
@@ -441,12 +446,13 @@ Orderer::_order_sub_ssccs(
              * dependency cycles which we can order however we like! */
             for (Set<Resolvent>::ConstIterator r(sub_scc->nodes()->begin()), r_end(sub_scc->nodes()->end()) ;
                     r != r_end ; ++r)
-                _schedule(_imp->change_or_remove_resolvents.find(*r)->second,
-                    make_shared_copy(make_named_values<OrdererNotes>(
-                            n::cycle_breaking() = "In run dependency cycle with: " + join(
-                                sub_scc->nodes()->begin(), sub_scc->nodes()->end(), ", ", nice_resolvent) + (can_recurse ?
-                                " in dependency cycle with " + join(top_scc.nodes()->begin(), top_scc.nodes()->end(), ", ", nice_resolvent) : "")
-                            )));
+                _schedule(*r,
+                        _imp->change_or_remove_resolvents.find(*r)->second,
+                        make_shared_copy(make_named_values<OrdererNotes>(
+                                n::cycle_breaking() = "In run dependency cycle with: " + join(
+                                    sub_scc->nodes()->begin(), sub_scc->nodes()->end(), ", ", nice_resolvent) + (can_recurse ?
+                                    " in dependency cycle with " + join(top_scc.nodes()->begin(), top_scc.nodes()->end(), ", ", nice_resolvent) : "")
+                                )));
         }
         else if (can_recurse)
         {
@@ -485,8 +491,53 @@ Orderer::_order_sub_ssccs(
     }
 }
 
+namespace
+{
+    typedef std::tr1::unordered_set<Resolvent, Hash<Resolvent> > RecursedRequirements;
+
+    void populate_requirements(
+            const std::tr1::shared_ptr<const NAG> & nag,
+            const InstallJobNumbers & install_job_numbers,
+            const Resolvent & resolvent,
+            const std::tr1::shared_ptr<JobRequirements> & requirements,
+            const bool recursing,
+            RecursedRequirements & recursed)
+    {
+        if (! recursing)
+            for (NAG::EdgesFromConstIterator e(nag->begin_edges_from(resolvent)),
+                    e_end(nag->end_edges_from(resolvent)) ;
+                    e != e_end ; ++e)
+            {
+                if ((! e->second.build_all_met()) || (! e->second.run_all_met()))
+                {
+                    InstallJobNumbers::const_iterator n(install_job_numbers.find(e->first));
+                    if (n != install_job_numbers.end())
+                        requirements->push_back(make_named_values<JobRequirement>(
+                                    n::job_number() = n->second,
+                                    n::required_if() = JobRequirementIfs() + jri_require_for_satisfied
+                                    ));
+                }
+            }
+
+        if (recursed.insert(resolvent).second)
+            for (NAG::EdgesFromConstIterator e(nag->begin_edges_from(resolvent)),
+                    e_end(nag->end_edges_from(resolvent)) ;
+                    e != e_end ; ++e)
+            {
+                InstallJobNumbers::const_iterator n(install_job_numbers.find(e->first));
+                if (n != install_job_numbers.end())
+                    requirements->push_back(make_named_values<JobRequirement>(
+                                n::job_number() = n->second,
+                                n::required_if() = JobRequirementIfs() + jri_require_for_independent
+                                ));
+                populate_requirements(nag, install_job_numbers, e->first, requirements, true, recursed);
+            }
+    }
+}
+
 void
 Orderer::_schedule(
+        const Resolvent & resolvent,
         const std::tr1::shared_ptr<const ChangeOrRemoveDecision> & d,
         const std::tr1::shared_ptr<const OrdererNotes> & n)
 {
@@ -502,19 +553,40 @@ Orderer::_schedule(
         _imp->resolved->job_lists()->pretend_job_list()->append(make_shared_ptr(new PretendJob(
                         changes_to_make_decision->origin_id())));
 
-        _imp->resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new FetchJob(
-                        changes_to_make_decision->origin_id())));
+        JobNumber fetch_job_n(_imp->resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new FetchJob(
+                            make_shared_ptr(new JobRequirements),
+                            changes_to_make_decision->origin_id()))));
 
-        _imp->resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new InstallJob(
-                        changes_to_make_decision->origin_id(),
-                        changes_to_make_decision->destination()->repository(),
-                        changes_to_make_decision->resolvent().destination_type(),
-                        changes_to_make_decision->destination()->replacing()
-                        )));
+        const std::tr1::shared_ptr<JobRequirements> requirements(new JobRequirements);
+        requirements->push_back(make_named_values<JobRequirement>(
+                    n::job_number() = fetch_job_n,
+                    n::required_if() = JobRequirementIfs() + jri_require_for_satisfied + jri_require_for_independent + jri_require_always
+                    ));
+
+        RecursedRequirements recursed;
+        populate_requirements(
+                _imp->resolved->nag(),
+                _imp->install_job_numbers,
+                resolvent,
+                requirements,
+                false,
+                recursed
+                );
+
+        JobNumber install_job_n(_imp->resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new InstallJob(
+                            requirements,
+                            changes_to_make_decision->origin_id(),
+                            changes_to_make_decision->destination()->repository(),
+                            changes_to_make_decision->resolvent().destination_type(),
+                            changes_to_make_decision->destination()->replacing()
+                            ))));
+
+        _imp->install_job_numbers.insert(std::make_pair(resolvent, install_job_n));
     }
     else if (remove_decision)
     {
         _imp->resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new UninstallJob(
+                        make_shared_ptr(new JobRequirements),
                         remove_decision->ids()
                         )));
     }

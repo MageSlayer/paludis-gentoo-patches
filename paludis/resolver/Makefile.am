@@ -3,6 +3,7 @@ include $(top_srcdir)/misc/common-makefile.am
 DISTCLEANFILES = \
 	any_child_score-se.hh any_child_score-se.cc \
 	change_type-se.hh change_type-se.cc \
+	job_requirements-se.hh job_requirements-se.cc \
 	destination_types-se.hh destination_types-se.cc \
 	resolver_functions-se.hh resolver_functions-se.cc \
 	use_existing-se.hh use_existing-se.cc
@@ -11,6 +12,7 @@ EXTRA_DIST = \
 	any_child_score-se.hh any_child_score-se.cc any_child_score.se \
 	change_type-se.hh change_type-se.cc change_type.se \
 	destination_types-se.hh destination_types-se.cc destination_types.se \
+	job_requirements-se.hh job_requirements-se.cc job_requirements.se \
 	resolver_functions-se.hh resolver_functions-se.cc resolver_functions.se \
 	use_existing-se.hh use_existing-se.cc use_existing.se \
 	$(check_SCRIPTS)
@@ -18,6 +20,7 @@ BUILT_SOURCES = \
 	any_child_score-se.hh any_child_score-se.cc \
 	change_type-se.hh change_type-se.cc \
 	destination_types-se.hh destination_types-se.cc \
+	job_requirements-se.hh job_requirements-se.cc \
 	resolver_functions-se.hh resolver_functions-se.cc \
 	use_existing-se.hh use_existing-se.cc
 
@@ -33,6 +36,7 @@ noinst_HEADERS = \
 	job.hh job-fwd.hh \
 	job_list.hh job_list-fwd.hh \
 	job_lists.hh job_lists-fwd.hh \
+	job_requirements.hh job_requirements-fwd.hh \
 	job_state.hh job_state-fwd.hh \
 	nag.hh nag-fwd.hh \
 	orderer.hh orderer-fwd.hh \
@@ -66,6 +70,7 @@ libpaludisresolver_a_SOURCES = \
 	job.cc \
 	job_list.cc \
 	job_lists.cc \
+	job_requirements.cc \
 	job_state.cc \
 	nag.cc \
 	orderer.cc \
@@ -102,6 +107,7 @@ TESTS = \
 	resolver_TEST_suggestions \
 	resolver_TEST_any \
 	resolver_TEST_errors \
+	resolver_TEST_continue_on_failure \
 	$(virtuals_tests)
 endif
 
@@ -115,7 +121,8 @@ check_SCRIPTS = \
 	resolver_TEST_simple_setup.sh resolver_TEST_simple_cleanup.sh \
 	resolver_TEST_virtuals_setup.sh resolver_TEST_virtuals_cleanup.sh \
 	resolver_TEST_any_setup.sh resolver_TEST_any_cleanup.sh \
-	resolver_TEST_errors_setup.sh resolver_TEST_errors_cleanup.sh
+	resolver_TEST_errors_setup.sh resolver_TEST_errors_cleanup.sh \
+	resolver_TEST_continue_on_failure_setup.sh resolver_TEST_continue_on_failure_cleanup.sh
 check_LIBRARIES = libpaludisresolvertest.a
 
 libpaludisresolvertest_a_SOURCES = \
@@ -226,6 +233,19 @@ resolver_TEST_errors_LDADD = \
 
 resolver_TEST_errors_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
+resolver_TEST_continue_on_failure_SOURCES = resolver_TEST_continue_on_failure.cc
+
+resolver_TEST_continue_on_failure_LDADD = \
+	libpaludisresolvertest.a \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	libpaludisresolver.a \
+	$(DYNAMIC_LD_LIBS)
+
+resolver_TEST_continue_on_failure_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
 use_existing-se.hh : use_existing.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/use_existing.se > $@ ; then rm -f $@ ; exit 1 ; fi
 
@@ -255,4 +275,10 @@ resolver_functions-se.hh : resolver_functions.se $(top_srcdir)/misc/make_se.bash
 
 resolver_functions-se.cc : resolver_functions.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/resolver_functions.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+job_requirements-se.hh : job_requirements.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/job_requirements.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+job_requirements-se.cc : job_requirements.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/job_requirements.se > $@ ; then rm -f $@ ; exit 1 ; fi
 

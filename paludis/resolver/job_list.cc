@@ -60,7 +60,7 @@ JobList<Job_>::~JobList()
 }
 
 template <typename Job_>
-JobListIndex
+JobNumber
 JobList<Job_>::append(const std::tr1::shared_ptr<Job_> & i)
 {
     typename std::vector<std::tr1::shared_ptr<Job_> >::const_iterator p(_imp->list.insert(_imp->list.end(), i));
@@ -86,6 +86,13 @@ typename JobList<Job_>::ConstIterator
 JobList<Job_>::end() const
 {
     return ConstIterator(_imp->list.end());
+}
+
+template <typename Job_>
+typename JobList<Job_>::ConstIterator
+JobList<Job_>::fetch(const JobNumber n) const
+{
+    return ConstIterator(_imp->list.begin() + n);
 }
 
 template <typename Job_>
