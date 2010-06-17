@@ -1718,10 +1718,7 @@ Decider::add_target_with_reason(const PackageOrBlockDepSpec & spec, const std::t
     {
         for (Sequence<PackageOrBlockDepSpec>::ConstIterator i(if_rewritten->specs()->begin()), i_end(if_rewritten->specs()->end()) ;
                 i != i_end ; ++i)
-            if (i->if_package())
-                add_target_with_reason(*i->if_package(), reason);
-            else
-                throw InternalError(PALUDIS_HERE, "resolver bug: rewritten " + stringify(spec) + " includes " + stringify(*i));
+            add_target_with_reason(*i, reason);
     }
     else
     {

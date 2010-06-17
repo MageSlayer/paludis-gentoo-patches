@@ -140,7 +140,7 @@ SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::tr1
                 continue;
 
             PackageDepSpec spec(PartiallyMadePackageDepSpec(s.if_block()->blocking()).package(*n));
-            std::string prefix(s.if_block()->blocking().text());
+            std::string prefix(s.if_block()->text());
             std::string::size_type p(prefix.find_first_not_of('!'));
             if (std::string::npos != p)
                 prefix.erase(p);
