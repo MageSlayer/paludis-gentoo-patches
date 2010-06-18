@@ -66,6 +66,7 @@ namespace paludis
         {
             private:
                 void _populate_one(
+                        const Environment * const,
                         const Decider &,
                         const std::tr1::shared_ptr<const Resolution> &,
                         const std::tr1::shared_ptr<const PackageID> &,
@@ -77,6 +78,7 @@ namespace paludis
                 ~SanitisedDependencies();
 
                 void populate(
+                        const Environment * const,
                         const Decider &,
                         const std::tr1::shared_ptr<const Resolution> &,
                         const std::tr1::shared_ptr<const PackageID> &);

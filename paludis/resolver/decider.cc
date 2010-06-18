@@ -1014,7 +1014,7 @@ Decider::_add_dependencies_if_necessary(
             + stringify(*package_id) + "':");
 
     const std::tr1::shared_ptr<SanitisedDependencies> deps(new SanitisedDependencies);
-    deps->populate(*this, our_resolution, package_id);
+    deps->populate(_imp->env, *this, our_resolution, package_id);
 
     for (SanitisedDependencies::ConstIterator s(deps->begin()), s_end(deps->end()) ;
             s != s_end ; ++s)

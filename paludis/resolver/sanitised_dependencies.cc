@@ -41,6 +41,8 @@
 #include <paludis/elike_package_dep_spec.hh>
 #include <paludis/elike_annotations.hh>
 #include <paludis/serialise-impl.hh>
+#include <paludis/environment.hh>
+#include <paludis/repository.hh>
 #include <set>
 #include <list>
 
@@ -254,7 +256,7 @@ namespace
             {
             }
             else if (super_complicated)
-                throw InternalError(PALUDIS_HERE, "can't");
+                throw InternalError(PALUDIS_HERE, "Nested || ( ) dependencies too complicated to handle");
             else
             {
                 /* we've got a choice of groups of packages. pick the best score, left to right. */
@@ -296,6 +298,7 @@ namespace
 
     struct Finder
     {
+        const Environment * const env;
         const Decider & decider;
         const std::tr1::shared_ptr<const Resolution> our_resolution;
         const std::tr1::shared_ptr<const PackageID> & our_id;
@@ -306,6 +309,7 @@ namespace
         std::list<std::tr1::shared_ptr<const DependenciesLabelSequence> > labels_stack;
 
         Finder(
+                const Environment * const e,
                 const Decider & r,
                 const std::tr1::shared_ptr<const Resolution> & q,
                 const std::tr1::shared_ptr<const PackageID> & f,
@@ -314,6 +318,7 @@ namespace
                 const std::string & rn,
                 const std::string & hn,
                 const std::string & a) :
+            env(e),
             decider(r),
             our_resolution(q),
             our_id(f),
@@ -400,9 +405,13 @@ namespace
                     );
         }
 
-        void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type &) PALUDIS_ATTRIBUTE((noreturn))
+        void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node)
         {
-            throw InternalError(PALUDIS_HERE, "not implemented");
+            const std::tr1::shared_ptr<const SetSpecTree> set(env->set(node.spec()->name()));
+            if (set)
+                set->root()->accept(*this);
+            else
+                throw NoSuchSetError(stringify(node.spec()->name()));
         }
 
         void visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type & node)
@@ -440,6 +449,7 @@ SanitisedDependencies::~SanitisedDependencies()
 
 void
 SanitisedDependencies::_populate_one(
+        const Environment * const env,
         const Decider & decider,
         const std::tr1::shared_ptr<const Resolution> & resolution,
         const std::tr1::shared_ptr<const PackageID> & id,
@@ -448,13 +458,14 @@ SanitisedDependencies::_populate_one(
 {
     Context context("When finding dependencies for '" + stringify(*id) + "' from key '" + ((*id).*pmf)()->raw_name() + "':");
 
-    Finder f(decider, resolution, id, *this, ((*id).*pmf)()->initial_labels(), ((*id).*pmf)()->raw_name(),
+    Finder f(env, decider, resolution, id, *this, ((*id).*pmf)()->initial_labels(), ((*id).*pmf)()->raw_name(),
             ((*id).*pmf)()->human_name(), "");
     ((*id).*pmf)()->value()->root()->accept(f);
 }
 
 void
 SanitisedDependencies::populate(
+        const Environment * const env,
         const Decider & decider,
         const std::tr1::shared_ptr<const Resolution> & resolution,
         const std::tr1::shared_ptr<const PackageID> & id)
@@ -462,17 +473,17 @@ SanitisedDependencies::populate(
     Context context("When finding dependencies for '" + stringify(*id) + "':");
 
     if (id->dependencies_key())
-        _populate_one(decider, resolution, id, &PackageID::dependencies_key);
+        _populate_one(env, decider, resolution, id, &PackageID::dependencies_key);
     else
     {
         if (id->build_dependencies_key())
-            _populate_one(decider, resolution, id, &PackageID::build_dependencies_key);
+            _populate_one(env, decider, resolution, id, &PackageID::build_dependencies_key);
         if (id->run_dependencies_key())
-            _populate_one(decider, resolution, id, &PackageID::run_dependencies_key);
+            _populate_one(env, decider, resolution, id, &PackageID::run_dependencies_key);
         if (id->post_dependencies_key())
-            _populate_one(decider, resolution, id, &PackageID::post_dependencies_key);
+            _populate_one(env, decider, resolution, id, &PackageID::post_dependencies_key);
         if (id->suggested_dependencies_key())
-            _populate_one(decider, resolution, id, &PackageID::suggested_dependencies_key);
+            _populate_one(env, decider, resolution, id, &PackageID::suggested_dependencies_key);
     }
 }
 
