@@ -121,9 +121,20 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE ChangeOrRemoveDecision :
-            public ConfirmableDecision
+            public ConfirmableDecision,
+            public virtual DeclareAbstractAcceptMethods<ChangeOrRemoveDecision, MakeTypeList<
+                ChangesToMakeDecision, RemoveDecision>::Type>
         {
             public:
+                typedef DeclareAbstractAcceptMethods<ChangeOrRemoveDecision,
+                        MakeTypeList<ChangesToMakeDecision, RemoveDecision>::Type> MoreSpecificVisitor;
+
+                typedef MoreSpecificVisitor::VisitableTypeList VisitableTypeList;
+                typedef MoreSpecificVisitor::VisitableBaseClass VisitableBaseClass;
+
+                using MoreSpecificVisitor::accept_returning;
+                using MoreSpecificVisitor::accept;
+
                 static const std::tr1::shared_ptr<ChangeOrRemoveDecision> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
@@ -132,6 +143,7 @@ namespace paludis
             public ChangeOrRemoveDecision,
             public ImplementAcceptMethods<Decision, ChangesToMakeDecision>,
             public ImplementAcceptMethods<ConfirmableDecision, ChangesToMakeDecision>,
+            public ImplementAcceptMethods<ChangeOrRemoveDecision, ChangesToMakeDecision>,
             private PrivateImplementationPattern<ChangesToMakeDecision>
         {
             public:
@@ -176,6 +188,7 @@ namespace paludis
             public ChangeOrRemoveDecision,
             public ImplementAcceptMethods<Decision, RemoveDecision>,
             public ImplementAcceptMethods<ConfirmableDecision, RemoveDecision>,
+            public ImplementAcceptMethods<ChangeOrRemoveDecision, RemoveDecision>,
             private PrivateImplementationPattern<RemoveDecision>
         {
             public:

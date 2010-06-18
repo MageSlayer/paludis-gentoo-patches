@@ -600,6 +600,70 @@ Orderer::_check_self_deps_and_schedule(
         _schedule(resolvent, d, n);
 }
 
+namespace
+{
+    struct ExtraScheduler
+    {
+        const std::tr1::shared_ptr<const Resolved> resolved;
+        InstallJobNumbers & install_job_numbers;
+        const Resolvent resolvent;
+
+        ExtraScheduler(
+                const std::tr1::shared_ptr<const Resolved> & r,
+                InstallJobNumbers & i,
+                const Resolvent & v) :
+            resolved(r),
+            install_job_numbers(i),
+            resolvent(v)
+        {
+        }
+
+        void visit(const ChangesToMakeDecision & changes_to_make_decision) const
+        {
+            resolved->job_lists()->pretend_job_list()->append(make_shared_ptr(new PretendJob(
+                            changes_to_make_decision.origin_id())));
+
+            JobNumber fetch_job_n(resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new FetchJob(
+                                make_shared_ptr(new JobRequirements),
+                                changes_to_make_decision.origin_id()))));
+
+            const std::tr1::shared_ptr<JobRequirements> requirements(new JobRequirements);
+            requirements->push_back(make_named_values<JobRequirement>(
+                        n::job_number() = fetch_job_n,
+                        n::required_if() = JobRequirementIfs() + jri_require_for_satisfied + jri_require_for_independent + jri_require_always
+                        ));
+
+            RecursedRequirements recursed;
+            populate_requirements(
+                    resolved->nag(),
+                    install_job_numbers,
+                    resolvent,
+                    requirements,
+                    false,
+                    recursed
+                    );
+
+            JobNumber install_job_n(resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new InstallJob(
+                                requirements,
+                                changes_to_make_decision.origin_id(),
+                                changes_to_make_decision.destination()->repository(),
+                                changes_to_make_decision.resolvent().destination_type(),
+                                changes_to_make_decision.destination()->replacing()
+                                ))));
+
+            install_job_numbers.insert(std::make_pair(resolvent, install_job_n));
+        }
+
+        void visit(const RemoveDecision & remove_decision) const
+        {
+            resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new UninstallJob(
+                            make_shared_ptr(new JobRequirements),
+                            remove_decision.ids()
+                            )));
+        }
+    };
+}
+
 void
 Orderer::_schedule(
         const Resolvent & resolvent,
@@ -610,52 +674,6 @@ Orderer::_schedule(
     if (d->required_confirmations_if_any())
         _imp->resolved->taken_unconfirmed_decisions()->push_back(d);
 
-    const ChangesToMakeDecision * const changes_to_make_decision(simple_visitor_cast<const ChangesToMakeDecision>(*d));
-    const RemoveDecision * const remove_decision(simple_visitor_cast<const RemoveDecision>(*d));
-
-    if (changes_to_make_decision)
-    {
-        _imp->resolved->job_lists()->pretend_job_list()->append(make_shared_ptr(new PretendJob(
-                        changes_to_make_decision->origin_id())));
-
-        JobNumber fetch_job_n(_imp->resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new FetchJob(
-                            make_shared_ptr(new JobRequirements),
-                            changes_to_make_decision->origin_id()))));
-
-        const std::tr1::shared_ptr<JobRequirements> requirements(new JobRequirements);
-        requirements->push_back(make_named_values<JobRequirement>(
-                    n::job_number() = fetch_job_n,
-                    n::required_if() = JobRequirementIfs() + jri_require_for_satisfied + jri_require_for_independent + jri_require_always
-                    ));
-
-        RecursedRequirements recursed;
-        populate_requirements(
-                _imp->resolved->nag(),
-                _imp->install_job_numbers,
-                resolvent,
-                requirements,
-                false,
-                recursed
-                );
-
-        JobNumber install_job_n(_imp->resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new InstallJob(
-                            requirements,
-                            changes_to_make_decision->origin_id(),
-                            changes_to_make_decision->destination()->repository(),
-                            changes_to_make_decision->resolvent().destination_type(),
-                            changes_to_make_decision->destination()->replacing()
-                            ))));
-
-        _imp->install_job_numbers.insert(std::make_pair(resolvent, install_job_n));
-    }
-    else if (remove_decision)
-    {
-        _imp->resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new UninstallJob(
-                        make_shared_ptr(new JobRequirements),
-                        remove_decision->ids()
-                        )));
-    }
-    else
-        throw InternalError(PALUDIS_HERE, "huh?");
+    d->accept(ExtraScheduler(_imp->resolved, _imp->install_job_numbers, resolvent));
 }
 
