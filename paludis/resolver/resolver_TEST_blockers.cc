@@ -313,5 +313,104 @@ namespace test_cases
                     );
         }
     } test_hard_block_and_dep_cycle;
+
+    struct SelfBlock : ResolverBlockersTestCase
+    {
+        const int installed_version;
+        const int dep_version;
+        const bool strong;
+        const std::string cat;
+
+        SelfBlock(int i, int d, bool s) :
+            ResolverBlockersTestCase("self block " + stringify(i) + " " + stringify(d) + " " + stringify(s), "0"),
+            installed_version(i),
+            dep_version(d),
+            strong(s),
+            cat(std::string("self-block-") +
+                    (-1 == installed_version ? "x" : stringify(installed_version)) + "-" +
+                    (-1 == dep_version ? "x" : stringify(dep_version)) + "-" +
+                    (strong ? "s" : "w"))
+        {
+            if (installed_version != -1)
+                install(cat, "dep", stringify(installed_version));
+
+            allowed_to_remove_names->insert(QualifiedPackageName(cat + "/dep"));
+        }
+
+        void run()
+        {
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved(cat + "/target"));
+            std::tr1::shared_ptr<DecisionChecks> checks, u_checks, o_checks;
+
+            if (dep_version != 0)
+            {
+                checks = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName(cat + "/target"))
+                        .finished());
+                u_checks = make_shared_copy(DecisionChecks()
+                        .unable(QualifiedPackageName(cat + "/dep"))
+                        .finished());
+                o_checks = make_shared_copy(DecisionChecks()
+                        .finished());
+            }
+            else if (installed_version == -1)
+            {
+                checks = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName(cat + "/dep"))
+                        .change(QualifiedPackageName(cat + "/target"))
+                        .finished());
+                u_checks = make_shared_copy(DecisionChecks()
+                        .finished());
+                o_checks = make_shared_copy(DecisionChecks()
+                        .finished());
+            }
+            else if (installed_version == 1 || ((! strong) && installed_version == 0))
+            {
+                checks = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName(cat + "/dep"))
+                        .change(QualifiedPackageName(cat + "/target"))
+                        .finished());
+                u_checks = make_shared_copy(DecisionChecks()
+                        .finished());
+                o_checks = make_shared_copy(DecisionChecks()
+                        .finished());
+            }
+            else if (strong && installed_version == 0 && dep_version == 0)
+            {
+                checks = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName(cat + "/target"))
+                        .finished());
+                u_checks = make_shared_copy(DecisionChecks()
+                        .finished());
+                o_checks = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName(cat + "/dep"))
+                        .finished());
+            }
+
+            TEST_CHECK(checks);
+            TEST_CHECK(u_checks);
+            TEST_CHECK(o_checks);
+
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = checks,
+                    n::taken_unable_to_make_decisions() = u_checks,
+                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unorderable_decisions() = o_checks,
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
+        }
+    } test_self_block_x_x_w(-1, -1, false), test_self_block_x_x_s(-1, -1, true),
+      test_self_block_0_x_w( 0, -1, false), test_self_block_0_x_s( 0, -1, true),
+      test_self_block_1_x_w( 1, -1, false), test_self_block_1_x_s( 1, -1, true),
+      test_self_block_x_0_w(-1,  0, false), test_self_block_x_0_s(-1,  0, true),
+      test_self_block_0_0_w( 0,  0, false), test_self_block_0_0_s( 0,  0, true),
+      test_self_block_1_0_w( 1,  0, false), test_self_block_1_0_s( 1,  0, true),
+      test_self_block_x_1_w(-1,  1, false), test_self_block_x_1_s(-1,  1, true),
+      test_self_block_0_1_w( 0,  1, false), test_self_block_0_1_s( 0,  1, true),
+      test_self_block_1_1_w( 1,  1, false), test_self_block_1_1_s( 1,  1, true);
 }
 

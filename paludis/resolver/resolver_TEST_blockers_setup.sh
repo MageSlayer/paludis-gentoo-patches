@@ -156,5 +156,51 @@ DEPEND="
     "
 END
 
+# self-block
+for i in "x" "0" "1" ; do
+    for d in "x" "0" "1" ; do
+        for b in "w" "s" ; do
+            cat=self-block-${i}-${d}-${b}
+
+            dep=${cat}/dep
+
+            if [[ "${d}" != "x" ]] ; then
+                dep="=${dep}-${d}"
+            fi
+
+            if [[ "${b}" == "w" ]] ; then
+                dep="!${dep}"
+            else
+                dep="!!${dep}"
+            fi
+
+            echo $cat >> metadata/categories.conf
+
+            mkdir -p 'packages/'$cat'/target'
+            cat <<END > packages/$cat/target/target-1.ebuild
+EAPI="2"
+DESCRIPTION="target"
+KEYWORDS="test"
+SLOT="0"
+DEPEND="
+    ${cat}/dep
+    "
+END
+
+            mkdir -p 'packages/'$cat'/dep'
+            cat <<END > packages/$cat/dep/dep-1.ebuild
+EAPI="2"
+DESCRIPTION="target"
+KEYWORDS="test"
+SLOT="0"
+DEPEND="
+    ${dep}
+    "
+END
+
+        done
+    done
+done
+
 cd ..
 

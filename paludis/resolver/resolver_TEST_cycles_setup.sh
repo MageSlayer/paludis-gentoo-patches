@@ -165,5 +165,28 @@ SLOT="0"
 DEPENDENCIES="run: triangle/dep-b"
 END
 
+# self
+for r in "build" "run" ; do
+    cat=self-${r}
+    echo $cat >> metadata/categories.conf
+
+    mkdir -p 'packages/'$cat'/target'
+    cat <<END > packages/$cat/target/target-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="${cat}/dep"
+END
+
+    mkdir -p 'packages/'$cat'/dep'
+    cat <<END > packages/$cat/dep/dep-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="${r}: ${cat}/dep[=1]"
+END
+
+    done
+
 cd ..
 

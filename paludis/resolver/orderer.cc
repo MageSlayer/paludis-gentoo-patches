@@ -395,7 +395,7 @@ Orderer::resolve()
         {
             /* there's only one real package in the component, so there's no
              * need to try anything clever */
-            _schedule(*changes_in_scc.begin(),
+            _check_self_deps_and_schedule(*changes_in_scc.begin(),
                     _imp->change_or_remove_resolvents.find(*changes_in_scc.begin())->second,
                     make_shared_copy(make_named_values<OrdererNotes>(
                             n::cycle_breaking() = ""
@@ -450,7 +450,7 @@ Orderer::_order_sub_ssccs(
         if (sub_scc->nodes()->size() == 1)
         {
             /* yay. it's all on its own. */
-            _schedule(*sub_scc->nodes()->begin(),
+            _check_self_deps_and_schedule(*sub_scc->nodes()->begin(),
                     _imp->change_or_remove_resolvents.find(*sub_scc->nodes()->begin())->second,
                     make_shared_copy(make_named_values<OrdererNotes>(
                             n::cycle_breaking() = (can_recurse ?
@@ -465,7 +465,7 @@ Orderer::_order_sub_ssccs(
              * dependency cycles which we can order however we like! */
             for (Set<Resolvent>::ConstIterator r(sub_scc->nodes()->begin()), r_end(sub_scc->nodes()->end()) ;
                     r != r_end ; ++r)
-                _schedule(*r,
+                _check_self_deps_and_schedule(*r,
                         _imp->change_or_remove_resolvents.find(*r)->second,
                         make_shared_copy(make_named_values<OrdererNotes>(
                                 n::cycle_breaking() = "In run dependency cycle with: " + join(
@@ -555,6 +555,49 @@ namespace
                 populate_requirements(nag, install_job_numbers, e->first, requirements, true, recursed);
             }
     }
+}
+
+void
+Orderer::_check_self_deps_and_schedule(
+        const Resolvent & resolvent,
+        const std::tr1::shared_ptr<const ChangeOrRemoveDecision> & d,
+        const std::tr1::shared_ptr<OrdererNotes> & n)
+{
+    /* do we dep directly upon ourself? */
+    bool direct_self_dep(false), self_dep_is_met(true), self_dep_is_not_build(true);
+    for (NAG::EdgesFromConstIterator e(_imp->resolved->nag()->begin_edges_from(resolvent)),
+            e_end(_imp->resolved->nag()->end_edges_from(resolvent)) ;
+            e != e_end ; ++e)
+    {
+        if (e->first == resolvent)
+        {
+            direct_self_dep = true;
+            self_dep_is_met = self_dep_is_met && e->second.build_all_met() && e->second.run_all_met();
+            self_dep_is_not_build = self_dep_is_not_build && ! e->second.build();
+        }
+    }
+
+    if (direct_self_dep)
+    {
+        if (! n->cycle_breaking().empty())
+            n->cycle_breaking().append("; ");
+
+        if (self_dep_is_met)
+            n->cycle_breaking().append("Self dependent (already met)");
+        else if (self_dep_is_not_build)
+            n->cycle_breaking().append("Self dependent (runtime only)");
+        else
+            n->cycle_breaking().append("Self dependent (unsolvable)");
+    }
+
+    if (direct_self_dep && ! self_dep_is_met && ! self_dep_is_not_build)
+    {
+        _imp->resolved->taken_unorderable_decisions()->push_back(
+                _imp->change_or_remove_resolvents.find(resolvent)->second,
+                n);
+    }
+    else
+        _schedule(resolvent, d, n);
 }
 
 void

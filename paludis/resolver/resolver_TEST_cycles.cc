@@ -271,5 +271,82 @@ namespace test_cases
                     );
         }
     } test_triangle_none(false, false), test_triangle_b(true, false), test_triangle_c(false, true);
+
+    struct TestSelf : ResolverCyclesTestCase
+    {
+        const int installed_version;
+        const bool runtime;
+        const std::string cat;
+
+        TestSelf (const int i, const bool r) :
+            ResolverCyclesTestCase("self " + stringify(i) + " " + stringify(r)),
+            installed_version(i),
+            runtime(r),
+            cat(runtime ? "self-run" : "self-build")
+        {
+            if (-1 != installed_version)
+                install(cat, "dep", stringify(installed_version));
+        }
+
+        virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)
+        {
+            ResolverFunctions result(ResolverCyclesTestCase::get_resolver_functions(initial_constraints));
+            result.get_use_existing_fn() = std::tr1::bind(&use_existing_if_same, std::tr1::placeholders::_1,
+                    std::tr1::placeholders::_2, std::tr1::placeholders::_3);
+            return result;
+        }
+
+        void run()
+        {
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved(cat + "/target"));
+            std::tr1::shared_ptr<DecisionChecks> checks, u_checks;
+
+            if (runtime || installed_version == 1)
+            {
+                if (installed_version == 1)
+                {
+                    checks = make_shared_copy(DecisionChecks()
+                            .change(QualifiedPackageName(cat + "/target"))
+                            .finished());
+                    u_checks = make_shared_copy(DecisionChecks()
+                            .finished());
+                }
+                else
+                {
+                    checks = make_shared_copy(DecisionChecks()
+                            .change(QualifiedPackageName(cat + "/dep"))
+                            .change(QualifiedPackageName(cat + "/target"))
+                            .finished());
+                    u_checks = make_shared_copy(DecisionChecks()
+                            .finished());
+                }
+            }
+            else
+            {
+                checks = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName(cat + "/target"))
+                        .finished());
+                u_checks = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName(cat + "/dep"))
+                        .finished());
+            }
+
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = checks,
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unorderable_decisions() = u_checks,
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
+        }
+    }
+      test_self_x_b(-1, false), test_self_x_r(-1, true),
+      test_self_0_b( 0, false), test_self_0_r( 0, true),
+      test_self_1_b( 1, false), test_self_1_r( 1, true);
 }
 

@@ -38,6 +38,11 @@ namespace paludis
             private PrivateImplementationPattern<Orderer>
         {
             private:
+                void _check_self_deps_and_schedule(
+                        const Resolvent &,
+                        const std::tr1::shared_ptr<const ChangeOrRemoveDecision> &,
+                        const std::tr1::shared_ptr<OrdererNotes> &);
+
                 void _schedule(
                         const Resolvent &,
                         const std::tr1::shared_ptr<const ChangeOrRemoveDecision> &,
