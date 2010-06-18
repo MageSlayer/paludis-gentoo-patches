@@ -27,6 +27,8 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/named_value.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>
@@ -141,7 +143,9 @@ namespace
         SlotsToVersions slots_to_versions;
 
         std::tr1::shared_ptr<const PackageIDSequence> versions(repo.package_ids(package));
-        for (PackageIDSequence::ConstIterator v(versions->begin()), v_end(versions->end()) ;
+        std::tr1::shared_ptr<PackageIDSet> versions_sorted(new PackageIDSet);
+        std::copy(versions->begin(), versions->end(), versions_sorted->inserter());
+        for (PackageIDSet::ConstIterator v(versions_sorted->begin()), v_end(versions_sorted->end()) ;
                 v != v_end ; ++v)
         {
             if (! (*v)->keywords_key())
