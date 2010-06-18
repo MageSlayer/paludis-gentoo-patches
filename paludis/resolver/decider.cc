@@ -1627,10 +1627,13 @@ Decider::_find_id_for_from(
         const std::tr1::shared_ptr<const Resolution> & resolution,
         const std::tr1::shared_ptr<const PackageIDSequence> & ids) const
 {
-    bool best(true);
+    std::tr1::shared_ptr<const PackageID> best_version;
     for (PackageIDSequence::ReverseConstIterator i(ids->rbegin()), i_end(ids->rend()) ;
             i != i_end ; ++i)
     {
+        if (! best_version)
+            best_version = *i;
+
         bool ok(true);
         for (Constraints::ConstIterator c(resolution->constraints()->begin()),
                 c_end(resolution->constraints()->end()) ;
@@ -1646,9 +1649,7 @@ Decider::_find_id_for_from(
         }
 
         if (ok)
-            return std::make_pair(*i, best);
-
-        best = false;
+            return std::make_pair(*i, (*i)->version() == best_version->version());
     }
 
     return std::make_pair(make_null_shared_ptr(), false);
