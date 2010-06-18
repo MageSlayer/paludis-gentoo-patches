@@ -99,9 +99,20 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE ConfirmableDecision :
-            public Decision
+            public Decision,
+            public virtual DeclareAbstractAcceptMethods<ConfirmableDecision, MakeTypeList<
+                ChangesToMakeDecision, RemoveDecision, BreakDecision>::Type>
         {
             public:
+                typedef DeclareAbstractAcceptMethods<ConfirmableDecision,
+                        MakeTypeList<ChangesToMakeDecision, RemoveDecision, BreakDecision>::Type> MoreSpecificVisitor;
+
+                typedef MoreSpecificVisitor::VisitableTypeList VisitableTypeList;
+                typedef MoreSpecificVisitor::VisitableBaseClass VisitableBaseClass;
+
+                using MoreSpecificVisitor::accept_returning;
+                using MoreSpecificVisitor::accept;
+
                 static const std::tr1::shared_ptr<ConfirmableDecision> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -120,6 +131,7 @@ namespace paludis
         class PALUDIS_VISIBLE ChangesToMakeDecision :
             public ChangeOrRemoveDecision,
             public ImplementAcceptMethods<Decision, ChangesToMakeDecision>,
+            public ImplementAcceptMethods<ConfirmableDecision, ChangesToMakeDecision>,
             private PrivateImplementationPattern<ChangesToMakeDecision>
         {
             public:
@@ -163,6 +175,7 @@ namespace paludis
         class PALUDIS_VISIBLE RemoveDecision :
             public ChangeOrRemoveDecision,
             public ImplementAcceptMethods<Decision, RemoveDecision>,
+            public ImplementAcceptMethods<ConfirmableDecision, RemoveDecision>,
             private PrivateImplementationPattern<RemoveDecision>
         {
             public:
@@ -213,6 +226,7 @@ namespace paludis
         class PALUDIS_VISIBLE BreakDecision :
             public ConfirmableDecision,
             public ImplementAcceptMethods<Decision, BreakDecision>,
+            public ImplementAcceptMethods<ConfirmableDecision, BreakDecision>,
             private PrivateImplementationPattern<BreakDecision>
         {
             public:
