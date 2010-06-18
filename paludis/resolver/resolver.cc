@@ -156,7 +156,7 @@ Resolver::add_target(const SetName & set_name)
 
     const std::tr1::shared_ptr<const SetSpecTree> set(_imp->env->set(set_name));
     if (! set)
-        throw InternalError(PALUDIS_HERE, "unimplemented: no such set");
+        throw NoSuchSetError(stringify(set_name));
 
     RecursingNames recurse;
     set->root()->accept(SetExpander(_imp->env, _imp->decider, make_shared_ptr(new TargetReason), recurse));
