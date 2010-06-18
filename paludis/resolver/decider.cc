@@ -1787,12 +1787,15 @@ namespace
 {
     struct ConfirmVisitor
     {
+        const Environment * const env;
         const ResolverFunctions & fns;
         const std::tr1::shared_ptr<const Resolution> resolution;
 
         ConfirmVisitor(
+                const Environment * const e,
                 const ResolverFunctions & f,
                 const std::tr1::shared_ptr<const Resolution> & r) :
+            env(e),
             fns(f),
             resolution(r)
         {
@@ -1834,9 +1837,21 @@ namespace
         {
         }
 
-        void visit(RemoveDecision &) const
+        void visit(RemoveDecision & remove_decision) const
         {
-            /* remove confirms are done elsewhere */
+            /* we do BreakConfirmation elsewhere */
+            bool is_system(false);
+            for (PackageIDSequence::ConstIterator i(remove_decision.ids()->begin()), i_end(remove_decision.ids()->end()) ;
+                    i != i_end && ! is_system ; ++i)
+                if (match_package_in_set(*env, *env->set(SetName("system")), **i, MatchPackageOptions()))
+                    is_system = true;
+
+            if (is_system)
+            {
+                const std::tr1::shared_ptr<RemoveSystemPackageConfirmation> c(new RemoveSystemPackageConfirmation);
+                if (! fns.confirm_fn()(resolution, c))
+                    remove_decision.add_required_confirmation(c);
+            }
         }
     };
 }
@@ -1845,7 +1860,7 @@ void
 Decider::_confirm(
         const std::tr1::shared_ptr<const Resolution> & resolution)
 {
-    resolution->decision()->accept(ConfirmVisitor(_imp->fns, resolution));
+    resolution->decision()->accept(ConfirmVisitor(_imp->env, _imp->fns, resolution));
 }
 
 

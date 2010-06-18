@@ -1090,6 +1090,7 @@ namespace
         const PackageDepSpecList & permit_downgrade;
         const PackageDepSpecList & permit_old_version;
         const PackageDepSpecList & allowed_to_break_specs;
+        const bool allowed_to_break_system;
         const std::tr1::shared_ptr<const PackageID> id;
 
         ConfirmFnVisitor(const Environment * const e,
@@ -1097,12 +1098,14 @@ namespace
                 const PackageDepSpecList & d,
                 const PackageDepSpecList & o,
                 const PackageDepSpecList & a,
+                const bool s,
                 const std::tr1::shared_ptr<const PackageID> & i) :
             env(e),
             resolution_options(r),
             permit_downgrade(d),
             permit_old_version(o),
             allowed_to_break_specs(a),
+            allowed_to_break_system(s),
             id(i)
         {
         }
@@ -1145,6 +1148,11 @@ namespace
 
             return false;
         }
+
+        bool visit(const RemoveSystemPackageConfirmation &) const
+        {
+            return allowed_to_break_system;
+        }
     };
 
     bool confirm_fn(
@@ -1153,10 +1161,12 @@ namespace
             const PackageDepSpecList & permit_downgrade,
             const PackageDepSpecList & permit_old_version,
             const PackageDepSpecList & allowed_to_break_specs,
+            const bool allowed_to_break_system,
             const std::tr1::shared_ptr<const Resolution> & r,
             const std::tr1::shared_ptr<const RequiredConfirmation> & c)
     {
-        return c->accept_returning<bool>(ConfirmFnVisitor(env, resolution_options, permit_downgrade, permit_old_version, allowed_to_break_specs,
+        return c->accept_returning<bool>(ConfirmFnVisitor(env, resolution_options, permit_downgrade, permit_old_version,
+                    allowed_to_break_specs, allowed_to_break_system,
                     r->decision()->accept_returning<std::tr1::shared_ptr<const PackageID> >(ChosenIDVisitor())
                     ));
     }
@@ -1479,6 +1489,7 @@ paludis::cave::resolve_common(
                        less_restrictive_remove_blockers_specs, with, without,
                        permit_old_version, permit_downgrade, take, take_from, ignore, ignore_from,
                        favour, avoid, no_dependencies_from, no_blockers_from;
+    bool allowed_to_break_system(false);
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_uninstall.begin_args()),
             i_end(resolution_options.a_permit_uninstall.end_args()) ;
@@ -1489,8 +1500,11 @@ paludis::cave::resolve_common(
     for (args::StringSetArg::ConstIterator i(resolution_options.a_uninstalls_may_break.begin_args()),
             i_end(resolution_options.a_uninstalls_may_break.end_args()) ;
             i != i_end ; ++i)
-        allowed_to_break_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+        if (*i == "system")
+            allowed_to_break_system = true;
+        else
+            allowed_to_break_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
+                        UserPackageDepSpecOptions() + updso_allow_wildcards));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_remove_if_dependent.begin_args()),
             i_end(resolution_options.a_remove_if_dependent.end_args()) ;
@@ -1631,7 +1645,8 @@ paludis::cave::resolve_common(
                         env.get(), std::tr1::cref(allowed_to_remove_specs), _1),
                 n::confirm_fn() = std::tr1::bind(&confirm_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::cref(permit_downgrade),
-                        std::tr1::cref(permit_old_version), std::tr1::cref(allowed_to_break_specs), _1, _2),
+                        std::tr1::cref(permit_old_version), std::tr1::cref(allowed_to_break_specs),
+                        allowed_to_break_system, _1, _2),
                 n::find_repository_for_fn() = std::tr1::bind(&find_repository_for_fn,
                         env.get(), std::tr1::cref(resolution_options), _1, _2),
                 n::get_constraints_for_dependent_fn() = std::tr1::bind(&get_constraints_for_dependent_fn,

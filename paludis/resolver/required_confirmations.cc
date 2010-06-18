@@ -36,6 +36,8 @@ RequiredConfirmation::deserialise(Deserialisation & d)
         return NotBestConfirmation::deserialise(d);
     else if (d.class_name() == "BreakConfirmation")
         return BreakConfirmation::deserialise(d);
+    else if (d.class_name() == "RemoveSystemPackageConfirmation")
+        return RemoveSystemPackageConfirmation::deserialise(d);
     else
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 
@@ -81,6 +83,20 @@ void
 BreakConfirmation::serialise(Serialiser & s) const
 {
     s.object("BreakConfirmation")
+        ;
+}
+
+const std::tr1::shared_ptr<RemoveSystemPackageConfirmation>
+RemoveSystemPackageConfirmation::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "RemoveSystemPackageConfirmation");
+    return make_shared_ptr(new RemoveSystemPackageConfirmation);
+}
+
+void
+RemoveSystemPackageConfirmation::serialise(Serialiser & s) const
+{
+    s.object("RemoveSystemPackageConfirmation")
         ;
 }
 

@@ -76,7 +76,8 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             "dependent packages are treated as errors. These options specify a different behaviour."),
     a_uninstalls_may_break(&g_dependent_options, "uninstalls-may-break", 'u',
             "Permit uninstalls that might break packages matching the specified specification. May be "
-            "specified multiple times. Use '*/*' to allow all packages to be broken."),
+            "specified multiple times. Use '*/*' to allow all packages to be broken. Use 'system' to "
+            "allow system packages to be uninstalled."),
     a_remove_if_dependent(&g_dependent_options, "remove-if-dependent", 'r',
             "Remove dependent packages that might be broken by other changes if those packages match "
             "the specified specification. May be specified multiple times. Use '*/*' to remove all "

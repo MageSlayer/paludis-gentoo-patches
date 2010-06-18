@@ -663,6 +663,11 @@ namespace
         {
             return "--uninstalls-may-break or --remove-if-dependent";
         }
+
+        std::string visit(const RemoveSystemPackageConfirmation &) const
+        {
+            return "--uninstalls-may-break system";
+        }
     };
 
     std::string stringify_confirmation(const RequiredConfirmation & c)
@@ -772,7 +777,9 @@ namespace
             const std::tr1::shared_ptr<const Resolution> & resolution,
             const RemoveDecision & decision,
             const bool more_annotations,
-            const bool untaken)
+            const bool confirmations,
+            const bool untaken,
+            const std::string & notes)
     {
         if (untaken)
             cout << "(<) " << c::bold_green() << decision.resolvent().package() << c::normal() << " ";
@@ -793,6 +800,10 @@ namespace
 
         cout << endl;
         display_reasons(resolution, more_annotations);
+        if (confirmations)
+            display_confirmations(decision);
+        if (! notes.empty())
+            cout << "    " << c::bold_normal() << notes << c::normal() << endl;
     }
 
     struct NotFixableMask
@@ -1193,7 +1204,9 @@ namespace
                     resolution,
                     remove_decision,
                     more_annotations,
-                    untaken);
+                    unconfirmed,
+                    untaken,
+                    cycle_breaking);
         }
 
         void visit(const BreakDecision & break_decision)
