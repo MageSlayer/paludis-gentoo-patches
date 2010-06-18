@@ -19,6 +19,7 @@
 
 #include <paludis/resolver/job.hh>
 #include <paludis/resolver/job_requirements.hh>
+#include <paludis/resolver/job_state.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
@@ -158,10 +159,12 @@ FetchJob::deserialise(Deserialisation & d)
             requirements->push_back(vv.member<JobRequirement>(stringify(n)));
     }
 
-    return make_shared_ptr(new FetchJob(
+    std::tr1::shared_ptr<FetchJob> result(new FetchJob(
                 requirements,
                 v.member<std::tr1::shared_ptr<const PackageID> >("origin_id")
                 ));
+    result->set_state(v.member<std::tr1::shared_ptr<JobState> >("state"));
+    return result;
 }
 
 void
@@ -170,6 +173,7 @@ FetchJob::serialise(Serialiser & s) const
     s.object("FetchJob")
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "requirements", requirements())
         .member(SerialiserFlags<serialise::might_be_null>(), "origin_id", origin_id())
+        .member(SerialiserFlags<serialise::might_be_null>(), "state", state())
         ;
 }
 
@@ -279,13 +283,16 @@ InstallJob::deserialise(Deserialisation & d)
             requirements->push_back(vv.member<JobRequirement>(stringify(n)));
     }
 
-    return make_shared_ptr(new InstallJob(
+    std::tr1::shared_ptr<InstallJob> result(new InstallJob(
                 requirements,
                 v.member<std::tr1::shared_ptr<const PackageID> >("origin_id"),
                 RepositoryName(v.member<std::string>("destination_repository_name")),
                 destringify<DestinationType>(v.member<std::string>("destination_type")),
                 replacing
                 ));
+
+    result->set_state(v.member<std::tr1::shared_ptr<JobState> >("state"));
+    return result;
 }
 
 void
@@ -297,6 +304,7 @@ InstallJob::serialise(Serialiser & s) const
         .member(SerialiserFlags<>(), "destination_repository_name", stringify(destination_repository_name()))
         .member(SerialiserFlags<>(), "destination_type", stringify(destination_type()))
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "replacing", replacing())
+        .member(SerialiserFlags<serialise::might_be_null>(), "state", state())
         ;
 }
 
@@ -376,10 +384,13 @@ UninstallJob::deserialise(Deserialisation & d)
             requirements->push_back(vv.member<JobRequirement>(stringify(n)));
     }
 
-    return make_shared_ptr(new UninstallJob(
+    std::tr1::shared_ptr<UninstallJob> result(new UninstallJob(
                 requirements,
                 ids_to_remove
                 ));
+
+    result->set_state(v.member<std::tr1::shared_ptr<JobState> >("state"));
+    return result;
 }
 
 void
@@ -388,6 +399,7 @@ UninstallJob::serialise(Serialiser & s) const
     s.object("UninstallJob")
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "requirements", requirements())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "ids_to_remove", ids_to_remove())
+        .member(SerialiserFlags<serialise::might_be_null>(), "state", state())
         ;
 }
 

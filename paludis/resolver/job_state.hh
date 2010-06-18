@@ -25,6 +25,7 @@
 #include <paludis/util/type_list.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/output_manager-fwd.hh>
+#include <paludis/serialise-fwd.hh>
 #include <tr1/memory>
 
 namespace paludis
@@ -37,12 +38,18 @@ namespace paludis
         {
             public:
                 virtual ~JobState() = 0;
+
+                virtual void serialise(Serialiser &) const = 0;
+                static const std::tr1::shared_ptr<JobState> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class PALUDIS_VISIBLE JobPendingState :
             public JobState,
             public ImplementAcceptMethods<JobState, JobPendingState>
         {
+            public:
+                virtual void serialise(Serialiser &) const;
+                static const std::tr1::shared_ptr<JobPendingState> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class PALUDIS_VISIBLE JobActiveState :
@@ -57,6 +64,9 @@ namespace paludis
                 void set_output_manager(const std::tr1::shared_ptr<OutputManager> &);
                 const std::tr1::shared_ptr<JobSucceededState> succeeded() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 const std::tr1::shared_ptr<JobFailedState> failed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual void serialise(Serialiser &) const;
+                static const std::tr1::shared_ptr<JobActiveState> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class PALUDIS_VISIBLE JobSucceededState :
@@ -69,6 +79,9 @@ namespace paludis
                 ~JobSucceededState();
 
                 const std::tr1::shared_ptr<OutputManager> output_manager() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual void serialise(Serialiser &) const;
+                static const std::tr1::shared_ptr<JobSucceededState> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class PALUDIS_VISIBLE JobFailedState :
@@ -81,12 +94,18 @@ namespace paludis
                 ~JobFailedState();
 
                 const std::tr1::shared_ptr<OutputManager> output_manager() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual void serialise(Serialiser &) const;
+                static const std::tr1::shared_ptr<JobFailedState> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class PALUDIS_VISIBLE JobSkippedState :
             public JobState,
             public ImplementAcceptMethods<JobState, JobSkippedState>
         {
+            public:
+                virtual void serialise(Serialiser &) const;
+                static const std::tr1::shared_ptr<JobSkippedState> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }
