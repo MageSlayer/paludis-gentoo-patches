@@ -1219,21 +1219,6 @@ namespace
                     more_annotations,
                     untaken);
         }
-
-        void visit(const NothingNoChangeDecision &) PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw InternalError(PALUDIS_HERE, "not allowed");
-        }
-
-        void visit(const ExistingNoChangeDecision &) PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw InternalError(PALUDIS_HERE, "not allowed");
-        }
-
-        void visit(const UnableToMakeDecision &) PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw InternalError(PALUDIS_HERE, "not allowed");
-        }
     };
 
     template <typename Decisions_>
