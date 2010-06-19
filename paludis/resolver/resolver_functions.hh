@@ -62,6 +62,7 @@ namespace paludis
     namespace resolver
     {
         typedef std::tr1::function<bool (
+                const std::tr1::shared_ptr<const Resolution> &,
                 const std::tr1::shared_ptr<const PackageID> &
                 )> AllowedToRemoveFunction;
 

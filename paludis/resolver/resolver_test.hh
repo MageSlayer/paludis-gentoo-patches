@@ -95,6 +95,7 @@ namespace paludis
 
             bool allowed_to_remove_fn(
                     const std::tr1::shared_ptr<const QualifiedPackageNameSet> &,
+                    const std::tr1::shared_ptr<const Resolution> &,
                     const std::tr1::shared_ptr<const PackageID> &);
 
             bool remove_if_dependent_fn(

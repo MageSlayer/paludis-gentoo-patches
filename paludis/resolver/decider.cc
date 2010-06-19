@@ -1409,7 +1409,7 @@ Decider::_try_to_find_decision_for(
         /* we can't stick with our existing id, if there is one, and we can't
          * fix it by installing things. this might be an error, or we might be
          * able to remove things. */
-        if (resolution->constraints()->nothing_is_fine_too() && _installed_but_allowed_to_remove(resolution->resolvent()))
+        if (resolution->constraints()->nothing_is_fine_too() && _installed_but_allowed_to_remove(resolution))
             return make_shared_ptr(new RemoveDecision(
                         resolution->resolvent(),
                         _installed_ids(resolution->resolvent()),
@@ -1572,20 +1572,23 @@ Decider::_find_existing_id_for(const std::tr1::shared_ptr<const Resolution> & re
 }
 
 bool
-Decider::_installed_but_allowed_to_remove(const Resolvent & resolvent) const
+Decider::_installed_but_allowed_to_remove(const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
-    const std::tr1::shared_ptr<const PackageIDSequence> ids(_installed_ids(resolvent));
+    const std::tr1::shared_ptr<const PackageIDSequence> ids(_installed_ids(resolution->resolvent()));
     if (ids->empty())
         return false;
 
     return ids->end() == std::find_if(ids->begin(), ids->end(),
-            std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(&Decider::_allowed_to_remove, this, std::tr1::placeholders::_1)));
+            std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(&Decider::_allowed_to_remove,
+                    this, resolution, std::tr1::placeholders::_1)));
 }
 
 bool
-Decider::_allowed_to_remove(const std::tr1::shared_ptr<const PackageID> & id) const
+Decider::_allowed_to_remove(
+        const std::tr1::shared_ptr<const Resolution> & resolution,
+        const std::tr1::shared_ptr<const PackageID> & id) const
 {
-    return id->supports_action(SupportsActionTest<UninstallAction>()) && _imp->fns.allowed_to_remove_fn()(id);
+    return id->supports_action(SupportsActionTest<UninstallAction>()) && _imp->fns.allowed_to_remove_fn()(resolution, id);
 }
 
 bool

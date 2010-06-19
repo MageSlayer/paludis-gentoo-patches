@@ -242,6 +242,7 @@ paludis::resolver::resolver_test::find_repository_for_fn(
 bool
 paludis::resolver::resolver_test::allowed_to_remove_fn(
         const std::tr1::shared_ptr<const QualifiedPackageNameSet> & s,
+        const std::tr1::shared_ptr<const Resolution> &,
         const std::tr1::shared_ptr<const PackageID> & i)
 {
     return s->end() != s->find(i->name());
@@ -360,7 +361,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
 {
     return make_named_values<ResolverFunctions>(
             n::allowed_to_remove_fn() = std::tr1::bind(&allowed_to_remove_fn,
-                    allowed_to_remove_names, std::tr1::placeholders::_1),
+                    allowed_to_remove_names, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
             n::confirm_fn() = &confirm_fn,
             n::find_repository_for_fn() = std::tr1::bind(&find_repository_for_fn,
                     &env, std::tr1::placeholders::_1, std::tr1::placeholders::_2),

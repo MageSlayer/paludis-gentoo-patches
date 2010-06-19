@@ -347,7 +347,6 @@ namespace
             const std::tr1::shared_ptr<Resolver> & resolver,
             const ResolveCommandLineResolutionOptions &,
             const std::tr1::shared_ptr<const Sequence<std::string> > & targets,
-            PackageDepSpecList & allowed_to_remove_specs,
             bool & is_set)
     {
         Context context("When adding targets from commandline:");
@@ -369,7 +368,6 @@ namespace
                     seen_packages = true;
                     PackageDepSpec s(parse_user_package_dep_spec(p->substr(1), env.get(), UserPackageDepSpecOptions()));
                     resolver->add_target(BlockDepSpec(*p, s, false));
-                    allowed_to_remove_specs.push_back(s);
                 }
                 else
                 {
@@ -995,11 +993,46 @@ namespace
         return false;
     }
 
+    struct AllowedToRemoveVisitor
+    {
+        bool visit(const DependentReason &) const
+        {
+            return true;
+        }
+
+        bool visit(const TargetReason &) const
+        {
+            return true;
+        }
+
+        bool visit(const DependencyReason &) const
+        {
+            return false;
+        }
+
+        bool visit(const SetReason & r) const
+        {
+            return r.reason_for_set()->accept_returning<bool>(*this);
+        }
+
+        bool visit(const PresetReason &) const
+        {
+            return false;
+        }
+    };
+
     bool allowed_to_remove_fn(
             const Environment * const env,
             const PackageDepSpecList & list,
+            const std::tr1::shared_ptr<const Resolution> & resolution,
             const std::tr1::shared_ptr<const PackageID> & i)
     {
+        for (Constraints::ConstIterator c(resolution->constraints()->begin()),
+                c_end(resolution->constraints()->end()) ;
+                c != c_end ; ++c)
+            if ((*c)->reason()->accept_returning<bool>(AllowedToRemoveVisitor()))
+                return true;
+
         return match_any(env, list, i);
     }
 
@@ -1642,7 +1675,7 @@ paludis::cave::resolve_common(
 
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
                 n::allowed_to_remove_fn() = std::tr1::bind(&allowed_to_remove_fn,
-                        env.get(), std::tr1::cref(allowed_to_remove_specs), _1),
+                        env.get(), std::tr1::cref(allowed_to_remove_specs), _1, _2),
                 n::confirm_fn() = std::tr1::bind(&confirm_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::cref(permit_downgrade),
                         std::tr1::cref(permit_old_version), std::tr1::cref(allowed_to_break_specs),
@@ -1688,8 +1721,7 @@ paludis::cave::resolve_common(
             {
                 try
                 {
-                    add_resolver_targets(env, resolver, resolution_options, targets,
-                            allowed_to_remove_specs, is_set);
+                    add_resolver_targets(env, resolver, resolution_options, targets, is_set);
                     resolver->resolve();
                     break;
                 }

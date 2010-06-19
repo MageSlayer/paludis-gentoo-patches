@@ -81,8 +81,7 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
     a_remove_if_dependent(&g_dependent_options, "remove-if-dependent", 'r',
             "Remove dependent packages that might be broken by other changes if those packages match "
             "the specified specification. May be specified multiple times. Use '*/*' to remove all "
-            "dependent packages that might be broken, recursively. Does not imply --permit-uninstall, "
-            "which must also be specified."),
+            "dependent packages that might be broken, recursively."),
     a_less_restrictive_remove_blockers(&g_dependent_options, "less-restrictive-remove-blockers", 'l',
             "Use less restrictive blockers for packages matching the supplied specification if that "
             "package is to be removed by --remove-if-dependent. May be specified multiple times. "

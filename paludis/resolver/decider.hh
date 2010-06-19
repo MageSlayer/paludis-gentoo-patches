@@ -190,12 +190,15 @@ namespace paludis
 
                 bool _already_met(const SanitisedDependency &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                bool _installed_but_allowed_to_remove(const Resolvent &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool _installed_but_allowed_to_remove(
+                        const std::tr1::shared_ptr<const Resolution> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::tr1::shared_ptr<const PackageIDSequence> _installed_ids(
                         const Resolvent & resolvent) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                bool _allowed_to_remove(const std::tr1::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool _allowed_to_remove(
+                        const std::tr1::shared_ptr<const Resolution> &,
+                        const std::tr1::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 bool _remove_if_dependent(const std::tr1::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
