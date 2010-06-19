@@ -24,10 +24,12 @@
 #include "command_command_line.hh"
 #include "formats.hh"
 #include "colour_formatter.hh"
+#include "resume_data.hh"
 #include <paludis/args/do_help.hh>
 #include <paludis/args/escape.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/stringify.hh>
@@ -41,6 +43,7 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
@@ -115,7 +118,7 @@ namespace
 
         virtual std::string app_synopsis() const
         {
-            return "Executes a dependency resolution created using 'cave execute'.";
+            return "Executes a dependency resolution created using 'cave resolve'.";
         }
 
         virtual std::string app_description() const
@@ -623,13 +626,12 @@ namespace
     {
         const std::tr1::shared_ptr<Environment> env;
         const ExecuteResolutionCommandLine & cmdline;
-        int & x;
-        const int y;
+        const int x, y;
 
         ExecuteOneVisitor(
                 const std::tr1::shared_ptr<Environment> & e,
                 const ExecuteResolutionCommandLine & c,
-                int & xx, int yy) :
+                int xx, int yy) :
             env(e),
             cmdline(c),
             x(xx),
@@ -639,8 +641,6 @@ namespace
 
         int visit(InstallJob & install_item)
         {
-            ++x;
-
             const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
             install_item.set_state(active_state);
 
@@ -664,8 +664,6 @@ namespace
 
         int visit(UninstallJob & uninstall_item)
         {
-            ++x;
-
             const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
             uninstall_item.set_state(active_state);
 
@@ -684,8 +682,6 @@ namespace
 
         int visit(FetchJob & fetch_item)
         {
-            ++x;
-
             const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
             fetch_item.set_state(active_state);
 
@@ -729,6 +725,75 @@ namespace
         }
     };
 
+    struct ExistingStateVisitor
+    {
+        bool done;
+        bool failed;
+        bool skipped;
+
+        ExistingStateVisitor() :
+            done(false),
+            failed(false),
+            skipped(false)
+        {
+        }
+
+        void visit(const JobPendingState &)
+        {
+        }
+
+        void visit(const JobActiveState &)
+        {
+        }
+
+        void visit(const JobFailedState &)
+        {
+            done = true;
+            failed = true;
+        }
+
+        void visit(const JobSkippedState &)
+        {
+            done = true;
+            skipped = true;
+        }
+
+        void visit(const JobSucceededState &)
+        {
+            done = true;
+        }
+    };
+
+    void already_done_action(
+            const std::string & state,
+            const std::string & name,
+            const int x, const int y)
+    {
+        cout << endl;
+        cout << c::bold_green() << x << " of " << y << ":  Already " << state << " for "
+            << name << "..." << c::normal() << endl;
+        cout << endl;
+    }
+
+    struct JobAsStringVisitor
+    {
+        std::string visit(const InstallJob & j) const
+        {
+            return "install " + stringify(*j.origin_id());
+        }
+
+        std::string visit(const FetchJob & j) const
+        {
+            return "fetch " + stringify(*j.origin_id());
+        }
+
+        std::string visit(const UninstallJob & j) const
+        {
+            return "uninstall " + join(indirect_iterator(j.ids_to_remove()->begin()),
+                    indirect_iterator(j.ids_to_remove()->end()), ", ");
+        }
+    };
+
     int execute_executions(
             const std::tr1::shared_ptr<Environment> & env,
             const std::tr1::shared_ptr<JobLists> & lists,
@@ -760,9 +825,35 @@ namespace
                 c_end(lists->execute_job_list()->end()) ;
                 c != c_end ; ++c)
         {
-            bool want(true);
+            ++x;
 
-            if (0 != retcode)
+            bool want(true);
+            ExistingStateVisitor initial_state;
+
+            if ((*c)->state())
+            {
+                (*c)->state()->accept(initial_state);
+
+                if (initial_state.failed)
+                {
+                    retcode = 1;
+                    want = false;
+                    already_done_action("failed", (*c)->accept_returning<std::string>(JobAsStringVisitor()), x, y);
+                }
+                else if (initial_state.skipped)
+                {
+                    retcode = 1;
+                    want = false;
+                    already_done_action("skipped", (*c)->accept_returning<std::string>(JobAsStringVisitor()), x, y);
+                }
+                else if (initial_state.done)
+                {
+                    want = false;
+                    already_done_action("succeeded", (*c)->accept_returning<std::string>(JobAsStringVisitor()), x, y);
+                }
+            }
+
+            if ((0 != retcode) && want)
             {
                 if (last_jri == require_if)
                     want = false;
@@ -785,7 +876,7 @@ namespace
                 ExecuteOneVisitor execute(env, cmdline, x, y);
                 retcode |= (*c)->accept_returning<int>(execute);
             }
-            else
+            else if (! initial_state.done)
                 (*c)->set_state(make_shared_ptr(new JobSkippedState));
         }
 
@@ -805,7 +896,8 @@ namespace
         for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),
                 c_end(lists->execute_job_list()->end()) ;
                 c != c_end ; ++c)
-            (*c)->set_state(make_shared_ptr(new JobPendingState));
+            if (! (*c)->state())
+                (*c)->set_state(make_shared_ptr(new JobPendingState));
 
         int retcode(0);
 
@@ -917,6 +1009,48 @@ namespace
         }
     }
 
+    struct NotASuccess
+    {
+        bool operator() (const std::tr1::shared_ptr<const ExecuteJob> & job) const
+        {
+            return (! job->state()) || ! simple_visitor_cast<const JobSucceededState>(*job->state());
+        }
+    };
+
+    void write_resume_file(
+            const std::tr1::shared_ptr<Environment> &,
+            const std::tr1::shared_ptr<JobLists> & lists,
+            const ExecuteResolutionCommandLine & cmdline)
+    {
+        if (! cmdline.execution_options.a_resume_file.specified())
+            return;
+
+        FSEntry resume_file(cmdline.execution_options.a_resume_file.argument());
+        bool success(lists->execute_job_list()->end() == std::find_if(lists->execute_job_list()->begin(),
+                    lists->execute_job_list()->end(), NotASuccess()));
+        if (success)
+        {
+            cout << endl << "Erasing resume file " << resume_file << "..." << endl;
+            resume_file.unlink();
+        }
+        else
+        {
+            std::tr1::shared_ptr<Sequence<std::string> > targets(new Sequence<std::string>);
+            std::copy(cmdline.begin_parameters(), cmdline.end_parameters(), targets->back_inserter());
+
+            ResumeData resume_data(make_named_values<ResumeData>(
+                        n::job_lists() = lists,
+                        n::target_set() = cmdline.a_set.specified(),
+                        n::targets() = targets
+                        ));
+
+            cout << endl << "Writing resume information to " << resume_file << "..." << endl;
+            SafeOFStream stream(resume_file);
+            Serialiser ser(stream);
+            resume_data.serialise(ser);
+        }
+    }
+
     int execute_resolution(
             const std::tr1::shared_ptr<Environment> & env,
             const std::tr1::shared_ptr<JobLists> & lists,
@@ -936,6 +1070,9 @@ namespace
         }
         catch (...)
         {
+            if ((! cmdline.a_pretend.specified()) || (0 == retcode))
+                write_resume_file(env, lists, cmdline);
+
             if (! cmdline.a_pretend.specified())
                 display_summary(lists, 0 != retcode);
 
@@ -947,6 +1084,9 @@ namespace
                 throw ActionAbortedError("Aborted by hook");
             throw;
         }
+
+        if ((! cmdline.a_pretend.specified()) || (0 == retcode))
+            write_resume_file(env, lists, cmdline);
 
         if (! cmdline.a_pretend.specified())
             display_summary(lists, 0 != retcode);

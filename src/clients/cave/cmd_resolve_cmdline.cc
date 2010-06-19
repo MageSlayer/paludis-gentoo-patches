@@ -288,6 +288,9 @@ ResolveCommandLineExecutionOptions::ResolveCommandLineExecutionOptions(args::Arg
             ("if-independent",             'i', "If remaining packages do not depend upon any failing package")
             ("always",                     'a', "Always (dangerous)"),
             "never"),
+    a_resume_file(&g_failure_options, "resume-file", '\0',
+            "Write resume information to the specified file. If a build fails, or if '--execute' is not "
+            "specified, then 'cave resume' can resume execution from this file."),
 
     g_phase_options(this, "Phase Options", "Options controlling which phases to execute. No sanity checking "
             "is done, allowing you to shoot as many feet off as you desire. Phase names do not have the "

@@ -43,6 +43,7 @@ command_MANS = \
 	cave-print-sets.1 \
 	cave-print-sync-protocols.1 \
 	cave-resolve.1 \
+	cave-resume.1 \
 	cave-search.1 \
 	cave-show.1 \
 	cave-sync.1 \
@@ -118,6 +119,7 @@ libcave_a_SOURCES = \
 	cmd_resolve_cmdline.cc cmd_resolve_cmdline.hh \
 	cmd_resolve_display_callback.cc cmd_resolve_display_callback.hh \
 	cmd_resolve_dump.cc cmd_resolve_dump.hh \
+	cmd_resume.cc cmd_resume.hh \
 	cmd_search.cc cmd_search.hh \
 	cmd_search_cmdline.cc cmd_search_cmdline.hh \
 	cmd_show.cc cmd_show.hh \
@@ -131,7 +133,8 @@ libcave_a_SOURCES = \
 	formats.cc formats.hh \
 	select_format_for_spec.cc select_format_for_spec.hh \
 	match_qpns.cc match_qpns.hh \
-	resolve_common.cc resolve_common.hh
+	resolve_common.cc resolve_common.hh \
+	resume_data.cc resume_data.hh
 
 #	cmd_executables.cc \
 #	cmd_owner.cc \

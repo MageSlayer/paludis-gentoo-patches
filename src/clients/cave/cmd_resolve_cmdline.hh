@@ -120,6 +120,7 @@ namespace paludis
 
             args::ArgsGroup g_failure_options;
             args::EnumArg a_continue_on_failure;
+            args::StringArg a_resume_file;
 
             args::ArgsGroup g_phase_options;
             args::StringSetArg a_skip_phase;
