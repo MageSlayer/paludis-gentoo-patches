@@ -132,13 +132,13 @@ namespace
             const std::tr1::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
             const std::tr1::shared_ptr<const PackageID> & origin_id,
-            const int x, const int y, const int last_x,
+            const int x, const int y, const int prev_x,
             std::tr1::shared_ptr<OutputManager> & output_manager_goes_here)
     {
         Context context("When pretending for '" + stringify(*origin_id) + "':");
 
-        if (0 != last_x)
-            cout << std::string(stringify(last_x).length() + stringify(y).length() + 4, '\010');
+        if (0 != prev_x)
+            cout << std::string(stringify(prev_x).length() + stringify(y).length() + 4, '\010');
         cout << x << " of " << y << std::flush;
 
         std::tr1::shared_ptr<Sequence<std::string> > args(new Sequence<std::string>);
@@ -592,7 +592,7 @@ namespace
             const ExecuteResolutionCommandLine & cmdline)
     {
         bool failed(false);
-        int x(0), y(lists->pretend_job_list()->length()), last_x(0);
+        int x(0), y(lists->pretend_job_list()->length()), prev_x(0);
 
         if (0 != env->perform_hook(Hook("pretend_all_pre")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
@@ -607,11 +607,11 @@ namespace
                 cout << "Executing pretend actions: " << std::flush;
 
             std::tr1::shared_ptr<OutputManager> output_manager_goes_here;
-            failed = failed || ! do_pretend(env, cmdline, (*c)->origin_id(), x, y, last_x, output_manager_goes_here);
-            last_x = x;
+            failed = failed || ! do_pretend(env, cmdline, (*c)->origin_id(), x, y, prev_x, output_manager_goes_here);
+            prev_x = x;
         }
 
-        if (0 != last_x)
+        if (0 != prev_x)
             cout << endl;
 
         if (0 != env->perform_hook(Hook("pretend_all_post")
@@ -622,29 +622,58 @@ namespace
         return failed ? 1 : 0;
     }
 
+    struct ExecuteCounts
+    {
+        int x_fetches, y_fetches, x_installs, y_installs;
+
+        ExecuteCounts() :
+            x_fetches(0),
+            y_fetches(0),
+            x_installs(0),
+            y_installs(0)
+        {
+        }
+
+        void visit(const FetchJob &)
+        {
+            ++y_fetches;
+        }
+
+        void visit(const InstallJob &)
+        {
+            ++y_installs;
+        }
+
+        void visit(const UninstallJob &)
+        {
+            ++y_installs;
+        }
+    };
+
     struct ExecuteOneVisitor
     {
         const std::tr1::shared_ptr<Environment> env;
         const ExecuteResolutionCommandLine & cmdline;
-        const int x, y;
+        ExecuteCounts & counts;
 
         ExecuteOneVisitor(
                 const std::tr1::shared_ptr<Environment> & e,
                 const ExecuteResolutionCommandLine & c,
-                int xx, int yy) :
+                ExecuteCounts & k) :
             env(e),
             cmdline(c),
-            x(xx),
-            y(yy)
+            counts(k)
         {
         }
 
         int visit(InstallJob & install_item)
         {
+            ++counts.x_installs;
+
             const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
             install_item.set_state(active_state);
 
-            if (! do_fetch(env, cmdline, install_item.origin_id(), x, y, false, *active_state))
+            if (! do_fetch(env, cmdline, install_item.origin_id(), counts.x_installs, counts.y_installs, false, *active_state))
             {
                 install_item.set_state(active_state->failed());
                 return 1;
@@ -652,7 +681,7 @@ namespace
 
             if (! do_install(env, cmdline, install_item.origin_id(), install_item.destination_repository_name(),
                         install_item.replacing(), install_item.destination_type(),
-                        x, y, *active_state))
+                        counts.x_installs, counts.y_installs, *active_state))
             {
                 install_item.set_state(active_state->failed());
                 return 1;
@@ -664,13 +693,15 @@ namespace
 
         int visit(UninstallJob & uninstall_item)
         {
+            ++counts.x_installs;
+
             const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
             uninstall_item.set_state(active_state);
 
             for (PackageIDSequence::ConstIterator i(uninstall_item.ids_to_remove()->begin()),
                     i_end(uninstall_item.ids_to_remove()->end()) ;
                     i != i_end ; ++i)
-                if (! do_uninstall(env, cmdline, *i, x, y, *active_state))
+                if (! do_uninstall(env, cmdline, *i, counts.x_installs, counts.y_installs, *active_state))
                 {
                     uninstall_item.set_state(active_state->failed());
                     return 1;
@@ -682,10 +713,12 @@ namespace
 
         int visit(FetchJob & fetch_item)
         {
+            ++counts.x_fetches;
+
             const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
             fetch_item.set_state(active_state);
 
-            if (! do_fetch(env, cmdline, fetch_item.origin_id(), x, y, true, *active_state))
+            if (! do_fetch(env, cmdline, fetch_item.origin_id(), counts.x_fetches, counts.y_fetches, true, *active_state))
             {
                 fetch_item.set_state(active_state->failed());
                 return 1;
@@ -764,35 +797,52 @@ namespace
         }
     };
 
-    void already_done_action(
-            const std::string & state,
-            const std::string & name,
-            const int x, const int y)
+    struct AlreadyDoneVisitor
     {
-        cout << endl;
-        cout << c::bold_green() << x << " of " << y << ":  Already " << state << " for "
-            << name << "..." << c::normal() << endl;
-        cout << endl;
-    }
+        ExecuteCounts & counts;
+        int x, y;
+        std::string text;
 
-    struct JobAsStringVisitor
-    {
-        std::string visit(const InstallJob & j) const
+        AlreadyDoneVisitor(ExecuteCounts & c) :
+            counts(c)
         {
-            return "install " + stringify(*j.origin_id());
         }
 
-        std::string visit(const FetchJob & j) const
+        void visit(const InstallJob & j)
         {
-            return "fetch " + stringify(*j.origin_id());
+            text = "install " + stringify(*j.origin_id());
+            x = ++counts.x_installs;
+            y = counts.y_installs;
         }
 
-        std::string visit(const UninstallJob & j) const
+        void visit(const FetchJob & j)
         {
-            return "uninstall " + join(indirect_iterator(j.ids_to_remove()->begin()),
+            text = "fetch " + stringify(*j.origin_id());
+            x = ++counts.x_fetches;
+            y = counts.y_fetches;
+        }
+
+        void visit(const UninstallJob & j)
+        {
+            text = "uninstall " + join(indirect_iterator(j.ids_to_remove()->begin()),
                     indirect_iterator(j.ids_to_remove()->end()), ", ");
+            x = ++counts.x_installs;
+            y = counts.y_installs;
         }
     };
+
+    void already_done_action(
+            const std::string & state,
+            const std::tr1::shared_ptr<const ExecuteJob> & job,
+            ExecuteCounts & counts)
+    {
+        AlreadyDoneVisitor v(counts);
+        job->accept(v);
+        cout << endl;
+        cout << c::bold_green() << v.x << " of " << v.y << ":  Already " << state << " for "
+            << v.text << "..." << c::normal() << endl;
+        cout << endl;
+    }
 
     int execute_executions(
             const std::tr1::shared_ptr<Environment> & env,
@@ -800,7 +850,12 @@ namespace
             const ExecuteResolutionCommandLine & cmdline)
     {
         int retcode(0);
-        int x(0), y(lists->execute_job_list()->length());
+        ExecuteCounts counts;
+
+        for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),
+                c_end(lists->execute_job_list()->end()) ;
+                c != c_end ; ++c)
+            (*c)->accept(counts);
 
         if (0 != env->perform_hook(Hook("install_all_pre")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
@@ -825,8 +880,6 @@ namespace
                 c_end(lists->execute_job_list()->end()) ;
                 c != c_end ; ++c)
         {
-            ++x;
-
             bool want(true);
             ExistingStateVisitor initial_state;
 
@@ -838,18 +891,18 @@ namespace
                 {
                     retcode = 1;
                     want = false;
-                    already_done_action("failed", (*c)->accept_returning<std::string>(JobAsStringVisitor()), x, y);
+                    already_done_action("failed", *c, counts);
                 }
                 else if (initial_state.skipped)
                 {
                     retcode = 1;
                     want = false;
-                    already_done_action("skipped", (*c)->accept_returning<std::string>(JobAsStringVisitor()), x, y);
+                    already_done_action("skipped", *c, counts);
                 }
                 else if (initial_state.done)
                 {
                     want = false;
-                    already_done_action("succeeded", (*c)->accept_returning<std::string>(JobAsStringVisitor()), x, y);
+                    already_done_action("succeeded", *c, counts);
                 }
             }
 
@@ -873,7 +926,7 @@ namespace
 
             if (want)
             {
-                ExecuteOneVisitor execute(env, cmdline, x, y);
+                ExecuteOneVisitor execute(env, cmdline, counts);
                 retcode |= (*c)->accept_returning<int>(execute);
             }
             else if (! initial_state.done)
