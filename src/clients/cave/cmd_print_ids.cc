@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,6 +18,7 @@
  */
 
 #include "cmd_print_ids.hh"
+#include "format_string.hh"
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/name.hh>
@@ -29,6 +30,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/map.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
@@ -37,6 +39,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/package_id.hh>
 #include <paludis/mask.hh>
+#include <paludis/metadata_key.hh>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
@@ -74,6 +77,9 @@ namespace
         args::StringSetArg a_supporting;
         args::StringSetArg a_with_mask;
 
+        args::ArgsGroup g_display_options;
+        args::StringArg a_format;
+
         PrintIDsCommandLine() :
             g_filters(main_options_section(), "Filters", "Filter the output. Each filter may be specified more than once."),
             a_matching(&g_filters, "matching", '\0', "Show only IDs matching this spec. If specified multiple "
@@ -100,9 +106,16 @@ namespace
                     ("repository",    "masked by repository")
                     ("unsupported",   "masked because it is unsupported")
                     ("association",   "masked by association")
-                   )
+                   ),
+            g_display_options(main_options_section(), "Display Options", "Controls the output format."),
+            a_format(&g_display_options, "format", '\0', "Select the output format. Special tokens recognised are "
+                    "%c for category, %p for package, %v for version, %s for slot, %: for ':' if we have a slot and "
+                    "empty otherwise, %r for repository, %F for the canonical full form, %V for the canonical full "
+                    "version, %W for the canonical full unversioned form, %N for the canonical full unnamed form, "
+                    "\\n for newline, \\t for tab. Default is '%F\\n'.")
         {
             add_usage_line("[ --matching spec ] [ --supporting action ] [ --with-mask mask-kind ]");
+            a_format.set_argument("%F\\n");
         }
     };
 
@@ -231,6 +244,24 @@ namespace
         {
         }
     };
+
+    std::string format_id(
+            const PrintIDsCommandLine & c,
+            const std::tr1::shared_ptr<const PackageID> & i)
+    {
+        std::tr1::shared_ptr<Map<char, std::string> > m(new Map<char, std::string>);
+        m->insert('c', stringify(i->name().category()));
+        m->insert('p', stringify(i->name().package()));
+        m->insert('v', stringify(i->version()));
+        m->insert('s', i->slot_key() ? stringify(i->slot_key()->value()) : "");
+        m->insert(':', i->slot_key() ? ":" : "");
+        m->insert('r', stringify(i->repository()->name()));
+        m->insert('F', i->canonical_form(idcf_full));
+        m->insert('V', i->canonical_form(idcf_version));
+        m->insert('W', i->canonical_form(idcf_no_version));
+        m->insert('N', i->canonical_form(idcf_no_name));
+        return format_string(c.a_format.argument(), m);
+    }
 }
 
 int
@@ -301,8 +332,9 @@ PrintIDsCommand::run(
     }
 
     const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(fg)]);
-    std::copy(indirect_iterator(ids->begin()), indirect_iterator(ids->end()),
-            std::ostream_iterator<PackageID>(cout, "\n"));
+    for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+            i != i_end ; ++i)
+        cout << format_id(cmdline, *i);
 
     return EXIT_SUCCESS;
 }
