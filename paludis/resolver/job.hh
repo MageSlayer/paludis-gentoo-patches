@@ -27,7 +27,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
-#include <paludis/package_id-fwd.hh>
+#include <paludis/dep_spec-fwd.hh>
 #include <paludis/serialise-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <tr1/memory>
@@ -41,11 +41,11 @@ namespace paludis
         {
             public:
                 PretendJob(
-                        const std::tr1::shared_ptr<const PackageID> &
+                        const PackageDepSpec &
                         );
                 ~PretendJob();
 
-                const std::tr1::shared_ptr<const PackageID> origin_id() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const PackageDepSpec origin_id_spec() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 static const std::tr1::shared_ptr<PretendJob> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
                 void serialise(Serialiser &) const;
@@ -75,11 +75,11 @@ namespace paludis
             public:
                 FetchJob(
                         const std::tr1::shared_ptr<const JobRequirements> &,
-                        const std::tr1::shared_ptr<const PackageID> &
+                        const PackageDepSpec &
                         );
                 ~FetchJob();
 
-                const std::tr1::shared_ptr<const PackageID> origin_id() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const PackageDepSpec origin_id_spec() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::tr1::shared_ptr<JobState> state() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void set_state(const std::tr1::shared_ptr<JobState> &);
@@ -98,16 +98,16 @@ namespace paludis
             public:
                 InstallJob(
                         const std::tr1::shared_ptr<const JobRequirements> &,
-                        const std::tr1::shared_ptr<const PackageID> &,
+                        const PackageDepSpec &,
                         const RepositoryName &,
                         const DestinationType,
-                        const std::tr1::shared_ptr<const PackageIDSequence> &);
+                        const std::tr1::shared_ptr<const Sequence<PackageDepSpec> > &);
                 ~InstallJob();
 
-                const std::tr1::shared_ptr<const PackageID> origin_id() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const PackageDepSpec origin_id_spec() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 const RepositoryName destination_repository_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 DestinationType destination_type() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                const std::tr1::shared_ptr<const PackageIDSequence> replacing() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::tr1::shared_ptr<const Sequence<PackageDepSpec> > replacing_specs() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::tr1::shared_ptr<JobState> state() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void set_state(const std::tr1::shared_ptr<JobState> &);
@@ -126,11 +126,11 @@ namespace paludis
             public:
                 UninstallJob(
                         const std::tr1::shared_ptr<const JobRequirements> &,
-                        const std::tr1::shared_ptr<const PackageIDSequence> &
+                        const std::tr1::shared_ptr<const Sequence<PackageDepSpec> > &
                         );
                 ~UninstallJob();
 
-                const std::tr1::shared_ptr<const PackageIDSequence> ids_to_remove() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::tr1::shared_ptr<const Sequence<PackageDepSpec> > ids_to_remove_specs() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::tr1::shared_ptr<JobState> state() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void set_state(const std::tr1::shared_ptr<JobState> &);

@@ -70,6 +70,10 @@
 #include <paludis/package_dep_spec_properties.hh>
 #include <paludis/serialise.hh>
 #include <paludis/ipc_output_manager.hh>
+#include <paludis/generator.hh>
+#include <paludis/selection.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/filter.hh>
 
 #include <set>
 #include <iterator>
@@ -131,11 +135,14 @@ namespace
     bool do_pretend(
             const std::tr1::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
-            const std::tr1::shared_ptr<const PackageID> & origin_id,
+            const PackageDepSpec & origin_id_spec,
             const int x, const int y, const int prev_x,
             std::tr1::shared_ptr<OutputManager> & output_manager_goes_here)
     {
-        Context context("When pretending for '" + stringify(*origin_id) + "':");
+        Context context("When pretending for '" + stringify(origin_id_spec) + "':");
+
+        const std::tr1::shared_ptr<const PackageID> origin_id(*(*env)[selection::RequireExactlyOne(
+                    generator::Matches(origin_id_spec, MatchPackageOptions()))]->begin());
 
         if (0 != prev_x)
             cout << std::string(stringify(prev_x).length() + stringify(y).length() + 4, '\010');
@@ -225,11 +232,14 @@ namespace
     bool do_fetch(
             const std::tr1::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
-            const std::tr1::shared_ptr<const PackageID> & id,
+            const PackageDepSpec & id_spec,
             const int x, const int y, bool normal_only,
             JobActiveState & active_state)
     {
-        Context context("When fetching for '" + stringify(*id) + "':");
+        Context context("When fetching for '" + stringify(id_spec) + "':");
+
+        const std::tr1::shared_ptr<const PackageID> id(*(*env)[selection::RequireExactlyOne(
+                    generator::Matches(id_spec, MatchPackageOptions()))]->begin());
 
         starting_action("fetch (" + std::string(normal_only ? "regular parts" : "extra parts") + ")", id, x, y);
 
@@ -301,13 +311,16 @@ namespace
     bool do_install(
             const std::tr1::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
-            const std::tr1::shared_ptr<const PackageID> & id,
+            const PackageDepSpec & id_spec,
             const RepositoryName & destination_repository_name,
-            const std::tr1::shared_ptr<const PackageIDSequence> & replacing,
+            const std::tr1::shared_ptr<const Sequence<PackageDepSpec> > & replacing_specs,
             const DestinationType & destination_type,
             const int x, const int y,
             JobActiveState & active_state)
     {
+        const std::tr1::shared_ptr<const PackageID> id(*(*env)[selection::RequireExactlyOne(
+                    generator::Matches(id_spec, MatchPackageOptions()))]->begin());
+
         std::string destination_string, action_string;
         switch (destination_type)
         {
@@ -339,10 +352,10 @@ namespace
         command.append(" install --hooks --managed-output ");
         command.append(stringify(id->uniquely_identifying_spec()));
         command.append(" --destination " + stringify(destination_repository_name));
-        for (PackageIDSequence::ConstIterator i(replacing->begin()),
-                i_end(replacing->end()) ;
+        for (Sequence<PackageDepSpec>::ConstIterator i(replacing_specs->begin()),
+                i_end(replacing_specs->end()) ;
                 i != i_end ; ++i)
-            command.append(" --replacing " + stringify((*i)->uniquely_identifying_spec()));
+            command.append(" --replacing " + stringify(*i));
 
         command.append(" --x-of-y '" + stringify(x) + " of " + stringify(y) + "'");
 
@@ -403,11 +416,14 @@ namespace
     bool do_uninstall(
             const std::tr1::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
-            const std::tr1::shared_ptr<const PackageID> & id,
+            const PackageDepSpec & id_spec,
             const int x, const int y,
             JobActiveState & active_state)
     {
-        Context context("When removing '" + stringify(*id) + "':");
+        Context context("When removing '" + stringify(id_spec) + "':");
+
+        const std::tr1::shared_ptr<const PackageID> id(*(*env)[selection::RequireExactlyOne(
+                    generator::Matches(id_spec, MatchPackageOptions()))]->begin());
 
         starting_action("remove", id, x, y);
 
@@ -607,7 +623,7 @@ namespace
                 cout << "Executing pretend actions: " << std::flush;
 
             std::tr1::shared_ptr<OutputManager> output_manager_goes_here;
-            failed = failed || ! do_pretend(env, cmdline, (*c)->origin_id(), x, y, prev_x, output_manager_goes_here);
+            failed = failed || ! do_pretend(env, cmdline, (*c)->origin_id_spec(), x, y, prev_x, output_manager_goes_here);
             prev_x = x;
         }
 
@@ -673,14 +689,14 @@ namespace
             const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
             install_item.set_state(active_state);
 
-            if (! do_fetch(env, cmdline, install_item.origin_id(), counts.x_installs, counts.y_installs, false, *active_state))
+            if (! do_fetch(env, cmdline, install_item.origin_id_spec(), counts.x_installs, counts.y_installs, false, *active_state))
             {
                 install_item.set_state(active_state->failed());
                 return 1;
             }
 
-            if (! do_install(env, cmdline, install_item.origin_id(), install_item.destination_repository_name(),
-                        install_item.replacing(), install_item.destination_type(),
+            if (! do_install(env, cmdline, install_item.origin_id_spec(), install_item.destination_repository_name(),
+                        install_item.replacing_specs(), install_item.destination_type(),
                         counts.x_installs, counts.y_installs, *active_state))
             {
                 install_item.set_state(active_state->failed());
@@ -698,8 +714,8 @@ namespace
             const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
             uninstall_item.set_state(active_state);
 
-            for (PackageIDSequence::ConstIterator i(uninstall_item.ids_to_remove()->begin()),
-                    i_end(uninstall_item.ids_to_remove()->end()) ;
+            for (Sequence<PackageDepSpec>::ConstIterator i(uninstall_item.ids_to_remove_specs()->begin()),
+                    i_end(uninstall_item.ids_to_remove_specs()->end()) ;
                     i != i_end ; ++i)
                 if (! do_uninstall(env, cmdline, *i, counts.x_installs, counts.y_installs, *active_state))
                 {
@@ -718,7 +734,7 @@ namespace
             const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
             fetch_item.set_state(active_state);
 
-            if (! do_fetch(env, cmdline, fetch_item.origin_id(), counts.x_fetches, counts.y_fetches, true, *active_state))
+            if (! do_fetch(env, cmdline, fetch_item.origin_id_spec(), counts.x_fetches, counts.y_fetches, true, *active_state))
             {
                 fetch_item.set_state(active_state->failed());
                 return 1;
@@ -797,46 +813,63 @@ namespace
         }
     };
 
+    std::string stringify_id_or_spec(
+            const std::tr1::shared_ptr<Environment> & env,
+            const PackageDepSpec & spec)
+    {
+        const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::RequireExactlyOne(
+                    generator::Matches(spec, MatchPackageOptions()))]);
+        if (ids->empty())
+            return stringify(spec);
+        else
+            return stringify(**ids->begin());
+    }
+
     struct AlreadyDoneVisitor
     {
+        const std::tr1::shared_ptr<Environment> env;
         ExecuteCounts & counts;
         int x, y;
         std::string text;
 
-        AlreadyDoneVisitor(ExecuteCounts & c) :
+        AlreadyDoneVisitor(
+                const std::tr1::shared_ptr<Environment> & e,
+                ExecuteCounts & c) :
+            env(e),
             counts(c)
         {
         }
 
         void visit(const InstallJob & j)
         {
-            text = "install " + stringify(*j.origin_id());
+            text = "install " + stringify_id_or_spec(env, j.origin_id_spec());
             x = ++counts.x_installs;
             y = counts.y_installs;
         }
 
         void visit(const FetchJob & j)
         {
-            text = "fetch " + stringify(*j.origin_id());
+            text = "fetch " + stringify_id_or_spec(env, j.origin_id_spec());
             x = ++counts.x_fetches;
             y = counts.y_fetches;
         }
 
         void visit(const UninstallJob & j)
         {
-            text = "uninstall " + join(indirect_iterator(j.ids_to_remove()->begin()),
-                    indirect_iterator(j.ids_to_remove()->end()), ", ");
+            text = "uninstall " + join(j.ids_to_remove_specs()->begin(), j.ids_to_remove_specs()->end(), ", ",
+                    std::tr1::bind(&stringify_id_or_spec, env, std::tr1::placeholders::_1));
             x = ++counts.x_installs;
             y = counts.y_installs;
         }
     };
 
     void already_done_action(
+            const std::tr1::shared_ptr<Environment> & env,
             const std::string & state,
             const std::tr1::shared_ptr<const ExecuteJob> & job,
             ExecuteCounts & counts)
     {
-        AlreadyDoneVisitor v(counts);
+        AlreadyDoneVisitor v(env, counts);
         job->accept(v);
         cout << endl;
         cout << c::bold_green() << v.x << " of " << v.y << ":  Already " << state << " for "
@@ -891,18 +924,18 @@ namespace
                 {
                     retcode = 1;
                     want = false;
-                    already_done_action("failed", *c, counts);
+                    already_done_action(env, "failed", *c, counts);
                 }
                 else if (initial_state.skipped)
                 {
                     retcode = 1;
                     want = false;
-                    already_done_action("skipped", *c, counts);
+                    already_done_action(env, "skipped", *c, counts);
                 }
                 else if (initial_state.done)
                 {
                     want = false;
-                    already_done_action("succeeded", *c, counts);
+                    already_done_action(env, "succeeded", *c, counts);
                 }
             }
 
@@ -970,30 +1003,44 @@ namespace
 
     struct SummaryNameVisitor
     {
+        const std::tr1::shared_ptr<Environment> env;
+
+        SummaryNameVisitor(const std::tr1::shared_ptr<Environment> & e) :
+            env(e)
+        {
+        }
+
         std::string visit(const FetchJob & j) const
         {
-            return "fetch " + stringify(*j.origin_id());
+            return "fetch " + stringify_id_or_spec(env, j.origin_id_spec());
         }
 
         std::string visit(const InstallJob & j) const
         {
-            return "install " + stringify(*j.origin_id()) + " to " + stringify(j.destination_repository_name());
+            return "install " + stringify_id_or_spec(env, j.origin_id_spec()) + " to " + stringify(j.destination_repository_name());
         }
 
         std::string visit(const UninstallJob & j) const
         {
-            return "uninstall " + join(indirect_iterator(j.ids_to_remove()->begin()), indirect_iterator(j.ids_to_remove()->end()), ", ");
+            return "uninstall " + join(j.ids_to_remove_specs()->begin(), j.ids_to_remove_specs()->end(), ", ",
+                    std::tr1::bind(&stringify_id_or_spec, env, std::tr1::placeholders::_1));
         }
 
     };
 
     struct SummaryDisplayer
     {
+        const std::tr1::shared_ptr<Environment> env;
         const std::tr1::shared_ptr<const ExecuteJob> job;
         const bool something_failed;
         bool & done_heading;
 
-        SummaryDisplayer(const std::tr1::shared_ptr<const ExecuteJob> & j, const bool s, bool & b) :
+        SummaryDisplayer(
+                const std::tr1::shared_ptr<Environment> & e,
+                const std::tr1::shared_ptr<const ExecuteJob> & j,
+                const bool s,
+                bool & b) :
+            env(e),
             job(j),
             something_failed(s),
             done_heading(b)
@@ -1012,13 +1059,15 @@ namespace
         void visit(const JobActiveState &) const
         {
             need_heading();
-            cout << c::bold_yellow() << "pending:   " << job->accept_returning<std::string>(SummaryNameVisitor()) << c::normal() << endl;
+            cout << c::bold_yellow() << "pending:   " << job->accept_returning<std::string>(
+                    SummaryNameVisitor(env)) << c::normal() << endl;
         }
 
         void visit(const JobPendingState &) const
         {
             need_heading();
-            cout << c::bold_yellow() << "pending:   " << job->accept_returning<std::string>(SummaryNameVisitor()) << c::normal() << endl;
+            cout << c::bold_yellow() << "pending:   " << job->accept_returning<std::string>(
+                    SummaryNameVisitor(env)) << c::normal() << endl;
         }
 
         void visit(const JobSucceededState & s) const
@@ -1027,14 +1076,16 @@ namespace
                     || (something_failed && ! simple_visitor_cast<const FetchJob>(*job)))
             {
                 need_heading();
-                cout << c::bold_green() << "succeeded: " << job->accept_returning<std::string>(SummaryNameVisitor()) << c::normal() << endl;
+                cout << c::bold_green() << "succeeded: " << job->accept_returning<std::string>(
+                        SummaryNameVisitor(env)) << c::normal() << endl;
             }
         }
 
         void visit(const JobFailedState &) const
         {
             need_heading();
-            cout << c::bold_red() << "failed:    " << job->accept_returning<std::string>(SummaryNameVisitor()) << c::normal() << endl;
+            cout << c::bold_red() << "failed:    " << job->accept_returning<std::string>(
+                    SummaryNameVisitor(env)) << c::normal() << endl;
         }
 
         void visit(const JobSkippedState &) const
@@ -1042,12 +1093,14 @@ namespace
             if (! simple_visitor_cast<const FetchJob>(*job))
             {
                 need_heading();
-                cout << c::bold_yellow() << "skipped:   " << job->accept_returning<std::string>(SummaryNameVisitor()) << c::normal() << endl;
+                cout << c::bold_yellow() << "skipped:   " << job->accept_returning<std::string>(
+                        SummaryNameVisitor(env)) << c::normal() << endl;
             }
         }
     };
 
     void display_summary(
+            const std::tr1::shared_ptr<Environment> & env,
             const std::tr1::shared_ptr<JobLists> & lists,
             const bool something_failed)
     {
@@ -1057,7 +1110,7 @@ namespace
                 c_end(lists->execute_job_list()->end()) ;
                 c != c_end ; ++c)
         {
-            (*c)->state()->accept(SummaryDisplayer(*c, something_failed, done_heading));
+            (*c)->state()->accept(SummaryDisplayer(env, *c, something_failed, done_heading));
             (*c)->set_state(make_null_shared_ptr());
         }
     }
@@ -1127,7 +1180,7 @@ namespace
                 write_resume_file(env, lists, cmdline);
 
             if (! cmdline.a_pretend.specified())
-                display_summary(lists, 0 != retcode);
+                display_summary(env, lists, 0 != retcode);
 
             if (0 != env->perform_hook(Hook("install_task_execute_post")
                         ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
@@ -1142,7 +1195,7 @@ namespace
             write_resume_file(env, lists, cmdline);
 
         if (! cmdline.a_pretend.specified())
-            display_summary(lists, 0 != retcode);
+            display_summary(env, lists, 0 != retcode);
 
         if (0 != env->perform_hook(Hook("install_task_execute_post")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))

@@ -621,11 +621,11 @@ namespace
         void visit(const ChangesToMakeDecision & changes_to_make_decision) const
         {
             resolved->job_lists()->pretend_job_list()->append(make_shared_ptr(new PretendJob(
-                            changes_to_make_decision.origin_id())));
+                            changes_to_make_decision.origin_id()->uniquely_identifying_spec())));
 
             JobNumber fetch_job_n(resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new FetchJob(
                                 make_shared_ptr(new JobRequirements),
-                                changes_to_make_decision.origin_id()))));
+                                changes_to_make_decision.origin_id()->uniquely_identifying_spec()))));
 
             const std::tr1::shared_ptr<JobRequirements> requirements(new JobRequirements);
             requirements->push_back(make_named_values<JobRequirement>(
@@ -643,12 +643,18 @@ namespace
                     recursed
                     );
 
+            const std::tr1::shared_ptr<Sequence<PackageDepSpec> > replacing(new Sequence<PackageDepSpec>);
+            for (PackageIDSequence::ConstIterator i(changes_to_make_decision.destination()->replacing()->begin()),
+                    i_end(changes_to_make_decision.destination()->replacing()->end()) ;
+                    i != i_end ; ++i)
+                replacing->push_back((*i)->uniquely_identifying_spec());
+
             JobNumber install_job_n(resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new InstallJob(
                                 requirements,
-                                changes_to_make_decision.origin_id(),
+                                changes_to_make_decision.origin_id()->uniquely_identifying_spec(),
                                 changes_to_make_decision.destination()->repository(),
                                 changes_to_make_decision.resolvent().destination_type(),
-                                changes_to_make_decision.destination()->replacing()
+                                replacing
                                 ))));
 
             install_job_numbers.insert(std::make_pair(resolvent, install_job_n));
@@ -656,9 +662,15 @@ namespace
 
         void visit(const RemoveDecision & remove_decision) const
         {
+            const std::tr1::shared_ptr<Sequence<PackageDepSpec> > removing(new Sequence<PackageDepSpec>);
+            for (PackageIDSequence::ConstIterator i(remove_decision.ids()->begin()),
+                    i_end(remove_decision.ids()->end()) ;
+                    i != i_end ; ++i)
+                removing->push_back((*i)->uniquely_identifying_spec());
+
             resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new UninstallJob(
                             make_shared_ptr(new JobRequirements),
-                            remove_decision.ids()
+                            removing
                             )));
         }
     };
