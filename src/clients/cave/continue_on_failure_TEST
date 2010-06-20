@@ -4,7 +4,7 @@ export PALUDIS_HOME=`pwd`/continue_on_failure_TEST_dir/config/
 export TEST_ROOT=`pwd`/continue_on_failure_TEST_dir/root/
 
 ./cave --environment :continue-on-failure-test \
-        resolve -x --continue-on-failure if-satisfied a b c
+        resolve -c -x --continue-on-failure if-satisfied a b c
 
 if [[ -f continue_on_failure_TEST_dir/root/a ]] ; then
     exit 1
@@ -27,10 +27,10 @@ if ! [[ -f continue_on_failure_TEST_dir/root/e ]] ; then
 fi
 
 ./cave --environment :continue-on-failure-test \
-        resolve -x =cat/w-1 cat/u --permit-old-version '*/*' || exit 6
+        resolve -c -x =cat/w-1 cat/u --permit-old-version '*/*' || exit 6
 
 ./cave --environment :continue-on-failure-test \
-        resolve -x --continue-on-failure if-independent x y z
+        resolve -c -x --continue-on-failure if-independent x y z
 
 if [[ -f continue_on_failure_TEST_dir/root/z ]] ; then
     exit 7
