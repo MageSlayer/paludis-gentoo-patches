@@ -11,6 +11,13 @@ of every change, see the ChangeLog.
       probably better to change your workflow such that Paludis never directly
       works with any repository it does not manage.
 
+    * environment.conf is now general.conf. Your existing environment.conf
+      should be renamed.
+
+    * When switching UIDs, we now also pick up supplemental groups.
+
+    * World is now updated for package moves.
+
 0.46.0:
     * We can now read environment.bz2 files from VDB created by newer Portage
       versions.
