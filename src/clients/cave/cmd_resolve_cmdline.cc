@@ -110,11 +110,12 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             ("never",                 'n', "Never")
             ("if-transient",          't', "Only if the installed package is transient "
                                            "(e.g. from 'importare') (default if --everything)")
-            ("if-same",               's', "If it is the same as the proposed replacement")
+            ("if-same",               's', "If it is the same as the proposed replacement "
+                                           "(default if --complete)")
             ("if-same-version",       'v', "If it is the same version as the proposed replacement")
-            ("if-possible",           'p', "If possible (default if --lazy)"),
+            ("if-possible",           'p', "If possible"),
 
-            "if-same"
+            "if-possible"
             ),
     a_reinstall_scm(&g_keep_options, "reinstall-scm", 'R',
             "Select whether to reinstall SCM packages that would otherwise be kept",
@@ -367,8 +368,6 @@ ResolveCommandLineResolutionOptions::apply_shortcuts()
 
     if (a_lazy.specified())
     {
-        if (! a_keep.specified())
-            a_keep.set_argument("if-possible");
         if (! a_target_slots.specified())
             a_target_slots.set_argument("best");
         if (! a_slots.specified())
@@ -379,6 +378,8 @@ ResolveCommandLineResolutionOptions::apply_shortcuts()
 
     if (a_complete.specified())
     {
+        if (! a_keep.specified())
+            a_keep.set_argument("if-same");
         if (! a_target_slots.specified())
             a_target_slots.set_argument("all");
         if (! a_slots.specified())
