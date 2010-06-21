@@ -110,7 +110,7 @@ HelpCommand::run(const std::tr1::shared_ptr<Environment> & env,
     {
         if (cmdline.begin_parameters() == cmdline.end_parameters())
         {
-            cout << "available cave commands:" << std::endl;
+            cout << "All available cave commands:" << std::endl;
             std::copy(CommandFactory::get_instance()->begin(), CommandFactory::get_instance()->end(),
                     std::ostream_iterator<std::string>(cout, "\n"));
             return EXIT_SUCCESS;
@@ -133,7 +133,7 @@ HelpCommand::run(const std::tr1::shared_ptr<Environment> & env,
         if (name != CommandFactory::get_instance()->end())
             length = name->length();
 
-        cout << "The most commonly used cave commands are:" << std::endl;
+        cout << "The most commonly used cave commands (add --all for the rest) are:" << std::endl;
         for (CommandFactory::ConstIterator cmd(CommandFactory::get_instance()->begin()), cmd_end(CommandFactory::get_instance()->end()) ;
                 cmd != cmd_end ; ++cmd)
         {
