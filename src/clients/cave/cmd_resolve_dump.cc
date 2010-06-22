@@ -164,6 +164,12 @@ namespace
             str = "Dependent(" + stringify(*r.id_being_removed()) + ")";
         }
 
+        void visit(const WasUsedByReason & r)
+        {
+            str = "WasUsedBy(" + join(indirect_iterator(r.ids_being_removed()->begin()),
+                        indirect_iterator(r.ids_being_removed()->end()), ", ") + ")";
+        }
+
         void visit(const DependencyReason & r)
         {
             std::stringstream s;

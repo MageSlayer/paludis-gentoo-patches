@@ -146,6 +146,43 @@ DependentReason::serialise(Serialiser & s) const
 namespace paludis
 {
     template <>
+    struct Implementation<WasUsedByReason>
+    {
+        const std::tr1::shared_ptr<const PackageIDSequence> ids_being_removed;
+
+        Implementation(const std::tr1::shared_ptr<const PackageIDSequence> & i) :
+            ids_being_removed(i)
+        {
+        }
+    };
+}
+
+WasUsedByReason::WasUsedByReason(const std::tr1::shared_ptr<const PackageIDSequence> & i) :
+    PrivateImplementationPattern<WasUsedByReason>(new Implementation<WasUsedByReason>(i))
+{
+}
+
+WasUsedByReason::~WasUsedByReason()
+{
+}
+
+const std::tr1::shared_ptr<const PackageIDSequence>
+WasUsedByReason::ids_being_removed() const
+{
+    return _imp->ids_being_removed;
+}
+
+void
+WasUsedByReason::serialise(Serialiser & s) const
+{
+    s.object("WasUsedByReason")
+        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "ids_being_removed", ids_being_removed())
+        ;
+}
+
+namespace paludis
+{
+    template <>
     struct Implementation<PresetReason>
     {
         const std::string explanation;
@@ -276,6 +313,15 @@ Reason::deserialise(Deserialisation & d)
         const std::tr1::shared_ptr<const PackageID> id_being_removed(v.member<std::tr1::shared_ptr<const PackageID> >("id_being_removed"));
         return make_shared_ptr(new DependentReason(id_being_removed));
     }
+    else if (d.class_name() == "WasUsedByReason")
+    {
+        Deserialisator v(d, "WasUsedByReason");
+        Deserialisator vv(*v.find_remove_member("ids_being_removed"), "c");
+        std::tr1::shared_ptr<PackageIDSequence> ids_being_removed(new PackageIDSequence);
+        for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
+            ids_being_removed->push_back(vv.member<std::tr1::shared_ptr<const PackageID> >(stringify(n)));
+        return make_shared_ptr(new WasUsedByReason(ids_being_removed));
+    }
     else
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 }
@@ -284,4 +330,5 @@ template class PrivateImplementationPattern<DependencyReason>;
 template class PrivateImplementationPattern<DependentReason>;
 template class PrivateImplementationPattern<SetReason>;
 template class PrivateImplementationPattern<PresetReason>;
+template class PrivateImplementationPattern<WasUsedByReason>;
 

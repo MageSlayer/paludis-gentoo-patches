@@ -310,6 +310,10 @@ namespace
         void visit(const TargetReason &)
         {
         }
+
+        void visit(const WasUsedByReason &)
+        {
+        }
     };
 
     bool no_build_dependencies(

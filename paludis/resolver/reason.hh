@@ -37,7 +37,7 @@ namespace paludis
     {
         class Reason :
             public virtual DeclareAbstractAcceptMethods<Reason, MakeTypeList<
-                TargetReason, DependencyReason, DependentReason, PresetReason, SetReason>::Type>
+                TargetReason, DependencyReason, DependentReason, WasUsedByReason, PresetReason, SetReason>::Type>
         {
             public:
                 virtual ~Reason() = 0;
@@ -92,6 +92,20 @@ namespace paludis
                 virtual void serialise(Serialiser &) const;
         };
 
+        class WasUsedByReason :
+            private PrivateImplementationPattern<WasUsedByReason>,
+            public Reason,
+            public ImplementAcceptMethods<Reason, WasUsedByReason>
+        {
+            public:
+                WasUsedByReason(const std::tr1::shared_ptr<const PackageIDSequence> & ids);
+                ~WasUsedByReason();
+
+                const std::tr1::shared_ptr<const PackageIDSequence> ids_being_removed() const;
+
+                virtual void serialise(Serialiser &) const;
+        };
+
         class PresetReason :
             private PrivateImplementationPattern<PresetReason>,
             public Reason,
@@ -129,6 +143,7 @@ namespace paludis
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<resolver::DependencyReason>;
     extern template class PrivateImplementationPattern<resolver::DependentReason>;
+    extern template class PrivateImplementationPattern<resolver::WasUsedByReason>;
     extern template class PrivateImplementationPattern<resolver::SetReason>;
 #endif
 

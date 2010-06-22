@@ -32,6 +32,7 @@ namespace paludis
         struct PresetReason;
         struct SetReason;
         struct DependentReason;
+        struct WasUsedByReason;
     }
 }
 

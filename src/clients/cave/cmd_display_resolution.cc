@@ -204,6 +204,12 @@ namespace
             return std::make_pair("dependent upon " + stringify(*r.id_being_removed()), true);
         }
 
+        std::pair<std::string, bool> visit(const WasUsedByReason & r) const
+        {
+            return std::make_pair("was used by " + join(indirect_iterator(r.ids_being_removed()->begin()),
+                        indirect_iterator(r.ids_being_removed()->end()), ", "), true);
+        }
+
         std::pair<std::string, bool> visit(const TargetReason &) const
         {
             return std::make_pair("target", true);

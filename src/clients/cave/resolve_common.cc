@@ -290,6 +290,11 @@ namespace
             return DestinationTypes() + dt_install_to_slash;
         }
 
+        DestinationTypes visit(const WasUsedByReason &) const
+        {
+            return DestinationTypes() + dt_install_to_slash;
+        }
+
         DestinationTypes visit(const DependencyReason &) const
         {
             return DestinationTypes() + dt_install_to_slash;
@@ -433,6 +438,11 @@ namespace
         }
 
         UseExisting visit(const DependentReason &) const
+        {
+            return ue_if_possible;
+        }
+
+        UseExisting visit(const WasUsedByReason &) const
         {
             return ue_if_possible;
         }
@@ -633,6 +643,11 @@ namespace
         }
 
         bool visit(const DependentReason &) const
+        {
+            return false;
+        }
+
+        bool visit(const WasUsedByReason &) const
         {
             return false;
         }
@@ -1008,6 +1023,11 @@ namespace
         bool visit(const DependencyReason &) const
         {
             return false;
+        }
+
+        bool visit(const WasUsedByReason &) const
+        {
+            return true;
         }
 
         bool visit(const SetReason & r) const
@@ -1443,6 +1463,12 @@ namespace
         {
             return "from " + stringify(*r.from_id()) + " dependency " + (r.sanitised_dependency().spec().if_package() ?
                     stringify(*r.sanitised_dependency().spec().if_package()) : stringify(*r.sanitised_dependency().spec().if_block()));
+        }
+
+        const std::string visit(const WasUsedByReason & r) const
+        {
+            return "from was used by " + join(indirect_iterator(r.ids_being_removed()->begin()),
+                    indirect_iterator(r.ids_being_removed()->end()), ", ");
         }
 
         const std::string visit(const DependentReason & r) const
