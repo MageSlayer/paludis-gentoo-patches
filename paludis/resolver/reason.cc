@@ -138,7 +138,7 @@ DependentReason::id_being_removed() const
 void
 DependentReason::serialise(Serialiser & s) const
 {
-    s.object("DependencyReason")
+    s.object("DependentReason")
         .member(SerialiserFlags<serialise::might_be_null>(), "id_being_removed", id_being_removed())
         ;
 }
