@@ -47,6 +47,7 @@ command_MANS = \
 	cave-search.1 \
 	cave-show.1 \
 	cave-sync.1 \
+	cave-uninstall.1 \
 	cave-update-world.1
 
 man_MANS = \
@@ -124,6 +125,7 @@ libcave_a_SOURCES = \
 	cmd_search_cmdline.cc cmd_search_cmdline.hh \
 	cmd_show.cc cmd_show.hh \
 	cmd_sync.cc cmd_sync.hh \
+	cmd_uninstall.cc cmd_uninstall.hh \
 	cmd_update_world.cc cmd_update_world.hh \
 	exceptions.cc exceptions.hh \
 	format_general.cc format_general.hh \
