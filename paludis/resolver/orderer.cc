@@ -163,7 +163,11 @@ namespace
                 return true;
             }
             else
-                throw InternalError(PALUDIS_HERE, "untaken RemoveDecision");
+            {
+                resolved->untaken_change_or_remove_decisions()->push_back(
+                        std::tr1::static_pointer_cast<const ChangeOrRemoveDecision>(decision));
+                return false;
+            }
         }
 
         bool visit(const BreakDecision & d)
