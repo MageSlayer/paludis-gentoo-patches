@@ -365,17 +365,6 @@ Decider::_collect_staying(const std::tr1::shared_ptr<const PackageIDSequence> & 
 }
 
 void
-Decider::_resolve_destinations()
-{
-    Context context("When resolving destinations:");
-
-    for (ResolutionsByResolvent::ConstIterator i(_imp->resolutions_by_resolvent->begin()),
-            i_end(_imp->resolutions_by_resolvent->end()) ;
-            i != i_end ; ++i)
-        _do_destination_if_necessary(*i);
-}
-
-void
 Decider::_resolve_confirmations()
 {
     Context context("When resolving confirmations:");
@@ -386,64 +375,13 @@ Decider::_resolve_confirmations()
         _confirm(*i);
 }
 
-namespace
-{
-    struct DoDestinationIfNecessaryVisitor
-    {
-        typedef std::tr1::function<const std::tr1::shared_ptr<const Destination> (
-                const ChangesToMakeDecision &)> MakeDestinationFunc;
-        typedef std::tr1::function<ChangeType (
-                const ChangesToMakeDecision &)> MakeChangeTypeForFunc;
-
-        MakeDestinationFunc make_destination_for;
-        MakeChangeTypeForFunc make_change_type_for;
-
-        DoDestinationIfNecessaryVisitor(const MakeDestinationFunc & f, const MakeChangeTypeForFunc & c) :
-            make_destination_for(f),
-            make_change_type_for(c)
-        {
-        }
-
-        void visit(RemoveDecision &)
-        {
-        }
-
-        void visit(ExistingNoChangeDecision &)
-        {
-        }
-
-        void visit(NothingNoChangeDecision &)
-        {
-        }
-
-        void visit(UnableToMakeDecision &)
-        {
-        }
-
-        void visit(BreakDecision &)
-        {
-        }
-
-        void visit(ChangesToMakeDecision & decision)
-        {
-            if (! decision.destination())
-            {
-                decision.set_destination(make_destination_for(decision));
-                decision.set_change_type(make_change_type_for(decision));
-            }
-        }
-    };
-}
-
 void
-Decider::_do_destination_if_necessary(
-        const std::tr1::shared_ptr<Resolution> & resolution)
+Decider::_fixup_changes_to_make_decision(
+        const std::tr1::shared_ptr<const Resolution> & resolution,
+        ChangesToMakeDecision & decision) const
 {
-    DoDestinationIfNecessaryVisitor v(
-            std::tr1::bind(&Decider::_make_destination_for, this, resolution, std::tr1::placeholders::_1),
-            std::tr1::bind(&Decider::_make_change_type_for, this, resolution, std::tr1::placeholders::_1)
-            );
-    resolution->decision()->accept(v);
+    decision.set_destination(_make_destination_for(resolution, decision));
+    decision.set_change_type(_make_change_type_for(resolution, decision));
 }
 
 const std::tr1::shared_ptr<Destination>
@@ -1359,15 +1297,15 @@ Decider::_try_to_find_decision_for(
 
     if (installable_id && ! existing_id)
     {
-        /* there's nothing suitable existing. we fix the last_ct when we do
-         * destinations. */
+        /* there's nothing suitable existing. */
         return make_shared_ptr(new ChangesToMakeDecision(
                     resolution->resolvent(),
                     installable_id,
                     best,
                     last_ct,
                     ! resolution->constraints()->all_untaken(),
-                    make_null_shared_ptr()
+                    make_null_shared_ptr(),
+                    std::tr1::bind(&Decider::_fixup_changes_to_make_decision, this, resolution, std::tr1::placeholders::_1)
                     ));
     }
     else if (existing_id && ! installable_id)
@@ -1491,21 +1429,15 @@ Decider::_try_to_find_decision_for(
                     best,
                     last_ct,
                     ! resolution->constraints()->all_untaken(),
-                    make_null_shared_ptr()
+                    make_null_shared_ptr(),
+                    std::tr1::bind(&Decider::_fixup_changes_to_make_decision, this, resolution, std::tr1::placeholders::_1)
                     ));
 
         switch (resolution->constraints()->strictest_use_existing())
         {
             case ue_only_if_transient:
             case ue_never:
-                return make_shared_ptr(new ChangesToMakeDecision(
-                            resolution->resolvent(),
-                            installable_id,
-                            best,
-                            last_ct,
-                            ! resolution->constraints()->all_untaken(),
-                            make_null_shared_ptr()
-                            ));
+                return changes_to_make;
 
             case ue_if_same:
                 if (is_same)
@@ -1692,7 +1624,8 @@ Decider::_get_unmatching_constraints(
                         false,
                         last_ct,
                         ! (*c)->untaken(),
-                        make_null_shared_ptr()
+                        make_null_shared_ptr(),
+                        std::tr1::bind(&Decider::_fixup_changes_to_make_decision, this, resolution, std::tr1::placeholders::_1)
                         ));
         if (! _check_constraint(*c, decision))
             result->add(*c);
@@ -1764,9 +1697,6 @@ Decider::resolve()
         if (! _resolve_dependents())
             break;
     }
-
-    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Finding Destinations"));
-    _resolve_destinations();
 
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Confirming"));
     _resolve_confirmations();

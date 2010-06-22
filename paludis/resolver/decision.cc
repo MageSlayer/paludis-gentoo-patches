@@ -128,7 +128,8 @@ ChangesToMakeDecision::deserialise(Deserialisation & d)
                 v.member<bool>("best"),
                 destringify<ChangeType>(v.member<std::string>("change_type")),
                 v.member<bool>("taken"),
-                v.member<std::tr1::shared_ptr<const Destination> >("destination")
+                v.member<std::tr1::shared_ptr<const Destination> >("destination"),
+                std::tr1::function<void (const ChangesToMakeDecision &)>()
                 ));
 
     {
@@ -369,9 +370,12 @@ ChangesToMakeDecision::ChangesToMakeDecision(
         const bool b,
         const ChangeType c,
         const bool t,
-        const std::tr1::shared_ptr<const Destination> & d) :
+        const std::tr1::shared_ptr<const Destination> & d,
+        const std::tr1::function<void (ChangesToMakeDecision &)> & f) :
     PrivateImplementationPattern<ChangesToMakeDecision>(new Implementation<ChangesToMakeDecision>(r, o, b, c, t, d))
 {
+    if (f)
+        f(*this);
 }
 
 #ifdef PALUDIS_HAVE_DEFAULT_DELETED

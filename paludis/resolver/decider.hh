@@ -134,6 +134,10 @@ namespace paludis
                 void _resolve_destinations();
                 void _resolve_confirmations();
 
+                void _fixup_changes_to_make_decision(
+                        const std::tr1::shared_ptr<const Resolution> &,
+                        ChangesToMakeDecision &) const;
+
                 const std::tr1::shared_ptr<Destination> _make_destination_for(
                         const std::tr1::shared_ptr<const Resolution> & resolution,
                         const ChangesToMakeDecision &) const;
@@ -151,9 +155,6 @@ namespace paludis
 
                 const std::tr1::shared_ptr<Decision> _cannot_decide_for(
                         const std::tr1::shared_ptr<const Resolution> & resolution) const;
-
-                void _do_destination_if_necessary(
-                        const std::tr1::shared_ptr<Resolution> & our_resolution);
 
                 void _add_dependencies_if_necessary(
                         const std::tr1::shared_ptr<Resolution> & our_resolution);

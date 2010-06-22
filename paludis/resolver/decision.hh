@@ -153,7 +153,8 @@ namespace paludis
                         const bool best,
                         const ChangeType,
                         const bool taken,
-                        const std::tr1::shared_ptr<const Destination> &
+                        const std::tr1::shared_ptr<const Destination> &,
+                        const std::tr1::function<void (ChangesToMakeDecision &)> &
                         );
 
                 ~ChangesToMakeDecision();
