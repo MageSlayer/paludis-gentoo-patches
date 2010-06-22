@@ -94,6 +94,11 @@ namespace paludis
                         const std::tr1::shared_ptr<const PackageID> &,
                         const std::tr1::shared_ptr<const PackageIDSequence> &) const;
 
+                const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_for_purge(
+                        const std::tr1::shared_ptr<const Resolution> & resolution,
+                        const std::tr1::shared_ptr<const PackageID> &,
+                        const std::tr1::shared_ptr<const PackageIDSequence> &) const;
+
                 void _apply_resolution_constraint(
                         const std::tr1::shared_ptr<Resolution> &,
                         const std::tr1::shared_ptr<const Constraint> &);
@@ -131,6 +136,7 @@ namespace paludis
 
                 void _resolve_decide_with_dependencies();
                 bool _resolve_dependents() PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool _resolve_purges() PALUDIS_ATTRIBUTE((warn_unused_result));
                 void _resolve_destinations();
                 void _resolve_confirmations();
 
@@ -216,6 +222,16 @@ namespace paludis
                         const std::tr1::shared_ptr<const PackageIDSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void _confirm(const std::tr1::shared_ptr<const Resolution> & resolution);
+
+                const std::tr1::shared_ptr<const PackageIDSet> _collect_installed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const std::tr1::shared_ptr<const PackageIDSet> _accumulate_deps(
+                        const std::tr1::shared_ptr<const PackageIDSet> &,
+                        const std::tr1::shared_ptr<const PackageIDSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const std::tr1::shared_ptr<const PackageIDSet> _collect_depped_upon(
+                        const std::tr1::shared_ptr<const PackageID> &,
+                        const std::tr1::shared_ptr<const PackageIDSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             public:
                 Decider(const Environment * const,

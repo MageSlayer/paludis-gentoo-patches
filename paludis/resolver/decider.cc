@@ -35,11 +35,13 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/enum_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/tribool.hh>
+#include <paludis/util/log.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/repository.hh>
@@ -1695,9 +1697,16 @@ Decider::resolve()
     {
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Deciding"));
         _resolve_decide_with_dependencies();
+
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Finding Dependents"));
-        if (! _resolve_dependents())
-            break;
+        if (_resolve_dependents())
+            continue;
+
+        _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Finding Purgeables"));
+        if (_resolve_purges())
+            continue;
+
+        break;
     }
 
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Confirming"));
@@ -1799,4 +1808,151 @@ Decider::_confirm(
     resolution->decision()->accept(ConfirmVisitor(_imp->env, _imp->fns, resolution));
 }
 
+bool
+Decider::_resolve_purges()
+{
+    Context context("When finding things to purge:");
+
+    const std::pair<
+        std::tr1::shared_ptr<const PackageIDSequence>,
+        std::tr1::shared_ptr<const PackageIDSequence> > going_away_newly_available(_collect_changing());
+
+    const std::tr1::shared_ptr<PackageIDSet> going_away(new PackageIDSet);
+    std::copy(going_away_newly_available.first->begin(), going_away_newly_available.first->end(), going_away->inserter());
+
+    const std::tr1::shared_ptr<PackageIDSet> newly_available(new PackageIDSet);
+    std::copy(going_away_newly_available.second->begin(), going_away_newly_available.second->end(), newly_available->inserter());
+
+    const std::tr1::shared_ptr<const PackageIDSet> have_now(_collect_installed());
+
+    const std::tr1::shared_ptr<PackageIDSet> have_now_minus_going_away(new PackageIDSet);
+    std::set_difference(have_now->begin(), have_now->end(),
+            going_away->begin(), going_away->end(), have_now_minus_going_away->inserter(), PackageIDSetComparator());
+
+    const std::tr1::shared_ptr<PackageIDSet> will_eventually_have_set(new PackageIDSet);
+    std::copy(have_now_minus_going_away->begin(), have_now_minus_going_away->end(), will_eventually_have_set->inserter());
+    std::copy(newly_available->begin(), newly_available->end(), will_eventually_have_set->inserter());
+
+    const std::tr1::shared_ptr<PackageIDSequence> will_eventually_have(new PackageIDSequence);
+    std::copy(will_eventually_have_set->begin(), will_eventually_have_set->end(), will_eventually_have->back_inserter());
+
+    const std::tr1::shared_ptr<const PackageIDSet> used_originally(_accumulate_deps(going_away, will_eventually_have));
+    const std::tr1::shared_ptr<const PackageIDSet> used_afterwards(_accumulate_deps(newly_available, will_eventually_have));
+
+    const std::tr1::shared_ptr<PackageIDSet> used_originally_and_not_going_away(new PackageIDSet);
+    std::set_difference(used_originally->begin(), used_originally->end(),
+            going_away->begin(), going_away->end(), used_originally_and_not_going_away->inserter(), PackageIDSetComparator());
+
+    const std::tr1::shared_ptr<PackageIDSet> newly_unused(new PackageIDSet);
+    std::set_difference(used_originally_and_not_going_away->begin(), used_originally_and_not_going_away->end(),
+            used_afterwards->begin(), used_afterwards->end(), newly_unused->inserter(), PackageIDSetComparator());
+
+    const std::tr1::shared_ptr<PackageIDSequence> newly_unused_seq(new PackageIDSequence);
+    std::copy(newly_unused->begin(), newly_unused->end(), newly_unused_seq->back_inserter());
+
+    const std::tr1::shared_ptr<PackageIDSet> used_by_unchanging(new PackageIDSet);
+    for (PackageIDSet::ConstIterator u(have_now_minus_going_away->begin()), u_end(have_now_minus_going_away->end()) ;
+            u != u_end ; ++u)
+    {
+        const std::tr1::shared_ptr<const PackageIDSet> used(_collect_depped_upon(*u, newly_unused_seq));
+        std::copy(used->begin(), used->end(), used_by_unchanging->inserter());
+    }
+
+    const std::tr1::shared_ptr<PackageIDSet> newly_really_unused(new PackageIDSet);
+    std::set_difference(newly_unused->begin(), newly_unused->end(),
+            used_by_unchanging->begin(), used_by_unchanging->end(), newly_really_unused->inserter(), PackageIDSetComparator());
+
+    if (newly_really_unused->empty())
+        return false;
+
+    for (PackageIDSet::ConstIterator i(newly_really_unused->begin()), i_end(newly_really_unused->end()) ;
+            i != i_end ; ++i)
+    {
+        const std::tr1::shared_ptr<PackageIDSequence> used_to_use(new PackageIDSequence), star_i_set(new PackageIDSequence);
+        star_i_set->push_back(*i);
+        for (PackageIDSet::ConstIterator g(going_away->begin()), g_end(going_away->end()) ;
+                g != g_end ; ++g)
+            if (! _collect_depped_upon(*g, star_i_set)->empty())
+                used_to_use->push_back(*g);
+
+        Resolvent resolvent(*i, dt_install_to_slash);
+        const std::tr1::shared_ptr<Resolution> resolution(_resolution_for_resolvent(resolvent, true));
+        const std::tr1::shared_ptr<const ConstraintSequence> constraints(_make_constraints_for_purge(resolution, *i, used_to_use));
+        for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
+                c != c_end ; ++c)
+            _apply_resolution_constraint(resolution, *c);
+    }
+
+    return true;
+}
+
+const std::tr1::shared_ptr<const PackageIDSet>
+Decider::_collect_installed() const
+{
+    const std::tr1::shared_ptr<const PackageIDSequence> q((*_imp->env)[selection::AllVersionsUnsorted(
+                generator::All() | filter::InstalledAtRoot(FSEntry("/")))]);
+    const std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
+
+    std::copy(q->begin(), q->end(), result->inserter());
+    return result;
+}
+
+const std::tr1::shared_ptr<const PackageIDSet>
+Decider::_accumulate_deps(
+        const std::tr1::shared_ptr<const PackageIDSet> & start,
+        const std::tr1::shared_ptr<const PackageIDSequence> & will_eventually_have) const
+{
+    const std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet), done(new PackageIDSet);
+    std::copy(start->begin(), start->end(), result->inserter());
+
+    while (result->size() > done->size())
+    {
+        const std::tr1::shared_ptr<PackageIDSet> more(new PackageIDSet);
+        std::set_difference(result->begin(), result->end(), done->begin(), done->end(), more->inserter(), PackageIDSetComparator());
+
+        for (PackageIDSet::ConstIterator i(more->begin()), i_end(more->end()) ;
+                i != i_end ; ++i)
+        {
+            done->insert(*i);
+            const std::tr1::shared_ptr<const PackageIDSet> depped_upon(_collect_depped_upon(*i, will_eventually_have));
+            std::copy(depped_upon->begin(), depped_upon->end(), result->inserter());
+        }
+    }
+
+    return result;
+}
+
+const std::tr1::shared_ptr<const PackageIDSet>
+Decider::_collect_depped_upon(
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const PackageIDSequence> & candidates) const
+{
+    DependentChecker c(_imp->env, candidates, make_shared_ptr(new PackageIDSequence));
+    if (id->dependencies_key())
+        id->dependencies_key()->value()->root()->accept(c);
+    else
+    {
+        if (id->build_dependencies_key())
+            id->build_dependencies_key()->value()->root()->accept(c);
+        if (id->run_dependencies_key())
+            id->run_dependencies_key()->value()->root()->accept(c);
+        if (id->post_dependencies_key())
+            id->post_dependencies_key()->value()->root()->accept(c);
+        if (id->suggested_dependencies_key())
+            id->suggested_dependencies_key()->value()->root()->accept(c);
+    }
+
+    const std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
+    std::copy(c.result->begin(), c.result->end(), result->inserter());
+    return result;
+}
+
+const std::tr1::shared_ptr<ConstraintSequence>
+Decider::_make_constraints_for_purge(
+        const std::tr1::shared_ptr<const Resolution> & resolution,
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const PackageIDSequence> & r) const
+{
+    return _imp->fns.get_constraints_for_purge_fn()(resolution, id, r);
+}
 

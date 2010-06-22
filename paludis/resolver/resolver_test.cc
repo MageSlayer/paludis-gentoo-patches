@@ -309,6 +309,35 @@ paludis::resolver::resolver_test::get_constraints_for_dependent_fn(
     return result;
 }
 
+const std::tr1::shared_ptr<ConstraintSequence>
+paludis::resolver::resolver_test::get_constraints_for_purge_fn(
+        const std::tr1::shared_ptr<const Resolution> &,
+        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::tr1::shared_ptr<const PackageIDSequence> & ids)
+{
+    const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
+
+    PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
+    partial_spec.package(id->name());
+    if (id->slot_key())
+        partial_spec.slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement(
+                        id->slot_key()->value(), false)));
+    PackageDepSpec spec(partial_spec);
+
+    const std::tr1::shared_ptr<WasUsedByReason> reason(new WasUsedByReason(ids));
+
+    result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                        n::destination_type() = dt_install_to_slash,
+                        n::nothing_is_fine_too() = true,
+                        n::reason() = reason,
+                        n::spec() = BlockDepSpec("!" + stringify(spec), spec, false),
+                        n::untaken() = false,
+                        n::use_existing() = ue_if_possible
+                        ))));
+
+    return result;
+}
+
 ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s, const std::string & e,
         const std::string & l) :
     TestCase(s),
@@ -366,8 +395,9 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             n::find_repository_for_fn() = std::tr1::bind(&find_repository_for_fn,
                     &env, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
             n::get_constraints_for_dependent_fn() = &get_constraints_for_dependent_fn,
+            n::get_constraints_for_purge_fn() = &get_constraints_for_purge_fn,
             n::get_destination_types_for_fn() = &get_destination_types_for_fn,
-            n::get_initial_constraints_for_fn() = 
+            n::get_initial_constraints_for_fn() =
                 std::tr1::bind(&initial_constraints_for_fn, std::tr1::ref(initial_constraints),
                     std::tr1::placeholders::_1),
             n::get_resolvents_for_fn() = &get_resolvents_for_fn,

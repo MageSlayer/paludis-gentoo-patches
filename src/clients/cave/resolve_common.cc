@@ -1264,6 +1264,36 @@ namespace
         return result;
     }
 
+    const std::tr1::shared_ptr<ConstraintSequence> get_constraints_for_purge_fn(
+            const Environment * const env,
+            const PackageDepSpecList & list,
+            const std::tr1::shared_ptr<const Resolution> &,
+            const std::tr1::shared_ptr<const PackageID> & id,
+            const std::tr1::shared_ptr<const PackageIDSequence> & ids)
+    {
+        const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
+
+        PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
+        partial_spec.package(id->name());
+        if (id->slot_key())
+            partial_spec.slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement(
+                            id->slot_key()->value(), false)));
+        PackageDepSpec spec(partial_spec);
+
+        const std::tr1::shared_ptr<WasUsedByReason> reason(new WasUsedByReason(ids));
+
+        result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                            n::destination_type() = dt_install_to_slash,
+                            n::nothing_is_fine_too() = true,
+                            n::reason() = reason,
+                            n::spec() = BlockDepSpec("!" + stringify(spec), spec, false),
+                            n::untaken() = ! match_any(env, list, id),
+                            n::use_existing() = ue_if_possible
+                            ))));
+
+        return result;
+    }
+
     void serialise_resolved(StringListStream & ser_stream, const Resolved & resolved)
     {
         Serialiser ser(ser_stream);
@@ -1545,7 +1575,7 @@ paludis::cave::resolve_common(
 
     InitialConstraints initial_constraints;
     PackageDepSpecList allowed_to_remove_specs, allowed_to_break_specs, remove_if_dependent_specs,
-                       less_restrictive_remove_blockers_specs, with, without,
+                       less_restrictive_remove_blockers_specs, purge_specs, with, without,
                        permit_old_version, permit_downgrade, take, take_from, ignore, ignore_from,
                        favour, avoid, no_dependencies_from, no_blockers_from;
     bool allowed_to_break_system(false);
@@ -1575,6 +1605,12 @@ paludis::cave::resolve_common(
             i_end(resolution_options.a_less_restrictive_remove_blockers.end_args()) ;
             i != i_end ; ++i)
         less_restrictive_remove_blockers_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
+                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_purge.begin_args()),
+            i_end(resolution_options.a_purge.end_args()) ;
+            i != i_end ; ++i)
+        purge_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
                     UserPackageDepSpecOptions() + updso_allow_wildcards));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_without.begin_args()),
@@ -1710,6 +1746,8 @@ paludis::cave::resolve_common(
                         env.get(), std::tr1::cref(resolution_options), _1, _2),
                 n::get_constraints_for_dependent_fn() = std::tr1::bind(&get_constraints_for_dependent_fn,
                         env.get(), std::tr1::cref(less_restrictive_remove_blockers_specs), _1, _2, _3),
+                n::get_constraints_for_purge_fn() = std::tr1::bind(&get_constraints_for_purge_fn,
+                        env.get(), std::tr1::cref(purge_specs), _1, _2, _3),
                 n::get_destination_types_for_fn() = std::tr1::bind(&get_destination_types_for_fn,
                         env.get(), std::tr1::cref(resolution_options), _1, _2, _3),
                 n::get_initial_constraints_for_fn() = std::tr1::bind(&initial_constraints_for_fn,

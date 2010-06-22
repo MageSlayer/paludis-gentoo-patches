@@ -690,6 +690,51 @@ namespace
                 join(indirect_iterator(r->begin()), indirect_iterator(r->end()), ", ", stringify_confirmation) << endl;
     }
 
+    void display_untaken_change(
+            const ChangesToMakeDecision &)
+    {
+        cout << c::bold_green() << "    Take using: " << c::normal() << "--take" << endl;
+    }
+
+    struct IsPurgeVisitor
+    {
+        bool visit(const TargetReason &) const
+        {
+            return false;
+        }
+
+        bool visit(const SetReason & r) const
+        {
+            return r.reason_for_set()->accept_returning<bool>(*this);
+        }
+
+        bool visit(const PresetReason &) const
+        {
+            return false;
+        }
+
+        bool visit(const DependencyReason &) const
+        {
+            return false;
+        }
+
+        bool visit(const DependentReason &) const
+        {
+            return false;
+        }
+
+        bool visit(const WasUsedByReason &) const
+        {
+            return true;
+        }
+    };
+
+    void display_untaken_remove(
+            const RemoveDecision &)
+    {
+        cout << c::bold_green() << "    Take using: " << c::normal() << "--purge" << endl;
+    }
+
     void display_one_installish(
             const std::tr1::shared_ptr<Environment> & env,
             const DisplayResolutionCommandLine & cmdline,
@@ -771,6 +816,8 @@ namespace
         display_one_description(env, cmdline, decision.origin_id(), ! old_id);
         display_choices(env, cmdline, decision.origin_id(), old_id, choices_to_explain);
         display_reasons(resolution, more_annotations);
+        if (untaken)
+            display_untaken_change(decision);
         if (confirmations)
             display_confirmations(decision);
         if (! notes.empty())
@@ -806,6 +853,8 @@ namespace
 
         cout << endl;
         display_reasons(resolution, more_annotations);
+        if (untaken)
+            display_untaken_remove(decision);
         if (confirmations)
             display_confirmations(decision);
         if (! notes.empty())

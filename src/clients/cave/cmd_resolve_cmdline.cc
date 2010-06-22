@@ -66,10 +66,10 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
     a_permit_old_version(&g_resolution_options, "permit-old-version", 'o', "Permit installs of versions matching the supplied "
             "specification even if those versions are worse than the best visible version in the slot. Use '*/*' "
             "to allow all worse versions to be installed."),
-//    a_purge(&g_resolution_options, "purge", 'P',
-//            "Purge packages matching the given specification, if they will no longer be used after "
-//            "a resolution. Use '*/*' to accept all purges, but note that by doing so you are putting "
-//            "a great deal of trust in package authors to get dependencies right."),
+    a_purge(&g_resolution_options, "purge", 'P',
+            "Purge packages matching the given specification, if they will no longer be used after "
+            "a resolution. Use '*/*' to accept all purges, but note that by doing so you are putting "
+            "a great deal of trust in package authors to get dependencies right."),
 
     g_dependent_options(this, "Dependent Options", "Dependent options. A package is dependent if it "
             "requires (or looks like it might require) a package which is being removed. By default, "
