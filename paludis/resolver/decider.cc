@@ -317,9 +317,11 @@ namespace
             std::copy(d.ids()->begin(), d.ids()->end(), going_away->back_inserter());
         }
 
-        void visit(const ChangesToMakeDecision &)
+        void visit(const ChangesToMakeDecision & d)
         {
-            /* todo */
+            std::copy(d.destination()->replacing()->begin(), d.destination()->replacing()->end(),
+                    going_away->back_inserter());
+            newly_available->push_back(d.origin_id());
         }
 
         void visit(const UnableToMakeDecision &)
