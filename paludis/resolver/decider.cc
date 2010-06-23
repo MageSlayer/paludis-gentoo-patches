@@ -346,7 +346,7 @@ Decider::_collect_changing() const
     for (ResolutionsByResolvent::ConstIterator i(_imp->resolutions_by_resolvent->begin()),
             i_end(_imp->resolutions_by_resolvent->end()) ;
             i != i_end ; ++i)
-        if ((*i)->decision())
+        if ((*i)->decision() && (*i)->decision()->taken())
             (*i)->decision()->accept(c);
 
     return std::make_pair(c.going_away, c.newly_available);
@@ -1862,9 +1862,7 @@ Decider::_resolve_purges()
     std::set_difference(newly_unused->begin(), newly_unused->end(),
             used_by_unchanging->begin(), used_by_unchanging->end(), newly_really_unused->inserter(), PackageIDSetComparator());
 
-    if (newly_really_unused->empty())
-        return false;
-
+    bool changed(false);
     for (PackageIDSet::ConstIterator i(newly_really_unused->begin()), i_end(newly_really_unused->end()) ;
             i != i_end ; ++i)
     {
@@ -1877,13 +1875,19 @@ Decider::_resolve_purges()
 
         Resolvent resolvent(*i, dt_install_to_slash);
         const std::tr1::shared_ptr<Resolution> resolution(_resolution_for_resolvent(resolvent, true));
+
+        if (resolution->decision())
+            continue;
+
         const std::tr1::shared_ptr<const ConstraintSequence> constraints(_make_constraints_for_purge(resolution, *i, used_to_use));
         for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                 c != c_end ; ++c)
             _apply_resolution_constraint(resolution, *c);
+
+        changed = true;
     }
 
-    return true;
+    return changed;
 }
 
 const std::tr1::shared_ptr<const PackageIDSet>
