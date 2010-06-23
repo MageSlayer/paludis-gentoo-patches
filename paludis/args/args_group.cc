@@ -57,6 +57,12 @@ ArgsGroup::ArgsGroup(ArgsSection * s, const std::string & our_name,
 }
 
 void
+ArgsGroup::remove()
+{
+    _section->remove(this);
+}
+
+void
 ArgsGroup::add(ArgsOption * const value)
 {
     /// \bug Should check for uniqueness of short and long names.

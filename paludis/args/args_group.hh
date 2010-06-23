@@ -60,6 +60,11 @@ namespace paludis
 
             public:
                 /**
+                 * Remove this group from our section.
+                 */
+                void remove();
+
+                /**
                  * Fetch our section.
                  */
                 ArgsSection * section() const

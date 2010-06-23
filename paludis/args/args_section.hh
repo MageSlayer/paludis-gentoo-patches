@@ -54,6 +54,7 @@ namespace paludis
                 const std::string name() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void add(ArgsGroup * const);
+                void remove(ArgsGroup * const);
         };
     }
 

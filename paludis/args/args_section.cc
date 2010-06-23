@@ -78,6 +78,12 @@ ArgsSection::add(ArgsGroup * const g)
     _imp->groups.push_back(g);
 }
 
+void
+ArgsSection::remove(ArgsGroup * const g)
+{
+    _imp->groups.remove(g);
+}
+
 ArgsHandler *
 ArgsSection::handler() const
 {
