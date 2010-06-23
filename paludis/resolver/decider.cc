@@ -1884,7 +1884,10 @@ Decider::_resolve_purges()
                 c != c_end ; ++c)
             _apply_resolution_constraint(resolution, *c);
 
-        changed = true;
+        _decide(resolution);
+
+        if (resolution->decision()->taken())
+            changed = true;
     }
 
     return changed;
