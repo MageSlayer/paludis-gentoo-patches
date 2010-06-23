@@ -80,7 +80,8 @@ namespace paludis
 
                 /**
                  * Remove an ArgsOption instance (called by
-                 * ArgsOption::remove).
+                 * ArgsOption::remove).  Calls ArgsGroup::remove() if
+                 * that would leave us with no ArgsOptions.
                  */
                 void remove(ArgsOption * const value);
 

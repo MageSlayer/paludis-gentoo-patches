@@ -96,7 +96,8 @@ namespace paludis
 
             public:
                 /**
-                 * Remove this option.
+                 * Remove this option.  Removes our group from its
+                 * section if the group would be left empty.
                  */
                 void remove();
 

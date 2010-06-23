@@ -73,6 +73,8 @@ void
 ArgsGroup::remove(ArgsOption * const value)
 {
     _imp->args_options.remove(value);
+    if (_imp->args_options.empty())
+        remove();
 }
 
 ArgsGroup::~ArgsGroup()
