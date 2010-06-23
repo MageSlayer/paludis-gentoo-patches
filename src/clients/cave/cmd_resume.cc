@@ -80,6 +80,7 @@ namespace
             execution_options(this),
             program_options(this)
         {
+            execution_options.a_preserve_world.remove();
             add_usage_line("--resume-file state [ --retry-failed ] [ --retry-skipped ]");
         }
 
@@ -140,6 +141,9 @@ namespace
                 p_end(data->targets()->end()) ;
                 p != p_end ; ++p)
             args->push_back(*p);
+
+        if (data->preserve_world())
+            args->push_back("--preserve-world");
 
         if (data->target_set())
             args->push_back("--set");

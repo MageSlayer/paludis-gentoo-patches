@@ -1146,6 +1146,7 @@ namespace
 
             ResumeData resume_data(make_named_values<ResumeData>(
                         n::job_lists() = lists,
+                        n::preserve_world() = cmdline.execution_options.a_preserve_world.specified(),
                         n::target_set() = cmdline.a_set.specified(),
                         n::targets() = targets
                         ));

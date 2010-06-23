@@ -31,6 +31,7 @@ namespace paludis
     namespace n
     {
         typedef Name<struct job_lists_name> job_lists;
+        typedef Name<struct preserve_world_name> preserve_world;
         typedef Name<struct target_set_name> target_set;
         typedef Name<struct targets_name> targets;
     }
@@ -40,6 +41,7 @@ namespace paludis
         struct ResumeData
         {
             NamedValue<n::job_lists, std::tr1::shared_ptr<resolver::JobLists> > job_lists;
+            NamedValue<n::preserve_world, bool> preserve_world;
             NamedValue<n::target_set, bool> target_set;
             NamedValue<n::targets, std::tr1::shared_ptr<Sequence<std::string> > > targets;
 

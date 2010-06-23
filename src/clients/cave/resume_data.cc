@@ -49,6 +49,7 @@ ResumeData::deserialise(Deserialisation & d)
 
     return make_shared_copy(make_named_values<ResumeData>(
                 n::job_lists() = v.member<std::tr1::shared_ptr<JobLists> >("job_lists"),
+                n::preserve_world() = v.member<bool>("preserve_world"),
                 n::target_set() = v.member<bool>("target_set"),
                 n::targets() = targets
                 ));
@@ -59,6 +60,7 @@ ResumeData::serialise(Serialiser & s) const
 {
     s.object("ResumeData@" + stringify(PALUDIS_VERSION))
         .member(SerialiserFlags<serialise::might_be_null>(), "job_lists", job_lists())
+        .member(SerialiserFlags<>(), "preserve_world", preserve_world())
         .member(SerialiserFlags<>(), "target_set", target_set())
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "targets", targets())
         ;
