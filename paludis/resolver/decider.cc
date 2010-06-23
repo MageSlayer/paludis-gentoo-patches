@@ -1030,10 +1030,8 @@ Decider::find_any_score(
     Context context("When working out whether we'd like '" + stringify(dep.spec()) + "' because of '"
             + stringify(our_resolution->resolvent()) + "':");
 
-    if (dep.spec().if_block())
-        throw InternalError(PALUDIS_HERE, "unimplemented: blockers inside || blocks are horrid");
-
-    const PackageDepSpec & spec(*dep.spec().if_package());
+    const bool is_block(dep.spec().if_block());
+    const PackageDepSpec & spec(is_block ? dep.spec().if_block()->blocking() : *dep.spec().if_package());
 
     // note: make sure the worst_score declaration in
     // AnyDepSpecChildHandler::commit in satitised_dependencies.cc
@@ -1052,7 +1050,7 @@ Decider::find_any_score(
             {
                 case vo_greater:
                 case vo_greater_equal:
-                    local_score = os_greater_or_none;
+                    local_score = is_block ? os_less : os_greater_or_none;
                     break;
 
                 case vo_equal:
@@ -1065,7 +1063,7 @@ Decider::find_any_score(
 
                 case vo_less_equal:
                 case vo_less:
-                    local_score = os_less;
+                    local_score = is_block ? os_greater_or_none : os_less;
                     break;
 
                 case last_vo:
@@ -1079,11 +1077,11 @@ Decider::find_any_score(
                 switch (spec.version_requirements_mode())
                 {
                     case vr_and:
-                        score = std::min(score, local_score);
+                        score = is_block ? std::max(score, local_score) : std::min(score, local_score);
                         break;
 
                     case vr_or:
-                        score = std::max(score, local_score);
+                        score = is_block ? std::min(score, local_score) : std::max(score, local_score);
                         break;
 
                     case last_vr:
@@ -1096,7 +1094,7 @@ Decider::find_any_score(
     {
         /* don't bias no operator over a >= operator, so || ( >=foo-2 bar )
          * still likes foo. */
-        operator_bias = os_greater_or_none;
+        operator_bias = is_block ? os_block_everything : os_greater_or_none;
     }
 
     /* explicit preferences come first */
@@ -1104,22 +1102,33 @@ Decider::find_any_score(
     {
         Tribool prefer_or_avoid(_imp->fns.prefer_or_avoid_fn()(*spec.package_ptr()));
         if (prefer_or_avoid.is_true())
-            return std::make_pair(acs_prefer, operator_bias);
+            return std::make_pair(is_block ? acs_avoid : acs_prefer, operator_bias);
         else if (prefer_or_avoid.is_false())
-            return std::make_pair(acs_avoid, operator_bias);
+            return std::make_pair(is_block ? acs_prefer : acs_avoid, operator_bias);
     }
 
-    /* best: already installed */
+    /* best: blocker that doesn't match anything */
+    if (is_block)
+    {
+        const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::BestVersionOnly(
+                    generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements)
+                        | filter::SupportsAction<InstallAction>() | filter::NotMasked()
+                    )]);
+        if (ids->empty())
+            return std::make_pair(acs_vacuous_blocker, operator_bias);
+    }
+
+    /* next: already installed */
     {
         const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
                     generator::Matches(spec, MatchPackageOptions()) |
                     filter::InstalledAtRoot(FSEntry("/")))]);
-        if (! installed_ids->empty())
+        if (! installed_ids->empty() ^ is_block)
             return std::make_pair(acs_already_installed, operator_bias);
     }
 
     /* next: already installed, except with the wrong options */
-    if (spec.additional_requirements_ptr())
+    if (! is_block && spec.additional_requirements_ptr())
     {
         const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
                     generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements) |
@@ -1133,6 +1142,7 @@ Decider::find_any_score(
     const std::tr1::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(spec, reason));
 
     /* next: will already be installing */
+    if (! is_block)
     {
         for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
                 r != r_end ; ++r)
@@ -1144,6 +1154,7 @@ Decider::find_any_score(
     }
 
     /* next: could install */
+    if (! is_block)
     {
         for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
                 r != r_end ; ++r)
@@ -1160,7 +1171,18 @@ Decider::find_any_score(
         }
     }
 
+    /* next: blocks installed package */
+    if (is_block)
+    {
+        const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
+                    generator::Matches(spec, MatchPackageOptions()) |
+                    filter::InstalledAtRoot(FSEntry("/")))]);
+        if (! installed_ids->empty())
+            return std::make_pair(acs_blocks_installed, operator_bias);
+    }
+
     /* next: exists */
+    if (! is_block)
     {
         const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::BestVersionOnly(
                     generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements)

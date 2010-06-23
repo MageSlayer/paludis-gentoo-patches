@@ -10,10 +10,12 @@ make_enum_AnyChildScore()
     key acs_hate_hate_hate           "Doesn't even exist"
     key acs_avoid                    "Explicitly avoiding"
     key acs_exists                   "Exists"
+    key acs_blocks_installed         "Blocks a currently-installed package"
     key acs_could_install            "Could install"
     key acs_will_be_installing       "Will be installing"
     key acs_wrong_options_installed  "Already installed, wrong options"
     key acs_already_installed        "Already installed"
+    key acs_vacuous_blocker          "Blocker that doesn't match any installable packages"
     key acs_prefer                   "Explicitly preferred"
 
     want_destringify
@@ -25,9 +27,10 @@ make_enum_OperatorScore()
     namespace paludis::resolver
 
     key os_worse_than_worst        "Worse than any option"
-    key os_less                    "<, <= etc"
+    key os_block_everything        "Blocker with no operator"
+    key os_less                    "<, <= etc, or blocker with >, >= etc"
     key os_equal                   "=, =* etc"
-    key os_greater_or_none         ">, >= etc, or no operator"
+    key os_greater_or_none         ">, >= etc, or no operator, or blocker with <, <= etc"
 
     want_destringify
 }
