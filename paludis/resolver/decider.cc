@@ -1854,6 +1854,8 @@ Decider::_resolve_purges()
     for (PackageIDSet::ConstIterator u(have_now_minus_going_away->begin()), u_end(have_now_minus_going_away->end()) ;
             u != u_end ; ++u)
     {
+        _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
+
         const std::tr1::shared_ptr<const PackageIDSet> used(_collect_depped_upon(*u, newly_unused_seq));
         std::copy(used->begin(), used->end(), used_by_unchanging->inserter());
     }
@@ -1866,6 +1868,8 @@ Decider::_resolve_purges()
     for (PackageIDSet::ConstIterator i(newly_really_unused->begin()), i_end(newly_really_unused->end()) ;
             i != i_end ; ++i)
     {
+        _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
+
         const std::tr1::shared_ptr<PackageIDSequence> used_to_use(new PackageIDSequence), star_i_set(new PackageIDSequence);
         star_i_set->push_back(*i);
         for (PackageIDSet::ConstIterator g(going_away->begin()), g_end(going_away->end()) ;
@@ -1920,6 +1924,8 @@ Decider::_accumulate_deps(
         for (PackageIDSet::ConstIterator i(more->begin()), i_end(more->end()) ;
                 i != i_end ; ++i)
         {
+            _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
+
             done->insert(*i);
             const std::tr1::shared_ptr<const PackageIDSet> depped_upon(_collect_depped_upon(*i, will_eventually_have));
             std::copy(depped_upon->begin(), depped_upon->end(), result->inserter());
