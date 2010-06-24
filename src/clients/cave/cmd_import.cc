@@ -193,7 +193,9 @@ ImportCommand::run(
     QualifiedPackageName package(*cmdline.begin_parameters());
     VersionSpec version((next(cmdline.begin_parameters()) != cmdline.end_parameters()) ?
             *next(cmdline.begin_parameters()) : "0", user_version_spec_options());
-    SlotName slot((next(cmdline.begin_parameters(), 2) != cmdline.end_parameters()) ?
+    SlotName slot(
+            (next(cmdline.begin_parameters()) != cmdline.end_parameters() &&
+             next(cmdline.begin_parameters(), 2) != cmdline.end_parameters()) ?
             *next(cmdline.begin_parameters(), 2) : "0");
 
     std::string build_dependencies, run_dependencies, description;
