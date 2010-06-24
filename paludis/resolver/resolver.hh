@@ -53,6 +53,7 @@ namespace paludis
 
                 void add_target(const PackageOrBlockDepSpec &);
                 void add_target(const SetName &);
+                void purge();
 
                 void resolve();
 

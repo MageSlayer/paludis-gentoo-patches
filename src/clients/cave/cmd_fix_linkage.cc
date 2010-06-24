@@ -242,7 +242,7 @@ FixLinkageCommand::run(
             resolve_cmdline.execution_options,
             resolve_cmdline.display_options,
             resolve_cmdline.program_options,
-            make_null_shared_ptr(), targets);
+            make_null_shared_ptr(), targets, false);
 }
 
 std::tr1::shared_ptr<args::ArgsHandler>

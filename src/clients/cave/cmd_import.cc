@@ -280,7 +280,7 @@ ImportCommand::run(
             resolve_cmdline.execution_options,
             resolve_cmdline.display_options,
             resolve_cmdline.program_options,
-            keys, targets);
+            keys, targets, false);
 }
 
 std::tr1::shared_ptr<args::ArgsHandler>

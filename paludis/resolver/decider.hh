@@ -233,6 +233,9 @@ namespace paludis
                         const std::tr1::shared_ptr<const PackageID> &,
                         const std::tr1::shared_ptr<const PackageIDSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
+                const std::tr1::shared_ptr<const PackageIDSet> _collect_world(
+                        const std::tr1::shared_ptr<const PackageIDSet> & from) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
             public:
                 Decider(const Environment * const,
                         const ResolverFunctions &,
@@ -242,6 +245,8 @@ namespace paludis
                 void resolve();
 
                 void add_target_with_reason(const PackageOrBlockDepSpec &, const std::tr1::shared_ptr<const Reason> &);
+
+                void purge();
 
                 std::pair<AnyChildScore, OperatorScore> find_any_score(
                         const std::tr1::shared_ptr<const Resolution> &,

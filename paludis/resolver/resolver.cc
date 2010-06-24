@@ -163,6 +163,12 @@ Resolver::add_target(const SetName & set_name)
 }
 
 void
+Resolver::purge()
+{
+    _imp->decider->purge();
+}
+
+void
 Resolver::resolve()
 {
     _imp->decider->resolve();

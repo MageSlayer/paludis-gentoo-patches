@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "cmd_uninstall.hh"
+#include "cmd_purge.hh"
 #include "cmd_resolve_cmdline.hh"
 #include "resolve_common.hh"
 #include "exceptions.hh"
@@ -44,63 +44,56 @@ using std::endl;
 
 namespace
 {
-    struct UninstallCommandLine :
+    struct PurgeCommandLine :
         CaveCommandCommandLine
     {
-        args::ArgsGroup g_target_options;
-        args::SwitchArg a_all_versions;
-
         std::tr1::shared_ptr<ResolveCommandLineResolutionOptions> resolution_options;
         std::tr1::shared_ptr<ResolveCommandLineExecutionOptions> execution_options;
         std::tr1::shared_ptr<ResolveCommandLineDisplayOptions> display_options;
         std::tr1::shared_ptr<ResolveCommandLineProgramOptions> program_options;
 
-        UninstallCommandLine(const bool for_docs) :
-            g_target_options(main_options_section(), "Target options", "Target options"),
-            a_all_versions(&g_target_options, "all-versions", 'a', "If a supplied spec matches multiple versions, "
-                    "uninstall all versions rather than erroring", true),
+        PurgeCommandLine(const bool for_docs) :
             resolution_options(for_docs ? make_null_shared_ptr() : make_shared_ptr(new ResolveCommandLineResolutionOptions(this))),
             execution_options(for_docs ? make_null_shared_ptr() : make_shared_ptr(new ResolveCommandLineExecutionOptions(this))),
             display_options(for_docs ? make_null_shared_ptr() : make_shared_ptr(new ResolveCommandLineDisplayOptions(this))),
             program_options(for_docs ? make_null_shared_ptr() : make_shared_ptr(new ResolveCommandLineProgramOptions(this)))
         {
-            add_usage_line("[ -x|--execute ] [ --uninstalls-may-break */* ] [ --remove-if-dependent */* ] spec ...");
+            add_usage_line("[ -x|--execute ]");
             add_note("All options available for 'cave resolve' are also permitted. See 'man cave-resolve' for details.");
         }
 
         std::string app_name() const
         {
-            return "cave uninstall";
+            return "cave purge";
         }
 
         std::string app_synopsis() const
         {
-            return "Uninstall one or more packages.";
+            return "Uninstall unused packages.";
         }
 
         std::string app_description() const
         {
-            return "Uninstalls one or more packages. Note that 'cave uninstall' simply rewrites the supplied "
-                "dependency specifications and then uses 'cave resolve' to do the work; 'cave uninstall foo' is "
-                "the same as 'cave resolve !foo'.";
+            return "Uninstalls any package that is not either in 'world' or a dependency of a package "
+                "in 'world'.";
         }
     };
 }
 
 bool
-UninstallCommand::important() const
+PurgeCommand::important() const
 {
     return true;
 }
 
 int
-UninstallCommand::run(
+PurgeCommand::run(
         const std::tr1::shared_ptr<Environment> & env,
         const std::tr1::shared_ptr<const Sequence<std::string > > & args
         )
 {
-    UninstallCommandLine cmdline(false);
-    cmdline.run(args, "CAVE", "CAVE_UNINSTALL_OPTIONS", "CAVE_UNINSTALL_CMDLINE");
+    PurgeCommandLine cmdline(false);
+    cmdline.run(args, "CAVE", "CAVE_PURGE_OPTIONS", "CAVE_PURGE_CMDLINE");
 
     if (cmdline.a_help.specified())
     {
@@ -111,37 +104,16 @@ UninstallCommand::run(
     cmdline.resolution_options->apply_shortcuts();
     cmdline.resolution_options->verify(env);
 
-    std::tr1::shared_ptr<Sequence<std::string> > targets(new Sequence<std::string>);
-    for (UninstallCommandLine::ParametersConstIterator p(cmdline.begin_parameters()), p_end(cmdline.end_parameters()) ;
-            p != p_end ; ++p)
-    {
-        PackageDepSpec spec(parse_user_package_dep_spec(*p, env.get(), UserPackageDepSpecOptions()));
-        const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
-                    generator::Matches(spec, MatchPackageOptions()) | filter::SupportsAction<UninstallAction>())]);
-        if (ids->empty())
-            throw NothingMatching(spec);
-        else if (1 != std::distance(ids->begin(), ids->end()) && ! cmdline.a_all_versions.specified())
-            throw BeMoreSpecific(spec, ids);
-        else
-        {
-            for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                    i != i_end ; ++i)
-            {
-                std::string target("!" + stringify((*i)->name()));
-                if ((*i)->slot_key())
-                    target.append(":" + stringify((*i)->slot_key()->value()));
-                targets->push_back(target);
-            }
-        }
-    }
+    cmdline.resolution_options->a_purge.set_specified(true);
+    cmdline.resolution_options->a_purge.add_argument("*/*");
 
     return resolve_common(env, *cmdline.resolution_options, *cmdline.execution_options, *cmdline.display_options,
-            *cmdline.program_options, make_null_shared_ptr(), targets, false);
+            *cmdline.program_options, make_null_shared_ptr(), make_null_shared_ptr(), true);
 }
 
 std::tr1::shared_ptr<args::ArgsHandler>
-UninstallCommand::make_doc_cmdline()
+PurgeCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new UninstallCommandLine(true));
+    return make_shared_ptr(new PurgeCommandLine(true));
 }
 

@@ -51,6 +51,7 @@
 #include "cmd_print_repository_formats.hh"
 #include "cmd_print_sets.hh"
 #include "cmd_print_sync_protocols.hh"
+#include "cmd_purge.hh"
 #include "cmd_resolve.hh"
 #include "cmd_resume.hh"
 #include "cmd_search.hh"
@@ -103,6 +104,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("info", std::tr1::bind(&make_command<InfoCommand>)));
     _imp->handlers.insert(std::make_pair("match", std::tr1::bind(&make_command<MatchCommand>)));
     _imp->handlers.insert(std::make_pair("perform", std::tr1::bind(&make_command<PerformCommand>)));
+    _imp->handlers.insert(std::make_pair("purge", std::tr1::bind(&make_command<PurgeCommand>)));
     _imp->handlers.insert(std::make_pair("print-categories", std::tr1::bind(&make_command<PrintCategoriesCommand>)));
     _imp->handlers.insert(std::make_pair("print-commands", std::tr1::bind(&make_command<PrintCommandsCommand>)));
     _imp->handlers.insert(std::make_pair("print-environment-metadata", std::tr1::bind(&make_command<PrintEnvironmentMetadataCommand>)));

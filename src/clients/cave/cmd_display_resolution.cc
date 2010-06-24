@@ -206,8 +206,11 @@ namespace
 
         std::pair<std::string, bool> visit(const WasUsedByReason & r) const
         {
-            return std::make_pair("was used by " + join(indirect_iterator(r.ids_being_removed()->begin()),
-                        indirect_iterator(r.ids_being_removed()->end()), ", "), true);
+            if (r.ids_being_removed()->empty())
+                return std::make_pair("was unused", true);
+            else
+                return std::make_pair("was used by " + join(indirect_iterator(r.ids_being_removed()->begin()),
+                            indirect_iterator(r.ids_being_removed()->end()), ", "), true);
         }
 
         std::pair<std::string, bool> visit(const TargetReason &) const

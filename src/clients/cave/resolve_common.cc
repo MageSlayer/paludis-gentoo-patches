@@ -1497,8 +1497,11 @@ namespace
 
         const std::string visit(const WasUsedByReason & r) const
         {
-            return "from was used by " + join(indirect_iterator(r.ids_being_removed()->begin()),
-                    indirect_iterator(r.ids_being_removed()->end()), ", ");
+            if (r.ids_being_removed()->empty())
+                return "from was unused";
+            else
+                return "from was used by " + join(indirect_iterator(r.ids_being_removed()->begin()),
+                        indirect_iterator(r.ids_being_removed()->end()), ", ");
         }
 
         const std::string visit(const DependentReason & r) const
@@ -1569,7 +1572,8 @@ paludis::cave::resolve_common(
         const ResolveCommandLineDisplayOptions & display_options,
         const ResolveCommandLineProgramOptions & program_options,
         const std::tr1::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
-        const std::tr1::shared_ptr<const Sequence<std::string> > & targets)
+        const std::tr1::shared_ptr<const Sequence<std::string> > & targets_if_not_purge,
+        const bool purge)
 {
     int retcode(0);
 
@@ -1785,7 +1789,10 @@ paludis::cave::resolve_common(
             {
                 try
                 {
-                    add_resolver_targets(env, resolver, resolution_options, targets, is_set);
+                    if (purge)
+                        resolver->purge();
+                    else
+                        add_resolver_targets(env, resolver, resolution_options, targets_if_not_purge, is_set);
                     resolver->resolve();
                     break;
                 }
@@ -1812,7 +1819,8 @@ paludis::cave::resolve_common(
         dump_if_requested(env, resolver, resolution_options);
 
         retcode |= display_resolution(env, resolver->resolved(), resolution_options,
-                display_options, program_options, keys_if_import, targets);
+                display_options, program_options, keys_if_import,
+                purge ? make_shared_ptr(new const Sequence<std::string>) : targets_if_not_purge);
 
         if (! resolver->resolved()->taken_unable_to_make_decisions()->empty())
             retcode |= 1;
@@ -1825,7 +1833,9 @@ paludis::cave::resolve_common(
 
         if (0 == retcode)
             return perform_resolution(env, resolver->resolved(), resolution_options,
-                    execution_options, program_options, keys_if_import, targets, is_set);
+                    execution_options, program_options, keys_if_import,
+                    purge ? make_shared_ptr(new const Sequence<std::string>) : targets_if_not_purge,
+                    is_set);
     }
     catch (...)
     {

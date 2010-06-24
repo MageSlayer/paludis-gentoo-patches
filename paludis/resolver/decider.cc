@@ -1713,6 +1713,62 @@ Decider::add_target_with_reason(const PackageOrBlockDepSpec & spec, const std::t
 }
 
 void
+Decider::purge()
+{
+    Context context("When purging everything:");
+
+    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Collecting"));
+
+    const std::tr1::shared_ptr<const PackageIDSet> have_now(_collect_installed());
+    const std::tr1::shared_ptr<PackageIDSequence> have_now_seq(new PackageIDSequence);
+    std::copy(have_now->begin(), have_now->end(), have_now_seq->back_inserter());
+
+    const std::tr1::shared_ptr<const PackageIDSet> world(_collect_world(have_now));
+    const std::tr1::shared_ptr<const PackageIDSet> world_plus_deps(_accumulate_deps(world, have_now_seq));
+
+    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Calculating Unused"));
+
+    const std::tr1::shared_ptr<PackageIDSet> unused(new PackageIDSet);
+    std::set_difference(have_now->begin(), have_now->end(),
+            world_plus_deps->begin(), world_plus_deps->end(), unused->inserter(), PackageIDSetComparator());
+
+    for (PackageIDSet::ConstIterator i(unused->begin()), i_end(unused->end()) ;
+            i != i_end ; ++i)
+    {
+        _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
+
+        Resolvent resolvent(*i, dt_install_to_slash);
+        const std::tr1::shared_ptr<Resolution> resolution(_resolution_for_resolvent(resolvent, true));
+
+        if (resolution->decision())
+            continue;
+
+        const std::tr1::shared_ptr<const PackageIDSequence> used_to_use(new PackageIDSequence);
+        const std::tr1::shared_ptr<const ConstraintSequence> constraints(_make_constraints_for_purge(resolution, *i, used_to_use));
+        for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
+                c != c_end ; ++c)
+            _apply_resolution_constraint(resolution, *c);
+
+        _decide(resolution);
+    }
+}
+
+const std::tr1::shared_ptr<const PackageIDSet>
+Decider::_collect_world(
+        const std::tr1::shared_ptr<const PackageIDSet> & from) const
+{
+    const std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
+    const std::tr1::shared_ptr<const SetSpecTree> set(_imp->env->set(SetName("world")));
+
+    for (PackageIDSet::ConstIterator i(from->begin()), i_end(from->end()) ;
+            i != i_end ; ++i)
+        if (match_package_in_set(*_imp->env, *set, **i, MatchPackageOptions()))
+            result->insert(*i);
+
+    return result;
+}
+
+void
 Decider::resolve()
 {
     while (true)
