@@ -52,6 +52,7 @@ using namespace paludis::resolver;
 
 typedef std::tr1::unordered_map<NAGIndex, std::tr1::shared_ptr<const ChangeOrRemoveDecision>, Hash<NAGIndex> > ChangeOrRemoveIndices;
 typedef std::tr1::unordered_map<NAGIndex, JobNumber, Hash<NAGIndex> > InstallJobNumbers;
+typedef std::tr1::unordered_map<Resolvent, JobNumber, Hash<Resolvent> > FetchJobNumbers;
 
 namespace paludis
 {
@@ -61,6 +62,7 @@ namespace paludis
         const Environment * const env;
         const std::tr1::shared_ptr<Resolved> resolved;
         ChangeOrRemoveIndices change_or_remove_indices;
+        FetchJobNumbers fetch_job_numbers;
         InstallJobNumbers install_job_numbers;
 
         Implementation(
@@ -127,7 +129,8 @@ namespace
         bool visit(const NothingNoChangeDecision &)
         {
             resolved->nag()->add_node(make_named_values<NAGIndex>(
-                        n::resolvent() = resolvent
+                        n::resolvent() = resolvent,
+                        n::role() = nir_done
                         ));
             return true;
         }
@@ -135,7 +138,8 @@ namespace
         bool visit(const ExistingNoChangeDecision &)
         {
             resolved->nag()->add_node(make_named_values<NAGIndex>(
-                        n::resolvent() = resolvent
+                        n::resolvent() = resolvent,
+                        n::role() = nir_done
                         ));
             return true;
         }
@@ -144,12 +148,30 @@ namespace
         {
             if (decision->taken())
             {
-                NAGIndex index(make_named_values<NAGIndex>(
-                            n::resolvent() = resolvent
+                NAGIndex fetched_index(make_named_values<NAGIndex>(
+                            n::resolvent() = resolvent,
+                            n::role() = nir_fetched
                             ));
-                resolved->nag()->add_node(index);
-                change_or_remove_indices.insert(std::make_pair(index,
+                resolved->nag()->add_node(fetched_index);
+                change_or_remove_indices.insert(std::make_pair(fetched_index,
                             std::tr1::static_pointer_cast<const ChangeOrRemoveDecision>(decision)));
+
+                NAGIndex done_index(make_named_values<NAGIndex>(
+                            n::resolvent() = resolvent,
+                            n::role() = nir_done
+                            ));
+                resolved->nag()->add_node(done_index);
+                change_or_remove_indices.insert(std::make_pair(done_index,
+                            std::tr1::static_pointer_cast<const ChangeOrRemoveDecision>(decision)));
+
+                resolved->nag()->add_edge(done_index, fetched_index,
+                        make_named_values<NAGEdgeProperties>(
+                            n::build() = true,
+                            n::build_all_met() = false,
+                            n::run() = false,
+                            n::run_all_met() = true
+                            ));
+
                 return true;
             }
             else
@@ -165,7 +187,8 @@ namespace
             if (decision->taken())
             {
                 NAGIndex index(make_named_values<NAGIndex>(
-                            n::resolvent() = resolvent
+                            n::resolvent() = resolvent,
+                            n::role() = nir_done
                             ));
                 resolved->nag()->add_node(index);
                 change_or_remove_indices.insert(std::make_pair(index,
@@ -194,11 +217,13 @@ namespace
         bool build;
         bool run;
         bool post;
+        bool fetch;
 
         LabelsClassifier() :
             build(false),
             run(false),
-            post(false)
+            post(false),
+            fetch(false)
         {
         }
 
@@ -214,7 +239,7 @@ namespace
 
         void visit(const DependenciesFetchLabel &)
         {
-            build = true;
+            fetch = true;
         }
 
         void visit(const DependenciesRunLabel &)
@@ -278,7 +303,7 @@ namespace
                     l != l_end ; ++l)
                 (*l)->accept(classifier);
 
-            if (classifier.build || classifier.run)
+            if (classifier.build || classifier.run || classifier.fetch)
             {
                 bool arrow(true);
                 if (r.sanitised_dependency().spec().if_block())
@@ -286,19 +311,25 @@ namespace
                         arrow = false;
 
                 if (arrow)
-                    nag->add_edge(
-                            make_named_values<NAGIndex>(
-                                n::resolvent() = r.from_resolvent()
-                                ),
-                            make_named_values<NAGIndex>(
-                                n::resolvent() = resolvent
-                                ),
+                {
+                    NAGIndex from(make_named_values<NAGIndex>(
+                                n::resolvent() = r.from_resolvent(),
+                                n::role() = classifier.fetch ? nir_fetched : nir_done
+                                ));
+
+                    NAGIndex to(make_named_values<NAGIndex>(
+                                n::resolvent() = resolvent,
+                                n::role() = nir_done
+                                ));
+
+                    nag->add_edge(from, to,
                             make_named_values<NAGEdgeProperties>(
-                                n::build() = classifier.build,
-                                n::build_all_met() = r.already_met() || ! classifier.build,
+                                n::build() = classifier.build || classifier.fetch,
+                                n::build_all_met() = r.already_met() || ! (classifier.build || classifier.fetch),
                                 n::run() = classifier.run,
                                 n::run_all_met() = r.already_met() || ! classifier.run
                                 ));
+                }
             }
             else if (classifier.post)
             {
@@ -630,14 +661,17 @@ namespace
     struct ExtraScheduler
     {
         const std::tr1::shared_ptr<const Resolved> resolved;
+        FetchJobNumbers & fetch_job_numbers;
         InstallJobNumbers & install_job_numbers;
         const NAGIndex index;
 
         ExtraScheduler(
                 const std::tr1::shared_ptr<const Resolved> & r,
+                FetchJobNumbers & f,
                 InstallJobNumbers & i,
                 const NAGIndex & v) :
             resolved(r),
+            fetch_job_numbers(f),
             install_job_numbers(i),
             index(v)
         {
@@ -645,44 +679,65 @@ namespace
 
         void visit(const ChangesToMakeDecision & changes_to_make_decision) const
         {
-            resolved->job_lists()->pretend_job_list()->append(make_shared_ptr(new PretendJob(
-                            changes_to_make_decision.origin_id()->uniquely_identifying_spec())));
+            switch (index.role())
+            {
+                case nir_done:
+                    {
+                        FetchJobNumbers::const_iterator fetch_job_n(fetch_job_numbers.find(index.resolvent()));
+                        if (fetch_job_n == fetch_job_numbers.end())
+                            throw InternalError(PALUDIS_HERE, "haven't scheduled the fetch for " + stringify(index.resolvent()) + " yet");
 
-            JobNumber fetch_job_n(resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new FetchJob(
-                                make_shared_ptr(new JobRequirements),
-                                changes_to_make_decision.origin_id()->uniquely_identifying_spec()))));
+                        resolved->job_lists()->pretend_job_list()->append(make_shared_ptr(new PretendJob(
+                                        changes_to_make_decision.origin_id()->uniquely_identifying_spec())));
 
-            const std::tr1::shared_ptr<JobRequirements> requirements(new JobRequirements);
-            requirements->push_back(make_named_values<JobRequirement>(
-                        n::job_number() = fetch_job_n,
-                        n::required_if() = JobRequirementIfs() + jri_require_for_satisfied + jri_require_for_independent + jri_require_always
-                        ));
+                        const std::tr1::shared_ptr<JobRequirements> requirements(new JobRequirements);
+                        requirements->push_back(make_named_values<JobRequirement>(
+                                    n::job_number() = fetch_job_n->second,
+                                    n::required_if() = JobRequirementIfs() + jri_require_for_satisfied + jri_require_for_independent + jri_require_always
+                                    ));
 
-            RecursedRequirements recursed;
-            populate_requirements(
-                    resolved->nag(),
-                    install_job_numbers,
-                    index,
-                    requirements,
-                    false,
-                    recursed
-                    );
-
-            const std::tr1::shared_ptr<Sequence<PackageDepSpec> > replacing(new Sequence<PackageDepSpec>);
-            for (PackageIDSequence::ConstIterator i(changes_to_make_decision.destination()->replacing()->begin()),
-                    i_end(changes_to_make_decision.destination()->replacing()->end()) ;
-                    i != i_end ; ++i)
-                replacing->push_back((*i)->uniquely_identifying_spec());
-
-            JobNumber install_job_n(resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new InstallJob(
+                        RecursedRequirements recursed;
+                        populate_requirements(
+                                resolved->nag(),
+                                install_job_numbers,
+                                index,
                                 requirements,
-                                changes_to_make_decision.origin_id()->uniquely_identifying_spec(),
-                                changes_to_make_decision.destination()->repository(),
-                                changes_to_make_decision.resolvent().destination_type(),
-                                replacing
-                                ))));
+                                false,
+                                recursed
+                                );
 
-            install_job_numbers.insert(std::make_pair(index, install_job_n));
+                        const std::tr1::shared_ptr<Sequence<PackageDepSpec> > replacing(new Sequence<PackageDepSpec>);
+                        for (PackageIDSequence::ConstIterator i(changes_to_make_decision.destination()->replacing()->begin()),
+                                i_end(changes_to_make_decision.destination()->replacing()->end()) ;
+                                i != i_end ; ++i)
+                            replacing->push_back((*i)->uniquely_identifying_spec());
+
+                        JobNumber install_job_n(resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new InstallJob(
+                                            requirements,
+                                            changes_to_make_decision.origin_id()->uniquely_identifying_spec(),
+                                            changes_to_make_decision.destination()->repository(),
+                                            changes_to_make_decision.resolvent().destination_type(),
+                                            replacing
+                                            ))));
+
+                        install_job_numbers.insert(std::make_pair(index, install_job_n));
+                    }
+                    return;
+
+                case nir_fetched:
+                    {
+                        JobNumber fetch_job_n(resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new FetchJob(
+                                            make_shared_ptr(new JobRequirements),
+                                            changes_to_make_decision.origin_id()->uniquely_identifying_spec()))));
+                        fetch_job_numbers.insert(std::make_pair(index.resolvent(), fetch_job_n));
+                    }
+                    return;
+
+                case last_nir:
+                    break;
+            }
+
+            throw InternalError(PALUDIS_HERE, "bad index.role");
         }
 
         void visit(const RemoveDecision & remove_decision) const
@@ -707,10 +762,26 @@ Orderer::_schedule(
         const std::tr1::shared_ptr<const ChangeOrRemoveDecision> & d,
         const std::tr1::shared_ptr<const OrdererNotes> & n)
 {
-    _imp->resolved->taken_change_or_remove_decisions()->push_back(d, n);
-    if (d->required_confirmations_if_any())
-        _imp->resolved->taken_unconfirmed_decisions()->push_back(d);
+    do
+    {
+        switch (index.role())
+        {
+            case nir_done:
+                _imp->resolved->taken_change_or_remove_decisions()->push_back(d, n);
+                if (d->required_confirmations_if_any())
+                    _imp->resolved->taken_unconfirmed_decisions()->push_back(d);
+                continue;
 
-    d->accept(ExtraScheduler(_imp->resolved, _imp->install_job_numbers, index));
+            case nir_fetched:
+                continue;
+
+            case last_nir:
+                break;
+        }
+
+        throw InternalError(PALUDIS_HERE, "bad index.role");
+    } while (false);
+
+    d->accept(ExtraScheduler(_imp->resolved, _imp->fetch_job_numbers, _imp->install_job_numbers, index));
 }
 

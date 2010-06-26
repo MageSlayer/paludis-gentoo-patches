@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_NAGIndexRole()
+{
+    prefix nir
+    namespace paludis::resolver
+
+    key nir_fetched        "Fetched"
+    key nir_done           "Done"
+
+    want_destringify
+}
+

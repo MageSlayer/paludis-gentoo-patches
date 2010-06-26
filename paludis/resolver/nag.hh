@@ -36,6 +36,7 @@ namespace paludis
         typedef Name<struct build_name> build;
         typedef Name<struct build_all_met_name> build_all_met;
         typedef Name<struct resolvent_name> resolvent;
+        typedef Name<struct role_name> role;
         typedef Name<struct run_name> run;
         typedef Name<struct run_all_met_name> run_all_met;
     }
@@ -45,6 +46,7 @@ namespace paludis
         struct NAGIndex
         {
             NamedValue<n::resolvent, Resolvent> resolvent;
+            NamedValue<n::role, NAGIndexRole> role;
 
             std::size_t hash() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

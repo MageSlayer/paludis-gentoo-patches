@@ -27,6 +27,9 @@ namespace paludis
 {
     namespace resolver
     {
+
+#include <paludis/resolver/nag-se.hh>
+
         struct NAG;
         struct NAGIndex;
         struct NAGEdgeProperties;

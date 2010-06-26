@@ -3,9 +3,10 @@ include $(top_srcdir)/misc/common-makefile.am
 DISTCLEANFILES = \
 	any_child_score-se.hh any_child_score-se.cc \
 	change_type-se.hh change_type-se.cc \
-	job_requirements-se.hh job_requirements-se.cc \
 	destination_types-se.hh destination_types-se.cc \
-	resolver_functions-se.hh resolver_functions-se.cc \
+	job_requirements-se.hh job_requirements-se.cc \
+	nag-se.hh nag-se.cc \
+	resolver_functions-se.hh resolver_functions-se.cc \ \
 	use_existing-se.hh use_existing-se.cc
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 EXTRA_DIST = \
@@ -13,6 +14,7 @@ EXTRA_DIST = \
 	change_type-se.hh change_type-se.cc change_type.se \
 	destination_types-se.hh destination_types-se.cc destination_types.se \
 	job_requirements-se.hh job_requirements-se.cc job_requirements.se \
+	nag-se.hh nag-se.cc nag.se \
 	resolver_functions-se.hh resolver_functions-se.cc resolver_functions.se \
 	use_existing-se.hh use_existing-se.cc use_existing.se \
 	$(check_SCRIPTS)
@@ -20,6 +22,7 @@ BUILT_SOURCES = \
 	any_child_score-se.hh any_child_score-se.cc \
 	change_type-se.hh change_type-se.cc \
 	destination_types-se.hh destination_types-se.cc \
+	nag-se.hh nag-se.cc \
 	job_requirements-se.hh job_requirements-se.cc \
 	resolver_functions-se.hh resolver_functions-se.cc \
 	use_existing-se.hh use_existing-se.cc
@@ -297,4 +300,10 @@ job_requirements-se.hh : job_requirements.se $(top_srcdir)/misc/make_se.bash
 
 job_requirements-se.cc : job_requirements.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/job_requirements.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+nag-se.hh : nag.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/nag.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+nag-se.cc : nag.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/nag.se > $@ ; then rm -f $@ ; exit 1 ; fi
 

@@ -41,6 +41,8 @@
 using namespace paludis;
 using namespace paludis::resolver;
 
+#include <paludis/resolver/nag-se.cc>
+
 typedef std::tr1::unordered_set<NAGIndex, Hash<NAGIndex> > Nodes;
 typedef std::tr1::unordered_map<NAGIndex, NAGEdgeProperties, Hash<NAGIndex> > NodesWithProperties;
 typedef std::tr1::unordered_map<NAGIndex, NodesWithProperties, Hash<NAGIndex> > Edges;
@@ -55,19 +57,23 @@ NAGIndex::hash() const
 bool
 paludis::resolver::operator< (const NAGIndex & a, const NAGIndex & b)
 {
-    return a.resolvent() < b.resolvent();
+    if (a.resolvent() < b.resolvent())
+        return true;
+    if (b.resolvent() < a.resolvent())
+        return false;
+    return a.role() < b.role();
 }
 
 bool
 paludis::resolver::operator== (const NAGIndex & a, const NAGIndex & b)
 {
-    return a.resolvent() == b.resolvent();
+    return a.resolvent() == b.resolvent() && a.role() == b.role();
 }
 
 std::ostream &
 paludis::resolver::operator<< (std::ostream & s, const NAGIndex & r)
 {
-    s << r.resolvent();
+    s << r.role() << " " << r.resolvent();
     return s;
 }
 
@@ -76,6 +82,7 @@ NAGIndex::serialise(Serialiser & s) const
 {
     s.object("NAGIndex")
         .member(SerialiserFlags<>(), "resolvent", resolvent())
+        .member(SerialiserFlags<>(), "role", stringify(role()))
         ;
 }
 
@@ -85,7 +92,8 @@ NAGIndex::deserialise(Deserialisation & d)
     Deserialisator v(d, "NAGIndex");
 
     return make_named_values<NAGIndex>(
-            n::resolvent() = v.member<Resolvent>("resolvent")
+            n::resolvent() = v.member<Resolvent>("resolvent"),
+            n::role() = destringify<NAGIndexRole>(v.member<std::string>("role"))
             );
 }
 
