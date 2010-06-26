@@ -267,9 +267,7 @@ ResolveCommandLineDisplayOptions::ResolveCommandLineDisplayOptions(args::ArgsHan
             "that it made"),
     a_explain(&g_explanations, "explain", 'X', "Explain why the resolver made a particular decision. The "
             "argument is a package dependency specification, so --explain dev-libs/boost or --explain qt:3"
-            " or even --explain '*/*' (although --dump is a better way of getting highly noisy debug output)."),
-    a_show_all_jobs(&g_explanations, "show-all-jobs", '\0', "Show all jobs that will be executed, rather than "
-            "just installs.", true)
+            " or even --explain '*/*' (although --dump is a better way of getting highly noisy debug output).")
 {
 }
 
