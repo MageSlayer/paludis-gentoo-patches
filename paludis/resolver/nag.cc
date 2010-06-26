@@ -222,29 +222,6 @@ namespace
 
         return node_data;
     }
-
-    void dfs(
-            const StronglyConnectedComponentsByRepresentative & sccs,
-            const NAGIndex & node,
-            const PlainEdges & edges,
-            Nodes & done,
-            std::tr1::shared_ptr<SortedStronglyConnectedComponents> & result)
-    {
-        if (done.end() != done.find(node))
-            return;
-
-        PlainEdges::const_iterator e(edges.find(node));
-        std::set<NAGIndex> consistently_ordered_edges;
-        if (e != edges.end())
-            std::copy(e->second.begin(), e->second.end(), std::inserter(consistently_ordered_edges, consistently_ordered_edges.begin()));
-
-        for (std::set<NAGIndex>::const_iterator n(consistently_ordered_edges.begin()), n_end(consistently_ordered_edges.end()) ;
-                n != n_end ; ++n)
-            dfs(sccs, *n, edges, done, result);
-
-        done.insert(node);
-        result->push_back(sccs.find(node)->second);
-    }
 }
 
 const std::tr1::shared_ptr<const SortedStronglyConnectedComponents>
@@ -275,7 +252,7 @@ NAG::sorted_strongly_connected_components() const
         throw InternalError(PALUDIS_HERE, "mismatch");
 
     /* build edges between SCCs */
-    PlainEdges scc_edges;
+    PlainEdges scc_edges, scc_edges_backwards;
     for (Edges::const_iterator e(_imp->edges.begin()), e_end(_imp->edges.end()) ;
             e != e_end ; ++e)
     {
@@ -285,21 +262,46 @@ NAG::sorted_strongly_connected_components() const
         {
             RepresentativeNodes::const_iterator to(representative_nodes.find(n->first));
             if (! (to->second == from->second))
+            {
                 scc_edges.insert(std::make_pair(from->second, Nodes())).first->second.insert(to->second);
+                scc_edges_backwards.insert(std::make_pair(to->second, Nodes())).first->second.insert(from->second);
+            }
         }
     }
 
     /* topological sort with consistent ordering (mostly to make test cases
      * easier). we know there're no cycles. */
     std::tr1::shared_ptr<SortedStronglyConnectedComponents> result(new SortedStronglyConnectedComponents);
+
     Nodes done;
-    std::set<NAGIndex> consistently_ordered_representative_nodes;
-    std::copy(first_iterator(sccs.begin()), first_iterator(sccs.end()),
-            std::inserter(consistently_ordered_representative_nodes, consistently_ordered_representative_nodes.begin()));
-    for (std::set<NAGIndex>::const_iterator n(consistently_ordered_representative_nodes.begin()),
-            n_end(consistently_ordered_representative_nodes.end()) ;
-            n != n_end ; ++n)
-        dfs(sccs, *n, scc_edges, done, result);
+    std::set<NAGIndex> orderable_now;
+    for (StronglyConnectedComponentsByRepresentative::const_iterator c(sccs.begin()), c_end(sccs.end()) ;
+            c != c_end ; ++c)
+        if (scc_edges.end() == scc_edges.find(c->first))
+            orderable_now.insert(c->first);
+
+    while (! orderable_now.empty())
+    {
+        std::set<NAGIndex>::iterator ordering_now(orderable_now.begin());
+        result->push_back(sccs.find(*ordering_now)->second);
+        done.insert(*ordering_now);
+
+        PlainEdges::iterator ordering_now_edges(scc_edges_backwards.find(*ordering_now));
+        if (ordering_now_edges != scc_edges_backwards.end())
+            for (Nodes::iterator e(ordering_now_edges->second.begin()), e_end(ordering_now_edges->second.end()) ;
+                    e != e_end ; )
+            {
+                PlainEdges::iterator reverse_edges(scc_edges.find(*e));
+                if (reverse_edges == scc_edges.end())
+                    throw InternalError(PALUDIS_HERE, "huh?");
+                reverse_edges->second.erase(*ordering_now);
+                if (reverse_edges->second.empty())
+                    orderable_now.insert(*e);
+                ordering_now_edges->second.erase(e++);
+            }
+
+        orderable_now.erase(ordering_now);
+    }
 
     if (done.size() != sccs.size())
         throw InternalError(PALUDIS_HERE, "mismatch");
