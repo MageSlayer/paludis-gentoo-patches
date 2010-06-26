@@ -50,8 +50,8 @@
 using namespace paludis;
 using namespace paludis::resolver;
 
-typedef std::tr1::unordered_map<Resolvent, std::tr1::shared_ptr<const ChangeOrRemoveDecision>, Hash<Resolvent> > ChangeOrRemoveResolvents;
-typedef std::tr1::unordered_map<Resolvent, JobNumber, Hash<Resolvent> > InstallJobNumbers;
+typedef std::tr1::unordered_map<NAGIndex, std::tr1::shared_ptr<const ChangeOrRemoveDecision>, Hash<NAGIndex> > ChangeOrRemoveIndices;
+typedef std::tr1::unordered_map<NAGIndex, JobNumber, Hash<NAGIndex> > InstallJobNumbers;
 
 namespace paludis
 {
@@ -60,7 +60,7 @@ namespace paludis
     {
         const Environment * const env;
         const std::tr1::shared_ptr<Resolved> resolved;
-        ChangeOrRemoveResolvents change_or_remove_resolvents;
+        ChangeOrRemoveIndices change_or_remove_indices;
         InstallJobNumbers install_job_numbers;
 
         Implementation(
@@ -92,19 +92,19 @@ namespace
     {
         const std::tr1::shared_ptr<Resolved> resolved;
         ResolventsSet & ignore_dependencies_from_resolvents;
-        ChangeOrRemoveResolvents & change_or_remove_resolvents;
+        ChangeOrRemoveIndices & change_or_remove_indices;
         const Resolvent resolvent;
         const std::tr1::shared_ptr<const Decision> decision;
 
         DecisionDispatcher(
                 const std::tr1::shared_ptr<Resolved> & r,
                 ResolventsSet & i,
-                ChangeOrRemoveResolvents & c,
+                ChangeOrRemoveIndices & c,
                 const Resolvent & v,
                 const std::tr1::shared_ptr<const Decision> & d) :
             resolved(r),
             ignore_dependencies_from_resolvents(i),
-            change_or_remove_resolvents(c),
+            change_or_remove_indices(c),
             resolvent(v),
             decision(d)
         {
@@ -126,13 +126,17 @@ namespace
 
         bool visit(const NothingNoChangeDecision &)
         {
-            resolved->nag()->add_node(resolvent);
+            resolved->nag()->add_node(make_named_values<NAGIndex>(
+                        n::resolvent() = resolvent
+                        ));
             return true;
         }
 
         bool visit(const ExistingNoChangeDecision &)
         {
-            resolved->nag()->add_node(resolvent);
+            resolved->nag()->add_node(make_named_values<NAGIndex>(
+                        n::resolvent() = resolvent
+                        ));
             return true;
         }
 
@@ -140,8 +144,11 @@ namespace
         {
             if (decision->taken())
             {
-                resolved->nag()->add_node(resolvent);
-                change_or_remove_resolvents.insert(std::make_pair(resolvent,
+                NAGIndex index(make_named_values<NAGIndex>(
+                            n::resolvent() = resolvent
+                            ));
+                resolved->nag()->add_node(index);
+                change_or_remove_indices.insert(std::make_pair(index,
                             std::tr1::static_pointer_cast<const ChangeOrRemoveDecision>(decision)));
                 return true;
             }
@@ -157,8 +164,11 @@ namespace
         {
             if (decision->taken())
             {
-                resolved->nag()->add_node(resolvent);
-                change_or_remove_resolvents.insert(std::make_pair(resolvent,
+                NAGIndex index(make_named_values<NAGIndex>(
+                            n::resolvent() = resolvent
+                            ));
+                resolved->nag()->add_node(index);
+                change_or_remove_indices.insert(std::make_pair(index,
                             std::tr1::static_pointer_cast<const ChangeOrRemoveDecision>(decision)));
                 return true;
             }
@@ -276,7 +286,14 @@ namespace
                         arrow = false;
 
                 if (arrow)
-                    nag->add_edge(r.from_resolvent(), resolvent, make_named_values<NAGEdgeProperties>(
+                    nag->add_edge(
+                            make_named_values<NAGIndex>(
+                                n::resolvent() = r.from_resolvent()
+                                ),
+                            make_named_values<NAGIndex>(
+                                n::resolvent() = resolvent
+                                ),
+                            make_named_values<NAGEdgeProperties>(
                                 n::build() = classifier.build,
                                 n::build_all_met() = r.already_met() || ! classifier.build,
                                 n::run() = classifier.run,
@@ -317,10 +334,10 @@ namespace
     };
 
     bool no_build_dependencies(
-            const Set<Resolvent> & resolvents,
+            const Set<NAGIndex> & indices,
             const NAG & nag)
     {
-        for (Set<Resolvent>::ConstIterator r(resolvents.begin()), r_end(resolvents.end()) ;
+        for (Set<NAGIndex>::ConstIterator r(indices.begin()), r_end(indices.end()) ;
                 r != r_end ; ++r)
             for (NAG::EdgesFromConstIterator e(nag.begin_edges_from(*r)), e_end(nag.end_edges_from(*r)) ;
                     e != e_end ; ++e)
@@ -346,7 +363,7 @@ Orderer::resolve()
         DecisionDispatcher decision_dispatcher(
                 _imp->resolved,
                 ignore_dependencies_from_resolvents,
-                _imp->change_or_remove_resolvents,
+                _imp->change_or_remove_indices,
                 (*r)->resolvent(),
                 (*r)->decision());
         if (! (*r)->decision()->accept_returning<bool>(decision_dispatcher))
@@ -386,12 +403,12 @@ Orderer::resolve()
          * nodes. this matters for cycle resolution. we identify them now, even
          * though our scc might just contain a single install, rather than
          * adding in extra useless code for the special easy case. */
-        typedef std::tr1::unordered_set<Resolvent, Hash<Resolvent> > ChangesInSCC;
+        typedef std::tr1::unordered_set<NAGIndex, Hash<NAGIndex> > ChangesInSCC;
         ChangesInSCC changes_in_scc;
 
-        for (Set<Resolvent>::ConstIterator r(scc->nodes()->begin()), r_end(scc->nodes()->end()) ;
+        for (Set<NAGIndex>::ConstIterator r(scc->nodes()->begin()), r_end(scc->nodes()->end()) ;
                 r != r_end ; ++r)
-            if (_imp->change_or_remove_resolvents.end() != _imp->change_or_remove_resolvents.find(*r))
+            if (_imp->change_or_remove_indices.end() != _imp->change_or_remove_indices.find(*r))
                 changes_in_scc.insert(*r);
 
         if (changes_in_scc.empty())
@@ -404,7 +421,7 @@ Orderer::resolve()
             /* there's only one real package in the component, so there's no
              * need to try anything clever */
             _check_self_deps_and_schedule(*changes_in_scc.begin(),
-                    _imp->change_or_remove_resolvents.find(*changes_in_scc.begin())->second,
+                    _imp->change_or_remove_indices.find(*changes_in_scc.begin())->second,
                     make_shared_copy(make_named_values<OrdererNotes>(
                             n::cycle_breaking() = ""
                             )));
@@ -437,9 +454,9 @@ Orderer::resolve()
 
 namespace
 {
-    std::string nice_resolvent(const Resolvent & r)
+    std::string nice_index(const NAGIndex & x)
     {
-        return stringify(r.package()) + stringify(r.slot());
+        return stringify(x.resolvent().package()) + stringify(x.resolvent().slot());
     }
 }
 
@@ -459,11 +476,11 @@ Orderer::_order_sub_ssccs(
         {
             /* yay. it's all on its own. */
             _check_self_deps_and_schedule(*sub_scc->nodes()->begin(),
-                    _imp->change_or_remove_resolvents.find(*sub_scc->nodes()->begin())->second,
+                    _imp->change_or_remove_indices.find(*sub_scc->nodes()->begin())->second,
                     make_shared_copy(make_named_values<OrdererNotes>(
                             n::cycle_breaking() = (can_recurse ?
-                                "In dependency cycle with existing packages: " + join(scc_nag.begin_nodes(), scc_nag.end_nodes(), ", ", nice_resolvent) :
-                                "In dependency cycle with: " + join(top_scc.nodes()->begin(), top_scc.nodes()->end(), ", ", nice_resolvent))
+                                "In dependency cycle with existing packages: " + join(scc_nag.begin_nodes(), scc_nag.end_nodes(), ", ", nice_index) :
+                                "In dependency cycle with: " + join(top_scc.nodes()->begin(), top_scc.nodes()->end(), ", ", nice_index))
                             )));
         }
         else if (no_build_dependencies(*sub_scc->nodes(), scc_nag))
@@ -471,14 +488,14 @@ Orderer::_order_sub_ssccs(
             /* what's that, timmy? we have directly codependent nodes?
              * well i'm jolly glad that's because they're run
              * dependency cycles which we can order however we like! */
-            for (Set<Resolvent>::ConstIterator r(sub_scc->nodes()->begin()), r_end(sub_scc->nodes()->end()) ;
+            for (Set<NAGIndex>::ConstIterator r(sub_scc->nodes()->begin()), r_end(sub_scc->nodes()->end()) ;
                     r != r_end ; ++r)
                 _check_self_deps_and_schedule(*r,
-                        _imp->change_or_remove_resolvents.find(*r)->second,
+                        _imp->change_or_remove_indices.find(*r)->second,
                         make_shared_copy(make_named_values<OrdererNotes>(
                                 n::cycle_breaking() = "In run dependency cycle with: " + join(
-                                    sub_scc->nodes()->begin(), sub_scc->nodes()->end(), ", ", nice_resolvent) + (can_recurse ?
-                                    " in dependency cycle with " + join(top_scc.nodes()->begin(), top_scc.nodes()->end(), ", ", nice_resolvent) : "")
+                                    sub_scc->nodes()->begin(), sub_scc->nodes()->end(), ", ", nice_index) + (can_recurse ?
+                                    " in dependency cycle with " + join(top_scc.nodes()->begin(), top_scc.nodes()->end(), ", ", nice_index) : "")
                                 )));
         }
         else if (can_recurse)
@@ -487,7 +504,7 @@ Orderer::_order_sub_ssccs(
              * this whole mess again, except without any edges for
              * dependencies that're already met */
             NAG scc_nag_without_met_deps;
-            for (Set<Resolvent>::ConstIterator r(sub_scc->nodes()->begin()), r_end(sub_scc->nodes()->end()) ;
+            for (Set<NAGIndex>::ConstIterator r(sub_scc->nodes()->begin()), r_end(sub_scc->nodes()->end()) ;
                     r != r_end ; ++r)
             {
                 scc_nag_without_met_deps.add_node(*r);
@@ -510,32 +527,32 @@ Orderer::_order_sub_ssccs(
         }
         else
         {
-            for (Set<Resolvent>::ConstIterator r(sub_scc->nodes()->begin()), r_end(sub_scc->nodes()->end()) ;
+            for (Set<NAGIndex>::ConstIterator r(sub_scc->nodes()->begin()), r_end(sub_scc->nodes()->end()) ;
                     r != r_end ; ++r)
                 _imp->resolved->taken_unorderable_decisions()->push_back(
-                        _imp->change_or_remove_resolvents.find(*r)->second,
+                        _imp->change_or_remove_indices.find(*r)->second,
                         make_shared_copy(make_named_values<OrdererNotes>(
                                 n::cycle_breaking() = "In unsolvable cycle with " + join(
-                                    top_scc.nodes()->begin(), top_scc.nodes()->end(), ", ", nice_resolvent))));
+                                    top_scc.nodes()->begin(), top_scc.nodes()->end(), ", ", nice_index))));
         }
     }
 }
 
 namespace
 {
-    typedef std::tr1::unordered_set<Resolvent, Hash<Resolvent> > RecursedRequirements;
+    typedef std::tr1::unordered_set<NAGIndex, Hash<NAGIndex> > RecursedRequirements;
 
     void populate_requirements(
             const std::tr1::shared_ptr<const NAG> & nag,
             const InstallJobNumbers & install_job_numbers,
-            const Resolvent & resolvent,
+            const NAGIndex & index,
             const std::tr1::shared_ptr<JobRequirements> & requirements,
             const bool recursing,
             RecursedRequirements & recursed)
     {
         if (! recursing)
-            for (NAG::EdgesFromConstIterator e(nag->begin_edges_from(resolvent)),
-                    e_end(nag->end_edges_from(resolvent)) ;
+            for (NAG::EdgesFromConstIterator e(nag->begin_edges_from(index)),
+                    e_end(nag->end_edges_from(index)) ;
                     e != e_end ; ++e)
             {
                 if ((! e->second.build_all_met()) || (! e->second.run_all_met()))
@@ -549,9 +566,9 @@ namespace
                 }
             }
 
-        if (recursed.insert(resolvent).second)
-            for (NAG::EdgesFromConstIterator e(nag->begin_edges_from(resolvent)),
-                    e_end(nag->end_edges_from(resolvent)) ;
+        if (recursed.insert(index).second)
+            for (NAG::EdgesFromConstIterator e(nag->begin_edges_from(index)),
+                    e_end(nag->end_edges_from(index)) ;
                     e != e_end ; ++e)
             {
                 InstallJobNumbers::const_iterator n(install_job_numbers.find(e->first));
@@ -567,17 +584,17 @@ namespace
 
 void
 Orderer::_check_self_deps_and_schedule(
-        const Resolvent & resolvent,
+        const NAGIndex & index,
         const std::tr1::shared_ptr<const ChangeOrRemoveDecision> & d,
         const std::tr1::shared_ptr<OrdererNotes> & n)
 {
     /* do we dep directly upon ourself? */
     bool direct_self_dep(false), self_dep_is_met(true), self_dep_is_not_build(true);
-    for (NAG::EdgesFromConstIterator e(_imp->resolved->nag()->begin_edges_from(resolvent)),
-            e_end(_imp->resolved->nag()->end_edges_from(resolvent)) ;
+    for (NAG::EdgesFromConstIterator e(_imp->resolved->nag()->begin_edges_from(index)),
+            e_end(_imp->resolved->nag()->end_edges_from(index)) ;
             e != e_end ; ++e)
     {
-        if (e->first == resolvent)
+        if (e->first == index)
         {
             direct_self_dep = true;
             self_dep_is_met = self_dep_is_met && e->second.build_all_met() && e->second.run_all_met();
@@ -601,11 +618,11 @@ Orderer::_check_self_deps_and_schedule(
     if (direct_self_dep && ! self_dep_is_met && ! self_dep_is_not_build)
     {
         _imp->resolved->taken_unorderable_decisions()->push_back(
-                _imp->change_or_remove_resolvents.find(resolvent)->second,
+                _imp->change_or_remove_indices.find(index)->second,
                 n);
     }
     else
-        _schedule(resolvent, d, n);
+        _schedule(index, d, n);
 }
 
 namespace
@@ -614,15 +631,15 @@ namespace
     {
         const std::tr1::shared_ptr<const Resolved> resolved;
         InstallJobNumbers & install_job_numbers;
-        const Resolvent resolvent;
+        const NAGIndex index;
 
         ExtraScheduler(
                 const std::tr1::shared_ptr<const Resolved> & r,
                 InstallJobNumbers & i,
-                const Resolvent & v) :
+                const NAGIndex & v) :
             resolved(r),
             install_job_numbers(i),
-            resolvent(v)
+            index(v)
         {
         }
 
@@ -645,7 +662,7 @@ namespace
             populate_requirements(
                     resolved->nag(),
                     install_job_numbers,
-                    resolvent,
+                    index,
                     requirements,
                     false,
                     recursed
@@ -665,7 +682,7 @@ namespace
                                 replacing
                                 ))));
 
-            install_job_numbers.insert(std::make_pair(resolvent, install_job_n));
+            install_job_numbers.insert(std::make_pair(index, install_job_n));
         }
 
         void visit(const RemoveDecision & remove_decision) const
@@ -686,7 +703,7 @@ namespace
 
 void
 Orderer::_schedule(
-        const Resolvent & resolvent,
+        const NAGIndex & index,
         const std::tr1::shared_ptr<const ChangeOrRemoveDecision> & d,
         const std::tr1::shared_ptr<const OrdererNotes> & n)
 {
@@ -694,6 +711,6 @@ Orderer::_schedule(
     if (d->required_confirmations_if_any())
         _imp->resolved->taken_unconfirmed_decisions()->push_back(d);
 
-    d->accept(ExtraScheduler(_imp->resolved, _imp->install_job_numbers, resolvent));
+    d->accept(ExtraScheduler(_imp->resolved, _imp->install_job_numbers, index));
 }
 

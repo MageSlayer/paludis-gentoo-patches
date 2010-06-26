@@ -20,12 +20,21 @@
 #ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_NAG_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_NAG_FWD_HH 1
 
+#include <paludis/util/attributes.hh>
+#include <iosfwd>
+
 namespace paludis
 {
     namespace resolver
     {
         struct NAG;
+        struct NAGIndex;
         struct NAGEdgeProperties;
+
+        bool operator< (const NAGIndex &, const NAGIndex &) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
+        bool operator== (const NAGIndex &, const NAGIndex &) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
+
+        std::ostream & operator<< (std::ostream &, const NAGIndex &) PALUDIS_VISIBLE;
     }
 }
 

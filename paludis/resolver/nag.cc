@@ -26,9 +26,10 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/set-impl.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/serialise-impl.hh>
 #include <tr1/unordered_set>
@@ -40,10 +41,53 @@
 using namespace paludis;
 using namespace paludis::resolver;
 
-typedef std::tr1::unordered_set<Resolvent, Hash<Resolvent> > Nodes;
-typedef std::tr1::unordered_map<Resolvent, NAGEdgeProperties, Hash<Resolvent> > NodesWithProperties;
-typedef std::tr1::unordered_map<Resolvent, NodesWithProperties, Hash<Resolvent> > Edges;
-typedef std::tr1::unordered_map<Resolvent, Nodes, Hash<Resolvent> > PlainEdges;
+typedef std::tr1::unordered_set<NAGIndex, Hash<NAGIndex> > Nodes;
+typedef std::tr1::unordered_map<NAGIndex, NAGEdgeProperties, Hash<NAGIndex> > NodesWithProperties;
+typedef std::tr1::unordered_map<NAGIndex, NodesWithProperties, Hash<NAGIndex> > Edges;
+typedef std::tr1::unordered_map<NAGIndex, Nodes, Hash<NAGIndex> > PlainEdges;
+
+std::size_t
+NAGIndex::hash() const
+{
+    return resolvent().hash();
+}
+
+bool
+paludis::resolver::operator< (const NAGIndex & a, const NAGIndex & b)
+{
+    return a.resolvent() < b.resolvent();
+}
+
+bool
+paludis::resolver::operator== (const NAGIndex & a, const NAGIndex & b)
+{
+    return a.resolvent() == b.resolvent();
+}
+
+std::ostream &
+paludis::resolver::operator<< (std::ostream & s, const NAGIndex & r)
+{
+    s << r.resolvent();
+    return s;
+}
+
+void
+NAGIndex::serialise(Serialiser & s) const
+{
+    s.object("NAGIndex")
+        .member(SerialiserFlags<>(), "resolvent", resolvent())
+        ;
+}
+
+const NAGIndex
+NAGIndex::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "NAGIndex");
+
+    return make_named_values<NAGIndex>(
+            n::resolvent() = v.member<Resolvent>("resolvent")
+            );
+}
 
 namespace paludis
 {
@@ -84,13 +128,13 @@ NAG::~NAG()
 }
 
 void
-NAG::add_node(const Resolvent & r)
+NAG::add_node(const NAGIndex & r)
 {
     _imp->nodes.insert(r);
 }
 
 void
-NAG::add_edge(const Resolvent & a, const Resolvent & b, const NAGEdgeProperties & p)
+NAG::add_edge(const NAGIndex & a, const NAGIndex & b, const NAGEdgeProperties & p)
 {
     _imp->edges.insert(std::make_pair(a, NodesWithProperties())).first->second.insert(std::make_pair(b, p)).first->second |= p;
 }
@@ -119,12 +163,12 @@ namespace
         NamedValue<n::lowlink, int> lowlink;
     };
 
-    typedef std::tr1::unordered_map<Resolvent, TarjanData, Hash<Resolvent> > TarjanDataMap;
-    typedef std::list<Resolvent> TarjanStack;
-    typedef std::tr1::unordered_map<Resolvent, StronglyConnectedComponent, Hash<Resolvent> > StronglyConnectedComponentsByRepresentative;
-    typedef std::tr1::unordered_map<Resolvent, Resolvent, Hash<Resolvent> > RepresentativeNodes;
+    typedef std::tr1::unordered_map<NAGIndex, TarjanData, Hash<NAGIndex> > TarjanDataMap;
+    typedef std::list<NAGIndex> TarjanStack;
+    typedef std::tr1::unordered_map<NAGIndex, StronglyConnectedComponent, Hash<NAGIndex> > StronglyConnectedComponentsByRepresentative;
+    typedef std::tr1::unordered_map<NAGIndex, NAGIndex, Hash<NAGIndex> > RepresentativeNodes;
 
-    TarjanDataMap::iterator tarjan(const Resolvent & node, const Edges & edges, TarjanDataMap & data, TarjanStack & stack, int & index,
+    TarjanDataMap::iterator tarjan(const NAGIndex & node, const Edges & edges, TarjanDataMap & data, TarjanStack & stack, int & index,
             StronglyConnectedComponentsByRepresentative & result)
     {
         TarjanDataMap::iterator node_data(data.insert(std::make_pair(node, make_named_values<TarjanData>(
@@ -156,8 +200,8 @@ namespace
         if (node_data->second.index() == node_data->second.lowlink())
         {
             StronglyConnectedComponent scc(make_named_values<StronglyConnectedComponent>(
-                        n::nodes() = make_shared_ptr(new Set<Resolvent>),
-                        n::requirements() = make_shared_ptr(new Set<Resolvent>)
+                        n::nodes() = make_shared_ptr(new Set<NAGIndex>),
+                        n::requirements() = make_shared_ptr(new Set<NAGIndex>)
                         ));
 
             std::copy(stack.begin(), top_of_stack_before_node, scc.nodes()->inserter());
@@ -173,7 +217,7 @@ namespace
 
     void dfs(
             const StronglyConnectedComponentsByRepresentative & sccs,
-            const Resolvent & node,
+            const NAGIndex & node,
             const PlainEdges & edges,
             Nodes & done,
             std::tr1::shared_ptr<SortedStronglyConnectedComponents> & result)
@@ -182,11 +226,11 @@ namespace
             return;
 
         PlainEdges::const_iterator e(edges.find(node));
-        std::set<Resolvent> consistently_ordered_edges;
+        std::set<NAGIndex> consistently_ordered_edges;
         if (e != edges.end())
             std::copy(e->second.begin(), e->second.end(), std::inserter(consistently_ordered_edges, consistently_ordered_edges.begin()));
 
-        for (std::set<Resolvent>::const_iterator n(consistently_ordered_edges.begin()), n_end(consistently_ordered_edges.end()) ;
+        for (std::set<NAGIndex>::const_iterator n(consistently_ordered_edges.begin()), n_end(consistently_ordered_edges.end()) ;
                 n != n_end ; ++n)
             dfs(sccs, *n, edges, done, result);
 
@@ -213,7 +257,7 @@ NAG::sorted_strongly_connected_components() const
     RepresentativeNodes representative_nodes;
     for (StronglyConnectedComponentsByRepresentative::const_iterator s(sccs.begin()), s_end(sccs.end()) ;
             s != s_end ; ++s)
-        for (Set<Resolvent>::ConstIterator r(s->second.nodes()->begin()), r_end(s->second.nodes()->end()) ;
+        for (Set<NAGIndex>::ConstIterator r(s->second.nodes()->begin()), r_end(s->second.nodes()->end()) ;
                 r != r_end ; ++r)
             if (! representative_nodes.insert(std::make_pair(*r, s->first)).second)
                 throw InternalError(PALUDIS_HERE, "node in multiple sccs");
@@ -241,10 +285,10 @@ NAG::sorted_strongly_connected_components() const
      * easier). we know there're no cycles. */
     std::tr1::shared_ptr<SortedStronglyConnectedComponents> result(new SortedStronglyConnectedComponents);
     Nodes done;
-    std::set<Resolvent> consistently_ordered_representative_nodes;
+    std::set<NAGIndex> consistently_ordered_representative_nodes;
     std::copy(first_iterator(sccs.begin()), first_iterator(sccs.end()),
             std::inserter(consistently_ordered_representative_nodes, consistently_ordered_representative_nodes.begin()));
-    for (std::set<Resolvent>::const_iterator n(consistently_ordered_representative_nodes.begin()),
+    for (std::set<NAGIndex>::const_iterator n(consistently_ordered_representative_nodes.begin()),
             n_end(consistently_ordered_representative_nodes.end()) ;
             n != n_end ; ++n)
         dfs(sccs, *n, scc_edges, done, result);
@@ -256,7 +300,7 @@ NAG::sorted_strongly_connected_components() const
 }
 
 NAG::EdgesFromConstIterator
-NAG::begin_edges_from(const Resolvent & r) const
+NAG::begin_edges_from(const NAGIndex & r) const
 {
     Edges::const_iterator e(_imp->edges.find(r));
     if (e == _imp->edges.end())
@@ -266,7 +310,7 @@ NAG::begin_edges_from(const Resolvent & r) const
 }
 
 NAG::EdgesFromConstIterator
-NAG::end_edges_from(const Resolvent & r) const
+NAG::end_edges_from(const NAGIndex & r) const
 {
     Edges::const_iterator e(_imp->edges.find(r));
     if (e == _imp->edges.end())
@@ -319,13 +363,13 @@ NAG::deserialise(Deserialisation & d)
     {
         Deserialisator vv(*v.find_remove_member("nodes"), "c");
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
-            result->add_node(vv.member<Resolvent>(stringify(n)));
+            result->add_node(vv.member<NAGIndex>(stringify(n)));
     }
 
     for (int n(1), n_end(v.member<int>("edge.count") + 1) ; n != n_end ; ++n)
         result->add_edge(
-                v.member<Resolvent>("edge." + stringify(n) + ".f"),
-                v.member<Resolvent>("edge." + stringify(n) + ".t"),
+                v.member<NAGIndex>("edge." + stringify(n) + ".f"),
+                v.member<NAGIndex>("edge." + stringify(n) + ".t"),
                 v.member<NAGEdgeProperties>("edge." + stringify(n) + ".p")
                 );
 
@@ -365,6 +409,10 @@ NAGEdgeProperties::deserialise(Deserialisation & d)
             );
 }
 
-template class WrappedForwardIterator<NAG::EdgesFromConstIteratorTag, const std::pair<const Resolvent, NAGEdgeProperties> >;
-template class WrappedForwardIterator<NAG::NodesConstIteratorTag, const Resolvent>;
+template class WrappedForwardIterator<NAG::EdgesFromConstIteratorTag, const std::pair<const NAGIndex, NAGEdgeProperties> >;
+template class WrappedForwardIterator<NAG::NodesConstIteratorTag, const NAGIndex>;
+
+template class Set<NAGIndex>;
+template class WrappedForwardIterator<Set<NAGIndex>::ConstIteratorTag, const NAGIndex>;
+template class WrappedOutputIterator<Set<NAGIndex>::InserterTag, NAGIndex>;
 

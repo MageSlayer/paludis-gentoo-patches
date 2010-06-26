@@ -22,6 +22,7 @@
 
 #include <paludis/resolver/strongly_connected_component-fwd.hh>
 #include <paludis/resolver/resolvent-fwd.hh>
+#include <paludis/resolver/nag-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
@@ -41,15 +42,15 @@ namespace paludis
     {
         struct StronglyConnectedComponent
         {
-            NamedValue<n::nodes, std::tr1::shared_ptr<Set<Resolvent> > > nodes;
-            NamedValue<n::requirements, std::tr1::shared_ptr<Set<Resolvent> > > requirements;
+            NamedValue<n::nodes, std::tr1::shared_ptr<Set<NAGIndex> > > nodes;
+            NamedValue<n::requirements, std::tr1::shared_ptr<Set<NAGIndex> > > requirements;
         };
     }
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
-    extern template class Set<resolver::Resolvent>;
-    extern template class WrappedForwardIterator<Set<resolver::Resolvent>::ConstIteratorTag, const resolver::Resolvent>;
-    extern template class WrappedOutputIterator<Set<resolver::Resolvent>::InserterTag, resolver::Resolvent>;
+    extern template class Set<resolver::NAGIndex>;
+    extern template class WrappedForwardIterator<Set<resolver::NAGIndex>::ConstIteratorTag, const resolver::NAGIndex>;
+    extern template class WrappedOutputIterator<Set<resolver::NAGIndex>::InserterTag, resolver::NAGIndex>;
 
     extern template class Sequence<resolver::StronglyConnectedComponent>;
     extern template class WrappedForwardIterator<Sequence<resolver::StronglyConnectedComponent>::ConstIteratorTag, const resolver::StronglyConnectedComponent>;

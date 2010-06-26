@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_NAG_HH 1
 
 #include <paludis/resolver/nag-fwd.hh>
-#include <paludis/resolver/resolvent-fwd.hh>
+#include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/strongly_connected_component-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -35,12 +35,23 @@ namespace paludis
     {
         typedef Name<struct build_name> build;
         typedef Name<struct build_all_met_name> build_all_met;
+        typedef Name<struct resolvent_name> resolvent;
         typedef Name<struct run_name> run;
         typedef Name<struct run_all_met_name> run_all_met;
     }
 
     namespace resolver
     {
+        struct NAGIndex
+        {
+            NamedValue<n::resolvent, Resolvent> resolvent;
+
+            std::size_t hash() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            void serialise(Serialiser &) const;
+            static const NAGIndex deserialise(Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+
         struct NAGEdgeProperties
         {
             NamedValue<n::build, bool> build;
@@ -61,8 +72,8 @@ namespace paludis
                 NAG();
                 ~NAG();
 
-                void add_node(const Resolvent &);
-                void add_edge(const Resolvent &, const Resolvent &, const NAGEdgeProperties &);
+                void add_node(const NAGIndex &);
+                void add_edge(const NAGIndex &, const NAGIndex &, const NAGEdgeProperties &);
 
                 void verify_edges() const;
 
@@ -70,12 +81,12 @@ namespace paludis
                     sorted_strongly_connected_components() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 struct EdgesFromConstIteratorTag;
-                typedef WrappedForwardIterator<EdgesFromConstIteratorTag, const std::pair<const Resolvent, NAGEdgeProperties> > EdgesFromConstIterator;
-                EdgesFromConstIterator begin_edges_from(const Resolvent &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-                EdgesFromConstIterator end_edges_from(const Resolvent &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                typedef WrappedForwardIterator<EdgesFromConstIteratorTag, const std::pair<const NAGIndex, NAGEdgeProperties> > EdgesFromConstIterator;
+                EdgesFromConstIterator begin_edges_from(const NAGIndex &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                EdgesFromConstIterator end_edges_from(const NAGIndex &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 struct NodesConstIteratorTag;
-                typedef WrappedForwardIterator<NodesConstIteratorTag, const Resolvent> NodesConstIterator;
+                typedef WrappedForwardIterator<NodesConstIteratorTag, const NAGIndex> NodesConstIterator;
                 NodesConstIterator begin_nodes() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 NodesConstIterator end_nodes() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -86,8 +97,8 @@ namespace paludis
 
 #ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class WrappedForwardIterator<resolver::NAG::EdgesFromConstIteratorTag,
-           const std::pair<const resolver::Resolvent, resolver::NAGEdgeProperties> >;
-    extern template class WrappedForwardIterator<resolver::NAG::NodesConstIteratorTag, const resolver::Resolvent>;
+           const std::pair<const resolver::NAGIndex, resolver::NAGEdgeProperties> >;
+    extern template class WrappedForwardIterator<resolver::NAG::NodesConstIteratorTag, const resolver::NAGIndex>;
 #endif
 }
 
