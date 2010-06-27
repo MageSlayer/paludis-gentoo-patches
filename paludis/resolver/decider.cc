@@ -1651,7 +1651,7 @@ Decider::_get_unmatching_constraints(
                         last_ct,
                         ! (*c)->untaken(),
                         make_null_shared_ptr(),
-                        std::tr1::bind(&Decider::_fixup_changes_to_make_decision, this, resolution, std::tr1::placeholders::_1)
+                        std::tr1::function<void (const ChangesToMakeDecision &)>()
                         ));
         if (! _check_constraint(*c, decision))
             result->add(*c);
