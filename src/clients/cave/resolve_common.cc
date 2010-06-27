@@ -279,10 +279,13 @@ namespace
 
         DestinationTypes visit(const TargetReason &) const
         {
-            if (resolution_options.a_create_binaries_for_targets.specified())
+            if (resolution_options.a_make.argument() == "binaries")
                 return DestinationTypes() + dt_create_binary;
-            else
+            else if (resolution_options.a_make.argument() == "install")
                 return DestinationTypes() + dt_install_to_slash;
+            else
+                throw args::DoHelp("Don't understand argument '" + resolution_options.a_make.argument() + "' to '--"
+                        + resolution_options.a_make.long_name() + "'");
         }
 
         DestinationTypes visit(const DependentReason &) const

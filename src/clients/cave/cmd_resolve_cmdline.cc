@@ -219,16 +219,27 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             "does not satisfy other constraints. Also note that specifying a preset will not force a package to be "
             "considered if it would otherwise not be part of the resolution set."),
 
-    g_destination_options(this, "Destination Options", "Control to which destinations packages are installed. "
-            "If no options from this group are selected, install only to /. Otherwise, install to all of the "
-            "specified destinations, and install to / as necessary to satisfy build dependencies."),
-//    a_fetch(&g_destination_options, "fetch", 'f', "Only fetch packages, do not install anything", true),
-    a_create_binaries_for_targets(&g_destination_options, "create-binaries-for-targets", 'b',
-            "Rather than installing targets to /, instead create binary packages for targets, and install packages "
-            "to / as necessary for dependencies.", true),
-//    a_install_via_binary(&g_destination_options, "install-via-binary", 'B',
-//            "If installing a package to / that matches the supplied spec, create a binary package and install that. May "
-//            "be specified multiple times."),
+    g_destination_options(this, "Destination Options", "Control to which destinations targets are installed. Dependencies "
+            "will always be installed to / as necessary."),
+    a_make(&g_destination_options, "make", 'm', "Specify what to do with targets.",
+            args::EnumArg::EnumArgOptions
+            ("install",               'i', "Install targets to /")
+            ("binaries",              'b', "Create binary packages for targets"),
+            "install"),
+//    a_make_dependencies(&g_destination_options, "make-dependencies", 'M', "Specify what to do with dependencies of "
+//            "targets. Only useful when '--make' is not set to 'install', since dependencies on / are considered "
+//            "specially.",
+//            args::EnumArg::EnumArgOptions
+//            ("auto",                  '\0', "Select appropriate behaviour based upon --make. For 'install', 'all', and "
+//                                            "for 'binaries', 'runtime'.")
+//            ("runtime",               'r',  "Only care about runtime dependencies")
+//            ("all",                   'a',  "Care about all dependencies")
+//            ("none",                  'n',  "Don't care about dependencies at all"),
+//            "auto"),
+//    a_via_binary(&g_destination_options, "via-binary", 'b', "When building a package matching the supplied spec, "
+//            "create a binary package and use that for the install. May be specified multiple times. If this option "
+//            "is not specified, a package will be built multiple times for multiple destinations"),
+
 
 //    g_query_options(this, "Query Options", "Query the user interactively when making decisions. "
 //            "If only --query is specified, prompt for everything. Otherwise, prompt only for the specified decisions."),

@@ -91,8 +91,12 @@ namespace paludis
             args::StringSetArg a_preset;
 
             args::ArgsGroup g_destination_options;
+            args::EnumArg a_make;
+//            args::EnumArg a_make_dependencies;
+//            args::StringSetArg a_via_binary;
+
 //            args::SwitchArg a_fetch;
-            args::SwitchArg a_create_binaries_for_targets;
+//            args::SwitchArg a_create_binaries_for_targets;
 //            args::StringSetArg a_install_via_binary;
 //            args::StringSetArg a_no_binaries_for;
 
