@@ -143,7 +143,7 @@ ERepositorySets::sets_list() const
     result->insert(SetName("security"));
     result->insert(SetName("system"));
 
-    try
+    if (_imp->params.setsdir().exists())
     {
         using namespace std::tr1::placeholders;
 
@@ -167,9 +167,6 @@ ERepositorySets::sets_list() const
                 Log::get_instance()->message("e.sets.failure", ll_warning, lc_context) << "Skipping set '"
                     << *f << "' due to exception '" << e.message() << "' (" << e.what() << ")";
             }
-    }
-    catch (const paludis::DirOpenError &)
-    {
     }
 
     return result;
