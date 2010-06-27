@@ -140,7 +140,6 @@ namespace paludis
 
             args::ArgsGroup g_explanations;
             args::StringSetArg a_explain;
-            args::SwitchArg a_show_all_jobs;
         };
 
         struct ResolveCommandLineProgramOptions :
