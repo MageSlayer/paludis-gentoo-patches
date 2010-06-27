@@ -382,6 +382,8 @@ namespace
 void
 Orderer::resolve()
 {
+    Context context("When resolving ordering:");
+
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Nodifying Decisions"));
 
     ResolventsSet ignore_dependencies_from_resolvents, ignore_edges_from_resolvents;
@@ -459,6 +461,8 @@ Orderer::resolve()
         }
         else
         {
+            Context sub_context("When considering only changes:");
+
             /* whoop de doo. what do our SCCs look like if we only count change
              * or remove nodes? */
             NAG scc_nag;
@@ -498,6 +502,8 @@ Orderer::_order_sub_ssccs(
         const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> & sub_ssccs,
         const bool can_recurse)
 {
+    Context context("When ordering SSCCs" + std::string(can_recurse ? " for the first time" : " for the second time") + ":");
+
     for (SortedStronglyConnectedComponents::ConstIterator sub_scc(sub_ssccs->begin()), sub_scc_end(sub_ssccs->end()) ;
             sub_scc != sub_scc_end ; ++sub_scc)
     {

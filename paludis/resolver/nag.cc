@@ -31,6 +31,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/member_iterator-impl.hh>
+#include <paludis/util/join.hh>
 #include <paludis/serialise-impl.hh>
 #include <tr1/unordered_set>
 #include <tr1/unordered_map>
@@ -150,16 +151,20 @@ NAG::add_edge(const NAGIndex & a, const NAGIndex & b, const NAGEdgeProperties & 
 void
 NAG::verify_edges() const
 {
+    Context context("When verifying NAG edges:");
+
     for (Edges::const_iterator e(_imp->edges.begin()), e_end(_imp->edges.end()) ;
             e != e_end ; ++e)
     {
         if (_imp->nodes.end() == _imp->nodes.find(e->first))
-            throw InternalError(PALUDIS_HERE, "Missing node for edge " + stringify(e->first));
+            throw InternalError(PALUDIS_HERE, "Missing node for edge '" + stringify(e->first) + "' in nodes { "
+                    + join(_imp->nodes.begin(), _imp->nodes.end(), ", ") + " }");
 
         for (NodesWithProperties::const_iterator f(e->second.begin()), f_end(e->second.end()) ;
                 f != f_end ; ++f)
             if (_imp->nodes.end() == _imp->nodes.find(f->first))
-                throw InternalError(PALUDIS_HERE, "Missing node for edge " + stringify(e->first) + " -> " + stringify(f->first));
+                throw InternalError(PALUDIS_HERE, "Missing node for edge '" + stringify(e->first) + "' -> '" + stringify(f->first) + "' in nodes { "
+                        + join(_imp->nodes.begin(), _imp->nodes.end(), ", ") + " }");
     }
 }
 
@@ -367,6 +372,8 @@ NAG::serialise(Serialiser & s) const
 const std::tr1::shared_ptr<NAG>
 NAG::deserialise(Deserialisation & d)
 {
+    Context context("When deserialising NAG:");
+
     Deserialisator v(d, "NAG");
     std::tr1::shared_ptr<NAG> result(new NAG);
 
