@@ -16,7 +16,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-mkdir -p "${ROOT}/var/log"
+mkdir -p "${PALUDIS_LOG_DIRECTORY:-${ROOT}/var/log}"
 
 if [[ -n ${X_OF_Y} ]] ; then
     COUNTS=" (${X_OF_Y})"
@@ -103,6 +103,6 @@ fi
         *)
             echo "unknown hook ${HOOK}"
     esac
-) >> ${ROOT}/var/log/paludis.log
+) >> "${PALUDIS_LOG_DIRECTORY:-${ROOT}/var/log}/paludis.log"
 
 true
