@@ -278,14 +278,17 @@ namespace
         const std::tr1::shared_ptr<NAG> nag;
         const ResolventsSet & ignore_dependencies_from_resolvents;
         const Resolvent resolvent;
+        const std::tr1::function<NAGIndexRole (const Resolvent &)> role_for_fetching;
 
         EdgesFromReasonVisitor(
                 const std::tr1::shared_ptr<NAG> & n,
                 const ResolventsSet & i,
-                const Resolvent & v) :
+                const Resolvent & v,
+            const std::tr1::function<NAGIndexRole (const Resolvent &)> & f) :
             nag(n),
             ignore_dependencies_from_resolvents(i),
-            resolvent(v)
+            resolvent(v),
+            role_for_fetching(f)
         {
         }
 
@@ -314,7 +317,7 @@ namespace
                 {
                     NAGIndex from(make_named_values<NAGIndex>(
                                 n::resolvent() = r.from_resolvent(),
-                                n::role() = classifier.fetch ? nir_fetched : nir_done
+                                n::role() = classifier.fetch ? role_for_fetching(r.from_resolvent()) : nir_done
                                 ));
 
                     NAGIndex to(make_named_values<NAGIndex>(
@@ -414,7 +417,8 @@ Orderer::resolve()
         if (ignore_dependencies_from_resolvents.end() != ignore_edges_from_resolvents.find((*r)->resolvent()))
             continue;
 
-        EdgesFromReasonVisitor edges_from_reason_visitor(_imp->resolved->nag(), ignore_dependencies_from_resolvents, (*r)->resolvent());
+        EdgesFromReasonVisitor edges_from_reason_visitor(_imp->resolved->nag(), ignore_dependencies_from_resolvents, (*r)->resolvent(),
+                std::tr1::bind(&Orderer::_role_for_fetching, this, std::tr1::placeholders::_1));
         for (Constraints::ConstIterator c((*r)->constraints()->begin()),
                 c_end((*r)->constraints()->end()) ;
                 c != c_end ; ++c)
@@ -789,5 +793,49 @@ Orderer::_schedule(
     } while (false);
 
     d->accept(ExtraScheduler(_imp->resolved, _imp->fetch_job_numbers, _imp->install_job_numbers, index));
+}
+
+namespace
+{
+    struct RoleForFetchingVisitor
+    {
+        NAGIndexRole visit(const ChangesToMakeDecision &) const
+        {
+            return nir_fetched;
+        }
+
+        NAGIndexRole visit(const ExistingNoChangeDecision &) const
+        {
+            return nir_done;
+        }
+
+        NAGIndexRole visit(const UnableToMakeDecision &) const
+        {
+            return nir_done;
+        }
+
+        NAGIndexRole visit(const BreakDecision &) const
+        {
+            return nir_done;
+        }
+
+        NAGIndexRole visit(const RemoveDecision &) const
+        {
+            return nir_done;
+        }
+
+        NAGIndexRole visit(const NothingNoChangeDecision &) const
+        {
+            return nir_done;
+        }
+    };
+}
+
+NAGIndexRole
+Orderer::_role_for_fetching(
+        const Resolvent & resolvent) const
+{
+    return (*_imp->resolved->resolutions_by_resolvent()->find(
+                resolvent))->decision()->accept_returning<NAGIndexRole>(RoleForFetchingVisitor());
 }
 

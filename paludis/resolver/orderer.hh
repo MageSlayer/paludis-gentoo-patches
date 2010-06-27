@@ -54,6 +54,9 @@ namespace paludis
                         const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> & sub_ssccs,
                         const bool can_recurse);
 
+                NAGIndexRole _role_for_fetching(
+                        const Resolvent & resolvent) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
             public:
                 Orderer(
                         const Environment * const,
