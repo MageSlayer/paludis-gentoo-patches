@@ -746,6 +746,7 @@ namespace
             const bool more_annotations,
             const bool confirmations,
             const bool untaken,
+            const bool unorderable,
             const std::string & notes,
             ChoicesToExplain & choices_to_explain)
     {
@@ -824,7 +825,7 @@ namespace
         if (confirmations)
             display_confirmations(decision);
         if (! notes.empty())
-            cout << "    " << c::bold_normal() << notes << c::normal() << endl;
+            cout << "    " << (unorderable ? c::bold_red() : c::bold_normal()) << notes << c::normal() << endl;
     }
 
     void display_one_uninstall(
@@ -1216,6 +1217,7 @@ namespace
         const bool more_annotations;
         const bool unconfirmed;
         const bool untaken;
+        const bool unorderable;
         const std::string cycle_breaking;
         ChoicesToExplain & choices_to_explain;
 
@@ -1226,6 +1228,7 @@ namespace
                 bool m,
                 bool uc,
                 bool ut,
+                bool un,
                 const std::string & s,
                 ChoicesToExplain & x) :
             env(e),
@@ -1234,6 +1237,7 @@ namespace
             more_annotations(m),
             unconfirmed(uc),
             untaken(ut),
+            unorderable(un),
             cycle_breaking(s),
             choices_to_explain(x)
         {
@@ -1249,6 +1253,7 @@ namespace
                     more_annotations,
                     unconfirmed,
                     untaken,
+                    unorderable,
                     cycle_breaking,
                     choices_to_explain);
         }
@@ -1319,6 +1324,7 @@ namespace
                     more_annotations,
                     unconfirmed,
                     untaken,
+                    unorderable,
                     star_i.second ? star_i.second->cycle_breaking() : "",
                     choices_to_explain);
             star_i.first->accept(v);
