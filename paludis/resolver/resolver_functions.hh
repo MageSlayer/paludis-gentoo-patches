@@ -46,6 +46,7 @@ namespace paludis
     namespace n
     {
         typedef Name<struct allowed_to_remove_fn_name> allowed_to_remove_fn;
+        typedef Name<struct can_use_fn_name> can_use_fn;
         typedef Name<struct confirm_fn_name> confirm_fn;
         typedef Name<struct find_repository_for_fn_name> find_repository_for_fn;
         typedef Name<struct get_constraints_for_dependent_fn_name> get_constraints_for_dependent_fn;
@@ -66,6 +67,10 @@ namespace paludis
                 const std::tr1::shared_ptr<const Resolution> &,
                 const std::tr1::shared_ptr<const PackageID> &
                 )> AllowedToRemoveFunction;
+
+        typedef std::tr1::function<bool (
+                const std::tr1::shared_ptr<const PackageID> &
+                )> CanUseFunction;
 
         typedef std::tr1::function<bool (
                 const std::tr1::shared_ptr<const Resolution> &,
@@ -132,6 +137,7 @@ namespace paludis
         struct ResolverFunctions
         {
             NamedValue<n::allowed_to_remove_fn, AllowedToRemoveFunction> allowed_to_remove_fn;
+            NamedValue<n::can_use_fn, CanUseFunction> can_use_fn;
             NamedValue<n::confirm_fn, ConfirmFunction> confirm_fn;
             NamedValue<n::find_repository_for_fn, FindRepositoryForFunction> find_repository_for_fn;
             NamedValue<n::get_constraints_for_dependent_fn, GetConstraintsForDependentFunction> get_constraints_for_dependent_fn;

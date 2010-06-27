@@ -236,6 +236,9 @@ namespace paludis
                 const std::tr1::shared_ptr<const PackageIDSet> _collect_world(
                         const std::tr1::shared_ptr<const PackageIDSet> & from) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
+                bool _can_use(
+                        const std::tr1::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
             public:
                 Decider(const Environment * const,
                         const ResolverFunctions &,

@@ -1794,7 +1794,7 @@ Decider::resolve()
 bool
 Decider::_already_met(const SanitisedDependency & dep) const
 {
-    const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
+    const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::AllVersionsUnsorted(
                 generator::Matches(dep.spec().if_package() ?
                     *dep.spec().if_package() :
                     dep.spec().if_block()->blocking(),
@@ -1803,7 +1803,23 @@ Decider::_already_met(const SanitisedDependency & dep) const
     if (installed_ids->empty())
         return dep.spec().if_block();
     else
-        return dep.spec().if_package();
+    {
+        if (dep.spec().if_block())
+            return false;
+
+        if (installed_ids->end() == std::find_if(installed_ids->begin(), installed_ids->end(),
+                    std::tr1::bind(&Decider::_can_use, this, std::tr1::placeholders::_1)))
+            return false;
+
+        return true;
+    }
+}
+
+bool
+Decider::_can_use(
+        const std::tr1::shared_ptr<const PackageID> & id) const
+{
+    return _imp->fns.can_use_fn()(id);
 }
 
 namespace

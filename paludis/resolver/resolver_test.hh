@@ -116,6 +116,9 @@ namespace paludis
                     const std::tr1::shared_ptr<const Resolution> &,
                     const std::tr1::shared_ptr<const RequiredConfirmation> &);
 
+            bool can_use_fn(
+                    const std::tr1::shared_ptr<const PackageID> &);
+
             struct ResolverTestCase : test::TestCase
             {
                 TestEnvironment env;

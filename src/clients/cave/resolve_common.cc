@@ -1294,6 +1294,14 @@ namespace
         return result;
     }
 
+    bool can_use_fn(
+            const Environment * const env,
+            const PackageDepSpecList & list,
+            const std::tr1::shared_ptr<const PackageID> & id)
+    {
+        return ! match_any(env, list, id);
+    }
+
     void serialise_resolved(StringListStream & ser_stream, const Resolved & resolved)
     {
         Serialiser ser(ser_stream);
@@ -1581,7 +1589,7 @@ paludis::cave::resolve_common(
     PackageDepSpecList allowed_to_remove_specs, allowed_to_break_specs, remove_if_dependent_specs,
                        less_restrictive_remove_blockers_specs, purge_specs, with, without,
                        permit_old_version, permit_downgrade, take, take_from, ignore, ignore_from,
-                       favour, avoid, no_dependencies_from, no_blockers_from;
+                       favour, avoid, no_dependencies_from, no_blockers_from, not_usable_specs;
     bool allowed_to_break_system(false);
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_uninstall.begin_args()),
@@ -1689,6 +1697,12 @@ paludis::cave::resolve_common(
         permit_old_version.push_back(parse_user_package_dep_spec(*i, env.get(),
                     UserPackageDepSpecOptions() + updso_allow_wildcards));
 
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_not_usable.begin_args()),
+            i_end(resolution_options.a_not_usable.end_args()) ;
+            i != i_end ; ++i)
+        not_usable_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
+                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+
     std::tr1::shared_ptr<Generator> all_binary_repos_generator;
     for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
             r_end(env->package_database()->end_repositories()) ;
@@ -1742,6 +1756,8 @@ paludis::cave::resolve_common(
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
                 n::allowed_to_remove_fn() = std::tr1::bind(&allowed_to_remove_fn,
                         env.get(), std::tr1::cref(allowed_to_remove_specs), _1, _2),
+                n::can_use_fn() = std::tr1::bind(&can_use_fn,
+                    env.get(), std::tr1::cref(not_usable_specs), _1),
                 n::confirm_fn() = std::tr1::bind(&confirm_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::cref(permit_downgrade),
                         std::tr1::cref(permit_old_version), std::tr1::cref(allowed_to_break_specs),

@@ -82,7 +82,8 @@ namespace paludis
             args::StringSetArg a_favour;
             args::StringSetArg a_avoid;
 
-//            args::ArgsGroup g_ordering_options;
+            args::ArgsGroup g_ordering_options;
+            args::StringSetArg a_not_usable;
 //            args::StringSetArg a_early;
 //            args::StringSetArg a_late;
 //

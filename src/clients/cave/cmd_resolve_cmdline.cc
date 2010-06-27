@@ -206,7 +206,10 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
     a_avoid(&g_package_options, "avoid", 'A', "If there is a choice (e.g. || ( ) dependencies), avoid the "
             "specified package names"),
 
-//    g_ordering_options(this, "Package Ordering Options", "Control the order in which packages are installed"),
+    g_ordering_options(this, "Package Ordering Options", "Control the order in which packages are installed"),
+    a_not_usable(&g_ordering_options, "not-usable", 'N', "Consider installed packages matching the supplied specification "
+            "as being unusable when breaking dependency cycles. May be specified multiple times. Note that this option "
+            "affects only ordering; it does not also force a reinstall of these packages."),
 //    a_early(&g_ordering_options, "early", 'E', "Try to install the specified package name as early as possible"),
 //    a_late(&g_ordering_options, "late", 'L', "Try to install the specified package name as late as possible"),
 
