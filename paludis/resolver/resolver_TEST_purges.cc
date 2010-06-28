@@ -82,8 +82,10 @@ namespace test_cases
         TestPurges() :
             ResolverPurgesTestCase("purges")
         {
-            install("purges", "target", "0")->build_dependencies_key()->set_from_string("purges/still-used-dep purges/old-dep purges/unrelated-dep");
+            install("purges", "target", "0")->build_dependencies_key()->set_from_string(
+                    "purges/still-used-dep purges/old-dep purges/old-dep-locked purges/unrelated-dep");
             install("purges", "old-dep", "0");
+            install("purges", "old-dep-locked", "0")->behaviours_set()->insert("used");
             install("purges", "still-used-dep", "0");
             install("purges", "unrelated-dep", "0");
             install("purges", "unrelated", "0")->build_dependencies_key()->set_from_string("purges/unrelated-dep");

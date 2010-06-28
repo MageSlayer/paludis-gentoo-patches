@@ -57,6 +57,7 @@
 #include <paludis/choice.hh>
 #include <paludis/action.hh>
 #include <paludis/elike_slot_requirement.hh>
+#include <paludis/dep_spec_flattener.hh>
 
 #include <paludis/util/private_implementation_pattern-impl.hh>
 
@@ -1757,7 +1758,7 @@ Decider::purge()
     std::copy(have_now->begin(), have_now->end(), have_now_seq->back_inserter());
 
     const std::tr1::shared_ptr<const PackageIDSet> world(_collect_world(have_now));
-    const std::tr1::shared_ptr<const PackageIDSet> world_plus_deps(_accumulate_deps(world, have_now_seq, true));
+    const std::tr1::shared_ptr<const PackageIDSet> world_plus_deps(_accumulate_deps_and_provides(world, have_now_seq, true));
 
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Calculating Unused"));
 
@@ -1769,6 +1770,10 @@ Decider::purge()
             i != i_end ; ++i)
     {
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
+
+        if ((*i)->behaviours_key() && (*i)->behaviours_key()->value()->end() !=
+                (*i)->behaviours_key()->value()->find("used"))
+            continue;
 
         Resolvent resolvent(*i, dt_install_to_slash);
         const std::tr1::shared_ptr<Resolution> resolution(_resolution_for_resolvent(resolvent, true));
@@ -1963,8 +1968,8 @@ Decider::_resolve_purges()
     const std::tr1::shared_ptr<PackageIDSequence> will_eventually_have(new PackageIDSequence);
     std::copy(will_eventually_have_set->begin(), will_eventually_have_set->end(), will_eventually_have->back_inserter());
 
-    const std::tr1::shared_ptr<const PackageIDSet> used_originally(_accumulate_deps(going_away, will_eventually_have, false));
-    const std::tr1::shared_ptr<const PackageIDSet> used_afterwards(_accumulate_deps(newly_available, will_eventually_have, false));
+    const std::tr1::shared_ptr<const PackageIDSet> used_originally(_accumulate_deps_and_provides(going_away, will_eventually_have, false));
+    const std::tr1::shared_ptr<const PackageIDSet> used_afterwards(_accumulate_deps_and_provides(newly_available, will_eventually_have, false));
 
     const std::tr1::shared_ptr<PackageIDSet> used_originally_and_not_going_away(new PackageIDSet);
     std::set_difference(used_originally->begin(), used_originally->end(),
@@ -1996,6 +2001,10 @@ Decider::_resolve_purges()
             i != i_end ; ++i)
     {
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
+
+        if ((*i)->behaviours_key() && (*i)->behaviours_key()->value()->end() !=
+                (*i)->behaviours_key()->value()->find("used"))
+            continue;
 
         const std::tr1::shared_ptr<PackageIDSequence> used_to_use(new PackageIDSequence), star_i_set(new PackageIDSequence);
         star_i_set->push_back(*i);
@@ -2036,7 +2045,7 @@ Decider::_collect_installed() const
 }
 
 const std::tr1::shared_ptr<const PackageIDSet>
-Decider::_accumulate_deps(
+Decider::_accumulate_deps_and_provides(
         const std::tr1::shared_ptr<const PackageIDSet> & start,
         const std::tr1::shared_ptr<const PackageIDSequence> & will_eventually_have,
         const bool recurse) const
@@ -2058,6 +2067,9 @@ Decider::_accumulate_deps(
 
             const std::tr1::shared_ptr<const PackageIDSet> depped_upon(_collect_depped_upon(*i, will_eventually_have));
             std::copy(depped_upon->begin(), depped_upon->end(), result->inserter());
+
+            const std::tr1::shared_ptr<const PackageIDSet> provided(_collect_provided(*i));
+            std::copy(provided->begin(), provided->end(), result->inserter());
         }
 
         if (! recurse)
@@ -2089,6 +2101,29 @@ Decider::_collect_depped_upon(
 
     const std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
     std::copy(c.result->begin(), c.result->end(), result->inserter());
+    return result;
+}
+
+const std::tr1::shared_ptr<const PackageIDSet>
+Decider::_collect_provided(
+        const std::tr1::shared_ptr<const PackageID> & id) const
+{
+    const std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
+
+    if (id->provide_key())
+    {
+        DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->env);
+        id->provide_key()->value()->root()->accept(f);
+
+        for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator v(f.begin()), v_end(f.end()) ;
+                v != v_end ; ++v)
+        {
+            const std::tr1::shared_ptr<const PackageIDSequence> virtuals((*_imp->env)[selection::AllVersionsUnsorted(
+                        generator::Matches(**v, MatchPackageOptions()))]);
+            std::copy(virtuals->begin(), virtuals->end(), result->inserter());
+        }
+    }
+
     return result;
 }
 

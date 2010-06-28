@@ -232,7 +232,7 @@ namespace paludis
 
                 const std::tr1::shared_ptr<const PackageIDSet> _collect_installed() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                const std::tr1::shared_ptr<const PackageIDSet> _accumulate_deps(
+                const std::tr1::shared_ptr<const PackageIDSet> _accumulate_deps_and_provides(
                         const std::tr1::shared_ptr<const PackageIDSet> &,
                         const std::tr1::shared_ptr<const PackageIDSequence> &,
                         const bool recurse) const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -240,6 +240,9 @@ namespace paludis
                 const std::tr1::shared_ptr<const PackageIDSet> _collect_depped_upon(
                         const std::tr1::shared_ptr<const PackageID> &,
                         const std::tr1::shared_ptr<const PackageIDSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const std::tr1::shared_ptr<const PackageIDSet> _collect_provided(
+                        const std::tr1::shared_ptr<const PackageID> & id) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::tr1::shared_ptr<const PackageIDSet> _collect_world(
                         const std::tr1::shared_ptr<const PackageIDSet> & from) const PALUDIS_ATTRIBUTE((warn_unused_result));
