@@ -227,6 +227,19 @@ namespace
 
         return node_data;
     }
+
+    struct OrderingNowComparator
+    {
+        bool operator() (const NAGIndex & a, const NAGIndex & b) const
+        {
+            if (a.role() == nir_fetched && b.role() != nir_fetched)
+                return true;
+            if (b.role() == nir_fetched && a.role() != nir_fetched)
+                return false;
+
+            return a < b;
+        }
+    };
 }
 
 const std::tr1::shared_ptr<const SortedStronglyConnectedComponents>
@@ -279,7 +292,7 @@ NAG::sorted_strongly_connected_components() const
     std::tr1::shared_ptr<SortedStronglyConnectedComponents> result(new SortedStronglyConnectedComponents);
 
     Nodes done;
-    std::set<NAGIndex> orderable_now;
+    std::set<NAGIndex, OrderingNowComparator> orderable_now;
     for (StronglyConnectedComponentsByRepresentative::const_iterator c(sccs.begin()), c_end(sccs.end()) ;
             c != c_end ; ++c)
         if (scc_edges.end() == scc_edges.find(c->first))
@@ -287,7 +300,7 @@ NAG::sorted_strongly_connected_components() const
 
     while (! orderable_now.empty())
     {
-        std::set<NAGIndex>::iterator ordering_now(orderable_now.begin());
+        std::set<NAGIndex, OrderingNowComparator>::iterator ordering_now(orderable_now.begin());
         result->push_back(sccs.find(*ordering_now)->second);
         done.insert(*ordering_now);
 

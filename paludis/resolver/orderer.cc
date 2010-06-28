@@ -742,8 +742,20 @@ namespace
 
                 case nir_fetched:
                     {
+                        const std::tr1::shared_ptr<JobRequirements> requirements(new JobRequirements);
+
+                        RecursedRequirements recursed;
+                        populate_requirements(
+                                resolved->nag(),
+                                install_job_numbers,
+                                index,
+                                requirements,
+                                false,
+                                recursed
+                                );
+
                         JobNumber fetch_job_n(resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new FetchJob(
-                                            make_shared_ptr(new JobRequirements),
+                                            requirements,
                                             changes_to_make_decision.origin_id()->uniquely_identifying_spec()))));
                         fetch_job_numbers.insert(std::make_pair(index.resolvent(), fetch_job_n));
                     }

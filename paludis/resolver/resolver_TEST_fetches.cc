@@ -60,10 +60,10 @@ using namespace test;
 
 namespace
 {
-    struct ResolverContinueOnFailureTestCase : ResolverTestCase
+    struct ResolverFetchTestCase : ResolverTestCase
     {
-        ResolverContinueOnFailureTestCase(const std::string & s) :
-            ResolverTestCase("continue_on_failure", s, "exheres-0", "exheres")
+        ResolverFetchTestCase(const std::string & s) :
+            ResolverTestCase("fetch", s, "exheres-0", "exheres")
         {
         }
     };
@@ -94,36 +94,18 @@ namespace
 
 namespace test_cases
 {
-    struct TestContinueOnFailure : ResolverContinueOnFailureTestCase
+    struct TestFetchDeps : ResolverFetchTestCase
     {
-        const bool direct_dep_installed;
-
-        TestContinueOnFailure(const bool d) :
-            ResolverContinueOnFailureTestCase("continue on failure " + stringify(d)),
-            direct_dep_installed(d)
-        {
-            if (d)
-                install("continue-on-failure", "direct-dep", "0");
-            install("continue-on-failure", "unchanged-dep", "1")->build_dependencies_key()->set_from_string("continue-on-failure/indirect-dep");
-        }
-
-        virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)
-        {
-            ResolverFunctions result(ResolverContinueOnFailureTestCase::get_resolver_functions(initial_constraints));
-            result.get_use_existing_fn() = std::tr1::bind(&use_existing_if_same, std::tr1::placeholders::_1,
-                    std::tr1::placeholders::_2, std::tr1::placeholders::_3);
-            return result;
-        }
+        TestFetchDeps() : ResolverFetchTestCase("fetch") { }
 
         void run()
         {
-            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("continue-on-failure/target"));
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("fetch/target"));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .change(QualifiedPackageName("continue-on-failure/direct-dep"))
-                        .change(QualifiedPackageName("continue-on-failure/indirect-dep"))
-                        .change(QualifiedPackageName("continue-on-failure/target"))
+                        .change(QualifiedPackageName("fetch/fetch-dep"))
+                        .change(QualifiedPackageName("fetch/target"))
                         .finished()),
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
@@ -137,27 +119,28 @@ namespace test_cases
                         .finished())
                     );
 
-            TEST_CHECK_EQUAL(resolved->job_lists()->execute_job_list()->length(), 6);
+            TEST_CHECK_EQUAL(resolved->job_lists()->execute_job_list()->length(), 4);
 
-            const InstallJob * const direct_dep_job(simple_visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(3)));
-            TEST_CHECK(direct_dep_job);
-            TEST_CHECK_EQUAL(join(direct_dep_job->requirements()->begin(), direct_dep_job->requirements()->end(), ", ", stringify_req),
+            const FetchJob * const fetch_fetch_dep_job(simple_visitor_cast<const FetchJob>(**resolved->job_lists()->execute_job_list()->fetch(0)));
+            TEST_CHECK(fetch_fetch_dep_job);
+            TEST_CHECK_EQUAL(join(fetch_fetch_dep_job->requirements()->begin(), fetch_fetch_dep_job->requirements()->end(), ", ", stringify_req),
+                    "");
+
+            const InstallJob * const fetch_dep_job(simple_visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(1)));
+            TEST_CHECK(fetch_dep_job);
+            TEST_CHECK_EQUAL(join(fetch_dep_job->requirements()->begin(), fetch_dep_job->requirements()->end(), ", ", stringify_req),
                     "0 satisfied independent always");
 
-            const InstallJob * const indirect_dep_job(simple_visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(4)));
-            TEST_CHECK(indirect_dep_job);
-            TEST_CHECK_EQUAL(join(indirect_dep_job->requirements()->begin(), indirect_dep_job->requirements()->end(), ", ", stringify_req),
-                    "1 satisfied independent always");
+            const FetchJob * const fetch_target_job(simple_visitor_cast<const FetchJob>(**resolved->job_lists()->execute_job_list()->fetch(2)));
+            TEST_CHECK(fetch_target_job);
+            TEST_CHECK_EQUAL(join(fetch_target_job->requirements()->begin(), fetch_target_job->requirements()->end(), ", ", stringify_req),
+                    "1 satisfied, 1 independent");
 
-            const InstallJob * const target_job(simple_visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(5)));
+            const InstallJob * const target_job(simple_visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(3)));
             TEST_CHECK(target_job);
-            if (direct_dep_installed)
-                TEST_CHECK_EQUAL(join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req),
-                        "2 satisfied independent always, 4 independent, 3 independent");
-            else
-                TEST_CHECK_EQUAL(join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req),
-                        "2 satisfied independent always, 3 satisfied, 4 independent, 3 independent");
+            TEST_CHECK_EQUAL(join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req),
+                    "2 satisfied independent always, 1 independent");
         }
-    } test_continue_on_failure_false(false), test_continue_on_failure_true(true);
+    } test_fetch_dep;
 }
 
