@@ -1999,6 +1999,8 @@ Decider::_resolve_purges()
     std::set_difference(newly_unused->begin(), newly_unused->end(),
             used_by_unchanging->begin(), used_by_unchanging->end(), newly_really_unused->inserter(), PackageIDSetComparator());
 
+    const std::tr1::shared_ptr<const SetSpecTree> world(_imp->env->set(SetName("world")));
+
     bool changed(false);
     for (PackageIDSet::ConstIterator i(newly_really_unused->begin()), i_end(newly_really_unused->end()) ;
             i != i_end ; ++i)
@@ -2007,6 +2009,11 @@ Decider::_resolve_purges()
 
         if ((*i)->behaviours_key() && (*i)->behaviours_key()->value()->end() !=
                 (*i)->behaviours_key()->value()->find("used"))
+            continue;
+
+        /* to catch packages being purged that are also in world and not used
+         * by anything else */
+        if (match_package_in_set(*_imp->env, *world, **i, MatchPackageOptions()))
             continue;
 
         const std::tr1::shared_ptr<PackageIDSequence> used_to_use(new PackageIDSequence), star_i_set(new PackageIDSequence);
