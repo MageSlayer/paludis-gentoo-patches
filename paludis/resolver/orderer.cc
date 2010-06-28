@@ -45,6 +45,7 @@
 #include <paludis/notifier_callback.hh>
 #include <tr1/unordered_set>
 #include <tr1/unordered_map>
+#include <algorithm>
 #include <list>
 
 using namespace paludis;
@@ -501,7 +502,10 @@ namespace
 {
     std::string nice_index(const NAGIndex & x)
     {
-        return stringify(x.resolvent().package()) + stringify(x.resolvent().slot());
+        std::string result(stringify(x.resolvent().package()) + stringify(x.resolvent().slot()));
+        if (x.role() == nir_fetched)
+            result = result + " (fetch)";
+        return result;
     }
 }
 
@@ -576,11 +580,20 @@ Orderer::_order_sub_ssccs(
         {
             for (Set<NAGIndex>::ConstIterator r(sub_scc->nodes()->begin()), r_end(sub_scc->nodes()->end()) ;
                     r != r_end ; ++r)
+            {
+                if (r->role() == nir_fetched && sub_scc->nodes()->end() != std::find(sub_scc->nodes()->begin(),
+                            sub_scc->nodes()->end(), make_named_values<NAGIndex>(
+                                n::resolvent() = r->resolvent(),
+                                n::role() = nir_done
+                                )))
+                    continue;
+
                 _imp->resolved->taken_unorderable_decisions()->push_back(
                         _imp->change_or_remove_indices.find(*r)->second,
                         make_shared_copy(make_named_values<OrdererNotes>(
                                 n::cycle_breaking() = "In unsolvable cycle with " + join(
                                     top_scc.nodes()->begin(), top_scc.nodes()->end(), ", ", nice_index))));
+            }
         }
     }
 }
