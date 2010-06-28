@@ -706,7 +706,8 @@ namespace
             const ResolveCommandLineResolutionOptions & resolution_options,
             const PackageDepSpec & spec,
             const std::tr1::shared_ptr<const SlotName> & maybe_slot,
-            const std::tr1::shared_ptr<const Reason> & reason)
+            const std::tr1::shared_ptr<const Reason> & reason,
+            const DestinationTypes & extra_dts)
     {
         std::tr1::shared_ptr<PackageIDSequence> result_ids(new PackageIDSequence);
         std::tr1::shared_ptr<const PackageID> best;
@@ -760,7 +761,7 @@ namespace
         for (PackageIDSequence::ConstIterator i(result_ids->begin()), i_end(result_ids->end()) ;
                 i != i_end ; ++i)
         {
-            DestinationTypes destination_types(get_destination_types_for_fn(env, resolution_options, spec, *i, reason));
+            DestinationTypes destination_types(get_destination_types_for_fn(env, resolution_options, spec, *i, reason) | extra_dts);
             for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
                 if (destination_types[*t])
                     result->push_back(Resolvent(*i, *t));
@@ -1772,8 +1773,12 @@ paludis::cave::resolve_common(
     {
         const std::tr1::shared_ptr<const Reason> reason(new PresetReason("preset", make_null_shared_ptr()));
         PackageDepSpec spec(parse_user_package_dep_spec(*i, env.get(), UserPackageDepSpecOptions()));
+        DestinationTypes all_dts;
+        for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
+            all_dts += *t;
         const std::tr1::shared_ptr<const Resolvents> resolvents(get_resolvents_for_fn(
-                    env.get(), resolution_options, spec, make_null_shared_ptr(), reason));
+                    env.get(), resolution_options, spec, make_null_shared_ptr(), reason,
+                    all_dts));
 
         if (resolvents->empty())
             throw args::DoHelp("Preset '" + *i + "' has no resolvents");
@@ -1821,7 +1826,7 @@ paludis::cave::resolve_common(
                         env.get(), std::tr1::cref(resolution_options), std::tr1::cref(without),
                         std::tr1::cref(initial_constraints), all_binary_repos_generator, _1),
                 n::get_resolvents_for_fn() = std::tr1::bind(&get_resolvents_for_fn,
-                        env.get(), std::tr1::cref(resolution_options), _1, _2, _3),
+                        env.get(), std::tr1::cref(resolution_options), _1, _2, _3, DestinationTypes()),
                 n::get_use_existing_fn() = std::tr1::bind(&use_existing_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::cref(without), std::tr1::cref(with), _1, _2, _3),
                 n::interest_in_spec_fn() = std::tr1::bind(&interest_in_spec_fn,
