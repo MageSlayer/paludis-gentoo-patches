@@ -1757,7 +1757,7 @@ Decider::purge()
     std::copy(have_now->begin(), have_now->end(), have_now_seq->back_inserter());
 
     const std::tr1::shared_ptr<const PackageIDSet> world(_collect_world(have_now));
-    const std::tr1::shared_ptr<const PackageIDSet> world_plus_deps(_accumulate_deps(world, have_now_seq));
+    const std::tr1::shared_ptr<const PackageIDSet> world_plus_deps(_accumulate_deps(world, have_now_seq, true));
 
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Calculating Unused"));
 
@@ -1963,8 +1963,8 @@ Decider::_resolve_purges()
     const std::tr1::shared_ptr<PackageIDSequence> will_eventually_have(new PackageIDSequence);
     std::copy(will_eventually_have_set->begin(), will_eventually_have_set->end(), will_eventually_have->back_inserter());
 
-    const std::tr1::shared_ptr<const PackageIDSet> used_originally(_accumulate_deps(going_away, will_eventually_have));
-    const std::tr1::shared_ptr<const PackageIDSet> used_afterwards(_accumulate_deps(newly_available, will_eventually_have));
+    const std::tr1::shared_ptr<const PackageIDSet> used_originally(_accumulate_deps(going_away, will_eventually_have, false));
+    const std::tr1::shared_ptr<const PackageIDSet> used_afterwards(_accumulate_deps(newly_available, will_eventually_have, false));
 
     const std::tr1::shared_ptr<PackageIDSet> used_originally_and_not_going_away(new PackageIDSet);
     std::set_difference(used_originally->begin(), used_originally->end(),
@@ -2038,7 +2038,8 @@ Decider::_collect_installed() const
 const std::tr1::shared_ptr<const PackageIDSet>
 Decider::_accumulate_deps(
         const std::tr1::shared_ptr<const PackageIDSet> & start,
-        const std::tr1::shared_ptr<const PackageIDSequence> & will_eventually_have) const
+        const std::tr1::shared_ptr<const PackageIDSequence> & will_eventually_have,
+        const bool recurse) const
 {
     const std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet), done(new PackageIDSet);
     std::copy(start->begin(), start->end(), result->inserter());
@@ -2054,9 +2055,13 @@ Decider::_accumulate_deps(
             _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
             done->insert(*i);
+
             const std::tr1::shared_ptr<const PackageIDSet> depped_upon(_collect_depped_upon(*i, will_eventually_have));
             std::copy(depped_upon->begin(), depped_upon->end(), result->inserter());
         }
+
+        if (! recurse)
+            break;
     }
 
     return result;
