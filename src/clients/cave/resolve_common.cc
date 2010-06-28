@@ -308,6 +308,11 @@ namespace
             return DestinationTypes();
         }
 
+        DestinationTypes visit(const LikeOtherDestinationTypeReason & r) const
+        {
+            return r.reason_for_other()->accept_returning<DestinationTypes>(*this);
+        }
+
         DestinationTypes visit(const SetReason & r) const
         {
             return r.reason_for_set()->accept_returning<DestinationTypes>(*this);
@@ -459,6 +464,12 @@ namespace
         {
             UseExistingVisitor v(resolution_options, true);
             return r.reason_for_set()->accept_returning<UseExisting>(v);
+        }
+
+        UseExisting visit(const LikeOtherDestinationTypeReason & r) const
+        {
+            UseExistingVisitor v(resolution_options, true);
+            return r.reason_for_other()->accept_returning<UseExisting>(v);
         }
     };
 
@@ -663,6 +674,11 @@ namespace
         bool visit(const TargetReason &) const
         {
             return true;
+        }
+
+        bool visit(const LikeOtherDestinationTypeReason & r) const
+        {
+            return r.reason_for_other()->accept_returning<bool>(*this);
         }
 
         bool visit(const SetReason & r) const
@@ -1036,6 +1052,11 @@ namespace
         bool visit(const SetReason & r) const
         {
             return r.reason_for_set()->accept_returning<bool>(*this);
+        }
+
+        bool visit(const LikeOtherDestinationTypeReason & r) const
+        {
+            return r.reason_for_other()->accept_returning<bool>(*this);
         }
 
         bool visit(const PresetReason &) const
@@ -1538,6 +1559,12 @@ namespace
         const std::string visit(const SetReason & r) const
         {
             return "from " + stringify(r.set_name()) + " (" + r.reason_for_set()->accept_returning<std::string>(*this) + ")";
+        }
+
+        const std::string visit(const LikeOtherDestinationTypeReason & r) const
+        {
+            return "from being like " + stringify(r.other_resolvent())
+                + " (" + r.reason_for_other()->accept_returning<std::string>(*this) + ")";
         }
     };
 

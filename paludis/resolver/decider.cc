@@ -517,19 +517,21 @@ Decider::_create_resolution_for_resolvent(const Resolvent & r) const
 }
 
 const std::tr1::shared_ptr<Resolution>
-Decider::_resolution_for_resolvent(const Resolvent & r, const bool create)
+Decider::_resolution_for_resolvent(const Resolvent & r, const Tribool if_not_exist)
 {
     ResolutionsByResolvent::ConstIterator i(_imp->resolutions_by_resolvent->find(r));
     if (_imp->resolutions_by_resolvent->end() == i)
     {
-        if (create)
+        if (if_not_exist.is_true())
         {
             std::tr1::shared_ptr<Resolution> resolution(_create_resolution_for_resolvent(r));
             i = _imp->resolutions_by_resolvent->insert_new(resolution);
         }
-        else
+        else if (if_not_exist.is_false())
             throw InternalError(PALUDIS_HERE, "resolver bug: expected resolution for "
                     + stringify(r) + " to exist, but it doesn't");
+        else
+            return make_null_shared_ptr();
     }
 
     return *i;
@@ -893,11 +895,42 @@ Decider::_decide(const std::tr1::shared_ptr<Resolution> & resolution)
 {
     Context context("When deciding upon an origin ID to use for '" + stringify(resolution->resolvent()) + "':");
 
+    _copy_other_destination_constraints(resolution);
+
     std::tr1::shared_ptr<Decision> decision(_try_to_find_decision_for(resolution));
     if (decision)
         resolution->decision() = decision;
     else
         resolution->decision() = _cannot_decide_for(resolution);
+}
+
+void
+Decider::_copy_other_destination_constraints(const std::tr1::shared_ptr<Resolution> & resolution)
+{
+    for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
+    {
+        if (*t == resolution->resolvent().destination_type())
+            continue;
+
+        Resolvent copy_from_resolvent(resolution->resolvent());
+        copy_from_resolvent.destination_type() = *t;
+
+        const std::tr1::shared_ptr<Resolution> copy_from_resolution(
+                _resolution_for_resolvent(copy_from_resolvent, indeterminate));
+        if (! copy_from_resolution)
+            continue;
+
+        for (Constraints::ConstIterator c(copy_from_resolution->constraints()->begin()),
+                c_end(copy_from_resolution->constraints()->end()) ;
+                c != c_end ; ++c)
+        {
+            const std::tr1::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_other_destination(
+                        resolution, copy_from_resolution, *c));
+            for (ConstraintSequence::ConstIterator d(constraints->begin()), d_end(constraints->end()) ;
+                    d != d_end ; ++d)
+                _apply_resolution_constraint(resolution, *d);
+        }
+    }
 }
 
 namespace
@@ -2061,5 +2094,59 @@ Decider::_make_constraints_for_purge(
         const std::tr1::shared_ptr<const PackageIDSequence> & r) const
 {
     return _imp->fns.get_constraints_for_purge_fn()(resolution, id, r);
+}
+
+namespace
+{
+    struct ConstraintFromOtherDestinationVisitor
+    {
+        const DestinationType destination_type;
+        const std::tr1::shared_ptr<const Constraint> from_constraint;
+        const Resolvent resolvent;
+
+        ConstraintFromOtherDestinationVisitor(
+                const DestinationType t,
+                const std::tr1::shared_ptr<const Constraint> f,
+                const Resolvent & r) :
+            destination_type(t),
+            from_constraint(f),
+            resolvent(r)
+        {
+        }
+
+        const std::tr1::shared_ptr<ConstraintSequence> visit(const LikeOtherDestinationTypeReason &) const
+        {
+            std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
+            return result;
+        }
+
+        const std::tr1::shared_ptr<ConstraintSequence> visit(const Reason &) const
+        {
+            std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
+            result->push_back(make_shared_copy(make_named_values<Constraint>(
+                            n::destination_type() = destination_type,
+                            n::nothing_is_fine_too() = true,
+                            n::reason() = make_shared_ptr(new LikeOtherDestinationTypeReason(
+                                    resolvent,
+                                    from_constraint->reason()
+                                    )),
+                            n::spec() = from_constraint->spec(),
+                            n::untaken() = from_constraint->untaken(),
+                            n::use_existing() = ue_if_possible
+                            )));
+            return result;
+        }
+    };
+}
+
+const std::tr1::shared_ptr<ConstraintSequence>
+Decider::_make_constraints_from_other_destination(
+        const std::tr1::shared_ptr<const Resolution> & new_resolution,
+        const std::tr1::shared_ptr<const Resolution> & from_resolution,
+        const std::tr1::shared_ptr<const Constraint> & from_constraint) const
+{
+    return from_constraint->reason()->accept_returning<std::tr1::shared_ptr<ConstraintSequence> >(
+            ConstraintFromOtherDestinationVisitor(new_resolution->resolvent().destination_type(),
+                from_constraint, from_resolution->resolvent()));
 }
 

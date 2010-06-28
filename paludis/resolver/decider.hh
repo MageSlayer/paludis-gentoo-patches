@@ -39,6 +39,7 @@
 #include <paludis/resolver/resolutions_by_resolvent-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/tribool-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/repository-fwd.hh>
@@ -54,7 +55,7 @@ namespace paludis
         {
             private:
                 const std::tr1::shared_ptr<Resolution> _create_resolution_for_resolvent(const Resolvent &) const;
-                const std::tr1::shared_ptr<Resolution> _resolution_for_resolvent(const Resolvent &, const bool create);
+                const std::tr1::shared_ptr<Resolution> _resolution_for_resolvent(const Resolvent &, const Tribool);
 
                 const std::tr1::shared_ptr<const Resolvents> _get_resolvents_for_blocker(const BlockDepSpec &) const;
 
@@ -98,6 +99,11 @@ namespace paludis
                         const std::tr1::shared_ptr<const Resolution> & resolution,
                         const std::tr1::shared_ptr<const PackageID> &,
                         const std::tr1::shared_ptr<const PackageIDSequence> &) const;
+
+                const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_from_other_destination(
+                        const std::tr1::shared_ptr<const Resolution> & resolution,
+                        const std::tr1::shared_ptr<const Resolution> & from_resolution,
+                        const std::tr1::shared_ptr<const Constraint> & from_constraint) const;
 
                 void _apply_resolution_constraint(
                         const std::tr1::shared_ptr<Resolution> &,
@@ -155,6 +161,7 @@ namespace paludis
                 FilteredGenerator _make_destination_filtered_generator(const Generator &, const Resolvent & resolvent) const;
 
                 void _decide(const std::tr1::shared_ptr<Resolution> & resolution);
+                void _copy_other_destination_constraints(const std::tr1::shared_ptr<Resolution> & resolution);
 
                 const std::tr1::shared_ptr<Decision> _try_to_find_decision_for(
                         const std::tr1::shared_ptr<const Resolution> & resolution) const;

@@ -33,6 +33,7 @@ namespace paludis
         struct SetReason;
         struct DependentReason;
         struct WasUsedByReason;
+        struct LikeOtherDestinationTypeReason;
     }
 }
 

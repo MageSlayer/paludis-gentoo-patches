@@ -37,7 +37,8 @@ namespace paludis
     {
         class Reason :
             public virtual DeclareAbstractAcceptMethods<Reason, MakeTypeList<
-                TargetReason, DependencyReason, DependentReason, WasUsedByReason, PresetReason, SetReason>::Type>
+                TargetReason, DependencyReason, DependentReason, WasUsedByReason, PresetReason,
+                SetReason, LikeOtherDestinationTypeReason>::Type>
         {
             public:
                 virtual ~Reason() = 0;
@@ -135,6 +136,21 @@ namespace paludis
 
                 const SetName set_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 const std::tr1::shared_ptr<const Reason> reason_for_set() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual void serialise(Serialiser &) const;
+        };
+
+        class LikeOtherDestinationTypeReason :
+            public Reason,
+            private PrivateImplementationPattern<LikeOtherDestinationTypeReason>,
+            public ImplementAcceptMethods<Reason, LikeOtherDestinationTypeReason>
+        {
+            public:
+                LikeOtherDestinationTypeReason(const Resolvent &, const std::tr1::shared_ptr<const Reason> &);
+                ~LikeOtherDestinationTypeReason();
+
+                const Resolvent other_resolvent() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::tr1::shared_ptr<const Reason> reason_for_other() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;
         };

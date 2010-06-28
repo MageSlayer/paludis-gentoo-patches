@@ -272,6 +272,52 @@ SetReason::serialise(Serialiser & s) const
         ;
 }
 
+namespace paludis
+{
+    template <>
+    struct Implementation<LikeOtherDestinationTypeReason>
+    {
+        const Resolvent other_resolvent;
+        const std::tr1::shared_ptr<const Reason> reason_for_other;
+
+        Implementation(const Resolvent & s, const std::tr1::shared_ptr<const Reason> & r) :
+            other_resolvent(s),
+            reason_for_other(r)
+        {
+        }
+    };
+}
+
+LikeOtherDestinationTypeReason::LikeOtherDestinationTypeReason(const Resolvent & s, const std::tr1::shared_ptr<const Reason> & r) :
+    PrivateImplementationPattern<LikeOtherDestinationTypeReason>(new Implementation<LikeOtherDestinationTypeReason>(s, r))
+{
+}
+
+LikeOtherDestinationTypeReason::~LikeOtherDestinationTypeReason()
+{
+}
+
+const Resolvent
+LikeOtherDestinationTypeReason::other_resolvent() const
+{
+    return _imp->other_resolvent;
+}
+
+const std::tr1::shared_ptr<const Reason>
+LikeOtherDestinationTypeReason::reason_for_other() const
+{
+    return _imp->reason_for_other;
+}
+
+void
+LikeOtherDestinationTypeReason::serialise(Serialiser & s) const
+{
+    s.object("LikeOtherDestinationTypeReason")
+        .member(SerialiserFlags<serialise::might_be_null>(), "reason_for_other", reason_for_other())
+        .member(SerialiserFlags<>(), "other_resolvent", other_resolvent())
+        ;
+}
+
 const std::tr1::shared_ptr<Reason>
 Reason::deserialise(Deserialisation & d)
 {
@@ -322,6 +368,14 @@ Reason::deserialise(Deserialisation & d)
             ids_being_removed->push_back(vv.member<std::tr1::shared_ptr<const PackageID> >(stringify(n)));
         return make_shared_ptr(new WasUsedByReason(ids_being_removed));
     }
+    else if (d.class_name() == "LikeOtherDestinationTypeReason")
+    {
+        Deserialisator v(d, "LikeOtherDestinationTypeReason");
+        return make_shared_ptr(new LikeOtherDestinationTypeReason(
+                    v.member<Resolvent>("other_resolvent"),
+                    v.member<std::tr1::shared_ptr<Reason> >("reason_for_other")
+                    ));
+    }
     else
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 }
@@ -331,4 +385,5 @@ template class PrivateImplementationPattern<DependentReason>;
 template class PrivateImplementationPattern<SetReason>;
 template class PrivateImplementationPattern<PresetReason>;
 template class PrivateImplementationPattern<WasUsedByReason>;
+template class PrivateImplementationPattern<LikeOtherDestinationTypeReason>;
 

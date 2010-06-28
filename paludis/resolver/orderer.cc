@@ -350,6 +350,12 @@ namespace
                 r.reason_for_set()->accept(*this);
         }
 
+        void visit(const LikeOtherDestinationTypeReason & r)
+        {
+            if (r.reason_for_other())
+                r.reason_for_other()->accept(*this);
+        }
+
         void visit(const PresetReason &)
         {
         }

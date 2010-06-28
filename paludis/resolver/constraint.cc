@@ -159,6 +159,11 @@ namespace
             return make_null_shared_ptr();
         }
 
+        const std::tr1::shared_ptr<const PackageID> visit(const LikeOtherDestinationTypeReason &) const
+        {
+            return make_null_shared_ptr();
+        }
+
         const std::tr1::shared_ptr<const PackageID> visit(const PresetReason &) const
         {
             return make_null_shared_ptr();

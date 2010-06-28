@@ -224,6 +224,12 @@ namespace
             return std::make_pair(rr.first + " (" + stringify(r.set_name()) + ")", rr.second);
         }
 
+        std::pair<std::string, bool> visit(const LikeOtherDestinationTypeReason & r) const
+        {
+            std::pair<std::string, bool> rr(r.reason_for_other()->accept_returning<std::pair<std::string, bool> >(*this));
+            return std::make_pair(rr.first + " (to be like " + stringify(r.other_resolvent()) + ")", rr.second);
+        }
+
         std::pair<std::string, bool> visit(const PresetReason & r) const
         {
             std::pair<std::string, bool> rr("", false);
@@ -709,6 +715,11 @@ namespace
         bool visit(const SetReason & r) const
         {
             return r.reason_for_set()->accept_returning<bool>(*this);
+        }
+
+        bool visit(const LikeOtherDestinationTypeReason & r) const
+        {
+            return r.reason_for_other()->accept_returning<bool>(*this);
         }
 
         bool visit(const PresetReason &) const

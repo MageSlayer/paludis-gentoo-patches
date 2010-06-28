@@ -159,6 +159,14 @@ namespace
             str = "Set(" + stringify(r.set_name()) + " " + f.str + ")";
         }
 
+        void visit(const LikeOtherDestinationTypeReason & r)
+        {
+            ReasonFinder f;
+            if (r.reason_for_other())
+                r.reason_for_other()->accept(f);
+            str = "LikeOtherDestinationTypeReason(" + stringify(r.other_resolvent()) + " " + f.str + ")";
+        }
+
         void visit(const DependentReason & r)
         {
             str = "Dependent(" + stringify(*r.id_being_removed()) + ")";
