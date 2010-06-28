@@ -34,6 +34,7 @@ namespace paludis
         typedef Name<struct preserve_world_name> preserve_world;
         typedef Name<struct target_set_name> target_set;
         typedef Name<struct targets_name> targets;
+        typedef Name<struct world_specs_name> world_specs;
     }
 
     namespace cave
@@ -44,6 +45,7 @@ namespace paludis
             NamedValue<n::preserve_world, bool> preserve_world;
             NamedValue<n::target_set, bool> target_set;
             NamedValue<n::targets, std::tr1::shared_ptr<Sequence<std::string> > > targets;
+            NamedValue<n::world_specs, std::tr1::shared_ptr<Sequence<std::string> > > world_specs;
 
             void serialise(Serialiser &) const;
             static const std::tr1::shared_ptr<ResumeData> deserialise(

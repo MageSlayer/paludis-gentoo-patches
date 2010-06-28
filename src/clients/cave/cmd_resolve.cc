@@ -103,7 +103,7 @@ ResolveCommand::run(
         targets->push_back(*p);
 
     return resolve_common(env, cmdline.resolution_options, cmdline.execution_options, cmdline.display_options,
-            cmdline.program_options, make_null_shared_ptr(), targets, false);
+            cmdline.program_options, make_null_shared_ptr(), targets, make_null_shared_ptr(), false);
 }
 
 std::tr1::shared_ptr<args::ArgsHandler>

@@ -47,11 +47,19 @@ ResumeData::deserialise(Deserialisation & d)
             targets->push_back(vv.member<std::string>(stringify(n)));
     }
 
+    std::tr1::shared_ptr<Sequence<std::string> > world_specs(new Sequence<std::string>);
+    {
+        Deserialisator vv(*v.find_remove_member("world_specs"), "c");
+        for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
+            world_specs->push_back(vv.member<std::string>(stringify(n)));
+    }
+
     return make_shared_copy(make_named_values<ResumeData>(
                 n::job_lists() = v.member<std::tr1::shared_ptr<JobLists> >("job_lists"),
                 n::preserve_world() = v.member<bool>("preserve_world"),
                 n::target_set() = v.member<bool>("target_set"),
-                n::targets() = targets
+                n::targets() = targets,
+                n::world_specs() = world_specs
                 ));
 }
 
@@ -63,6 +71,7 @@ ResumeData::serialise(Serialiser & s) const
         .member(SerialiserFlags<>(), "preserve_world", preserve_world())
         .member(SerialiserFlags<>(), "target_set", target_set())
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "targets", targets())
+        .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "world_specs", world_specs())
         ;
 }
 

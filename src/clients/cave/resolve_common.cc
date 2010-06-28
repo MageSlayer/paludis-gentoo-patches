@@ -355,7 +355,7 @@ namespace
         throw InternalError(PALUDIS_HERE, stringify(r.destination_type()));
     }
 
-    void add_resolver_targets(
+    const std::tr1::shared_ptr<const Sequence<std::string> > add_resolver_targets(
             const std::tr1::shared_ptr<Environment> & env,
             const std::tr1::shared_ptr<Resolver> & resolver,
             const ResolveCommandLineResolutionOptions &,
@@ -367,6 +367,7 @@ namespace
         if (targets->empty())
             throw args::DoHelp("Must specify at least one target");
 
+        const std::tr1::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
         bool seen_sets(false), seen_packages(false);
         for (Sequence<std::string>::ConstIterator p(targets->begin()), p_end(targets->end()) ;
                 p != p_end ; ++p)
@@ -380,12 +381,16 @@ namespace
                 {
                     seen_packages = true;
                     PackageDepSpec s(parse_user_package_dep_spec(p->substr(1), env.get(), UserPackageDepSpecOptions()));
-                    resolver->add_target(BlockDepSpec(*p, s, false));
+                    BlockDepSpec bs("!" + stringify(s), s, false);
+                    result->push_back(stringify(bs));
+                    resolver->add_target(bs);
                 }
                 else
                 {
-                    resolver->add_target(parse_user_package_dep_spec(*p, env.get(),
+                    PackageDepSpec s(parse_user_package_dep_spec(*p, env.get(),
                                 UserPackageDepSpecOptions() + updso_throw_if_set));
+                    result->push_back(stringify(s));
+                    resolver->add_target(s);
                     seen_packages = true;
                 }
             }
@@ -395,6 +400,7 @@ namespace
                     throw args::DoHelp("Cannot specify multiple set targets");
 
                 resolver->add_target(SetName(*p));
+                result->push_back(*p);
                 seen_sets = true;
             }
         }
@@ -404,6 +410,8 @@ namespace
 
         if (seen_sets)
             is_set = true;
+
+        return result;
     }
 
     UseExisting use_existing_from_cmdline(const args::EnumArg & a, const bool is_set)
@@ -1409,6 +1417,7 @@ namespace
             const ResolveCommandLineProgramOptions & program_options,
             const std::tr1::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
             const std::tr1::shared_ptr<const Sequence<std::string> > & targets,
+            const std::tr1::shared_ptr<const Sequence<std::string> > & world_specs,
             const bool is_set)
     {
         Context context("When performing chosen resolution:");
@@ -1444,6 +1453,13 @@ namespace
 
         if (! resolution_options.a_execute.specified())
             args->push_back("--pretend");
+
+        for (Sequence<std::string>::ConstIterator p(world_specs->begin()), p_end(world_specs->end()) ;
+                p != p_end ; ++p)
+        {
+            args->push_back("--world-specs");
+            args->push_back(*p);
+        }
 
         for (Sequence<std::string>::ConstIterator p(targets->begin()), p_end(targets->end()) ;
                 p != p_end ; ++p)
@@ -1611,6 +1627,7 @@ paludis::cave::resolve_common(
         const ResolveCommandLineProgramOptions & program_options,
         const std::tr1::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
         const std::tr1::shared_ptr<const Sequence<std::string> > & targets_if_not_purge,
+        const std::tr1::shared_ptr<const Sequence<std::string> > & world_specs_if_not_auto,
         const bool purge)
 {
     int retcode(0);
@@ -1822,6 +1839,7 @@ paludis::cave::resolve_common(
     ScopedSelectionCache selection_cache(env.get());
     std::tr1::shared_ptr<Resolver> resolver(new Resolver(env.get(), resolver_functions));
     bool is_set(false);
+    std::tr1::shared_ptr<const Sequence<std::string> > targets_cleaned_up;
     std::list<SuggestRestart> restarts;
 
     try
@@ -1838,7 +1856,7 @@ paludis::cave::resolve_common(
                     if (purge)
                         resolver->purge();
                     else
-                        add_resolver_targets(env, resolver, resolution_options, targets_if_not_purge, is_set);
+                        targets_cleaned_up = add_resolver_targets(env, resolver, resolution_options, targets_if_not_purge, is_set);
                     resolver->resolve();
                     break;
                 }
@@ -1881,6 +1899,7 @@ paludis::cave::resolve_common(
             return perform_resolution(env, resolver->resolved(), resolution_options,
                     execution_options, program_options, keys_if_import,
                     purge ? make_shared_ptr(new const Sequence<std::string>) : targets_if_not_purge,
+                    world_specs_if_not_auto ? world_specs_if_not_auto : targets_cleaned_up,
                     is_set);
     }
     catch (...)

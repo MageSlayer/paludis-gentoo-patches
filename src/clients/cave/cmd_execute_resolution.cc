@@ -98,6 +98,7 @@ namespace
         args::ArgsGroup g_general_options;
         args::SwitchArg a_pretend;
         args::SwitchArg a_set;
+        args::StringSetArg a_world_specs;
 
         ResolveCommandLineExecutionOptions execution_options;
         ResolveCommandLineProgramOptions program_options;
@@ -107,6 +108,7 @@ namespace
             g_general_options(main_options_section(), "General Options", "General options."),
             a_pretend(&g_general_options, "pretend", '\0', "Only carry out the pretend action", false),
             a_set(&g_general_options, "set", '\0', "Our target is a set rather than package specs", false),
+            a_world_specs(&g_general_options, "world-specs", '\0', "Use the specified spec or set name for updating world"),
             execution_options(this),
             program_options(this),
             import_options(this)
@@ -510,8 +512,8 @@ namespace
                 return;
 
             command.append(" --set");
-            for (args::ArgsHandler::ParametersConstIterator a(cmdline.begin_parameters()),
-                    a_end(cmdline.end_parameters()) ;
+            for (args::StringSetArg::ConstIterator a(cmdline.a_world_specs.begin_args()),
+                    a_end(cmdline.a_world_specs.end_args()) ;
                     a != a_end ; ++a)
             {
                 if (*a == "world" || *a == "system" || *a == "security"
@@ -528,8 +530,8 @@ namespace
         }
         else
         {
-            for (args::ArgsHandler::ParametersConstIterator a(cmdline.begin_parameters()),
-                    a_end(cmdline.end_parameters()) ;
+            for (args::StringSetArg::ConstIterator a(cmdline.a_world_specs.begin_args()),
+                    a_end(cmdline.a_world_specs.end_args()) ;
                     a != a_end ; ++a)
             {
                 std::string aa(*a);
@@ -548,7 +550,7 @@ namespace
                         continue;
                 }
 
-                PackageDepSpec spec(parse_user_package_dep_spec(aa, env.get(), UserPackageDepSpecOptions()));
+                PackageDepSpec spec(parse_user_package_dep_spec(aa, env.get(), UserPackageDepSpecOptions() + updso_no_disambiguation));
                 if (package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
                                 n::has_additional_requirements() = false,
                                 n::has_category_name_part() = false,
@@ -1144,11 +1146,15 @@ namespace
             std::tr1::shared_ptr<Sequence<std::string> > targets(new Sequence<std::string>);
             std::copy(cmdline.begin_parameters(), cmdline.end_parameters(), targets->back_inserter());
 
+            std::tr1::shared_ptr<Sequence<std::string> > world_specs(new Sequence<std::string>);
+            std::copy(cmdline.a_world_specs.begin_args(), cmdline.a_world_specs.end_args(), world_specs->back_inserter());
+
             ResumeData resume_data(make_named_values<ResumeData>(
                         n::job_lists() = lists,
                         n::preserve_world() = cmdline.execution_options.a_preserve_world.specified(),
                         n::target_set() = cmdline.a_set.specified(),
-                        n::targets() = targets
+                        n::targets() = targets,
+                        n::world_specs() = world_specs
                         ));
 
             cout << endl << "Writing resume information to " << resume_file << "..." << endl;

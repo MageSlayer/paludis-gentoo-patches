@@ -108,7 +108,7 @@ PurgeCommand::run(
     cmdline.resolution_options->a_purge.add_argument("*/*");
 
     return resolve_common(env, *cmdline.resolution_options, *cmdline.execution_options, *cmdline.display_options,
-            *cmdline.program_options, make_null_shared_ptr(), make_null_shared_ptr(), true);
+            *cmdline.program_options, make_null_shared_ptr(), make_null_shared_ptr(), make_null_shared_ptr(), true);
 }
 
 std::tr1::shared_ptr<args::ArgsHandler>
