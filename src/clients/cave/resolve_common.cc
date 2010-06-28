@@ -1854,8 +1854,10 @@ paludis::cave::resolve_common(
                 try
                 {
                     if (purge)
+                    {
                         resolver->purge();
-                    else
+                        targets_cleaned_up.reset(new Sequence<std::string>);
+                    } else
                         targets_cleaned_up = add_resolver_targets(env, resolver, resolution_options, targets_if_not_purge, is_set);
                     resolver->resolve();
                     break;
