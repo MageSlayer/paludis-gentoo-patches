@@ -1979,6 +1979,9 @@ Decider::_resolve_purges()
     std::set_difference(used_originally_and_not_going_away->begin(), used_originally_and_not_going_away->end(),
             used_afterwards->begin(), used_afterwards->end(), newly_unused->inserter(), PackageIDSetComparator());
 
+    if (newly_unused->empty())
+        return false;
+
     const std::tr1::shared_ptr<PackageIDSequence> newly_unused_seq(new PackageIDSequence);
     std::copy(newly_unused->begin(), newly_unused->end(), newly_unused_seq->back_inserter());
 
