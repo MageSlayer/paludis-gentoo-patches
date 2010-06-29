@@ -21,6 +21,7 @@ command_MANS = \
 	cave-config.1 \
 	cave-contents.1 \
 	cave-display-resolution.1 \
+	cave-executables.1 \
 	cave-execute-resolution.1 \
 	cave-find-candidates.1 \
 	cave-fix-cache.1 \
@@ -96,6 +97,7 @@ libcave_a_SOURCES = \
 	cmd_contents.cc cmd_contents.hh \
 	cmd_config.cc cmd_config.hh \
 	cmd_display_resolution.cc cmd_display_resolution.hh \
+	cmd_executables.cc cmd_executables.hh \
 	cmd_execute_resolution.cc cmd_execute_resolution.hh \
 	cmd_find_candidates.cc cmd_find_candidates.hh \
 	cmd_fix_cache.cc cmd_fix_cache.hh \
@@ -132,6 +134,7 @@ libcave_a_SOURCES = \
 	cmd_uninstall.cc cmd_uninstall.hh \
 	cmd_update_world.cc cmd_update_world.hh \
 	exceptions.cc exceptions.hh \
+	executables_common.cc executables_common.hh \
 	format_general.cc format_general.hh \
 	format_plain_contents_entry.cc format_plain_contents_entry.hh \
 	format_plain_metadata_key.cc format_plain_metadata_key.hh \
@@ -143,7 +146,6 @@ libcave_a_SOURCES = \
 	resolve_common.cc resolve_common.hh \
 	resume_data.cc resume_data.hh
 
-#	cmd_executables.cc \
 #	cmd_print_id_actions.cc \
 #	cmd_print_id_masks.cc \
 #	cmd_print_repository_metadata.cc \

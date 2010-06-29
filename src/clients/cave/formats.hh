@@ -167,6 +167,8 @@ namespace paludis
             const std::string contents_other();
 
             const std::string owner_id();
+
+            const std::string executables_file();
         }
     }
 }

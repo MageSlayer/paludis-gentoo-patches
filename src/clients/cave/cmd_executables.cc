@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2009 Alexander Færøy
+ * Copyright (c) 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,9 +18,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "cmd_print_id_executables.hh"
+#include "cmd_executables.hh"
 #include "command_command_line.hh"
 #include "executables_common.hh"
+#include "formats.hh"
+#include "format_general.hh"
 
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
@@ -42,45 +45,44 @@ using std::endl;
 
 namespace
 {
-    struct PrintIDExecutablesCommandLine :
+    struct ExecutablesCommandLine :
         CaveCommandCommandLine
     {
         virtual std::string app_name() const
         {
-            return "cave print-id-executables";
+            return "cave executables";
         }
 
         virtual std::string app_synopsis() const
         {
-            return "Prints a list of executables belonging to an ID.";
+            return "Display executables belonging to an ID.";
         }
 
         virtual std::string app_description() const
         {
-            return "Prints a list of executables belonging to an ID. "
-                "No formating is used, making the script suitable for parsing by scripts.";
+            return "Display executables belonging to an ID.";
         }
 
-        PrintIDExecutablesCommandLine()
+        ExecutablesCommandLine()
         {
             add_usage_line("spec");
         }
     };
 
-    void print_fsentry(const FSEntry & e)
+    void format_fsentry(const FSEntry & f)
     {
-        cout << e << endl;
+        cout << format_general_s(f::executables_file(), stringify(f));
     }
 }
 
 int
-PrintIDExecutablesCommand::run(
+ExecutablesCommand::run(
         const std::tr1::shared_ptr<Environment> & env,
         const std::tr1::shared_ptr<const Sequence<std::string > > & args
         )
 {
-    PrintIDExecutablesCommandLine cmdline;
-    cmdline.run(args, "CAVE", "CAVE_PRINT_ID_EXECUTABLES_OPTIONS", "CAVE_PRINT_ID_EXECUTABLES_CMDLINE");
+    ExecutablesCommandLine cmdline;
+    cmdline.run(args, "CAVE", "CAVE_EXECUTABLES_OPTIONS", "CAVE_EXECUTABLES_CMDLINE");
 
     if (cmdline.a_help.specified())
     {
@@ -89,14 +91,14 @@ PrintIDExecutablesCommand::run(
     }
 
     if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
-        throw args::DoHelp("print-id-executables takes exactly one parameter");
+        throw args::DoHelp("executables takes exactly one parameter");
 
-    return executables_common(env, *cmdline.begin_parameters(), &print_fsentry);
+    return executables_common(env, *cmdline.begin_parameters(), &format_fsentry);
 }
 
 std::tr1::shared_ptr<args::ArgsHandler>
-PrintIDExecutablesCommand::make_doc_cmdline()
+ExecutablesCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new PrintIDExecutablesCommandLine);
+    return make_shared_ptr(new ExecutablesCommandLine);
 }
 

@@ -669,3 +669,9 @@ paludis::cave::f::owner_id()
     return c::bold_blue_or_pink() + "%s" + c::normal() + "\\n";
 }
 
+const std::string
+paludis::cave::f::executables_file()
+{
+    return c::bold_blue_or_pink() + "%s" + c::normal() + "\\n";
+}
+
