@@ -32,6 +32,7 @@
 #include <paludis/resolver/job_requirements.hh>
 #include <paludis/resolver/destination.hh>
 #include <paludis/resolver/orderer_notes.hh>
+#include <paludis/resolver/change_by_resolvent.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
@@ -361,8 +362,25 @@ namespace
         {
         }
 
-        void visit(const DependentReason &)
+        void visit(const DependentReason & r)
         {
+            NAGIndex from(make_named_values<NAGIndex>(
+                        n::resolvent() = r.id_and_resolvent_being_removed().resolvent(),
+                        n::role() = nir_done
+                        ));
+
+            NAGIndex to(make_named_values<NAGIndex>(
+                        n::resolvent() = resolvent,
+                        n::role() = nir_done
+                        ));
+
+            nag->add_edge(from, to,
+                    make_named_values<NAGEdgeProperties>(
+                        n::build() = false,
+                        n::build_all_met() = true,
+                        n::run() = false,
+                        n::run_all_met() = true
+                        ));
         }
 
         void visit(const TargetReason &)
