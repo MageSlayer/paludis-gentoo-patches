@@ -32,6 +32,7 @@
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/tribool.hh>
 #include <paludis/serialise-impl.hh>
 #include <tr1/unordered_set>
 #include <tr1/unordered_map>
@@ -228,16 +229,23 @@ namespace
         return node_data;
     }
 
-    int order_score_one(const NAGIndex & n)
+    int order_score_one(const NAGIndex & n, const std::tr1::function<Tribool (const NAGIndex &)> & order_early_fn)
     {
         /* lower scores are 'better' and mean 'order earlier' */
+        Tribool order_early(order_early_fn(n));
+        int bias(0);
+        if (order_early.is_indeterminate())
+            bias = 1;
+        else if (order_early.is_false())
+            bias = 2;
+
         switch (n.role())
         {
             case nir_fetched:
-                return 10;
+                return 10 + bias;
 
             case nir_done:
-                return 20;
+                return 20 + bias;
 
             case last_nir:
                 break;
@@ -246,14 +254,15 @@ namespace
         throw InternalError(PALUDIS_HERE, "bad nir");
     }
 
-    std::pair<int, NAGIndex> order_score(const NAGIndex & r, const StronglyConnectedComponent & scc)
+    std::pair<int, NAGIndex> order_score(const NAGIndex & r, const StronglyConnectedComponent & scc,
+            const std::tr1::function<Tribool (const NAGIndex &)> & order_early_fn)
     {
         int best_score(-1);
 
         for (Set<NAGIndex>::ConstIterator e(scc.nodes()->begin()), e_end(scc.nodes()->end()) ;
                 e != e_end ; ++e)
         {
-            int score(order_score_one(*e));
+            int score(order_score_one(*e, order_early_fn));
             if (best_score == -1 || score < best_score)
                 best_score = score;
         }
@@ -263,7 +272,9 @@ namespace
 }
 
 const std::tr1::shared_ptr<const SortedStronglyConnectedComponents>
-NAG::sorted_strongly_connected_components() const
+NAG::sorted_strongly_connected_components(
+        const std::tr1::function<Tribool (const NAGIndex &)> & order_early_fn
+        ) const
 {
     StronglyConnectedComponentsByRepresentative sccs;
     TarjanDataMap data;
@@ -318,7 +329,7 @@ NAG::sorted_strongly_connected_components() const
     for (StronglyConnectedComponentsByRepresentative::const_iterator c(sccs.begin()), c_end(sccs.end()) ;
             c != c_end ; ++c)
         if (scc_edges.end() == scc_edges.find(c->first))
-            orderable_now.insert(order_score(c->first, c->second));
+            orderable_now.insert(order_score(c->first, c->second, order_early_fn));
 
     while (! orderable_now.empty())
     {
@@ -336,7 +347,7 @@ NAG::sorted_strongly_connected_components() const
                     throw InternalError(PALUDIS_HERE, "huh?");
                 reverse_edges->second.erase(ordering_now->second);
                 if (reverse_edges->second.empty())
-                    orderable_now.insert(order_score(*e, sccs.find(*e)->second));
+                    orderable_now.insert(order_score(*e, sccs.find(*e)->second, order_early_fn));
                 ordering_now_edges->second.erase(e++);
             }
 

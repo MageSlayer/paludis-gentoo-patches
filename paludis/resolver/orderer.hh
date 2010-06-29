@@ -28,7 +28,9 @@
 #include <paludis/resolver/nag-fwd.hh>
 #include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/tribool-fwd.hh>
 #include <paludis/environment-fwd.hh>
+#include <tr1/functional>
 
 namespace paludis
 {
@@ -52,7 +54,11 @@ namespace paludis
                         const NAG &,
                         const StronglyConnectedComponent & top_scc,
                         const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> & sub_ssccs,
-                        const bool can_recurse);
+                        const bool can_recurse,
+                        const std::tr1::function<Tribool (const NAGIndex &)> & order_early_fn);
+
+                Tribool _order_early(
+                        const NAGIndex &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 NAGIndexRole _role_for_fetching(
                         const Resolvent & resolvent) const PALUDIS_ATTRIBUTE((warn_unused_result));

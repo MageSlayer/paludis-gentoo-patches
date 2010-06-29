@@ -42,6 +42,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/tribool.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <tr1/unordered_set>
@@ -439,6 +440,12 @@ namespace
     }
 }
 
+Tribool
+Orderer::_order_early(const NAGIndex &) const
+{
+    return indeterminate;
+}
+
 void
 Orderer::resolve()
 {
@@ -484,8 +491,11 @@ Orderer::resolve()
 
     _imp->resolved->nag()->verify_edges();
 
+    const std::tr1::function<Tribool (const NAGIndex &)> order_early_fn(std::tr1::bind(&Orderer::_order_early, this, std::tr1::placeholders::_1));
+
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Finding NAG SCCs"));
-    const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> ssccs(_imp->resolved->nag()->sorted_strongly_connected_components());
+    const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> ssccs(
+            _imp->resolved->nag()->sorted_strongly_connected_components(order_early_fn));
 
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Ordering SCCs"));
     for (SortedStronglyConnectedComponents::ConstIterator scc(ssccs->begin()), scc_end(ssccs->end()) ;
@@ -542,8 +552,8 @@ Orderer::resolve()
             scc_nag.verify_edges();
 
             /* now we try again, hopefully with lots of small SCCs now */
-            const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> sub_ssccs(scc_nag.sorted_strongly_connected_components());
-            _order_sub_ssccs(scc_nag, *scc, sub_ssccs, true);
+            const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> sub_ssccs(scc_nag.sorted_strongly_connected_components(order_early_fn));
+            _order_sub_ssccs(scc_nag, *scc, sub_ssccs, true, order_early_fn);
         }
     }
 }
@@ -564,7 +574,8 @@ Orderer::_order_sub_ssccs(
         const NAG & scc_nag,
         const StronglyConnectedComponent & top_scc,
         const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> & sub_ssccs,
-        const bool can_recurse)
+        const bool can_recurse,
+        const std::tr1::function<Tribool (const NAGIndex &)> & order_early_fn)
 {
     Context context("When ordering SSCCs" + std::string(can_recurse ? " for the first time" : " for the second time") + ":");
 
@@ -623,8 +634,8 @@ Orderer::_order_sub_ssccs(
             scc_nag_without_met_deps.verify_edges();
 
             const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> sub_ssccs_without_met_deps(
-                    scc_nag_without_met_deps.sorted_strongly_connected_components());
-            _order_sub_ssccs(scc_nag_without_met_deps, top_scc, sub_ssccs_without_met_deps, false);
+                    scc_nag_without_met_deps.sorted_strongly_connected_components(order_early_fn));
+            _order_sub_ssccs(scc_nag_without_met_deps, top_scc, sub_ssccs_without_met_deps, false, order_early_fn);
         }
         else
         {
