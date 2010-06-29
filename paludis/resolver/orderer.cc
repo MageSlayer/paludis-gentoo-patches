@@ -310,29 +310,39 @@ namespace
 
             if (classifier.build || classifier.run || classifier.fetch)
             {
-                bool arrow(true);
+                bool normal(true);
                 if (r.sanitised_dependency().spec().if_block())
                     if (! r.sanitised_dependency().spec().if_block()->strong())
-                        arrow = false;
+                        normal = false;
 
-                if (arrow)
+                NAGIndex from(make_named_values<NAGIndex>(
+                            n::resolvent() = r.from_resolvent(),
+                            n::role() = classifier.fetch ? role_for_fetching(r.from_resolvent()) : nir_done
+                            ));
+
+                NAGIndex to(make_named_values<NAGIndex>(
+                            n::resolvent() = resolvent,
+                            n::role() = nir_done
+                            ));
+
+                if (normal)
                 {
-                    NAGIndex from(make_named_values<NAGIndex>(
-                                n::resolvent() = r.from_resolvent(),
-                                n::role() = classifier.fetch ? role_for_fetching(r.from_resolvent()) : nir_done
-                                ));
-
-                    NAGIndex to(make_named_values<NAGIndex>(
-                                n::resolvent() = resolvent,
-                                n::role() = nir_done
-                                ));
-
                     nag->add_edge(from, to,
                             make_named_values<NAGEdgeProperties>(
                                 n::build() = classifier.build || classifier.fetch,
                                 n::build_all_met() = r.already_met() || ! (classifier.build || classifier.fetch),
                                 n::run() = classifier.run,
                                 n::run_all_met() = r.already_met() || ! classifier.run
+                                ));
+                }
+                else
+                {
+                    nag->add_edge(to, from,
+                            make_named_values<NAGEdgeProperties>(
+                                n::build() = false,
+                                n::build_all_met() = true,
+                                n::run() = false,
+                                n::run_all_met() = true
                                 ));
                 }
             }

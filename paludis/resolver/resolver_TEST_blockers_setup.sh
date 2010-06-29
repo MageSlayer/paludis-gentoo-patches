@@ -75,12 +75,19 @@ SUMMARY="target"
 PLATFORMS="test"
 SLOT="0"
 DEPENDENCIES="
-    ( !remove/a-pkg )
+    ( !remove/a-pkg !remove/z-pkg )
     "
 END
 
 mkdir -p 'packages/remove/a-pkg'
 cat <<END > packages/remove/a-pkg/a-pkg-2.exheres-0
+SUMMARY="dep"
+PLATFORMS="test"
+SLOT="0"
+END
+
+mkdir -p 'packages/remove/z-pkg'
+cat <<END > packages/remove/z-pkg/z-pkg-2.exheres-0
 SUMMARY="dep"
 PLATFORMS="test"
 SLOT="0"

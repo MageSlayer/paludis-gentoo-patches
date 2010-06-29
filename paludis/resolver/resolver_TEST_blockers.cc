@@ -142,7 +142,9 @@ namespace test_cases
             transient(t)
         {
             allowed_to_remove_names->insert(QualifiedPackageName("remove/a-pkg"));
+            allowed_to_remove_names->insert(QualifiedPackageName("remove/z-pkg"));
             install("remove", "a-pkg", "1")->behaviours_set()->insert(transient ? "transient" : "");
+            install("remove", "z-pkg", "1")->behaviours_set()->insert(transient ? "transient" : "");
         }
 
         void run()
@@ -151,6 +153,7 @@ namespace test_cases
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .remove(QualifiedPackageName("remove/a-pkg"))
+                        .remove(QualifiedPackageName("remove/z-pkg"))
                         .change(QualifiedPackageName("remove/target"))
                         .finished()),
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
