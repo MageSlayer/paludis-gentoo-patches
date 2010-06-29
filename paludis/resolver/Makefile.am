@@ -29,6 +29,7 @@ BUILT_SOURCES = \
 
 noinst_HEADERS = \
 	any_child_score.hh any_child_score-fwd.hh any_child_score-se.hh \
+	change_by_resolvent.hh change_by_resolvent-fwd.hh \
 	change_type.hh change_type-fwd.hh change_type-se.hh \
 	constraint.hh constraint-fwd.hh \
 	decider.hh decider-fwd.hh \
@@ -63,6 +64,7 @@ noinst_HEADERS = \
 
 libpaludisresolver_a_SOURCES = \
 	any_child_score.cc \
+	change_by_resolvent.cc \
 	change_type.cc \
 	constraint.cc \
 	decider.cc \

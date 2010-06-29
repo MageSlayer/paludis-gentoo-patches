@@ -30,6 +30,7 @@
 #include <paludis/resolver/destination_types-fwd.hh>
 #include <paludis/resolver/constraint-fwd.hh>
 #include <paludis/resolver/required_confirmations-fwd.hh>
+#include <paludis/resolver/change_by_resolvent-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/tribool-fwd.hh>
 #include <paludis/filter-fwd.hh>
@@ -85,13 +86,13 @@ namespace paludis
         typedef std::tr1::function<std::tr1::shared_ptr<ConstraintSequence> (
                 const std::tr1::shared_ptr<const Resolution> &,
                 const std::tr1::shared_ptr<const PackageID> &,
-                const std::tr1::shared_ptr<const PackageIDSequence> &
+                const std::tr1::shared_ptr<const ChangeByResolventSequence> &
                 )> GetConstraintsForDependentFunction;
 
         typedef std::tr1::function<std::tr1::shared_ptr<ConstraintSequence> (
                 const std::tr1::shared_ptr<const Resolution> &,
                 const std::tr1::shared_ptr<const PackageID> &,
-                const std::tr1::shared_ptr<const PackageIDSequence> &
+                const std::tr1::shared_ptr<const ChangeByResolventSequence> &
                 )> GetConstraintsForPurgeFunction;
 
         typedef std::tr1::function<DestinationTypes (

@@ -28,6 +28,7 @@
 #include <paludis/resolver/decisions.hh>
 #include <paludis/resolver/decider.hh>
 #include <paludis/resolver/reason.hh>
+#include <paludis/resolver/change_by_resolvent.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
@@ -280,7 +281,7 @@ const std::tr1::shared_ptr<ConstraintSequence>
 paludis::resolver::resolver_test::get_constraints_for_dependent_fn(
         const std::tr1::shared_ptr<const Resolution> &,
         const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const PackageIDSequence> & ids)
+        const std::tr1::shared_ptr<const ChangeByResolventSequence> & ids)
 {
     const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
 
@@ -291,7 +292,7 @@ paludis::resolver::resolver_test::get_constraints_for_dependent_fn(
                         id->slot_key()->value(), false)));
     PackageDepSpec spec(partial_spec);
 
-    for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+    for (ChangeByResolventSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
             i != i_end ; ++i)
     {
         const std::tr1::shared_ptr<DependentReason> reason(new DependentReason(*i));
@@ -313,7 +314,7 @@ const std::tr1::shared_ptr<ConstraintSequence>
 paludis::resolver::resolver_test::get_constraints_for_purge_fn(
         const std::tr1::shared_ptr<const Resolution> &,
         const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const PackageIDSequence> & ids)
+        const std::tr1::shared_ptr<const ChangeByResolventSequence> & ids)
 {
     const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
 

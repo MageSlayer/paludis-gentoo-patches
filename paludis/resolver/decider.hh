@@ -37,6 +37,7 @@
 #include <paludis/resolver/change_type-fwd.hh>
 #include <paludis/resolver/package_or_block_dep_spec-fwd.hh>
 #include <paludis/resolver/resolutions_by_resolvent-fwd.hh>
+#include <paludis/resolver/change_by_resolvent-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/tribool-fwd.hh>
@@ -93,12 +94,12 @@ namespace paludis
                 const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_for_dependent(
                         const std::tr1::shared_ptr<const Resolution> & resolution,
                         const std::tr1::shared_ptr<const PackageID> &,
-                        const std::tr1::shared_ptr<const PackageIDSequence> &) const;
+                        const std::tr1::shared_ptr<const ChangeByResolventSequence> &) const;
 
                 const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_for_purge(
                         const std::tr1::shared_ptr<const Resolution> & resolution,
                         const std::tr1::shared_ptr<const PackageID> &,
-                        const std::tr1::shared_ptr<const PackageIDSequence> &) const;
+                        const std::tr1::shared_ptr<const ChangeByResolventSequence> &) const;
 
                 const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_from_other_destination(
                         const std::tr1::shared_ptr<const Resolution> & resolution,
@@ -217,16 +218,16 @@ namespace paludis
                 bool _remove_if_dependent(const std::tr1::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::pair<
-                    std::tr1::shared_ptr<const PackageIDSequence>,
-                    std::tr1::shared_ptr<const PackageIDSequence> > _collect_changing() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    std::tr1::shared_ptr<const ChangeByResolventSequence>,
+                    std::tr1::shared_ptr<const ChangeByResolventSequence> > _collect_changing() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::tr1::shared_ptr<const PackageIDSequence> _collect_staying(
-                        const std::tr1::shared_ptr<const PackageIDSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                        const std::tr1::shared_ptr<const ChangeByResolventSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                const std::tr1::shared_ptr<const PackageIDSequence> _dependent_upon(
+                const std::tr1::shared_ptr<const ChangeByResolventSequence> _dependent_upon(
                         const std::tr1::shared_ptr<const PackageID> &,
-                        const std::tr1::shared_ptr<const PackageIDSequence> &,
-                        const std::tr1::shared_ptr<const PackageIDSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                        const std::tr1::shared_ptr<const ChangeByResolventSequence> &,
+                        const std::tr1::shared_ptr<const ChangeByResolventSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void _confirm(const std::tr1::shared_ptr<const Resolution> & resolution);
 

@@ -31,6 +31,7 @@
 #include <paludis/resolver/unsuitable_candidates.hh>
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/required_confirmations.hh>
+#include <paludis/resolver/change_by_resolvent.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
@@ -146,8 +147,8 @@ Decider::_resolve_dependents()
 
     bool changed(false);
     const std::pair<
-        std::tr1::shared_ptr<const PackageIDSequence>,
-        std::tr1::shared_ptr<const PackageIDSequence> > changing(_collect_changing());
+        std::tr1::shared_ptr<const ChangeByResolventSequence>,
+        std::tr1::shared_ptr<const ChangeByResolventSequence> > changing(_collect_changing());
 
     if (changing.first->empty())
         return false;
@@ -159,7 +160,7 @@ Decider::_resolve_dependents()
     {
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-        const std::tr1::shared_ptr<const PackageIDSequence> dependent_upon(_dependent_upon(
+        const std::tr1::shared_ptr<const ChangeByResolventSequence> dependent_upon(_dependent_upon(
                     *s, changing.first, changing.second));
         if (dependent_upon->empty())
             continue;
@@ -194,28 +195,39 @@ const std::tr1::shared_ptr<ConstraintSequence>
 Decider::_make_constraints_for_dependent(
         const std::tr1::shared_ptr<const Resolution> & resolution,
         const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const PackageIDSequence> & r) const
+        const std::tr1::shared_ptr<const ChangeByResolventSequence> & r) const
 {
     return _imp->fns.get_constraints_for_dependent_fn()(resolution, id, r);
 }
 
 namespace
 {
+    const std::tr1::shared_ptr<const PackageID> dependent_checker_id(const std::tr1::shared_ptr<const PackageID> & i)
+    {
+        return i;
+    }
+
+    const std::tr1::shared_ptr<const PackageID> dependent_checker_id(const ChangeByResolvent & i)
+    {
+        return i.package_id();
+    }
+
+    template <typename C_>
     struct DependentChecker
     {
         const Environment * const env;
-        const std::tr1::shared_ptr<const PackageIDSequence> going_away;
-        const std::tr1::shared_ptr<const PackageIDSequence> newly_available;
-        const std::tr1::shared_ptr<PackageIDSequence> result;
+        const std::tr1::shared_ptr<const C_> going_away;
+        const std::tr1::shared_ptr<const C_> newly_available;
+        const std::tr1::shared_ptr<C_> result;
 
         DependentChecker(
                 const Environment * const e,
-                const std::tr1::shared_ptr<const PackageIDSequence> & g,
-                const std::tr1::shared_ptr<const PackageIDSequence> & n) :
+                const std::tr1::shared_ptr<const C_> & g,
+                const std::tr1::shared_ptr<const C_> & n) :
             env(e),
             going_away(g),
             newly_available(n),
-            result(new PackageIDSequence)
+            result(new C_)
         {
         }
 
@@ -227,16 +239,24 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & s)
         {
-            for (PackageIDSequence::ConstIterator g(going_away->begin()), g_end(going_away->end()) ;
+            for (typename C_::ConstIterator g(going_away->begin()), g_end(going_away->end()) ;
                     g != g_end ; ++g)
             {
-                if (! match_package(*env, *s.spec(), **g, MatchPackageOptions()))
+                if (! match_package(*env, *s.spec(), *dependent_checker_id(*g), MatchPackageOptions()))
                     continue;
 
-                if (indirect_iterator(newly_available->end()) == std::find_if(
-                            indirect_iterator(newly_available->begin()), indirect_iterator(newly_available->end()),
-                            std::tr1::bind(&match_package, std::tr1::cref(*env), std::tr1::cref(*s.spec()),
-                                std::tr1::placeholders::_1, MatchPackageOptions())))
+                bool any(false);
+                for (typename C_::ConstIterator n(newly_available->begin()), n_end(newly_available->end()) ;
+                        n != n_end ; ++n)
+                {
+                    if (match_package(*env, *s.spec(), *dependent_checker_id(*n), MatchPackageOptions()))
+                    {
+                        any = true;
+                        break;
+                    }
+                }
+
+                if (! any)
                     result->push_back(*g);
             }
         }
@@ -268,15 +288,20 @@ namespace
         {
         }
     };
+
+    const std::tr1::shared_ptr<const PackageID> get_change_by_resolvent_id(const ChangeByResolvent & r)
+    {
+        return r.package_id();
+    }
 }
 
-const std::tr1::shared_ptr<const PackageIDSequence>
+const std::tr1::shared_ptr<const ChangeByResolventSequence>
 Decider::_dependent_upon(
         const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const PackageIDSequence> & going_away,
-        const std::tr1::shared_ptr<const PackageIDSequence> & staying) const
+        const std::tr1::shared_ptr<const ChangeByResolventSequence> & going_away,
+        const std::tr1::shared_ptr<const ChangeByResolventSequence> & staying) const
 {
-    DependentChecker c(_imp->env, going_away, staying);
+    DependentChecker<ChangeByResolventSequence> c(_imp->env, going_away, staying);
     if (id->dependencies_key())
         id->dependencies_key()->value()->root()->accept(c);
     else
@@ -298,12 +323,14 @@ namespace
 {
     struct ChangingCollector
     {
-        std::tr1::shared_ptr<PackageIDSequence> going_away;
-        std::tr1::shared_ptr<PackageIDSequence> newly_available;
+        std::tr1::shared_ptr<Resolution> current_resolution;
+
+        std::tr1::shared_ptr<ChangeByResolventSequence> going_away;
+        std::tr1::shared_ptr<ChangeByResolventSequence> newly_available;
 
         ChangingCollector() :
-            going_away(new PackageIDSequence),
-            newly_available(new PackageIDSequence)
+            going_away(new ChangeByResolventSequence),
+            newly_available(new ChangeByResolventSequence)
         {
         }
 
@@ -317,14 +344,27 @@ namespace
 
         void visit(const RemoveDecision & d)
         {
-            std::copy(d.ids()->begin(), d.ids()->end(), going_away->back_inserter());
+            for (PackageIDSequence::ConstIterator i(d.ids()->begin()), i_end(d.ids()->end()) ;
+                    i != i_end ; ++i)
+                going_away->push_back(make_named_values<ChangeByResolvent>(
+                            n::package_id() = *i,
+                            n::resolvent() = current_resolution->resolvent()
+                            ));
         }
 
         void visit(const ChangesToMakeDecision & d)
         {
-            std::copy(d.destination()->replacing()->begin(), d.destination()->replacing()->end(),
-                    going_away->back_inserter());
-            newly_available->push_back(d.origin_id());
+            for (PackageIDSequence::ConstIterator i(d.destination()->replacing()->begin()), i_end(d.destination()->replacing()->end()) ;
+                    i != i_end ; ++i)
+                going_away->push_back(make_named_values<ChangeByResolvent>(
+                            n::package_id() = *i,
+                            n::resolvent() = current_resolution->resolvent()
+                            ));
+
+            newly_available->push_back(make_named_values<ChangeByResolvent>(
+                        n::package_id() = d.origin_id(),
+                        n::resolvent() = current_resolution->resolvent()
+                        ));
         }
 
         void visit(const UnableToMakeDecision &)
@@ -338,8 +378,8 @@ namespace
 }
 
 const std::pair<
-    std::tr1::shared_ptr<const PackageIDSequence>,
-    std::tr1::shared_ptr<const PackageIDSequence> >
+    std::tr1::shared_ptr<const ChangeByResolventSequence>,
+    std::tr1::shared_ptr<const ChangeByResolventSequence> >
 Decider::_collect_changing() const
 {
     ChangingCollector c;
@@ -348,13 +388,34 @@ Decider::_collect_changing() const
             i_end(_imp->resolutions_by_resolvent->end()) ;
             i != i_end ; ++i)
         if ((*i)->decision() && (*i)->decision()->taken())
+        {
+            c.current_resolution = *i;
             (*i)->decision()->accept(c);
+        }
 
     return std::make_pair(c.going_away, c.newly_available);
 }
 
+namespace
+{
+    struct ChangeByResolventPackageIDIs
+    {
+        const std::tr1::shared_ptr<const PackageID> id;
+
+        ChangeByResolventPackageIDIs(const std::tr1::shared_ptr<const PackageID> & i) :
+            id(i)
+        {
+        }
+
+        bool operator() (const ChangeByResolvent & r) const
+        {
+            return *r.package_id() == *id;
+        }
+    };
+}
+
 const std::tr1::shared_ptr<const PackageIDSequence>
-Decider::_collect_staying(const std::tr1::shared_ptr<const PackageIDSequence> & going_away) const
+Decider::_collect_staying(const std::tr1::shared_ptr<const ChangeByResolventSequence> & going_away) const
 {
     const std::tr1::shared_ptr<const PackageIDSequence> existing((*_imp->env)[selection::AllVersionsUnsorted(
                 generator::All() | filter::InstalledAtRoot(FSEntry("/")))]);
@@ -362,8 +423,7 @@ Decider::_collect_staying(const std::tr1::shared_ptr<const PackageIDSequence> & 
     const std::tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
     for (PackageIDSequence::ConstIterator x(existing->begin()), x_end(existing->end()) ;
             x != x_end ; ++x)
-        if (indirect_iterator(going_away->end()) == std::find(indirect_iterator(going_away->begin()),
-                    indirect_iterator(going_away->end()), **x))
+        if (going_away->end() == std::find_if(going_away->begin(), going_away->end(), ChangeByResolventPackageIDIs(*x)))
             result->push_back(*x);
 
     return result;
@@ -1781,7 +1841,7 @@ Decider::purge()
         if (resolution->decision())
             continue;
 
-        const std::tr1::shared_ptr<const PackageIDSequence> used_to_use(new PackageIDSequence);
+        const std::tr1::shared_ptr<const ChangeByResolventSequence> used_to_use(new ChangeByResolventSequence);
         const std::tr1::shared_ptr<const ConstraintSequence> constraints(_make_constraints_for_purge(resolution, *i, used_to_use));
         for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                 c != c_end ; ++c)
@@ -1946,14 +2006,16 @@ Decider::_resolve_purges()
     Context context("When finding things to purge:");
 
     const std::pair<
-        std::tr1::shared_ptr<const PackageIDSequence>,
-        std::tr1::shared_ptr<const PackageIDSequence> > going_away_newly_available(_collect_changing());
+        std::tr1::shared_ptr<const ChangeByResolventSequence>,
+        std::tr1::shared_ptr<const ChangeByResolventSequence> > going_away_newly_available(_collect_changing());
 
     const std::tr1::shared_ptr<PackageIDSet> going_away(new PackageIDSet);
-    std::copy(going_away_newly_available.first->begin(), going_away_newly_available.first->end(), going_away->inserter());
+    std::transform(going_away_newly_available.first->begin(), going_away_newly_available.first->end(),
+            going_away->inserter(), get_change_by_resolvent_id);
 
     const std::tr1::shared_ptr<PackageIDSet> newly_available(new PackageIDSet);
-    std::copy(going_away_newly_available.second->begin(), going_away_newly_available.second->end(), newly_available->inserter());
+    std::transform(going_away_newly_available.second->begin(), going_away_newly_available.second->end(),
+            newly_available->inserter(), get_change_by_resolvent_id);
 
     const std::tr1::shared_ptr<const PackageIDSet> have_now(_collect_installed());
 
@@ -2016,11 +2078,12 @@ Decider::_resolve_purges()
         if (match_package_in_set(*_imp->env, *world, **i, MatchPackageOptions()))
             continue;
 
-        const std::tr1::shared_ptr<PackageIDSequence> used_to_use(new PackageIDSequence), star_i_set(new PackageIDSequence);
+        const std::tr1::shared_ptr<ChangeByResolventSequence> used_to_use(new ChangeByResolventSequence);
+        const std::tr1::shared_ptr<PackageIDSequence> star_i_set(new PackageIDSequence);
         star_i_set->push_back(*i);
-        for (PackageIDSet::ConstIterator g(going_away->begin()), g_end(going_away->end()) ;
+        for (ChangeByResolventSequence::ConstIterator g(going_away_newly_available.first->begin()), g_end(going_away_newly_available.first->end()) ;
                 g != g_end ; ++g)
-            if (! _collect_depped_upon(*g, star_i_set)->empty())
+            if (! _collect_depped_upon(g->package_id(), star_i_set)->empty())
                 used_to_use->push_back(*g);
 
         Resolvent resolvent(*i, dt_install_to_slash);
@@ -2094,7 +2157,7 @@ Decider::_collect_depped_upon(
         const std::tr1::shared_ptr<const PackageID> & id,
         const std::tr1::shared_ptr<const PackageIDSequence> & candidates) const
 {
-    DependentChecker c(_imp->env, candidates, make_shared_ptr(new PackageIDSequence));
+    DependentChecker<PackageIDSequence> c(_imp->env, candidates, make_shared_ptr(new PackageIDSequence));
     if (id->dependencies_key())
         id->dependencies_key()->value()->root()->accept(c);
     else
@@ -2141,7 +2204,7 @@ const std::tr1::shared_ptr<ConstraintSequence>
 Decider::_make_constraints_for_purge(
         const std::tr1::shared_ptr<const Resolution> & resolution,
         const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const PackageIDSequence> & r) const
+        const std::tr1::shared_ptr<const ChangeByResolventSequence> & r) const
 {
     return _imp->fns.get_constraints_for_purge_fn()(resolution, id, r);
 }

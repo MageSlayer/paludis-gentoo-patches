@@ -53,6 +53,7 @@
 #include <paludis/resolver/decisions.hh>
 #include <paludis/resolver/required_confirmations.hh>
 #include <paludis/resolver/orderer_notes.hh>
+#include <paludis/resolver/change_by_resolvent.hh>
 #include <paludis/package_id.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -139,6 +140,11 @@ namespace
         return value->value();
     }
 
+    std::string stringify_change_by_resolvent(const ChangeByResolvent & r)
+    {
+        return stringify(*r.package_id());
+    }
+
     struct ReasonNameGetter
     {
         const bool verbose;
@@ -201,16 +207,17 @@ namespace
 
         std::pair<std::string, bool> visit(const DependentReason & r) const
         {
-            return std::make_pair("dependent upon " + stringify(*r.id_being_removed()), true);
+            return std::make_pair("dependent upon " + stringify(*r.id_and_resolvent_being_removed().package_id()), true);
         }
 
         std::pair<std::string, bool> visit(const WasUsedByReason & r) const
         {
-            if (r.ids_being_removed()->empty())
+            if (r.ids_and_resolvents_being_removed()->empty())
                 return std::make_pair("was unused", true);
             else
-                return std::make_pair("was used by " + join(indirect_iterator(r.ids_being_removed()->begin()),
-                            indirect_iterator(r.ids_being_removed()->end()), ", "), true);
+                return std::make_pair("was used by " + join(r.ids_and_resolvents_being_removed()->begin(),
+                            r.ids_and_resolvents_being_removed()->end(),
+                            ", ", stringify_change_by_resolvent), true);
         }
 
         std::pair<std::string, bool> visit(const TargetReason &) const

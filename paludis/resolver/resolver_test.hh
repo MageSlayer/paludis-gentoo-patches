@@ -33,6 +33,7 @@
 #include <paludis/resolver/required_confirmations-fwd.hh>
 #include <paludis/resolver/package_or_block_dep_spec-fwd.hh>
 #include <paludis/resolver/resolved-fwd.hh>
+#include <paludis/resolver/change_by_resolvent-fwd.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/environments/test/test_environment.hh>
@@ -69,13 +70,13 @@ namespace paludis
             get_constraints_for_dependent_fn(
                     const std::tr1::shared_ptr<const Resolution> &,
                     const std::tr1::shared_ptr<const PackageID> & id,
-                    const std::tr1::shared_ptr<const PackageIDSequence> & ids);
+                    const std::tr1::shared_ptr<const ChangeByResolventSequence> & ids);
 
             const std::tr1::shared_ptr<ConstraintSequence>
             get_constraints_for_purge_fn(
                     const std::tr1::shared_ptr<const Resolution> &,
                     const std::tr1::shared_ptr<const PackageID> & id,
-                    const std::tr1::shared_ptr<const PackageIDSequence> & ids);
+                    const std::tr1::shared_ptr<const ChangeByResolventSequence> & ids);
 
             std::tr1::shared_ptr<Resolvents> get_resolvents_for_fn(const PackageDepSpec & spec,
                     const std::tr1::shared_ptr<const SlotName> &,

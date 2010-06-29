@@ -27,6 +27,7 @@
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/destination.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
+#include <paludis/resolver/change_by_resolvent.hh>
 #include <paludis/util/enum_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/join.hh>
@@ -66,6 +67,11 @@ namespace
         }
         else
             return "null";
+    }
+
+    std::string stringify_change_by_resolvent(const ChangeByResolvent & r)
+    {
+        return stringify(*r.package_id());
     }
 
     struct DecisionStringifier
@@ -169,13 +175,13 @@ namespace
 
         void visit(const DependentReason & r)
         {
-            str = "Dependent(" + stringify(*r.id_being_removed()) + ")";
+            str = "Dependent(" + stringify(*r.id_and_resolvent_being_removed().package_id()) + ")";
         }
 
         void visit(const WasUsedByReason & r)
         {
-            str = "WasUsedBy(" + join(indirect_iterator(r.ids_being_removed()->begin()),
-                        indirect_iterator(r.ids_being_removed()->end()), ", ") + ")";
+            str = "WasUsedBy(" + join(r.ids_and_resolvents_being_removed()->begin(),
+                        r.ids_and_resolvents_being_removed()->end(), ", ", stringify_change_by_resolvent) + ")";
         }
 
         void visit(const DependencyReason & r)

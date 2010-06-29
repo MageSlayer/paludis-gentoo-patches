@@ -20,6 +20,7 @@
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
+#include <paludis/resolver/change_by_resolvent.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/serialise-impl.hh>
@@ -111,16 +112,16 @@ namespace paludis
     template <>
     struct Implementation<DependentReason>
     {
-        const std::tr1::shared_ptr<const PackageID> id_being_removed;
+        const ChangeByResolvent id_being_removed;
 
-        Implementation(const std::tr1::shared_ptr<const PackageID> & i) :
+        Implementation(const ChangeByResolvent & i) :
             id_being_removed(i)
         {
         }
     };
 }
 
-DependentReason::DependentReason(const std::tr1::shared_ptr<const PackageID> & i) :
+DependentReason::DependentReason(const ChangeByResolvent & i) :
     PrivateImplementationPattern<DependentReason>(new Implementation<DependentReason>(i))
 {
 }
@@ -129,8 +130,8 @@ DependentReason::~DependentReason()
 {
 }
 
-const std::tr1::shared_ptr<const PackageID>
-DependentReason::id_being_removed() const
+const ChangeByResolvent
+DependentReason::id_and_resolvent_being_removed() const
 {
     return _imp->id_being_removed;
 }
@@ -139,7 +140,7 @@ void
 DependentReason::serialise(Serialiser & s) const
 {
     s.object("DependentReason")
-        .member(SerialiserFlags<serialise::might_be_null>(), "id_being_removed", id_being_removed())
+        .member(SerialiserFlags<>(), "id_and_resolvent_being_removed", id_and_resolvent_being_removed())
         ;
 }
 
@@ -148,16 +149,16 @@ namespace paludis
     template <>
     struct Implementation<WasUsedByReason>
     {
-        const std::tr1::shared_ptr<const PackageIDSequence> ids_being_removed;
+        const std::tr1::shared_ptr<const ChangeByResolventSequence> ids_being_removed;
 
-        Implementation(const std::tr1::shared_ptr<const PackageIDSequence> & i) :
+        Implementation(const std::tr1::shared_ptr<const ChangeByResolventSequence> & i) :
             ids_being_removed(i)
         {
         }
     };
 }
 
-WasUsedByReason::WasUsedByReason(const std::tr1::shared_ptr<const PackageIDSequence> & i) :
+WasUsedByReason::WasUsedByReason(const std::tr1::shared_ptr<const ChangeByResolventSequence> & i) :
     PrivateImplementationPattern<WasUsedByReason>(new Implementation<WasUsedByReason>(i))
 {
 }
@@ -166,8 +167,8 @@ WasUsedByReason::~WasUsedByReason()
 {
 }
 
-const std::tr1::shared_ptr<const PackageIDSequence>
-WasUsedByReason::ids_being_removed() const
+const std::tr1::shared_ptr<const ChangeByResolventSequence>
+WasUsedByReason::ids_and_resolvents_being_removed() const
 {
     return _imp->ids_being_removed;
 }
@@ -176,7 +177,7 @@ void
 WasUsedByReason::serialise(Serialiser & s) const
 {
     s.object("WasUsedByReason")
-        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "ids_being_removed", ids_being_removed())
+        .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "ids_and_resolvents_being_removed", ids_and_resolvents_being_removed())
         ;
 }
 
@@ -356,17 +357,18 @@ Reason::deserialise(Deserialisation & d)
     else if (d.class_name() == "DependentReason")
     {
         Deserialisator v(d, "DependentReason");
-        const std::tr1::shared_ptr<const PackageID> id_being_removed(v.member<std::tr1::shared_ptr<const PackageID> >("id_being_removed"));
-        return make_shared_ptr(new DependentReason(id_being_removed));
+        return make_shared_ptr(new DependentReason(
+                    v.member<ChangeByResolvent>("id_and_resolvent_being_removed"))
+                );
     }
     else if (d.class_name() == "WasUsedByReason")
     {
         Deserialisator v(d, "WasUsedByReason");
-        Deserialisator vv(*v.find_remove_member("ids_being_removed"), "c");
-        std::tr1::shared_ptr<PackageIDSequence> ids_being_removed(new PackageIDSequence);
+        Deserialisator vv(*v.find_remove_member("ids_and_resolvents_being_removed"), "c");
+        std::tr1::shared_ptr<ChangeByResolventSequence> ids_and_resolvents_being_removed(new ChangeByResolventSequence);
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
-            ids_being_removed->push_back(vv.member<std::tr1::shared_ptr<const PackageID> >(stringify(n)));
-        return make_shared_ptr(new WasUsedByReason(ids_being_removed));
+            ids_and_resolvents_being_removed->push_back(vv.member<ChangeByResolvent>(stringify(n)));
+        return make_shared_ptr(new WasUsedByReason(ids_and_resolvents_being_removed));
     }
     else if (d.class_name() == "LikeOtherDestinationTypeReason")
     {

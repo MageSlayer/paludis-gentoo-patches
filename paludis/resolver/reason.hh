@@ -23,6 +23,7 @@
 #include <paludis/resolver/reason-fwd.hh>
 #include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
+#include <paludis/resolver/change_by_resolvent-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
@@ -85,10 +86,10 @@ namespace paludis
             public ImplementAcceptMethods<Reason, DependentReason>
         {
             public:
-                DependentReason(const std::tr1::shared_ptr<const PackageID> & id);
+                DependentReason(const ChangeByResolvent &);
                 ~DependentReason();
 
-                const std::tr1::shared_ptr<const PackageID> id_being_removed() const;
+                const ChangeByResolvent id_and_resolvent_being_removed() const;
 
                 virtual void serialise(Serialiser &) const;
         };
@@ -99,10 +100,10 @@ namespace paludis
             public ImplementAcceptMethods<Reason, WasUsedByReason>
         {
             public:
-                WasUsedByReason(const std::tr1::shared_ptr<const PackageIDSequence> & ids);
+                WasUsedByReason(const std::tr1::shared_ptr<const ChangeByResolventSequence> & ids);
                 ~WasUsedByReason();
 
-                const std::tr1::shared_ptr<const PackageIDSequence> ids_being_removed() const;
+                const std::tr1::shared_ptr<const ChangeByResolventSequence> ids_and_resolvents_being_removed() const;
 
                 virtual void serialise(Serialiser &) const;
         };

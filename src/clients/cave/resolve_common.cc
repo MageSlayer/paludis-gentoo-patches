@@ -54,6 +54,7 @@
 #include <paludis/resolver/required_confirmations.hh>
 #include <paludis/resolver/job_lists.hh>
 #include <paludis/resolver/decisions.hh>
+#include <paludis/resolver/change_by_resolvent.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/generator.hh>
@@ -1262,7 +1263,7 @@ namespace
             const PackageDepSpecList & list,
             const std::tr1::shared_ptr<const Resolution> &,
             const std::tr1::shared_ptr<const PackageID> & id,
-            const std::tr1::shared_ptr<const PackageIDSequence> & ids)
+            const std::tr1::shared_ptr<const ChangeByResolventSequence> & ids)
     {
         const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
 
@@ -1279,7 +1280,7 @@ namespace
             spec = make_shared_ptr(new PackageDepSpec(partial_spec));
         }
 
-        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+        for (ChangeByResolventSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
         {
             const std::tr1::shared_ptr<DependentReason> reason(new DependentReason(*i));
@@ -1302,7 +1303,7 @@ namespace
             const PackageDepSpecList & list,
             const std::tr1::shared_ptr<const Resolution> &,
             const std::tr1::shared_ptr<const PackageID> & id,
-            const std::tr1::shared_ptr<const PackageIDSequence> & ids)
+            const std::tr1::shared_ptr<const ChangeByResolventSequence> & ids)
     {
         const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
 
@@ -1536,6 +1537,11 @@ namespace
         }
     };
 
+    std::string stringify_change_by_resolvent(const ChangeByResolvent & r)
+    {
+        return stringify(*r.package_id());
+    }
+
     struct ShortReasonName
     {
         const std::string visit(const DependencyReason & r) const
@@ -1546,16 +1552,16 @@ namespace
 
         const std::string visit(const WasUsedByReason & r) const
         {
-            if (r.ids_being_removed()->empty())
+            if (r.ids_and_resolvents_being_removed()->empty())
                 return "from was unused";
             else
-                return "from was used by " + join(indirect_iterator(r.ids_being_removed()->begin()),
-                        indirect_iterator(r.ids_being_removed()->end()), ", ");
+                return "from was used by " + join(r.ids_and_resolvents_being_removed()->begin(),
+                        r.ids_and_resolvents_being_removed()->end(), ", ", stringify_change_by_resolvent);
         }
 
         const std::string visit(const DependentReason & r) const
         {
-            return "from dependent " + stringify(*r.id_being_removed());
+            return "from dependent " + stringify(*r.id_and_resolvent_being_removed().package_id());
         }
 
         const std::string visit(const TargetReason &) const
