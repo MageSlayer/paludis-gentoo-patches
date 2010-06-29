@@ -28,6 +28,7 @@ command_MANS = \
 	cave-help.1 \
 	cave-import.1 \
 	cave-info.1 \
+	cave-owner.1 \
 	cave-perform.1 \
 	cave-print-categories.1 \
 	cave-print-commands.1 \
@@ -103,6 +104,7 @@ libcave_a_SOURCES = \
 	cmd_import.cc cmd_import.hh \
 	cmd_info.cc cmd_info.hh \
 	cmd_match.cc cmd_match.hh \
+	cmd_owner.cc cmd_owner.hh \
 	cmd_perform.cc cmd_perform.hh \
 	cmd_print_categories.cc cmd_print_categories.hh \
 	cmd_print_commands.cc cmd_print_commands.hh \
@@ -137,11 +139,11 @@ libcave_a_SOURCES = \
 	formats.cc formats.hh \
 	select_format_for_spec.cc select_format_for_spec.hh \
 	match_qpns.cc match_qpns.hh \
+	owner_common.cc owner_common.hh \
 	resolve_common.cc resolve_common.hh \
 	resume_data.cc resume_data.hh
 
 #	cmd_executables.cc \
-#	cmd_owner.cc \
 #	cmd_print_id_actions.cc \
 #	cmd_print_id_masks.cc \
 #	cmd_print_repository_metadata.cc \

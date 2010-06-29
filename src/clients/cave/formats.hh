@@ -165,6 +165,8 @@ namespace paludis
             const std::string contents_dir();
             const std::string contents_sym();
             const std::string contents_other();
+
+            const std::string owner_id();
         }
     }
 }

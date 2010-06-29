@@ -37,6 +37,7 @@
 #include "cmd_import.hh"
 #include "cmd_info.hh"
 #include "cmd_match.hh"
+#include "cmd_owner.hh"
 #include "cmd_perform.hh"
 #include "cmd_print_categories.hh"
 #include "cmd_print_commands.hh"
@@ -103,6 +104,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("import", std::tr1::bind(&make_command<ImportCommand>)));
     _imp->handlers.insert(std::make_pair("info", std::tr1::bind(&make_command<InfoCommand>)));
     _imp->handlers.insert(std::make_pair("match", std::tr1::bind(&make_command<MatchCommand>)));
+    _imp->handlers.insert(std::make_pair("owner", std::tr1::bind(&make_command<OwnerCommand>)));
     _imp->handlers.insert(std::make_pair("perform", std::tr1::bind(&make_command<PerformCommand>)));
     _imp->handlers.insert(std::make_pair("purge", std::tr1::bind(&make_command<PurgeCommand>)));
     _imp->handlers.insert(std::make_pair("print-categories", std::tr1::bind(&make_command<PrintCategoriesCommand>)));

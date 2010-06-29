@@ -18,14 +18,23 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "cmd_print_owners.hh"
+#include "cmd_owner.hh"
 #include "command_command_line.hh"
 #include "owner_common.hh"
+#include "format_general.hh"
+#include "formats.hh"
+
+#include <paludis/action.hh>
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/stringify.hh>
+
 #include <iostream>
 #include <cstdlib>
+#include <tr1/functional>
 
 using namespace paludis;
 using namespace cave;
@@ -34,28 +43,28 @@ using std::endl;
 
 namespace
 {
-    struct PrintOwnersCommandLine :
+    struct OwnerCommandLine :
         CaveCommandCommandLine
     {
         virtual std::string app_name() const
         {
-            return "cave print-owners";
+            return "cave owner";
         }
 
         virtual std::string app_synopsis() const
         {
-            return "Prints a list of package IDs owning a given file.";
+            return "Shows package IDs owning a given file.";
         }
 
         virtual std::string app_description() const
         {
-            return "Prints a list of package IDs owning a given file. No formatting is used, making the output suitable for parsing by scripts.";
+            return "Shows package IDs owning a given file.";
         }
 
         args::ArgsGroup g_owner_options;
         args::EnumArg a_match;
 
-        PrintOwnersCommandLine() :
+        OwnerCommandLine() :
             g_owner_options(main_options_section(), "Owner options", "Alter how the search is performed."),
             a_match(&g_owner_options, "match", 'm', "Which match algorithm to use",
                     args::EnumArg::EnumArgOptions
@@ -69,20 +78,20 @@ namespace
         }
     };
 
-    void print_package_id(const std::tr1::shared_ptr<const PackageID> & id)
+    void format_id(const std::tr1::shared_ptr<const PackageID> & id)
     {
-        cout << *id << endl;
+        cout << format_general_s(f::owner_id(), stringify(*id));
     }
 }
 
 int
-PrintOwnersCommand::run(
+OwnerCommand::run(
         const std::tr1::shared_ptr<Environment> & env,
         const std::tr1::shared_ptr<const Sequence<std::string > > & args
         )
 {
-    PrintOwnersCommandLine cmdline;
-    cmdline.run(args, "CAVE", "CAVE_PRINT_OWNERS_OPTIONS", "CAVE_PRINT_OWNERS_CMDLINE");
+    OwnerCommandLine cmdline;
+    cmdline.run(args, "CAVE", "CAVE_OWNER_OPTIONS", "CAVE_OWNER_CMDLINE");
 
     if (cmdline.a_help.specified())
     {
@@ -91,14 +100,14 @@ PrintOwnersCommand::run(
     }
 
     if (std::distance(cmdline.begin_parameters(), cmdline.end_parameters()) != 1)
-        throw args::DoHelp("print-owners takes exactly one parameter");
+        throw args::DoHelp("owner takes exactly one parameter");
 
-    return owner_common(env, cmdline.a_match.argument(), *cmdline.begin_parameters(), &print_package_id);
+    return owner_common(env, cmdline.a_match.argument(), *cmdline.begin_parameters(), &format_id);
 }
 
 std::tr1::shared_ptr<args::ArgsHandler>
-PrintOwnersCommand::make_doc_cmdline()
+OwnerCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new PrintOwnersCommandLine);
+    return make_shared_ptr(new OwnerCommandLine);
 }
 
