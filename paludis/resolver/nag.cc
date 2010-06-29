@@ -228,18 +228,38 @@ namespace
         return node_data;
     }
 
-    struct OrderingNowComparator
+    int order_score_one(const NAGIndex & n)
     {
-        bool operator() (const NAGIndex & a, const NAGIndex & b) const
+        /* lower scores are 'better' and mean 'order earlier' */
+        switch (n.role())
         {
-            if (a.role() == nir_fetched && b.role() != nir_fetched)
-                return true;
-            if (b.role() == nir_fetched && a.role() != nir_fetched)
-                return false;
+            case nir_fetched:
+                return 10;
 
-            return a < b;
+            case nir_done:
+                return 20;
+
+            case last_nir:
+                break;
         }
-    };
+
+        throw InternalError(PALUDIS_HERE, "bad nir");
+    }
+
+    std::pair<int, NAGIndex> order_score(const NAGIndex & r, const StronglyConnectedComponent & scc)
+    {
+        int best_score(-1);
+
+        for (Set<NAGIndex>::ConstIterator e(scc.nodes()->begin()), e_end(scc.nodes()->end()) ;
+                e != e_end ; ++e)
+        {
+            int score(order_score_one(*e));
+            if (best_score == -1 || score < best_score)
+                best_score = score;
+        }
+
+        return std::make_pair(best_score, r);
+    }
 }
 
 const std::tr1::shared_ptr<const SortedStronglyConnectedComponents>
@@ -291,20 +311,22 @@ NAG::sorted_strongly_connected_components() const
      * easier). we know there're no cycles. */
     std::tr1::shared_ptr<SortedStronglyConnectedComponents> result(new SortedStronglyConnectedComponents);
 
+    typedef std::set<std::pair<int, NAGIndex> > OrderableNow;
+    OrderableNow orderable_now;
     Nodes done;
-    std::set<NAGIndex, OrderingNowComparator> orderable_now;
+
     for (StronglyConnectedComponentsByRepresentative::const_iterator c(sccs.begin()), c_end(sccs.end()) ;
             c != c_end ; ++c)
         if (scc_edges.end() == scc_edges.find(c->first))
-            orderable_now.insert(c->first);
+            orderable_now.insert(order_score(c->first, c->second));
 
     while (! orderable_now.empty())
     {
-        std::set<NAGIndex, OrderingNowComparator>::iterator ordering_now(orderable_now.begin());
-        result->push_back(sccs.find(*ordering_now)->second);
-        done.insert(*ordering_now);
+        OrderableNow::iterator ordering_now(orderable_now.begin());
+        result->push_back(sccs.find(ordering_now->second)->second);
+        done.insert(ordering_now->second);
 
-        PlainEdges::iterator ordering_now_edges(scc_edges_backwards.find(*ordering_now));
+        PlainEdges::iterator ordering_now_edges(scc_edges_backwards.find(ordering_now->second));
         if (ordering_now_edges != scc_edges_backwards.end())
             for (Nodes::iterator e(ordering_now_edges->second.begin()), e_end(ordering_now_edges->second.end()) ;
                     e != e_end ; )
@@ -312,9 +334,9 @@ NAG::sorted_strongly_connected_components() const
                 PlainEdges::iterator reverse_edges(scc_edges.find(*e));
                 if (reverse_edges == scc_edges.end())
                     throw InternalError(PALUDIS_HERE, "huh?");
-                reverse_edges->second.erase(*ordering_now);
+                reverse_edges->second.erase(ordering_now->second);
                 if (reverse_edges->second.empty())
-                    orderable_now.insert(*e);
+                    orderable_now.insert(order_score(*e, sccs.find(*e)->second));
                 ordering_now_edges->second.erase(e++);
             }
 
