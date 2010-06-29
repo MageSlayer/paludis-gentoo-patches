@@ -1354,32 +1354,38 @@ VDBRepository::perform_updates()
     {
         Context context_2("When performing updates from '" + stringify((*r)->name()) + "':");
 
-        Repository::MetadataConstIterator k_iter((*r)->find_metadata("e_updates_location"));
-        if (k_iter == (*r)->end_metadata())
-        {
-            Log::get_instance()->message("e.vdb.updates.no_key", ll_debug, lc_context) <<
-                "Repository " << (*r)->name() << " defines no e_updates_location key";
-            continue;
-        }
-
-        const MetadataValueKey<FSEntry> * k(simple_visitor_cast<const MetadataValueKey<FSEntry> >(**k_iter));
-        if (! k)
-        {
-            Log::get_instance()->message("e.vdb.udpates.bad_key", ll_warning, lc_context) <<
-                "Repository " << (*r)->name() << " defines an e_updates_location key, but it is not an FSEntry key";
-            continue;
-        }
-
-        FSEntry dir(k->value());
-        if (! dir.is_directory_or_symlink_to_directory())
-        {
-            Log::get_instance()->message("e.vdb.updates.bad_key", ll_warning, lc_context) <<
-                "Repository " << (*r)->name() << " has e_updates_location " << dir << ", but this is not a directory";
-            continue;
-        }
-
         try
         {
+            if (0 == stringify((*r)->name()).compare(0, 2, "x-"))
+            {
+                /* ticket:897. not really the best solution, but it'll do for now. */
+                continue;
+            }
+
+            Repository::MetadataConstIterator k_iter((*r)->find_metadata("e_updates_location"));
+            if (k_iter == (*r)->end_metadata())
+            {
+                Log::get_instance()->message("e.vdb.updates.no_key", ll_debug, lc_context) <<
+                    "Repository " << (*r)->name() << " defines no e_updates_location key";
+                continue;
+            }
+
+            const MetadataValueKey<FSEntry> * k(simple_visitor_cast<const MetadataValueKey<FSEntry> >(**k_iter));
+            if (! k)
+            {
+                Log::get_instance()->message("e.vdb.udpates.bad_key", ll_warning, lc_context) <<
+                    "Repository " << (*r)->name() << " defines an e_updates_location key, but it is not an FSEntry key";
+                continue;
+            }
+
+            FSEntry dir(k->value());
+            if (! dir.is_directory_or_symlink_to_directory())
+            {
+                Log::get_instance()->message("e.vdb.updates.bad_key", ll_warning, lc_context) <<
+                    "Repository " << (*r)->name() << " has e_updates_location " << dir << ", but this is not a directory";
+                continue;
+            }
+
             for (DirIterator d(k->value(), DirIteratorOptions()), d_end ;
                     d != d_end ; ++d)
             {
