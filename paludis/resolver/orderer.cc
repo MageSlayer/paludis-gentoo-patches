@@ -33,6 +33,7 @@
 #include <paludis/resolver/destination.hh>
 #include <paludis/resolver/orderer_notes.hh>
 #include <paludis/resolver/change_by_resolvent.hh>
+#include <paludis/resolver/resolver_functions.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
@@ -63,6 +64,7 @@ namespace paludis
     struct Implementation<Orderer>
     {
         const Environment * const env;
+        const ResolverFunctions fns;
         const std::tr1::shared_ptr<Resolved> resolved;
         ChangeOrRemoveIndices change_or_remove_indices;
         FetchJobNumbers fetch_job_numbers;
@@ -70,8 +72,10 @@ namespace paludis
 
         Implementation(
                 const Environment * const e,
+                const ResolverFunctions & f,
                 const std::tr1::shared_ptr<Resolved> & r) :
             env(e),
+            fns(f),
             resolved(r)
         {
         }
@@ -80,8 +84,9 @@ namespace paludis
 
 Orderer::Orderer(
         const Environment * const e,
+        const ResolverFunctions & f,
         const std::tr1::shared_ptr<Resolved> & r) :
-    PrivateImplementationPattern<Orderer>(new Implementation<Orderer>(e, r))
+    PrivateImplementationPattern<Orderer>(new Implementation<Orderer>(e, f, r))
 {
 }
 
@@ -441,9 +446,9 @@ namespace
 }
 
 Tribool
-Orderer::_order_early(const NAGIndex &) const
+Orderer::_order_early(const NAGIndex & i) const
 {
-    return indeterminate;
+    return _imp->fns.order_early_fn()(*_imp->resolved->resolutions_by_resolvent()->find(i.resolvent()));
 }
 
 void

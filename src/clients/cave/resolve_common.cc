@@ -1170,6 +1170,26 @@ namespace
         }
     };
 
+    Tribool order_early_fn(
+            const Environment * const env,
+            const ResolveCommandLineResolutionOptions &,
+            const PackageDepSpecList & early,
+            const PackageDepSpecList & late,
+            const std::tr1::shared_ptr<const Resolution> & r)
+    {
+        const std::tr1::shared_ptr<const PackageID> id(r->decision()->accept_returning<std::tr1::shared_ptr<const PackageID> >(
+                    ChosenIDVisitor()));
+        if (id)
+        {
+            if (match_any(env, early, id))
+                return true;
+            if (match_any(env, late, id))
+                return false;
+        }
+
+        return indeterminate;
+    }
+
     struct ConfirmFnVisitor
     {
         const Environment * const env;
@@ -1643,7 +1663,7 @@ paludis::cave::resolve_common(
     PackageDepSpecList allowed_to_remove_specs, allowed_to_break_specs, remove_if_dependent_specs,
                        less_restrictive_remove_blockers_specs, purge_specs, with, without,
                        permit_old_version, permit_downgrade, take, take_from, ignore, ignore_from,
-                       favour, avoid, no_dependencies_from, no_blockers_from, not_usable_specs;
+                       favour, avoid, early, late, no_dependencies_from, no_blockers_from, not_usable_specs;
     bool allowed_to_break_system(false);
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_uninstall.begin_args()),
@@ -1725,6 +1745,18 @@ paludis::cave::resolve_common(
             i_end(resolution_options.a_avoid.end_args()) ;
             i != i_end ; ++i)
         avoid.push_back(parse_user_package_dep_spec(*i, env.get(),
+                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_early.begin_args()),
+            i_end(resolution_options.a_early.end_args()) ;
+            i != i_end ; ++i)
+        early.push_back(parse_user_package_dep_spec(*i, env.get(),
+                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_late.begin_args()),
+            i_end(resolution_options.a_late.end_args()) ;
+            i != i_end ; ++i)
+        late.push_back(parse_user_package_dep_spec(*i, env.get(),
                     UserPackageDepSpecOptions() + updso_allow_wildcards));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_no_dependencies_from.begin_args()),
@@ -1841,6 +1873,8 @@ paludis::cave::resolve_common(
                         std::tr1::cref(no_dependencies_from), _1, _2),
                 n::make_destination_filtered_generator_fn() = std::tr1::bind(&make_destination_filtered_generator,
                         env.get(), std::tr1::cref(resolution_options), all_binary_repos_generator, _1, _2),
+                n::order_early_fn() = std::tr1::bind(&order_early_fn,
+                        env.get(), std::tr1::cref(resolution_options), std::tr1::cref(early), std::tr1::cref(late), _1),
                 n::prefer_or_avoid_fn() = std::tr1::bind(&prefer_or_avoid_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::cref(favour), std::tr1::cref(avoid), _1),
                 n::remove_if_dependent_fn() = std::tr1::bind(&remove_if_dependent_fn,

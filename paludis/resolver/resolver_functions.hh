@@ -58,6 +58,7 @@ namespace paludis
         typedef Name<struct get_use_existing_fn_name> get_use_existing_fn;
         typedef Name<struct interest_in_spec_fn_name> interest_in_spec_fn;
         typedef Name<struct make_destination_filtered_generator_fn_name> make_destination_filtered_generator_fn;
+        typedef Name<struct order_early_fn_name> order_early_fn;
         typedef Name<struct prefer_or_avoid_fn_name> prefer_or_avoid_fn;
         typedef Name<struct remove_if_dependent_fn_name> remove_if_dependent_fn;
     }
@@ -128,6 +129,10 @@ namespace paludis
                 )> MakeDestinationFilteredGeneratorFunction;
 
         typedef std::tr1::function<Tribool (
+                const std::tr1::shared_ptr<const Resolution> &
+                )> OrderEarlyFunction;
+
+        typedef std::tr1::function<Tribool (
                 const QualifiedPackageName &
                 )> PreferOrAvoidFunction;
 
@@ -150,6 +155,7 @@ namespace paludis
             NamedValue<n::interest_in_spec_fn, InterestInSpecFunction> interest_in_spec_fn;
             NamedValue<n::make_destination_filtered_generator_fn,
                 MakeDestinationFilteredGeneratorFunction> make_destination_filtered_generator_fn;
+            NamedValue<n::order_early_fn, OrderEarlyFunction> order_early_fn;
             NamedValue<n::prefer_or_avoid_fn, PreferOrAvoidFunction> prefer_or_avoid_fn;
             NamedValue<n::remove_if_dependent_fn, RemoveIfDependentFunction> remove_if_dependent_fn;
         };

@@ -269,6 +269,13 @@ paludis::resolver::resolver_test::prefer_or_avoid_fn(
         return indeterminate;
 }
 
+Tribool
+paludis::resolver::resolver_test::order_early_fn(
+        const std::tr1::shared_ptr<const Resolution> &)
+{
+    return indeterminate;
+}
+
 bool
 paludis::resolver::resolver_test::confirm_fn(
         const std::tr1::shared_ptr<const Resolution> &,
@@ -413,6 +420,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             n::get_use_existing_fn() = &get_use_existing_fn,
             n::interest_in_spec_fn() = &interest_in_spec_fn,
             n::make_destination_filtered_generator_fn() = &make_destination_filtered_generator_fn,
+            n::order_early_fn() = &order_early_fn,
             n::prefer_or_avoid_fn() = std::tr1::bind(&prefer_or_avoid_fn,
                     prefer_or_avoid_names, std::tr1::placeholders::_1),
             n::remove_if_dependent_fn() = std::tr1::bind(&remove_if_dependent_fn,

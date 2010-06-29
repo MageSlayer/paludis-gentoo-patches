@@ -27,6 +27,7 @@
 #include <paludis/resolver/strongly_connected_component-fwd.hh>
 #include <paludis/resolver/nag-fwd.hh>
 #include <paludis/resolver/resolvent-fwd.hh>
+#include <paludis/resolver/resolver_functions-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/tribool-fwd.hh>
 #include <paludis/environment-fwd.hh>
@@ -66,6 +67,7 @@ namespace paludis
             public:
                 Orderer(
                         const Environment * const,
+                        const ResolverFunctions &,
                         const std::tr1::shared_ptr<Resolved> &);
                 ~Orderer();
 

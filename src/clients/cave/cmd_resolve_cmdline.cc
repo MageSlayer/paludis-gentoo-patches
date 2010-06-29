@@ -210,8 +210,10 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
     a_not_usable(&g_ordering_options, "not-usable", 'N', "Consider installed packages matching the supplied specification "
             "as being unusable when breaking dependency cycles. May be specified multiple times. Note that this option "
             "affects only ordering; it does not also force a reinstall of these packages."),
-//    a_early(&g_ordering_options, "early", 'E', "Try to install the specified package name as early as possible"),
-//    a_late(&g_ordering_options, "late", 'L', "Try to install the specified package name as late as possible"),
+    a_early(&g_ordering_options, "early", 'E', "When given a collection of otherwise equally desirable packages to order, "
+            "order packages matching the supplied spec first."),
+    a_late(&g_ordering_options, "late", 'L', "When given a collection of otherwise equally desirable packages to order, "
+            "order packages matching the supplied spec last."),
 
     g_preset_options(this, "Preset Options", "Preset various constraints."),
     a_preset(&g_preset_options, "preset", 'p', "Preset a given constraint. For example, --preset =cat/pkg-2.1 will tell "

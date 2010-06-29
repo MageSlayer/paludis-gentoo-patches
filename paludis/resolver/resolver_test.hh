@@ -113,6 +113,9 @@ namespace paludis
                         const std::tr1::shared_ptr<const Map<QualifiedPackageName, bool> > &,
                         const QualifiedPackageName &);
 
+            Tribool order_early_fn(
+                        const std::tr1::shared_ptr<const Resolution> &);
+
             bool confirm_fn(
                     const std::tr1::shared_ptr<const Resolution> &,
                     const std::tr1::shared_ptr<const RequiredConfirmation> &);

@@ -78,7 +78,7 @@ namespace paludis
                             n::untaken_unable_to_make_decisions() = make_shared_ptr(new Decisions<UnableToMakeDecision>)
                             ))),
             decider(new Decider(e, f, resolved->resolutions_by_resolvent())),
-            orderer(new Orderer(e, resolved))
+            orderer(new Orderer(e, f, resolved))
         {
         }
     };
