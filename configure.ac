@@ -1443,6 +1443,7 @@ fi
 
 if echo $clients | tr ' ' '\n' | grep '^cave$' >/dev/null ; then
 	need_resolver=yes
+	need_pcrecpp_check=yes
 fi
 dnl }}}
 
@@ -1470,7 +1471,7 @@ dnl }}}
 dnl {{{ pcrecpp check
 if test "x$need_pcrecpp_check" = "xyes" ; then
 	PKG_CHECK_MODULES(PCRECPPDEPS, [libpcrecpp >= 7.8], [],
-		[AC_MSG_ERROR([pcrecpp (http://www.pcre.org/) is required if --with-clients=inquisitio is used])])
+		[AC_MSG_ERROR([pcrecpp (http://www.pcre.org/) is required if --with-clients=inquisitio or --with-clients=cave is used])])
 	AC_SUBST(PCRECPPDEPS_CFLAGS)
 	AC_SUBST(PCRECPPDEPS_LIBS)
 fi

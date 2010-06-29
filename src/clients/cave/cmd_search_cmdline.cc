@@ -36,7 +36,8 @@ SearchCommandLineMatchOptions::SearchCommandLineMatchOptions(args::ArgsHandler *
     a_type(&g_pattern_options, "type", 't', "Specify which matching algorithm to use",
             args::EnumArg::EnumArgOptions
             ("text",  't', "Match an exact text substring, ignoring case")
-            ("exact", 'x', "Match only an entire exact string, ignoring case"),
+            ("exact", 'x', "Match only an entire exact string, ignoring case")
+            ("regex", 'r', "Match using pcre regular expressions, ignoring case"),
             "text"
           ),
     a_and(&g_pattern_options, "and", '&', "If multiple patterns are specified, require that "

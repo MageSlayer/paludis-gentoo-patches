@@ -165,3 +165,10 @@ EXTRA_DIST = \
 
 DISTCLEANFILES = $(man_MANS) $(noinst_DATA)
 
+lib_LTLIBRARIES = libcavematchextras_@PALUDIS_PC_SLOT@.la
+
+libcavematchextras_@PALUDIS_PC_SLOT@_la_SOURCES = match_extras.cc match_extras.hh
+libcavematchextras_@PALUDIS_PC_SLOT@_la_CXXFLAGS = $(AM_CXXFLAGS) @PCRECPPDEPS_CFLAGS@
+libcavematchextras_@PALUDIS_PC_SLOT@_la_LIBADD = @PCRECPPDEPS_LIBS@
+libcavematchextras_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+

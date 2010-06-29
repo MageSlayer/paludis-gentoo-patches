@@ -31,6 +31,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/iterator_funcs.hh>
+#include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
@@ -41,12 +42,16 @@
 #include <paludis/mask.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/choice.hh>
+#include <paludis/about.hh>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
 #include <list>
 #include <string.h>
+#include <dlfcn.h>
+#include <stdint.h>
 
+#include "config.h"
 #include "command_command_line.hh"
 
 using namespace paludis;
@@ -54,8 +59,38 @@ using namespace cave;
 using std::cout;
 using std::endl;
 
+#define STUPID_CAST(type, val) reinterpret_cast<type>(reinterpret_cast<uintptr_t>(val))
+
 namespace
 {
+    struct ExtrasHandle :
+        InstantiationPolicy<ExtrasHandle, instantiation_method::SingletonTag>
+    {
+        typedef bool (* MatchFunction)(const std::string &, const std::string &);
+
+        void * handle;
+        MatchFunction match_function;
+
+        ExtrasHandle() :
+            handle(0),
+            match_function(0)
+        {
+            handle = ::dlopen(("libcavematchextras_" + stringify(PALUDIS_PC_SLOT) + ".so").c_str(), RTLD_NOW | RTLD_GLOBAL);
+            if (! handle)
+                throw args::DoHelp("Regular expression match not available because dlopen said " + stringify(::dlerror()));
+
+            match_function = STUPID_CAST(MatchFunction, ::dlsym(handle, "cave_match_extras_match_regex"));
+            if (! match_function)
+                throw args::DoHelp("Regular expression match not available because dlsym said " + stringify(::dlerror()));
+        }
+
+        ~ExtrasHandle()
+        {
+            if (handle)
+                ::dlclose(handle);
+        }
+    };
+
     struct MatchCommandLine :
         CaveCommandCommandLine
     {
@@ -94,12 +129,19 @@ namespace
         return 0 == strcasecmp(text.c_str(), pattern.c_str());
     }
 
+    bool match_regex(const std::string & text, const std::string & pattern)
+    {
+        return ExtrasHandle::get_instance()->match_function(text, pattern);
+    }
+
     bool match(const std::string & text, const std::string & pattern, const std::string & algorithm)
     {
         if (algorithm == "text")
             return match_text(text, pattern);
         else if (algorithm == "exact")
             return match_exact(text, pattern);
+        else if (algorithm == "regex")
+            return match_regex(text, pattern);
         else
             throw args::DoHelp("Unknown algoritm '" + algorithm + "'");
     }
