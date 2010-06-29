@@ -142,6 +142,14 @@ namespace
                 p != p_end ; ++p)
             args->push_back(*p);
 
+        for (Sequence<std::string>::ConstIterator p(data->world_specs()->begin()),
+                p_end(data->world_specs()->end()) ;
+                p != p_end ; ++p)
+        {
+            args->push_back("--world-specs");
+            args->push_back(*p);
+        }
+
         if (data->preserve_world())
             args->push_back("--preserve-world");
 
