@@ -387,8 +387,30 @@ namespace
         {
         }
 
-        void visit(const WasUsedByReason &)
+        void visit(const WasUsedByReason & r)
         {
+            for (ChangeByResolventSequence::ConstIterator i(r.ids_and_resolvents_being_removed()->begin()),
+                    i_end(r.ids_and_resolvents_being_removed()->end()) ;
+                    i != i_end ; ++i)
+            {
+                NAGIndex to(make_named_values<NAGIndex>(
+                            n::resolvent() = i->resolvent(),
+                            n::role() = nir_done
+                            ));
+
+                NAGIndex from(make_named_values<NAGIndex>(
+                            n::resolvent() = resolvent,
+                            n::role() = nir_done
+                            ));
+
+                nag->add_edge(from, to,
+                        make_named_values<NAGEdgeProperties>(
+                            n::build() = false,
+                            n::build_all_met() = true,
+                            n::run() = false,
+                            n::run_all_met() = true
+                            ));
+            }
         }
     };
 

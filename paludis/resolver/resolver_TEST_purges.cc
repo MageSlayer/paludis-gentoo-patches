@@ -107,8 +107,8 @@ namespace test_cases
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("purges/new-dep"))
-                        .remove(QualifiedPackageName("purges/old-dep"))
                         .change(QualifiedPackageName("purges/target"))
+                        .remove(QualifiedPackageName("purges/old-dep"))
                         .finished()),
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
