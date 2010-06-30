@@ -33,6 +33,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/instantiation_policy.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key-fwd.hh>

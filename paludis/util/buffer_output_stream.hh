@@ -22,6 +22,7 @@
 
 #include <paludis/util/buffer_output_stream-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/attributes.hh>
 #include <ostream>
 
 namespace paludis

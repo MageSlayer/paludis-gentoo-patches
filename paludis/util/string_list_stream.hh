@@ -22,6 +22,7 @@
 
 #include <paludis/util/string_list_stream-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/attributes.hh>
 #include <istream>
 #include <ostream>
 

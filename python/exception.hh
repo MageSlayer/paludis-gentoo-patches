@@ -22,6 +22,7 @@
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/util/instantiation_policy.hh>
 #include <boost/python.hpp>
 #include <tr1/memory>
 #include <tr1/functional>

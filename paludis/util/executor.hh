@@ -22,6 +22,7 @@
 
 #include <paludis/util/executor-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/attributes.hh>
 #include <string>
 #include <tr1/memory>
 

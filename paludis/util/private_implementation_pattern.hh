@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,8 +19,6 @@
 
 #ifndef PALUDIS_GUARD_PALUDIS_PRIVATE_IMPLEMENTATION_PATTERN_HH
 #define PALUDIS_GUARD_PALUDIS_PRIVATE_IMPLEMENTATION_PATTERN_HH 1
-
-#include <paludis/util/instantiation_policy.hh>
 
 /** \file
  * Declarations for the PrivateImplementationPattern pattern.
@@ -50,8 +48,7 @@ namespace paludis
      * \ingroup g_oo
      */
     template <typename C_>
-    class PrivateImplementationPattern :
-        private InstantiationPolicy<PrivateImplementationPattern<C_>, instantiation_method::NonCopyableTag>
+    class PrivateImplementationPattern
     {
         protected:
             /**
