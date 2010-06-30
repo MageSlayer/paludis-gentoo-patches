@@ -29,6 +29,7 @@ command_MANS = \
 	cave-help.1 \
 	cave-import.1 \
 	cave-info.1 \
+	cave-match.1 \
 	cave-owner.1 \
 	cave-perform.1 \
 	cave-print-categories.1 \
@@ -152,9 +153,7 @@ libcave_a_SOURCES = \
 #	cmd_print_repository_metadata.cc \
 #	cmd_print_set.cc \
 #	cmd_print_sync_protocol_metadata.cc \
-#	cmd_report.cc \
-#	cmd_uninstall.cc \
-#	cmd_uninstall_unused.cc
+#	cmd_report.cc
 
 TESTS = \
 	continue_on_failure_TEST
