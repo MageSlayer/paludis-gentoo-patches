@@ -641,7 +641,6 @@ namespace paludis
             ///\}
     };
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<FetchAction>;
     extern template class PrivateImplementationPattern<InstallAction>;
     extern template class PrivateImplementationPattern<PretendAction>;
@@ -649,7 +648,6 @@ namespace paludis
     extern template class PrivateImplementationPattern<UninstallAction>;
     extern template class PrivateImplementationPattern<InfoAction>;
     extern template class PrivateImplementationPattern<ConfigAction>;
-#endif
 }
 
 #endif

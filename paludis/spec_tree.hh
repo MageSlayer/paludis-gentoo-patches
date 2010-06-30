@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -207,7 +207,6 @@ namespace paludis
             const std::tr1::shared_ptr<typename InnerNodeType<RootNode_>::Type> _root;
     };
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<GenericSpecTree>::ConstIteratorTag,
            const std::tr1::shared_ptr<const spec_tree_internals::BasicNode<GenericSpecTree> > >;
     extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<DependencySpecTree>::ConstIteratorTag,
@@ -224,7 +223,6 @@ namespace paludis
              const std::tr1::shared_ptr<const spec_tree_internals::BasicNode<FetchableURISpecTree> > >;
     extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<LicenseSpecTree>::ConstIteratorTag,
              const std::tr1::shared_ptr<const spec_tree_internals::BasicNode<LicenseSpecTree> > >;
-#endif
 
 }
 

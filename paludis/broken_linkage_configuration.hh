@@ -49,9 +49,7 @@ namespace paludis
             bool lib_is_masked(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class WrappedForwardIterator<BrokenLinkageConfiguration::DirsIteratorTag, const FSEntry>;
-#endif
 }
 
 #endif

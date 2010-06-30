@@ -497,10 +497,8 @@ namespace paludis
                     const std::tr1::shared_ptr<const PackageID> &) const;
     };
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class WrappedForwardIterator<PackageID::MasksConstIteratorTag, const std::tr1::shared_ptr<const Mask> >;
     extern template class WrappedForwardIterator<PackageID::OverriddenMasksConstIteratorTag, const std::tr1::shared_ptr<const OverriddenMask> >;
-#endif
 }
 
 #endif

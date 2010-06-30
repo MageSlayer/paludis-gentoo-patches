@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -88,9 +88,7 @@ namespace paludis
             const std::string text() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template struct PrivateImplementationPattern<SimpleParser>;
-#endif
 }
 
 #endif

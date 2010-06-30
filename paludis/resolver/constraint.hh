@@ -87,11 +87,9 @@ namespace paludis
         };
     }
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<resolver::Constraints>;
     extern template class WrappedForwardIterator<resolver::Constraints::ConstIteratorTag,
            const std::tr1::shared_ptr<const resolver::Constraint> >;
-#endif
 }
 
 #endif

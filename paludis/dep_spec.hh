@@ -970,7 +970,6 @@ namespace paludis
             const std::string label() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class Cloneable<DepSpec>;
     extern template class PrivateImplementationPattern<ConditionalDepSpec>;
     extern template class CloneUsingThis<DepSpec, ConditionalDepSpec>;
@@ -986,7 +985,6 @@ namespace paludis
     extern template class WrappedForwardIterator<URILabelsDepSpec::ConstIteratorTag,
            const std::tr1::shared_ptr<const URILabel> >;
 
-#endif
 }
 
 #endif

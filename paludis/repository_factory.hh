@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -156,11 +156,9 @@ namespace paludis
     template <typename RepositoryClass_>
     void register_repositories(const RepositoryClass_ * const, RepositoryFactory * const);
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<RepositoryFactory>;
     extern template class InstantiationPolicy<RepositoryFactory, instantiation_method::SingletonTag>;
     extern template class WrappedForwardIterator<RepositoryFactory::ConstIteratorTag, const std::string>;
-#endif
 }
 
 #endif

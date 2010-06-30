@@ -54,10 +54,8 @@ namespace paludis
         };
     }
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<erepository::InfoPkgsMetadataKey>;
     extern template class PrivateImplementationPattern<erepository::InfoVarsMetadataKey>;
-#endif
 }
 
 #endif

@@ -74,16 +74,13 @@ namespace paludis
                 static const std::tr1::shared_ptr<Decisions> deserialise(Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
         extern template class Decisions<UnableToMakeDecision>;
         extern template class Decisions<ChangesToMakeDecision>;
         extern template class Decisions<ChangeOrRemoveDecision>;
         extern template class Decisions<ConfirmableDecision>;
         extern template class Decisions<ChangeOrRemoveDecision, std::tr1::shared_ptr<const OrdererNotes> >;
-#endif
     }
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class WrappedForwardIterator<resolver::Decisions<resolver::UnableToMakeDecision>::ConstIteratorTag,
            const std::tr1::shared_ptr<const resolver::UnableToMakeDecision> >;
     extern template class WrappedForwardIterator<resolver::Decisions<resolver::ChangesToMakeDecision>::ConstIteratorTag,
@@ -97,7 +94,6 @@ namespace paludis
            const std::pair<
                std::tr1::shared_ptr<const resolver::ChangeOrRemoveDecision>,
                std::tr1::shared_ptr<const resolver::OrdererNotes> > >;
-#endif
 }
 
 #endif

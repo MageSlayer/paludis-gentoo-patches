@@ -44,10 +44,8 @@ namespace paludis
                 ~MemoisedHashes();
         };
     }
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<erepository::MemoisedHashes>;
     extern template class InstantiationPolicy<erepository::MemoisedHashes, instantiation_method::SingletonTag>;
-#endif
 }
 
 #endif

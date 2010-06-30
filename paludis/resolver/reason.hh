@@ -157,12 +157,10 @@ namespace paludis
         };
     }
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<resolver::DependencyReason>;
     extern template class PrivateImplementationPattern<resolver::DependentReason>;
     extern template class PrivateImplementationPattern<resolver::WasUsedByReason>;
     extern template class PrivateImplementationPattern<resolver::SetReason>;
-#endif
 
 }
 

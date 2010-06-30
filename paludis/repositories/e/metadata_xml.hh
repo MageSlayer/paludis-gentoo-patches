@@ -65,10 +65,8 @@ namespace paludis
         };
     }
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<erepository::MetadataXMLPool>;
     extern template class InstantiationPolicy<erepository::MetadataXMLPool, instantiation_method::SingletonTag>;
-#endif
 }
 
 #endif

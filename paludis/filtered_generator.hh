@@ -71,9 +71,7 @@ namespace paludis
             const Filter & filter() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<FilteredGenerator>;
-#endif
 }
 
 #endif

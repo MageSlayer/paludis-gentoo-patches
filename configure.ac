@@ -314,9 +314,8 @@ AC_DEFUN([CHECK_CXXFLAG], [
 	CXXFLAGS="$CXXFLAGS $PALUDIS_CXXFLAGS $1 -Werror"
 	AC_COMPILE_IFELSE([
 #include <string>
-template <typename T_> struct S { };
-extern template struct S<int>;
 #include <iostream>
+template <typename T_> struct S { };
 int main(int, char **)
 {
 	std::string s("test");
@@ -431,42 +430,7 @@ AC_PREPROC_IFELSE([
 
 PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC=$PALUDIS_CXXFLAGS
 
-AC_MSG_CHECKING([whether -pedantic works if we use extern template])
-if test "x${cxx_compiler_icc}" = "xyes" ; then
-	AC_MSG_RESULT([no, icc doesn't do pedantic])
-else
-	if test x$CAN_USE_EXTERN_TEMPLATE = xyes ; then
-		save_CXXFLAGS=$CXXFLAGS
-		CXXFLAGS="$CXXFLAGS -pedantic"
-		AC_COMPILE_IFELSE([
-template <typename T_> struct S { };
-extern template struct S<int>;
-	],
-		[AC_MSG_RESULT([yes])
-		 CHECK_CXXFLAG([-pedantic])],
-		[AC_MSG_RESULT([no])])
-	else
-		CHECK_CXXFLAG([-pedantic])
-	fi
-	CXXFLAGS=$save_CXXFLAGS
-fi
-
-AC_SUBST([PALUDIS_CXXFLAGS])
-AC_SUBST([PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC])
-AC_SUBST([PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST])
-AC_SUBST([PALUDIS_CXXFLAGS_NO_WSHADOW])
-AC_SUBST([PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS])
-AC_SUBST([PALUDIS_CXXFLAGS_NO_WEXTRA])
-AC_SUBST([PALUDIS_CXXFLAGS_NO_WUNUSED])
-AC_SUBST([PALUDIS_CXXFLAGS_NO_WWRITE_STRINGS])
-AC_SUBST([PALUDIS_CXXFLAGS_NO_WMISSING_NORETURN])
-
-save_CXXFLAGS="$CXXFLAGS"
-CXXFLAGS="$CXXFLAGS $PALUDIS_CXXFLAGS"
-
-dnl {{{ check whether we can do extern template
-CAN_USE_EXTERN_TEMPLATE=
-AC_MSG_CHECKING([for c++0x 'extern template' support])
+AC_MSG_CHECKING([for 'extern template' support])
 AC_COMPILE_IFELSE([
 template <typename T_> class S
 {
@@ -490,15 +454,43 @@ void f()
 	t.f();
 }
 ],
-		[AC_MSG_RESULT([yes])
-		 CAN_USE_EXTERN_TEMPLATE=yes
-		 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_EXTERN_TEMPLATE=1"
-		 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_EXTERN_TEMPLATE=1"
-		],
+		[AC_MSG_RESULT([yes])],
 		[AC_MSG_RESULT([no, your compiler is weird])
+		 AC_MSG_ERROR([your compiler supports 'extern template' in a very broken manner])
 		])
 	 ],
-	[AC_MSG_RESULT([no])])
+	[AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([your compiler does not support 'extern template'])
+	])
+
+AC_MSG_CHECKING([whether -pedantic works if we use extern template])
+if test "x${cxx_compiler_icc}" = "xyes" ; then
+	AC_MSG_RESULT([no, icc doesn't do pedantic])
+else
+	save_CXXFLAGS=$CXXFLAGS
+	CXXFLAGS="$CXXFLAGS -pedantic"
+	AC_COMPILE_IFELSE([
+template <typename T_> struct S { };
+extern template struct S<int>;
+	],
+	[AC_MSG_RESULT([yes])
+	 CHECK_CXXFLAG([-pedantic])],
+    [AC_MSG_RESULT([no])])
+	CXXFLAGS=$save_CXXFLAGS
+fi
+
+AC_SUBST([PALUDIS_CXXFLAGS])
+AC_SUBST([PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC])
+AC_SUBST([PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST])
+AC_SUBST([PALUDIS_CXXFLAGS_NO_WSHADOW])
+AC_SUBST([PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS])
+AC_SUBST([PALUDIS_CXXFLAGS_NO_WEXTRA])
+AC_SUBST([PALUDIS_CXXFLAGS_NO_WUNUSED])
+AC_SUBST([PALUDIS_CXXFLAGS_NO_WWRITE_STRINGS])
+AC_SUBST([PALUDIS_CXXFLAGS_NO_WMISSING_NORETURN])
+
+save_CXXFLAGS="$CXXFLAGS"
+CXXFLAGS="$CXXFLAGS $PALUDIS_CXXFLAGS"
 dnl }}}
 
 dnl {{{ check for partial specialisation of template classes
@@ -584,6 +576,34 @@ int main(int, char **)
 	 AC_MSG_RESULT([no])
 	 AC_MSG_ERROR([Your std::set<>::const_reverse_iterator is h0rked])
 	])
+dnl }}}
+
+dnl {{{ check for -O3 / extern template breakage
+AC_MSG_CHECKING([whether your compiler tries to inline extern template things])
+AC_COMPILE_IFELSE([
+template <typename> struct F;
+template <typename X_> struct T
+{
+	void f();
+};
+
+template <typename X_>
+void T<X_>::f()
+{
+	F<X_>::g();
+}
+
+extern template class T<int>;
+
+int main(int, char **)
+{
+	T<int> f;
+	f.f();
+}
+],
+	[AC_MSG_RESULT([no])],
+	[AC_MSG_RESULT([yes])
+	 AC_MSG_ERROR([Your compiler is b0rked (GCC bug 39242? Try -O2 or -fno-inline-functions)])])
 dnl }}}
 
 dnl {{{ check for namespace aliasing

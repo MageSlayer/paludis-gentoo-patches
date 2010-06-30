@@ -65,9 +65,7 @@ namespace paludis
         };
     }
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<repository_repository::RepositoryRepositoryStore>;
-#endif
 }
 
 #endif

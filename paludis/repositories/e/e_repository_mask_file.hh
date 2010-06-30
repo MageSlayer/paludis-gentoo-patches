@@ -63,10 +63,8 @@ namespace paludis
         };
     }
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class WrappedForwardIterator<erepository::MaskFile::ConstIteratorTag,
              const std::pair<const std::string, std::tr1::shared_ptr<const RepositoryMaskInfo> > >;
-#endif
 }
 
 #endif

@@ -48,10 +48,8 @@ namespace paludis
         };
     }
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class Sequence<resolver::JobRequirement>;
     extern template class WrappedForwardIterator<Sequence<resolver::JobRequirement>::ConstIteratorTag, const resolver::JobRequirement>;
-#endif
 }
 
 #endif

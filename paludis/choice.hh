@@ -370,13 +370,11 @@ namespace paludis
             ///\}
     };
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<Choices>;
     extern template class PrivateImplementationPattern<Choice>;
 
     extern template class WrappedForwardIterator<Choices::ConstIteratorTag, const std::tr1::shared_ptr<const Choice> >;
     extern template class WrappedForwardIterator<Choice::ConstIteratorTag, const std::tr1::shared_ptr<const ChoiceValue> >;
-#endif
 }
 
 #endif

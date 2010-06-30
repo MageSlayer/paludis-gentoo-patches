@@ -147,11 +147,9 @@ namespace paludis
             const std::string &,
             const std::string &) PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<Deserialiser>;
     extern template class PrivateImplementationPattern<Deserialisation>;
     extern template class PrivateImplementationPattern<Deserialisator>;
-#endif
 }
 
 #endif

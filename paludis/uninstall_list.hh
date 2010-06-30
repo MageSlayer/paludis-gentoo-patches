@@ -155,9 +155,7 @@ namespace paludis
             ///\}
     };
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class WrappedForwardIterator<UninstallList::UninstallListTag, const UninstallListEntry>;
-#endif
 }
 
 #endif

@@ -239,7 +239,6 @@ namespace paludis
         };
     }
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<Filter>;
     extern template class filter::SupportsAction<InstallAction>;
     extern template class filter::SupportsAction<UninstallAction>;
@@ -248,7 +247,6 @@ namespace paludis
     extern template class filter::SupportsAction<FetchAction>;
     extern template class filter::SupportsAction<InfoAction>;
     extern template class filter::SupportsAction<PretendFetchAction>;
-#endif
 }
 
 #endif

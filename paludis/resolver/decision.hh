@@ -265,14 +265,12 @@ namespace paludis
         };
     }
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<resolver::NothingNoChangeDecision>;
     extern template class PrivateImplementationPattern<resolver::ExistingNoChangeDecision>;
     extern template class PrivateImplementationPattern<resolver::ChangesToMakeDecision>;
     extern template class PrivateImplementationPattern<resolver::UnableToMakeDecision>;
     extern template class PrivateImplementationPattern<resolver::RemoveDecision>;
     extern template class PrivateImplementationPattern<resolver::BreakDecision>;
-#endif
 
 }
 

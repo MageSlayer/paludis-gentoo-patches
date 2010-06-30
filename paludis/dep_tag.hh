@@ -349,11 +349,9 @@ namespace paludis
         bool operator() (const DepTagEntry &, const DepTagEntry &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class InstantiationPolicy<DepTagCategoryFactory, instantiation_method::SingletonTag>;
     extern template class PrivateImplementationPattern<DependencyDepTag>;
     extern template class PrivateImplementationPattern<GeneralSetDepTag>;
-#endif
 
 }
 

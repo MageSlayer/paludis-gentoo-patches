@@ -307,12 +307,10 @@ namespace paludis
                     const PackageDepSpec &, const std::tr1::shared_ptr<const DestinationsSet> & destinations);
     };
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<DepList>;
     extern template class WrappedForwardIterator<DepList::IteratorTag, DepListEntry>;
     extern template class WrappedForwardIterator<DepList::ConstIteratorTag, const DepListEntry>;
     extern template WrappedForwardIterator<DepList::ConstIteratorTag, const DepListEntry>::WrappedForwardIterator(const DepList::Iterator &);
-#endif
 }
 
 #endif

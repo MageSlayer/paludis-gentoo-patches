@@ -94,9 +94,7 @@ namespace paludis
             void remove_now();
     };
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<ScopedNotifierCallback>;
-#endif
 
 }
 

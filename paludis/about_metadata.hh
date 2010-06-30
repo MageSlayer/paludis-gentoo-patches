@@ -58,10 +58,8 @@ namespace paludis
             void need_keys_added() const;
     };
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class PrivateImplementationPattern<AboutMetadata>;
     extern template class InstantiationPolicy<AboutMetadata, instantiation_method::SingletonTag>;
-#endif
 }
 
 #endif

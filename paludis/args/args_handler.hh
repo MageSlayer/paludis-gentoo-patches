@@ -301,7 +301,6 @@ namespace paludis
         std::ostream & operator<< (std::ostream &, const ArgsHandler &) PALUDIS_VISIBLE;
     }
 
-#ifdef PALUDIS_HAVE_EXTERN_TEMPLATE
     extern template class WrappedForwardIterator<args::ArgsHandler::ParametersConstIteratorTag, const std::string>;
     extern template class WrappedForwardIterator<args::ArgsHandler::UsageLineConstIteratorTag, const std::string>;
     extern template class WrappedForwardIterator<args::ArgsHandler::EnvironmentLineConstIteratorTag,
@@ -312,8 +311,6 @@ namespace paludis
     extern template class WrappedForwardIterator<args::ArgsHandler::DescriptionLineConstIteratorTag, const std::string>;
     extern template class WrappedForwardIterator<args::ArgsHandler::NotesIteratorTag, const std::string>;
     extern template class WrappedForwardIterator<args::ArgsHandler::ArgsIteratorTag, std::string>;
-
-#endif
 }
 
 #endif
