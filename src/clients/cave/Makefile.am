@@ -61,7 +61,7 @@ cave.1 : man-cave
 	./man-cave > $@
 
 $(command_MANS) : man-cave
-	if ! ./man-cave `echo $@ | sed -e 's.^cave-..' -e 's,\.1$$,,'` > $@ ; then rm -f $@ ; exit 1 ; fi
+	if ! env CAVE_COMMANDS_PATH="" ./man-cave `echo $@ | sed -e 's.^cave-..' -e 's,\.1$$,,'` > $@ ; then rm -f $@ ; exit 1 ; fi
 
 cave_SOURCES = \
 	cave.cc
@@ -140,6 +140,7 @@ libcave_a_SOURCES = \
 	format_plain_metadata_key.cc format_plain_metadata_key.hh \
 	format_string.cc format_string.hh \
 	formats.cc formats.hh \
+	script_command.cc script_command.hh \
 	select_format_for_spec.cc select_format_for_spec.hh \
 	match_qpns.cc match_qpns.hh \
 	owner_common.cc owner_common.hh \
@@ -165,10 +166,18 @@ EXTRA_DIST = \
 
 DISTCLEANFILES = $(man_MANS) $(noinst_DATA)
 
+CLEANFILES += .keep
+
 lib_LTLIBRARIES = libcavematchextras_@PALUDIS_PC_SLOT@.la
 
 libcavematchextras_@PALUDIS_PC_SLOT@_la_SOURCES = match_extras.cc match_extras.hh
 libcavematchextras_@PALUDIS_PC_SLOT@_la_CXXFLAGS = $(AM_CXXFLAGS) @PCRECPPDEPS_CFLAGS@
 libcavematchextras_@PALUDIS_PC_SLOT@_la_LIBADD = @PCRECPPDEPS_LIBS@
 libcavematchextras_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+
+cavecommandsdir = $(libexecdir)/cave/commands
+cavecommands_DATA = .keep
+
+.keep :
+	touch $@
 

@@ -29,10 +29,19 @@ CaveCommandLine::CaveCommandLine() :
     a_log_level(&g_global_options, "log-level", '\0')
 {
     add_usage_line("[ --environment class:suffix ] [ --log-level level ] COMMAND [ARGS...]");
+
     add_description_line("For the COMMAND argument, see 'cave help' for a list of common commands, "
             "or 'cave help --all' for all commands. To see documentation for a command named "
             "'foo', use 'man cave-foo'.");
+    add_description_line("In addition to built-in commands, cave will also look in the directories "
+            "named in the colon-separated CAVE_COMMANDS_PATH environment variable, or, if unset, '"
+            LIBEXECDIR "/cave/commands'. Any executables in this path will also be available as "
+            "commands (with any file extension stripped); these executables may use the $CAVE "
+            "environment variable to get access to the main cave program.");
     add_description_line("Arguments specified after the COMMAND are handled by the individual "
             "commands. Arguments before the COMMAND are global arguments shared by all commands.");
+
+    add_environment_variable("CAVE_COMMANDS_PATH", "Colon-separated paths in which to look for "
+            "additional commands.");
 }
 

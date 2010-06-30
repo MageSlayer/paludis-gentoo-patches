@@ -18,12 +18,20 @@
  */
 
 #include "command_factory.hh"
+#include "script_command.hh"
+
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/member_iterator-impl.hh>
+#include <paludis/util/tokeniser.hh>
+#include <paludis/util/dir_iterator.hh>
+#include <paludis/util/fs_entry.hh>
+#include <paludis/util/options.hh>
+#include <paludis/util/system.hh>
 #include <tr1/functional>
+#include <vector>
 #include <map>
 
 #include "cmd_config.hh"
@@ -65,7 +73,7 @@
 using namespace paludis;
 using namespace cave;
 
-typedef std::map<std::string, std::tr1::function<const std::tr1::shared_ptr<Command> ()> > Handlers;
+typedef std::map<std::string, std::tr1::function<const std::tr1::shared_ptr<cave::Command> ()> > Handlers;
 
 namespace paludis
 {
@@ -89,11 +97,42 @@ namespace
     {
         return make_shared_ptr(new T_);
     }
+
+    const std::tr1::shared_ptr<ScriptCommand> make_script_command(const std::string & s, const FSEntry & f)
+    {
+        return make_shared_ptr(new ScriptCommand(s, f));
+    }
 }
 
 CommandFactory::CommandFactory() :
     PrivateImplementationPattern<CommandFactory>(new Implementation<CommandFactory>)
 {
+    std::vector<std::string> paths;
+    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(getenv_with_default("CAVE_COMMANDS_PATH", LIBEXECDIR "/cave/commands"),
+            ":", "", std::back_inserter(paths));
+    for (std::vector<std::string>::const_iterator t(paths.begin()), t_end(paths.end()) ;
+            t != t_end ; ++t)
+    {
+        FSEntry path(*t);
+        if (! path.exists())
+            continue;
+
+        for (DirIterator s(path, DirIteratorOptions() + dio_inode_sort), s_end ;
+                s != s_end ; ++s)
+        {
+            if (s->is_regular_file_or_symlink_to_regular_file() && s->has_permission(fs_ug_others, fs_perm_execute))
+            {
+                std::string command_name(s->basename());
+                std::string::size_type p(command_name.rfind('.'));
+                if (std::string::npos != p)
+                    command_name.erase(p);
+
+                _imp->handlers.erase(command_name);
+                _imp->handlers.insert(std::make_pair(command_name, std::tr1::bind(&make_script_command, command_name, *s)));
+            }
+        }
+    }
+
     _imp->handlers.insert(std::make_pair("config", std::tr1::bind(&make_command<ConfigCommand>)));
     _imp->handlers.insert(std::make_pair("contents", std::tr1::bind(&make_command<ContentsCommand>)));
     _imp->handlers.insert(std::make_pair("display-resolution", std::tr1::bind(&make_command<DisplayResolutionCommand>)));
@@ -135,7 +174,7 @@ CommandFactory::~CommandFactory()
 {
 }
 
-const std::tr1::shared_ptr<Command>
+const std::tr1::shared_ptr<cave::Command>
 CommandFactory::create(const std::string & s) const
 {
     Handlers::const_iterator i(_imp->handlers.find(s));
