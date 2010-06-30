@@ -73,7 +73,7 @@ namespace paludis
             return s == "stilton" || (s == "camembert" && ! tasty);
         }
     };
-};
+}
 
 namespace test_cases
 {
