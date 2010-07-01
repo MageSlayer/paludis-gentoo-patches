@@ -197,10 +197,23 @@ namespace
     FilteredGenerator make_origin_filtered_generator(
             const Environment * const,
             const ResolveCommandLineResolutionOptions &,
+            const std::tr1::shared_ptr<const Generator> & not_binary_repos_generator,
             const Generator & g,
-            const std::tr1::shared_ptr<const Resolution> &)
+            const std::tr1::shared_ptr<const Resolution> & r)
     {
-        return g;
+        switch (r->resolvent().destination_type())
+        {
+            case dt_install_to_slash:
+                return g;
+
+            case dt_create_binary:
+                return g & *not_binary_repos_generator;
+
+            case last_dt:
+                break;
+        }
+
+        throw InternalError(PALUDIS_HERE, "bad dt");
     }
 
     const std::tr1::shared_ptr<const Sequence<std::string> > add_resolver_targets(
@@ -1636,17 +1649,28 @@ paludis::cave::resolve_common(
         not_usable_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
                     UserPackageDepSpecOptions() + updso_allow_wildcards));
 
-    std::tr1::shared_ptr<Generator> all_binary_repos_generator;
+    std::tr1::shared_ptr<Generator> all_binary_repos_generator, not_binary_repos_generator;
     for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
             r_end(env->package_database()->end_repositories()) ;
             r != r_end ; ++r)
-        if ((*r)->destination_interface() && ! (*r)->installed_root_key())
+        if (! (*r)->installed_root_key())
         {
-            if (all_binary_repos_generator)
-                all_binary_repos_generator.reset(new generator::Intersection(*all_binary_repos_generator,
-                            generator::InRepository((*r)->name())));
+            if ((*r)->destination_interface())
+            {
+                if (all_binary_repos_generator)
+                    all_binary_repos_generator.reset(new generator::Union(*all_binary_repos_generator,
+                                generator::InRepository((*r)->name())));
+                else
+                    all_binary_repos_generator.reset(new generator::InRepository((*r)->name()));
+            }
             else
-                all_binary_repos_generator.reset(new generator::InRepository((*r)->name()));
+            {
+                if (not_binary_repos_generator)
+                    not_binary_repos_generator.reset(new generator::Union(*not_binary_repos_generator,
+                                generator::InRepository((*r)->name())));
+                else
+                    not_binary_repos_generator.reset(new generator::InRepository((*r)->name()));
+            }
         }
 
     if (! all_binary_repos_generator)
@@ -1721,7 +1745,7 @@ paludis::cave::resolve_common(
                 n::make_destination_filtered_generator_fn() = std::tr1::bind(&make_destination_filtered_generator_with_resolution,
                         env.get(), std::tr1::cref(resolution_options), all_binary_repos_generator, _1, _2),
                 n::make_origin_filtered_generator_fn() = std::tr1::bind(&make_origin_filtered_generator,
-                        env.get(), std::tr1::cref(resolution_options), _1, _2),
+                        env.get(), std::tr1::cref(resolution_options), not_binary_repos_generator, _1, _2),
                 n::order_early_fn() = std::tr1::bind(&order_early_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::cref(early), std::tr1::cref(late), _1),
                 n::prefer_or_avoid_fn() = std::tr1::bind(&prefer_or_avoid_fn,
