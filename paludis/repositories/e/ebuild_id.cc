@@ -1435,7 +1435,7 @@ EbuildID::add_build_options(const std::tr1::shared_ptr<Choices> & choices) const
 
         /* preserve_work */
         build_options->add(make_shared_ptr(new ELikePreserveWorkChoiceValue(
-                        shared_from_this(), _imp->environment, build_options)));
+                        shared_from_this(), _imp->environment, build_options, false)));
 
         /* jobs */
         if (! eapi()->supported()->ebuild_environment_variables()->env_jobs().empty())

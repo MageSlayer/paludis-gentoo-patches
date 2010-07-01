@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -197,8 +197,20 @@ namespace paludis
             const bool _enabled;
 
         public:
+            /**
+             * \deprecated \since 0.48.1 Use the four argument form.
+             */
             ELikePreserveWorkChoiceValue(const std::tr1::shared_ptr<const PackageID> &,
-                    const Environment * const env, const std::tr1::shared_ptr<const Choice> &);
+                    const Environment * const env, const std::tr1::shared_ptr<const Choice> &) PALUDIS_ATTRIBUTE((deprecated));
+
+            /**
+             * \since 0.48.1
+             */
+            ELikePreserveWorkChoiceValue(
+                    const std::tr1::shared_ptr<const PackageID> &,
+                    const Environment * const env,
+                    const std::tr1::shared_ptr<const Choice> &,
+                    const bool enabled_by_default);
 
             virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const ChoiceNameWithPrefix name_with_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));

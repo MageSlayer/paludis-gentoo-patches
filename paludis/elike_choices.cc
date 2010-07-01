@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -547,6 +547,15 @@ ELikePreserveWorkChoiceValue::canonical_name_with_prefix()
 ELikePreserveWorkChoiceValue::ELikePreserveWorkChoiceValue(const std::tr1::shared_ptr<const PackageID> & id,
         const Environment * const env, const std::tr1::shared_ptr<const Choice> & choice) :
     _enabled(env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_true())
+{
+}
+
+ELikePreserveWorkChoiceValue::ELikePreserveWorkChoiceValue(const std::tr1::shared_ptr<const PackageID> & id,
+        const Environment * const env, const std::tr1::shared_ptr<const Choice> & choice,
+        const bool by_default) :
+    _enabled(by_default ?
+            ! env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_false() :
+            env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_true())
 {
 }
 

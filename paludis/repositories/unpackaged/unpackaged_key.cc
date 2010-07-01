@@ -174,7 +174,7 @@ UnpackagedChoicesKey::value() const
                         )));
         build_options->add(make_shared_ptr(new ELikeSplitChoiceValue(_imp->id->shared_from_this(), _imp->env, build_options)));
         build_options->add(make_shared_ptr(new ELikeStripChoiceValue(_imp->id->shared_from_this(), _imp->env, build_options)));
-        build_options->add(make_shared_ptr(new ELikePreserveWorkChoiceValue(_imp->id->shared_from_this(), _imp->env, build_options)));
+        build_options->add(make_shared_ptr(new ELikePreserveWorkChoiceValue(_imp->id->shared_from_this(), _imp->env, build_options, true)));
         _imp->value->add(build_options);
     }
 
