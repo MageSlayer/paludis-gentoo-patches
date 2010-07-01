@@ -96,9 +96,10 @@ paludis::resolver::resolver_test::get_resolvents_for_fn(const PackageDepSpec & s
 }
 
 FilteredGenerator
-paludis::resolver::resolver_test::make_destination_filtered_generator_fn(const Generator & g, const Resolvent & resolvent)
+paludis::resolver::resolver_test::make_destination_filtered_generator_fn(const Generator & g,
+        const std::tr1::shared_ptr<const Resolution> & resolution)
 {
-    switch (resolvent.destination_type())
+    switch (resolution->resolvent().destination_type())
     {
         case dt_install_to_slash:
             return g | filter::InstalledAtRoot(FSEntry("/"));
@@ -111,6 +112,13 @@ paludis::resolver::resolver_test::make_destination_filtered_generator_fn(const G
     }
 
     throw InternalError(PALUDIS_HERE, "unhandled dt");
+}
+
+FilteredGenerator
+paludis::resolver::resolver_test::make_origin_filtered_generator_fn(const Generator & g,
+        const std::tr1::shared_ptr<const Resolution> &)
+{
+    return g;
 }
 
 DestinationTypes
@@ -354,6 +362,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             n::get_use_existing_fn() = &get_use_existing_fn,
             n::interest_in_spec_fn() = &interest_in_spec_fn,
             n::make_destination_filtered_generator_fn() = &make_destination_filtered_generator_fn,
+            n::make_origin_filtered_generator_fn() = &make_origin_filtered_generator_fn,
             n::order_early_fn() = &order_early_fn,
             n::prefer_or_avoid_fn() = std::tr1::bind(&prefer_or_avoid_fn,
                     prefer_or_avoid_names, std::tr1::placeholders::_1),

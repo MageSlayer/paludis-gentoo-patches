@@ -184,6 +184,25 @@ namespace
         throw InternalError(PALUDIS_HERE, stringify(r.destination_type()));
     }
 
+    FilteredGenerator make_destination_filtered_generator_with_resolution(
+            const Environment * const env,
+            const ResolveCommandLineResolutionOptions & resolution_options,
+            const std::tr1::shared_ptr<const Generator> & all_binary_repos_generator,
+            const Generator & g,
+            const std::tr1::shared_ptr<const Resolution> & r)
+    {
+        return make_destination_filtered_generator(env, resolution_options, all_binary_repos_generator, g, r->resolvent());
+    }
+
+    FilteredGenerator make_origin_filtered_generator(
+            const Environment * const,
+            const ResolveCommandLineResolutionOptions &,
+            const Generator & g,
+            const std::tr1::shared_ptr<const Resolution> &)
+    {
+        return g;
+    }
+
     const std::tr1::shared_ptr<const Sequence<std::string> > add_resolver_targets(
             const std::tr1::shared_ptr<Environment> & env,
             const std::tr1::shared_ptr<Resolver> & resolver,
@@ -1699,8 +1718,10 @@ paludis::cave::resolve_common(
                         env.get(), std::tr1::cref(resolution_options), std::tr1::cref(take), std::tr1::cref(take_from),
                         std::tr1::cref(ignore), std::tr1::cref(ignore_from), std::tr1::cref(no_blockers_from),
                         std::tr1::cref(no_dependencies_from), _1, _2),
-                n::make_destination_filtered_generator_fn() = std::tr1::bind(&make_destination_filtered_generator,
+                n::make_destination_filtered_generator_fn() = std::tr1::bind(&make_destination_filtered_generator_with_resolution,
                         env.get(), std::tr1::cref(resolution_options), all_binary_repos_generator, _1, _2),
+                n::make_origin_filtered_generator_fn() = std::tr1::bind(&make_origin_filtered_generator,
+                        env.get(), std::tr1::cref(resolution_options), _1, _2),
                 n::order_early_fn() = std::tr1::bind(&order_early_fn,
                         env.get(), std::tr1::cref(resolution_options), std::tr1::cref(early), std::tr1::cref(late), _1),
                 n::prefer_or_avoid_fn() = std::tr1::bind(&prefer_or_avoid_fn,

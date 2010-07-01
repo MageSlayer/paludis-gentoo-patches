@@ -92,7 +92,11 @@ namespace paludis
                     const std::tr1::shared_ptr<const Resolution> &,
                     const ChangesToMakeDecision &);
 
-            FilteredGenerator make_destination_filtered_generator_fn(const Generator &, const Resolvent &);
+            FilteredGenerator make_destination_filtered_generator_fn(const Generator &,
+                    const std::tr1::shared_ptr<const Resolution> &);
+
+            FilteredGenerator make_origin_filtered_generator_fn(const Generator &,
+                    const std::tr1::shared_ptr<const Resolution> &);
 
             DestinationTypes get_destination_types_for_fn(const PackageDepSpec &,
                     const std::tr1::shared_ptr<const PackageID> &,

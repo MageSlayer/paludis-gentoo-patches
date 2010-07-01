@@ -159,7 +159,13 @@ namespace paludis
                         const std::tr1::shared_ptr<const Resolution> & resolution,
                         const ChangesToMakeDecision &) const;
 
-                FilteredGenerator _make_destination_filtered_generator(const Generator &, const Resolvent & resolvent) const;
+                FilteredGenerator _make_destination_filtered_generator(
+                        const Generator &,
+                        const std::tr1::shared_ptr<const Resolution> &) const;
+
+                FilteredGenerator _make_origin_filtered_generator(
+                        const Generator &,
+                        const std::tr1::shared_ptr<const Resolution> &) const;
 
                 void _decide(const std::tr1::shared_ptr<Resolution> & resolution);
                 void _copy_other_destination_constraints(const std::tr1::shared_ptr<Resolution> & resolution);
@@ -209,7 +215,7 @@ namespace paludis
                         const std::tr1::shared_ptr<const Resolution> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::tr1::shared_ptr<const PackageIDSequence> _installed_ids(
-                        const Resolvent & resolvent) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                        const std::tr1::shared_ptr<const Resolution> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 bool _allowed_to_remove(
                         const std::tr1::shared_ptr<const Resolution> &,

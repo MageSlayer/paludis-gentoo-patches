@@ -512,9 +512,17 @@ Decider::_find_repository_for(
 }
 
 FilteredGenerator
-Decider::_make_destination_filtered_generator(const Generator & g, const Resolvent & resolvent) const
+Decider::_make_destination_filtered_generator(const Generator & g,
+        const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
-    return _imp->fns.make_destination_filtered_generator_fn()(g, resolvent);
+    return _imp->fns.make_destination_filtered_generator_fn()(g, resolution);
+}
+
+FilteredGenerator
+Decider::_make_origin_filtered_generator(const Generator & g,
+        const std::tr1::shared_ptr<const Resolution> & resolution) const
+{
+    return _imp->fns.make_origin_filtered_generator_fn()(g, resolution);
 }
 
 const std::tr1::shared_ptr<const PackageIDSequence>
@@ -1404,7 +1412,7 @@ Decider::_try_to_find_decision_for(
 
     if (resolution->constraints()->nothing_is_fine_too())
     {
-        const std::tr1::shared_ptr<const PackageIDSequence> existing_resolvent_ids(_installed_ids(resolution->resolvent()));
+        const std::tr1::shared_ptr<const PackageIDSequence> existing_resolvent_ids(_installed_ids(resolution));
         if (existing_resolvent_ids->empty())
         {
             /* nothing existing, but nothing's ok */
@@ -1470,7 +1478,7 @@ Decider::_try_to_find_decision_for(
         if (resolution->constraints()->nothing_is_fine_too() && _installed_but_allowed_to_remove(resolution))
             return make_shared_ptr(new RemoveDecision(
                         resolution->resolvent(),
-                        _installed_ids(resolution->resolvent()),
+                        _installed_ids(resolution),
                         ! resolution->constraints()->all_untaken()
                         ));
         else
@@ -1619,14 +1627,14 @@ Decider::_make_unsuitable_candidate(
 const std::tr1::shared_ptr<const PackageID>
 Decider::_find_existing_id_for(const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
-    const std::tr1::shared_ptr<const PackageIDSequence> ids(_installed_ids(resolution->resolvent()));
+    const std::tr1::shared_ptr<const PackageIDSequence> ids(_installed_ids(resolution));
     return _find_id_for_from(resolution, ids).first;
 }
 
 bool
 Decider::_installed_but_allowed_to_remove(const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
-    const std::tr1::shared_ptr<const PackageIDSequence> ids(_installed_ids(resolution->resolvent()));
+    const std::tr1::shared_ptr<const PackageIDSequence> ids(_installed_ids(resolution));
     if (ids->empty())
         return false;
 
@@ -1650,11 +1658,11 @@ Decider::_remove_if_dependent(const std::tr1::shared_ptr<const PackageID> & id) 
 }
 
 const std::tr1::shared_ptr<const PackageIDSequence>
-Decider::_installed_ids(const Resolvent & resolvent) const
+Decider::_installed_ids(const std::tr1::shared_ptr<const Resolution> & resolution) const
 {
     return (*_imp->env)[selection::AllVersionsSorted(
-            _make_destination_filtered_generator(generator::Package(resolvent.package()), resolvent) |
-            make_slot_filter(resolvent)
+            _make_destination_filtered_generator(generator::Package(resolution->resolvent().package()), resolution) |
+            make_slot_filter(resolution->resolvent())
             )];
 }
 
@@ -1664,7 +1672,7 @@ Decider::_find_installable_id_candidates_for(
         const bool include_errors) const
 {
     return (*_imp->env)[selection::AllVersionsSorted(
-            generator::Package(resolution->resolvent().package()) |
+            _make_origin_filtered_generator(generator::Package(resolution->resolvent().package()), resolution) |
             make_slot_filter(resolution->resolvent()) |
             filter::SupportsAction<InstallAction>() |
             ((! include_errors) ? Filter(filter::NotMasked()) : Filter(filter::All()))
