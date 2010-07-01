@@ -82,8 +82,6 @@ namespace paludis
                     const std::tr1::shared_ptr<const SlotName> &,
                     const std::tr1::shared_ptr<const Reason> &);
 
-            bool is_just_suggestion(const SanitisedDependency & dep);
-
             UseExisting get_use_existing_fn(
                     const std::tr1::shared_ptr<const Resolution> &,
                     const PackageDepSpec &,

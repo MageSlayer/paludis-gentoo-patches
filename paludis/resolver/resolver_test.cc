@@ -29,6 +29,7 @@
 #include <paludis/resolver/decider.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/change_by_resolvent.hh>
+#include <paludis/resolver/labels_classifier.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
@@ -122,63 +123,6 @@ paludis::resolver::resolver_test::get_destination_types_for_fn(const PackageDepS
 
 namespace
 {
-    struct IsSuggestionVisitor
-    {
-        bool seen_not_suggestion;
-        bool seen_suggestion;
-
-        IsSuggestionVisitor() :
-            seen_not_suggestion(false),
-            seen_suggestion(false)
-        {
-        }
-
-        void visit(const DependenciesBuildLabel &)
-        {
-            seen_not_suggestion = true;
-        }
-
-        void visit(const DependenciesTestLabel &)
-        {
-            seen_not_suggestion = true;
-        }
-
-        void visit(const DependenciesRunLabel &)
-        {
-            seen_not_suggestion = true;
-        }
-
-        void visit(const DependenciesPostLabel &)
-        {
-            seen_not_suggestion = true;
-        }
-
-        void visit(const DependenciesSuggestionLabel &)
-        {
-            seen_suggestion = true;
-        }
-
-        void visit(const DependenciesRecommendationLabel &)
-        {
-            seen_not_suggestion = true;
-        }
-
-        void visit(const DependenciesCompileAgainstLabel &)
-        {
-            seen_not_suggestion = true;
-        }
-
-        void visit(const DependenciesInstallLabel &)
-        {
-            seen_not_suggestion = true;
-        }
-
-        void visit(const DependenciesFetchLabel &)
-        {
-            seen_not_suggestion = true;
-        }
-    };
-
 #ifdef ENABLE_VIRTUALS_REPOSITORY
     std::string virtuals_repo_keys(const std::string & k)
     {
@@ -202,21 +146,11 @@ namespace
 #endif
 }
 
-bool
-paludis::resolver::resolver_test::is_just_suggestion(const SanitisedDependency & dep)
-{
-    IsSuggestionVisitor v;
-    std::for_each(indirect_iterator(dep.active_dependency_labels()->begin()),
-            indirect_iterator(dep.active_dependency_labels()->end()),
-            accept_visitor(v));
-    return v.seen_suggestion && ! v.seen_not_suggestion;
-}
-
 SpecInterest
 paludis::resolver::resolver_test::interest_in_spec_fn(
         const std::tr1::shared_ptr<const Resolution> &, const SanitisedDependency & dep)
 {
-    if (is_just_suggestion(dep))
+    if (is_suggestion(dep))
         return si_untaken;
     else
         return si_take;

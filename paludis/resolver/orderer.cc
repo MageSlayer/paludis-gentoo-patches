@@ -34,6 +34,7 @@
 #include <paludis/resolver/orderer_notes.hh>
 #include <paludis/resolver/change_by_resolvent.hh>
 #include <paludis/resolver/resolver_functions.hh>
+#include <paludis/resolver/labels_classifier.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
@@ -220,67 +221,6 @@ namespace
         }
     };
 
-    struct LabelsClassifier
-    {
-        bool build;
-        bool run;
-        bool post;
-        bool fetch;
-
-        LabelsClassifier() :
-            build(false),
-            run(false),
-            post(false),
-            fetch(false)
-        {
-        }
-
-        void visit(const DependenciesBuildLabel &)
-        {
-            build = true;
-        }
-
-        void visit(const DependenciesInstallLabel &)
-        {
-            build = true;
-        }
-
-        void visit(const DependenciesFetchLabel &)
-        {
-            fetch = true;
-        }
-
-        void visit(const DependenciesRunLabel &)
-        {
-            run = true;
-        }
-
-        void visit(const DependenciesTestLabel &)
-        {
-            build = true;
-        }
-
-        void visit(const DependenciesPostLabel &)
-        {
-            post = true;
-        }
-
-        void visit(const DependenciesSuggestionLabel &)
-        {
-            post = true;
-        }
-
-        void visit(const DependenciesRecommendationLabel &)
-        {
-            post = true;
-        }
-
-        void visit(const DependenciesCompileAgainstLabel &)
-        {
-            build = true;
-        }
-    };
-
     struct EdgesFromReasonVisitor
     {
         const std::tr1::shared_ptr<NAG> nag;
@@ -314,7 +254,7 @@ namespace
                     l != l_end ; ++l)
                 (*l)->accept(classifier);
 
-            if (classifier.build || classifier.run || classifier.fetch)
+            if (classifier.includes_buildish || classifier.includes_non_post_runish)
             {
                 bool normal(true);
                 if (r.sanitised_dependency().spec().if_block())
@@ -323,7 +263,7 @@ namespace
 
                 NAGIndex from(make_named_values<NAGIndex>(
                             n::resolvent() = r.from_resolvent(),
-                            n::role() = classifier.fetch ? role_for_fetching(r.from_resolvent()) : nir_done
+                            n::role() = classifier.includes_fetch ? role_for_fetching(r.from_resolvent()) : nir_done
                             ));
 
                 NAGIndex to(make_named_values<NAGIndex>(
@@ -335,10 +275,10 @@ namespace
                 {
                     nag->add_edge(from, to,
                             make_named_values<NAGEdgeProperties>(
-                                n::build() = classifier.build || classifier.fetch,
-                                n::build_all_met() = r.already_met() || ! (classifier.build || classifier.fetch),
-                                n::run() = classifier.run,
-                                n::run_all_met() = r.already_met() || ! classifier.run
+                                n::build() = classifier.includes_buildish,
+                                n::build_all_met() = r.already_met() || ! classifier.includes_buildish,
+                                n::run() = classifier.includes_non_post_runish,
+                                n::run_all_met() = r.already_met() || ! classifier.includes_non_post_runish
                                 ));
                 }
                 else
@@ -352,7 +292,7 @@ namespace
                                 ));
                 }
             }
-            else if (classifier.post)
+            else if (classifier.includes_postish)
             {
                 /* we won't add a backwards edge, since most post deps dep upon
                  * the thing requiring them anyway */
