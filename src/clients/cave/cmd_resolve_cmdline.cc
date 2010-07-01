@@ -228,16 +228,16 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             ("install",               'i', "Install targets to /")
             ("binaries",              'b', "Create binary packages for targets"),
             "install"),
-//    a_make_dependencies(&g_destination_options, "make-dependencies", 'M', "Specify what to do with dependencies of "
-//            "targets. Only useful when '--make' is not set to 'install', since dependencies on / are considered "
-//            "specially.",
-//            args::EnumArg::EnumArgOptions
-//            ("auto",                  '\0', "Select appropriate behaviour based upon --make. For 'install', 'all', and "
-//                                            "for 'binaries', 'runtime'.")
-//            ("runtime",               'r',  "Only care about runtime dependencies")
-//            ("all",                   'a',  "Care about all dependencies")
-//            ("none",                  'n',  "Don't care about dependencies at all"),
-//            "auto"),
+    a_make_dependencies(&g_destination_options, "make-dependencies", 'M', "Specify what to do with dependencies of "
+            "targets. Only useful when '--make' is not set to 'install', since dependencies on / are considered "
+            "specially.",
+            args::EnumArg::EnumArgOptions
+            ("auto",                  '\0', "Select appropriate behaviour based upon --make. For 'install', 'all', and "
+                                            "for 'binaries', 'runtime'.")
+            ("runtime",               'r',  "Only care about runtime dependencies")
+            ("all",                   'a',  "Care about all dependencies")
+            ("none",                  'n',  "Don't care about dependencies at all"),
+            "auto"),
 //    a_via_binary(&g_destination_options, "via-binary", 'b', "When building a package matching the supplied spec, "
 //            "create a binary package and use that for the install. May be specified multiple times. If this option "
 //            "is not specified, a package will be built multiple times for multiple destinations"),

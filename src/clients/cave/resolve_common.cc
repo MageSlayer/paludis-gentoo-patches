@@ -129,7 +129,16 @@ namespace
 
         DestinationTypes visit(const DependencyReason &) const
         {
-            return DestinationTypes() + dt_install_to_slash;
+            DestinationTypes extras;
+            if (resolution_options.a_make.argument() == "binaries")
+            {
+                if (resolution_options.a_make_dependencies.argument() == "auto" ||
+                        resolution_options.a_make_dependencies.argument() == "runtime" ||
+                        resolution_options.a_make_dependencies.argument() == "all")
+                    extras += dt_create_binary;
+            }
+
+            return (DestinationTypes() + dt_install_to_slash) | extras;
         }
 
         DestinationTypes visit(const PresetReason &) const

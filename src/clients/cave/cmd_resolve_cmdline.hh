@@ -92,7 +92,7 @@ namespace paludis
 
             args::ArgsGroup g_destination_options;
             args::EnumArg a_make;
-//            args::EnumArg a_make_dependencies;
+            args::EnumArg a_make_dependencies;
 //            args::StringSetArg a_via_binary;
 
 //            args::SwitchArg a_fetch;
