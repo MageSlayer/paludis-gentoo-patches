@@ -93,6 +93,7 @@ namespace
         args::ArgsGroup g_display_options;
         args::SwitchArg a_flat;
         args::SwitchArg a_raw_names;
+        args::SwitchArg a_one_version;
 
         ShowCommandLine() :
             g_object_options(main_options_section(), "Object Options", "Alter how objects are interpreted."),
@@ -115,7 +116,10 @@ namespace
             a_flat(&g_display_options, "flat", 'f',
                     "Do not spread key values over multiple lines", true),
             a_raw_names(&g_display_options, "raw-names", 'r',
-                    "Display raw rather than human readable key names", true)
+                    "Display raw rather than human readable key names", true),
+            a_one_version(&g_display_options, "one-version", '1',
+                    "Display only a single version of any package, rather than all installed and the "
+                    "best installable package", true)
         {
             add_usage_line("spec ...");
         }
@@ -895,11 +899,21 @@ namespace
             cout << endl;
         }
 
-        for (PackageIDSequence::ConstIterator i(all_installed->begin()), i_end(all_installed->end()) ;
-                i != i_end ; ++i)
-            do_one_package_id(cmdline, env, *i);
-        if (best_installable)
-            do_one_package_id(cmdline, env, best_installable);
+        if (cmdline.a_one_version.specified())
+        {
+            if (best_installable)
+                do_one_package_id(cmdline, env, best_installable);
+            else if (! all_installed->empty())
+                do_one_package_id(cmdline, env, *all_installed->rbegin());
+        }
+        else
+        {
+            for (PackageIDSequence::ConstIterator i(all_installed->begin()), i_end(all_installed->end()) ;
+                    i != i_end ; ++i)
+                do_one_package_id(cmdline, env, *i);
+            if (best_installable)
+                do_one_package_id(cmdline, env, best_installable);
+        }
 
         cout << endl;
     }
