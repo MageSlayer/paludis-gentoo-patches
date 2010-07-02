@@ -88,6 +88,7 @@ namespace
         args::ArgsGroup g_key_options;
         args::SwitchArg a_complex_keys;
         args::SwitchArg a_internal_keys;
+        args::SwitchArg a_significant_keys_only;
         args::StringSetArg a_key;
 
         args::ArgsGroup g_display_options;
@@ -109,7 +110,9 @@ namespace
             a_complex_keys(&g_key_options, "complex-keys", 'c',
                     "Show complex keys", true),
             a_internal_keys(&g_key_options, "internal-keys", 'i',
-                    "Show keys regardless of importance, including internal-only values", true),
+                    "Show keys marked as 'internal-only'", true),
+            a_significant_keys_only(&g_key_options, "significant-keys-only", 's',
+                    "Show only keys marked as 'significant'", true),
             a_key(&g_key_options, "key", 'k',
                     "Show keys with the given name, regardless of other options. May be specified multiple times."),
             g_display_options(main_options_section(), "Display Options", "Controls the output format."),
@@ -264,6 +267,22 @@ namespace
         }
     };
 
+    bool want_key(
+            const ShowCommandLine & cmdline,
+            const std::tr1::shared_ptr<const MetadataKey> & key)
+    {
+        if (cmdline.a_key.end_args() != std::find(cmdline.a_key.begin_args(), cmdline.a_key.end_args(), key->raw_name()))
+            return true;
+
+        if (key->type() == mkt_internal && ! cmdline.a_internal_keys.specified())
+            return false;
+
+        if (key->type() != mkt_significant && cmdline.a_significant_keys_only.specified())
+            return false;
+
+        return true;
+    }
+
     struct InfoDisplayer
     {
         const ShowCommandLine & cmdline;
@@ -288,8 +307,7 @@ namespace
                     s(keys.begin()), s_end(keys.end()) ; s != s_end ; ++s)
             {
                 InfoDisplayer i(cmdline, indent + 1, ((*s)->type() == mkt_significant));
-                if (cmdline.a_internal_keys.specified() || ((*s)->type() != mkt_internal) ||
-                        (cmdline.a_key.end_args() != std::find(cmdline.a_key.begin_args(), cmdline.a_key.end_args(), (*s)->raw_name())))
+                if (want_key(cmdline, *s))
                     accept_visitor(i)(**s);
             }
         }
@@ -762,8 +780,7 @@ namespace
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
         {
             InfoDisplayer i(cmdline, 0, ((*k)->type() == mkt_significant));
-            if (cmdline.a_internal_keys.specified() || ((*k)->type() != mkt_internal) ||
-                    (cmdline.a_key.end_args() != std::find(cmdline.a_key.begin_args(), cmdline.a_key.end_args(), (*k)->raw_name())))
+            if (want_key(cmdline, *k))
                 accept_visitor(i)(**k);
         }
         cout << endl;
@@ -780,8 +797,7 @@ namespace
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
         {
             InfoDisplayer i(cmdline, 1, ((*k)->type() == mkt_significant));
-            if (cmdline.a_internal_keys.specified() || ((*k)->type() != mkt_internal) ||
-                    (cmdline.a_key.end_args() != std::find(cmdline.a_key.begin_args(), cmdline.a_key.end_args(), (*k)->raw_name())))
+            if (want_key(cmdline, *k))
                 accept_visitor(i)(**k);
         }
 
