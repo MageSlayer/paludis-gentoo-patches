@@ -63,22 +63,8 @@ PALUDIS_PC_CFLAGS=
 PALUDIS_PC_LIBS="-lpaludis_${PALUDIS_PC_SLOT} -lpaludisutil_${PALUDIS_PC_SLOT} -lpaludisargs_${PALUDIS_PC_SLOT}"
 dnl }}}
 
-dnl {{{ monolithic build
-AC_MSG_CHECKING([whether to do a monolithic build])
-AC_ARG_ENABLE([monolithic],
-			  AS_HELP_STRING([--enable-monolithic], [Make a monolithic build (developer use only)]),
-			  [build_monolithic=$enableval
-			   AC_MSG_RESULT([$enableval])],
-			  [build_monolithic=no
-			   AC_MSG_RESULT([no])])
-MONOLITHIC=$build_monolithic
-AC_SUBST([MONOLITHIC])
-AM_CONDITIONAL([MONOLITHIC], test "x$build_monolithic" = "xyes")
-if test "x$build_monolithic" = "xyes" ; then
-	AC_DEFINE([MONOLITHIC], [1], [Make a monolithic build])
-else
-	AC_DISABLE_STATIC
-fi
+dnl {{{ static?
+AC_DISABLE_STATIC
 AC_MSG_CHECKING([whether we're building shared libaries])
 AC_MSG_RESULT([$enable_shared])
 AC_MSG_CHECKING([whether we're building static libaries])
