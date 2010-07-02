@@ -248,6 +248,8 @@ VirtualsPackageID::canonical_form(const PackageIDCanonicalForm f) const
 PackageDepSpec
 VirtualsPackageID::uniquely_identifying_spec() const
 {
+    /* hack: ensure the slot key's loaded, so that stringify returns the full form */
+    _imp->virtual_for->value()->slot_key();
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
             (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository()->name()) +
             "[." + _imp->virtual_for->raw_name() + "=" + stringify(*_imp->virtual_for->value()) + "]",
