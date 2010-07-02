@@ -26,6 +26,7 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/strongly_connected_component.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
+#include <paludis/resolver/resolver_functions.hh>
 #include <paludis/resolver/job_lists.hh>
 #include <paludis/resolver/job_list.hh>
 #include <paludis/resolver/job.hh>
@@ -45,6 +46,7 @@
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/tribool.hh>
+#include <paludis/util/enum_iterator.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <tr1/unordered_set>
@@ -426,6 +428,8 @@ Orderer::resolve()
         if (ignore_dependencies_from_resolvents.end() != ignore_edges_from_resolvents.find((*r)->resolvent()))
             continue;
 
+        _add_binary_cleverness(*r);
+
         EdgesFromReasonVisitor edges_from_reason_visitor(_imp->resolved->nag(), ignore_dependencies_from_resolvents, (*r)->resolvent(),
                 std::tr1::bind(&Orderer::_role_for_fetching, this, std::tr1::placeholders::_1));
         for (Constraints::ConstIterator c((*r)->constraints()->begin()),
@@ -500,6 +504,44 @@ Orderer::resolve()
             const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> sub_ssccs(scc_nag.sorted_strongly_connected_components(order_early_fn));
             _order_sub_ssccs(scc_nag, *scc, sub_ssccs, true, order_early_fn);
         }
+    }
+}
+
+void
+Orderer::_add_binary_cleverness(const std::tr1::shared_ptr<const Resolution> & resolution)
+{
+    if (resolution->resolvent().destination_type() != dt_create_binary)
+        return;
+
+    for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
+    {
+        if (*t == dt_create_binary)
+            continue;
+
+        Resolvent non_binary_resolvent(resolution->resolvent());
+        non_binary_resolvent.destination_type() = *t;
+
+        if (_imp->resolved->resolutions_by_resolvent()->end() ==
+                _imp->resolved->resolutions_by_resolvent()->find(non_binary_resolvent))
+            continue;
+
+        NAGIndex from(make_named_values<NAGIndex>(
+                    n::resolvent() = non_binary_resolvent,
+                    n::role() = nir_done
+                    ));
+
+        NAGIndex to(make_named_values<NAGIndex>(
+                    n::resolvent() = resolution->resolvent(),
+                    n::role() = nir_done
+                    ));
+
+        _imp->resolved->nag()->add_edge(from, to,
+                make_named_values<NAGEdgeProperties>(
+                    n::build() = true,
+                    n::build_all_met() = false,
+                    n::run() = false,
+                    n::run_all_met() = true
+                    ));
     }
 }
 

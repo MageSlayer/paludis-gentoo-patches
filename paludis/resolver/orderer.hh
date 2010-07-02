@@ -28,6 +28,7 @@
 #include <paludis/resolver/nag-fwd.hh>
 #include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/resolver/resolver_functions-fwd.hh>
+#include <paludis/resolver/resolution-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/tribool-fwd.hh>
 #include <paludis/environment-fwd.hh>
@@ -63,6 +64,9 @@ namespace paludis
 
                 NAGIndexRole _role_for_fetching(
                         const Resolvent & resolvent) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                void _add_binary_cleverness(
+                        const std::tr1::shared_ptr<const Resolution> & resolvent);
 
             public:
                 Orderer(
