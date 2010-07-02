@@ -768,9 +768,29 @@ namespace
             const std::string & notes,
             ChoicesToExplain & choices_to_explain)
     {
-        std::string x("X");
+        std::string x("X"), c;
         if (! decision.best())
             x = "-" + x;
+
+        do
+        {
+            switch (resolution->resolvent().destination_type())
+            {
+                case dt_install_to_slash:
+                    continue;
+
+                case dt_create_binary:
+                    c = c::green();
+                    continue;
+
+                case last_dt:
+                    break;
+            }
+
+            throw InternalError(PALUDIS_HERE, "bad destination_type. huh?");
+        }
+        while (false);
+
         if (untaken)
             x = "(" + x + ")";
 
@@ -782,19 +802,19 @@ namespace
             switch (decision.change_type())
             {
                 case ct_new:
-                    cout << x.replace(x.find('X'), 1, "n") << c::bold_blue();
+                    cout << c << x.replace(x.find('X'), 1, "n") << c::bold_blue();
                     continue;
                 case ct_slot_new:
-                    cout << x.replace(x.find('X'), 1, "s") << c::bold_blue();
+                    cout << c << x.replace(x.find('X'), 1, "s") << c::bold_blue();
                     continue;
                 case ct_upgrade:
-                    cout << x.replace(x.find('X'), 1, "u") << c::blue();
+                    cout << c << x.replace(x.find('X'), 1, "u") << c::blue();
                     continue;
                 case ct_reinstall:
-                    cout << x.replace(x.find('X'), 1, "r") << c::yellow();
+                    cout << c << x.replace(x.find('X'), 1, "r") << c::yellow();
                     continue;
                 case ct_downgrade:
-                    cout << x.replace(x.find('X'), 1, "d") << c::bold_yellow();
+                    cout << c << x.replace(x.find('X'), 1, "d") << c::bold_yellow();
                     continue;
                 case last_ct:
                     break;
