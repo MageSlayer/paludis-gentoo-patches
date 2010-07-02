@@ -156,14 +156,14 @@ namespace
         {
         }
 
-        std::pair<std::string, bool> annotate(
+        std::pair<std::string, Tribool> annotate(
                 const std::tr1::shared_ptr<const MetadataSectionKey> & key,
-                const std::pair<std::string, bool> unannotated) const
+                const std::pair<std::string, Tribool> unannotated) const
         {
             if ((! key) || (! more_annotations))
                 return unannotated;
 
-            std::pair<std::string, bool> result(unannotated);
+            std::pair<std::string, Tribool> result(unannotated);
 
             std::string description_annotation(get_annotation(key, "description"));
             if (! description_annotation.empty())
@@ -175,7 +175,7 @@ namespace
             return result;
         }
 
-        std::pair<std::string, bool> visit(const DependencyReason & r) const
+        std::pair<std::string, Tribool> visit(const DependencyReason & r) const
         {
             if (r.sanitised_dependency().spec().if_block())
                 return annotate(r.sanitised_dependency().spec().if_block()->annotations_key(),
@@ -197,20 +197,20 @@ namespace
                                 + (r.sanitised_dependency().active_dependency_labels_as_string().empty() ? "" :
                                     ", labelled '" + r.sanitised_dependency().active_dependency_labels_as_string() + "'")
                                 + as,
-                                false));
+                                indeterminate));
                 }
                 else
                     return annotate(r.sanitised_dependency().spec().if_package()->annotations_key(),
-                            std::make_pair(stringify(r.from_id()->name()), false));
+                            std::make_pair(stringify(r.from_id()->name()), indeterminate));
             }
         }
 
-        std::pair<std::string, bool> visit(const DependentReason & r) const
+        std::pair<std::string, Tribool> visit(const DependentReason & r) const
         {
             return std::make_pair("dependent upon " + stringify(*r.id_and_resolvent_being_removed().package_id()), true);
         }
 
-        std::pair<std::string, bool> visit(const WasUsedByReason & r) const
+        std::pair<std::string, Tribool> visit(const WasUsedByReason & r) const
         {
             if (r.ids_and_resolvents_being_removed()->empty())
                 return std::make_pair("was unused", true);
@@ -220,28 +220,28 @@ namespace
                             ", ", stringify_change_by_resolvent), true);
         }
 
-        std::pair<std::string, bool> visit(const TargetReason &) const
+        std::pair<std::string, Tribool> visit(const TargetReason &) const
         {
             return std::make_pair("target", true);
         }
 
-        std::pair<std::string, bool> visit(const SetReason & r) const
+        std::pair<std::string, Tribool> visit(const SetReason & r) const
         {
-            std::pair<std::string, bool> rr(r.reason_for_set()->accept_returning<std::pair<std::string, bool> >(*this));
+            std::pair<std::string, Tribool> rr(r.reason_for_set()->accept_returning<std::pair<std::string, Tribool> >(*this));
             return std::make_pair(rr.first + " (" + stringify(r.set_name()) + ")", rr.second);
         }
 
-        std::pair<std::string, bool> visit(const LikeOtherDestinationTypeReason & r) const
+        std::pair<std::string, Tribool> visit(const LikeOtherDestinationTypeReason & r) const
         {
-            std::pair<std::string, bool> rr(r.reason_for_other()->accept_returning<std::pair<std::string, bool> >(*this));
+            std::pair<std::string, Tribool> rr(r.reason_for_other()->accept_returning<std::pair<std::string, Tribool> >(*this));
             return std::make_pair(rr.first + " (to be like " + stringify(r.other_resolvent()) + ")", rr.second);
         }
 
-        std::pair<std::string, bool> visit(const PresetReason & r) const
+        std::pair<std::string, Tribool> visit(const PresetReason & r) const
         {
-            std::pair<std::string, bool> rr("", false);
+            std::pair<std::string, Tribool> rr("", indeterminate);
             if (r.maybe_reason_for_preset())
-                rr = r.maybe_reason_for_preset()->accept_returning<std::pair<std::string, bool> >(*this);
+                rr = r.maybe_reason_for_preset()->accept_returning<std::pair<std::string, Tribool> >(*this);
 
             rr.first = r.maybe_explanation() + (r.maybe_explanation().empty() || rr.first.empty() ? "" : " ")
                 + rr.first;
@@ -360,7 +360,7 @@ namespace
             cout << "      * " << constraint_as_string(**c) << endl;
             cout << "        Because of ";
             ReasonNameGetter g(true, true);
-            cout << (*c)->reason()->accept_returning<std::pair<std::string, bool> >(g).first;
+            cout << (*c)->reason()->accept_returning<std::pair<std::string, Tribool> >(g).first;
             cout << endl;
         }
     }
@@ -622,13 +622,13 @@ namespace
                 c != c_end ; ++c)
         {
             ReasonNameGetter g(false, more_annotations);
-            std::pair<std::string, bool> r((*c)->reason()->accept_returning<std::pair<std::string, bool> >(g));
+            std::pair<std::string, Tribool> r((*c)->reason()->accept_returning<std::pair<std::string, Tribool> >(g));
             if (r.first.empty())
                 continue;
 
-            if (r.second)
+            if (r.second.is_true())
                 special_reasons.insert(r.first);
-            else
+            else if (r.second.is_false())
                 reasons.insert(r.first);
         }
 
@@ -1123,7 +1123,7 @@ namespace
             {
                 ReasonNameGetter g(false, true);
                 std::string s(constraint_as_string(**c) + " from " +
-                        (*c)->reason()->accept_returning<std::pair<std::string, bool> >(g).first);
+                        (*c)->reason()->accept_returning<std::pair<std::string, Tribool> >(g).first);
 
                 if (! duplicates.insert(s).second)
                     continue;
