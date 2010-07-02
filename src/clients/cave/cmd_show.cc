@@ -88,6 +88,7 @@ namespace
         args::ArgsGroup g_key_options;
         args::SwitchArg a_complex_keys;
         args::SwitchArg a_internal_keys;
+        args::StringSetArg a_key;
 
         args::ArgsGroup g_display_options;
         args::SwitchArg a_flat;
@@ -108,6 +109,8 @@ namespace
                     "Show complex keys", true),
             a_internal_keys(&g_key_options, "internal-keys", 'i',
                     "Show keys regardless of importance, including internal-only values", true),
+            a_key(&g_key_options, "key", 'k',
+                    "Show keys with the given name, regardless of other options. May be specified multiple times."),
             g_display_options(main_options_section(), "Display Options", "Controls the output format."),
             a_flat(&g_display_options, "flat", 'f',
                     "Do not spread key values over multiple lines", true),
@@ -281,7 +284,8 @@ namespace
                     s(keys.begin()), s_end(keys.end()) ; s != s_end ; ++s)
             {
                 InfoDisplayer i(cmdline, indent + 1, ((*s)->type() == mkt_significant));
-                if (cmdline.a_internal_keys.specified() || ((*s)->type() != mkt_internal))
+                if (cmdline.a_internal_keys.specified() || ((*s)->type() != mkt_internal) ||
+                        (cmdline.a_key.end_args() != std::find(cmdline.a_key.begin_args(), cmdline.a_key.end_args(), (*s)->raw_name())))
                     accept_visitor(i)(**s);
             }
         }
@@ -754,7 +758,8 @@ namespace
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
         {
             InfoDisplayer i(cmdline, 0, ((*k)->type() == mkt_significant));
-            if (cmdline.a_internal_keys.specified() || ((*k)->type() != mkt_internal))
+            if (cmdline.a_internal_keys.specified() || ((*k)->type() != mkt_internal) ||
+                    (cmdline.a_key.end_args() != std::find(cmdline.a_key.begin_args(), cmdline.a_key.end_args(), (*k)->raw_name())))
                 accept_visitor(i)(**k);
         }
         cout << endl;
@@ -771,7 +776,8 @@ namespace
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
         {
             InfoDisplayer i(cmdline, 1, ((*k)->type() == mkt_significant));
-            if (cmdline.a_internal_keys.specified() || ((*k)->type() != mkt_internal))
+            if (cmdline.a_internal_keys.specified() || ((*k)->type() != mkt_internal) ||
+                    (cmdline.a_key.end_args() != std::find(cmdline.a_key.begin_args(), cmdline.a_key.end_args(), (*k)->raw_name())))
                 accept_visitor(i)(**k);
         }
 
