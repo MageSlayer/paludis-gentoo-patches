@@ -106,7 +106,7 @@ Decider::_resolve_decide_with_dependencies()
 {
     Context context("When resolving and adding dependencies recursively:");
 
-    enum State { deciding_non_suggestions, deciding_suggestions, finished } state = deciding_non_suggestions;
+    enum State { deciding_non_suggestions, deciding_nothings, deciding_suggestions, finished } state = deciding_non_suggestions;
     bool changed(true);
     while (true)
     {
@@ -127,7 +127,12 @@ Decider::_resolve_decide_with_dependencies()
             /* we're only being suggested. don't do this on the first pass, so
              * we don't have to do restarts for suggestions later becoming hard
              * deps. */
-            if (state == deciding_non_suggestions && (*i)->constraints()->all_untaken())
+            if (state < deciding_suggestions && (*i)->constraints()->all_untaken())
+                continue;
+
+            /* avoid deciding nothings until after we've decided things we've
+             * taken, so adding extra destinations doesn't get messy. */
+            if (state < deciding_nothings && (*i)->constraints()->nothing_is_fine_too())
                 continue;
 
             _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
