@@ -34,6 +34,7 @@ namespace paludis
 
         bool is_just_build_dep(const SanitisedDependency & dep) PALUDIS_ATTRIBUTE((warn_unused_result));
         bool is_just_fetch_dep(const SanitisedDependency & dep) PALUDIS_ATTRIBUTE((warn_unused_result));
+        bool is_run_or_post_dep(const SanitisedDependency & dep) PALUDIS_ATTRIBUTE((warn_unused_result));
         bool is_compiled_against_dep(const SanitisedDependency & dep) PALUDIS_ATTRIBUTE((warn_unused_result));
         bool is_enabled_dep(const SanitisedDependency & dep) PALUDIS_ATTRIBUTE((warn_unused_result));
     }

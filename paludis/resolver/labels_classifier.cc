@@ -208,3 +208,16 @@ paludis::resolver::is_enabled_dep(const SanitisedDependency & dep)
     return v.any_enabled;
 }
 
+bool
+paludis::resolver::is_run_or_post_dep(const SanitisedDependency & dep)
+{
+    if (dep.active_dependency_labels()->empty())
+        throw InternalError(PALUDIS_HERE, "not implemented");
+
+    LabelsClassifier v;
+    std::for_each(indirect_iterator(dep.active_dependency_labels()->begin()),
+            indirect_iterator(dep.active_dependency_labels()->end()),
+            accept_visitor(v));
+    return v.includes_non_post_runish || v.includes_postish;
+}
+

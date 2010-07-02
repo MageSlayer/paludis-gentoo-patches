@@ -133,7 +133,7 @@ namespace
             return DestinationTypes() + dt_install_to_slash;
         }
 
-        DestinationTypes visit(const DependencyReason &) const
+        DestinationTypes visit(const DependencyReason & dep) const
         {
             DestinationTypes extras;
 
@@ -141,9 +141,15 @@ namespace
             if (resolution_options.a_make.argument() == "binaries")
             {
                 if (resolution_options.a_make_dependencies.argument() == "auto" ||
-                        resolution_options.a_make_dependencies.argument() == "runtime" ||
                         resolution_options.a_make_dependencies.argument() == "all")
                     extras += dt_create_binary;
+                else if (resolution_options.a_make_dependencies.argument() == "runtime")
+                {
+                    /* this will track run deps of build deps, which isn't
+                     * really right... */
+                    if (is_run_or_post_dep(dep.sanitised_dependency()))
+                        extras += dt_create_binary;
+                }
             }
 #endif
 
