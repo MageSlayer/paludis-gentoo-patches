@@ -300,6 +300,17 @@ SearchCommand::run(
     if (show_args->empty())
         return EXIT_FAILURE;
 
+    if (! cmdline.search_options.a_all_versions.specified())
+        show_args->push_back("--one-version");
+
+    show_args->push_back("--significant-keys-only");
+    for (args::StringSetArg::ConstIterator k(cmdline.match_options.a_key.begin_args()), k_end(cmdline.match_options.a_key.end_args()) ;
+            k != k_end ; ++k)
+    {
+        show_args->push_back("--key");
+        show_args->push_back(*k);
+    }
+
     ShowCommand show_command;
     return show_command.run(env, show_args);
 }
