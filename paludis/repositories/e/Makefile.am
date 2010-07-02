@@ -251,17 +251,6 @@ e_repository_TEST_0_LDADD = \
 
 e_repository_TEST_0_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
-e_repository_TEST_pbin_SOURCES = e_repository_TEST_pbin.cc
-
-e_repository_TEST_pbin_LDADD = \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/test/libtest.a \
-	$(DYNAMIC_LD_LIBS)
-
-e_repository_TEST_pbin_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
-
 e_repository_TEST_phases_SOURCES = e_repository_TEST_phases.cc
 
 e_repository_TEST_phases_LDADD = \
@@ -597,6 +586,23 @@ xml_things_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
 endif
 
+if ENABLE_PBINS
+
+PBINS_TESTS = e_repository_TEST_pbin
+
+e_repository_TEST_pbin_SOURCES = e_repository_TEST_pbin.cc
+
+e_repository_TEST_pbin_LDADD = \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
+e_repository_TEST_pbin_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
+endif
+
 paludis_datadir = $(datadir)/paludis
 
 dist_paludis_data_DATA = traditional.exclude ebuild_entries_suffixes.conf
@@ -613,7 +619,6 @@ TESTS = \
 	e_repository_TEST_ever \
 	e_repository_TEST_exheres_0 \
 	e_repository_TEST_exlibs \
-	e_repository_TEST_pbin \
 	e_repository_TEST_phases \
 	e_repository_TEST_replacing \
 	e_repository_TEST_symlink_rewriting \
@@ -629,7 +634,8 @@ TESTS = \
 	source_uri_finder_TEST \
 	vdb_merger_TEST \
 	vdb_unmerger_TEST \
-	$(GLSA_TESTS)
+	$(GLSA_TESTS) \
+	$(PBINS_TESTS)
 
 check_PROGRAMS = $(TESTS)
 

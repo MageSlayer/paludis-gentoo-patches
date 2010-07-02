@@ -23,6 +23,7 @@
 #include "command_command_line.hh"
 #include <paludis/environment-fwd.hh>
 #include <tr1/memory>
+#include "config.h"
 
 namespace paludis
 {
@@ -90,17 +91,14 @@ namespace paludis
             args::ArgsGroup g_preset_options;
             args::StringSetArg a_preset;
 
+#ifdef ENABLE_PBINS
             args::ArgsGroup g_destination_options;
             args::EnumArg a_make;
             args::EnumArg a_make_dependencies;
 //            args::StringSetArg a_via_binary;
-
 //            args::SwitchArg a_fetch;
-//            args::SwitchArg a_create_binaries_for_targets;
-//            args::StringSetArg a_install_via_binary;
-//            args::StringSetArg a_no_binaries_for;
+#endif
 
-//
 //            args::ArgsGroup g_query_options;
 //            args::SwitchArg a_query;
 //            args::SwitchArg a_query_slots;

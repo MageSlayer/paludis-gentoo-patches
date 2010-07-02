@@ -78,6 +78,8 @@
 #include <list>
 #include <map>
 
+#include "config.h"
+
 using namespace paludis;
 using namespace paludis::resolver;
 using namespace cave;
@@ -108,6 +110,7 @@ namespace
 
         DestinationTypes visit(const TargetReason &) const
         {
+#ifdef ENABLE_PBINS
             if (resolution_options.a_make.argument() == "binaries")
                 return DestinationTypes() + dt_create_binary;
             else if (resolution_options.a_make.argument() == "install")
@@ -115,6 +118,9 @@ namespace
             else
                 throw args::DoHelp("Don't understand argument '" + resolution_options.a_make.argument() + "' to '--"
                         + resolution_options.a_make.long_name() + "'");
+#else
+            return DestinationTypes() + dt_install_to_slash;
+#endif
         }
 
         DestinationTypes visit(const DependentReason &) const
@@ -130,6 +136,8 @@ namespace
         DestinationTypes visit(const DependencyReason &) const
         {
             DestinationTypes extras;
+
+#ifdef ENABLE_PBINS
             if (resolution_options.a_make.argument() == "binaries")
             {
                 if (resolution_options.a_make_dependencies.argument() == "auto" ||
@@ -137,6 +145,7 @@ namespace
                         resolution_options.a_make_dependencies.argument() == "all")
                     extras += dt_create_binary;
             }
+#endif
 
             return (DestinationTypes() + dt_install_to_slash) | extras;
         }

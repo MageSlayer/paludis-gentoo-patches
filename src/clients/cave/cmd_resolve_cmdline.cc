@@ -221,6 +221,7 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             "does not satisfy other constraints. Also note that specifying a preset will not force a package to be "
             "considered if it would otherwise not be part of the resolution set."),
 
+#ifdef ENABLE_PBINS
     g_destination_options(this, "Destination Options", "Control to which destinations targets are installed. Dependencies "
             "will always be installed to / as necessary."),
     a_make(&g_destination_options, "make", 'm', "Specify what to do with targets.",
@@ -241,7 +242,7 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
 //    a_via_binary(&g_destination_options, "via-binary", 'b', "When building a package matching the supplied spec, "
 //            "create a binary package and use that for the install. May be specified multiple times. If this option "
 //            "is not specified, a package will be built multiple times for multiple destinations"),
-
+#endif
 
 //    g_query_options(this, "Query Options", "Query the user interactively when making decisions. "
 //            "If only --query is specified, prompt for everything. Otherwise, prompt only for the specified decisions."),

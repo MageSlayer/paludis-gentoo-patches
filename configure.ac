@@ -1453,6 +1453,23 @@ if echo $clients | tr ' ' '\n' | grep '^cave$' >/dev/null ; then
 fi
 dnl }}}
 
+dnl {{{
+
+AC_ARG_ENABLE([pbins],
+			  AS_HELP_STRING([--enable-pbins], [Enable pbins (nonfunctional, for development only)]),
+			  [ENABLE_PBINS=$enableval
+			   enable_pbins=$enableval],
+			  [ENABLE_PBINS=no
+			   enable_pbins=no])
+AC_MSG_RESULT([$ENABLE_PBINS])
+AC_SUBST([ENABLE_VISIBILITY])
+AM_CONDITIONAL([ENABLE_PBINS], test "x$enable_pbins" = "xyes")
+if test x"$ENABLE_PBINS" = "xyes" ; then
+	AC_DEFINE([ENABLE_PBINS], [1], [Build pbin support])
+fi
+
+dnl }}}
+
 dnl {{{ new resolver
 
 if test "x$need_resolver" = "xyes" ; then
