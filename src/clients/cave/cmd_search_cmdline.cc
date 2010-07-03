@@ -26,7 +26,8 @@ SearchCommandLineCandidateOptions::SearchCommandLineCandidateOptions(args::ArgsH
     ArgsSection(h, "Search Candidate Options"),
     g_candidate_options(this, "Candidate Options", "Control which packages and versions are selected as "
             "candidates for matching."),
-    a_all_versions(&g_candidate_options, "all-versions", 'a', "Search in every version of packages", true)
+    a_all_versions(&g_candidate_options, "all-versions", 'a', "Search in every version of packages", true),
+    a_matching(&g_candidate_options, "matching", 'm', "Search only in packages matching the supplied specification")
 {
 }
 

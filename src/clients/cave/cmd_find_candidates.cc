@@ -28,6 +28,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/generator.hh>
@@ -90,6 +91,19 @@ namespace
     void no_step(const std::string &)
     {
     }
+
+    void check_candidates(
+            const std::tr1::function<void (const PackageDepSpec &)> & yield,
+            const std::tr1::function<void (const std::string &)> & step,
+            const std::tr1::shared_ptr<const PackageIDSequence> & ids)
+    {
+        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+                i != i_end ; ++i)
+        {
+            step("Checking candidates");
+            yield((*i)->uniquely_identifying_spec());
+        }
+    }
 }
 
 int
@@ -131,71 +145,95 @@ FindCandidatesCommand::run_hosted(
         const std::tr1::function<void (const PackageDepSpec &)> & yield,
         const std::tr1::function<void (const std::string &)> & step)
 {
-    step("Searching repositories");
-
-    RepositoryNames repository_names;
-    for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
-            r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
-        repository_names.insert((*r)->name());
-
-    step("Searching categories");
-
-    CategoryNames category_names;
-    for (RepositoryNames::const_iterator r(repository_names.begin()), r_end(repository_names.end()) ;
-            r != r_end ; ++r)
+    if (! search_options.a_matching.specified())
     {
-        const std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(*r));
-        const std::tr1::shared_ptr<const CategoryNamePartSet> cats(repo->category_names());
-        std::copy(cats->begin(), cats->end(), std::inserter(category_names, category_names.end()));
-    }
+        step("Searching repositories");
 
-    step("Searching packages");
+        RepositoryNames repository_names;
+        for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
+                r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
+            repository_names.insert((*r)->name());
 
-    QualifiedPackageNames package_names;
-    for (RepositoryNames::const_iterator r(repository_names.begin()), r_end(repository_names.end()) ;
-            r != r_end ; ++r)
-    {
-        const std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(*r));
-        for (CategoryNames::const_iterator c(category_names.begin()), c_end(category_names.end()) ;
-                c != c_end ; ++c)
+        step("Searching categories");
+
+        CategoryNames category_names;
+        for (RepositoryNames::const_iterator r(repository_names.begin()), r_end(repository_names.end()) ;
+                r != r_end ; ++r)
         {
-            const std::tr1::shared_ptr<const QualifiedPackageNameSet> qpns(repo->package_names(*c));
-            std::copy(qpns->begin(), qpns->end(), std::inserter(package_names, package_names.end()));
+            const std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(*r));
+            const std::tr1::shared_ptr<const CategoryNamePartSet> cats(repo->category_names());
+            std::copy(cats->begin(), cats->end(), std::inserter(category_names, category_names.end()));
+        }
+
+        step("Searching packages");
+
+        QualifiedPackageNames package_names;
+        for (RepositoryNames::const_iterator r(repository_names.begin()), r_end(repository_names.end()) ;
+                r != r_end ; ++r)
+        {
+            const std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(*r));
+            for (CategoryNames::const_iterator c(category_names.begin()), c_end(category_names.end()) ;
+                    c != c_end ; ++c)
+            {
+                const std::tr1::shared_ptr<const QualifiedPackageNameSet> qpns(repo->package_names(*c));
+                std::copy(qpns->begin(), qpns->end(), std::inserter(package_names, package_names.end()));
+            }
+        }
+
+        step("Searching versions");
+
+        for (QualifiedPackageNames::const_iterator q(package_names.begin()), q_end(package_names.end()) ;
+                q != q_end ; ++q)
+        {
+            if (search_options.a_all_versions.specified())
+            {
+                const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
+                            generator::Package(*q))]);
+                check_candidates(yield, step, ids);
+            }
+            else
+            {
+                std::tr1::shared_ptr<const PackageIDSequence> ids;
+
+                ids = ((*env)[selection::BestVersionOnly(generator::Package(*q) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
+                if (ids->empty())
+                    ids = ((*env)[selection::BestVersionOnly(generator::Package(*q) | filter::SupportsAction<InstallAction>())]);
+                if (ids->empty())
+                    ids = ((*env)[selection::BestVersionOnly(generator::Package(*q))]);
+
+                check_candidates(yield, step, ids);
+            }
         }
     }
-
-    step("Searching versions");
-
-    for (QualifiedPackageNames::const_iterator q(package_names.begin()), q_end(package_names.end()) ;
-            q != q_end ; ++q)
+    else
     {
+        step("Searching matches");
+
+        std::tr1::shared_ptr<Generator> match_generator;
+
+        for (args::StringSetArg::ConstIterator k(search_options.a_matching.begin_args()),
+                k_end(search_options.a_matching.end_args()) ;
+                k != k_end ; ++k)
+        {
+            generator::Matches m(parse_user_package_dep_spec(*k, env.get(), UserPackageDepSpecOptions() + updso_allow_wildcards), MatchPackageOptions());
+
+            if (match_generator)
+                match_generator = make_shared_ptr(new generator::Union(*match_generator, m));
+            else
+                match_generator = make_shared_copy(m);
+        }
+
         if (search_options.a_all_versions.specified())
         {
             const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
-                        generator::Package(*q))]);
-            for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                    i != i_end ; ++i)
-            {
-                step("Checking candidates");
-                yield((*i)->uniquely_identifying_spec());
-            }
+                        *match_generator)]);
+            check_candidates(yield, step, ids);
         }
         else
         {
-            std::tr1::shared_ptr<const PackageIDSequence> ids;
-
-            ids = ((*env)[selection::BestVersionOnly(generator::Package(*q) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
-            if (ids->empty())
-                ids = ((*env)[selection::BestVersionOnly(generator::Package(*q) | filter::SupportsAction<InstallAction>())]);
-            if (ids->empty())
-                ids = ((*env)[selection::BestVersionOnly(generator::Package(*q))]);
-
-            for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                    i != i_end ; ++i)
-            {
-                step("Checking candidates");
-                yield((*i)->uniquely_identifying_spec());
-            }
+            const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
+                        *match_generator)]);
+            check_candidates(yield, step, ids);
         }
     }
 }
