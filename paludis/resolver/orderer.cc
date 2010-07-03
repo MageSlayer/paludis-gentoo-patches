@@ -513,6 +513,10 @@ Orderer::_add_binary_cleverness(const std::tr1::shared_ptr<const Resolution> & r
     if (resolution->resolvent().destination_type() != dt_create_binary)
         return;
 
+    const ChangesToMakeDecision * changes_decision(simple_visitor_cast<const ChangesToMakeDecision>(*resolution->decision()));
+    if (! changes_decision)
+        return;
+
     for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
     {
         if (*t == dt_create_binary)
@@ -521,9 +525,15 @@ Orderer::_add_binary_cleverness(const std::tr1::shared_ptr<const Resolution> & r
         Resolvent non_binary_resolvent(resolution->resolvent());
         non_binary_resolvent.destination_type() = *t;
 
-        if (_imp->resolved->resolutions_by_resolvent()->end() ==
-                _imp->resolved->resolutions_by_resolvent()->find(non_binary_resolvent))
+        ResolutionsByResolvent::ConstIterator non_binary_resolution(_imp->resolved->resolutions_by_resolvent()->find(non_binary_resolvent));
+        if (_imp->resolved->resolutions_by_resolvent()->end() == non_binary_resolution)
             continue;
+
+        ChangesToMakeDecision * non_binary_changes_decision(simple_visitor_cast<ChangesToMakeDecision>(*(*non_binary_resolution)->decision()));
+        if (! non_binary_changes_decision)
+            continue;
+
+        non_binary_changes_decision->set_via_new_binary_in(changes_decision->destination()->repository());
 
         NAGIndex from(make_named_values<NAGIndex>(
                     n::resolvent() = non_binary_resolvent,
@@ -735,6 +745,16 @@ Orderer::_check_self_deps_and_schedule(
 
 namespace
 {
+    PackageDepSpec make_origin_spec(const ChangesToMakeDecision & changes_to_make_decision)
+    {
+        PartiallyMadePackageDepSpec result(changes_to_make_decision.origin_id()->uniquely_identifying_spec());
+
+        if (changes_to_make_decision.if_via_new_binary_in())
+            result.in_repository(*changes_to_make_decision.if_via_new_binary_in());
+
+        return result;
+    }
+
     struct ExtraScheduler
     {
         const std::tr1::shared_ptr<const Resolved> resolved;
@@ -791,7 +811,7 @@ namespace
 
                         JobNumber install_job_n(resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new InstallJob(
                                             requirements,
-                                            changes_to_make_decision.origin_id()->uniquely_identifying_spec(),
+                                            make_origin_spec(changes_to_make_decision),
                                             changes_to_make_decision.destination()->repository(),
                                             changes_to_make_decision.resolvent().destination_type(),
                                             replacing

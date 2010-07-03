@@ -400,7 +400,10 @@ namespace
                 cout << "    The decision made was:" << endl;
             else
                 cout << "    The decision made was not to:" << endl;
-            cout << "        Use origin ID " << *d.origin_id() << endl;
+            cout << "        Use origin ID " << *d.origin_id();
+            if (d.if_via_new_binary_in())
+                cout << " via binary created in " << *d.if_via_new_binary_in();
+            cout << endl;
             cout << "        Install to repository " << d.destination()->repository() << endl;
             for (PackageIDSequence::ConstIterator i(d.destination()->replacing()->begin()), i_end(d.destination()->replacing()->end()) ;
                     i != i_end ; ++i)
@@ -830,6 +833,10 @@ namespace
 
         cout << c::normal() << " " << decision.origin_id()->canonical_form(idcf_version) <<
             " to " << decision.destination()->repository();
+
+        if (decision.if_via_new_binary_in())
+            cout << c::normal() << " via binary created in " << c::bold_normal()
+                << *decision.if_via_new_binary_in() << c::normal();
 
         if (! decision.destination()->replacing()->empty())
         {

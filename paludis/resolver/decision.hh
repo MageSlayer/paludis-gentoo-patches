@@ -167,6 +167,11 @@ namespace paludis
                 const std::tr1::shared_ptr<const PackageID> origin_id() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
+                const std::tr1::shared_ptr<const RepositoryName> if_via_new_binary_in() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                void set_via_new_binary_in(const RepositoryName &);
+
                 virtual bool best() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual ChangeType change_type() const PALUDIS_ATTRIBUTE((warn_unused_result));

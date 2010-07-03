@@ -23,6 +23,7 @@
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/required_confirmations.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/sequence.hh>
@@ -140,6 +141,12 @@ ChangesToMakeDecision::deserialise(Deserialisation & d)
             for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
                 result->add_required_confirmation(vv.member<std::tr1::shared_ptr<RequiredConfirmation> >(stringify(n)));
         }
+    }
+
+    {
+        const std::tr1::shared_ptr<Deserialisation> dn(v.find_remove_member("if_via_new_binary_in"));
+        if (! dn->null())
+            result->set_via_new_binary_in(RepositoryName(dn->string_value()));
     }
 
     return result;
@@ -345,6 +352,7 @@ namespace paludis
         const bool taken;
         std::tr1::shared_ptr<const Destination> destination;
         std::tr1::shared_ptr<RequiredConfirmations> required_confirmations;
+        std::tr1::shared_ptr<RepositoryName> if_via_new_binary_in;
 
         Implementation(
                 const Resolvent & l,
@@ -448,6 +456,18 @@ ChangesToMakeDecision::taken() const
     return _imp->taken;
 }
 
+const std::tr1::shared_ptr<const RepositoryName>
+ChangesToMakeDecision::if_via_new_binary_in() const
+{
+    return _imp->if_via_new_binary_in;
+}
+
+void
+ChangesToMakeDecision::set_via_new_binary_in(const RepositoryName & n)
+{
+    _imp->if_via_new_binary_in = make_shared_copy(n);
+}
+
 void
 ChangesToMakeDecision::serialise(Serialiser & s) const
 {
@@ -457,6 +477,8 @@ ChangesToMakeDecision::serialise(Serialiser & s) const
         .member(SerialiserFlags<>(), "best", best())
         .member(SerialiserFlags<>(), "change_type", stringify(change_type()))
         .member(SerialiserFlags<serialise::might_be_null>(), "destination", destination())
+        .member(SerialiserFlags<serialise::might_be_null>(), "if_via_new_binary_in", if_via_new_binary_in() ?
+                make_shared_copy(stringify(*if_via_new_binary_in())) : make_null_shared_ptr())
         .member(SerialiserFlags<>(), "taken", taken())
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "required_confirmations_if_any", required_confirmations_if_any())
         ;
