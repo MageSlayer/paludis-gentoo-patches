@@ -31,10 +31,18 @@ CaveCommandCommandLine::CaveCommandCommandLine() :
 std::ostream &
 paludis::cave::operator<< (std::ostream & os, const CaveCommandCommandLine & cmdline)
 {
-    os << "usage: " << cmdline.app_name() << " ";
-    std::copy(cmdline.begin_usage_lines(), cmdline.end_usage_lines(),
-            std::ostream_iterator<std::string>(os, "\n"));
-    os << std::endl;
+    if (cmdline.begin_usage_lines() != cmdline.end_usage_lines())
+    {
+        os << "usage: ";
+        for (args::ArgsHandler::UsageLineConstIterator u_begin(cmdline.begin_usage_lines()), u(u_begin), u_end(cmdline.end_usage_lines()) ;
+                u != u_end ; ++u)
+        {
+            if (u != u_begin)
+                os << "       ";
+            os << cmdline.app_name() << " " << *u << std::endl;
+        }
+        os << std::endl;
+    }
 
     os << static_cast<const args::ArgsHandler &>(cmdline);
 

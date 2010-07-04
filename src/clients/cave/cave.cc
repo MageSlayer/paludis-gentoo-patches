@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,9 +25,11 @@
 #include <paludis/environment_factory.hh>
 #include <paludis/environment.hh>
 #include <paludis/action.hh>
+#include <paludis/about.hh>
 #include <iostream>
 #include <cstdlib>
 #include <string>
+#include <algorithm>
 
 #include "command_factory.hh"
 #include "command_line.hh"
@@ -45,6 +47,35 @@ int main(int argc, char * argv[])
     {
         cave::CaveCommandLine cmdline;
         cmdline.run(argc, argv, "CAVE", "CAVE_OPTIONS", "CAVE_CMDLINE", args::ArgsHandlerOptions() + args::aho_stop_on_first_parameter);
+
+        if (cmdline.a_help.specified())
+        {
+            if (cmdline.begin_usage_lines() != cmdline.end_usage_lines())
+            {
+                cout << "usage: ";
+                for (args::ArgsHandler::UsageLineConstIterator u_begin(cmdline.begin_usage_lines()), u(u_begin), u_end(cmdline.end_usage_lines()) ;
+                        u != u_end ; ++u)
+                {
+                    if (u != u_begin)
+                        cout << "       ";
+                    cout << cmdline.app_name() << " " << *u << endl;
+                }
+            }
+            cout << endl;
+            cout << cmdline;
+            cout << "See 'cave help [ --all ]' or 'man cave' for command names and options for those" << endl;
+            cout << "commands" << endl;
+            return EXIT_SUCCESS;
+        }
+        else if (cmdline.a_version.specified())
+        {
+            cout << PALUDIS_PACKAGE << " " << PALUDIS_VERSION_MAJOR << "."
+                << PALUDIS_VERSION_MINOR << "." << PALUDIS_VERSION_MICRO << PALUDIS_VERSION_SUFFIX;
+            if (! std::string(PALUDIS_GIT_HEAD).empty())
+                cout << " git " << PALUDIS_GIT_HEAD;
+            cout << endl;
+            return EXIT_SUCCESS;
+        }
 
         if (cmdline.begin_parameters() == cmdline.end_parameters())
             throw args::DoHelp();

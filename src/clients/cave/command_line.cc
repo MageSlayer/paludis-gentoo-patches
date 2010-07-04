@@ -26,7 +26,9 @@ CaveCommandLine::CaveCommandLine() :
     g_global_options(main_options_section(), "Global Options", "Global options, used by every subcommand."),
     a_environment(&g_global_options, "environment", 'E',
             "Environment specification (class:suffix, both parts optional)"),
-    a_log_level(&g_global_options, "log-level", '\0')
+    a_log_level(&g_global_options, "log-level", '\0'),
+    a_help(&g_global_options, "help", 'h', "display help message", false),
+    a_version(&g_global_options, "version", 'v', "display version information", false)
 {
     add_usage_line("[ --environment class:suffix ] [ --log-level level ] COMMAND [ARGS...]");
 
