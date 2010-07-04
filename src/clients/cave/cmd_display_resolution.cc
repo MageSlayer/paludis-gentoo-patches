@@ -790,6 +790,8 @@ namespace
             switch (resolution->resolvent().destination_type())
             {
                 case dt_install_to_slash:
+                    if (decision.if_via_new_binary_in())
+                        c = c::yellow();
                     continue;
 
                 case dt_create_binary:
