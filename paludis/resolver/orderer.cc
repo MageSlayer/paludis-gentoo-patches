@@ -543,7 +543,7 @@ Orderer::_add_binary_cleverness(const std::tr1::shared_ptr<const Resolution> & r
 
         NAGIndex from(make_named_values<NAGIndex>(
                     n::resolvent() = non_binary_resolvent,
-                    n::role() = nir_done
+                    n::role() = nir_fetched /* can't fetch until our origin exists */
                     ));
 
         NAGIndex to(make_named_values<NAGIndex>(
@@ -843,7 +843,7 @@ namespace
 
                         JobNumber fetch_job_n(resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new FetchJob(
                                             requirements,
-                                            changes_to_make_decision.origin_id()->uniquely_identifying_spec()))));
+                                            make_origin_spec(changes_to_make_decision)))));
                         fetch_job_numbers.insert(std::make_pair(index.resolvent(), fetch_job_n));
                     }
                     return;
