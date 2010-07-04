@@ -239,9 +239,9 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             ("all",                   'a',  "Care about all dependencies")
             ("none",                  'n',  "Don't care about dependencies at all"),
             "auto"),
-//    a_via_binary(&g_destination_options, "via-binary", 'b', "When building a package matching the supplied spec, "
-//            "create a binary package and use that for the install. May be specified multiple times. If this option "
-//            "is not specified, a package will be built multiple times for multiple destinations"),
+    a_via_binary(&g_destination_options, "via-binary", 'b', "When building a package matching the supplied spec, "
+            "create a binary package and use that for the install. May be specified multiple times. If this option "
+            "is not specified, a package will be built multiple times for multiple destinations"),
 #endif
 
 //    g_query_options(this, "Query Options", "Query the user interactively when making decisions. "

@@ -39,7 +39,7 @@ namespace paludis
         class Reason :
             public virtual DeclareAbstractAcceptMethods<Reason, MakeTypeList<
                 TargetReason, DependencyReason, DependentReason, WasUsedByReason, PresetReason,
-                SetReason, LikeOtherDestinationTypeReason>::Type>
+                SetReason, LikeOtherDestinationTypeReason, ViaBinaryReason>::Type>
         {
             public:
                 virtual ~Reason() = 0;
@@ -155,12 +155,27 @@ namespace paludis
 
                 virtual void serialise(Serialiser &) const;
         };
+
+        class ViaBinaryReason :
+            public Reason,
+            private PrivateImplementationPattern<ViaBinaryReason>,
+            public ImplementAcceptMethods<Reason, ViaBinaryReason>
+        {
+            public:
+                ViaBinaryReason(const Resolvent &);
+                ~ViaBinaryReason();
+
+                const Resolvent other_resolvent() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual void serialise(Serialiser &) const;
+        };
     }
 
     extern template class PrivateImplementationPattern<resolver::DependencyReason>;
     extern template class PrivateImplementationPattern<resolver::DependentReason>;
     extern template class PrivateImplementationPattern<resolver::WasUsedByReason>;
     extern template class PrivateImplementationPattern<resolver::SetReason>;
+    extern template class PrivateImplementationPattern<resolver::ViaBinaryReason>;
 
 }
 

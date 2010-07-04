@@ -34,6 +34,7 @@ namespace paludis
         struct DependentReason;
         struct WasUsedByReason;
         struct LikeOtherDestinationTypeReason;
+        struct ViaBinaryReason;
     }
 }
 

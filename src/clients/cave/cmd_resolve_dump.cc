@@ -173,6 +173,11 @@ namespace
             str = "LikeOtherDestinationTypeReason(" + stringify(r.other_resolvent()) + " " + f.str + ")";
         }
 
+        void visit(const ViaBinaryReason & r)
+        {
+            str = "ViaBinaryReason(" + stringify(r.other_resolvent()) + ")";
+        }
+
         void visit(const DependentReason & r)
         {
             str = "Dependent(" + stringify(*r.id_and_resolvent_being_removed().package_id()) + ")";

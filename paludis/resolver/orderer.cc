@@ -320,6 +320,12 @@ namespace
         {
         }
 
+        void visit(const ViaBinaryReason &)
+        {
+            /* we do clever binary arrows later, to get binaries that just
+             * happen to work anyway right too */
+        }
+
         void visit(const DependentReason & r)
         {
             NAGIndex from(make_named_values<NAGIndex>(

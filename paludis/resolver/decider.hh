@@ -106,6 +106,10 @@ namespace paludis
                         const std::tr1::shared_ptr<const Resolution> & from_resolution,
                         const std::tr1::shared_ptr<const Constraint> & from_constraint) const;
 
+                const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_for_via_binary(
+                        const std::tr1::shared_ptr<const Resolution> & resolution,
+                        const std::tr1::shared_ptr<const Resolution> & from_resolution) const;
+
                 void _apply_resolution_constraint(
                         const std::tr1::shared_ptr<Resolution> &,
                         const std::tr1::shared_ptr<const Constraint> &);
@@ -142,10 +146,14 @@ namespace paludis
                         const ChangesToMakeDecision &) const;
 
                 void _resolve_decide_with_dependencies();
+                bool _resolve_vias() PALUDIS_ATTRIBUTE((warn_unused_result));
                 bool _resolve_dependents() PALUDIS_ATTRIBUTE((warn_unused_result));
                 bool _resolve_purges() PALUDIS_ATTRIBUTE((warn_unused_result));
                 void _resolve_destinations();
                 void _resolve_confirmations();
+
+                bool _via_binary(const std::tr1::shared_ptr<const Resolution> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool _always_via_binary(const std::tr1::shared_ptr<const Resolution> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void _fixup_changes_to_make_decision(
                         const std::tr1::shared_ptr<const Resolution> &,

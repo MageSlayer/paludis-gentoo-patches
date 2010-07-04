@@ -237,6 +237,11 @@ namespace
             return std::make_pair(rr.first + " (to be like " + stringify(r.other_resolvent()) + ")", rr.second);
         }
 
+        std::pair<std::string, Tribool> visit(const ViaBinaryReason & r) const
+        {
+            return std::make_pair("to install via binary for " + stringify(r.other_resolvent()), false);
+        }
+
         std::pair<std::string, Tribool> visit(const PresetReason & r) const
         {
             std::pair<std::string, Tribool> rr("", indeterminate);
@@ -738,6 +743,11 @@ namespace
         }
 
         bool visit(const DependencyReason &) const
+        {
+            return false;
+        }
+
+        bool visit(const ViaBinaryReason &) const
         {
             return false;
         }

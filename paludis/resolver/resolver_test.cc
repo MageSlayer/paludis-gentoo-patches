@@ -288,11 +288,40 @@ paludis::resolver::resolver_test::get_constraints_for_purge_fn(
     return result;
 }
 
+const std::tr1::shared_ptr<ConstraintSequence>
+paludis::resolver::resolver_test::get_constraints_for_via_binary_fn(
+        const std::tr1::shared_ptr<const Resolution> & resolution,
+        const std::tr1::shared_ptr<const Resolution> & because_resolution)
+{
+    PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
+    partial_spec.package(resolution->resolvent().package());
+    PackageDepSpec spec(partial_spec);
+
+    std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
+    result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                        n::destination_type() = resolution->resolvent().destination_type(),
+                        n::nothing_is_fine_too() = false,
+                        n::reason() = make_shared_ptr(new ViaBinaryReason(because_resolution->resolvent())),
+                        n::spec() = spec,
+                        n::untaken() = false,
+                        n::use_existing() = ue_if_possible
+                        ))));
+
+    return result;
+}
+
 bool
 paludis::resolver::resolver_test::can_use_fn(
         const std::tr1::shared_ptr<const PackageID> &)
 {
     return true;
+}
+
+bool
+paludis::resolver::resolver_test::always_via_binary_fn(
+        const std::tr1::shared_ptr<const Resolution> &)
+{
+    return false;
 }
 
 ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s, const std::string & e,
@@ -348,12 +377,14 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
     return make_named_values<ResolverFunctions>(
             n::allowed_to_remove_fn() = std::tr1::bind(&allowed_to_remove_fn,
                     allowed_to_remove_names, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
+            n::always_via_binary_fn() = &always_via_binary_fn,
             n::can_use_fn() = &can_use_fn,
             n::confirm_fn() = &confirm_fn,
             n::find_repository_for_fn() = std::tr1::bind(&find_repository_for_fn,
                     &env, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
             n::get_constraints_for_dependent_fn() = &get_constraints_for_dependent_fn,
             n::get_constraints_for_purge_fn() = &get_constraints_for_purge_fn,
+            n::get_constraints_for_via_binary_fn() = &get_constraints_for_via_binary_fn,
             n::get_destination_types_for_fn() = &get_destination_types_for_fn,
             n::get_initial_constraints_for_fn() =
                 std::tr1::bind(&initial_constraints_for_fn, std::tr1::ref(initial_constraints),

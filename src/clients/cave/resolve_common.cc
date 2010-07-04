@@ -39,6 +39,7 @@
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_shared_copy.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/args/escape.hh>
 #include <paludis/resolver/resolver.hh>
@@ -126,6 +127,11 @@ namespace
         DestinationTypes visit(const DependentReason &) const
         {
             return DestinationTypes() + dt_install_to_slash;
+        }
+
+        DestinationTypes visit(const ViaBinaryReason &) const
+        {
+            return DestinationTypes();
         }
 
         DestinationTypes visit(const WasUsedByReason &) const
@@ -353,6 +359,11 @@ namespace
             return ue_if_possible;
         }
 
+        UseExisting visit(const ViaBinaryReason &) const
+        {
+            return ue_if_possible;
+        }
+
         UseExisting visit(const SetReason & r) const
         {
             UseExistingVisitor v(resolution_options, true);
@@ -560,6 +571,11 @@ namespace
         }
 
         bool visit(const PresetReason &) const
+        {
+            return false;
+        }
+
+        bool visit(const ViaBinaryReason &) const
         {
             return false;
         }
@@ -943,6 +959,11 @@ namespace
             return true;
         }
 
+        bool visit(const ViaBinaryReason &) const
+        {
+            return false;
+        }
+
         bool visit(const SetReason & r) const
         {
             return r.reason_for_set()->accept_returning<bool>(*this);
@@ -1232,12 +1253,49 @@ namespace
         return result;
     }
 
+    const std::tr1::shared_ptr<ConstraintSequence> get_constraints_for_via_binary_fn(
+            const Environment * const,
+            const std::tr1::shared_ptr<const Resolution> & resolution,
+            const std::tr1::shared_ptr<const Resolution> & other_resolution)
+    {
+        const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
+
+        PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
+        partial_spec.package(resolution->resolvent().package());
+        PackageDepSpec spec(partial_spec);
+
+        const std::tr1::shared_ptr<ViaBinaryReason> reason(new ViaBinaryReason(other_resolution->resolvent()));
+
+        result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+                            n::destination_type() = resolution->resolvent().destination_type(),
+                            n::nothing_is_fine_too() = false,
+                            n::reason() = reason,
+                            n::spec() = spec,
+                            n::untaken() = false,
+                            n::use_existing() = ue_if_possible
+                            ))));
+
+        return result;
+    }
+
     bool can_use_fn(
             const Environment * const env,
             const PackageDepSpecList & list,
             const std::tr1::shared_ptr<const PackageID> & id)
     {
         return ! match_any(env, list, id);
+    }
+
+    bool always_via_binary_fn(
+            const Environment * const env,
+            const PackageDepSpecList & list,
+            const std::tr1::shared_ptr<const Resolution> & resolution)
+    {
+        const ChangesToMakeDecision * changes_decision(simple_visitor_cast<const ChangesToMakeDecision>(*resolution->decision()));
+        if (! changes_decision)
+            return false;
+
+        return match_any(env, list, changes_decision->origin_id());
     }
 
     void serialise_resolved(StringListStream & ser_stream, const Resolved & resolved)
@@ -1473,6 +1531,11 @@ namespace
             return "from target";
         }
 
+        const std::string visit(const ViaBinaryReason &) const
+        {
+            return "from via binary";
+        }
+
         const std::string visit(const PresetReason & r) const
         {
             std::string result("from preset");
@@ -1547,7 +1610,8 @@ paludis::cave::resolve_common(
     PackageDepSpecList allowed_to_remove_specs, allowed_to_break_specs, remove_if_dependent_specs,
                        less_restrictive_remove_blockers_specs, purge_specs, with, without,
                        permit_old_version, permit_downgrade, take, take_from, ignore, ignore_from,
-                       favour, avoid, early, late, no_dependencies_from, no_blockers_from, not_usable_specs;
+                       favour, avoid, early, late, no_dependencies_from, no_blockers_from, not_usable_specs,
+                       via_binary_specs;
     bool allowed_to_break_system(false);
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_uninstall.begin_args()),
@@ -1673,6 +1737,14 @@ paludis::cave::resolve_common(
         not_usable_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
                     UserPackageDepSpecOptions() + updso_allow_wildcards));
 
+#ifdef ENABLE_PBINS
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_via_binary.begin_args()),
+            i_end(resolution_options.a_via_binary.end_args()) ;
+            i != i_end ; ++i)
+        via_binary_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
+                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+#endif
+
     std::tr1::shared_ptr<Generator> all_binary_repos_generator, not_binary_repos_generator;
     for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
             r_end(env->package_database()->end_repositories()) ;
@@ -1740,42 +1812,46 @@ paludis::cave::resolve_common(
 
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
                 n::allowed_to_remove_fn() = std::tr1::bind(&allowed_to_remove_fn,
-                        env.get(), std::tr1::cref(allowed_to_remove_specs), _1, _2),
+                    env.get(), std::tr1::cref(allowed_to_remove_specs), _1, _2),
+                n::always_via_binary_fn() = std::tr1::bind(&always_via_binary_fn,
+                    env.get(), std::tr1::cref(via_binary_specs), _1),
                 n::can_use_fn() = std::tr1::bind(&can_use_fn,
                     env.get(), std::tr1::cref(not_usable_specs), _1),
                 n::confirm_fn() = std::tr1::bind(&confirm_fn,
-                        env.get(), std::tr1::cref(resolution_options), std::tr1::cref(permit_downgrade),
-                        std::tr1::cref(permit_old_version), std::tr1::cref(allowed_to_break_specs),
-                        allowed_to_break_system, _1, _2),
+                    env.get(), std::tr1::cref(resolution_options), std::tr1::cref(permit_downgrade),
+                    std::tr1::cref(permit_old_version), std::tr1::cref(allowed_to_break_specs),
+                    allowed_to_break_system, _1, _2),
                 n::find_repository_for_fn() = std::tr1::bind(&find_repository_for_fn,
-                        env.get(), std::tr1::cref(resolution_options), _1, _2),
+                    env.get(), std::tr1::cref(resolution_options), _1, _2),
                 n::get_constraints_for_dependent_fn() = std::tr1::bind(&get_constraints_for_dependent_fn,
-                        env.get(), std::tr1::cref(less_restrictive_remove_blockers_specs), _1, _2, _3),
+                    env.get(), std::tr1::cref(less_restrictive_remove_blockers_specs), _1, _2, _3),
                 n::get_constraints_for_purge_fn() = std::tr1::bind(&get_constraints_for_purge_fn,
-                        env.get(), std::tr1::cref(purge_specs), _1, _2, _3),
+                    env.get(), std::tr1::cref(purge_specs), _1, _2, _3),
+                n::get_constraints_for_via_binary_fn() = std::tr1::bind(&get_constraints_for_via_binary_fn,
+                    env.get(), _1, _2),
                 n::get_destination_types_for_fn() = std::tr1::bind(&get_destination_types_for_fn,
-                        env.get(), std::tr1::cref(resolution_options), _1, _2, _3),
+                    env.get(), std::tr1::cref(resolution_options), _1, _2, _3),
                 n::get_initial_constraints_for_fn() = std::tr1::bind(&initial_constraints_for_fn,
-                        env.get(), std::tr1::cref(resolution_options), std::tr1::cref(without),
-                        std::tr1::cref(initial_constraints), all_binary_repos_generator, _1),
+                    env.get(), std::tr1::cref(resolution_options), std::tr1::cref(without),
+                    std::tr1::cref(initial_constraints), all_binary_repos_generator, _1),
                 n::get_resolvents_for_fn() = std::tr1::bind(&get_resolvents_for_fn,
-                        env.get(), std::tr1::cref(resolution_options), _1, _2, _3, DestinationTypes()),
+                    env.get(), std::tr1::cref(resolution_options), _1, _2, _3, DestinationTypes()),
                 n::get_use_existing_fn() = std::tr1::bind(&use_existing_fn,
-                        env.get(), std::tr1::cref(resolution_options), std::tr1::cref(without), std::tr1::cref(with), _1, _2, _3),
+                    env.get(), std::tr1::cref(resolution_options), std::tr1::cref(without), std::tr1::cref(with), _1, _2, _3),
                 n::interest_in_spec_fn() = std::tr1::bind(&interest_in_spec_fn,
-                        env.get(), std::tr1::cref(resolution_options), std::tr1::cref(take), std::tr1::cref(take_from),
-                        std::tr1::cref(ignore), std::tr1::cref(ignore_from), std::tr1::cref(no_blockers_from),
-                        std::tr1::cref(no_dependencies_from), _1, _2),
+                    env.get(), std::tr1::cref(resolution_options), std::tr1::cref(take), std::tr1::cref(take_from),
+                    std::tr1::cref(ignore), std::tr1::cref(ignore_from), std::tr1::cref(no_blockers_from),
+                    std::tr1::cref(no_dependencies_from), _1, _2),
                 n::make_destination_filtered_generator_fn() = std::tr1::bind(&make_destination_filtered_generator_with_resolution,
-                        env.get(), std::tr1::cref(resolution_options), all_binary_repos_generator, _1, _2),
+                    env.get(), std::tr1::cref(resolution_options), all_binary_repos_generator, _1, _2),
                 n::make_origin_filtered_generator_fn() = std::tr1::bind(&make_origin_filtered_generator,
-                        env.get(), std::tr1::cref(resolution_options), not_binary_repos_generator, _1, _2),
+                    env.get(), std::tr1::cref(resolution_options), not_binary_repos_generator, _1, _2),
                 n::order_early_fn() = std::tr1::bind(&order_early_fn,
-                        env.get(), std::tr1::cref(resolution_options), std::tr1::cref(early), std::tr1::cref(late), _1),
+                    env.get(), std::tr1::cref(resolution_options), std::tr1::cref(early), std::tr1::cref(late), _1),
                 n::prefer_or_avoid_fn() = std::tr1::bind(&prefer_or_avoid_fn,
-                        env.get(), std::tr1::cref(resolution_options), std::tr1::cref(favour), std::tr1::cref(avoid), _1),
+                    env.get(), std::tr1::cref(resolution_options), std::tr1::cref(favour), std::tr1::cref(avoid), _1),
                 n::remove_if_dependent_fn() = std::tr1::bind(&remove_if_dependent_fn,
-                        env.get(), std::tr1::cref(remove_if_dependent_specs), _1)
+                    env.get(), std::tr1::cref(remove_if_dependent_specs), _1)
                 ));
 
     ScopedSelectionCache selection_cache(env.get());

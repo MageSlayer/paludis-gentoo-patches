@@ -319,6 +319,43 @@ LikeOtherDestinationTypeReason::serialise(Serialiser & s) const
         ;
 }
 
+namespace paludis
+{
+    template <>
+    struct Implementation<ViaBinaryReason>
+    {
+        const Resolvent other_resolvent;
+
+        Implementation(const Resolvent & s) :
+            other_resolvent(s)
+        {
+        }
+    };
+}
+
+ViaBinaryReason::ViaBinaryReason(const Resolvent & r) :
+    PrivateImplementationPattern<ViaBinaryReason>(new Implementation<ViaBinaryReason>(r))
+{
+}
+
+ViaBinaryReason::~ViaBinaryReason()
+{
+}
+
+const Resolvent
+ViaBinaryReason::other_resolvent() const
+{
+    return _imp->other_resolvent;
+}
+
+void
+ViaBinaryReason::serialise(Serialiser & s) const
+{
+    s.object("ViaBinaryReason")
+        .member(SerialiserFlags<>(), "other_resolvent", other_resolvent())
+        ;
+}
+
 const std::tr1::shared_ptr<Reason>
 Reason::deserialise(Deserialisation & d)
 {
@@ -378,6 +415,13 @@ Reason::deserialise(Deserialisation & d)
                     v.member<std::tr1::shared_ptr<Reason> >("reason_for_other")
                     ));
     }
+    else if (d.class_name() == "ViaBinaryReason")
+    {
+        Deserialisator v(d, "ViaBinaryReason");
+        return make_shared_ptr(new ViaBinaryReason(
+                    v.member<Resolvent>("other_resolvent")
+                    ));
+    }
     else
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 }
@@ -388,4 +432,5 @@ template class PrivateImplementationPattern<SetReason>;
 template class PrivateImplementationPattern<PresetReason>;
 template class PrivateImplementationPattern<WasUsedByReason>;
 template class PrivateImplementationPattern<LikeOtherDestinationTypeReason>;
+template class PrivateImplementationPattern<ViaBinaryReason>;
 

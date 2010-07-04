@@ -47,11 +47,13 @@ namespace paludis
     namespace n
     {
         typedef Name<struct allowed_to_remove_fn_name> allowed_to_remove_fn;
+        typedef Name<struct always_via_binary_fn_name> always_via_binary_fn;
         typedef Name<struct can_use_fn_name> can_use_fn;
         typedef Name<struct confirm_fn_name> confirm_fn;
         typedef Name<struct find_repository_for_fn_name> find_repository_for_fn;
         typedef Name<struct get_constraints_for_dependent_fn_name> get_constraints_for_dependent_fn;
         typedef Name<struct get_constraints_for_purge_fn_name> get_constraints_for_purge_fn;
+        typedef Name<struct get_constraints_for_via_binary_fn_name> get_constraints_for_via_binary_fn;
         typedef Name<struct get_destination_types_for_fn_name> get_destination_types_for_fn;
         typedef Name<struct get_initial_constraints_for_fn_name> get_initial_constraints_for_fn;
         typedef Name<struct get_resolvents_for_fn_name> get_resolvents_for_fn;
@@ -70,6 +72,10 @@ namespace paludis
                 const std::tr1::shared_ptr<const Resolution> &,
                 const std::tr1::shared_ptr<const PackageID> &
                 )> AllowedToRemoveFunction;
+
+        typedef std::tr1::function<bool (
+                const std::tr1::shared_ptr<const Resolution> &
+                )> AlwaysViaBinaryFunction;
 
         typedef std::tr1::function<bool (
                 const std::tr1::shared_ptr<const PackageID> &
@@ -96,6 +102,11 @@ namespace paludis
                 const std::tr1::shared_ptr<const PackageID> &,
                 const std::tr1::shared_ptr<const ChangeByResolventSequence> &
                 )> GetConstraintsForPurgeFunction;
+
+        typedef std::tr1::function<std::tr1::shared_ptr<ConstraintSequence> (
+                const std::tr1::shared_ptr<const Resolution> &,
+                const std::tr1::shared_ptr<const Resolution> &
+                )> GetConstraintsForViaBinaryFunction;
 
         typedef std::tr1::function<DestinationTypes (
                 const PackageDepSpec &,
@@ -149,11 +160,13 @@ namespace paludis
         struct ResolverFunctions
         {
             NamedValue<n::allowed_to_remove_fn, AllowedToRemoveFunction> allowed_to_remove_fn;
+            NamedValue<n::always_via_binary_fn, AlwaysViaBinaryFunction> always_via_binary_fn;
             NamedValue<n::can_use_fn, CanUseFunction> can_use_fn;
             NamedValue<n::confirm_fn, ConfirmFunction> confirm_fn;
             NamedValue<n::find_repository_for_fn, FindRepositoryForFunction> find_repository_for_fn;
             NamedValue<n::get_constraints_for_dependent_fn, GetConstraintsForDependentFunction> get_constraints_for_dependent_fn;
             NamedValue<n::get_constraints_for_purge_fn, GetConstraintsForPurgeFunction> get_constraints_for_purge_fn;
+            NamedValue<n::get_constraints_for_via_binary_fn, GetConstraintsForViaBinaryFunction> get_constraints_for_via_binary_fn;
             NamedValue<n::get_destination_types_for_fn, GetDestinationTypesForFunction> get_destination_types_for_fn;
             NamedValue<n::get_initial_constraints_for_fn, GetInitialConstraintsFunction> get_initial_constraints_for_fn;
             NamedValue<n::get_resolvents_for_fn, GetResolventsForFunction> get_resolvents_for_fn;

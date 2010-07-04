@@ -43,6 +43,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/repository.hh>
@@ -143,6 +144,71 @@ Decider::_resolve_decide_with_dependencies()
             _add_dependencies_if_necessary(*i);
         }
     }
+}
+
+bool
+Decider::_resolve_vias()
+{
+    Context context("When finding vias:");
+
+    bool changed(false);
+
+    for (ResolutionsByResolvent::ConstIterator i(_imp->resolutions_by_resolvent->begin()),
+            i_end(_imp->resolutions_by_resolvent->end()) ;
+            i != i_end ; ++i)
+    {
+        if ((*i)->resolvent().destination_type() == dt_create_binary)
+            continue;
+
+        if (! _always_via_binary(*i))
+            continue;
+
+        _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
+
+        Resolvent binary_resolvent((*i)->resolvent());
+        binary_resolvent.destination_type() = dt_create_binary;
+
+        const std::tr1::shared_ptr<Resolution> binary_resolution(_resolution_for_resolvent(binary_resolvent, true));
+
+        bool already(false);
+        for (Constraints::ConstIterator c(binary_resolution->constraints()->begin()),
+                c_end(binary_resolution->constraints()->end()) ;
+                c != c_end ; ++c)
+            if (simple_visitor_cast<const ViaBinaryReason>(*(*c)->reason()))
+            {
+                already = true;
+                break;
+            }
+
+        if (already)
+            continue;
+
+        changed = true;
+
+        const std::tr1::shared_ptr<const ConstraintSequence> constraints(_make_constraints_for_via_binary(binary_resolution, *i));
+
+        for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
+                c != c_end ; ++c)
+            _apply_resolution_constraint(binary_resolution, *c);
+
+        _decide(binary_resolution);
+    }
+
+    return changed;
+}
+
+bool
+Decider::_always_via_binary(const std::tr1::shared_ptr<const Resolution> & resolution) const
+{
+    return _imp->fns.always_via_binary_fn()(resolution);
+}
+
+const std::tr1::shared_ptr<ConstraintSequence>
+Decider::_make_constraints_for_via_binary(
+        const std::tr1::shared_ptr<const Resolution> & resolution,
+        const std::tr1::shared_ptr<const Resolution> & other_resolution) const
+{
+    return _imp->fns.get_constraints_for_via_binary_fn()(resolution, other_resolution);
 }
 
 bool
@@ -1886,6 +1952,10 @@ Decider::resolve()
     {
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Deciding"));
         _resolve_decide_with_dependencies();
+
+        _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Vialating"));
+        if (_resolve_vias())
+            continue;
 
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Finding Dependents"));
         if (_resolve_dependents())
