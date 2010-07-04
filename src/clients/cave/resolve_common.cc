@@ -1271,7 +1271,7 @@ namespace
                             n::nothing_is_fine_too() = false,
                             n::reason() = reason,
                             n::spec() = spec,
-                            n::untaken() = false,
+                            n::untaken() = true,
                             n::use_existing() = ue_if_possible
                             ))));
 
