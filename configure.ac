@@ -917,6 +917,13 @@ AC_ARG_ENABLE([htmltidy],
 AC_SUBST([HAVE_HTMLTIDY])
 AM_CONDITIONAL([HAVE_HTMLTIDY], test "x$HAVE_HTMLTIDY" = "xyes")
 
+if test "x$HAVE_HTMLTIDY" = "xyes" ; then
+	AC_CHECK_PROG(HAVE_HTMLTIDY_WORKS, [tidy], [yes], [no])
+	if test "x$HAVE_HTMLTIDY_WORKS" = xno ; then
+		AC_MSG_ERROR([--enable-htmltidy was specified but 'tidy' doesn't work])
+	fi
+fi
+
 dnl {{{ check for whether to build xml stuff
 AC_MSG_CHECKING([whether to build xml things for metadata.xml and GLSA support])
 AC_ARG_ENABLE([xml],
