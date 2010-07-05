@@ -589,6 +589,7 @@ paludis::run_command(const Command & cmd)
 
             /* clear any SIGINT or SIGTERM handlers we inherit, and unblock signals */
             struct sigaction act;
+            sigemptyset(&act.sa_mask);
             act.sa_handler = SIG_DFL;
             act.sa_flags = 0;
             sigaction(SIGINT,  &act, 0);
@@ -717,9 +718,9 @@ paludis::run_command(const Command & cmd)
 
             /* On SIGINT or SIGTERM, just output a notice. */
             struct sigaction act, old_act;
+            sigemptyset(&act.sa_mask);
             act.sa_handler = &wait_handler;
             act.sa_flags = SA_RESTART;
-            sigemptyset(&act.sa_mask);
             sigaddset(&act.sa_mask, SIGINT);
             sigaddset(&act.sa_mask, SIGTERM);
 
@@ -1087,6 +1088,7 @@ paludis::become_command(const Command & cmd)
         /* Ignore CLD. POSIX may or may not say that if we do this, our child will
          * not become a zombie. */
         struct sigaction act;
+        sigemptyset(&act.sa_mask);
         act.sa_handler = SIG_IGN;
         act.sa_flags = 0;
         sigaction(SIGCLD, &act, 0);
@@ -1133,6 +1135,7 @@ paludis::become_command(const Command & cmd)
 
         /* clear any SIGINT or SIGTERM handlers we inherit, and unblock signals */
         struct sigaction act;
+        sigemptyset(&act.sa_mask);
         act.sa_handler = SIG_DFL;
         act.sa_flags = 0;
         sigaction(SIGINT,  &act, 0);
