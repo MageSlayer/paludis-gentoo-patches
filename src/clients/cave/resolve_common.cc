@@ -1272,7 +1272,7 @@ namespace
                             n::reason() = reason,
                             n::spec() = spec,
                             n::untaken() = true,
-                            n::use_existing() = ue_if_same
+                            n::use_existing() = ue_never
                             ))));
 
         return result;
