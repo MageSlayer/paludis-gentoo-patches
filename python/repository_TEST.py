@@ -63,6 +63,7 @@ class TestCase_01_Repository(unittest.TestCase):
 
     def test_07_package_ids(self):
         y = list(x.version for x in repo.package_ids("foo/bar"));
+        y.sort()
         z = [VersionSpec("1.0"), VersionSpec("2.0")]
         self.assertEquals(y, z)
         self.assertEquals(len(list(repo.package_ids("bar/baz"))), 0)
