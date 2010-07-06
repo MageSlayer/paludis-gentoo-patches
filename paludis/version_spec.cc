@@ -63,15 +63,10 @@ namespace paludis
         mutable bool has_hash;
         mutable std::size_t hash;
 
-        mutable Mutex is_scm_mutex;
-        mutable bool has_is_scm;
-        mutable bool is_scm;
-
         const VersionSpecOptions options;
 
         Implementation(const VersionSpecOptions & o) :
             has_hash(false),
-            has_is_scm(false),
             options(o)
         {
         }
@@ -350,8 +345,6 @@ VersionSpec::operator= (const VersionSpec & other)
         _imp->parts = other._imp->parts;
         _imp->has_hash = other._imp->has_hash;
         _imp->hash = other._imp->hash;
-        _imp->has_is_scm = other._imp->has_is_scm;
-        _imp->is_scm = other._imp->is_scm;
     }
     return *this;
 }
@@ -660,11 +653,6 @@ paludis::operator<< (std::ostream & s, const VersionSpec & v)
 bool
 VersionSpec::is_scm() const
 {
-    Lock l(_imp->is_scm_mutex);
-
-    if (_imp->has_is_scm)
-        return _imp->is_scm;
-
     bool result(false);
     do
     {
@@ -700,9 +688,6 @@ VersionSpec::is_scm() const
             break;
         }
     } while (false);
-
-    _imp->is_scm = result;
-    _imp->has_is_scm = true;
 
     return result;
 }
