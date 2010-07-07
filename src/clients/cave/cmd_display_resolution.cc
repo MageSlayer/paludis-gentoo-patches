@@ -1120,13 +1120,13 @@ namespace
             const bool untaken)
     {
         if (untaken)
-            cout << "(!) " << c::bold_red() << resolution->resolvent() << c::normal() << endl;
+            cout << "(!) " << c::red() << resolution->resolvent() << c::normal() << endl;
         else
             cout << "!   " << c::bold_red() << resolution->resolvent() << c::normal() << endl;
 
         display_reasons(resolution, true);
 
-        if (d.unsuitable_candidates()->empty())
+        if (untaken || d.unsuitable_candidates()->empty())
             return;
 
         cout << "    Unsuitable candidates:" << endl;
