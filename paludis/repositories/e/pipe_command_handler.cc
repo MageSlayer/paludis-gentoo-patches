@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  * Copyright (c) 2009 Ingmar Vanhassel
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -35,6 +35,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/save.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/package_id.hh>
 #include <paludis/environment.hh>
@@ -65,51 +66,96 @@ namespace
         StringifyFormatter f;
         std::stringstream str;
 
+        std::string prefix;
+
+        const std::tr1::shared_ptr<const PackageID> id;
+        const std::string description_annotation;
+        const std::string joiner;
+
+        MyOptionsRewriter(
+                const std::tr1::shared_ptr<const PackageID> & i,
+                const std::string & d,
+                const std::string & j) :
+            id(i),
+            description_annotation(d),
+            joiner(j)
+        {
+        }
+
         void visit(const PlainTextSpecTree::NodeType<AllDepSpec>::Type & node)
         {
+            Save<std::string> save_prefix(&prefix);
             str << "( ";
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
             str << " ) ";
-            do_annotations(*node.spec());
+            do_annotations(*node.spec(), "");
         }
 
         void visit(const PlainTextSpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
+            Save<std::string> save_prefix(&prefix);
             str << f.format(*node.spec(), format::Plain()) << " ( ";
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
             str << " ) ";
-            do_annotations(*node.spec());
+            do_annotations(*node.spec(), "");
         }
 
         void visit(const PlainTextSpecTree::NodeType<PlainTextDepSpec>::Type & node)
         {
             str << f.format(*node.spec(), format::Plain()) << " ";
-            do_annotations(*node.spec());
+            do_annotations(*node.spec(), (prefix.empty() ? "" : prefix + joiner) + stringify(*node.spec()));
         }
 
         void visit(const PlainTextSpecTree::NodeType<PlainTextLabelDepSpec>::Type & node)
         {
+            prefix = node.spec()->label();
             str << f.format(*node.spec(), format::Plain()) << " ";
-            do_annotations(*node.spec());
+            do_annotations(*node.spec(), "");
         }
 
-        void do_annotations(const DepSpec & p)
+        void do_annotations(const DepSpec & p, const std::string & desc_from)
         {
-            if (p.annotations_key() && (p.annotations_key()->begin_metadata() != p.annotations_key()->end_metadata()))
-            {
-                str << " [[ ";
+            bool seen_description(false), done_brackets(false);
+
+            if (p.annotations_key())
                 for (MetadataSectionKey::MetadataConstIterator k(p.annotations_key()->begin_metadata()),
                         k_end(p.annotations_key()->end_metadata()) ;
                         k != k_end ; ++k)
                 {
+                    if (! done_brackets)
+                    {
+                        str << " [[ ";
+                        done_brackets = true;
+                    }
+
                     const MetadataValueKey<std::string> * r(
                             simple_visitor_cast<const MetadataValueKey<std::string> >(**k));
                     if (! r)
                         throw InternalError(PALUDIS_HERE, "annotations must be string keys");
                     str << (*k)->raw_name() << " = [" << (r->value().empty() ? " " : " " + r->value() + " ") << "] ";
+
+                    if ((*k)->raw_name() == description_annotation)
+                        seen_description = true;
                 }
-                str << "]] ";
+
+            if ((! seen_description) && (id->choices_key()) && (! desc_from.empty()))
+            {
+                const std::tr1::shared_ptr<const ChoiceValue> choice(
+                        id->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix(desc_from)));
+                if (choice && (! choice->description().empty()) && (! description_annotation.empty()))
+                {
+                    if (! done_brackets)
+                    {
+                        str << " [[ ";
+                        done_brackets = true;
+                    }
+
+                    str << description_annotation << " = [ " << choice->description() << " ] ";
+                }
             }
+
+            if (done_brackets)
+                str << "]] ";
         }
     };
 }
@@ -419,7 +465,9 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     throw InternalError(PALUDIS_HERE, "oops. key '" + var + "' isn't a PlainTextSpecTree key");
 
                 StringifyFormatter ff;
-                MyOptionsRewriter p;
+                MyOptionsRewriter p(package_id,
+                        eapi->supported()->annotations()->myoptions_description(),
+                        std::string(1, eapi->supported()->choices_options()->use_expand_separator()));
                 mm->value()->root()->accept(p);
                 return "O0;" + p.str.str();
             }
