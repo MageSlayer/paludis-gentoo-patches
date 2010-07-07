@@ -551,6 +551,9 @@ std::tr1::shared_ptr<Sequence<std::tr1::shared_ptr<HookFile> > >
 Hooker::_find_hooks(const Hook & hook) const
 {
     std::map<std::string, std::tr1::shared_ptr<HookFile> > hook_files;
+    std::set<std::string> ignore_hooks;
+    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(getenv_with_default("PALUDIS_IGNORE_HOOKS_NAMED", ""),
+            ":", "", std::inserter(ignore_hooks, ignore_hooks.begin()));
 
     {
         _imp->need_auto_hook_files();
@@ -569,6 +572,9 @@ Hooker::_find_hooks(const Hook & hook) const
 
         for (DirIterator e(d->first / hook.name()), e_end ; e != e_end ; ++e)
         {
+            if (ignore_hooks.find(e->basename()) != ignore_hooks.end())
+                continue;
+
             if (is_file_with_extension(*e, ".bash", IsFileWithOptions()))
                 if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".bash"),
                                 std::tr1::shared_ptr<HookFile>(new BashHookFile(*e, d->second, _imp->env)))).second)
