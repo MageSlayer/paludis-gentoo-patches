@@ -283,16 +283,39 @@ namespace
         return true;
     }
 
+    std::string added_or_changed_string(
+            const std::tr1::shared_ptr<const Choice> & choice,
+            const std::tr1::shared_ptr<const ChoiceValue> & value,
+            const std::tr1::shared_ptr<const PackageID> & maybe_old_id)
+    {
+        std::tr1::shared_ptr<const ChoiceValue> maybe_old_value;
+        if (maybe_old_id && maybe_old_id->choices_key())
+            maybe_old_value = maybe_old_id->choices_key()->value()->find_by_name_with_prefix(value->name_with_prefix());
+
+        if (maybe_old_value)
+        {
+            if (maybe_old_value->enabled() != value->enabled())
+                return "*";
+        }
+        else if (maybe_old_id && value->explicitly_listed() && choice->consider_added_or_changed())
+            return "+";
+
+        return "";
+    }
+
     struct InfoDisplayer
     {
         const ShowCommandLine & cmdline;
         const int indent;
         const bool important;
+        const std::tr1::shared_ptr<const PackageID> maybe_old_id;
 
-        InfoDisplayer(const ShowCommandLine & c, const int i, const bool m) :
+        InfoDisplayer(const ShowCommandLine & c, const int i, const bool m,
+                const std::tr1::shared_ptr<const PackageID> & o) :
             cmdline(c),
             indent(i),
-            important(m)
+            important(m),
+            maybe_old_id(o)
         {
         }
 
@@ -306,7 +329,7 @@ namespace
             for (std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                     s(keys.begin()), s_end(keys.end()) ; s != s_end ; ++s)
             {
-                InfoDisplayer i(cmdline, indent + 1, ((*s)->type() == mkt_significant));
+                InfoDisplayer i(cmdline, indent + 1, ((*s)->type() == mkt_significant), maybe_old_id);
                 if (want_key(cmdline, *s))
                     accept_visitor(i)(**s);
             }
@@ -573,16 +596,20 @@ namespace
                         if ((*v)->enabled())
                         {
                             if ((*v)->locked())
-                                s << format_general_s(f::show_choice_forced_enabled(), stringify((*v)->unprefixed_name())) << " ";
+                                s << format_general_sr(f::show_choice_forced_enabled(), stringify((*v)->unprefixed_name()),
+                                        added_or_changed_string(*c, *v, maybe_old_id)) << " ";
                             else
-                                s << format_general_s(f::show_choice_enabled(), stringify((*v)->unprefixed_name())) << " ";
+                                s << format_general_sr(f::show_choice_enabled(), stringify((*v)->unprefixed_name()),
+                                        added_or_changed_string(*c, *v, maybe_old_id)) << " ";
                         }
                         else
                         {
                             if ((*v)->locked())
-                                s << format_general_s(f::show_choice_forced_disabled(), stringify((*v)->unprefixed_name())) << " ";
+                                s << format_general_sr(f::show_choice_forced_disabled(), stringify((*v)->unprefixed_name()),
+                                        added_or_changed_string(*c, *v, maybe_old_id)) << " ";
                             else
-                                s << format_general_s(f::show_choice_disabled(), stringify((*v)->unprefixed_name())) << " ";
+                                s << format_general_sr(f::show_choice_disabled(), stringify((*v)->unprefixed_name()),
+                                        added_or_changed_string(*c, *v, maybe_old_id)) << " ";
                         }
                     }
                 }
@@ -638,16 +665,20 @@ namespace
                             {
                                 cout << format_general_rhvib(
                                         (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
-                                        format_general_s(f::show_choice_forced_enabled(), stringify((*v)->name_with_prefix())),
-                                        format_general_s(f::show_choice_forced_enabled(), stringify((*v)->unprefixed_name())),
+                                        format_general_sr(f::show_choice_forced_enabled(), stringify((*v)->name_with_prefix()),
+                                            added_or_changed_string(*c, *v, maybe_old_id)),
+                                        format_general_sr(f::show_choice_forced_enabled(), stringify((*v)->unprefixed_name()),
+                                            added_or_changed_string(*c, *v, maybe_old_id)),
                                         (*v)->description(), indent + 2, important);
                             }
                             else
                             {
                                 cout << format_general_rhvib(
                                         (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
-                                        format_general_s(f::show_choice_enabled(), stringify((*v)->name_with_prefix())),
-                                        format_general_s(f::show_choice_enabled(), stringify((*v)->unprefixed_name())),
+                                        format_general_sr(f::show_choice_enabled(), stringify((*v)->name_with_prefix()),
+                                            added_or_changed_string(*c, *v, maybe_old_id)),
+                                        format_general_sr(f::show_choice_enabled(), stringify((*v)->unprefixed_name()),
+                                            added_or_changed_string(*c, *v, maybe_old_id)),
                                         (*v)->description(), indent + 2, important);
                             }
                         }
@@ -657,16 +688,20 @@ namespace
                             {
                                 cout << format_general_rhvib(
                                         (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
-                                        format_general_s(f::show_choice_forced_disabled(), stringify((*v)->name_with_prefix())),
-                                        format_general_s(f::show_choice_forced_disabled(), stringify((*v)->unprefixed_name())),
+                                        format_general_sr(f::show_choice_forced_disabled(), stringify((*v)->name_with_prefix()),
+                                            added_or_changed_string(*c, *v, maybe_old_id)),
+                                        format_general_sr(f::show_choice_forced_disabled(), stringify((*v)->unprefixed_name()),
+                                            added_or_changed_string(*c, *v, maybe_old_id)),
                                         (*v)->description(), indent + 2, important);
                             }
                             else
                             {
                                 cout << format_general_rhvib(
                                         (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
-                                        format_general_s(f::show_choice_disabled(), stringify((*v)->name_with_prefix())),
-                                        format_general_s(f::show_choice_disabled(), stringify((*v)->unprefixed_name())),
+                                        format_general_sr(f::show_choice_disabled(), stringify((*v)->name_with_prefix()),
+                                            added_or_changed_string(*c, *v, maybe_old_id)),
+                                        format_general_sr(f::show_choice_disabled(), stringify((*v)->unprefixed_name()),
+                                            added_or_changed_string(*c, *v, maybe_old_id)),
                                         (*v)->description(), indent + 2, important);
                             }
                         }
@@ -714,7 +749,7 @@ namespace
         {
             if (m.unaccepted_key())
             {
-                InfoDisplayer i(cmdline, indent, false);
+                InfoDisplayer i(cmdline, indent, false, make_null_shared_ptr());
                 m.unaccepted_key()->accept(i);
             }
             else
@@ -754,7 +789,7 @@ namespace
         {
             if (m.mask_key())
             {
-                InfoDisplayer i(cmdline, indent, false);
+                InfoDisplayer i(cmdline, indent, false, make_null_shared_ptr());
                 m.mask_key()->accept(i);
             }
             else
@@ -779,7 +814,7 @@ namespace
         for (std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
         {
-            InfoDisplayer i(cmdline, 0, ((*k)->type() == mkt_significant));
+            InfoDisplayer i(cmdline, 0, ((*k)->type() == mkt_significant), make_null_shared_ptr());
             if (want_key(cmdline, *k))
                 accept_visitor(i)(**k);
         }
@@ -789,14 +824,15 @@ namespace
     void do_one_package_id(
             const ShowCommandLine & cmdline,
             const std::tr1::shared_ptr<Environment> &,
-            const std::tr1::shared_ptr<const PackageID> & best)
+            const std::tr1::shared_ptr<const PackageID> & best,
+            const std::tr1::shared_ptr<const PackageID> & maybe_old_id)
     {
         cout << format_general_s(f::show_package_id_heading(), stringify(*best));
         std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(best->begin_metadata(), best->end_metadata());
         for (std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
         {
-            InfoDisplayer i(cmdline, 1, ((*k)->type() == mkt_significant));
+            InfoDisplayer i(cmdline, 1, ((*k)->type() == mkt_significant), maybe_old_id);
             if (want_key(cmdline, *k))
                 accept_visitor(i)(**k);
         }
@@ -918,17 +954,17 @@ namespace
         if (cmdline.a_one_version.specified())
         {
             if (best_installable)
-                do_one_package_id(cmdline, env, best_installable);
+                do_one_package_id(cmdline, env, best_installable, all_installed->empty() ? make_null_shared_ptr() : *all_installed->rbegin());
             else if (! all_installed->empty())
-                do_one_package_id(cmdline, env, *all_installed->rbegin());
+                do_one_package_id(cmdline, env, *all_installed->rbegin(), make_null_shared_ptr());
         }
         else
         {
             for (PackageIDSequence::ConstIterator i(all_installed->begin()), i_end(all_installed->end()) ;
                     i != i_end ; ++i)
-                do_one_package_id(cmdline, env, *i);
+                do_one_package_id(cmdline, env, *i, make_null_shared_ptr());
             if (best_installable)
-                do_one_package_id(cmdline, env, best_installable);
+                do_one_package_id(cmdline, env, best_installable, all_installed->empty() ? make_null_shared_ptr() : *all_installed->rbegin());
         }
 
         cout << endl;

@@ -540,25 +540,25 @@ paludis::cave::f::show_contents_sym()
 const std::string
 paludis::cave::f::show_choice_forced_enabled()
 {
-    return c::green_or_pink() + "(%s)" + c::normal();
+    return c::green_or_pink() + "(%s)" + c::normal() + "%r";
 }
 
 const std::string
 paludis::cave::f::show_choice_enabled()
 {
-    return c::green_or_pink() + "%s" + c::normal();
+    return c::green_or_pink() + "%s" + c::normal() + "%r";
 }
 
 const std::string
 paludis::cave::f::show_choice_forced_disabled()
 {
-    return c::red() + "(-%s)" + c::normal();
+    return c::red() + "(-%s)" + c::normal() + "%r";
 }
 
 const std::string
 paludis::cave::f::show_choice_disabled()
 {
-    return c::red() + "-%s" + c::normal();
+    return c::red() + "-%s" + c::normal() + "%r";
 }
 
 const std::string
