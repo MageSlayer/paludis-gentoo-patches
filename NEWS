@@ -4,6 +4,17 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.48.1:
+    * We now work around broken TLS support in certain monkey-patched GCC
+      versions.
+
+    * Various minor bug fixes.
+
+    * Working compiler support for 'extern template' is now required.
+
+    * The PALUDIS_IGNORE_HOOKS_NAMED environment variable can be used to skip
+      executing hooks from specific files.
+
 0.48.0:
     * --reset is now the default for git syncers. If Paludis is used to sync a
       git repository with modifications, those modifications will be lost. Use
