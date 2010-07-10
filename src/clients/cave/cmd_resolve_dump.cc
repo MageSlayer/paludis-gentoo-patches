@@ -147,9 +147,9 @@ namespace
         {
         }
 
-        void visit(const TargetReason &)
+        void visit(const TargetReason & r)
         {
-            str = "Target";
+            str = "Target(" + r.extra_information() + ")";
         }
 
         void visit(const PresetReason &)

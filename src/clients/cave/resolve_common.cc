@@ -1526,9 +1526,9 @@ namespace
             return "from dependent " + stringify(*r.id_and_resolvent_being_removed().package_id());
         }
 
-        const std::string visit(const TargetReason &) const
+        const std::string visit(const TargetReason & r) const
         {
-            return "from target";
+            return "from target" + (r.extra_information().empty() ? "" : " (" + r.extra_information() + ")");
         }
 
         const std::string visit(const ViaBinaryReason &) const

@@ -220,9 +220,9 @@ namespace
                             ", ", stringify_change_by_resolvent), true);
         }
 
-        std::pair<std::string, Tribool> visit(const TargetReason &) const
+        std::pair<std::string, Tribool> visit(const TargetReason & r) const
         {
-            return std::make_pair("target", true);
+            return std::make_pair("target" + (r.extra_information().empty() ? "" : " (" + r.extra_information() + ")"), true);
         }
 
         std::pair<std::string, Tribool> visit(const SetReason & r) const
