@@ -58,6 +58,7 @@ namespace paludis
         std::list<std::pair<std::string, std::string> > example_lines;
         std::list<std::string> notes;
         std::list<std::string> descriptions;
+        std::list<std::pair<std::string, int> > see_alsos;
         std::tr1::shared_ptr<Sequence<std::string> > separate_after_dashes_args;
 
         std::map<std::string, ArgsOption *> longopts;
@@ -118,6 +119,12 @@ namespace paludis
     {
         typedef std::list<std::string>::iterator UnderlyingIterator;
     };
+
+    template <>
+    struct WrappedForwardIteratorTraits<ArgsHandler::SeeAlsoConstIteratorTag>
+    {
+        typedef std::list<std::pair<std::string, int> >::const_iterator UnderlyingIterator;
+    };
 }
 
 ArgsHandler::ArgsHandler() :
@@ -151,6 +158,12 @@ void
 ArgsHandler::add_note(const std::string & e)
 {
     _imp->notes.push_back(e);
+}
+
+void
+ArgsHandler::add_see_also(const std::string & e, const int s)
+{
+    _imp->see_alsos.push_back(std::make_pair(e, s));
 }
 
 void
@@ -402,6 +415,18 @@ ArgsHandler::end_notes() const
     return NotesIterator(_imp->notes.end());
 }
 
+ArgsHandler::SeeAlsoConstIterator
+ArgsHandler::begin_see_alsos() const
+{
+    return SeeAlsoConstIterator(_imp->see_alsos.begin());
+}
+
+ArgsHandler::SeeAlsoConstIterator
+ArgsHandler::end_see_alsos() const
+{
+    return SeeAlsoConstIterator(_imp->see_alsos.end());
+}
+
 ArgsHandler::ArgsSectionsConstIterator
 ArgsHandler::begin_args_sections() const
 {
@@ -455,5 +480,6 @@ template class WrappedForwardIterator<ArgsHandler::ExamplesConstIteratorTag,
 template class WrappedForwardIterator<ArgsHandler::ArgsSectionsConstIteratorTag, const ArgsSection>;
 template class WrappedForwardIterator<ArgsHandler::NotesIteratorTag, const std::string>;
 template class WrappedForwardIterator<ArgsHandler::DescriptionLineConstIteratorTag, const std::string>;
-template class WrappedForwardIterator<args::ArgsHandler::ArgsIteratorTag, std::string>;
+template class WrappedForwardIterator<ArgsHandler::ArgsIteratorTag, std::string>;
+template class WrappedForwardIterator<ArgsHandler::SeeAlsoConstIteratorTag, const std::pair<std::string, int> >;
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -91,6 +91,10 @@ namespace paludis
                 virtual void subsection(const std::string & title) = 0;
                 virtual void paragraph(const std::string & text) = 0;
 
+                virtual void start_see_alsos() = 0;
+                virtual void see_also(const std::string &, const int, const bool first) = 0;
+                virtual void end_see_alsos() = 0;
+
                 ///\}
         };
 
@@ -150,6 +154,10 @@ namespace paludis
                 void section(const std::string & title);
                 void subsection(const std::string & title);
                 void paragraph(const std::string & text);
+
+                void start_see_alsos();
+                void see_also(const std::string &, const int, const bool first);
+                void end_see_alsos();
         };
 
         /**
@@ -208,6 +216,10 @@ namespace paludis
                 void section(const std::string & title);
                 void subsection(const std::string & title);
                 void paragraph(const std::string & text);
+
+                void start_see_alsos();
+                void see_also(const std::string &, const int, const bool first);
+                void end_see_alsos();
         };
 
     }

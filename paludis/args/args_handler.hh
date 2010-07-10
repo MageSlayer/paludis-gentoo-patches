@@ -90,6 +90,13 @@ namespace paludis
                 void add_description_line(const std::string & l);
 
                 /**
+                 * Add a 'see also' item.
+                 *
+                 * \since 0.48.2
+                 */
+                void add_see_also(const std::string &, int section);
+
+                /**
                  * Add an new ArgsSection (called by the ArgsSection constructor).
                  */
                 void add(ArgsSection * const);
@@ -255,6 +262,19 @@ namespace paludis
 
                 ///\}
 
+                ///\name Iterate over our 'see also' lines
+                ///\since 0.48.2
+                ///\{
+
+                struct SeeAlsoConstIteratorTag;
+                typedef WrappedForwardIterator<SeeAlsoConstIteratorTag, const std::pair<std::string, int> > SeeAlsoConstIterator;
+
+                SeeAlsoConstIterator begin_see_alsos() const;
+
+                SeeAlsoConstIterator end_see_alsos() const;
+
+                ///\}
+
                 ///\name For use by ArgsVisitor
                 ///\{
 
@@ -311,6 +331,7 @@ namespace paludis
     extern template class WrappedForwardIterator<args::ArgsHandler::DescriptionLineConstIteratorTag, const std::string>;
     extern template class WrappedForwardIterator<args::ArgsHandler::NotesIteratorTag, const std::string>;
     extern template class WrappedForwardIterator<args::ArgsHandler::ArgsIteratorTag, std::string>;
+    extern template class WrappedForwardIterator<args::ArgsHandler::SeeAlsoConstIteratorTag, const std::pair<std::string, int> >;
 }
 
 #endif

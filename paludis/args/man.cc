@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -170,6 +170,17 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
             dw.example(a->first, a->second);
 
         dw.end_examples();
+    }
+
+    if (h->begin_see_alsos() != h->end_see_alsos())
+    {
+        dw.start_see_alsos();
+
+        for (ArgsHandler::SeeAlsoConstIterator u(h->begin_see_alsos()),
+                u_end(h->end_see_alsos()) ; u != u_end ; ++u)
+            dw.see_also(u->first, u->second, u == h->begin_see_alsos());
+
+        dw.end_see_alsos();
     }
 }
 
@@ -351,6 +362,25 @@ HtmlWriter::example(const std::string & first, const std::string & second)
 void
 HtmlWriter::end_examples()
 {
+}
+
+void
+HtmlWriter::start_see_alsos()
+{
+    _os << "<h2>See Also</h2>" << endl;
+    _os << "<ul>" << endl;
+}
+
+void
+HtmlWriter::see_also(const std::string & page, const int s, const bool)
+{
+    _os << "<li><strong>" << page << "</strong> (" << s << ")</li>" << endl;
+}
+
+void
+HtmlWriter::end_see_alsos()
+{
+    _os << "</ul>" << endl;
 }
 
 void
@@ -557,6 +587,26 @@ ManWriter::extra_description(const std::string & s)
 
 void
 ManWriter::end_examples()
+{
+}
+
+void
+ManWriter::start_see_alsos()
+{
+    _os << ".SH SEE ALSO" << endl;
+    _os << ".sp" << endl;
+}
+
+void
+ManWriter::see_also(const std::string & m, const int s, const bool first)
+{
+    if (! first)
+        _os << ", ";
+    _os << "\\fB" << m << "\\fR(" << s << ")";
+}
+
+void
+ManWriter::end_see_alsos()
 {
 }
 
