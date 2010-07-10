@@ -89,6 +89,21 @@ namespace
         {
         }
     };
+
+    std::string escape_html_char(char c)
+    {
+        switch (c)
+        {
+            case '&':
+                return "&amp;";
+            case '<':
+                return "&lt;";
+            case '>':
+                return "&gt;";
+            default:
+                return std::string(1, c);
+        }
+    };
 }
 
 
@@ -244,7 +259,7 @@ HtmlWriter::arg_group_item(const char & short_name, const std::string & long_nam
 {
     _os << "<dt>";
     if (short_name)
-        _os << "-" << short_name << ", ";
+        _os << "-" << escape_html_char(short_name) << ", ";
     _os << "--" << long_name;
     if (! negated_long_name.empty())
         _os << " (" << "--" << negated_long_name << ")";
@@ -267,7 +282,7 @@ HtmlWriter::extra_arg_enum(const AllowedEnumArg & e, const std::string & default
 
     _os << "<dt>" << e.long_name();
     if (e.short_name())
-        _os << " (" << std::string(1, e.short_name()) << ")";
+        _os << " (" << escape_html_char(e.short_name()) << ")";
     _os << "</dt>" << endl;
     _os << "<dd>" << e.description() << default_string << "</dd>" << endl;
 }
