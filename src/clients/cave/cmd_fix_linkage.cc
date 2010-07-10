@@ -38,6 +38,7 @@
 #include <paludis/version_requirements.hh>
 
 #include <iostream>
+#include <set>
 #include <cstdlib>
 
 using namespace paludis;
@@ -183,7 +184,7 @@ FixLinkageCommand::run(
         return EXIT_SUCCESS;
     }
 
-    std::tr1::shared_ptr<Sequence<std::string> > targets(new Sequence<std::string>);
+    std::tr1::shared_ptr<Sequence<std::pair<std::string, std::string> > > targets(new Sequence<std::pair<std::string, std::string> >);
 
     for (BrokenLinkageFinder::BrokenPackageConstIterator pkg_it(finder->begin_broken_packages()),
              pkg_it_end(finder->end_broken_packages()); pkg_it_end != pkg_it; ++pkg_it)
@@ -192,15 +193,20 @@ FixLinkageCommand::run(
 
         cout << "* " << **pkg_it << endl;
 
+        std::set<FSEntry> broken_files;
         for (BrokenLinkageFinder::BrokenFileConstIterator file_it(finder->begin_broken_files(*pkg_it)),
                  file_it_end(finder->end_broken_files(*pkg_it)); file_it_end != file_it; ++file_it)
         {
             cout << "    " << *file_it;
             if (library.empty())
+            {
                 cout << " (requires "
                           << join(finder->begin_missing_requirements(*pkg_it, *file_it),
                                   finder->end_missing_requirements(*pkg_it, *file_it),
                                   " ") << ")";
+                std::copy(finder->begin_missing_requirements(*pkg_it, *file_it), finder->end_missing_requirements(*pkg_it, *file_it),
+                        std::inserter(broken_files, broken_files.end()));
+            }
             cout << endl;
         }
 
@@ -214,7 +220,7 @@ FixLinkageCommand::run(
                         n::version_operator() = vo_equal,
                         n::version_spec() = (*pkg_it)->version()));
 
-        targets->push_back(stringify(PackageDepSpec(part_spec)));
+        targets->push_back(std::make_pair(stringify(PackageDepSpec(part_spec)), join(broken_files.begin(), broken_files.end(), ", ")));
     }
 
     std::tr1::shared_ptr<const PackageID> orphans;

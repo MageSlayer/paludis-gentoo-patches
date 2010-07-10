@@ -37,7 +37,7 @@ namespace paludis
                 const ResolveCommandLineDisplayOptions & display_options,
                 const ResolveCommandLineProgramOptions & program_options,
                 const std::tr1::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
-                const std::tr1::shared_ptr<const Sequence<std::string> > & targets_if_not_purge,
+                const std::tr1::shared_ptr<const Sequence<std::pair<std::string, std::string> > > & targets_if_not_purge,
                 const std::tr1::shared_ptr<const Sequence<std::string> > & world_specs_if_not_auto,
                 const bool purge
                 ) PALUDIS_ATTRIBUTE((warn_unused_result));

@@ -111,7 +111,8 @@ UninstallCommand::run(
     cmdline.resolution_options->apply_shortcuts();
     cmdline.resolution_options->verify(env);
 
-    std::tr1::shared_ptr<Sequence<std::string> > targets(new Sequence<std::string>), targets_cleaned_up(new Sequence<std::string>);
+    std::tr1::shared_ptr<Sequence<std::pair<std::string, std::string> > > targets(new Sequence<std::pair<std::string, std::string> >);
+    std::tr1::shared_ptr<Sequence<std::string> > targets_cleaned_up(new Sequence<std::string>);
     for (UninstallCommandLine::ParametersConstIterator p(cmdline.begin_parameters()), p_end(cmdline.end_parameters()) ;
             p != p_end ; ++p)
     {
@@ -130,7 +131,7 @@ UninstallCommand::run(
                 std::string target("!" + stringify((*i)->name()));
                 if ((*i)->slot_key())
                     target.append(":" + stringify((*i)->slot_key()->value()));
-                targets->push_back(target);
+                targets->push_back(std::make_pair(target, ""));
             }
 
             targets_cleaned_up->push_back("!" + stringify((*ids->begin())->name()));

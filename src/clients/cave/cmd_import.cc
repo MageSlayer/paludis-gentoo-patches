@@ -272,15 +272,18 @@ ImportCommand::run(
     if (cmdline.a_execute.specified())
         resolve_cmdline.resolution_options.a_execute.set_specified(true);
 
-    std::tr1::shared_ptr<Sequence<std::string> > targets(new Sequence<std::string>);
-    targets->push_back(stringify((*ids->begin())->name()));
+    std::tr1::shared_ptr<Sequence<std::pair<std::string, std::string> > > targets(new Sequence<std::pair<std::string, std::string> >);
+    targets->push_back(std::make_pair(stringify((*ids->begin())->name()), ""));
+
+    std::tr1::shared_ptr<Sequence<std::string> > world_specs(new Sequence<std::string>);
+    world_specs->push_back(stringify((*ids->begin())->name()));
 
     return resolve_common(env,
             resolve_cmdline.resolution_options,
             resolve_cmdline.execution_options,
             resolve_cmdline.display_options,
             resolve_cmdline.program_options,
-            keys, targets, targets, false);
+            keys, targets, world_specs, false);
 }
 
 std::tr1::shared_ptr<args::ArgsHandler>

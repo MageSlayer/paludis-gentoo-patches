@@ -97,10 +97,10 @@ ResolveCommand::run(
     cmdline.resolution_options.apply_shortcuts();
     cmdline.resolution_options.verify(env);
 
-    std::tr1::shared_ptr<Sequence<std::string> > targets(new Sequence<std::string>);
+    std::tr1::shared_ptr<Sequence<std::pair<std::string, std::string> > > targets(new Sequence<std::pair<std::string, std::string> >);
     for (ResolveCommandLine::ParametersConstIterator p(cmdline.begin_parameters()), p_end(cmdline.end_parameters()) ;
             p != p_end ; ++p)
-        targets->push_back(*p);
+        targets->push_back(std::make_pair(*p, ""));
 
     return resolve_common(env, cmdline.resolution_options, cmdline.execution_options, cmdline.display_options,
             cmdline.program_options, make_null_shared_ptr(), targets, make_null_shared_ptr(), false);

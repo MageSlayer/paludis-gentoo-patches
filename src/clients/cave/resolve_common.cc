@@ -40,6 +40,8 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/sequence-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/args/escape.hh>
 #include <paludis/resolver/resolver.hh>
@@ -250,7 +252,7 @@ namespace
             const std::tr1::shared_ptr<Environment> & env,
             const std::tr1::shared_ptr<Resolver> & resolver,
             const ResolveCommandLineResolutionOptions &,
-            const std::tr1::shared_ptr<const Sequence<std::string> > & targets,
+            const std::tr1::shared_ptr<const Sequence<std::pair<std::string, std::string> > > & targets,
             bool & is_set)
     {
         Context context("When adding targets from commandline:");
@@ -260,28 +262,28 @@ namespace
 
         const std::tr1::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
         bool seen_sets(false), seen_packages(false);
-        for (Sequence<std::string>::ConstIterator p(targets->begin()), p_end(targets->end()) ;
+        for (Sequence<std::pair<std::string, std::string> >::ConstIterator p(targets->begin()), p_end(targets->end()) ;
                 p != p_end ; ++p)
         {
-            if (p->empty())
+            if (p->first.empty())
                 continue;
 
             try
             {
-                if ('!' == p->at(0))
+                if ('!' == p->first.at(0))
                 {
                     seen_packages = true;
-                    PackageDepSpec s(parse_user_package_dep_spec(p->substr(1), env.get(), UserPackageDepSpecOptions()));
+                    PackageDepSpec s(parse_user_package_dep_spec(p->first.substr(1), env.get(), UserPackageDepSpecOptions()));
                     BlockDepSpec bs("!" + stringify(s), s, false);
                     result->push_back(stringify(bs));
-                    resolver->add_target(bs, "");
+                    resolver->add_target(bs, p->second);
                 }
                 else
                 {
-                    PackageDepSpec s(parse_user_package_dep_spec(*p, env.get(),
+                    PackageDepSpec s(parse_user_package_dep_spec(p->first, env.get(),
                                 UserPackageDepSpecOptions() + updso_throw_if_set));
                     result->push_back(stringify(s));
-                    resolver->add_target(s, "");
+                    resolver->add_target(s, p->second);
                     seen_packages = true;
                 }
             }
@@ -290,8 +292,8 @@ namespace
                 if (seen_sets)
                     throw args::DoHelp("Cannot specify multiple set targets");
 
-                resolver->add_target(SetName(*p), "");
-                result->push_back(*p);
+                resolver->add_target(SetName(p->first), p->second);
+                result->push_back(p->first);
                 seen_sets = true;
             }
         }
@@ -1312,7 +1314,7 @@ namespace
             const ResolveCommandLineDisplayOptions & display_options,
             const ResolveCommandLineProgramOptions & program_options,
             const std::tr1::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
-            const std::tr1::shared_ptr<const Sequence<std::string> > & targets)
+            const std::tr1::shared_ptr<const Sequence<std::pair<std::string, std::string> > > & targets)
     {
         Context context("When displaying chosen resolution:");
 
@@ -1335,9 +1337,9 @@ namespace
                 }
         }
 
-        for (Sequence<std::string>::ConstIterator p(targets->begin()), p_end(targets->end()) ;
+        for (Sequence<std::pair<std::string, std::string> >::ConstIterator p(targets->begin()), p_end(targets->end()) ;
                 p != p_end ; ++p)
-            args->push_back(*p);
+            args->push_back(p->first);
 
         if (program_options.a_display_resolution_program.specified())
         {
@@ -1380,7 +1382,7 @@ namespace
             const ResolveCommandLineExecutionOptions & execution_options,
             const ResolveCommandLineProgramOptions & program_options,
             const std::tr1::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
-            const std::tr1::shared_ptr<const Sequence<std::string> > & targets,
+            const std::tr1::shared_ptr<const Sequence<std::pair<std::string, std::string> > > & targets,
             const std::tr1::shared_ptr<const Sequence<std::string> > & world_specs,
             const bool is_set)
     {
@@ -1425,9 +1427,9 @@ namespace
             args->push_back(*p);
         }
 
-        for (Sequence<std::string>::ConstIterator p(targets->begin()), p_end(targets->end()) ;
+        for (Sequence<std::pair<std::string, std::string> >::ConstIterator p(targets->begin()), p_end(targets->end()) ;
                 p != p_end ; ++p)
-            args->push_back(*p);
+            args->push_back(p->first);
 
         if (program_options.a_execute_resolution_program.specified() || resolution_options.a_execute.specified())
         {
@@ -1600,7 +1602,7 @@ paludis::cave::resolve_common(
         const ResolveCommandLineDisplayOptions & display_options,
         const ResolveCommandLineProgramOptions & program_options,
         const std::tr1::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
-        const std::tr1::shared_ptr<const Sequence<std::string> > & targets_if_not_purge,
+        const std::tr1::shared_ptr<const Sequence<std::pair<std::string, std::string> > > & targets_if_not_purge,
         const std::tr1::shared_ptr<const Sequence<std::string> > & world_specs_if_not_auto,
         const bool purge)
 {
@@ -1904,7 +1906,7 @@ paludis::cave::resolve_common(
 
         retcode |= display_resolution(env, resolver->resolved(), resolution_options,
                 display_options, program_options, keys_if_import,
-                purge ? make_shared_ptr(new const Sequence<std::string>) : targets_if_not_purge);
+                purge ? make_shared_ptr(new const Sequence<std::pair<std::string, std::string> >) : targets_if_not_purge);
 
         if (! resolver->resolved()->taken_unable_to_make_decisions()->empty())
             retcode |= 1;
@@ -1918,7 +1920,7 @@ paludis::cave::resolve_common(
         if (0 == retcode)
             return perform_resolution(env, resolver->resolved(), resolution_options,
                     execution_options, program_options, keys_if_import,
-                    purge ? make_shared_ptr(new const Sequence<std::string>) : targets_if_not_purge,
+                    purge ? make_shared_ptr(new const Sequence<std::pair<std::string, std::string> >) : targets_if_not_purge,
                     world_specs_if_not_auto ? world_specs_if_not_auto : targets_cleaned_up,
                     is_set);
     }
@@ -1933,4 +1935,8 @@ paludis::cave::resolve_common(
 
     return retcode | 1;
 }
+
+template class Sequence<std::pair<std::string, std::string> >;
+template class WrappedForwardIterator<Sequence<std::pair<std::string, std::string> >::ConstIteratorTag,
+         const std::pair<std::string, std::string> >;
 
