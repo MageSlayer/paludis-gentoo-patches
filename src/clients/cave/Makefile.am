@@ -59,7 +59,7 @@ man_MANS = \
 	$(command_MANS)
 
 cave.1 : man-cave
-	./man-cave > $@
+	env CAVE_COMMANDS_PATH="" ./man-cave > $@
 
 $(command_MANS) : man-cave
 	if ! env CAVE_COMMANDS_PATH="" ./man-cave `echo $@ | sed -e 's.^cave-..' -e 's,\.1$$,,'` > $@ ; then rm -f $@ ; exit 1 ; fi
