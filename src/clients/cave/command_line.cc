@@ -48,8 +48,10 @@ CaveCommandLine::CaveCommandLine() :
     add_environment_variable("CAVE_COMMANDS_PATH", "Colon-separated paths in which to look for "
             "additional commands.");
 
-    for (CommandFactory::ConstIterator c(CommandFactory::get_instance()->begin()), c_end(CommandFactory::get_instance()->end()) ;
-            c != c_end ; ++c)
-        add_see_also("cave-" + *c, 1);
+    for (int pass(0) ; pass != 2 ; ++pass)
+        for (CommandFactory::ConstIterator c(CommandFactory::get_instance()->begin()), c_end(CommandFactory::get_instance()->end()) ;
+                c != c_end ; ++c)
+            if (CommandFactory::get_instance()->create(*c)->important() == (0 == pass))
+                add_see_also("cave-" + *c, 1);
 }
 
