@@ -17,6 +17,7 @@ bin_PROGRAMS = cave
 
 noinst_PROGRAMS = man-cave
 
+# Also update doc/clients/Makefile.am when adding here:
 command_MANS = \
 	cave-config.1 \
 	cave-contents.1 \
@@ -89,6 +90,7 @@ man_cave_LDADD = \
 
 noinst_LIBRARIES = libcave.a
 
+# Also update command_MANS above when adding new commands here:
 libcave_a_SOURCES = \
 	colour_formatter.cc colour_formatter.hh \
 	command.cc command.hh \

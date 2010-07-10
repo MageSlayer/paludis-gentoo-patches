@@ -9,10 +9,12 @@ CLEANFILES += \
 	index.html
 
 DISTCLEANFILES = \
-	$(ALL_CLIENTS_HTML)
+	$(ALL_CLIENTS_HTML) \
+	$(CAVE_COMMANDS_HTML)
 
 EXTRA_DIST = \
 	$(ALL_CLIENTS_HTML) \
+	$(CAVE_COMMANDS_HTML) \
 	toplinks.html.part.in \
 	index.html.part
 
@@ -20,7 +22,45 @@ paludisclientshtmldir = $(htmldir)/clients
 
 paludisclientshtml_DATA = \
 	index.html \
-	$(ALL_CLIENTS_HTML)
+	$(ALL_CLIENTS_HTML) \
+	$(CAVE_COMMANDS_HTML)
+
+CAVE_COMMANDS_HTML = \
+	cave-config.html \
+	cave-contents.html \
+	cave-display-resolution.html \
+	cave-executables.html \
+	cave-execute-resolution.html \
+	cave-find-candidates.html \
+	cave-fix-cache.html \
+	cave-fix-linkage.html \
+	cave-help.html \
+	cave-import.html \
+	cave-info.html \
+	cave-match.html \
+	cave-owner.html \
+	cave-perform.html \
+	cave-print-categories.html \
+	cave-print-commands.html \
+	cave-print-environment-metadata.html \
+	cave-print-id-contents.html \
+	cave-print-id-executables.html \
+	cave-print-id-metadata.html \
+	cave-print-ids.html \
+	cave-print-owners.html \
+	cave-print-packages.html \
+	cave-print-repositories.html \
+	cave-print-repository-formats.html \
+	cave-print-sets.html \
+	cave-print-sync-protocols.html \
+	cave-purge.html \
+	cave-resolve.html \
+	cave-resume.html \
+	cave-search.html \
+	cave-show.html \
+	cave-sync.html \
+	cave-uninstall.html \
+	cave-update-world.html
 
 if HAVE_HTMLTIDY
 
@@ -79,7 +119,19 @@ appareo.html : header.html.part footer.html.part
 cave.html : header.html.part footer.html.part
 	{ cat header.html.part && { \
 	    if test -x $(top_builddir)/src/clients/cave/man-cave ; then \
-	        env CAVE_COMMANDS_PATH="" $(top_builddir)/src/clients/cave/man-cave --html ; \
+	        env CAVE_COMMANDS_PATH="" $(top_builddir)/src/clients/cave/man-cave --html | \
+	        sed -e '/<h2>See Also<.h2>/,/<.ul>/s#<strong>\(.*\)</strong> (1)#<a href="\1.html">\1</a>#'; \
+	    else \
+	        echo "<h1>cave</h1>"; \
+	        echo "<p>Sorry, documentation was generated without support for the cave client.</p>" ; \
+	    fi ; } && \
+	    cat footer.html.part ; } > $@
+
+$(CAVE_COMMANDS_HTML) : header.html.part footer.html.part
+	{ cat header.html.part && { \
+	    if test -x $(top_builddir)/src/clients/cave/man-cave ; then \
+	        basename $@ .html | sed -e 's,^cave-,,' | xargs env CAVE_COMMANDS_PATH="" $(top_builddir)/src/clients/cave/man-cave --html | \
+	        sed -e '/<h2>See Also<.h2>/,/<.ul>/s#<strong>\(.*\)</strong> (1)#<a href="\1.html">\1</a>#'; \
 	    else \
 	        echo "<h1>cave</h1>"; \
 	        echo "<p>Sorry, documentation was generated without support for the cave client.</p>" ; \
