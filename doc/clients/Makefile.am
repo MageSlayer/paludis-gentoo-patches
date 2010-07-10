@@ -79,7 +79,7 @@ appareo.html : header.html.part footer.html.part
 cave.html : header.html.part footer.html.part
 	{ cat header.html.part && { \
 	    if test -x $(top_builddir)/src/clients/cave/man-cave ; then \
-	        $(top_builddir)/src/clients/cave/man-cave --html ; \
+	        env CAVE_COMMANDS_PATH="" $(top_builddir)/src/clients/cave/man-cave --html ; \
 	    else \
 	        echo "<h1>cave</h1>"; \
 	        echo "<p>Sorry, documentation was generated without support for the cave client.</p>" ; \
