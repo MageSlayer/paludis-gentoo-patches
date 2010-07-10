@@ -1417,13 +1417,13 @@ ALL_CLIENTS_HTML=""
 for a in $ALL_CLIENTS ; do
 	ALL_CLIENTS_HTML="$ALL_CLIENTS_HTML $a.html"
 done
-DEFAULT_CLIENTS="adjutrix importare paludis reconcilio"
+DEFAULT_CLIENTS="adjutrix cave importare paludis reconcilio"
 AC_MSG_CHECKING([which clients to build...])
 AC_ARG_WITH([clients],
 			[  --with-clients=foo,bar,...
 			  Build the specified clients:
 			  all             All available clients
-			  default         Equivalent to adjutrix,importare,paludis,reconcilio
+			  default         Equivalent to adjutrix,cave,importare,paludis,reconcilio
 
 			  accerso         A fetch / mirror client
 			  adjutrix        A tool for tree querying
