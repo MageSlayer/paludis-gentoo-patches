@@ -18,6 +18,7 @@
  */
 
 #include "command_line.hh"
+#include "command_factory.hh"
 
 using namespace paludis;
 using namespace cave;
@@ -31,6 +32,7 @@ CaveCommandLine::CaveCommandLine() :
     a_version(&g_global_options, "version", 'v', "display version information", false)
 {
     add_usage_line("[ --environment class:suffix ] [ --log-level level ] COMMAND [ARGS...]");
+    add_usage_line("help [ --all ]");
 
     add_description_line("For the COMMAND argument, see 'cave help' for a list of common commands, "
             "or 'cave help --all' for all commands. To see documentation for a command named "
@@ -45,5 +47,9 @@ CaveCommandLine::CaveCommandLine() :
 
     add_environment_variable("CAVE_COMMANDS_PATH", "Colon-separated paths in which to look for "
             "additional commands.");
+
+    for (CommandFactory::ConstIterator c(CommandFactory::get_instance()->begin()), c_end(CommandFactory::get_instance()->end()) ;
+            c != c_end ; ++c)
+        add_see_also("cave-" + *c, 1);
 }
 
