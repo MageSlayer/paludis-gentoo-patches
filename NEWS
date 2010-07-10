@@ -2,7 +2,7 @@ News for Paludis
 ================
 
 This file lists the major changes between versions. For a more detailed list
-of every change, see the ChangeLog.
+of every change, see the Git log.
 
 0.48.2:
     * The 'cave' client is now enabled by default. 'cave' is a modular console
