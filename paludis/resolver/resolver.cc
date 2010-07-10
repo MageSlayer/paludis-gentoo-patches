@@ -94,9 +94,9 @@ Resolver::~Resolver()
 }
 
 void
-Resolver::add_target(const PackageOrBlockDepSpec & spec)
+Resolver::add_target(const PackageOrBlockDepSpec & spec, const std::string & extra_information)
 {
-    _imp->decider->add_target_with_reason(spec, make_shared_ptr(new TargetReason));
+    _imp->decider->add_target_with_reason(spec, make_shared_ptr(new TargetReason(extra_information)));
 }
 
 namespace
@@ -149,7 +149,7 @@ namespace
 }
 
 void
-Resolver::add_target(const SetName & set_name)
+Resolver::add_target(const SetName & set_name, const std::string & extra_information)
 {
     Context context("When adding set target '" + stringify(set_name) + "':");
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
@@ -159,7 +159,7 @@ Resolver::add_target(const SetName & set_name)
         throw NoSuchSetError(stringify(set_name));
 
     RecursingNames recurse;
-    set->root()->accept(SetExpander(_imp->env, _imp->decider, make_shared_ptr(new TargetReason), recurse));
+    set->root()->accept(SetExpander(_imp->env, _imp->decider, make_shared_ptr(new TargetReason(extra_information)), recurse));
 }
 
 void

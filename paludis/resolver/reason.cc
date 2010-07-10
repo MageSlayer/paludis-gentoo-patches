@@ -32,10 +32,40 @@ Reason::~Reason()
 {
 }
 
+namespace paludis
+{
+    template <>
+    struct Implementation<TargetReason>
+    {
+        const std::string extra_information;
+
+        Implementation(const std::string & x) :
+            extra_information(x)
+        {
+        }
+    };
+}
+
+TargetReason::TargetReason(const std::string & x) :
+    PrivateImplementationPattern<TargetReason>(new Implementation<TargetReason>(x))
+{
+}
+
+TargetReason::~TargetReason()
+{
+}
+
+const std::string
+TargetReason::extra_information() const
+{
+    return _imp->extra_information;
+};
+
 void
 TargetReason::serialise(Serialiser & s) const
 {
     s.object("TargetReason")
+        .member(SerialiserFlags<>(), "extra_information", extra_information())
         ;
 }
 
@@ -362,7 +392,7 @@ Reason::deserialise(Deserialisation & d)
     if (d.class_name() == "TargetReason")
     {
         Deserialisator v(d, "TargetReason");
-        return make_shared_ptr(new TargetReason);
+        return make_shared_ptr(new TargetReason(v.member<std::string>("extra_information")));
     }
     else if (d.class_name() == "PresetReason")
     {
@@ -426,6 +456,7 @@ Reason::deserialise(Deserialisation & d)
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 }
 
+template class PrivateImplementationPattern<TargetReason>;
 template class PrivateImplementationPattern<DependencyReason>;
 template class PrivateImplementationPattern<DependentReason>;
 template class PrivateImplementationPattern<SetReason>;

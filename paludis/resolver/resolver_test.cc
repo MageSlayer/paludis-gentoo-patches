@@ -412,7 +412,7 @@ ResolverTestCase::get_resolved(const PackageOrBlockDepSpec & target)
         try
         {
             Resolver resolver(&env, get_resolver_functions(initial_constraints));
-            resolver.add_target(target);
+            resolver.add_target(target, "");
             resolver.resolve();
             return resolver.resolved();
         }

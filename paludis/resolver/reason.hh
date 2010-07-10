@@ -51,10 +51,16 @@ namespace paludis
         };
 
         class TargetReason :
+            private PrivateImplementationPattern<TargetReason>,
             public Reason,
             public ImplementAcceptMethods<Reason, TargetReason>
         {
             public:
+                TargetReason(const std::string &);
+                ~TargetReason();
+
+                const std::string extra_information() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
                 virtual void serialise(Serialiser &) const;
         };
 
@@ -171,6 +177,7 @@ namespace paludis
         };
     }
 
+    extern template class PrivateImplementationPattern<resolver::TargetReason>;
     extern template class PrivateImplementationPattern<resolver::DependencyReason>;
     extern template class PrivateImplementationPattern<resolver::DependentReason>;
     extern template class PrivateImplementationPattern<resolver::WasUsedByReason>;

@@ -51,8 +51,8 @@ namespace paludis
                         const ResolverFunctions &);
                 ~Resolver();
 
-                void add_target(const PackageOrBlockDepSpec &);
-                void add_target(const SetName &);
+                void add_target(const PackageOrBlockDepSpec &, const std::string & extra_information);
+                void add_target(const SetName &, const std::string & extra_information);
                 void purge();
 
                 void resolve();

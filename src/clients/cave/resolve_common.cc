@@ -274,14 +274,14 @@ namespace
                     PackageDepSpec s(parse_user_package_dep_spec(p->substr(1), env.get(), UserPackageDepSpecOptions()));
                     BlockDepSpec bs("!" + stringify(s), s, false);
                     result->push_back(stringify(bs));
-                    resolver->add_target(bs);
+                    resolver->add_target(bs, "");
                 }
                 else
                 {
                     PackageDepSpec s(parse_user_package_dep_spec(*p, env.get(),
                                 UserPackageDepSpecOptions() + updso_throw_if_set));
                     result->push_back(stringify(s));
-                    resolver->add_target(s);
+                    resolver->add_target(s, "");
                     seen_packages = true;
                 }
             }
@@ -290,7 +290,7 @@ namespace
                 if (seen_sets)
                     throw args::DoHelp("Cannot specify multiple set targets");
 
-                resolver->add_target(SetName(*p));
+                resolver->add_target(SetName(*p), "");
                 result->push_back(*p);
                 seen_sets = true;
             }
