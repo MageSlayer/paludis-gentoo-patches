@@ -14,11 +14,15 @@
             </td>
 
             <td class="currentpage">
+                <a href="###TOPURI###clients/cave.html">cave</a>
+            </td>
+
+            <td class="currentpage">
                 <a href="###TOPURI###clients/paludis.html">paludis</a>
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###clients/appareo.html">appareo</a>
+                <a href="###TOPURI###clients/accerso.html">accerso</a>
             </td>
         </tr>
 
@@ -28,10 +32,15 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###clients/inquisitio.html">inquisitio</a>
+                &nbsp;
             </td>
 
             <td class="currentpage">
+                <a href="###TOPURI###clients/importare.html">importare</a>
+            </td>
+
+            <td class="currentpage">
+                <a href="###TOPURI###clients/adjutrix.html">adjutrix</a>
             </td>
         </tr>
 
@@ -41,11 +50,15 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###clients/importare.html">importare</a>
+                &nbsp;
             </td>
 
             <td class="currentpage">
-                &nbsp;
+                <a href="###TOPURI###clients/inquisitio.html">inquisitio</a>
+            </td>
+
+            <td class="currentpage">
+                <a href="###TOPURI###clients/instruo.html">instruo</a>
             </td>
         </tr>
 
@@ -55,11 +68,15 @@
             </td>
 
             <td class="currentpage">
+                &nbsp;
+            </td>
+
+            <td class="currentpage">
                 <a href="###TOPURI###clients/reconcilio.html">reconcilio</a>
             </td>
 
             <td class="currentpage">
-                &nbsp;
+                <a href="###TOPURI###clients/appareo.html">appareo</a>
             </td>
         </tr>
 
@@ -69,7 +86,11 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###clients/accerso.html">accerso</a>
+                &nbsp;
+            </td>
+
+            <td class="currentpage">
+                &nbsp;
             </td>
 
             <td class="currentpage">
@@ -83,7 +104,11 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###clients/adjutrix.html">adjutrix</a>
+                &nbsp;
+            </td>
+
+            <td class="currentpage">
+                &nbsp;
             </td>
 
             <td class="currentpage">
@@ -97,7 +122,11 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###clients/instruo.html">instruo</a>
+                &nbsp;
+            </td>
+
+            <td class="currentpage">
+                &nbsp;
             </td>
 
             <td class="currentpage">

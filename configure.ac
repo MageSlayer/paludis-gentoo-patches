@@ -1415,11 +1415,7 @@ dnl {{{ clients
 ALL_CLIENTS="accerso adjutrix appareo cave importare inquisitio instruo paludis reconcilio"
 ALL_CLIENTS_HTML=""
 for a in $ALL_CLIENTS ; do
-	if test x$a = xcave ; then
-		true
-	else
-		ALL_CLIENTS_HTML="$ALL_CLIENTS_HTML $a.html"
-	fi
+	ALL_CLIENTS_HTML="$ALL_CLIENTS_HTML $a.html"
 done
 DEFAULT_CLIENTS="adjutrix importare paludis reconcilio"
 AC_MSG_CHECKING([which clients to build...])

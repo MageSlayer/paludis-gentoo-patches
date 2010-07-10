@@ -75,7 +75,14 @@ the exheres repository format.</p>
 <p>For users:</p>
 
 <ul>
-    <li><a href="clients/paludis.html">paludis</a>, the console package management client.</li>
+    <li><a href="clients/cave.html">cave</a>, the new, improved and not yet entirely feature-complete console package
+    management client.</li>
+</ul>
+
+<p>Or for users who prefer to continue using the original clients for now:</p>
+
+<ul>
+    <li><a href="clients/paludis.html">paludis</a>, the original console package management client.</li>
     <li><a href="clients/importare.html">importare</a>, the unpackaged package installer.</li>
     <li><a href="clients/inquisitio.html">inquisitio</a>, the search client.</li>
     <li><a href="clients/reconcilio.html">reconcilio</a>, a tool for rebuilding packages with broken linkage.</li>
