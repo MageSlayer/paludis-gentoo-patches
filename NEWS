@@ -4,6 +4,12 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.48.2:
+    * The 'cave' client is now enabled by default. 'cave' is a modular console
+      client that will eventually replace 'paludis'. It is currently reasonably
+      functional and well tested, but does not yet have all the features present
+      in 'paludis', and is thus not yet considered a complete replacement.
+
 0.48.1:
     * We now work around broken TLS support in certain monkey-patched GCC
       versions.
