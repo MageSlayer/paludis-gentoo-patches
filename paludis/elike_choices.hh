@@ -198,12 +198,6 @@ namespace paludis
 
         public:
             /**
-             * \deprecated \since 0.48.1 Use the four argument form.
-             */
-            ELikePreserveWorkChoiceValue(const std::tr1::shared_ptr<const PackageID> &,
-                    const Environment * const env, const std::tr1::shared_ptr<const Choice> &) PALUDIS_ATTRIBUTE((deprecated));
-
-            /**
              * \since 0.48.1
              */
             ELikePreserveWorkChoiceValue(
