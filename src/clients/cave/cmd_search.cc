@@ -86,6 +86,8 @@ namespace
             match_options(this)
         {
             add_usage_line("[ --name | --description | --key HOMEPAGE ] pattern ...");
+            add_note("'cave search' should only be used when a complex metadata search is required. To see "
+                    "information about a known package, use 'cave show' instead.");
         }
     };
 
