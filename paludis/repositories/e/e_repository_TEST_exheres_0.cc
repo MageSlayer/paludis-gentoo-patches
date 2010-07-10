@@ -118,7 +118,7 @@ namespace test_cases
             keys->insert("layout", "exheres");
             keys->insert("eapi_when_unknown", "exheres-0");
             keys->insert("eapi_when_unspecified", "exheres-0");
-            keys->insert("profile_eapi", "exheres-0");
+            keys->insert("profile_eapi_when_unspecified", "exheres-0");
             keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_exheres_0_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_exheres_0_dir" / "build"));
             std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,

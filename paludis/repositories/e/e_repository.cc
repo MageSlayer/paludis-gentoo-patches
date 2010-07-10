@@ -1408,14 +1408,6 @@ ERepository::repository_factory_create(
     std::string profile_eapi(f("profile_eapi_when_unspecified"));
     if (profile_eapi.empty())
     {
-        profile_eapi = f("profile_eapi");
-        if (! profile_eapi.empty())
-            Log::get_instance()->message("e.ebuild.configuration.profile_eapi", ll_warning, lc_context) <<
-                "Key 'profile_eapi' in '" + f("repo_file") + "' is deprecated, use profile_eapi_when_unspecified";
-    }
-
-    if (profile_eapi.empty())
-    {
         if (! layout_conf
                 || (profile_eapi = layout_conf->get("profile_eapi_when_unspecified")).empty())
             profile_eapi = EExtraDistributionData::get_instance()->data_from_distribution(
