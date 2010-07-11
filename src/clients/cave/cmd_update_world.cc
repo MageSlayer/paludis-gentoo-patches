@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -58,11 +58,17 @@ namespace
             return "Adds or removes items from the world set.";
         }
 
+        args::ArgsGroup g_output_options;
+        args::SwitchArg a_verbose;
+
         args::ArgsGroup g_update_options;
         args::SwitchArg a_remove;
         args::SwitchArg a_set;
 
         UpdateWorldCommandLine() :
+            g_output_options(main_options_section(), "Output Options", "Alter the output."),
+            a_verbose(&g_output_options, "verbose", '\0', "Produce verbose output", true),
+
             g_update_options(main_options_section(), "Update Options", "Alter how updates are performed."),
             a_remove(&g_update_options, "remove", 'r', "Remove the specified items instead of adding them", true),
             a_set(&g_update_options, "set", 's', "The parameters are set names, not package names", true)
@@ -95,12 +101,16 @@ UpdateWorldCommand::run(
             p_end(cmdline.end_parameters()) ;
             p != p_end ; ++p)
     {
+        bool result(false);
+        std::string name;
+
         if (cmdline.a_set.specified())
         {
+            name = *p;
             if (cmdline.a_remove.specified())
-                env->remove_from_world(SetName(*p));
+                result = env->remove_from_world(SetName(*p));
             else
-                env->add_to_world(SetName(*p));
+                result = env->add_to_world(SetName(*p));
         }
         else
         {
@@ -111,10 +121,30 @@ UpdateWorldCommand::run(
             else
                 q = QualifiedPackageName(*p);
 
+            name = stringify(q);
+
             if (cmdline.a_remove.specified())
-                env->remove_from_world(q);
+                result = env->remove_from_world(q);
             else
-                env->add_to_world(q);
+                result = env->add_to_world(q);
+        }
+
+        if (cmdline.a_verbose.specified())
+        {
+            if (cmdline.a_remove.specified())
+            {
+                if (result)
+                    cout << "* Removed '" << name << "'" << endl;
+                else
+                    cout << "* Did not remove '" << name << "'" << endl;
+            }
+            else
+            {
+                if (result)
+                    cout << "* Added '" << name << "'" << endl;
+                else
+                    cout << "* Did not need to add '" << name << "'" << endl;
+            }
         }
     }
 
@@ -126,5 +156,4 @@ UpdateWorldCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new UpdateWorldCommandLine);
 }
-
 

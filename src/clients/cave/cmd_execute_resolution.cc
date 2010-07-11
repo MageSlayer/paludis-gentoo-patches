@@ -500,7 +500,7 @@ namespace
     {
         std::string command(cmdline.program_options.a_update_world_program.argument());
         if (command.empty())
-            command = "$CAVE update-world";
+            command = "$CAVE update-world --verbose";
 
         if (removes)
             command.append(" --remove");
@@ -523,7 +523,6 @@ namespace
                 else
                 {
                     any = true;
-                    cout << "* Adding '" << *a << "'" << endl;
                     command.append(" " + *a);
                 }
             }
@@ -567,10 +566,6 @@ namespace
                                 )))
                 {
                     any = true;
-                    if (removes)
-                        cout << "* Removing '" << spec << "'" << endl;
-                    else
-                        cout << "* Adding '" << spec << "'" << endl;
                     command.append(" " + stringify(spec));
                 }
                 else
