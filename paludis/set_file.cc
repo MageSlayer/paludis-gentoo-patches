@@ -58,7 +58,7 @@ namespace
             virtual ~SetFileHandler();
 
             virtual std::tr1::shared_ptr<SetSpecTree> contents() const = 0;
-            virtual void add(const std::string &) = 0;
+            virtual bool add(const std::string &) = 0;
             virtual bool remove(const std::string &) = 0;
             virtual void rewrite() const = 0;
     };
@@ -79,7 +79,7 @@ namespace
             PaludisConfHandler(const SetFileParams &);
 
             virtual std::tr1::shared_ptr<SetSpecTree> contents() const;
-            virtual void add(const std::string &);
+            virtual bool add(const std::string &);
             virtual bool remove(const std::string &);
             virtual void rewrite() const;
     };
@@ -95,7 +95,7 @@ namespace
             PaludisBashHandler(const SetFileParams &);
 
             virtual std::tr1::shared_ptr<SetSpecTree> contents() const;
-            virtual void add(const std::string &) PALUDIS_ATTRIBUTE((noreturn));
+            virtual bool add(const std::string &) PALUDIS_ATTRIBUTE((noreturn));
             virtual bool remove(const std::string &) PALUDIS_ATTRIBUTE((noreturn));
             virtual void rewrite() const PALUDIS_ATTRIBUTE((noreturn));
     };
@@ -116,7 +116,7 @@ namespace
             SimpleHandler(const SetFileParams &);
 
             virtual std::tr1::shared_ptr<SetSpecTree> contents() const;
-            virtual void add(const std::string &);
+            virtual bool add(const std::string &);
             virtual bool remove(const std::string &);
             virtual void rewrite() const;
     };
@@ -372,15 +372,21 @@ SimpleHandler::contents() const
     return _contents;
 }
 
-void
+bool
 SimpleHandler::add(const std::string & p)
 {
     Lock l(_mutex);
 
+    bool result(false);
     if (_lines.end() == std::find(_lines.begin(), _lines.end(), p))
+    {
+        result = true;
         _lines.push_back(p);
+    }
 
     _contents.reset();
+
+    return result;
 }
 
 bool
@@ -462,15 +468,20 @@ PaludisConfHandler::contents() const
     return _contents;
 }
 
-void
+bool
 PaludisConfHandler::add(const std::string & p)
 {
     Lock l(_mutex);
 
+    bool result(false);
     if (_lines.end() == std::find_if(_lines.begin(), _lines.end(), TokenOneIs(p)))
+    {
+        result = true;
         _lines.push_back("* " + p);
+    }
 
     _contents.reset();
+    return result;
 }
 
 bool
@@ -555,7 +566,7 @@ PaludisBashHandler::contents() const
     return _contents;
 }
 
-void
+bool
 PaludisBashHandler::add(const std::string & p)
 {
     throw SetFileError(_p.file_name(), "Cannot add entry '" + p + "' to bash script '" + stringify(_p.file_name()) + "'");
@@ -610,10 +621,10 @@ SetFile::rewrite() const
     _imp->handler->rewrite();
 }
 
-void
+bool
 SetFile::add(const std::string & p)
 {
-    _imp->handler->add(p);
+    return _imp->handler->add(p);
 }
 
 bool

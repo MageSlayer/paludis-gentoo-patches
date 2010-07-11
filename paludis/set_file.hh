@@ -137,8 +137,10 @@ namespace paludis
 
             /**
              * Add an item to our contents, if it is not there already.
+             *
+             * \since 0.49 returns whether any lines were added
              */
-            void add(const std::string &);
+            bool add(const std::string &);
 
             /**
              * Remove any matching lines.
