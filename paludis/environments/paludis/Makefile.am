@@ -85,3 +85,12 @@ world_TEST_LDADD = \
 
 world_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
+logdir = @HACKED_LOG_DIR@
+
+log_DATA = .keep
+
+.keep :
+	touch $@
+
+CLEANFILES += .keep
+
