@@ -535,7 +535,7 @@ void expose_environment()
         .add_property("package_database", bp::make_function(package_database,
                     bp::with_custodian_and_ward_postcall<0, 1>()),
                 "[ro] PackageDatabase\n"
-                "Our package databas."
+                "Our package database."
                 )
 
         .def("set", &Environment::set,
