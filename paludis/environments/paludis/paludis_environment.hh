@@ -133,13 +133,13 @@ namespace paludis
             virtual bool unmasked_by_user(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual void add_to_world(const QualifiedPackageName &) const;
+            virtual bool add_to_world(const QualifiedPackageName &) const;
 
-            virtual void add_to_world(const SetName &) const;
+            virtual bool add_to_world(const SetName &) const;
 
-            virtual void remove_from_world(const QualifiedPackageName &) const;
+            virtual bool remove_from_world(const QualifiedPackageName &) const;
 
-            virtual void remove_from_world(const SetName &) const;
+            virtual bool remove_from_world(const SetName &) const;
 
             virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
             virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > config_location_key() const;

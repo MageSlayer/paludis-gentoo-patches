@@ -414,23 +414,31 @@ namespace paludis
 
             /**
              * Add this package to world.
+             *
+             * \return whether anything was added \since 0.49
              */
-            virtual void add_to_world(const QualifiedPackageName &) const = 0;
+            virtual bool add_to_world(const QualifiedPackageName &) const = 0;
 
             /**
              * Add this set to world.
+             *
+             * \return whether anything was added \since 0.49
              */
-            virtual void add_to_world(const SetName &) const = 0;
+            virtual bool add_to_world(const SetName &) const = 0;
 
             /**
              * Remove this package from world, if it is present.
+             *
+             * \return whether anything was removed \since 0.49
              */
-            virtual void remove_from_world(const QualifiedPackageName &) const = 0;
+            virtual bool remove_from_world(const QualifiedPackageName &) const = 0;
 
             /**
              * Remove this set from world, if it is present.
+             *
+             * \return whether anything was removed \since 0.49
              */
-            virtual void remove_from_world(const SetName &) const = 0;
+            virtual bool remove_from_world(const SetName &) const = 0;
 
             /**
              * Where possible, update configuration files with the first spec to use the second package name.

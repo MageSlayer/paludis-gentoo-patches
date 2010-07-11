@@ -273,28 +273,28 @@ PaludisEnvironment::syncers_dirs() const
     return result;
 }
 
-void
+bool
 PaludisEnvironment::add_to_world(const QualifiedPackageName & q) const
 {
-    _imp->config->world()->add_to_world(q);
+    return _imp->config->world()->add_to_world(q);
 }
 
-void
+bool
 PaludisEnvironment::add_to_world(const SetName & s) const
 {
-    _imp->config->world()->add_to_world(s);
+    return _imp->config->world()->add_to_world(s);
 }
 
-void
+bool
 PaludisEnvironment::remove_from_world(const QualifiedPackageName & q) const
 {
-    _imp->config->world()->remove_from_world(q);
+    return _imp->config->world()->remove_from_world(q);
 }
 
-void
+bool
 PaludisEnvironment::remove_from_world(const SetName & s) const
 {
-    _imp->config->world()->remove_from_world(s);
+    return _imp->config->world()->remove_from_world(s);
 }
 
 std::tr1::shared_ptr<const MirrorsSequence>

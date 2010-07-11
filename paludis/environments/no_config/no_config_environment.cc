@@ -472,24 +472,28 @@ NoConfigEnvironment::accept_keywords(const std::tr1::shared_ptr<const KeywordNam
     return false;
 }
 
-void
+bool
 NoConfigEnvironment::add_to_world(const QualifiedPackageName &) const
 {
+    return false;
 }
 
-void
+bool
 NoConfigEnvironment::remove_from_world(const QualifiedPackageName &) const
 {
+    return false;
 }
 
-void
+bool
 NoConfigEnvironment::add_to_world(const SetName &) const
 {
+    return false;
 }
 
-void
+bool
 NoConfigEnvironment::remove_from_world(const SetName &) const
 {
+    return false;
 }
 
 bool

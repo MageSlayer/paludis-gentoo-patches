@@ -192,24 +192,28 @@ TestEnvironment::unmasked_by_user(const PackageID &) const
     return false;
 }
 
-void
+bool
 TestEnvironment::add_to_world(const QualifiedPackageName &) const
 {
+    return false;
 }
 
-void
+bool
 TestEnvironment::remove_from_world(const QualifiedPackageName &) const
 {
+    return false;
 }
 
-void
+bool
 TestEnvironment::add_to_world(const SetName &) const
 {
+    return false;
 }
 
-void
+bool
 TestEnvironment::remove_from_world(const SetName &) const
 {
+    return false;
 }
 
 void

@@ -76,7 +76,7 @@ namespace paludis
             template<typename I_>
             void _load_atom_file(const FSEntry &, I_, const std::string &, const bool);
 
-            void _add_string_to_world(const std::string &) const;
+            bool _add_string_to_world(const std::string &) const;
             bool _remove_string_from_world(const std::string &) const;
 
         protected:
@@ -157,13 +157,13 @@ namespace paludis
 
             virtual gid_t reduced_gid() const;
 
-            virtual void add_to_world(const QualifiedPackageName &) const;
+            virtual bool add_to_world(const QualifiedPackageName &) const;
 
-            virtual void add_to_world(const SetName &) const;
+            virtual bool add_to_world(const SetName &) const;
 
-            virtual void remove_from_world(const QualifiedPackageName &) const;
+            virtual bool remove_from_world(const QualifiedPackageName &) const;
 
-            virtual void remove_from_world(const SetName &) const;
+            virtual bool remove_from_world(const SetName &) const;
 
             virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
             virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > config_location_key() const;

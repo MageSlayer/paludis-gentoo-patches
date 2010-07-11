@@ -324,38 +324,38 @@ class EnvironmentImplementationWrapper :
             return EnvironmentImplementation::distribution();
         }
 
-        virtual void add_to_world(const QualifiedPackageName & s) const
+        virtual bool add_to_world(const QualifiedPackageName & s) const
         {
             Lock l(get_mutex());
             if (bp::override f = get_override("add_to_world"))
-                f(s);
+                return f(s);
             else
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "add_to_world");
         }
 
-        virtual void add_to_world(const SetName & s) const
+        virtual bool add_to_world(const SetName & s) const
         {
             Lock l(get_mutex());
             if (bp::override f = get_override("add_to_world"))
-                f(s);
+                return f(s);
             else
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "add_to_world");
         }
 
-        virtual void remove_from_world(const QualifiedPackageName & s) const
+        virtual bool remove_from_world(const QualifiedPackageName & s) const
         {
             Lock l(get_mutex());
             if (bp::override f = get_override("remove_from_world"))
-                f(s);
+                return f(s);
             else
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "remove_from_world");
         }
 
-        virtual void remove_from_world(const SetName & s) const
+        virtual bool remove_from_world(const SetName & s) const
         {
             Lock l(get_mutex());
             if (bp::override f = get_override("remove_from_world"))
-                f(s);
+                return f(s);
             else
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "remove_from_world");
         }

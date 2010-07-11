@@ -36,7 +36,7 @@ namespace paludis
             private PrivateImplementationPattern<World>
         {
             private:
-                void _add_string_to_world(const std::string &) const;
+                bool _add_string_to_world(const std::string &) const;
                 bool _remove_string_from_world(const std::string &) const;
 
             public:
@@ -45,11 +45,11 @@ namespace paludis
 
                 const std::tr1::shared_ptr<const SetSpecTree> world_set() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                void add_to_world(const SetName &) const;
-                void add_to_world(const QualifiedPackageName &) const;
+                bool add_to_world(const SetName &) const;
+                bool add_to_world(const QualifiedPackageName &) const;
 
-                void remove_from_world(const SetName &) const;
-                void remove_from_world(const QualifiedPackageName &) const;
+                bool remove_from_world(const SetName &) const;
+                bool remove_from_world(const QualifiedPackageName &) const;
 
                 std::tr1::shared_ptr<const FSEntry> location_if_set() const;
 

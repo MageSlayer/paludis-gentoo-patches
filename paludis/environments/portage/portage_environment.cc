@@ -870,31 +870,31 @@ PortageEnvironment::reduced_uid() const
     return getuid();
 }
 
-void
+bool
 PortageEnvironment::add_to_world(const QualifiedPackageName & q) const
 {
-    _add_string_to_world(stringify(q));
+    return _add_string_to_world(stringify(q));
 }
 
-void
+bool
 PortageEnvironment::add_to_world(const SetName & s) const
 {
-    _add_string_to_world(stringify(s));
+    return _add_string_to_world(stringify(s));
 }
 
-void
+bool
 PortageEnvironment::remove_from_world(const QualifiedPackageName & q) const
 {
-    _remove_string_from_world(stringify(q));
+    return _remove_string_from_world(stringify(q));
 }
 
-void
+bool
 PortageEnvironment::remove_from_world(const SetName & s) const
 {
-    _remove_string_from_world(stringify(s));
+    return _remove_string_from_world(stringify(s));
 }
 
-void
+bool
 PortageEnvironment::_add_string_to_world(const std::string & s) const
 {
     Lock l(_imp->world_mutex);
@@ -913,7 +913,7 @@ PortageEnvironment::_add_string_to_world(const std::string & s) const
         {
             Log::get_instance()->message("portage_environment.world.write_failed", ll_warning, lc_no_context)
                 << "Cannot create world file '" << _imp->world_file << "': '" << e.message() << "' (" << e.what() << ")";
-            return;
+            return false;
         }
     }
 
@@ -925,8 +925,10 @@ PortageEnvironment::_add_string_to_world(const std::string & s) const
                 n::tag() = std::tr1::shared_ptr<DepTag>(),
                 n::type() = sft_simple
             ));
-    world.add(s);
+    bool result(world.add(s));
     world.rewrite();
+
+    return result;
 }
 
 bool

@@ -59,31 +59,31 @@ World::~World()
 {
 }
 
-void
+bool
 World::add_to_world(const SetName & s) const
 {
-    _add_string_to_world(stringify(s));
+    return _add_string_to_world(stringify(s));
 }
 
-void
+bool
 World::add_to_world(const QualifiedPackageName & q) const
 {
-    _add_string_to_world(stringify(q));
+    return _add_string_to_world(stringify(q));
 }
 
-void
+bool
 World::remove_from_world(const SetName & s) const
 {
-    _remove_string_from_world(stringify(s));
+    return _remove_string_from_world(stringify(s));
 }
 
-void
+bool
 World::remove_from_world(const QualifiedPackageName & q) const
 {
-    _remove_string_from_world(stringify(q));
+    return _remove_string_from_world(stringify(q));
 }
 
-void
+bool
 World::_add_string_to_world(const std::string & n) const
 {
     using namespace std::tr1::placeholders;
@@ -94,7 +94,7 @@ World::_add_string_to_world(const std::string & n) const
             << "Not adding '" << n << "' to world because "
             "no world file has been configured. If you have recently upgraded from <paludis-0.26.0_alpha13, consult "
             "the FAQ Upgrades section.";
-        return;
+        return false;
     }
 
     Lock l(_imp->mutex);
@@ -111,7 +111,7 @@ World::_add_string_to_world(const std::string & n) const
         {
             Log::get_instance()->message("paludis_environment.world.cannot_create", ll_warning, lc_no_context)
                 << "Cannot create world file '" << *_imp->maybe_world_file << "': '" << e.message() << "' (" << e.what() << ")";
-            return;
+            return false;
         }
     }
 
@@ -123,8 +123,10 @@ World::_add_string_to_world(const std::string & n) const
                 n::tag() = std::tr1::shared_ptr<DepTag>(),
                 n::type() = sft_simple
                 ));
-    world.add(n);
+    bool result(world.add(n));
     world.rewrite();
+
+    return result;
 }
 
 bool
