@@ -843,6 +843,19 @@ namespace
         if (! decision.best())
             cout << c::bold_yellow() << " (not the best version)" << c::normal();
 
+        if ((! decision.destination()->replacing()->empty()) &&
+                (*decision.destination()->replacing()->begin())->from_repositories_key() &&
+                ! (*decision.destination()->replacing()->begin())->from_repositories_key()->value()->empty() &&
+                (*decision.destination()->replacing()->begin())->from_repositories_key()->value()->end() ==
+                (*decision.destination()->replacing()->begin())->from_repositories_key()->value()->find(stringify(
+                        decision.origin_id()->repository()->name())))
+        {
+            cout << c::bold_yellow() << " (formerly from ::" << join(
+                        (*decision.destination()->replacing()->begin())->from_repositories_key()->value()->begin(),
+                        (*decision.destination()->replacing()->begin())->from_repositories_key()->value()->end(),
+                        ", ::") << ")";
+        }
+
         cout << c::normal() << " " << decision.origin_id()->canonical_form(idcf_version) <<
             " to " << decision.destination()->repository();
 
