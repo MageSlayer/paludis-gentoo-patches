@@ -86,6 +86,7 @@ namespace
         args::SwitchArg a_exclude_unmirrorable;
         args::SwitchArg a_fetch_unneeded;
         args::SwitchArg a_ignore_unfetched;
+        args::SwitchArg a_ignore_manual_fetch_errors;
         args::SwitchArg a_regulars_only;
 
         args::ArgsGroup g_install_action_options;
@@ -123,6 +124,8 @@ namespace
             a_ignore_unfetched(&g_fetch_action_options, "ignore-unfetched", '\0',
                     "Do not fetch any component that has not already been downloaded (but do verify "
                     "components that have already been downloaded", true),
+            a_ignore_manual_fetch_errors(&g_fetch_action_options, "ignore-manual-fetch-errors", '\0',
+                    "Ignore any errors that say that manual fetching is required for a component", true),
             a_regulars_only(&g_fetch_action_options, "regulars-only", '\0',
                     "Only fetch regular components. If this option is not specified, the job cannot safely "
                     "be backgrounded or run in parallel with installs", true),
@@ -394,8 +397,9 @@ PerformCommand::run(
 
         OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         WantInstallPhase want_phase(cmdline, output_manager_holder);
+        std::tr1::shared_ptr<Sequence<FetchActionFailure> > failures(new Sequence<FetchActionFailure>);
         FetchActionOptions options(make_named_values<FetchActionOptions>(
-                    n::errors() = make_shared_ptr(new Sequence<FetchActionFailure>),
+                    n::errors() = failures,
                     n::exclude_unmirrorable() = cmdline.a_exclude_unmirrorable.specified(),
                     n::fetch_parts() = parts,
                     n::ignore_not_in_manifest() = false,
@@ -405,7 +409,24 @@ PerformCommand::run(
                     n::want_phase() = want_phase
                     ));
         FetchAction fetch_action(options);
-        execute(env, cmdline, id, action, fetch_action);
+
+        try
+        {
+            execute(env, cmdline, id, action, fetch_action);
+        }
+        catch (const ActionFailedError &)
+        {
+            if (cmdline.a_ignore_manual_fetch_errors.specified())
+            {
+                for (Sequence<FetchActionFailure>::ConstIterator f(failures->begin()), f_end(failures->end()) ;
+                        f != f_end ; ++f)
+                    if (! f->requires_manual_fetching())
+                        throw;
+            }
+            else
+                throw;
+        }
+
     }
     else if (action == "pretend-fetch")
     {
