@@ -24,6 +24,7 @@
 
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
@@ -134,7 +135,25 @@ UninstallCommand::run(
                 targets->push_back(std::make_pair(target, ""));
             }
 
-            targets_cleaned_up->push_back("!" + stringify((*ids->begin())->name()));
+            bool removing_all_slots(true);
+            const std::tr1::shared_ptr<const PackageIDSequence> all_uninstallable((*env)[selection::AllVersionsSorted(
+                        generator::Package(*spec.package_ptr()) | filter::SupportsAction<UninstallAction>())]);
+            for (PackageIDSequence::ConstIterator i(all_uninstallable->begin()), i_end(all_uninstallable->end()) ;
+                    i != i_end ; ++i)
+                if (indirect_iterator(ids->end()) == std::find(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), **i))
+                {
+                    removing_all_slots = false;
+                    break;
+                }
+
+            if (removing_all_slots)
+                targets_cleaned_up->push_back("!" + stringify((*ids->begin())->name()));
+            else
+            {
+                for (Sequence<std::pair<std::string, std::string> >::ConstIterator t(targets->begin()), t_end(targets->end()) ;
+                        t != t_end ; ++t)
+                    targets_cleaned_up->push_back(t->first);
+            }
         }
     }
 
