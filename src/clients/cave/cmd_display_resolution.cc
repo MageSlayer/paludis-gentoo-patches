@@ -197,11 +197,11 @@ namespace
                                 + (r.sanitised_dependency().active_dependency_labels_as_string().empty() ? "" :
                                     ", labelled '" + r.sanitised_dependency().active_dependency_labels_as_string() + "'")
                                 + as,
-                                indeterminate));
+                                false));
                 }
                 else
                     return annotate(r.sanitised_dependency().spec().if_package()->annotations_key(),
-                            std::make_pair(stringify(r.from_id()->name()), indeterminate));
+                            std::make_pair(stringify(r.from_id()->name()), false));
             }
         }
 
@@ -239,7 +239,7 @@ namespace
 
         std::pair<std::string, Tribool> visit(const ViaBinaryReason & r) const
         {
-            return std::make_pair("to install via binary for " + stringify(r.other_resolvent()), false);
+            return std::make_pair("to install via binary for " + stringify(r.other_resolvent()), indeterminate);
         }
 
         std::pair<std::string, Tribool> visit(const PresetReason & r) const
