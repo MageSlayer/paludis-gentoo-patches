@@ -814,7 +814,7 @@ namespace
             const std::tr1::shared_ptr<Environment> & env,
             const PackageDepSpec & spec)
     {
-        const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::RequireExactlyOne(
+        const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
                     generator::Matches(spec, MatchPackageOptions()))]);
         if (ids->empty())
             return stringify(spec);
