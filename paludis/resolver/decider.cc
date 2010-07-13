@@ -1857,8 +1857,13 @@ Decider::add_target_with_reason(const PackageOrBlockDepSpec & spec, const std::t
     }
     else
     {
-        PackageDepSpec base_spec(spec.if_package() ? *spec.if_package() : spec.if_block()->blocking());
-        std::tr1::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(base_spec, reason));
+        std::tr1::shared_ptr<const Resolvents> resolvents;
+
+        if (spec.if_package())
+            resolvents = _get_resolvents_for(*spec.if_package(), reason);
+        else
+            resolvents = _get_resolvents_for_blocker(*spec.if_block());
+
         if (resolvents->empty())
         {
             if (spec.if_package())
