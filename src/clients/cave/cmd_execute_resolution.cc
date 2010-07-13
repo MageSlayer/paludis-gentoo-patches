@@ -254,7 +254,7 @@ namespace
         command.append(" --x-of-y '" + stringify(x) + " of " + stringify(y) + "'");
 
         if (normal_only)
-            command.append(" --regulars-only");
+            command.append(" --regulars-only --ignore-manual-fetch-errors");
 
         if (cmdline.execution_options.a_skip_phase.specified() || cmdline.execution_options.a_abort_at_phase.specified()
                 || cmdline.execution_options.a_skip_until_phase.specified())
