@@ -664,9 +664,9 @@ namespace
             return "BreakDecision";
         }
 
-        std::string visit(const RemoveDecision &) const
+        std::string visit(const RemoveDecision & d) const
         {
-            return "RemoveDecision";
+            return "RemoveDecision(" + join(indirect_iterator(d.ids()->begin()), indirect_iterator(d.ids()->end()), ", ") + ")";
         }
     };
 }
