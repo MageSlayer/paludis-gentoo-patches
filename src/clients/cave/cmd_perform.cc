@@ -81,6 +81,7 @@ namespace
         args::SwitchArg a_hooks;
         args::StringArg a_x_of_y;
         args::SwitchArg a_managed_output;
+        args::EnumArg a_output_exclusivity;
 
         args::ArgsGroup g_fetch_action_options;
         args::SwitchArg a_exclude_unmirrorable;
@@ -113,6 +114,14 @@ namespace
             a_managed_output(&g_general_options, "managed-output", '\0',
                     "Specify that our output is being managed by another process. Used by "
                     "'cave execute-resolution'; not for end user use.", false),
+            a_output_exclusivity(&g_general_options, "output-exclusivity", '\0',
+                    "Specify the exclusivity of our output. Should not be changed unless "
+                    "--managed-output is also specified",
+                    args::EnumArg::EnumArgOptions
+                    ("exclusive",       "Exclusive output")
+                    ("with-others",     "With others")
+                    ("background",      "Backgrounded"),
+                    "exclusive"),
 
             g_fetch_action_options(main_options_section(), "Fetch Action Options",
                     "Options for if the action is 'fetch' or 'pretend-fetch'"),
@@ -162,6 +171,19 @@ namespace
         }
     };
 
+    OutputExclusivity get_output_exclusivity(const PerformCommandLine & cmdline)
+    {
+        if (cmdline.a_output_exclusivity.argument() == "exclusive")
+            return oe_exclusive;
+        if (cmdline.a_output_exclusivity.argument() == "with-others")
+            return oe_with_others;
+        if (cmdline.a_output_exclusivity.argument() == "background")
+            return oe_background;
+        throw args::DoHelp("Don't understand argument '"
+                + cmdline.a_output_exclusivity.argument() + "' to '--"
+                + cmdline.a_output_exclusivity.long_name() + "'");
+    }
+
     struct OutputManagerFromIPCOrEnvironment
     {
         std::tr1::shared_ptr<OutputManagerFromIPC> manager_if_ipc;
@@ -173,10 +195,10 @@ namespace
                 const std::tr1::shared_ptr<const PackageID> & id)
         {
             if (cmdline.a_managed_output.specified())
-                manager_if_ipc.reset(new OutputManagerFromIPC(e, id, oe_exclusive,
+                manager_if_ipc.reset(new OutputManagerFromIPC(e, id, get_output_exclusivity(cmdline),
                             ClientOutputFeatures() + cof_summary_at_end));
             else
-                manager_if_env.reset(new OutputManagerFromEnvironment(e, id, oe_exclusive,
+                manager_if_env.reset(new OutputManagerFromEnvironment(e, id, get_output_exclusivity(cmdline),
                             ClientOutputFeatures() + cof_summary_at_end));
         }
 
