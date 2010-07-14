@@ -44,6 +44,9 @@
 #include <paludis/util/type_list.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/executor.hh>
+#include <paludis/util/mutex.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
@@ -206,28 +209,37 @@ namespace
 
     void starting_action(
             const std::string & action,
-            const std::tr1::shared_ptr<const PackageID> & id,
+            const std::tr1::shared_ptr<const PackageIDSequence> & ids,
             const int x, const int y)
     {
         cout << endl;
         cout << c::bold_blue() << x << " of " << y << ": Starting " << action << " for "
-            << *id << "..." << c::normal() << endl;
+            << join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), ", ") << "..." << c::normal() << endl;
         cout << endl;
     }
 
     void done_action(
             const std::string & action,
-            const std::tr1::shared_ptr<const PackageID> & id,
+            const std::tr1::shared_ptr<const PackageIDSequence> & ids,
             const bool success)
     {
         cout << endl;
         if (success)
             cout << c::bold_green() << "Done " << action << " for "
-                << *id << c::normal() << endl;
+                << join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), ", ") << c::normal() << endl;
         else
             cout << c::bold_red() << "Failed " << action << " for "
-                << *id << c::normal() << endl;
+                << join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), ", ") << c::normal() << endl;
         cout << endl;
+    }
+
+    void set_output_manager(
+            Mutex & mutex,
+            JobActiveState & active_state,
+            const std::tr1::shared_ptr<OutputManager> & o)
+    {
+        Lock lock(mutex);
+        active_state.set_output_manager(o);
     }
 
     bool do_fetch(
@@ -235,6 +247,7 @@ namespace
             const ExecuteResolutionCommandLine & cmdline,
             const PackageDepSpec & id_spec,
             const int x, const int y, bool normal_only,
+            Mutex & job_mutex,
             JobActiveState & active_state)
     {
         Context context("When fetching for '" + stringify(id_spec) + "':");
@@ -242,13 +255,11 @@ namespace
         const std::tr1::shared_ptr<const PackageID> id(*(*env)[selection::RequireExactlyOne(
                     generator::Matches(id_spec, MatchPackageOptions()))]->begin());
 
-        starting_action("fetch (" + std::string(normal_only ? "regular parts" : "extra parts") + ")", id, x, y);
-
         std::string command(cmdline.program_options.a_perform_program.argument());
         if (command.empty())
             command = "$CAVE perform";
 
-        command.append(" fetch --hooks --if-supported --managed-output ");
+        command.append(" fetch --hooks --if-supported --managed-output --output-exclusivity with-others ");
         command.append(stringify(id->uniquely_identifying_spec()));
         command.append(" --x-of-y '" + stringify(x) + " of " + stringify(y) + "'");
 
@@ -290,21 +301,15 @@ namespace
                 command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " '" + *p + "'");
         }
 
-        IPCInputManager input_manager(env.get(), std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)>());
+        IPCInputManager input_manager(env.get(), std::tr1::bind(&set_output_manager, std::tr1::ref(job_mutex),
+                    std::tr1::ref(active_state), std::tr1::placeholders::_1));
+
         paludis::Command cmd(command);
         cmd
             .with_pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler())
             ;
 
         int retcode(run_command(cmd));
-        const std::tr1::shared_ptr<OutputManager> output_manager(input_manager.underlying_output_manager_if_constructed());
-        if (output_manager)
-        {
-            output_manager->nothing_more_to_come();
-            active_state.set_output_manager(output_manager);
-        }
-
-        done_action("fetch (" + std::string(normal_only ? "regular parts" : "extra parts") + ")", id, 0 == retcode);
         return 0 == retcode;
     }
 
@@ -314,42 +319,21 @@ namespace
             const PackageDepSpec & id_spec,
             const RepositoryName & destination_repository_name,
             const std::tr1::shared_ptr<const Sequence<PackageDepSpec> > & replacing_specs,
-            const DestinationType & destination_type,
+            const std::string & destination_string,
             const int x, const int y,
+            Mutex & job_mutex,
             JobActiveState & active_state)
     {
         const std::tr1::shared_ptr<const PackageID> id(*(*env)[selection::RequireExactlyOne(
                     generator::Matches(id_spec, MatchPackageOptions()))]->begin());
 
-        std::string destination_string, action_string;
-        switch (destination_type)
-        {
-            case dt_install_to_slash:
-                destination_string = "installing to /";
-                action_string = "install to /";
-                break;
-
-            case dt_create_binary:
-                destination_string = "creating binary";
-                action_string = "create binary";
-                break;
-
-            case last_dt:
-                break;
-        }
-
-        if (destination_string.empty())
-            throw InternalError(PALUDIS_HERE, "unhandled dt");
-
         Context context("When " + destination_string + " for '" + stringify(*id) + "':");
-
-        starting_action(action_string, id, x, y);
 
         std::string command(cmdline.program_options.a_perform_program.argument());
         if (command.empty())
             command = "$CAVE perform";
 
-        command.append(" install --hooks --managed-output ");
+        command.append(" install --hooks --managed-output --output-exclusivity with-others ");
         command.append(stringify(id->uniquely_identifying_spec()));
         command.append(" --destination " + stringify(destination_repository_name));
         for (Sequence<PackageDepSpec>::ConstIterator i(replacing_specs->begin()),
@@ -394,7 +378,8 @@ namespace
                 command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " '" + *p + "'");
         }
 
-        IPCInputManager input_manager(env.get(), std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)>());
+        IPCInputManager input_manager(env.get(), std::tr1::bind(&set_output_manager, std::tr1::ref(job_mutex),
+                    std::tr1::ref(active_state), std::tr1::placeholders::_1));
         paludis::Command cmd(command);
         cmd
             .with_pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler())
@@ -402,13 +387,6 @@ namespace
 
         int retcode(run_command(cmd));
         const std::tr1::shared_ptr<OutputManager> output_manager(input_manager.underlying_output_manager_if_constructed());
-        if (output_manager)
-        {
-            output_manager->nothing_more_to_come();
-            active_state.set_output_manager(output_manager);
-        }
-
-        done_action(action_string, id, 0 == retcode);
         return 0 == retcode;
     }
 
@@ -417,6 +395,7 @@ namespace
             const ExecuteResolutionCommandLine & cmdline,
             const PackageDepSpec & id_spec,
             const int x, const int y,
+            Mutex & job_mutex,
             JobActiveState & active_state)
     {
         Context context("When removing '" + stringify(id_spec) + "':");
@@ -424,13 +403,11 @@ namespace
         const std::tr1::shared_ptr<const PackageID> id(*(*env)[selection::RequireExactlyOne(
                     generator::Matches(id_spec, MatchPackageOptions()))]->begin());
 
-        starting_action("remove", id, x, y);
-
         std::string command(cmdline.program_options.a_perform_program.argument());
         if (command.empty())
             command = "$CAVE perform";
 
-        command.append(" uninstall --hooks --managed-output ");
+        command.append(" uninstall --hooks --managed-output --output-exclusivity with-others ");
         command.append(stringify(id->uniquely_identifying_spec()));
 
         command.append(" --x-of-y '" + stringify(x) + " of " + stringify(y) + "'");
@@ -470,7 +447,8 @@ namespace
                 command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " '" + *p + "'");
         }
 
-        IPCInputManager input_manager(env.get(), std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)>());
+        IPCInputManager input_manager(env.get(), std::tr1::bind(&set_output_manager, std::tr1::ref(job_mutex),
+                    std::tr1::ref(active_state), std::tr1::placeholders::_1));
         paludis::Command cmd(command);
         cmd
             .with_pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler())
@@ -479,13 +457,8 @@ namespace
         int retcode(run_command(cmd));
         const std::tr1::shared_ptr<OutputManager> output_manager(input_manager.underlying_output_manager_if_constructed());
         if (output_manager)
-        {
-            output_manager->nothing_more_to_come();
             output_manager->succeeded();
-            active_state.set_output_manager(output_manager);
-        }
 
-        done_action("remove", id, 0 == retcode);
         return 0 == retcode;
     }
 
@@ -633,6 +606,7 @@ namespace
 
     struct ExecuteCounts
     {
+        Mutex mutex;
         int x_fetches, y_fetches, x_installs, y_installs;
 
         ExecuteCounts() :
@@ -645,18 +619,28 @@ namespace
 
         void visit(const FetchJob &)
         {
+            Lock lock(mutex);
             ++y_fetches;
         }
 
         void visit(const InstallJob &)
         {
+            Lock lock(mutex);
             ++y_installs;
         }
 
         void visit(const UninstallJob &)
         {
+            Lock lock(mutex);
             ++y_installs;
         }
+    };
+
+    enum ExecuteOneVisitorPart
+    {
+        x1_pre,
+        x1_main,
+        x1_post
     };
 
     struct ExecuteOneVisitor
@@ -664,76 +648,190 @@ namespace
         const std::tr1::shared_ptr<Environment> env;
         const ExecuteResolutionCommandLine & cmdline;
         ExecuteCounts & counts;
+        Mutex & job_mutex;
+        const ExecuteOneVisitorPart part;
+        int retcode;
 
         ExecuteOneVisitor(
                 const std::tr1::shared_ptr<Environment> & e,
                 const ExecuteResolutionCommandLine & c,
-                ExecuteCounts & k) :
+                ExecuteCounts & k,
+                Mutex & m,
+                ExecuteOneVisitorPart p,
+                int r) :
             env(e),
             cmdline(c),
-            counts(k)
+            counts(k),
+            job_mutex(m),
+            part(p),
+            retcode(r)
         {
         }
 
         int visit(InstallJob & install_item)
         {
-            ++counts.x_installs;
-
-            const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
-            install_item.set_state(active_state);
-
-            if (! do_fetch(env, cmdline, install_item.origin_id_spec(), counts.x_installs, counts.y_installs, false, *active_state))
+            std::string destination_string, action_string;
+            switch (install_item.destination_type())
             {
-                install_item.set_state(active_state->failed());
-                return 1;
+                case dt_install_to_slash:
+                    destination_string = "installing to /";
+                    action_string = "install to /";
+                    break;
+
+                case dt_create_binary:
+                    destination_string = "creating binary";
+                    action_string = "create binary";
+                    break;
+
+                case last_dt:
+                    break;
             }
 
-            if (! do_install(env, cmdline, install_item.origin_id_spec(), install_item.destination_repository_name(),
-                        install_item.replacing_specs(), install_item.destination_type(),
-                        counts.x_installs, counts.y_installs, *active_state))
+            if (destination_string.empty())
+                throw InternalError(PALUDIS_HERE, "unhandled dt");
+
+            const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::RequireExactlyOne(
+                        generator::Matches(install_item.origin_id_spec(), MatchPackageOptions()))]);
+
+            switch (part)
             {
-                install_item.set_state(active_state->failed());
-                return 1;
+                case x1_pre:
+                    {
+                        ++counts.x_installs;
+                        starting_action(action_string, ids, counts.x_installs, counts.y_installs);
+                    }
+                    break;
+
+                case x1_main:
+                    {
+                        const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
+                        {
+                            Lock lock(job_mutex);
+                            install_item.set_state(active_state);
+                        }
+
+                        if (! do_fetch(env, cmdline, install_item.origin_id_spec(), counts.x_installs, counts.y_installs, false,
+                                    job_mutex, *active_state))
+                        {
+                            Lock lock(job_mutex);
+                            install_item.set_state(active_state->failed());
+                            return 1;
+                        }
+
+                        if (! do_install(env, cmdline, install_item.origin_id_spec(), install_item.destination_repository_name(),
+                                    install_item.replacing_specs(), destination_string,
+                                    counts.x_installs, counts.y_installs, job_mutex, *active_state))
+                        {
+                            Lock lock(job_mutex);
+                            install_item.set_state(active_state->failed());
+                            return 1;
+                        }
+
+                        Lock lock(job_mutex);
+                        install_item.set_state(active_state->succeeded());
+                    }
+                    break;
+
+                case x1_post:
+                    done_action(action_string, ids, 0 == retcode);
+                    break;
             }
 
-            install_item.set_state(active_state->succeeded());
             return 0;
         }
 
         int visit(UninstallJob & uninstall_item)
         {
-            ++counts.x_installs;
-
-            const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
-            uninstall_item.set_state(active_state);
-
+            const std::tr1::shared_ptr<PackageIDSequence> ids(new PackageIDSequence);
             for (Sequence<PackageDepSpec>::ConstIterator i(uninstall_item.ids_to_remove_specs()->begin()),
                     i_end(uninstall_item.ids_to_remove_specs()->end()) ;
                     i != i_end ; ++i)
-                if (! do_uninstall(env, cmdline, *i, counts.x_installs, counts.y_installs, *active_state))
-                {
-                    uninstall_item.set_state(active_state->failed());
-                    return 1;
-                }
+            {
+                const std::tr1::shared_ptr<const PackageID> id(*(*env)[selection::RequireExactlyOne(
+                            generator::Matches(*i, MatchPackageOptions()))]->begin());
+                ids->push_back(id);
+            }
 
-            uninstall_item.set_state(active_state->succeeded());
+            switch (part)
+            {
+                case x1_pre:
+                    {
+                        ++counts.x_installs;
+                        starting_action("remove", ids, counts.x_installs, counts.y_installs);
+                    }
+                    break;
+
+                case x1_main:
+                    {
+                        const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
+                        {
+                            Lock lock(job_mutex);
+                            uninstall_item.set_state(active_state);
+                        }
+
+                        for (Sequence<PackageDepSpec>::ConstIterator i(uninstall_item.ids_to_remove_specs()->begin()),
+                                i_end(uninstall_item.ids_to_remove_specs()->end()) ;
+                                i != i_end ; ++i)
+                            if (! do_uninstall(env, cmdline, *i, counts.x_installs, counts.y_installs, job_mutex, *active_state))
+                            {
+                                Lock lock(job_mutex);
+                                uninstall_item.set_state(active_state->failed());
+                                return 1;
+                            }
+
+                        Lock lock(job_mutex);
+                        uninstall_item.set_state(active_state->succeeded());
+                    }
+                    break;
+
+                case x1_post:
+                    done_action("remove", ids, 0 == retcode);
+                    break;
+            }
+
             return 0;
         }
 
         int visit(FetchJob & fetch_item)
         {
-            ++counts.x_fetches;
+            const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::RequireExactlyOne(
+                        generator::Matches(fetch_item.origin_id_spec(), MatchPackageOptions()))]);
 
-            const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
-            fetch_item.set_state(active_state);
-
-            if (! do_fetch(env, cmdline, fetch_item.origin_id_spec(), counts.x_fetches, counts.y_fetches, true, *active_state))
+            switch (part)
             {
-                fetch_item.set_state(active_state->failed());
-                return 1;
+                case x1_pre:
+                    {
+                        ++counts.x_fetches;
+                        starting_action("fetch", ids, counts.x_fetches, counts.y_fetches);
+                    }
+                    break;
+
+                case x1_main:
+                    {
+                        const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
+                        {
+                            Lock lock(job_mutex);
+                            fetch_item.set_state(active_state);
+                        }
+
+                        if (! do_fetch(env, cmdline, fetch_item.origin_id_spec(), counts.x_fetches, counts.y_fetches, true,
+                                    job_mutex, *active_state))
+                        {
+                            Lock lock(job_mutex);
+                            fetch_item.set_state(active_state->failed());
+                            return 1;
+                        }
+
+                        Lock lock(job_mutex);
+                        fetch_item.set_state(active_state->succeeded());
+                    }
+                    break;
+
+                case x1_post:
+                    done_action("fetch", ids, 0 == retcode);
+                    break;
             }
 
-            fetch_item.set_state(active_state->succeeded());
             return 0;
         }
     };
@@ -870,12 +968,310 @@ namespace
         cout << endl;
     }
 
+    struct MakeJobID
+    {
+        const std::tr1::shared_ptr<Environment> env;
+
+        MakeJobID(const std::tr1::shared_ptr<Environment> & e) :
+            env(e)
+        {
+        }
+
+        std::string visit(const UninstallJob & j) const
+        {
+            return "Uninstall " + join(j.ids_to_remove_specs()->begin(), j.ids_to_remove_specs()->end(), ",",
+                    std::tr1::bind(stringify_id_or_spec, env, std::tr1::placeholders::_1));
+        }
+
+        std::string visit(const InstallJob & j) const
+        {
+            return "Install " + stringify_id_or_spec(env, j.origin_id_spec()) + " to " + stringify(j.destination_repository_name());
+        }
+
+        std::string visit(const FetchJob & j) const
+        {
+            return "Fetch " + stringify_id_or_spec(env, j.origin_id_spec());
+        }
+    };
+
+    struct GetOutputManager
+    {
+        const std::tr1::shared_ptr<OutputManager> visit(const JobActiveState & s) const
+        {
+            return s.output_manager();
+        }
+
+        const std::tr1::shared_ptr<OutputManager> visit(const JobFailedState & s) const
+        {
+            return s.output_manager();
+        }
+
+        const std::tr1::shared_ptr<OutputManager> visit(const JobSucceededState & s) const
+        {
+            return s.output_manager();
+        }
+
+        const std::tr1::shared_ptr<OutputManager> visit(const JobSkippedState &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::tr1::shared_ptr<OutputManager> visit(const JobPendingState &) const
+        {
+            return make_null_shared_ptr();
+        }
+    };
+
+    struct CanStartState
+    {
+        bool visit(const JobSkippedState &) const
+        {
+            return true;
+        }
+
+        bool visit(const JobPendingState &) const
+        {
+            return false;
+        }
+
+        bool visit(const JobActiveState &) const
+        {
+            return false;
+        }
+
+        bool visit(const JobSucceededState &) const
+        {
+            return true;
+        }
+
+        bool visit(const JobFailedState &) const
+        {
+            return true;
+        }
+    };
+
+    struct ExecuteJobExecutive :
+        Executive
+    {
+        const std::tr1::shared_ptr<Environment> env;
+        const ExecuteResolutionCommandLine & cmdline;
+        const std::tr1::shared_ptr<ExecuteJob> job;
+        const std::tr1::shared_ptr<const JobLists> lists;
+        JobRequirementIf require_if;
+        Mutex & retcode_mutex;
+        int & retcode;
+        ExecuteCounts & counts;
+        std::string & old_heading;
+
+        Timestamp last_flushed, last_output;
+
+        Mutex job_mutex;
+
+        bool want, already_done;
+
+        ExecuteJobExecutive(
+                const std::tr1::shared_ptr<Environment> & e,
+                const ExecuteResolutionCommandLine & c,
+                const std::tr1::shared_ptr<ExecuteJob> & j,
+                const std::tr1::shared_ptr<const JobLists> & l,
+                JobRequirementIf r,
+                Mutex & m,
+                int & rc,
+                ExecuteCounts & k,
+                std::string & h) :
+            env(e),
+            cmdline(c),
+            job(j),
+            lists(l),
+            require_if(r),
+            retcode_mutex(m),
+            retcode(rc),
+            counts(k),
+            old_heading(h),
+            last_flushed(Timestamp::now()),
+            last_output(last_flushed),
+            want(true),
+            already_done(false)
+        {
+        }
+
+        std::string queue_name() const
+        {
+            return simple_visitor_cast<const FetchJob>(*job) ? "fetch" : "execute";
+        }
+
+        std::string unique_id() const
+        {
+            return job->accept_returning<std::string>(MakeJobID(env));
+        }
+
+        bool can_run() const
+        {
+            for (JobRequirements::ConstIterator r(job->requirements()->begin()), r_end(job->requirements()->end()) ;
+                    r != r_end ; ++r)
+            {
+                if (! r->required_if()[jri_require_always])
+                    continue;
+
+                const std::tr1::shared_ptr<const ExecuteJob> req(*lists->execute_job_list()->fetch(r->job_number()));
+                if (! req->state()->accept_returning<bool>(CanStartState()))
+                    return false;
+            }
+
+            return true;
+        }
+
+        void pre_execute_exclusive()
+        {
+            last_flushed = Timestamp::now();
+            last_output = last_flushed;
+
+            ExistingStateVisitor initial_state;
+
+            if (job->state())
+            {
+                job->state()->accept(initial_state);
+
+                if (initial_state.failed)
+                {
+                    {
+                        Lock lock(retcode_mutex);
+                        retcode = 1;
+                    }
+                    want = false;
+                    already_done_action(env, "failed", job, counts);
+                }
+                else if (initial_state.skipped)
+                {
+                    {
+                        Lock lock(retcode_mutex);
+                        retcode = 1;
+                    }
+                    want = false;
+                    already_done_action(env, "skipped", job, counts);
+                }
+                else if (initial_state.done)
+                {
+                    want = false;
+                    already_done_action(env, "succeeded", job, counts);
+                }
+            }
+
+            if ((0 != retcode) && want)
+            {
+                if (last_jri == require_if)
+                    want = false;
+                else
+                {
+                    for (JobRequirements::ConstIterator r(job->requirements()->begin()), r_end(job->requirements()->end()) ;
+                            r != r_end && want ; ++r)
+                    {
+                        if (! r->required_if()[require_if])
+                            continue;
+
+                        const std::tr1::shared_ptr<const ExecuteJob> req(*lists->execute_job_list()->fetch(r->job_number()));
+                        want = want && req->state()->accept_returning<bool>(ContinueAfterState());
+                    }
+                }
+            }
+
+            already_done = initial_state.done;
+
+            if (want)
+            {
+                ExecuteOneVisitor execute(env, cmdline, counts, job_mutex, x1_pre, retcode);
+                retcode |= job->accept_returning<int>(execute);
+            }
+        }
+
+        void execute_threaded()
+        {
+            if (want)
+            {
+                ExecuteOneVisitor execute(env, cmdline, counts, job_mutex, x1_main, retcode);
+                retcode |= job->accept_returning<int>(execute);
+            }
+            else if (! already_done)
+            {
+                Lock lock(job_mutex);
+                job->set_state(make_shared_ptr(new JobSkippedState));
+            }
+        }
+
+        void display_active()
+        {
+            Lock lock(job_mutex);
+            const std::tr1::shared_ptr<OutputManager> output_manager(
+                    job->state()->accept_returning<std::tr1::shared_ptr<OutputManager> >(GetOutputManager()));
+
+            if (output_manager)
+            {
+                std::string heading("[" + queue_name() + "] " + unique_id());
+
+                if (output_manager->want_to_flush())
+                {
+                    if (heading != old_heading)
+                    {
+                        cout << endl << c::bold_blue() << heading << c::normal() << endl << endl;
+                        old_heading = heading;
+                    }
+
+                    output_manager->flush();
+                    last_output = Timestamp::now();
+                }
+                else
+                {
+                    cout << endl << c::bold_blue() << heading << c::normal() << endl << endl;
+                    old_heading = "";
+                    cout << "-> (no output for " << (Timestamp::now().seconds() - last_output.seconds()) << " seconds)" << endl;
+                }
+
+                last_flushed = Timestamp::now();
+            }
+        }
+
+        void flush_threaded()
+        {
+            Lock lock(job_mutex);
+            const std::tr1::shared_ptr<OutputManager> output_manager(
+                    job->state()->accept_returning<std::tr1::shared_ptr<OutputManager> >(GetOutputManager()));
+
+            if (output_manager && output_manager->want_to_flush())
+                display_active();
+            else
+            {
+
+                Timestamp now(Timestamp::now());
+                if (now.seconds() - last_flushed.seconds() >= 10)
+                    display_active();
+            }
+        }
+
+        void post_execute_exclusive()
+        {
+            ExecuteOneVisitor execute(env, cmdline, counts, job_mutex, x1_post, retcode);
+            retcode |= job->accept_returning<int>(execute);
+
+            Lock lock(job_mutex);
+            const std::tr1::shared_ptr<OutputManager> output_manager(
+                    job->state()->accept_returning<std::tr1::shared_ptr<OutputManager> >(GetOutputManager()));
+
+            if (output_manager)
+            {
+                if (output_manager->want_to_flush())
+                    display_active();
+                output_manager->nothing_more_to_come();
+            }
+        }
+    };
+
     int execute_executions(
             const std::tr1::shared_ptr<Environment> & env,
             const std::tr1::shared_ptr<JobLists> & lists,
             const ExecuteResolutionCommandLine & cmdline)
     {
         int retcode(0);
+        Mutex retcode_mutex;
         ExecuteCounts counts;
 
         for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),
@@ -902,62 +1298,16 @@ namespace
                     + cmdline.execution_options.a_continue_on_failure.argument() + "' to '--"
                     + cmdline.execution_options.a_continue_on_failure.long_name() + "'");
 
+        Executor executor;
+
+        std::string old_heading;
         for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),
                 c_end(lists->execute_job_list()->end()) ;
                 c != c_end ; ++c)
-        {
-            bool want(true);
-            ExistingStateVisitor initial_state;
+            executor.add(make_shared_ptr(new ExecuteJobExecutive(env, cmdline, *c, lists, require_if, retcode_mutex,
+                            retcode, counts, old_heading)));
 
-            if ((*c)->state())
-            {
-                (*c)->state()->accept(initial_state);
-
-                if (initial_state.failed)
-                {
-                    retcode = 1;
-                    want = false;
-                    already_done_action(env, "failed", *c, counts);
-                }
-                else if (initial_state.skipped)
-                {
-                    retcode = 1;
-                    want = false;
-                    already_done_action(env, "skipped", *c, counts);
-                }
-                else if (initial_state.done)
-                {
-                    want = false;
-                    already_done_action(env, "succeeded", *c, counts);
-                }
-            }
-
-            if ((0 != retcode) && want)
-            {
-                if (last_jri == require_if)
-                    want = false;
-                else
-                {
-                    for (JobRequirements::ConstIterator r((*c)->requirements()->begin()), r_end((*c)->requirements()->end()) ;
-                            r != r_end && want ; ++r)
-                    {
-                        if (! r->required_if()[require_if])
-                            continue;
-
-                        const std::tr1::shared_ptr<const ExecuteJob> req(*lists->execute_job_list()->fetch(r->job_number()));
-                        want = want && req->state()->accept_returning<bool>(ContinueAfterState());
-                    }
-                }
-            }
-
-            if (want)
-            {
-                ExecuteOneVisitor execute(env, cmdline, counts);
-                retcode |= (*c)->accept_returning<int>(execute);
-            }
-            else if (! initial_state.done)
-                (*c)->set_state(make_shared_ptr(new JobSkippedState));
-        }
+        executor.execute();
 
         if (0 != env->perform_hook(Hook("install_all_post")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
