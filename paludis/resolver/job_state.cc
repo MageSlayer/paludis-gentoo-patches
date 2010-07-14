@@ -120,6 +120,12 @@ JobActiveState::set_output_manager(const std::tr1::shared_ptr<OutputManager> & m
     _imp->output_manager = m;
 }
 
+const std::tr1::shared_ptr<OutputManager>
+JobActiveState::output_manager() const
+{
+    return _imp->output_manager;
+}
+
 const std::tr1::shared_ptr<JobSucceededState>
 JobActiveState::succeeded() const
 {

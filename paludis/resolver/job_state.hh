@@ -65,6 +65,8 @@ namespace paludis
                 const std::tr1::shared_ptr<JobSucceededState> succeeded() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 const std::tr1::shared_ptr<JobFailedState> failed() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
+                const std::tr1::shared_ptr<OutputManager> output_manager() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
                 virtual void serialise(Serialiser &) const;
                 static const std::tr1::shared_ptr<JobActiveState> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
