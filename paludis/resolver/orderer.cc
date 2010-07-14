@@ -58,7 +58,7 @@ using namespace paludis;
 using namespace paludis::resolver;
 
 typedef std::tr1::unordered_map<NAGIndex, std::tr1::shared_ptr<const ChangeOrRemoveDecision>, Hash<NAGIndex> > ChangeOrRemoveIndices;
-typedef std::tr1::unordered_map<NAGIndex, JobNumber, Hash<NAGIndex> > InstallJobNumbers;
+typedef std::tr1::unordered_map<NAGIndex, JobNumber, Hash<NAGIndex> > ChangeOrRemoveJobNumbers;
 typedef std::tr1::unordered_map<Resolvent, JobNumber, Hash<Resolvent> > FetchJobNumbers;
 
 namespace paludis
@@ -71,7 +71,7 @@ namespace paludis
         const std::tr1::shared_ptr<Resolved> resolved;
         ChangeOrRemoveIndices change_or_remove_indices;
         FetchJobNumbers fetch_job_numbers;
-        InstallJobNumbers install_job_numbers;
+        ChangeOrRemoveJobNumbers change_or_remove_job_numbers;
 
         Implementation(
                 const Environment * const e,
@@ -668,9 +668,10 @@ namespace
 
     void populate_requirements(
             const std::tr1::shared_ptr<const NAG> & nag,
-            const InstallJobNumbers & install_job_numbers,
+            const ChangeOrRemoveJobNumbers & change_or_remove_job_numbers,
             const NAGIndex & index,
             const std::tr1::shared_ptr<JobRequirements> & requirements,
+            const bool is_uninstall,
             const bool recursing,
             RecursedRequirements & recursed)
     {
@@ -679,10 +680,10 @@ namespace
                     e_end(nag->end_edges_from(index)) ;
                     e != e_end ; ++e)
             {
-                if ((! e->second.build_all_met()) || (! e->second.run_all_met()))
+                if ((! e->second.build_all_met()) || (! e->second.run_all_met()) || is_uninstall)
                 {
-                    InstallJobNumbers::const_iterator n(install_job_numbers.find(e->first));
-                    if (n != install_job_numbers.end())
+                    ChangeOrRemoveJobNumbers::const_iterator n(change_or_remove_job_numbers.find(e->first));
+                    if (n != change_or_remove_job_numbers.end())
                         requirements->push_back(make_named_values<JobRequirement>(
                                     n::job_number() = n->second,
                                     n::required_if() = JobRequirementIfs() + jri_require_for_satisfied
@@ -690,18 +691,18 @@ namespace
                 }
             }
 
-        if (recursed.insert(index).second)
+        if ((! is_uninstall) && recursed.insert(index).second)
             for (NAG::EdgesFromConstIterator e(nag->begin_edges_from(index)),
                     e_end(nag->end_edges_from(index)) ;
                     e != e_end ; ++e)
             {
-                InstallJobNumbers::const_iterator n(install_job_numbers.find(e->first));
-                if (n != install_job_numbers.end())
+                ChangeOrRemoveJobNumbers::const_iterator n(change_or_remove_job_numbers.find(e->first));
+                if (n != change_or_remove_job_numbers.end())
                     requirements->push_back(make_named_values<JobRequirement>(
                                 n::job_number() = n->second,
                                 n::required_if() = JobRequirementIfs() + jri_require_for_independent
                                 ));
-                populate_requirements(nag, install_job_numbers, e->first, requirements, true, recursed);
+                populate_requirements(nag, change_or_remove_job_numbers, e->first, requirements, is_uninstall, true, recursed);
             }
     }
 }
@@ -765,17 +766,17 @@ namespace
     {
         const std::tr1::shared_ptr<const Resolved> resolved;
         FetchJobNumbers & fetch_job_numbers;
-        InstallJobNumbers & install_job_numbers;
+        ChangeOrRemoveJobNumbers & change_or_remove_job_numbers;
         const NAGIndex index;
 
         ExtraScheduler(
                 const std::tr1::shared_ptr<const Resolved> & r,
                 FetchJobNumbers & f,
-                InstallJobNumbers & i,
+                ChangeOrRemoveJobNumbers & i,
                 const NAGIndex & v) :
             resolved(r),
             fetch_job_numbers(f),
-            install_job_numbers(i),
+            change_or_remove_job_numbers(i),
             index(v)
         {
         }
@@ -802,9 +803,10 @@ namespace
                         RecursedRequirements recursed;
                         populate_requirements(
                                 resolved->nag(),
-                                install_job_numbers,
+                                change_or_remove_job_numbers,
                                 index,
                                 requirements,
+                                false,
                                 false,
                                 recursed
                                 );
@@ -823,7 +825,7 @@ namespace
                                             replacing
                                             ))));
 
-                        install_job_numbers.insert(std::make_pair(index, install_job_n));
+                        change_or_remove_job_numbers.insert(std::make_pair(index, install_job_n));
                     }
                     return;
 
@@ -834,9 +836,10 @@ namespace
                         RecursedRequirements recursed;
                         populate_requirements(
                                 resolved->nag(),
-                                install_job_numbers,
+                                change_or_remove_job_numbers,
                                 index,
                                 requirements,
+                                false,
                                 false,
                                 recursed
                                 );
@@ -863,10 +866,24 @@ namespace
                     i != i_end ; ++i)
                 removing->push_back((*i)->uniquely_identifying_spec());
 
-            resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new UninstallJob(
-                            make_shared_ptr(new JobRequirements),
-                            removing
-                            )));
+            const std::tr1::shared_ptr<JobRequirements> requirements(new JobRequirements);
+            RecursedRequirements recursed;
+            populate_requirements(
+                    resolved->nag(),
+                    change_or_remove_job_numbers,
+                    index,
+                    requirements,
+                    true,
+                    false,
+                    recursed
+                    );
+
+            JobNumber uninstall_job_n(resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new UninstallJob(
+                                requirements,
+                                removing
+                                ))));
+
+            change_or_remove_job_numbers.insert(std::make_pair(index, uninstall_job_n));
         }
     };
 }
@@ -897,7 +914,7 @@ Orderer::_schedule(
         throw InternalError(PALUDIS_HERE, "bad index.role");
     } while (false);
 
-    d->accept(ExtraScheduler(_imp->resolved, _imp->fetch_job_numbers, _imp->install_job_numbers, index));
+    d->accept(ExtraScheduler(_imp->resolved, _imp->fetch_job_numbers, _imp->change_or_remove_job_numbers, index));
 }
 
 namespace

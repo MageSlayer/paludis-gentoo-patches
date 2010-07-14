@@ -159,5 +159,76 @@ namespace test_cases
                         "2 satisfied independent always, 3 satisfied, 4 independent, 3 independent");
         }
     } test_continue_on_failure_false(false), test_continue_on_failure_true(true);
+
+    struct TestUninstallContinueOnFailure : ResolverContinueOnFailureTestCase
+    {
+        TestUninstallContinueOnFailure() :
+            ResolverContinueOnFailureTestCase("uninstall continue on failure")
+        {
+            install("continue-on-failure-uninstall", "dep-of-dep", "1")->build_dependencies_key()->set_from_string("");
+            install("continue-on-failure-uninstall", "dep", "1")->build_dependencies_key()->set_from_string("continue-on-failure-uninstall/dep-of-dep");
+            install("continue-on-failure-uninstall", "target", "1")->build_dependencies_key()->set_from_string("continue-on-failure-uninstall/dep");
+            install("continue-on-failure-uninstall", "needs-target", "1")->build_dependencies_key()->set_from_string("continue-on-failure-uninstall/target");
+
+            allowed_to_remove_names->insert(QualifiedPackageName("continue-on-failure-uninstall/dep-of-dep"));
+            allowed_to_remove_names->insert(QualifiedPackageName("continue-on-failure-uninstall/dep"));
+            allowed_to_remove_names->insert(QualifiedPackageName("continue-on-failure-uninstall/target"));
+            allowed_to_remove_names->insert(QualifiedPackageName("continue-on-failure-uninstall/needs-target"));
+
+            remove_if_dependent_names->insert(QualifiedPackageName("continue-on-failure-uninstall/dep-of-dep"));
+            remove_if_dependent_names->insert(QualifiedPackageName("continue-on-failure-uninstall/dep"));
+            remove_if_dependent_names->insert(QualifiedPackageName("continue-on-failure-uninstall/target"));
+            remove_if_dependent_names->insert(QualifiedPackageName("continue-on-failure-uninstall/needs-target"));
+        }
+
+        void run()
+        {
+            std::tr1::shared_ptr<const Resolved> resolved(get_resolved(BlockDepSpec(
+                            "!continue-on-failure-uninstall/target",
+                            parse_user_package_dep_spec("continue-on-failure-uninstall/target", &env, UserPackageDepSpecOptions()),
+                            false)));
+
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .remove(QualifiedPackageName("continue-on-failure-uninstall/needs-target"))
+                        .remove(QualifiedPackageName("continue-on-failure-uninstall/target"))
+                        .remove(QualifiedPackageName("continue-on-failure-uninstall/dep"))
+                        .remove(QualifiedPackageName("continue-on-failure-uninstall/dep-of-dep"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
+
+            TEST_CHECK_EQUAL(resolved->job_lists()->execute_job_list()->length(), 4);
+
+            const UninstallJob * const needs_target_job(simple_visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(0)));
+            TEST_CHECK(needs_target_job);
+            TEST_CHECK_EQUAL(join(needs_target_job->requirements()->begin(), needs_target_job->requirements()->end(), ", ", stringify_req),
+                    "");
+
+            const UninstallJob * const target_job(simple_visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(1)));
+            TEST_CHECK(target_job);
+            TEST_CHECK_EQUAL(join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req),
+                    "0 satisfied");
+
+            const UninstallJob * const dep_job(simple_visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(2)));
+            TEST_CHECK(dep_job);
+            TEST_CHECK_EQUAL(join(dep_job->requirements()->begin(), dep_job->requirements()->end(), ", ", stringify_req),
+                    "1 satisfied");
+
+            const UninstallJob * const dep_of_dep_job(simple_visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(3)));
+            TEST_CHECK(dep_of_dep_job);
+            TEST_CHECK_EQUAL(join(dep_of_dep_job->requirements()->begin(), dep_of_dep_job->requirements()->end(), ", ", stringify_req),
+                    "2 satisfied");
+        }
+    } test_uninstall_continue_on_failure_uninstall;
 }
 
