@@ -65,7 +65,6 @@ namespace paludis
         public:
             IPCInputManager(
                     const Environment * const,
-                    const OutputExclusivity,
                     const std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)> &);
 
             ~IPCInputManager();

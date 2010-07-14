@@ -181,8 +181,7 @@ namespace
                     a != a_end ; ++a)
                 command = command + " " + args::escape(*a);
 
-            IPCInputManager input_manager(env.get(), oe_exclusive,
-                    std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)>());
+            IPCInputManager input_manager(env.get(), std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)>());
             paludis::Command cmd(command);
             cmd
                 .with_pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler())
@@ -291,8 +290,7 @@ namespace
                 command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " '" + *p + "'");
         }
 
-        IPCInputManager input_manager(env.get(), oe_exclusive,
-                std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)>());
+        IPCInputManager input_manager(env.get(), std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)>());
         paludis::Command cmd(command);
         cmd
             .with_pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler())
@@ -396,8 +394,7 @@ namespace
                 command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " '" + *p + "'");
         }
 
-        IPCInputManager input_manager(env.get(), oe_exclusive,
-                std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)>());
+        IPCInputManager input_manager(env.get(), std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)>());
         paludis::Command cmd(command);
         cmd
             .with_pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler())
@@ -473,8 +470,7 @@ namespace
                 command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " '" + *p + "'");
         }
 
-        IPCInputManager input_manager(env.get(), oe_exclusive,
-                std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)>());
+        IPCInputManager input_manager(env.get(), std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)>());
         paludis::Command cmd(command);
         cmd
             .with_pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler())

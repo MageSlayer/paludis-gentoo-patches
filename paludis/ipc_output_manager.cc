@@ -181,7 +181,6 @@ namespace paludis
     struct Implementation<IPCInputManager>
     {
         const Environment * const env;
-        const OutputExclusivity exclusivity;
         const std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)> on_create;
 
         mutable Mutex mutex;
@@ -191,10 +190,9 @@ namespace paludis
 
         std::tr1::shared_ptr<Thread> copy_thread;
 
-        Implementation(const Environment * const e, const OutputExclusivity x,
+        Implementation(const Environment * const e,
                 const std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)> & c) :
             env(e),
-            exclusivity(x),
             on_create(c)
         {
             if (0 != ::fcntl(finished_pipe.read_fd(), F_SETFD, FD_CLOEXEC))
@@ -209,9 +207,9 @@ namespace paludis
     };
 }
 
-IPCInputManager::IPCInputManager(const Environment * const e, const OutputExclusivity x,
+IPCInputManager::IPCInputManager(const Environment * const e,
         const std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)> & c) :
-    PrivateImplementationPattern<IPCInputManager>(new Implementation<IPCInputManager>(e, x, c))
+    PrivateImplementationPattern<IPCInputManager>(new Implementation<IPCInputManager>(e, c))
 {
 }
 
