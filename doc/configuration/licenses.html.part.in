@@ -9,12 +9,12 @@
     'LICENSE', whose name cannot be fixed for Gentoo-based distributions for historical reasons.</p>
 </div>
 
-<p>On Gentoo and derived distributions, the <code>license.conf</code> file controls which licenses are and are not
-accepted. It is a standard configuration file which may be a bash file (<code>license.bash</code>) and which may use the
+<p>On Gentoo and derived distributions, the <code>licenses.conf</code> file controls which licenses are and are not
+accepted. It is a standard configuration file which may be a bash file (<code>licenses.bash</code>) and which may use the
 <code>licenses.conf.d/</code> directory.</p>
 
-<p>On Exherbo, the <code>licence.conf</code> file controls which licences are and are not accepted. It is a standard
-configuration file which may be a bash file (<code>licence.bash</code>) and which may use the
+<p>On Exherbo, the <code>licences.conf</code> file controls which licences are and are not accepted. It is a standard
+configuration file which may be a bash file (<code>licences.bash</code>) and which may use the
 <code>licences.conf.d/</code> directory.</p>
 
 <p>Each line in the file consists of a specification followed by one or more license symbols. A specification may be
