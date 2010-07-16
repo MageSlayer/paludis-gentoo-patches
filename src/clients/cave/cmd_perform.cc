@@ -80,6 +80,7 @@ namespace
         args::SwitchArg a_if_supported;
         args::SwitchArg a_hooks;
         args::StringArg a_x_of_y;
+        args::SwitchArg a_no_terminal_titles;
         args::SwitchArg a_managed_output;
         args::EnumArg a_output_exclusivity;
 
@@ -111,6 +112,8 @@ namespace
                     "Also execute the appropriate hooks for the action.", true),
             a_x_of_y(&g_general_options, "x-of-y", '\0',
                     "Specify the value of the X_OF_Y variable that is passed to hooks."),
+            a_no_terminal_titles(&g_general_options, "no-terminal-titles", '\0',
+                    "Do not change terminal titles", false),
             a_managed_output(&g_general_options, "managed-output", '\0',
                     "Specify that our output is being managed by another process. Used by "
                     "'cave execute-resolution'; not for end user use.", false),
@@ -234,7 +237,7 @@ namespace
             const std::string & action_name,
             Action & action)
     {
-        if (cmdline.a_x_of_y.specified())
+        if (cmdline.a_x_of_y.specified() && ! cmdline.a_no_terminal_titles.specified())
             std::cout << "\x1b]2;" << cmdline.a_x_of_y.argument() << " " << action_name << " "
                 << stringify(*id) << "\x07" << std::flush;
 
@@ -254,7 +257,7 @@ namespace
                         ).max_exit_status())
                 throw ActionAbortedError("Aborted by hook");
 
-        if (cmdline.a_x_of_y.specified())
+        if (cmdline.a_x_of_y.specified() && ! cmdline.a_no_terminal_titles.specified())
             std::cout << "\x1b]2;Completed " << cmdline.a_x_of_y.argument() << " " << action_name << " "
                 << stringify(*id) << "\x07" << std::flush;
     }
@@ -274,7 +277,7 @@ namespace
         UninstallAction uninstall_action(options);
         execute(env, cmdline, id, "clean", uninstall_action);
 
-        if (cmdline.a_x_of_y.specified())
+        if (cmdline.a_x_of_y.specified() && ! cmdline.a_no_terminal_titles.specified())
             std::cout << "\x1b]2;" << cmdline.a_x_of_y.argument() << " " << action_name << " "
                 << stringify(*id) << "\x07" << std::flush;
     }
