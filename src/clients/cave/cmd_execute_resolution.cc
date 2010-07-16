@@ -259,7 +259,9 @@ namespace
         if (command.empty())
             command = "$CAVE perform";
 
-        command.append(" fetch --hooks --if-supported --managed-output --output-exclusivity with-others ");
+        command.append(" fetch --hooks --if-supported --managed-output ");
+        if (cmdline.execution_options.a_fetch_jobs.argument() != 0)
+            command.append("--output-exclusivity with-others ");
         command.append(stringify(id->uniquely_identifying_spec()));
         command.append(" --x-of-y '" + stringify(x) + " of " + stringify(y) + "'");
 
@@ -333,7 +335,9 @@ namespace
         if (command.empty())
             command = "$CAVE perform";
 
-        command.append(" install --hooks --managed-output --output-exclusivity with-others ");
+        command.append(" install --hooks --managed-output ");
+        if (cmdline.execution_options.a_fetch_jobs.argument() != 0)
+            command.append("--output-exclusivity with-others ");
         command.append(stringify(id->uniquely_identifying_spec()));
         command.append(" --destination " + stringify(destination_repository_name));
         for (Sequence<PackageDepSpec>::ConstIterator i(replacing_specs->begin()),
@@ -407,7 +411,9 @@ namespace
         if (command.empty())
             command = "$CAVE perform";
 
-        command.append(" uninstall --hooks --managed-output --output-exclusivity with-others ");
+        command.append(" uninstall --hooks --managed-output ");
+        if (cmdline.execution_options.a_fetch_jobs.argument() != 0)
+            command.append("--output-exclusivity with-others ");
         command.append(stringify(id->uniquely_identifying_spec()));
 
         command.append(" --x-of-y '" + stringify(x) + " of " + stringify(y) + "'");
@@ -979,18 +985,18 @@ namespace
 
         std::string visit(const UninstallJob & j) const
         {
-            return "Uninstall " + join(j.ids_to_remove_specs()->begin(), j.ids_to_remove_specs()->end(), ",",
+            return "uninstalling " + join(j.ids_to_remove_specs()->begin(), j.ids_to_remove_specs()->end(), ", ",
                     std::tr1::bind(stringify_id_or_spec, env, std::tr1::placeholders::_1));
         }
 
         std::string visit(const InstallJob & j) const
         {
-            return "Install " + stringify_id_or_spec(env, j.origin_id_spec()) + " to " + stringify(j.destination_repository_name());
+            return "installing " + stringify_id_or_spec(env, j.origin_id_spec()) + " to " + stringify(j.destination_repository_name());
         }
 
         std::string visit(const FetchJob & j) const
         {
-            return "Fetch " + stringify_id_or_spec(env, j.origin_id_spec());
+            return "fetch " + stringify_id_or_spec(env, j.origin_id_spec());
         }
     };
 
@@ -1097,7 +1103,10 @@ namespace
 
         std::string queue_name() const
         {
-            return simple_visitor_cast<const FetchJob>(*job) ? "fetch" : "execute";
+            if (cmdline.execution_options.a_fetch_jobs.argument() != 0)
+                return simple_visitor_cast<const FetchJob>(*job) ? "fetch" : "execute";
+            else
+                return "execute";
         }
 
         std::string unique_id() const
@@ -1200,19 +1209,22 @@ namespace
 
         void display_active()
         {
+            if (cmdline.execution_options.a_fetch_jobs.argument() == 0)
+                return;
+
             Lock lock(job_mutex);
             const std::tr1::shared_ptr<OutputManager> output_manager(
                     job->state()->accept_returning<std::tr1::shared_ptr<OutputManager> >(GetOutputManager()));
 
             if (output_manager)
             {
-                std::string heading("[" + queue_name() + "] " + unique_id());
+                std::string heading("Output from " + unique_id() + ":");
 
                 if (output_manager->want_to_flush())
                 {
                     if (heading != old_heading)
                     {
-                        cout << endl << c::bold_blue() << heading << c::normal() << endl << endl;
+                        cout << endl << c::bold_normal() << heading << c::normal() << endl << endl;
                         old_heading = heading;
                     }
 
@@ -1221,7 +1233,7 @@ namespace
                 }
                 else
                 {
-                    cout << endl << c::bold_blue() << heading << c::normal() << endl << endl;
+                    cout << endl << c::bold_normal() << heading << c::normal() << endl << endl;
                     old_heading = "";
                     cout << "-> (no output for " << (Timestamp::now().seconds() - last_output.seconds()) << " seconds)" << endl;
                 }

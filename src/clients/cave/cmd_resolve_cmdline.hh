@@ -125,6 +125,9 @@ namespace paludis
             args::EnumArg a_continue_on_failure;
             args::StringArg a_resume_file;
 
+            args::ArgsGroup g_jobs_options;
+            args::IntegerArg a_fetch_jobs;
+
             args::ArgsGroup g_phase_options;
             args::StringSetArg a_skip_phase;
             args::StringSetArg a_abort_at_phase;
