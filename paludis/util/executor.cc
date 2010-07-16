@@ -28,7 +28,8 @@
 
 using namespace paludis;
 
-typedef std::multimap<std::string, std::tr1::shared_ptr<Executive> > Queues;
+typedef std::list<std::tr1::shared_ptr<Executive> > ExecutiveList;
+typedef std::map<std::string, ExecutiveList> Queues;
 typedef std::list<std::tr1::shared_ptr<Executive> > ReadyForPost;
 
 Executive::~Executive()
@@ -100,7 +101,7 @@ void
 Executor::add(const std::tr1::shared_ptr<Executive> & x)
 {
     ++_imp->pending;
-    _imp->queues.insert(std::make_pair(x->queue_name(), x));
+    _imp->queues.insert(std::make_pair(x->queue_name(), ExecutiveList())).first->second.push_back(x);
 }
 
 void
@@ -116,7 +117,7 @@ Executor::execute()
         for (Queues::iterator q(_imp->queues.begin()), q_end(_imp->queues.end()) ;
                 q != q_end ; )
         {
-            if ((running.end() != running.find(q->first)) || ! q->second->can_run())
+            if ((running.end() != running.find(q->first)) || ! (*q->second.begin())->can_run())
             {
                 ++q;
                 continue;
@@ -124,10 +125,14 @@ Executor::execute()
 
             ++_imp->active;
             --_imp->pending;
-            q->second->pre_execute_exclusive();
+            (*q->second.begin())->pre_execute_exclusive();
             running.insert(std::make_pair(q->first, std::make_pair(make_shared_ptr(new Thread(
-                                std::tr1::bind(&Executor::_one, this, q->second))), q->second)));
-            _imp->queues.erase(q++);
+                                std::tr1::bind(&Executor::_one, this, *q->second.begin()))), *q->second.begin())));
+            q->second.erase(q->second.begin());
+            if (q->second.empty())
+                _imp->queues.erase(q++);
+            else
+                ++q;
             any = true;
         }
 
