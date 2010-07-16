@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -66,11 +66,20 @@ ConditionVariable::wait(Mutex & m)
 }
 
 bool
-ConditionVariable::timed_wait(Mutex & m, const unsigned n)
+ConditionVariable::timed_wait(Mutex & m, const unsigned n, const unsigned ms)
 {
     struct timespec t;
     clock_gettime(CLOCK_REALTIME, &t);
+
     t.tv_sec += n;
+    t.tv_nsec += (1000000 * ms);
+
+    if (t.tv_nsec >= 1000000000)
+    {
+        t.tv_nsec -= 1000000000;
+        t.tv_sec += 1;
+    }
+
     int r(pthread_cond_timedwait(_cond, m.posix_mutex(), &t));
 
     if (0 == r)
