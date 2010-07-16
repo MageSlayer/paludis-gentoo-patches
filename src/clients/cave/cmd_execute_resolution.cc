@@ -1298,7 +1298,7 @@ namespace
                     + cmdline.execution_options.a_continue_on_failure.argument() + "' to '--"
                     + cmdline.execution_options.a_continue_on_failure.long_name() + "'");
 
-        Executor executor;
+        Executor executor(100);
 
         std::string old_heading;
         for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),
