@@ -1224,7 +1224,7 @@ namespace
                 {
                     if (heading != old_heading)
                     {
-                        cout << endl << c::bold_normal() << heading << c::normal() << endl << endl;
+                        cout << endl << c::bold_yellow() << heading << c::normal() << endl << endl;
                         old_heading = heading;
                     }
 
@@ -1233,7 +1233,7 @@ namespace
                 }
                 else
                 {
-                    cout << endl << c::bold_normal() << heading << c::normal() << endl << endl;
+                    cout << endl << c::bold_yellow() << heading << c::normal() << endl << endl;
                     old_heading = "";
                     cout << "-> (no output for " << (Timestamp::now().seconds() - last_output.seconds()) << " seconds)" << endl;
                 }
