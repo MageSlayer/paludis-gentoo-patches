@@ -23,6 +23,8 @@
 #include <paludis/util/condition_variable.hh>
 #include <paludis/util/thread.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/util/stringify.hh>
 #include <map>
 #include <list>
 
@@ -139,7 +141,11 @@ Executor::execute()
         }
 
         if ((! any) && running.empty())
+        {
+            if (! _imp->queues.empty())
+                throw InternalError(PALUDIS_HERE, "None of our executives can start, but queues are not empty");
             break;
+        }
 
         _imp->condition.timed_wait(_imp->mutex, _imp->ms_update_interval / 1000, _imp->ms_update_interval % 1000);
 
