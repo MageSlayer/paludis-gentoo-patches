@@ -261,7 +261,7 @@ namespace
 
         command.append(" fetch --hooks --if-supported --managed-output ");
         if (cmdline.execution_options.a_fetch_jobs.argument() != 0)
-            command.append("--output-exclusivity with-others ");
+            command.append("--output-exclusivity with-others --no-terminal-titles ");
         command.append(stringify(id->uniquely_identifying_spec()));
         command.append(" --x-of-y '" + stringify(x) + " of " + stringify(y) + "'");
 
