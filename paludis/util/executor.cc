@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -41,6 +41,7 @@ namespace paludis
     template <>
     struct Implementation<Executor>
     {
+        int ms_update_interval;
         int pending;
         int active;
         int done;
@@ -50,7 +51,8 @@ namespace paludis
         Mutex mutex;
         ConditionVariable condition;
 
-        Implementation() :
+        Implementation(int u) :
+            ms_update_interval(u),
             pending(0),
             active(0),
             done(0)
@@ -59,8 +61,8 @@ namespace paludis
     };
 }
 
-Executor::Executor() :
-    PrivateImplementationPattern<Executor>(new Implementation<Executor>)
+Executor::Executor(int ms_update_interval) :
+    PrivateImplementationPattern<Executor>(new Implementation<Executor>(ms_update_interval))
 {
 }
 
@@ -139,7 +141,7 @@ Executor::execute()
         if ((! any) && running.empty())
             break;
 
-        _imp->condition.timed_wait(_imp->mutex, 1);
+        _imp->condition.timed_wait(_imp->mutex, _imp->ms_update_interval / 1000, _imp->ms_update_interval % 1000);
 
         for (Running::iterator r(running.begin()), r_end(running.end()) ;
                 r != r_end ; ++r)

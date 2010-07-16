@@ -50,7 +50,7 @@ namespace paludis
             void _one(const std::tr1::shared_ptr<Executive>);
 
         public:
-            Executor();
+            explicit Executor(const int ms_update_interval = 1000);
             ~Executor();
 
             int pending() const;
