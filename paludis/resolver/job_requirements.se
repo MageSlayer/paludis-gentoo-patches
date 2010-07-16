@@ -9,6 +9,7 @@ make_enum_JobRequirementIf()
     key jri_require_for_satisfied    "Require it if we're in if-satisfied mode"
     key jri_require_for_independent  "Require it if we're in if-independent mode"
     key jri_require_always           "Always require it"
+    key jri_fetching                 "Require before fetching"
 
     want_destringify
 }

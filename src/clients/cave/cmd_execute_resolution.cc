@@ -1119,7 +1119,7 @@ namespace
             for (JobRequirements::ConstIterator r(job->requirements()->begin()), r_end(job->requirements()->end()) ;
                     r != r_end ; ++r)
             {
-                if (! r->required_if()[jri_require_always])
+                if (! r->required_if()[jri_fetching])
                     continue;
 
                 const std::tr1::shared_ptr<const ExecuteJob> req(*lists->execute_job_list()->fetch(r->job_number()));

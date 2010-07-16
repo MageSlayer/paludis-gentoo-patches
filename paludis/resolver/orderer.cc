@@ -672,9 +672,14 @@ namespace
             const NAGIndex & index,
             const std::tr1::shared_ptr<JobRequirements> & requirements,
             const bool is_uninstall,
+            const bool is_fetch,
             const bool recursing,
             RecursedRequirements & recursed)
     {
+        JobRequirementIfs basic_required_ifs;
+        if (is_fetch)
+            basic_required_ifs += jri_fetching;
+
         if (! recursing)
             for (NAG::EdgesFromConstIterator e(nag->begin_edges_from(index)),
                     e_end(nag->end_edges_from(index)) ;
@@ -686,7 +691,7 @@ namespace
                     if (n != change_or_remove_job_numbers.end())
                         requirements->push_back(make_named_values<JobRequirement>(
                                     n::job_number() = n->second,
-                                    n::required_if() = JobRequirementIfs() + jri_require_for_satisfied
+                                    n::required_if() = basic_required_ifs + jri_require_for_satisfied
                                     ));
                 }
             }
@@ -700,9 +705,10 @@ namespace
                 if (n != change_or_remove_job_numbers.end())
                     requirements->push_back(make_named_values<JobRequirement>(
                                 n::job_number() = n->second,
-                                n::required_if() = JobRequirementIfs() + jri_require_for_independent
+                                n::required_if() = basic_required_ifs + jri_require_for_independent
                                 ));
-                populate_requirements(nag, change_or_remove_job_numbers, e->first, requirements, is_uninstall, true, recursed);
+                populate_requirements(nag, change_or_remove_job_numbers, e->first, requirements,
+                        is_uninstall, is_fetch, true, recursed);
             }
     }
 }
@@ -797,7 +803,8 @@ namespace
                         const std::tr1::shared_ptr<JobRequirements> requirements(new JobRequirements);
                         requirements->push_back(make_named_values<JobRequirement>(
                                     n::job_number() = fetch_job_n->second,
-                                    n::required_if() = JobRequirementIfs() + jri_require_for_satisfied + jri_require_for_independent + jri_require_always
+                                    n::required_if() = JobRequirementIfs() + jri_require_for_satisfied + jri_require_for_independent
+                                        + jri_require_always + jri_fetching
                                     ));
 
                         RecursedRequirements recursed;
@@ -806,6 +813,7 @@ namespace
                                 change_or_remove_job_numbers,
                                 index,
                                 requirements,
+                                false,
                                 false,
                                 false,
                                 recursed
@@ -840,6 +848,7 @@ namespace
                                 index,
                                 requirements,
                                 false,
+                                true,
                                 false,
                                 recursed
                                 );
@@ -874,6 +883,7 @@ namespace
                     index,
                     requirements,
                     true,
+                    false,
                     false,
                     recursed
                     );
