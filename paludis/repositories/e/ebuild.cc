@@ -411,17 +411,20 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
     bool ok(false);
     keys.reset(new Map<std::string, std::string>);
 
-    std::string input;
     try
     {
         Context context("When running ebuild command to generate metadata for '" + stringify(*params.package_id()) + "':");
 
-        std::stringstream prog, prog_err;
+        std::stringstream prog, prog_err, metadata;
         Command real_cmd(cmd);
-        int exit_status(run_command(real_cmd.with_captured_stdout_stream(&prog).with_captured_stderr_stream(&prog_err)));
-        input.assign((std::istreambuf_iterator<char>(prog)), std::istreambuf_iterator<char>());
-        std::stringstream input_stream(input);
-        KeyValueConfigFile f(input_stream, KeyValueConfigFileOptions() + kvcfo_disallow_continuations + kvcfo_disallow_comments
+        real_cmd
+            .with_captured_stdout_stream(&prog)
+            .with_captured_stderr_stream(&prog_err)
+            .with_output_stream(&metadata, -1, "PALUDIS_METADATA_FD");
+
+        int exit_status(run_command(real_cmd));
+
+        KeyValueConfigFile f(metadata, KeyValueConfigFileOptions() + kvcfo_disallow_continuations + kvcfo_disallow_comments
                 + kvcfo_disallow_space_around_equals + kvcfo_disallow_unquoted_values + kvcfo_disallow_source
                 + kvcfo_disallow_variables + kvcfo_preserve_whitespace,
                 &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
@@ -430,6 +433,7 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
         if (0 == exit_status)
             ok = true;
 
+        captured_stdout = prog.str();
         captured_stderr = prog_err.str();
     }
     catch (const InternalError &)
@@ -440,7 +444,7 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
     {
         Log::get_instance()->message("e.ebuild.cache_failure", ll_warning, lc_context) << "Caught exception '"
                 << e.message() << "' (" << e.what() << ") when generating cache for '"
-                << *params.package_id() << "', input is '" << purdy(input) << "', stderr is '" << captured_stderr << "'";
+                << *params.package_id() << "'";
     }
 
     if (ok)
@@ -448,7 +452,7 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
     else
     {
         Log::get_instance()->message("e.ebuild.cache_failure", ll_warning, lc_context) << "Could not generate cache for '"
-            << *params.package_id() << "' stderr says '" << captured_stderr << "'";
+            << *params.package_id() << "', stdout says '" << captured_stdout << "' and stderr says '" << captured_stderr << "'";
         keys.reset(new Map<std::string, std::string>);
         keys->insert("EAPI", EAPIData::get_instance()->unknown_eapi()->name());
 
@@ -480,6 +484,8 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
         Log::get_instance()->message("e.ebuild.preload_eapi.unsupported", ll_debug, lc_context)
             << "ID pre-load EAPI '" << id->eapi()->name() << "' not supported";
 
+        if (! captured_stdout.empty())
+            id->load_captured_stdout("STDERR", "Captured stdout", mkt_normal, captured_stdout);
         if (! captured_stderr.empty())
             id->load_captured_stderr("STDERR", "Captured stderr", mkt_normal, captured_stderr);
 
@@ -499,6 +505,8 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
     {
         Log::get_instance()->message("e.ebuild.postload_eapi.unsupported", ll_debug, lc_context)
             << "ID post-load EAPI '" << id->eapi()->name() << "' not supported";
+        if (! captured_stdout.empty())
+            id->load_captured_stdout("STDERR", "Captured stdout", mkt_normal, captured_stdout);
         if (! captured_stderr.empty())
             id->load_captured_stderr("STDERR", "Captured stderr", mkt_normal, captured_stderr);
         return;
@@ -507,6 +515,8 @@ EbuildMetadataCommand::load(const std::tr1::shared_ptr<const EbuildID> & id)
         Log::get_instance()->message("e.ebuild.postload_eapi.supported", ll_debug, lc_context)
             << "ID post-load EAPI '" << id->eapi()->name() << "' is supported";
 
+    if (! captured_stdout.empty())
+        id->load_captured_stdout("STDERR", "Captured stdout", mkt_internal, captured_stdout);
     if (! captured_stderr.empty())
         id->load_captured_stderr("STDERR", "Captured stderr", mkt_internal, captured_stderr);
 

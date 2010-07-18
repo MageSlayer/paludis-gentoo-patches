@@ -117,6 +117,7 @@ namespace paludis
                 std::string guessed_eapi_name() const;
 
                 void load_short_description(const std::string &, const std::string &, const std::string &) const;
+                void load_captured_stdout(const std::string &, const std::string &, const MetadataKeyType, const std::string &) const;
                 void load_captured_stderr(const std::string &, const std::string &, const MetadataKeyType, const std::string &) const;
                 void load_raw_depend(const std::string &, const std::string &, const std::string &) const;
                 void load_build_depend(const std::string &, const std::string &, const std::string &,

@@ -84,6 +84,7 @@ namespace paludis
         mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<FSEntry> > fs_location;
         mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > short_description;
         mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > long_description;
+        mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > captured_stdout_key;
         mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > captured_stderr_key;
         mutable std::tr1::shared_ptr<const EDependenciesKey> raw_dependencies;
         mutable std::tr1::shared_ptr<const EDependenciesKey> build_dependencies;
@@ -876,6 +877,14 @@ EbuildID::load_captured_stderr(const std::string & r, const std::string & h, con
     Lock l(_imp->mutex);
     _imp->captured_stderr_key.reset(new LiteralMetadataValueKey<std::string> (r, h, t, v));
     add_metadata_key(_imp->captured_stderr_key);
+}
+
+void
+EbuildID::load_captured_stdout(const std::string & r, const std::string & h, const MetadataKeyType t, const std::string & v) const
+{
+    Lock l(_imp->mutex);
+    _imp->captured_stdout_key.reset(new LiteralMetadataValueKey<std::string> (r, h, t, v));
+    add_metadata_key(_imp->captured_stdout_key);
 }
 
 void
