@@ -100,11 +100,11 @@ namespace
             g_object_options(main_options_section(), "Object Options", "Alter how objects are interpreted."),
             a_type(&g_object_options, "type", 't', "Specify the type of the specified objects.",
                     args::EnumArg::EnumArgOptions
-                    ("auto",               "Automatically determine the type")
-                    ("repository",         "Treat the objects as repository names")
-                    ("set",                "Treat the objects as set names")
-                    ("wildcard",           "Treat the objects as a wildcarded package spec")
-                    ("package",            "Treat the objects as an unwildcarded package spec, showing all matches for wildcards"),
+                    ("auto",               'a', "Automatically determine the type")
+                    ("repository",         'r', "Treat the objects as repository names")
+                    ("set",                's', "Treat the objects as set names")
+                    ("wildcard",           'w', "Treat the objects as a wildcarded package spec")
+                    ("package",            'p', "Treat the objects as an unwildcarded package spec, showing all matches for wildcards"),
                     "auto"),
             g_key_options(main_options_section(), "Key Options", "Control which keys are shown."),
             a_complex_keys(&g_key_options, "complex-keys", 'c',
