@@ -25,6 +25,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
@@ -35,6 +36,7 @@
 #include <paludis/metadata_key.hh>
 
 #include <iostream>
+#include <set>
 #include <cstdlib>
 
 using namespace paludis;
@@ -86,6 +88,20 @@ namespace
                 "the same as 'cave resolve !foo'.";
         }
     };
+
+    bool has_multiple_versions(const std::tr1::shared_ptr<const PackageIDSequence> & ids)
+    {
+        QualifiedPackageName old_qpn("x/x");
+        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+                i != i_end ; ++i)
+        {
+            if ((*i)->name() == old_qpn)
+                return true;
+            old_qpn = (*i)->name();
+        }
+
+        return false;
+    }
 }
 
 bool
@@ -114,46 +130,58 @@ UninstallCommand::run(
 
     std::tr1::shared_ptr<Sequence<std::pair<std::string, std::string> > > targets(new Sequence<std::pair<std::string, std::string> >);
     std::tr1::shared_ptr<Sequence<std::string> > targets_cleaned_up(new Sequence<std::string>);
+
+    std::set<QualifiedPackageName> qpns_being_changed;
+    std::tr1::shared_ptr<PackageIDSequence> ids_going_away(new PackageIDSequence);
+
     for (UninstallCommandLine::ParametersConstIterator p(cmdline.begin_parameters()), p_end(cmdline.end_parameters()) ;
             p != p_end ; ++p)
     {
-        PackageDepSpec spec(parse_user_package_dep_spec(*p, env.get(), UserPackageDepSpecOptions()));
+        PackageDepSpec spec(parse_user_package_dep_spec(*p, env.get(), UserPackageDepSpecOptions() + updso_allow_wildcards));
         const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
                     generator::Matches(spec, MatchPackageOptions()) | filter::SupportsAction<UninstallAction>())]);
         if (ids->empty())
             throw NothingMatching(spec);
-        else if (1 != std::distance(ids->begin(), ids->end()) && ! cmdline.a_all_versions.specified())
+        else if ((! cmdline.a_all_versions.specified()) && has_multiple_versions(ids))
             throw BeMoreSpecific(spec, ids);
         else
         {
             for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                     i != i_end ; ++i)
             {
+                qpns_being_changed.insert((*i)->name());
                 std::string target("!" + stringify((*i)->name()));
                 if ((*i)->slot_key())
                     target.append(":" + stringify((*i)->slot_key()->value()));
                 targets->push_back(std::make_pair(target, ""));
             }
 
-            bool removing_all_slots(true);
-            const std::tr1::shared_ptr<const PackageIDSequence> all_uninstallable((*env)[selection::AllVersionsSorted(
-                        generator::Package(*spec.package_ptr()) | filter::SupportsAction<UninstallAction>())]);
-            for (PackageIDSequence::ConstIterator i(all_uninstallable->begin()), i_end(all_uninstallable->end()) ;
-                    i != i_end ; ++i)
-                if (indirect_iterator(ids->end()) == std::find(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), **i))
-                {
-                    removing_all_slots = false;
-                    break;
-                }
+            std::copy(ids->begin(), ids->end(), ids_going_away->back_inserter());
+        }
+    }
 
-            if (removing_all_slots)
-                targets_cleaned_up->push_back("!" + stringify((*ids->begin())->name()));
-            else
+    for (std::set<QualifiedPackageName>::const_iterator q(qpns_being_changed.begin()), q_end(qpns_being_changed.end()) ;
+            q != q_end ; ++q)
+    {
+        bool removing_all_slots(true);
+        const std::tr1::shared_ptr<const PackageIDSequence> all_uninstallable((*env)[selection::AllVersionsSorted(
+                    generator::Package(*q) | filter::SupportsAction<UninstallAction>())]);
+        for (PackageIDSequence::ConstIterator i(all_uninstallable->begin()), i_end(all_uninstallable->end()) ;
+                i != i_end ; ++i)
+            if (indirect_iterator(ids_going_away->end()) == std::find(
+                        indirect_iterator(ids_going_away->begin()), indirect_iterator(ids_going_away->end()), **i))
             {
-                for (Sequence<std::pair<std::string, std::string> >::ConstIterator t(targets->begin()), t_end(targets->end()) ;
-                        t != t_end ; ++t)
-                    targets_cleaned_up->push_back(t->first);
+                removing_all_slots = false;
+                break;
             }
+
+        if (removing_all_slots)
+            targets_cleaned_up->push_back("!" + stringify(*q));
+        else
+        {
+            for (Sequence<std::pair<std::string, std::string> >::ConstIterator t(targets->begin()), t_end(targets->end()) ;
+                    t != t_end ; ++t)
+                targets_cleaned_up->push_back(t->first);
         }
     }
 
