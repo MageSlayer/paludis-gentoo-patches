@@ -177,6 +177,9 @@ namespace paludis
         std::tr1::function<std::string (const std::string &)> pipe_command_handler;
         std::ostream * captured_stdout_stream;
         std::ostream * captured_stderr_stream;
+        std::ostream * output_stream;
+        int output_fd;
+        std::string output_fd_env_var;
         std::istream * input_stream;
         int input_fd;
         std::string input_fd_env_var;
@@ -193,6 +196,9 @@ namespace paludis
                 const std::tr1::function<std::string (const std::string &)> & h = std::tr1::function<std::string (const std::string &)>(),
                 std::ostream * cs = 0,
                 std::ostream * ds = 0,
+                std::ostream * os = 0,
+                int osf = -1,
+                const std::string & osfe = "",
                 std::istream * is = 0,
                 int isf = -1,
                 const std::string & isfe = "",
@@ -212,6 +218,9 @@ namespace paludis
             pipe_command_handler(h),
             captured_stdout_stream(cs),
             captured_stderr_stream(ds),
+            output_stream(os),
+            output_fd(osf),
+            output_fd_env_var(osfe),
             input_stream(is),
             input_fd(isf),
             input_fd_env_var(isfe),
@@ -238,7 +247,8 @@ Command::Command(const Command & other) :
                 other._imp->prefix_discard_blank_output,
                 other._imp->prefix_blank_lines, other._imp->pipe_command_env_var_prefix,
                 other._imp->pipe_command_handler, other._imp->captured_stdout_stream,
-                other._imp->captured_stderr_stream, other._imp->input_stream, other._imp->input_fd,
+                other._imp->captured_stderr_stream, other._imp->output_stream, other._imp->output_fd,
+                other._imp->output_fd_env_var, other._imp->input_stream, other._imp->input_fd,
                 other._imp->input_fd_env_var, other._imp->ptys))
 {
 }
@@ -260,6 +270,9 @@ Command::operator= (const Command & other)
                     other._imp->pipe_command_handler,
                     other._imp->captured_stdout_stream,
                     other._imp->captured_stderr_stream,
+                    other._imp->output_stream,
+                    other._imp->output_fd,
+                    other._imp->output_fd_env_var,
                     other._imp->input_stream,
                     other._imp->input_fd,
                     other._imp->input_fd_env_var,
@@ -315,6 +328,15 @@ Command &
 Command::with_captured_stderr_stream(std::ostream * const c)
 {
     _imp->captured_stderr_stream = c;
+    return *this;
+}
+
+Command &
+Command::with_output_stream(std::ostream * const c, int fd, const std::string & e)
+{
+    _imp->output_stream = c;
+    _imp->output_fd = fd;
+    _imp->output_fd_env_var = e;
     return *this;
 }
 
@@ -542,7 +564,7 @@ paludis::run_command(const Command & cmd)
         << " " << extras;
 
     std::tr1::shared_ptr<Pipe> internal_command_reader(new Pipe), pipe_command_reader,
-        pipe_command_response, input_stream;
+        pipe_command_response, input_stream, output_stream;
     std::tr1::shared_ptr<Channel> captured_stdout, captured_stderr;
     if (cmd.pipe_command_handler())
     {
@@ -553,6 +575,8 @@ paludis::run_command(const Command & cmd)
         captured_stdout.reset(cmd.ptys() ? static_cast<Channel *>(new Pty) : new Pipe);
     if (cmd.captured_stderr_stream())
         captured_stderr.reset(cmd.ptys() ? static_cast<Channel *>(new Pty) : new Pipe);
+    if (cmd.output_stream())
+        output_stream.reset(new Pipe);
     if (cmd.input_stream())
     {
         input_stream.reset(new Pipe);
@@ -563,7 +587,6 @@ paludis::run_command(const Command & cmd)
         if (-1 == fcntl(input_stream->write_fd(), F_SETFL, arg))
             throw RunCommandError("fcntl F_SETFL failed: " + stringify(strerror(errno)));
     }
-
 
     /* Why do we fork twice, rather than install a SIGCHLD handler that writes to a pipe that
      * our pselect watches? Simple: Unix is retarded. APUE 12.8 says "Each thread has its own signal
@@ -619,6 +642,12 @@ paludis::run_command(const Command & cmd)
                     captured_stderr->clear_read_fd();
                 }
 
+                if (cmd.output_stream())
+                {
+                    close(output_stream->read_fd());
+                    output_stream->clear_read_fd();
+                }
+
                 if (cmd.input_stream())
                 {
                     close(input_stream->write_fd());
@@ -671,6 +700,22 @@ paludis::run_command(const Command & cmd)
 
                     if (-1 != stderr_close_fd)
                         close(stderr_close_fd);
+                }
+
+                if (cmd.output_stream())
+                {
+                    int cmd_output_fd;
+
+                    if (-1 == cmd.output_fd())
+                        cmd_output_fd = dup(output_stream->write_fd());
+                    else
+                        cmd_output_fd = dup2(output_stream->write_fd(), cmd.output_fd());
+
+                    if (-1 == cmd_output_fd)
+                        throw RunCommandError("output dup2 failed: " + stringify(strerror(errno)));
+
+                    if (! cmd.output_fd_env_var().empty())
+                        setenv(cmd.output_fd_env_var().c_str(), stringify(cmd_output_fd).c_str(), 1);
                 }
 
                 if (cmd.input_stream())
@@ -763,6 +808,14 @@ paludis::run_command(const Command & cmd)
                 captured_stderr->clear_write_fd();
             }
 
+            if (cmd.output_stream())
+            {
+                close(output_stream->read_fd());
+                output_stream->clear_read_fd();
+                close(output_stream->write_fd());
+                output_stream->clear_write_fd();
+            }
+
             if (cmd.input_stream())
             {
                 close(input_stream->read_fd());
@@ -839,6 +892,12 @@ paludis::run_command(const Command & cmd)
             captured_stderr->clear_write_fd();
         }
 
+        if (cmd.output_stream())
+        {
+            close(output_stream->write_fd());
+            output_stream->clear_write_fd();
+        }
+
         if (cmd.input_stream())
         {
             close(input_stream->read_fd());
@@ -873,6 +932,12 @@ paludis::run_command(const Command & cmd)
             {
                 FD_SET(captured_stderr->read_fd(), &read_fds);
                 max_fd = std::max(max_fd, captured_stderr->read_fd());
+            }
+
+            if (cmd.output_stream() && -1 != output_stream->read_fd())
+            {
+                FD_SET(output_stream->read_fd(), &read_fds);
+                max_fd = std::max(max_fd, output_stream->read_fd());
             }
 
             if (cmd.input_stream() && -1 != input_stream->write_fd())
@@ -922,6 +987,13 @@ paludis::run_command(const Command & cmd)
                          * when capturing output */
                         continue;
                     }
+                }
+
+                if (cmd.output_stream() && FD_ISSET(output_stream->read_fd(), &read_fds))
+                {
+                    int r;
+                    if (((r = read(output_stream->read_fd(), buf, 1024))) > 0)
+                        *cmd.output_stream() << std::string(buf, r);
                 }
 
                 if (cmd.pipe_command_handler() && FD_ISSET(pipe_command_reader->read_fd(), &read_fds))
@@ -1335,6 +1407,24 @@ const std::string
 Command::input_fd_env_var() const
 {
     return _imp->input_fd_env_var;
+}
+
+std::ostream *
+Command::output_stream() const
+{
+    return _imp->output_stream;
+}
+
+int
+Command::output_fd() const
+{
+    return _imp->output_fd;
+}
+
+const std::string
+Command::output_fd_env_var() const
+{
+    return _imp->output_fd_env_var;
 }
 
 bool

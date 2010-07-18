@@ -238,6 +238,21 @@ namespace test_cases
         }
     } test_captured_err;
 
+    struct CapturedExtraOutTest : TestCase
+    {
+        CapturedExtraOutTest() : TestCase("captured extra output") { }
+
+        void run()
+        {
+            std::stringstream s;
+            TEST_CHECK_EQUAL(run_command(Command("echo hi 1>&$TEST_PIPE_FD").with_output_stream(&s, -1, "TEST_PIPE_FD")), 0);
+            std::string line;
+            TEST_CHECK(std::getline(s, line));
+            TEST_CHECK_EQUAL(line, "hi");
+            TEST_CHECK(! std::getline(s, line));
+        }
+    } test_captured_extra_out;
+
     struct CapturedNoExistTest : TestCase
     {
         CapturedNoExistTest() : TestCase("captured nonexistent command") { }

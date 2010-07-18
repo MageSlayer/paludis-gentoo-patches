@@ -209,6 +209,21 @@ namespace paludis
             Command & with_captured_stderr_stream(std::ostream * const);
 
             /**
+             * Capture input from a particular FD to a stream.
+             *
+             * May only be called once.
+             *
+             * \param fd Read to this FD. If -1, pick an unused FD.
+             * \param env_var If not empty, put the FD chosen in this env var.
+             *
+             * \since 0.50
+             */
+            Command & with_output_stream(
+                    std::ostream * const,
+                    int fd,
+                    const std::string & env_var);
+
+            /**
              * Send the contents of a stream in via a particular FD.
              *
              * May only be called once.
@@ -325,6 +340,27 @@ namespace paludis
              * \since 0.40
              */
             const std::string input_fd_env_var() const;
+
+            /**
+             * The input stream, or null.
+             *
+             * \since 0.50
+             */
+            std::ostream * output_stream() const;
+
+            /**
+             * The output FD, if output_stream() not null.
+             *
+             * \since 0.50
+             */
+            int output_fd() const;
+
+            /**
+             * The output FD env var, if output_stream() not null.
+             *
+             * \since 0.50
+             */
+            const std::string output_fd_env_var() const;
 
             /**
              * Uses ptys instead of pipes?
