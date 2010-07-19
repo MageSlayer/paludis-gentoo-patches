@@ -1915,8 +1915,9 @@ Decider::purge()
     {
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-        if ((*i)->behaviours_key() && (*i)->behaviours_key()->value()->end() !=
-                (*i)->behaviours_key()->value()->find("used"))
+        if (((*i)->behaviours_key() && (*i)->behaviours_key()->value()->end() !=
+                    (*i)->behaviours_key()->value()->find("used")) ||
+                (! (*i)->supports_action(SupportsActionTest<UninstallAction>())))
             continue;
 
         Resolvent resolvent(*i, dt_install_to_slash);
@@ -2157,8 +2158,9 @@ Decider::_resolve_purges()
     {
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-        if ((*i)->behaviours_key() && (*i)->behaviours_key()->value()->end() !=
-                (*i)->behaviours_key()->value()->find("used"))
+        if (((*i)->behaviours_key() && (*i)->behaviours_key()->value()->end() !=
+                    (*i)->behaviours_key()->value()->find("used")) ||
+                (! (*i)->supports_action(SupportsActionTest<UninstallAction>())))
             continue;
 
         /* to catch packages being purged that are also in world and not used
