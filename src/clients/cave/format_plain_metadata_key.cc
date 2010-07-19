@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -172,15 +172,21 @@ paludis::cave::format_plain_metadata_key(
         const std::string & i,
         const std::string & f)
 {
-    ValueGetter v;
-    k->accept(v);
-
     std::tr1::shared_ptr<Map<char, std::string> > m(new Map<char, std::string>);
     m->insert('r', k->raw_name());
     m->insert('h', k->human_name());
-    m->insert('v', v.s.str());
+    m->insert('v', format_plain_metadata_key_value(k));
     m->insert('i', i);
 
     return format_string(f, m);
+}
+
+std::string
+paludis::cave::format_plain_metadata_key_value(
+        const std::tr1::shared_ptr<const MetadataKey> & k)
+{
+    ValueGetter v;
+    k->accept(v);
+    return v.s.str();
 }
 

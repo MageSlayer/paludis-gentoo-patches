@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,27 +17,26 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_CLIENTS_CAVE_FORMAT_PLAIN_METADATA_KEY_HH
-#define PALUDIS_GUARD_SRC_CLIENTS_CAVE_FORMAT_PLAIN_METADATA_KEY_HH 1
+#ifndef PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_PRINT_ID_MASKS_HH
+#define PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_PRINT_ID_MASKS_HH 1
 
-#include <paludis/util/attributes.hh>
-#include <paludis/metadata_key-fwd.hh>
-#include <tr1/memory>
-#include <string>
+#include "command.hh"
 
 namespace paludis
 {
     namespace cave
     {
-        std::string format_plain_metadata_key(
-                const std::tr1::shared_ptr<const MetadataKey> &,
-                const std::string & value_for_i,
-                const std::string & format)
-            PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
+        class PALUDIS_VISIBLE PrintIDMasksCommand :
+            public Command
+        {
+            public:
+                int run(
+                        const std::tr1::shared_ptr<Environment> &,
+                        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+                        );
 
-        std::string format_plain_metadata_key_value(
-                const std::tr1::shared_ptr<const MetadataKey> &)
-            PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
+                std::tr1::shared_ptr<args::ArgsHandler> make_doc_cmdline();
+        };
     }
 }
 

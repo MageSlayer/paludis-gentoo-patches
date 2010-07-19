@@ -53,6 +53,7 @@
 #include "cmd_print_environment_metadata.hh"
 #include "cmd_print_id_contents.hh"
 #include "cmd_print_id_executables.hh"
+#include "cmd_print_id_masks.hh"
 #include "cmd_print_id_metadata.hh"
 #include "cmd_print_ids.hh"
 #include "cmd_print_owners.hh"
@@ -155,6 +156,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("print-environment-metadata", std::tr1::bind(&make_command<PrintEnvironmentMetadataCommand>)));
     _imp->handlers.insert(std::make_pair("print-id-contents", std::tr1::bind(&make_command<PrintIDContentsCommand>)));
     _imp->handlers.insert(std::make_pair("print-id-executables", std::tr1::bind(&make_command<PrintIDExecutablesCommand>)));
+    _imp->handlers.insert(std::make_pair("print-id-masks", std::tr1::bind(&make_command<PrintIDMasksCommand>)));
     _imp->handlers.insert(std::make_pair("print-id-metadata", std::tr1::bind(&make_command<PrintIDMetadataCommand>)));
     _imp->handlers.insert(std::make_pair("print-ids", std::tr1::bind(&make_command<PrintIDsCommand>)));
     _imp->handlers.insert(std::make_pair("print-owners", std::tr1::bind(&make_command<PrintOwnersCommand>)));
