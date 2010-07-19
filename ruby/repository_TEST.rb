@@ -97,6 +97,7 @@ module Paludis
         def test_package_ids
             a = repo.package_ids "foo/bar"
             assert_equal 2, a.length
+            a.sort_by { | id | id.version }
             assert_equal VersionSpec.new("1.0"), a[0].version
             assert_equal VersionSpec.new("2.0"), a[1].version
 
