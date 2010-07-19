@@ -44,6 +44,7 @@ command_MANS = \
 	cave-print-packages.1 \
 	cave-print-repositories.1 \
 	cave-print-repository-formats.1 \
+	cave-print-repository-metadata.1 \
 	cave-print-set.1 \
 	cave-print-sets.1 \
 	cave-print-sync-protocols.1 \
@@ -123,6 +124,7 @@ libcave_a_SOURCES = \
 	cmd_print_packages.cc cmd_print_packages.hh \
 	cmd_print_repositories.cc cmd_print_repositories.hh \
 	cmd_print_repository_formats.cc cmd_print_repository_formats.hh \
+	cmd_print_repository_metadata.cc cmd_print_repository_metadata.hh \
 	cmd_print_set.cc cmd_print_set.hh \
 	cmd_print_sets.cc cmd_print_sets.hh \
 	cmd_print_sync_protocols.cc cmd_print_sync_protocols.hh \

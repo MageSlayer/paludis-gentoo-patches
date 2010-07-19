@@ -59,6 +59,7 @@
 #include "cmd_print_packages.hh"
 #include "cmd_print_repositories.hh"
 #include "cmd_print_repository_formats.hh"
+#include "cmd_print_repository_metadata.hh"
 #include "cmd_print_set.hh"
 #include "cmd_print_sets.hh"
 #include "cmd_print_sync_protocols.hh"
@@ -160,6 +161,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("print-packages", std::tr1::bind(&make_command<PrintPackagesCommand>)));
     _imp->handlers.insert(std::make_pair("print-repositories", std::tr1::bind(&make_command<PrintRepositoriesCommand>)));
     _imp->handlers.insert(std::make_pair("print-repository-formats", std::tr1::bind(&make_command<PrintRepositoryFormatsCommand>)));
+    _imp->handlers.insert(std::make_pair("print-repository-metadata", std::tr1::bind(&make_command<PrintRepositoryMetadataCommand>)));
     _imp->handlers.insert(std::make_pair("print-set", std::tr1::bind(&make_command<PrintSetCommand>)));
     _imp->handlers.insert(std::make_pair("print-sets", std::tr1::bind(&make_command<PrintSetsCommand>)));
     _imp->handlers.insert(std::make_pair("print-sync-protocols", std::tr1::bind(&make_command<PrintSyncProtocolsCommand>)));
