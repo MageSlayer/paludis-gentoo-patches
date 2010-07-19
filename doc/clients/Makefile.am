@@ -51,6 +51,7 @@ CAVE_COMMANDS_HTML = \
 	cave-print-packages.html \
 	cave-print-repositories.html \
 	cave-print-repository-formats.html \
+	cave-print-set.html \
 	cave-print-sets.html \
 	cave-print-sync-protocols.html \
 	cave-purge.html \
