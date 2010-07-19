@@ -29,18 +29,12 @@ using namespace paludis::resolver;
 
 namespace paludis
 {
-#ifndef PALUDIS_NO_DOUBLE_TEMPLATE
-    template <>
-#endif
     template <typename Job_>
     struct Implementation<JobList<Job_> >
     {
         std::vector<std::tr1::shared_ptr<Job_> > list;
     };
 
-#ifdef PALUDIS_NO_DOUBLE_TEMPLATE
-    template <>
-#endif
     template <typename Job_>
     struct WrappedForwardIteratorTraits<JobListConstIteratorTag<Job_> >
     {

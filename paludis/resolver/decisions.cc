@@ -97,18 +97,12 @@ namespace
 
 namespace paludis
 {
-#ifdef PALUDIS_NO_DOUBLE_TEMPLATE
-    template <>
-#endif
     template <typename Decision_, typename Notes_>
     struct Implementation<Decisions<Decision_, Notes_> >
     {
         typename ContainerTraits<Decision_, Notes_>::ContainerType values;
     };
 
-#ifdef PALUDIS_NO_DOUBLE_TEMPLATE
-    template <>
-#endif
     template <typename Decision_, typename Notes_>
     struct WrappedForwardIteratorTraits<DecisionsConstIteratorTag<Decision_, Notes_> >
     {

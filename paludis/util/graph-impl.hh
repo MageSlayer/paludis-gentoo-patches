@@ -90,9 +90,6 @@ namespace paludis
      * \ingroup g_data_structures
      * \nosubgrouping
      */
-#ifndef PALUDIS_NO_DOUBLE_TEMPLATE
-    template<>
-#endif
     template <typename Node_, typename Edge_, typename Comparator_>
     struct Implementation<DirectedGraph<Node_, Edge_, Comparator_> >
     {

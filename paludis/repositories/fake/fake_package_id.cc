@@ -51,9 +51,6 @@ using namespace paludis::fakerepository;
 
 namespace paludis
 {
-#ifndef PALUDIS_NO_DOUBLE_TEMPLATE
-    template <>
-#endif
     template <typename C_>
     struct Implementation<FakeMetadataValueKey<C_> >
     {
@@ -129,9 +126,6 @@ FakeMetadataValueKey<C_>::set_value(const C_ & c)
 
 namespace paludis
 {
-#ifndef PALUDIS_NO_DOUBLE_TEMPLATE
-    template <>
-#endif
     template <typename C_>
     struct Implementation<FakeMetadataCollectionKey<C_> >
     {
@@ -214,9 +208,6 @@ FakeMetadataKeywordSetKey::set_from_string(const std::string & s)
 
 namespace paludis
 {
-#ifndef PALUDIS_NO_DOUBLE_TEMPLATE
-    template <>
-#endif
     template <typename C_>
     struct Implementation<FakeMetadataSpecTreeKey<C_> >
     {
