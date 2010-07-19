@@ -98,6 +98,7 @@ paludis-*.*.*.tar.bz2
 /doc/clients/cave-print-categories.html
 /doc/clients/cave-print-commands.html
 /doc/clients/cave-print-environment-metadata.html
+/doc/clients/cave-print-id-actions.html
 /doc/clients/cave-print-id-contents.html
 /doc/clients/cave-print-id-executables.html
 /doc/clients/cave-print-id-masks.html

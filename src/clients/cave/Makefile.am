@@ -36,6 +36,7 @@ command_MANS = \
 	cave-print-categories.1 \
 	cave-print-commands.1 \
 	cave-print-environment-metadata.1 \
+	cave-print-id-actions.1 \
 	cave-print-id-contents.1 \
 	cave-print-id-executables.1 \
 	cave-print-id-masks.1 \
@@ -117,6 +118,7 @@ libcave_a_SOURCES = \
 	cmd_print_categories.cc cmd_print_categories.hh \
 	cmd_print_commands.cc cmd_print_commands.hh \
 	cmd_print_environment_metadata.cc cmd_print_environment_metadata.hh \
+	cmd_print_id_actions.cc cmd_print_id_actions.hh \
 	cmd_print_id_contents.cc cmd_print_id_contents.hh \
 	cmd_print_id_executables.cc cmd_print_id_executables.hh \
 	cmd_print_id_masks.cc cmd_print_id_masks.hh \
@@ -156,10 +158,6 @@ libcave_a_SOURCES = \
 	resolve_common.cc resolve_common.hh \
 	resume_data.cc resume_data.hh
 
-#	cmd_print_id_actions.cc \
-#	cmd_print_id_masks.cc \
-#	cmd_print_repository_metadata.cc \
-#	cmd_print_set.cc \
 #	cmd_print_sync_protocol_metadata.cc \
 #	cmd_report.cc
 
