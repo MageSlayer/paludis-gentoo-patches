@@ -129,7 +129,7 @@ PrintSetCommand::run(
         )
 {
     PrintSetCommandLine cmdline;
-    cmdline.run(args, "CAVE", "CAVE_PRINT_IDS_OPTIONS", "CAVE_PRINT_IDS_CMDLINE");
+    cmdline.run(args, "CAVE", "CAVE_PRINT_SET_OPTIONS", "CAVE_PRINT_SET_CMDLINE");
 
     if (cmdline.a_help.specified())
     {
