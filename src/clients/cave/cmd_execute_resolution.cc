@@ -1261,18 +1261,21 @@ namespace
 
         void post_execute_exclusive()
         {
-            ExecuteOneVisitor execute(env, cmdline, counts, job_mutex, x1_post, retcode);
-            retcode |= job->accept_returning<int>(execute);
-
-            Lock lock(job_mutex);
-            const std::tr1::shared_ptr<OutputManager> output_manager(
-                    job->state()->accept_returning<std::tr1::shared_ptr<OutputManager> >(GetOutputManager()));
-
-            if (output_manager)
+            if (want)
             {
-                if (output_manager->want_to_flush())
-                    display_active();
-                output_manager->nothing_more_to_come();
+                ExecuteOneVisitor execute(env, cmdline, counts, job_mutex, x1_post, retcode);
+                retcode |= job->accept_returning<int>(execute);
+
+                Lock lock(job_mutex);
+                const std::tr1::shared_ptr<OutputManager> output_manager(
+                        job->state()->accept_returning<std::tr1::shared_ptr<OutputManager> >(GetOutputManager()));
+
+                if (output_manager)
+                {
+                    if (output_manager->want_to_flush())
+                        display_active();
+                    output_manager->nothing_more_to_come();
+                }
             }
         }
     };
