@@ -743,7 +743,7 @@ namespace
                     break;
             }
 
-            return 0;
+            return retcode;
         }
 
         int visit(UninstallJob & uninstall_item)
@@ -795,7 +795,7 @@ namespace
                     break;
             }
 
-            return 0;
+            return retcode;
         }
 
         int visit(FetchJob & fetch_item)
@@ -838,7 +838,7 @@ namespace
                     break;
             }
 
-            return 0;
+            return retcode;
         }
     };
 
@@ -1189,7 +1189,9 @@ namespace
             if (want)
             {
                 ExecuteOneVisitor execute(env, cmdline, counts, job_mutex, x1_pre, retcode);
-                retcode |= job->accept_returning<int>(execute);
+                int local_retcode(job->accept_returning<int>(execute));
+                Lock lock(retcode_mutex);
+                retcode |= local_retcode;
             }
         }
 
@@ -1198,7 +1200,9 @@ namespace
             if (want)
             {
                 ExecuteOneVisitor execute(env, cmdline, counts, job_mutex, x1_main, retcode);
-                retcode |= job->accept_returning<int>(execute);
+                int local_retcode(job->accept_returning<int>(execute));
+                Lock lock(retcode_mutex);
+                retcode |= local_retcode;
             }
             else if (! already_done)
             {
