@@ -191,23 +191,23 @@ UnavailableRepositoryFile::_load(const FSEntry & f)
                     versions.push_back(VersionSpec(token, user_version_spec_options()));
                 else
                     throw UnavailableRepositoryConfigurationError(
-                            "Cannot parse body version line '" + line + " in '" + stringify(f) + "'");
+                            "Cannot parse body version line '" + line + "' in '" + stringify(f) + "'");
             }
 
             if (versions.empty())
                 throw UnavailableRepositoryConfigurationError(
-                        "Cannot parse body version line '" + line + " in '" + stringify(f) + "'");
+                        "Cannot parse body version line '" + line + "' in '" + stringify(f) + "'");
 
             if (! line_parser.consume(
                         (*simple_parser::any_of(" \t")) &
                         (+simple_parser::any_except("") >> token)
                         ))
                 throw UnavailableRepositoryConfigurationError(
-                        "Cannot parse body description line '" + line + " in '" + stringify(f) + "'");
+                        "Cannot parse body description line '" + line + "' in '" + stringify(f) + "'");
 
             if (! line_parser.eof())
                 throw UnavailableRepositoryConfigurationError(
-                        "Cannot parse body description line '" + line + " in '" + stringify(f) + "'");
+                        "Cannot parse body description line '" + line + "' in '" + stringify(f) + "'");
 
             std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > desc(
                     new LiteralMetadataValueKey<std::string>("DESCRIPTION", "Description", mkt_significant,
@@ -223,7 +223,7 @@ UnavailableRepositoryFile::_load(const FSEntry & f)
         }
         else
             throw UnavailableRepositoryConfigurationError(
-                    "Cannot parse body line '" + line + " in '" + stringify(f) + "'");
+                    "Cannot parse body line '" + line + "' in '" + stringify(f) + "'");
     }
 }
 
