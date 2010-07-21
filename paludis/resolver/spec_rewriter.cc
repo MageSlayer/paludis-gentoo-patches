@@ -84,17 +84,7 @@ SpecRewriter::SpecRewriter(const Environment * const e) :
 {
 }
 
-#ifdef PALUDIS_HAVE_DEFAULT_DELETED
-
 SpecRewriter::~SpecRewriter() = default;
-
-#else
-
-SpecRewriter::~SpecRewriter()
-{
-}
-
-#endif
 
 const std::tr1::shared_ptr<const RewrittenSpec>
 SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::tr1::shared_ptr<const Resolvent> & maybe_our_resolvent) const

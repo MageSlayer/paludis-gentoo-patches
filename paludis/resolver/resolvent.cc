@@ -75,20 +75,7 @@ paludis::resolver::operator== (const Resolvent & a, const Resolvent & b)
     return true;
 }
 
-#ifdef PALUDIS_HAVE_DEFAULT_DELETED
-
 Resolvent::Resolvent(const Resolvent &) = default;
-
-#else
-
-Resolvent::Resolvent(const Resolvent & other) :
-    destination_type(other.destination_type()),
-    package(other.package()),
-    slot(other.slot())
-{
-}
-
-#endif
 
 Resolvent::Resolvent(
         const PackageDepSpec & spec,

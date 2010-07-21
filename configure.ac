@@ -746,11 +746,9 @@ struct S
 	S & operator= (const S &) = delete;
 };
 ],
-	[AC_MSG_RESULT([yes])
-	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_DEFAULT_DELETED=1"
-	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_DEFAULT_DELETED=1"
-	],
+	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([your compiler does not support c++0x default and deleted functions])
 	])
 dnl }}}
 

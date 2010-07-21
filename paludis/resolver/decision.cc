@@ -34,13 +34,7 @@
 using namespace paludis;
 using namespace paludis::resolver;
 
-#ifdef PALUDIS_HAVE_DEFAULT_DELETED
 Decision::~Decision() = default;
-#else
-Decision::~Decision()
-{
-}
-#endif
 
 const std::tr1::shared_ptr<Decision>
 Decision::deserialise(Deserialisation & d)
@@ -221,13 +215,7 @@ NothingNoChangeDecision::NothingNoChangeDecision(const Resolvent & r, const bool
 {
 }
 
-#ifdef PALUDIS_HAVE_DEFAULT_DELETED
 NothingNoChangeDecision::~NothingNoChangeDecision() = default;
-#else
-NothingNoChangeDecision::~NothingNoChangeDecision()
-{
-}
-#endif
 
 const Resolvent
 NothingNoChangeDecision::resolvent() const
@@ -283,13 +271,7 @@ ExistingNoChangeDecision::ExistingNoChangeDecision(const Resolvent & l, const st
 {
 }
 
-#ifdef PALUDIS_HAVE_DEFAULT_DELETED
 ExistingNoChangeDecision::~ExistingNoChangeDecision() = default;
-#else
-ExistingNoChangeDecision::~ExistingNoChangeDecision()
-{
-}
-#endif
 
 const std::tr1::shared_ptr<const PackageID>
 ExistingNoChangeDecision::existing_id() const
@@ -386,13 +368,7 @@ ChangesToMakeDecision::ChangesToMakeDecision(
         f(*this);
 }
 
-#ifdef PALUDIS_HAVE_DEFAULT_DELETED
 ChangesToMakeDecision::~ChangesToMakeDecision() = default;
-#else
-ChangesToMakeDecision::~ChangesToMakeDecision()
-{
-}
-#endif
 
 const std::tr1::shared_ptr<const Destination>
 ChangesToMakeDecision::destination() const
@@ -511,13 +487,7 @@ UnableToMakeDecision::UnableToMakeDecision(
 {
 }
 
-#ifdef PALUDIS_HAVE_DEFAULT_DELETED
 UnableToMakeDecision::~UnableToMakeDecision() = default;
-#else
-UnableToMakeDecision::~UnableToMakeDecision()
-{
-}
-#endif
 
 const std::tr1::shared_ptr<const UnsuitableCandidates>
 UnableToMakeDecision::unsuitable_candidates() const
@@ -571,13 +541,7 @@ RemoveDecision::RemoveDecision(const Resolvent & l, const std::tr1::shared_ptr<c
 {
 }
 
-#ifdef PALUDIS_HAVE_DEFAULT_DELETED
 RemoveDecision::~RemoveDecision() = default;
-#else
-RemoveDecision::~RemoveDecision()
-{
-}
-#endif
 
 const Resolvent
 RemoveDecision::resolvent() const
@@ -649,13 +613,7 @@ BreakDecision::BreakDecision(const Resolvent & l, const std::tr1::shared_ptr<con
 {
 }
 
-#ifdef PALUDIS_HAVE_DEFAULT_DELETED
 BreakDecision::~BreakDecision() = default;
-#else
-BreakDecision::~BreakDecision()
-{
-}
-#endif
 
 const std::tr1::shared_ptr<const PackageID>
 BreakDecision::existing_id() const
