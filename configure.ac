@@ -1270,7 +1270,7 @@ dnl }}}
 dnl {{{ repositories
 m4_define(ALL_REPOSITORIES_m4, [accounts,cran,e,fake,gems,repository,unavailable,unpackaged,unwritten,virtuals])
 ALL_REPOSITORIES=`echo ALL_REPOSITORIES_m4 | tr , ' '`
-DEFAULT_REPOSITORIES="e fake unavailable unpackaged unwritten virtuals"
+DEFAULT_REPOSITORIES="e fake repository unavailable unpackaged unwritten virtuals"
 AC_MSG_CHECKING([which repositories to build...])
 AC_ARG_WITH([repositories],
 			[  --with-repositories=foo,bar,...
