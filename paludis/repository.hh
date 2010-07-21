@@ -379,11 +379,20 @@ namespace paludis
             /**
              * Might some of our IDs support a particular action?
              *
-             * Used to optimise PackageDatabase::query. If a repository doesn't
-             * support, say, InstallAction, a query can skip searching it
-             * entirely when looking for installable packages.
+             * Used to optimise various Generator and Filter queries. If a
+             * repository doesn't support, say, InstallAction, a query can skip
+             * searching it entirely when looking for installable packages.
              */
             virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const = 0;
+
+            /**
+             * Might some of our IDs be not masked?
+             *
+             * Used to optimise various Generator and Filter queries.
+             *
+             * \since 0.49
+             */
+            virtual bool some_ids_might_not_be_masked() const = 0;
 
             ///\}
 

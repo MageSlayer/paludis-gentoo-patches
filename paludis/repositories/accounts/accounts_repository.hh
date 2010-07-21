@@ -131,6 +131,7 @@ namespace paludis
                         const CategoryNamePart & c) const;
                 virtual std::tr1::shared_ptr<const PackageIDSequence> package_ids(const QualifiedPackageName & p) const;
                 virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
+                virtual bool some_ids_might_not_be_masked() const;
 
                 ///\}
 

@@ -300,6 +300,12 @@ InstalledVirtualsRepository::some_ids_might_support_action(const SupportsActionT
     return a.accept_returning<bool>(q);
 }
 
+bool
+InstalledVirtualsRepository::some_ids_might_not_be_masked() const
+{
+    return true;
+}
+
 std::tr1::shared_ptr<const CategoryNamePartSet>
 InstalledVirtualsRepository::unimportant_category_names() const
 {

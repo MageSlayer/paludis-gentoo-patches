@@ -192,6 +192,12 @@ FakeInstalledRepository::some_ids_might_support_action(const SupportsActionTestB
     return a.accept_returning<bool>(q);
 }
 
+bool
+FakeInstalledRepository::some_ids_might_not_be_masked() const
+{
+    return true;
+}
+
 const bool
 FakeInstalledRepository::is_unimportant() const
 {

@@ -100,6 +100,7 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
+            virtual bool some_ids_might_not_be_masked() const;
 
             virtual const bool is_unimportant() const;
 

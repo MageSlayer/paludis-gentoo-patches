@@ -539,6 +539,12 @@ CRANInstalledRepository::some_ids_might_support_action(const SupportsActionTestB
     return a.accept_returning<bool>(q);
 }
 
+bool
+CRANInstalledRepository::some_ids_might_not_be_masked() const
+{
+    return true;
+}
+
 void
 CRANInstalledRepository::need_ids() const
 {

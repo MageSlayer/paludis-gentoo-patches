@@ -132,6 +132,12 @@ EInstalledRepository::some_ids_might_support_action(const SupportsActionTestBase
 }
 
 bool
+EInstalledRepository::some_ids_might_not_be_masked() const
+{
+    return true;
+}
+
+bool
 EInstalledRepository::is_suitable_destination_for(const PackageID & e) const
 {
     std::string f(e.repository()->format_key() ? e.repository()->format_key()->value() : "");

@@ -400,6 +400,12 @@ VirtualsRepository::some_ids_might_support_action(const SupportsActionTestBase &
     return a.accept_returning<bool>(q);
 }
 
+bool
+VirtualsRepository::some_ids_might_not_be_masked() const
+{
+    return true;
+}
+
 std::tr1::shared_ptr<const CategoryNamePartSet>
 VirtualsRepository::unimportant_category_names() const
 {

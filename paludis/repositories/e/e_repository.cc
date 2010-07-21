@@ -1061,6 +1061,12 @@ ERepository::some_ids_might_support_action(const SupportsActionTestBase & a) con
     return a.accept_returning<bool>(q);
 }
 
+bool
+ERepository::some_ids_might_not_be_masked() const
+{
+    return true;
+}
+
 void
 ERepository::make_manifest(const QualifiedPackageName & qpn)
 {

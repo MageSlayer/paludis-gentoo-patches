@@ -81,6 +81,8 @@ namespace paludis
 
                 virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
 
+                virtual bool some_ids_might_not_be_masked() const;
+
                 HookResult perform_hook(const Hook & hook)
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 

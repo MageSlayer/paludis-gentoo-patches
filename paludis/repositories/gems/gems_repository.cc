@@ -325,6 +325,12 @@ GemsRepository::some_ids_might_support_action(const SupportsActionTestBase & a) 
     return a.accept_returning<bool>(q);
 }
 
+bool
+GemsRepository::some_ids_might_not_be_masked() const
+{
+    return true;
+}
+
 const bool
 GemsRepository::is_unimportant() const
 {

@@ -254,6 +254,12 @@ UnwrittenRepository::some_ids_might_support_action(const SupportsActionTestBase 
 }
 
 bool
+UnwrittenRepository::some_ids_might_not_be_masked() const
+{
+    return false;
+}
+
+bool
 UnwrittenRepository::sync(const std::tr1::shared_ptr<OutputManager> & output_manager) const
 {
     Context context("When syncing repository '" + stringify(name()) + "':");

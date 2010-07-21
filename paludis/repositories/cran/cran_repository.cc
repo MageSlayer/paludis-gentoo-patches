@@ -523,6 +523,12 @@ CRANRepository::some_ids_might_support_action(const SupportsActionTestBase & a) 
     return a.accept_returning<bool>(q);
 }
 
+bool
+CRANRepository::some_ids_might_not_be_masked() const
+{
+    return true;
+}
+
 void
 CRANRepository::need_keys_added() const
 {

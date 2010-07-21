@@ -395,6 +395,12 @@ AccountsRepository::some_ids_might_support_action(const SupportsActionTestBase &
 }
 
 bool
+AccountsRepository::some_ids_might_not_be_masked() const
+{
+    return true;
+}
+
+bool
 AccountsRepository::is_suitable_destination_for(const PackageID & id) const
 {
     std::string f(id.repository()->format_key() ? id.repository()->format_key()->value() : "");

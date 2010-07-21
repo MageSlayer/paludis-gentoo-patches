@@ -169,6 +169,12 @@ UnpackagedRepository::some_ids_might_support_action(const SupportsActionTestBase
     return _imp->id->supports_action(test);
 }
 
+bool
+UnpackagedRepository::some_ids_might_not_be_masked() const
+{
+    return true;
+}
+
 const bool
 UnpackagedRepository::is_unimportant() const
 {

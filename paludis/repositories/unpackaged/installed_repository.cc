@@ -215,6 +215,12 @@ InstalledUnpackagedRepository::some_ids_might_support_action(const SupportsActio
     return test.accept_returning<bool>(v);
 }
 
+bool
+InstalledUnpackagedRepository::some_ids_might_not_be_masked() const
+{
+    return true;
+}
+
 const bool
 InstalledUnpackagedRepository::is_unimportant() const
 {

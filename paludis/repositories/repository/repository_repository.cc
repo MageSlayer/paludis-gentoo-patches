@@ -256,6 +256,12 @@ RepositoryRepository::some_ids_might_support_action(const SupportsActionTestBase
 }
 
 bool
+RepositoryRepository::some_ids_might_not_be_masked() const
+{
+    return true;
+}
+
+bool
 RepositoryRepository::sync(const std::tr1::shared_ptr<OutputManager> &) const
 {
     return false;
