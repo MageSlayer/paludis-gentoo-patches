@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,8 +27,6 @@ namespace paludis
     template <typename Item_, typename Tail_>
     struct TypeListEntry;
 
-#ifdef PALUDIS_HAVE_VARIADIC_TEMPLATES
-
     template <typename...>
     struct MakeTypeList;
 
@@ -37,42 +35,6 @@ namespace paludis
 
     template <typename H_, typename... T_>
     struct MakeTypeList<H_, T_...>;
-
-#else
-
-    template <typename Item_, typename Tail_>
-    struct MakeTypeListEntry;
-
-    template <
-        typename T01_ = TypeListTail,
-        typename T02_ = TypeListTail,
-        typename T03_ = TypeListTail,
-        typename T04_ = TypeListTail,
-        typename T05_ = TypeListTail,
-        typename T06_ = TypeListTail,
-        typename T07_ = TypeListTail,
-        typename T08_ = TypeListTail,
-        typename T09_ = TypeListTail,
-        typename T10_ = TypeListTail,
-        typename T11_ = TypeListTail,
-        typename T12_ = TypeListTail,
-        typename T13_ = TypeListTail,
-        typename T14_ = TypeListTail,
-        typename T15_ = TypeListTail,
-        typename T16_ = TypeListTail,
-        typename T17_ = TypeListTail,
-        typename T18_ = TypeListTail,
-        typename T19_ = TypeListTail,
-        typename T20_ = TypeListTail,
-        typename T21_ = TypeListTail,
-        typename T22_ = TypeListTail,
-        typename T23_ = TypeListTail,
-        typename T24_ = TypeListTail,
-        typename T25_ = TypeListTail
-        >
-    struct MakeTypeList;
-
-#endif
 
     template <typename TypeList_>
     struct MakeTypeListConst;
