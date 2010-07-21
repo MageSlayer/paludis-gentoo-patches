@@ -59,7 +59,7 @@ const std::string
 TargetReason::extra_information() const
 {
     return _imp->extra_information;
-};
+}
 
 void
 TargetReason::serialise(Serialiser & s) const

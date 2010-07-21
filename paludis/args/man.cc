@@ -103,7 +103,7 @@ namespace
             default:
                 return std::string(1, c);
         }
-    };
+    }
 }
 
 
