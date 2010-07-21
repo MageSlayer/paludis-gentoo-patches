@@ -1,24 +1,24 @@
 <!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
 
-<h1>ebuild and exheres Repository Formats</h1>
+<h1> Repository Format</h1>
 
-<p>The <code>ebuild</code> repository format is used on Gentoo and derived distributions for repositories containing
-ebuilds. The <code>exheres</code> repository format is used on Exherbo for repositories containing exheres packages.
-Except where noted, all options described below are common to both formats.</p>
+<p>The <code>e</code> repository format is used on Gentoo and derived distributions for repositories containing ebuilds,
+and on Exherbo for repositories containing exheres packages. Except where noted, all options described below are common
+to both distributions.</p>
 
 <p>As well as the <a href="index.html">general keys supported for all repositories</a>, the following keys have meaning
-for <code>ebuild</code> and <code>exheres</code> format repositories:</p>
+for <code>e</code> format repositories:</p>
 
 <dl>
     <dt><code>location</code></dt>
     <dd>The location of the repository. Mandatory.</dd>
 
     <dt><code>master_repository</code></dt>
-    <dd>If set to the name of another ebuild-format repository, that repository is used as a 'master' for any part of
+    <dd>If set to the name of another e-format repository, that repository is used as a 'master' for any part of
     this repository that is not defined. Also changes the default importance of this repository from 0 to 10.  (In
     Portage terms, this is similar to saying that this repository is an overlay with the master as the main repository.
     However, identically named and versioned packages in this repository do not hide those in the master.)
-    <code>Exheres</code> format repositories describe their own masters, so this option does not apply to them.</dd>
+    Exheres repositories describe their own masters, so this option does not apply to them.</dd>
 
     <dt><code>profiles</code></dt>
     <dd>A space separated list of directories to use as profiles. Later entries override earlier entries. Inherited from
@@ -28,7 +28,7 @@ for <code>ebuild</code> and <code>exheres</code> format repositories:</p>
     <dt><code>eclassdirs</code></dt>
     <dd>A space separated list of directories in which to find eclasses. The first directory is used to set
     <code>ECLASSDIR</code>, but eclasses in later directories have priority. Optional, and not used by
-    <code>exheres</code> format repositories.</dd>
+    Exheres repositories.</dd>
 
     <dt><code>distdir</code></dt>
     <dd>Where to look for and save downloaded files. Inherited from a master. Optional.</dd>

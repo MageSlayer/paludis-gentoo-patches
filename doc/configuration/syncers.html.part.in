@@ -5,7 +5,7 @@
 <h2>Overview</h2>
 
 <p>Paludis makes use of scripts called 'syncers' to perform certain sync actions (e.g. handling <code>paludis
-    --sync</code> for ebuild format repositories). Some syncers support additional options that can be set via the
+    --sync</code> for e format repositories). Some syncers support additional options that can be set via the
 <code>sync_options</code> repository configuration key. Syncers can be added for additional protocols (for example, if
 you need to use a repository that uses a weird version control system), and built-in syncers can be replaced (for
 example, if you want to use a non-standard program).</p>

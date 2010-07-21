@@ -10,7 +10,7 @@
 <h2 id="profiles">Profiles vs Profiles</h2>
 
 <p>Don't confuse the <code>profiles/</code> directory with the <code>profiles
-    =</code> setting for ebuild format repositories. The special files
+    =</code> setting for e format repositories. The special files
 immediately under <code>profiles/</code>, such as
 <code>profiles/thirdpartymirrors</code>, <code>profiles/use.desc</code>
 and <code>profiles/package.mask</code>, are specific to the repository and not
@@ -25,7 +25,7 @@ peanut gallery, repositories are required to be uniquely identifiable. The
 identifier must remain consistent even if a repository is moved, either locally
 or remotely, and thus must be independent of user configuration.</p>
 
-<p>For ebuild format repositories, this is controlled by the <code>profiles/repo_name</code>
+<p>For e format repositories, this is controlled by the <code>profiles/repo_name</code>
 file. It should contain a single string with no whitespace or funny characters.
 For many repositories, this has already been created for you; for some overlays,
 probably including your local overlay if you have one, the file is not yet

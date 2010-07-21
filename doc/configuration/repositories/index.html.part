@@ -35,7 +35,7 @@ other keys.</p>
 <dl>
     <dt><code>format</code></dt>
     <dd>Determines which repository class Paludis uses to create the repository. Example formats are
-    <code>ebuild</code>, <code>vdb</code> and <code>installed_unpackaged</code>. Mandatory.</dd>
+    <code>e</code>, <code>vdb</code> and <code>installed_unpackaged</code>. Mandatory.</dd>
 
     <dt><code>importance</code></dt>
     <dd>Must be an integer. Used by Paludis to determine from which repository a package should be selected, all other
@@ -59,7 +59,7 @@ other keys.</p>
 <h3>Gentoo and Derived Distributions</h3>
 
 <ul>
-    <li><a href="e.html">ebuild</a> format repositories.</li>
+    <li><a href="e.html">e</a> format, for ebuild repositories.</li>
     <li><a href="vdb.html">VDB</a>, for tracking installed ebuilds.</li>
 </ul>
 
@@ -79,7 +79,7 @@ old-style virtuals:</p>
 <h3>Exherbo</h3>
 
 <ul>
-    <li><a href="e.html">exheres</a> format repositories.</li>
+    <li><a href="e.html">e</a> format, for exheres repositories.</li>
     <li><a href="exndbam.html">exndbam</a>, for tracking installed packages installed from an exheres.</li>
     <li><a href="accounts.html">accounts</a> and <a href="installed_accounts.html">installed_accounts</a> format
     repositories, for tracking user and group accounts.</li>

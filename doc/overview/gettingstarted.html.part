@@ -200,7 +200,7 @@ reasons, it is strongly recommended that the filename used matches the name of t
 location = /usr/portage
 sync = rsync://rsync.europe.gentoo.org/gentoo-portage/
 profiles = ${location}/profiles/default-linux/x86/2007.1
-format = ebuild
+format = e
 names_cache = (see below)
 </pre>
 
@@ -259,7 +259,7 @@ location = /var/paludis/repositories/paludis-overlay/
 sync = git://git.pioto.org/paludis-overlay.git
 names_cache = (as above)
 write_cache = (see below)
-format = ebuild
+format = e
 </pre>
 
 <p>If <code>write_cache =</code> is set to (for example) <code>/var/cache/paludis/metadata</code>, Paludis will write
@@ -291,7 +291,7 @@ config.</p>
 location = /var/db/paludis/repositories/arbor
 sync = git://git.exherbo.org/arbor.git
 profiles = ${location}/profiles/default-linux/x86/2007.0
-format = exheres
+format = e
 </pre>
 
 <h5>repositories/installed.conf</h5>
