@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -169,6 +169,22 @@ namespace
     struct NotMaskedFilterHandler :
         AllFilterHandlerBase
     {
+        virtual std::tr1::shared_ptr<const RepositoryNameSet> repositories(
+                const Environment * const env,
+                const std::tr1::shared_ptr<const RepositoryNameSet> & repos) const
+        {
+            std::tr1::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);
+
+            for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
+                    r != r_end ; ++r)
+            {
+                if (env->package_database()->fetch_repository(*r)->some_ids_might_not_be_masked())
+                    result->insert(*r);
+            }
+
+            return result;
+        }
+
         virtual std::tr1::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
                 const std::tr1::shared_ptr<const PackageIDSet> & id) const
