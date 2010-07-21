@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,6 +38,7 @@ namespace paludis
     template <>
     struct Implementation<XMLThingsHandle>
     {
+        void * paludis_handle;
         void * handle;
 
         typedef void (* InitPtr) ();
@@ -49,6 +50,7 @@ namespace paludis
         CleanupPtr cleanup;
 
         Implementation() :
+            paludis_handle(0),
             handle(0),
             create_glsa_from_xml_file(0),
             create_metadata_xml_from_xml_file(0),
@@ -58,6 +60,14 @@ namespace paludis
 #if ENABLE_XML
             if (! getenv_with_default("PALUDIS_NO_XML", "").empty())
                 return;
+
+            paludis_handle = ::dlopen(("libpaludis_" + stringify(PALUDIS_PC_SLOT) + ".so").c_str(), RTLD_NOW | RTLD_GLOBAL);
+            if (! paludis_handle)
+            {
+                Log::get_instance()->message("e.xml_things.dlopen_failed", ll_warning, lc_context) << "Got error '"
+                    << ::dlerror() << "' from dlopen libpaludis";
+                return;
+            }
 
             handle = ::dlopen(("libpaludiserepositoryxmlthings_" + stringify(PALUDIS_PC_SLOT) + ".so").c_str(), RTLD_NOW | RTLD_GLOBAL);
             if (! handle)
