@@ -1,6 +1,6 @@
 <!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
 
-<h1> Repository Format</h1>
+<h1>e Repository Format</h1>
 
 <p>The <code>e</code> repository format is used on Gentoo and derived distributions for repositories containing ebuilds,
 and on Exherbo for repositories containing exheres packages. Except where noted, all options described below are common
