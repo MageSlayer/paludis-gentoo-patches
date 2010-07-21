@@ -44,7 +44,7 @@
 
 #include "config.h"
 #ifdef HAVE_XATTRS
-#  include <attr/xattr.h>
+#  include <sys/xattr.h>
 #endif
 
 using namespace paludis;

@@ -140,8 +140,7 @@ dnl }}}
 dnl {{{ check for listxattrf etc
 AC_MSG_CHECKING([for f*xattr function family])
 AC_COMPILE_IFELSE([
-#include <sys/types.h>
-#include <attr/xattr.h>
+#include <sys/xattr.h>
 
 int main(int, char **)
 {
