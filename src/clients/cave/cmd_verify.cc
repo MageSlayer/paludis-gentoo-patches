@@ -87,15 +87,26 @@ namespace
 
     struct Verifier
     {
-        int exit_status;
+        const std::tr1::shared_ptr<const PackageID> id;
 
-        Verifier() :
-            exit_status(0)
+        int exit_status;
+        bool done_heading;
+
+        Verifier(const std::tr1::shared_ptr<const PackageID> & i) :
+            id(i),
+            exit_status(0),
+            done_heading(false)
         {
         }
 
         void message(const FSEntry & path, const std::string & text)
         {
+            if (! done_heading)
+            {
+                done_heading = true;
+                cout << format_general_s(f::verify_package(), stringify(*id));
+            }
+
             exit_status |= 1;
             cout << format_general_sr(f::verify_error(), text, stringify(path));
         }
@@ -193,7 +204,7 @@ VerifyCommand::run(
         throw args::DoHelp("verify takes exactly one parameter");
 
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(),
-                UserPackageDepSpecOptions(), filter::InstalledAtRoot(env->root())));
+                UserPackageDepSpecOptions() + updso_allow_wildcards, filter::InstalledAtRoot(env->root())));
 
     std::tr1::shared_ptr<const PackageIDSequence> entries(
             (*env)[selection::AllVersionsSorted(generator::Matches(spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
@@ -201,16 +212,21 @@ VerifyCommand::run(
     if (entries->empty())
         throw NothingMatching(spec);
 
-    const std::tr1::shared_ptr<const PackageID> id(*entries->last());
-    if (! id->contents_key())
-        throw BadIDForCommand(spec, id, "does not support listing contents");
+    int exit_status(0);
+    for (PackageIDSequence::ConstIterator i(entries->begin()), i_end(entries->end()) ;
+            i != i_end ; ++i)
+    {
+        if (! (*i)->contents_key())
+            continue;
 
-    Verifier v;
-    std::for_each(indirect_iterator(id->contents_key()->value()->begin()),
-            indirect_iterator(id->contents_key()->value()->end()),
-            accept_visitor(v));
+        Verifier v(*i);
+        std::for_each(indirect_iterator((*i)->contents_key()->value()->begin()),
+                indirect_iterator((*i)->contents_key()->value()->end()),
+                accept_visitor(v));
+        exit_status |= v.exit_status;
+    }
 
-    return v.exit_status;
+    return exit_status;
 }
 
 std::tr1::shared_ptr<args::ArgsHandler>

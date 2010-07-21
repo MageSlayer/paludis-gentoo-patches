@@ -676,8 +676,14 @@ paludis::cave::f::executables_file()
 }
 
 const std::string
+paludis::cave::f::verify_package()
+{
+    return c::bold_blue_or_pink() + "%s" + c::normal() + "\\n";
+}
+
+const std::string
 paludis::cave::f::verify_error()
 {
-    return c::bold_red() + "%s:" + c::normal() + "%{column 30}%r\\n";
+    return c::bold_red() + "    %s:" + c::normal() + "%{column 32}%r\\n";
 }
 
