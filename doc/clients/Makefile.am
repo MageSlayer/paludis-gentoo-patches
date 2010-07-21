@@ -64,7 +64,8 @@ CAVE_COMMANDS_HTML = \
 	cave-show.html \
 	cave-sync.html \
 	cave-uninstall.html \
-	cave-update-world.html
+	cave-update-world.html \
+	cave-verify.html
 
 if HAVE_HTMLTIDY
 

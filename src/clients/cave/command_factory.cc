@@ -73,6 +73,7 @@
 #include "cmd_sync.hh"
 #include "cmd_uninstall.hh"
 #include "cmd_update_world.hh"
+#include "cmd_verify.hh"
 
 using namespace paludis;
 using namespace cave;
@@ -176,6 +177,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("sync", std::tr1::bind(&make_command<SyncCommand>)));
     _imp->handlers.insert(std::make_pair("uninstall", std::tr1::bind(&make_command<UninstallCommand>)));
     _imp->handlers.insert(std::make_pair("update-world", std::tr1::bind(&make_command<UpdateWorldCommand>)));
+    _imp->handlers.insert(std::make_pair("verify", std::tr1::bind(&make_command<VerifyCommand>)));
 }
 
 CommandFactory::~CommandFactory()
