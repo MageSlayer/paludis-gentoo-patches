@@ -1,8 +1,9 @@
 README for Paludis
 ==================
 
-Paludis is a package manager for Gentoo and related distributions. It is
-entirely independent of Portage.
+Paludis is a multi-format package manager. It can currently be used on Gentoo
+and derivatives, using the ebuild and VDB repository formats, and on Exherbo
+using the exheres repository format.
 
 The various Paludis clients have man pages. You should read these.  More
 documentation is available at:
