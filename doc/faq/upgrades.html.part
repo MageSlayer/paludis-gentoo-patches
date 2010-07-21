@@ -16,7 +16,7 @@ environment.</p>
 to be used, and there is no need to change anything.</p>
 
 <p>If you are using the Paludis configuration format, you must specify the <code>world</code> key
-in <a href="../configuration/environment.html">environment.conf</a>. If this key is not specified,
+in <a href="../configuration/general.html">general.conf</a>. If this key is not specified,
 no file will be written to for world updates.</p>
 
 <p>To ease the upgrade, any <code>world</code> key explicitly specified for a VDB repository will
