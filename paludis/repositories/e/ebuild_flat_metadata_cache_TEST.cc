@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  * Copyright (c) 2008 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -65,7 +65,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -93,7 +93,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -121,7 +121,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -150,7 +150,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -181,7 +181,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -209,7 +209,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -237,7 +237,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -265,7 +265,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -293,7 +293,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -321,7 +321,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -350,7 +350,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -378,7 +378,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -406,7 +406,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -435,7 +435,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -463,7 +463,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -491,7 +491,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -519,7 +519,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -547,7 +547,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -575,7 +575,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -603,7 +603,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -634,7 +634,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -662,7 +662,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -690,7 +690,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -717,7 +717,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -748,7 +748,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -779,7 +779,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -807,7 +807,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -835,7 +835,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -863,7 +863,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -898,7 +898,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -926,7 +926,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -954,7 +954,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -986,7 +986,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -1018,7 +1018,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -1047,7 +1047,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -1076,7 +1076,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -1105,7 +1105,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -1141,7 +1141,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -1170,7 +1170,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -1205,7 +1205,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -1241,7 +1241,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -1277,7 +1277,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
@@ -1315,7 +1315,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));

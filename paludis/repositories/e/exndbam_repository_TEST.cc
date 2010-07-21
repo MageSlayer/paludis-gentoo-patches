@@ -127,7 +127,7 @@ namespace test_cases
             TestEnvironment env(FSEntry("exndbam_repository_TEST_dir/root").realpath());
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "exndbam_repository_TEST_dir" / "postinsttest_src1"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "exndbam_repository_TEST_dir" / "postinsttest_src1/profiles/profile"));

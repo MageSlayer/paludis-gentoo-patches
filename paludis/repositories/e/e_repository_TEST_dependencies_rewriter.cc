@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -97,7 +97,7 @@ namespace test_cases
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dependencies_rewriter_dir" / "repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dependencies_rewriter_dir" / "repo/profiles/profile"));

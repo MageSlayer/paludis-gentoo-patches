@@ -489,7 +489,7 @@ PortageEnvironment::_add_ebuild_repository(const FSEntry & portdir, const std::s
     keys->insert("profiles", stringify((_imp->conf_dir / "make.profile").realpath()) + " " +
             ((_imp->conf_dir / "portage" / "profile").is_directory() ?
              stringify(_imp->conf_dir / "portage" / "profile") : ""));
-    keys->insert("format", "ebuild");
+    keys->insert("format", "e");
     keys->insert("names_cache", "/var/empty");
     keys->insert("master_repository", master);
     keys->insert("sync", sync);

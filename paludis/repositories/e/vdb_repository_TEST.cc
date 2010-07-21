@@ -325,7 +325,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "srcrepo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "srcrepo/profiles/profile"));
@@ -455,7 +455,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "srcrepo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "srcrepo/profiles/profile"));
@@ -607,7 +607,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "namesincrtest_src"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "namesincrtest_src/profiles/profile"));
@@ -970,7 +970,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "providesincrtest_src1"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "providesincrtest_src1/profiles/profile"));
@@ -986,7 +986,7 @@ namespace test_cases
             env.package_database()->add_repository(1, repo1);
 
             keys.reset(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "providesincrtest_src2"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "providesincrtest_src1/profiles/profile"));
@@ -1165,7 +1165,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "reinstalltest_src1"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "reinstalltest_src1/profiles/profile"));
@@ -1181,7 +1181,7 @@ namespace test_cases
             env.package_database()->add_repository(1, repo1);
 
             keys.reset(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "reinstalltest_src2"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "reinstalltest_src1/profiles/profile"));
@@ -1296,7 +1296,7 @@ namespace test_cases
             TestEnvironment env(FSEntry(stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "root")).realpath());
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "postinsttest_src1"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "postinsttest_src1/profiles/profile"));

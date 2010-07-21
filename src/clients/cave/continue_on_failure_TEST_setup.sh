@@ -33,7 +33,7 @@ END
 cat <<END > config/.paludis-continue-on-failure-test/repositories/repo1.conf
 location = `pwd`/repo1
 cache = /var/empty
-format = ebuild
+format = e
 names_cache = /var/empty
 profiles = \${location}/profiles/testprofile
 builddir = `pwd`/build

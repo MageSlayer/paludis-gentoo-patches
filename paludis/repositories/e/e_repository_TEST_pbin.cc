@@ -114,7 +114,7 @@ namespace test_cases
             FSEntry root(FSEntry::cwd() / "e_repository_TEST_pbin_dir" / "root");
 
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_pbin_dir" / ("repo" + base_eapi)));
             keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_pbin_dir" / ("repo" + base_eapi + "/profiles/profile")));
@@ -130,7 +130,7 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             std::tr1::shared_ptr<Map<std::string, std::string> > b_keys(new Map<std::string, std::string>);
-            b_keys->insert("format", "ebuild");
+            b_keys->insert("format", "e");
             b_keys->insert("names_cache", "/var/empty");
             b_keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_pbin_dir" / ("binrepo" + base_eapi)));
             b_keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_pbin_dir" / ("binrepo" + base_eapi + "/profiles/profile")));

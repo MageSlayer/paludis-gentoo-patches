@@ -209,7 +209,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
             if (params.extra_params())
                 std::copy(params.extra_params()->begin(), params.extra_params()->end(), keys->inserter());
 
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("location", stringify(r->first.realpath()));
             keys->insert("profiles", params.profiles_if_not_auto().empty() ? "(auto)" : params.profiles_if_not_auto());
             keys->insert("ignore_deprecated_profiles", "true");

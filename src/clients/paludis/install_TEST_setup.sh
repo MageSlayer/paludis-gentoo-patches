@@ -61,7 +61,7 @@ END
         cat <<END > root/${SYSCONFDIR}/paludis-${c}-checks-${d}/repositories/repo1.conf
 location = `pwd`/repo1
 cache = /var/empty
-format = ebuild
+format = e
 names_cache = /var/empty
 profiles = \${location}/profiles/testprofile \${location}/profiles/anothertestprofile
 builddir = `pwd`/build

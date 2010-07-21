@@ -135,7 +135,7 @@ bool
 EInstalledRepository::is_suitable_destination_for(const PackageID & e) const
 {
     std::string f(e.repository()->format_key() ? e.repository()->format_key()->value() : "");
-    return f == "ebuild" || f == "exheres" || f == "portage";
+    return f == "e" || f == "ebuild" || f == "exheres" || f == "portage";
 }
 
 bool

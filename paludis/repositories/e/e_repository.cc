@@ -967,7 +967,7 @@ bool
 ERepository::is_suitable_destination_for(const PackageID & e) const
 {
     std::string f(e.repository()->format_key() ? e.repository()->format_key()->value() : "");
-    if (f == "ebuild")
+    if (f == "e")
         return static_cast<const ERepositoryID &>(e).eapi()->supported()->can_be_pbin();
     else
         return false;
@@ -1250,9 +1250,8 @@ ERepository::repository_factory_create(
         if (master_repository_uncasted->format_key())
             format = master_repository_uncasted->format_key()->value();
 
-        if (format != "ebuild")
-            throw ERepositoryConfigurationError("Master repository format is '" +
-                    stringify(format) + "', not 'ebuild'");
+        if (format != "e")
+            throw ERepositoryConfigurationError("Master repository format is '" + stringify(format) + "', not 'ebuild'");
 
         std::tr1::shared_ptr<ERepository> master_repository(std::tr1::static_pointer_cast<ERepository>(master_repository_uncasted));
         master_repositories.reset(new ERepositorySequence);
@@ -1277,9 +1276,8 @@ ERepository::repository_factory_create(
                 if (master_repository_uncasted->format_key())
                     format = master_repository_uncasted->format_key()->value();
 
-                if (format != "ebuild")
-                    throw ERepositoryConfigurationError("Master repository format is '" +
-                            stringify(format) + "', not 'ebuild'");
+                if (format != "e")
+                    throw ERepositoryConfigurationError("Master repository format is '" + stringify(format) + "', not 'ebuild'");
 
                 std::tr1::shared_ptr<ERepository> master_repository(std::tr1::static_pointer_cast<ERepository>(master_repository_uncasted));
                 if (! master_repositories)
@@ -1512,7 +1510,7 @@ ERepository::repository_factory_create(
                     n::eapi_when_unknown() = eapi_when_unknown,
                     n::eapi_when_unspecified() = eapi_when_unspecified,
                     n::eclassdirs() = eclassdirs,
-                    n::entry_format() = "ebuild",
+                    n::entry_format() = "e",
                     n::environment() = env,
                     n::ignore_deprecated_profiles() = ignore_deprecated_profiles,
                     n::layout() = layout,

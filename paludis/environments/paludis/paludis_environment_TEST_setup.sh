@@ -108,7 +108,7 @@ cat <<END > home1/.paludis/licenses.conf
 */* keyword "quoted keyword"
 END
 cat <<END > home1/.paludis/repositories/foo.conf
-format = ebuild
+format = e
 names_cache = /var/empty
 location = `pwd`/repo
 profiles = `pwd`/repo/profile
@@ -128,7 +128,7 @@ cat <<END > home2/.paludis/licenses.conf
 */* *
 END
 cat <<END > home2/.paludis/repositories/foo.conf
-format = ebuild
+format = e
 names_cache = /var/empty
 location = `pwd`/repo
 profiles = `pwd`/repo/profile
@@ -148,7 +148,7 @@ cat <<END > home3/.paludis/licenses.conf
 */* *
 END
 cat <<END > home3/.paludis/repositories/foo.conf
-format = ebuild
+format = e
 names_cache = /var/empty
 location = `pwd`/repo
 profiles = `pwd`/repo/profile
@@ -166,7 +166,7 @@ cat <<END > home4/.paludis/licenses.conf
 */* *
 END
 cat <<END > home4/.paludis/repositories/first.conf
-format = ebuild
+format = e
 names_cache = /var/empty
 location = `pwd`/firstrepo
 profiles = `pwd`/repo/profile
@@ -175,7 +175,7 @@ master_repository = second
 importance = 20
 END
 cat <<END > home4/.paludis/repositories/second.conf
-format = ebuild
+format = e
 names_cache = /var/empty
 location = `pwd`/secondrepo
 profiles = `pwd`/repo/profile
@@ -183,7 +183,7 @@ cache = /var/empty
 importance = 10
 END
 cat <<END > home4/.paludis/repositories/third.conf
-format = ebuild
+format = e
 names_cache = /var/empty
 location = `pwd`/thirdrepo
 profiles = `pwd`/repo/profile
@@ -192,7 +192,7 @@ master_repository = second
 importance = 8
 END
 cat <<END > home4/.paludis/repositories/fourth.conf
-format = ebuild
+format = e
 names_cache = /var/empty
 location = `pwd`/fourthrepo
 profiles = `pwd`/repo/profile
@@ -200,7 +200,7 @@ cache = /var/empty
 importance = 12
 END
 cat <<END > home4/.paludis/repositories/fifth.conf
-format = ebuild
+format = e
 names_cache = /var/empty
 location = `pwd`/fifthrepo
 profiles = `pwd`/repo/profile
@@ -221,7 +221,7 @@ cat <<END > home5/.paludis/licenses.conf
 */* *
 END
 cat <<END > home5/.paludis/repositories/foo.conf
-format = ebuild
+format = e
 names_cache = /var/empty
 location = `pwd`/sixthrepo
 profiles = `pwd`/sixthrepo/profile

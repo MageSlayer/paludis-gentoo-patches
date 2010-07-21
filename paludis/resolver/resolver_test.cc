@@ -332,7 +332,7 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
     prefer_or_avoid_names(new Map<QualifiedPackageName, bool>)
 {
     std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-    keys->insert("format", "exheres");
+    keys->insert("format", "e");
     keys->insert("names_cache", "/var/empty");
     keys->insert("location", stringify(FSEntry::cwd() / ("resolver_TEST_" + t + "_dir") / "repo"));
     keys->insert("profiles", stringify(FSEntry::cwd() / ("resolver_TEST_" + t + "_dir") / "repo/profiles/profile"));

@@ -9,7 +9,7 @@ mkdir -p one/.paludis/repositories/ || exit 1
 cat <<END > one/.paludis/repositories/one.conf
 location = `pwd`/repo1
 cache = /var/empty
-format = ebuild
+format = e
 names_cache = /var/empty
 profiles = \${location}/profiles/testprofile
 END
@@ -19,7 +19,7 @@ mkdir -p two/.paludis/repositories/ || exit 1
 cat <<END > two/.paludis/repositories/one.conf
 location = `pwd`/repo1
 cache = /var/empty
-format = ebuild
+format = e
 names_cache = /var/empty
 profiles = \${location}/profiles/testprofile
 END
@@ -27,7 +27,7 @@ END
 cat <<END > two/.paludis/repositories/two.conf
 location = `pwd`/repo2
 cache = /var/empty
-format = ebuild
+format = e
 names_cache = /var/empty
 profiles = \${location}/profiles/testprofile
 END

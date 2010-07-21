@@ -106,7 +106,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_3_dir" / "repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_3_dir" / "repo/profiles/profile"));

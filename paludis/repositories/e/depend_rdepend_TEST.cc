@@ -109,7 +109,7 @@ namespace
             FSEntry root(FSEntry::cwd() / "depend_rdepend_TEST_dir" / "root");
 
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "depend_rdepend_TEST_dir" / "repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "depend_rdepend_TEST_dir" / "repo/profiles/profile"));

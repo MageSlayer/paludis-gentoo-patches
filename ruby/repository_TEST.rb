@@ -379,7 +379,7 @@ module Paludis
 
         def test_format_key
             assert_kind_of MetadataStringKey, repo.format_key
-            assert_equal 'ebuild', repo.format_key.value
+            assert_equal 'e', repo.format_key.value
             assert_kind_of MetadataStringKey, installed_repo.format_key
             assert_equal 'vdb', installed_repo.format_key.value
         end
@@ -397,7 +397,7 @@ module Paludis
         def test_subscript
             assert_respond_to repo, :[]
             assert_kind_of MetadataStringKey, repo['format']
-            assert_equal 'ebuild', repo['format'].value
+            assert_equal 'e', repo['format'].value
             assert_nil repo['monkey']
         end
     end

@@ -57,7 +57,7 @@ namespace test_cases
         {
             TestEnvironment env;
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_sets_TEST_dir/repo1"));
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
@@ -84,7 +84,7 @@ namespace test_cases
         {
             TestEnvironment env;
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_sets_TEST_dir/repo1"));
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
@@ -124,7 +124,7 @@ namespace test_cases
         {
             TestEnvironment env;
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_sets_TEST_dir/repo1"));
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
@@ -156,7 +156,7 @@ namespace test_cases
             TestEnvironment env;
             std::tr1::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
-            keys->insert("format", "ebuild");
+            keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_sets_TEST_dir/repo1"));
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
