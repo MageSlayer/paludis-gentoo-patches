@@ -863,6 +863,34 @@ namespace
         }
     }
 
+    struct WeakMask
+    {
+        bool visit(const UnacceptedMask &) const
+        {
+            return true;
+        }
+
+        bool visit(const UserMask &) const
+        {
+            return false;
+        }
+
+        bool visit(const RepositoryMask &) const
+        {
+            return true;
+        }
+
+        bool visit(const UnsupportedMask &) const
+        {
+            return false;
+        }
+
+        bool visit(const AssociationMask &) const
+        {
+            return false;
+        }
+    };
+
     void do_one_package(
             const ShowCommandLine & cmdline,
             const std::tr1::shared_ptr<Environment> & env,
@@ -875,7 +903,7 @@ namespace
         if (ids->empty())
             throw NothingMatching(s);
 
-        std::tr1::shared_ptr<const PackageID> best_installable, best_masked_installable, best_not_installed;
+        std::tr1::shared_ptr<const PackageID> best_installable, best_weak_masked_installable, best_masked_installable, best_not_installed;
         std::tr1::shared_ptr<PackageIDSequence> all_installed(new PackageIDSequence);
         std::set<RepositoryName> repos;
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
@@ -886,7 +914,21 @@ namespace
             else if ((*i)->supports_action(SupportsActionTest<InstallAction>()))
             {
                 if ((*i)->masked())
-                    best_masked_installable = *i;
+                {
+                    bool weak_masked(true);
+                    for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
+                            m != m_end ; ++m)
+                        if (! (*m)->accept_returning<bool>(WeakMask()))
+                        {
+                            weak_masked = false;
+                            break;
+                        }
+
+                    if (weak_masked)
+                        best_weak_masked_installable = *i;
+                    else
+                        best_masked_installable = *i;
+                }
                 else
                     best_installable = *i;
             }
@@ -896,6 +938,8 @@ namespace
             repos.insert((*i)->repository()->name());
         }
 
+        if (! best_installable)
+            best_installable = best_weak_masked_installable;
         if (! best_installable)
             best_installable = best_masked_installable;
         if (! best_installable)
