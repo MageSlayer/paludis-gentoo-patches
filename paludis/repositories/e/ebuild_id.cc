@@ -1275,6 +1275,7 @@ EbuildID::make_choice_value(
         const std::tr1::shared_ptr<const Choice> & choice,
         const UnprefixedChoiceName & value_name,
         const Tribool iuse_default,
+        const bool iuse_default_wins,
         const bool explicitly_listed,
         const std::string & override_description,
         const bool force_locked
@@ -1312,6 +1313,13 @@ EbuildID::make_choice_value(
         {
             locked = true;
             enabled = enabled_by_default = true;
+        }
+        else if (iuse_default_wins && ! iuse_default.is_indeterminate())
+        {
+            if (iuse_default.is_true())
+                enabled_by_default = true;
+            else
+                enabled_by_default = false;
         }
         else
         {
