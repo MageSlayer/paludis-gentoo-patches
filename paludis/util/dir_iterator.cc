@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2010 Ciaran McCreesh
  * Copyright (c) 2008 Fernando J. Pereda
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -51,11 +51,21 @@ namespace paludis
         std::shared_ptr<EntrySet> items;
         EntrySet::iterator iter;
 
-        Implementation(std::shared_ptr<EntrySet> ii) :
+        Implementation(const std::shared_ptr<EntrySet> & ii) :
             items(ii)
         {
         }
     };
+
+    bool compare_inode(const std::pair<ino_t, FSEntry> & a, const std::pair<ino_t, FSEntry> & b)
+    {
+        return a.first < b.first;
+    }
+
+    bool compare_name(const std::pair<ino_t, FSEntry> & a, const std::pair<ino_t, FSEntry> & b)
+    {
+        return a.second < b.second;
+    }
 }
 
 DirOpenError::DirOpenError(const FSEntry & location, const int errno_value) throw () :
@@ -64,22 +74,14 @@ DirOpenError::DirOpenError(const FSEntry & location, const int errno_value) thro
 }
 
 DirIterator::DirIterator(const FSEntry & base, const DirIteratorOptions & options) :
-    PrivateImplementationPattern<DirIterator>(new Implementation<DirIterator>(std::shared_ptr<EntrySet>(new EntrySet)))
+    PrivateImplementationPattern<DirIterator>(new Implementation<DirIterator>(std::shared_ptr<EntrySet>()))
 {
     using namespace std::placeholders;
 
     if (options[dio_inode_sort])
-        _imp->items.reset(new EntrySet(
-                    std::bind(std::less<ino_t>(),
-                        std::bind<ino_t>(std::mem_fn(&std::pair<ino_t, FSEntry>::first), _1),
-                        std::bind<ino_t>(std::mem_fn(&std::pair<ino_t, FSEntry>::first), _2))
-                    ));
+        _imp->items = std::make_shared<EntrySet>(&compare_inode);
     else
-        _imp->items.reset(new EntrySet(
-                    std::bind(std::less<FSEntry>(),
-                        std::bind<FSEntry>(std::mem_fn(&std::pair<ino_t, FSEntry>::second), _1),
-                        std::bind<FSEntry>(std::mem_fn(&std::pair<ino_t, FSEntry>::second), _2))
-                    ));
+        _imp->items = std::make_shared<EntrySet>(&compare_name);
 
     DIR * d(opendir(stringify(base).c_str()));
     if (0 == d)
@@ -126,7 +128,7 @@ DirIterator::DirIterator(const DirIterator & other) :
 }
 
 DirIterator::DirIterator() :
-    PrivateImplementationPattern<DirIterator>(new Implementation<DirIterator>(std::shared_ptr<EntrySet>(new EntrySet)))
+    PrivateImplementationPattern<DirIterator>(new Implementation<DirIterator>(std::shared_ptr<EntrySet>(new EntrySet(&compare_name))))
 {
     _imp->iter = _imp->items->end();
 }
