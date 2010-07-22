@@ -349,8 +349,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 }
 
 NoConfigEnvironment::NoConfigEnvironment(const no_config_environment::Params & params) :
-    PrivateImplementationPattern<NoConfigEnvironment>(
-            new Implementation<NoConfigEnvironment>(this, params)),
+    PrivateImplementationPattern<NoConfigEnvironment>(this, params),
     _imp(PrivateImplementationPattern<NoConfigEnvironment>::_imp)
 {
     _imp->initialise(this);

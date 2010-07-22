@@ -74,7 +74,7 @@ UnwrittenRepositoryStore::UnwrittenRepositoryStore(
         const Environment * const env,
         const UnwrittenRepository * const repo,
         const FSEntry & f) :
-    PrivateImplementationPattern<UnwrittenRepositoryStore>(new Implementation<UnwrittenRepositoryStore>(repo))
+    PrivateImplementationPattern<UnwrittenRepositoryStore>(repo)
 {
     _populate(env, f);
 }

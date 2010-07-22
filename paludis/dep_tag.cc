@@ -237,7 +237,7 @@ namespace paludis
 }
 
 GeneralSetDepTag::GeneralSetDepTag(const SetName & id, const std::string & r) :
-    PrivateImplementationPattern<GeneralSetDepTag>(new Implementation<GeneralSetDepTag>(id, r))
+    PrivateImplementationPattern<GeneralSetDepTag>(id, r)
 {
 }
 
@@ -284,7 +284,7 @@ namespace paludis
 }
 
 DependencyDepTag::DependencyDepTag(const std::shared_ptr<const PackageID> & i, const PackageDepSpec & d) :
-    PrivateImplementationPattern<DependencyDepTag>(new Implementation<DependencyDepTag>(i, d))
+    PrivateImplementationPattern<DependencyDepTag>(i, d)
 {
 }
 

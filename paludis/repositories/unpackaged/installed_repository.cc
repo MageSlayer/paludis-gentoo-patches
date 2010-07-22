@@ -90,7 +90,7 @@ namespace paludis
 
 InstalledUnpackagedRepository::InstalledUnpackagedRepository(
         const RepositoryName & n, const InstalledUnpackagedRepositoryParams & p) :
-    PrivateImplementationPattern<InstalledUnpackagedRepository>(new Implementation<InstalledUnpackagedRepository>(p)),
+    PrivateImplementationPattern<InstalledUnpackagedRepository>(p),
     Repository(p.environment(), n, make_named_values<RepositoryCapabilities>(
                 n::destination_interface() = this,
                 n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),

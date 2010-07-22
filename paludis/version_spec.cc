@@ -92,7 +92,7 @@ namespace paludis
 }
 
 VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & options) :
-    PrivateImplementationPattern<VersionSpec>(new Implementation<VersionSpec>(options))
+    PrivateImplementationPattern<VersionSpec>(options)
 {
     Context c("When parsing version spec '" + text + "':");
 
@@ -330,7 +330,7 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
 }
 
 VersionSpec::VersionSpec(const VersionSpec & other) :
-    PrivateImplementationPattern<VersionSpec>(new Implementation<VersionSpec>(other._imp->options))
+    PrivateImplementationPattern<VersionSpec>(other._imp->options)
 {
     _imp->text = other._imp->text;
     _imp->parts = other._imp->parts;

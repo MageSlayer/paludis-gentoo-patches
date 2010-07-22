@@ -104,7 +104,7 @@ NDBAM::NDBAM(const FSEntry & l,
         const std::function<bool (const std::string &)> & check_format,
         const std::string & preferred_format,
         const VersionSpecOptions & version_options) :
-    PrivateImplementationPattern<NDBAM>(new Implementation<NDBAM>(l, version_options))
+    PrivateImplementationPattern<NDBAM>(l, version_options)
 {
     Context c("When checking NDBAM layout at '" + stringify(l) + "':");
     if ((l / "ndbam.conf").exists())

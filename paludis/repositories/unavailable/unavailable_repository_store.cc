@@ -79,7 +79,7 @@ UnavailableRepositoryStore::UnavailableRepositoryStore(
         const Environment * const env,
         const UnavailableRepository * const repo,
         const FSEntry & f) :
-    PrivateImplementationPattern<UnavailableRepositoryStore>(new Implementation<UnavailableRepositoryStore>(repo))
+    PrivateImplementationPattern<UnavailableRepositoryStore>(repo)
 {
     _populate(env, f);
 }

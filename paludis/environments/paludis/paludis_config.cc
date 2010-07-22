@@ -383,7 +383,7 @@ PaludisConfigNoDirectoryError::PaludisConfigNoDirectoryError(const std::string &
 }
 
 PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & suffix) :
-    PrivateImplementationPattern<PaludisConfig>(new Implementation<PaludisConfig>(e))
+    PrivateImplementationPattern<PaludisConfig>(e)
 {
     using namespace std::placeholders;
 

@@ -53,7 +53,7 @@ namespace paludis
 }
 
 FakeRepository::FakeRepository(const FakeRepositoryParams & params) :
-    PrivateImplementationPattern<FakeRepository>(new Implementation<FakeRepository>),
+    PrivateImplementationPattern<FakeRepository>(),
     FakeRepositoryBase(params.environment(), params.name(), make_named_values<RepositoryCapabilities>(
                 n::destination_interface() = static_cast<RepositoryDestinationInterface *>(0),
                 n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),

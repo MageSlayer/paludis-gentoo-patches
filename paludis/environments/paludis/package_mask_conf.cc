@@ -64,7 +64,7 @@ namespace paludis
 }
 
 PackageMaskConf::PackageMaskConf(const PaludisEnvironment * const e) :
-    PrivateImplementationPattern<PackageMaskConf>(new Implementation<PackageMaskConf>(e))
+    PrivateImplementationPattern<PackageMaskConf>(e)
 {
 }
 

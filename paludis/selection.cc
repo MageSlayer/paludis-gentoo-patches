@@ -63,12 +63,12 @@ namespace paludis
 }
 
 Selection::Selection(const std::shared_ptr<const SelectionHandler> & h) :
-    PrivateImplementationPattern<Selection>(new Implementation<Selection>(h))
+    PrivateImplementationPattern<Selection>(h)
 {
 }
 
 Selection::Selection(const Selection & other) :
-    PrivateImplementationPattern<Selection>(new Implementation<Selection>(other._imp->handler))
+    PrivateImplementationPattern<Selection>(other._imp->handler)
 {
 }
 

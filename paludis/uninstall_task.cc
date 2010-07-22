@@ -125,7 +125,7 @@ namespace paludis
 }
 
 UninstallTask::UninstallTask(Environment * const e) :
-    PrivateImplementationPattern<UninstallTask>(new Implementation<UninstallTask>(e))
+    PrivateImplementationPattern<UninstallTask>(e)
 {
 }
 

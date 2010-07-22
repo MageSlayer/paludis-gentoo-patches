@@ -51,7 +51,7 @@ namespace paludis
 
 
 DisplayCallback::DisplayCallback(const std::string & s) :
-    PrivateImplementationPattern<DisplayCallback>(new Implementation<DisplayCallback>(s))
+    PrivateImplementationPattern<DisplayCallback>(s)
 {
     if (_imp->output)
         std::cout << _imp->stage << std::flush;

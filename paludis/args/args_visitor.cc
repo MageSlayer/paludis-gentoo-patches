@@ -64,7 +64,7 @@ namespace paludis
 
 ArgsVisitor::ArgsVisitor(ArgsHandler::ArgsIterator * ai, ArgsHandler::ArgsIterator ae,
         const std::string & env_prefix, char & s, bool n) :
-    PrivateImplementationPattern<ArgsVisitor>(new Implementation<ArgsVisitor>(ai, ae, env_prefix, s, n))
+    PrivateImplementationPattern<ArgsVisitor>(ai, ae, env_prefix, s, n)
 {
 }
 

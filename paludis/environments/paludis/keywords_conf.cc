@@ -74,7 +74,7 @@ namespace paludis
 }
 
 KeywordsConf::KeywordsConf(const PaludisEnvironment * const e) :
-    PrivateImplementationPattern<KeywordsConf>(new Implementation<KeywordsConf>(e))
+    PrivateImplementationPattern<KeywordsConf>(e)
 {
 }
 

@@ -170,7 +170,7 @@ CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryPa
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
-    PrivateImplementationPattern<CRANInstalledRepository>(new Implementation<CRANInstalledRepository>(p)),
+    PrivateImplementationPattern<CRANInstalledRepository>(p),
     _imp(PrivateImplementationPattern<CRANInstalledRepository>::_imp)
 {
     _add_metadata_keys();

@@ -74,7 +74,7 @@ DirOpenError::DirOpenError(const FSEntry & location, const int errno_value) thro
 }
 
 DirIterator::DirIterator(const FSEntry & base, const DirIteratorOptions & options) :
-    PrivateImplementationPattern<DirIterator>(new Implementation<DirIterator>(std::shared_ptr<EntrySet>()))
+    PrivateImplementationPattern<DirIterator>(std::shared_ptr<EntrySet>())
 {
     using namespace std::placeholders;
 
@@ -122,13 +122,13 @@ DirIterator::DirIterator(const FSEntry & base, const DirIteratorOptions & option
 }
 
 DirIterator::DirIterator(const DirIterator & other) :
-    PrivateImplementationPattern<DirIterator>(new Implementation<DirIterator>(other._imp->items))
+    PrivateImplementationPattern<DirIterator>(other._imp->items)
 {
     _imp->iter = other._imp->iter;
 }
 
 DirIterator::DirIterator() :
-    PrivateImplementationPattern<DirIterator>(new Implementation<DirIterator>(std::shared_ptr<EntrySet>(new EntrySet(&compare_name))))
+    PrivateImplementationPattern<DirIterator>(std::shared_ptr<EntrySet>(new EntrySet(&compare_name)))
 {
     _imp->iter = _imp->items->end();
 }

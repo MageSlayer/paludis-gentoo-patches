@@ -99,7 +99,7 @@ AccountsID::AccountsID(const Environment * const e,
         const QualifiedPackageName & q, const std::shared_ptr<const Repository> & r,
         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & f, const FSEntry & l,
         const bool u, const bool m) :
-    PrivateImplementationPattern<AccountsID>(new Implementation<AccountsID>(e, q, r, f, l, u, m)),
+    PrivateImplementationPattern<AccountsID>(e, q, r, f, l, u, m),
     _imp(PrivateImplementationPattern<AccountsID>::_imp)
 {
     if (_imp->mask)

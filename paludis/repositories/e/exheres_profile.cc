@@ -125,8 +125,7 @@ ExheresProfile::ExheresProfile(
         const Environment * const env, const ERepository * const p, const RepositoryName & name,
         const FSEntrySequence & location,
         const std::string & arch_var_if_special, const bool x) :
-    PrivateImplementationPattern<ExheresProfile>(
-            new Implementation<ExheresProfile>(env, p, name, location, arch_var_if_special, x))
+    PrivateImplementationPattern<ExheresProfile>(env, p, name, location, arch_var_if_special, x)
 {
     for (FSEntrySequence::ConstIterator l(location.begin()), l_end(location.end()) ;
             l != l_end ; ++l)

@@ -81,7 +81,7 @@ namespace paludis
 }
 
 DistributionData::DistributionData() :
-    PrivateImplementationPattern<DistributionData>(new Implementation<DistributionData>)
+    PrivateImplementationPattern<DistributionData>()
 {
 }
 

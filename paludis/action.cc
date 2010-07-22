@@ -51,7 +51,7 @@ namespace paludis
 }
 
 InstallAction::InstallAction(const InstallActionOptions & o) :
-    PrivateImplementationPattern<InstallAction>(new Implementation<InstallAction>(o)),
+    PrivateImplementationPattern<InstallAction>(o),
     options(_imp->options)
 {
 }
@@ -75,7 +75,7 @@ namespace paludis
 }
 
 FetchAction::FetchAction(const FetchActionOptions & o) :
-    PrivateImplementationPattern<FetchAction>(new Implementation<FetchAction>(o)),
+    PrivateImplementationPattern<FetchAction>(o),
     options(_imp->options)
 {
 }
@@ -99,7 +99,7 @@ namespace paludis
 }
 
 UninstallAction::UninstallAction(const UninstallActionOptions & o) :
-    PrivateImplementationPattern<UninstallAction>(new Implementation<UninstallAction>(o)),
+    PrivateImplementationPattern<UninstallAction>(o),
     options(_imp->options)
 {
 }
@@ -125,7 +125,7 @@ namespace paludis
 }
 
 PretendAction::PretendAction(const PretendActionOptions & o) :
-    PrivateImplementationPattern<PretendAction>(new Implementation<PretendAction>(o)),
+    PrivateImplementationPattern<PretendAction>(o),
     options(_imp->options)
 {
 }
@@ -161,7 +161,7 @@ namespace paludis
 }
 
 PretendFetchAction::PretendFetchAction(const FetchActionOptions & o) :
-    PrivateImplementationPattern<PretendFetchAction>(new Implementation<PretendFetchAction>(o)),
+    PrivateImplementationPattern<PretendFetchAction>(o),
     options(_imp->options)
 {
 }
@@ -185,7 +185,7 @@ namespace paludis
 }
 
 InfoAction::InfoAction(const InfoActionOptions & o) :
-    PrivateImplementationPattern<InfoAction>(new Implementation<InfoAction>(o)),
+    PrivateImplementationPattern<InfoAction>(o),
     options(_imp->options)
 {
 }
@@ -209,7 +209,7 @@ namespace paludis
 }
 
 ConfigAction::ConfigAction(const ConfigActionOptions & o) :
-    PrivateImplementationPattern<ConfigAction>(new Implementation<ConfigAction>(o)),
+    PrivateImplementationPattern<ConfigAction>(o),
     options(_imp->options)
 {
 }

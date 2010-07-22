@@ -222,7 +222,7 @@ namespace
 }
 
 PortageEnvironment::PortageEnvironment(const std::string & s) :
-    PrivateImplementationPattern<PortageEnvironment>(new Implementation<PortageEnvironment>(this, s)),
+    PrivateImplementationPattern<PortageEnvironment>(this, s),
     _imp(PrivateImplementationPattern<PortageEnvironment>::_imp)
 {
     using namespace std::placeholders;

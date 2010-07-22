@@ -163,7 +163,7 @@ EInstalledRepositoryID::EInstalledRepositoryID(const QualifiedPackageName & q, c
         const Environment * const e,
         const std::shared_ptr<const Repository> & r,
         const FSEntry & f) :
-    PrivateImplementationPattern<EInstalledRepositoryID>(new Implementation<EInstalledRepositoryID>(q, v, e, r, f)),
+    PrivateImplementationPattern<EInstalledRepositoryID>(q, v, e, r, f),
     _imp(PrivateImplementationPattern<EInstalledRepositoryID>::_imp)
 {
 }

@@ -35,7 +35,7 @@ namespace paludis
 }
 
 ThreadPool::ThreadPool() :
-    PrivateImplementationPattern<ThreadPool>(new Implementation<ThreadPool>)
+    PrivateImplementationPattern<ThreadPool>()
 {
 }
 

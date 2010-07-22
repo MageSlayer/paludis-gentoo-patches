@@ -113,13 +113,13 @@ namespace paludis
 
     template <typename Node_, typename Edge_, typename Comparator_>
     DirectedGraph<Node_, Edge_, Comparator_>::DirectedGraph() :
-        PrivateImplementationPattern<DirectedGraph<Node_, Edge_, Comparator_> >(new Implementation<DirectedGraph<Node_, Edge_, Comparator_> >)
+        PrivateImplementationPattern<DirectedGraph<Node_, Edge_, Comparator_> >()
     {
     }
 
     template <typename Node_, typename Edge_, typename Comparator_>
     DirectedGraph<Node_, Edge_, Comparator_>::DirectedGraph(const DirectedGraph & g) :
-        PrivateImplementationPattern<DirectedGraph<Node_, Edge_, Comparator_> >(new Implementation<DirectedGraph<Node_, Edge_, Comparator_> >(g._imp->store))
+        PrivateImplementationPattern<DirectedGraph<Node_, Edge_, Comparator_> >(g._imp->store)
     {
     }
 

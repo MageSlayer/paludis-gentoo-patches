@@ -166,7 +166,7 @@ namespace paludis
 }
 
 PaludisLikeOptionsConf::PaludisLikeOptionsConf(const PaludisLikeOptionsConfParams & params) :
-    PrivateImplementationPattern<PaludisLikeOptionsConf>(new Implementation<PaludisLikeOptionsConf>(params))
+    PrivateImplementationPattern<PaludisLikeOptionsConf>(params)
 {
 }
 

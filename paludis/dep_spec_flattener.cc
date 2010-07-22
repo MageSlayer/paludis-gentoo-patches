@@ -76,8 +76,7 @@ namespace paludis
 template <typename Heirarchy_, typename Item_>
 DepSpecFlattener<Heirarchy_, Item_>::DepSpecFlattener(
         const Environment * const env) :
-    PrivateImplementationPattern<DepSpecFlattener<Heirarchy_, Item_> >(
-            new Implementation<DepSpecFlattener<Heirarchy_, Item_> >(env)),
+    PrivateImplementationPattern<DepSpecFlattener<Heirarchy_, Item_> >(env),
     _imp(PrivateImplementationPattern<DepSpecFlattener<Heirarchy_, Item_> >::_imp)
 {
 }

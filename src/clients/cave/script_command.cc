@@ -51,7 +51,7 @@ namespace paludis
 }
 
 ScriptCommand::ScriptCommand(const std::string &, const FSEntry & e) :
-    PrivateImplementationPattern<ScriptCommand>(new Implementation<ScriptCommand>(e))
+    PrivateImplementationPattern<ScriptCommand>(e)
 {
 }
 

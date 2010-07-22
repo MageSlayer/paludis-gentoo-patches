@@ -63,7 +63,7 @@ namespace paludis
 }
 
 MyOptionsRequirementsVerifier::MyOptionsRequirementsVerifier(const std::shared_ptr<const ERepositoryID> & id) :
-    PrivateImplementationPattern<MyOptionsRequirementsVerifier>(new Implementation<MyOptionsRequirementsVerifier>(id))
+    PrivateImplementationPattern<MyOptionsRequirementsVerifier>(id)
 {
 }
 

@@ -74,7 +74,7 @@ namespace paludis
 }
 
 UnavailableRepositoryID::UnavailableRepositoryID(const UnavailableRepositoryIDParams & entry) :
-    PrivateImplementationPattern<UnavailableRepositoryID>(new Implementation<UnavailableRepositoryID>(entry)),
+    PrivateImplementationPattern<UnavailableRepositoryID>(entry),
     _imp(PrivateImplementationPattern<UnavailableRepositoryID>::_imp)
 {
     if (_imp->dependencies_key)

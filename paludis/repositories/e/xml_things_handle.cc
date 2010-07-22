@@ -123,7 +123,7 @@ namespace paludis
 }
 
 XMLThingsHandle::XMLThingsHandle() :
-    PrivateImplementationPattern<XMLThingsHandle>(new Implementation<XMLThingsHandle>)
+    PrivateImplementationPattern<XMLThingsHandle>()
 {
 }
 

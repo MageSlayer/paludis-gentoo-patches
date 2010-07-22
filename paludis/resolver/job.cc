@@ -47,7 +47,7 @@ namespace paludis
 }
 
 PretendJob::PretendJob(const PackageDepSpec & o) :
-    PrivateImplementationPattern<PretendJob>(new Implementation<PretendJob>(o))
+    PrivateImplementationPattern<PretendJob>(o)
 {
 }
 
@@ -118,7 +118,7 @@ namespace paludis
 FetchJob::FetchJob(
         const std::shared_ptr<const JobRequirements> & r,
         const PackageDepSpec & o) :
-    PrivateImplementationPattern<FetchJob>(new Implementation<FetchJob>(r, o))
+    PrivateImplementationPattern<FetchJob>(r, o)
 {
 }
 
@@ -218,7 +218,7 @@ InstallJob::InstallJob(
         const DestinationType t,
         const std::shared_ptr<const Sequence<PackageDepSpec> > & r
         ) :
-    PrivateImplementationPattern<InstallJob>(new Implementation<InstallJob>(q, o, d, t, r))
+    PrivateImplementationPattern<InstallJob>(q, o, d, t, r)
 {
 }
 
@@ -345,7 +345,7 @@ UninstallJob::UninstallJob(
         const std::shared_ptr<const JobRequirements> & q,
         const std::shared_ptr<const Sequence<PackageDepSpec> > & r
         ) :
-    PrivateImplementationPattern<UninstallJob>(new Implementation<UninstallJob>(q, r))
+    PrivateImplementationPattern<UninstallJob>(q, r)
 {
 }
 

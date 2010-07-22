@@ -164,7 +164,7 @@ Symbol<ElfType_>::~Symbol()
 template <typename ElfType_>
 SymbolSection<ElfType_>::SymbolSection(typename ElfType_::Word index, const typename ElfType_::SectionHeader & shdr, std::istream & stream, bool need_byte_swap) :
     Section<ElfType_>(index, shdr),
-    PrivateImplementationPattern<SymbolSection>(new Implementation<SymbolSection>),
+    PrivateImplementationPattern<SymbolSection>(),
     _type("invalid")
 {
     if (shdr.sh_type == SHT_DYNSYM)

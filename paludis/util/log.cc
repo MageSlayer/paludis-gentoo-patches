@@ -127,7 +127,7 @@ namespace paludis
 }
 
 Log::Log() :
-    PrivateImplementationPattern<Log>(new Implementation<Log>)
+    PrivateImplementationPattern<Log>()
 {
 }
 

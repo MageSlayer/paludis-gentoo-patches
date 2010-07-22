@@ -88,7 +88,7 @@ RepositoryRepositoryConfigurationError::RepositoryRepositoryConfigurationError(c
 }
 
 RepositoryRepository::RepositoryRepository(const RepositoryRepositoryParams & p) :
-    PrivateImplementationPattern<RepositoryRepository>(new Implementation<RepositoryRepository>(this, p)),
+    PrivateImplementationPattern<RepositoryRepository>(this, p),
     Repository(
             p.environment(),
             p.name(),

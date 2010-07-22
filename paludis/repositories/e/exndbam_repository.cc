@@ -109,7 +109,7 @@ ExndbamRepository::ExndbamRepository(const RepositoryName & n, const ExndbamRepo
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
-    PrivateImplementationPattern<ExndbamRepository>(new Implementation<ExndbamRepository>(p)),
+    PrivateImplementationPattern<ExndbamRepository>(p),
     _imp(PrivateImplementationPattern<ExndbamRepository>::_imp)
 {
     _add_metadata_keys();

@@ -85,7 +85,7 @@ UnwrittenRepositoryConfigurationError::UnwrittenRepositoryConfigurationError(con
 }
 
 UnwrittenRepository::UnwrittenRepository(const UnwrittenRepositoryParams & p) :
-    PrivateImplementationPattern<UnwrittenRepository>(new Implementation<UnwrittenRepository>(this, p)),
+    PrivateImplementationPattern<UnwrittenRepository>(this, p),
     Repository(
             p.environment(),
             p.name(),

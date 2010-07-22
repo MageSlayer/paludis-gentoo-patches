@@ -110,22 +110,22 @@ namespace paludis
 }
 
 ConfigFile::Source::Source(const FSEntry & f) :
-    PrivateImplementationPattern<ConfigFile::Source>(new Implementation<ConfigFile::Source>(f))
+    PrivateImplementationPattern<ConfigFile::Source>(f)
 {
 }
 
 ConfigFile::Source::Source(const std::string & f) :
-    PrivateImplementationPattern<ConfigFile::Source>(new Implementation<ConfigFile::Source>(f))
+    PrivateImplementationPattern<ConfigFile::Source>(f)
 {
 }
 
 ConfigFile::Source::Source(std::istream & f) :
-    PrivateImplementationPattern<ConfigFile::Source>(new Implementation<ConfigFile::Source>(f))
+    PrivateImplementationPattern<ConfigFile::Source>(f)
 {
 }
 
 ConfigFile::Source::Source(const ConfigFile::Source & f) :
-    PrivateImplementationPattern<ConfigFile::Source>(new Implementation<ConfigFile::Source>(f._imp->filename, f._imp->text))
+    PrivateImplementationPattern<ConfigFile::Source>(f._imp->filename, f._imp->text)
 {
 }
 
@@ -190,7 +190,7 @@ namespace
 }
 
 LineConfigFile::LineConfigFile(const Source & sr, const LineConfigFileOptions & o) :
-    PrivateImplementationPattern<LineConfigFile>(new Implementation<LineConfigFile>(o))
+    PrivateImplementationPattern<LineConfigFile>(o)
 {
     Context context("When parsing line-based configuration file '" + (sr.filename().empty() ? "?" : sr.filename()) + "':");
 
@@ -537,7 +537,7 @@ KeyValueConfigFile::KeyValueConfigFile(
         const KeyValueConfigFileOptions & o,
         const KeyValueConfigFile::DefaultFunction & f,
         const KeyValueConfigFile::TransformationFunction & i) :
-    PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>(o, f, i))
+    PrivateImplementationPattern<KeyValueConfigFile>(o, f, i)
 {
     Context context("When parsing key=value-based configuration file '" + (sr.filename().empty() ? "?" : sr.filename()) + "':");
 

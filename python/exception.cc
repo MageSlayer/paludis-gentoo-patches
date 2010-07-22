@@ -46,7 +46,7 @@ namespace paludis
 }
 
 ExceptionRegister::ExceptionRegister() :
-    PrivateImplementationPattern<ExceptionRegister>(new Implementation<ExceptionRegister>)
+    PrivateImplementationPattern<ExceptionRegister>()
 {
 }
 

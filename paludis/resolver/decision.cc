@@ -212,7 +212,7 @@ namespace paludis
 }
 
 NothingNoChangeDecision::NothingNoChangeDecision(const Resolvent & r, const bool t) :
-    PrivateImplementationPattern<NothingNoChangeDecision>(new Implementation<NothingNoChangeDecision>(r, t))
+    PrivateImplementationPattern<NothingNoChangeDecision>(r, t)
 {
 }
 
@@ -267,8 +267,7 @@ namespace paludis
 
 ExistingNoChangeDecision::ExistingNoChangeDecision(const Resolvent & l, const std::shared_ptr<const PackageID> & e,
         const bool s, const bool v, const bool r, const bool t) :
-    PrivateImplementationPattern<ExistingNoChangeDecision>(new Implementation<ExistingNoChangeDecision>(
-                l, e, s, v, r, t))
+    PrivateImplementationPattern<ExistingNoChangeDecision>(l, e, s, v, r, t)
 {
 }
 
@@ -363,7 +362,7 @@ ChangesToMakeDecision::ChangesToMakeDecision(
         const bool t,
         const std::shared_ptr<const Destination> & d,
         const std::function<void (ChangesToMakeDecision &)> & f) :
-    PrivateImplementationPattern<ChangesToMakeDecision>(new Implementation<ChangesToMakeDecision>(r, o, b, c, t, d))
+    PrivateImplementationPattern<ChangesToMakeDecision>(r, o, b, c, t, d)
 {
     if (f)
         f(*this);
@@ -484,7 +483,7 @@ UnableToMakeDecision::UnableToMakeDecision(
         const Resolvent & l,
         const std::shared_ptr<const UnsuitableCandidates> & u,
         const bool t) :
-    PrivateImplementationPattern<UnableToMakeDecision>(new Implementation<UnableToMakeDecision>(l, u, t))
+    PrivateImplementationPattern<UnableToMakeDecision>(l, u, t)
 {
 }
 
@@ -538,7 +537,7 @@ namespace paludis
 }
 
 RemoveDecision::RemoveDecision(const Resolvent & l, const std::shared_ptr<const PackageIDSequence> & i, const bool t) :
-    PrivateImplementationPattern<RemoveDecision>(new Implementation<RemoveDecision>(l, i, t))
+    PrivateImplementationPattern<RemoveDecision>(l, i, t)
 {
 }
 
@@ -609,8 +608,7 @@ namespace paludis
 }
 
 BreakDecision::BreakDecision(const Resolvent & l, const std::shared_ptr<const PackageID> & e, const bool t) :
-    PrivateImplementationPattern<BreakDecision>(new Implementation<BreakDecision>(
-                l, e, t))
+    PrivateImplementationPattern<BreakDecision>(l, e, t)
 {
 }
 

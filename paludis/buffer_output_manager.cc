@@ -45,7 +45,7 @@ namespace paludis
 
 BufferOutputManager::BufferOutputManager(
         const std::shared_ptr<OutputManager> & c) :
-    PrivateImplementationPattern<BufferOutputManager>(new Implementation<BufferOutputManager>(c))
+    PrivateImplementationPattern<BufferOutputManager>(c)
 {
 }
 

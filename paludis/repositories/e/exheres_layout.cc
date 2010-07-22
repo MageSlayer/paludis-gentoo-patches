@@ -97,7 +97,7 @@ namespace paludis
 ExheresLayout::ExheresLayout(const ERepository * const r, const FSEntry & tree_root,
         const std::shared_ptr<const FSEntrySequence> & f) :
     Layout(f),
-    PrivateImplementationPattern<ExheresLayout>(new Implementation<ExheresLayout>(r, tree_root))
+    PrivateImplementationPattern<ExheresLayout>(r, tree_root)
 {
     if (master_repositories_locations())
     {

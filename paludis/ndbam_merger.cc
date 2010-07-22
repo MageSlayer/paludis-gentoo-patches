@@ -79,7 +79,7 @@ NDBAMMerger::NDBAMMerger(const NDBAMMergerParams & p) :
                 n::options() = p.options(),
                 n::root() = p.root()
                 )),
-    PrivateImplementationPattern<NDBAMMerger>(new Implementation<NDBAMMerger>(p)),
+    PrivateImplementationPattern<NDBAMMerger>(p),
     _imp(PrivateImplementationPattern<NDBAMMerger>::_imp)
 {
 }

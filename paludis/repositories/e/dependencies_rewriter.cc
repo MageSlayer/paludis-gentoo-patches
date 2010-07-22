@@ -82,7 +82,7 @@ namespace paludis
 }
 
 DependenciesRewriter::DependenciesRewriter() :
-    PrivateImplementationPattern<DependenciesRewriter>(new Implementation<DependenciesRewriter>)
+    PrivateImplementationPattern<DependenciesRewriter>()
 {
 }
 

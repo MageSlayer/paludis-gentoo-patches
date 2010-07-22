@@ -60,17 +60,21 @@ namespace paludis
             class ImpPtr
             {
                 private:
-                    ImpPtr(const ImpPtr &);
-                    void operator= (const ImpPtr &);
                     Implementation<C_> * _ptr;
 
                 public:
                     ///\name Basic operations
                     ///\{
 
-                    ImpPtr(Implementation<C_> * p);
+                    template <typename... Args_>
+                    explicit ImpPtr(Args_ && ... args);
 
                     ~ImpPtr();
+
+                    ImpPtr(ImpPtr &&);
+
+                    ImpPtr(const ImpPtr &) = delete;
+                    ImpPtr & operator= (const ImpPtr &) = delete;
 
                     ///\}
 
@@ -101,7 +105,10 @@ namespace paludis
             /**
              * Constructor.
              */
-            explicit PrivateImplementationPattern(Implementation<C_> * i);
+            template <typename... Args_>
+            explicit PrivateImplementationPattern(Args_ && ... args);
+
+            explicit PrivateImplementationPattern(Implementation<C_> *) = delete;
 
             ~PrivateImplementationPattern();
     };

@@ -65,7 +65,7 @@ namespace paludis
 
 FileOutputManager::FileOutputManager(const FSEntry & o, const bool k, const bool l,
         const std::shared_ptr<OutputManager> & m, const std::string & s) :
-    PrivateImplementationPattern<FileOutputManager>(new Implementation<FileOutputManager>(o, k, l, m, s))
+    PrivateImplementationPattern<FileOutputManager>(o, k, l, m, s)
 {
 }
 

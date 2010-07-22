@@ -75,7 +75,7 @@ namespace
 const std::shared_ptr<Set<std::string> > Implementation<RepositoryID>::behaviours_set = make_behaviours();
 
 RepositoryID::RepositoryID(const RepositoryIDParams & entry) :
-    PrivateImplementationPattern<RepositoryID>(new Implementation<RepositoryID>(entry)),
+    PrivateImplementationPattern<RepositoryID>(entry),
     _imp(PrivateImplementationPattern<RepositoryID>::_imp)
 {
     add_metadata_key(_imp->behaviours_key);

@@ -112,7 +112,7 @@ namespace paludis
 
 template <typename Decision_, typename Notes_>
 Decisions<Decision_, Notes_>::Decisions() :
-    PrivateImplementationPattern<Decisions<Decision_, Notes_> >(new Implementation<Decisions<Decision_, Notes_> >)
+    PrivateImplementationPattern<Decisions<Decision_, Notes_> >()
 {
 }
 

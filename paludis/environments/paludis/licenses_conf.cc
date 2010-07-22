@@ -73,7 +73,7 @@ namespace paludis
 }
 
 LicensesConf::LicensesConf(const PaludisEnvironment * const e) :
-    PrivateImplementationPattern<LicensesConf>(new Implementation<LicensesConf>(e))
+    PrivateImplementationPattern<LicensesConf>(e)
 {
 }
 

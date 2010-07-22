@@ -46,7 +46,7 @@ namespace paludis
 }
 
 MetadataXMLPool::MetadataXMLPool() :
-    PrivateImplementationPattern<MetadataXMLPool>(new Implementation<MetadataXMLPool>)
+    PrivateImplementationPattern<MetadataXMLPool>()
 {
 }
 

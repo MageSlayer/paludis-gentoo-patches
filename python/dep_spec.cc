@@ -111,7 +111,7 @@ namespace paludis
 }
 
 PythonCompositeDepSpec::PythonCompositeDepSpec() :
-    PrivateImplementationPattern<PythonCompositeDepSpec>(new Implementation<PythonCompositeDepSpec>)
+    PrivateImplementationPattern<PythonCompositeDepSpec>()
 {
 }
 
@@ -214,18 +214,18 @@ deep_copy(const std::shared_ptr<const T_> & x)
 
 PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
     PythonStringDepSpec(p.text()),
-    PrivateImplementationPattern<PythonPackageDepSpec>(new Implementation<PythonPackageDepSpec>(
-                deep_copy(p.package_ptr()),
-                deep_copy(p.category_name_part_ptr()),
-                deep_copy(p.package_name_part_ptr()),
-                std::make_shared<VersionRequirements>(),
-                p.version_requirements_mode(),
-                p.slot_requirement_ptr(),
-                deep_copy(p.in_repository_ptr()),
-                deep_copy(p.from_repository_ptr()),
-                p.additional_requirements_ptr(),
-                p.tag(),
-                stringify(p)))
+    PrivateImplementationPattern<PythonPackageDepSpec>(
+            deep_copy(p.package_ptr()),
+            deep_copy(p.category_name_part_ptr()),
+            deep_copy(p.package_name_part_ptr()),
+            std::make_shared<VersionRequirements>(),
+            p.version_requirements_mode(),
+            p.slot_requirement_ptr(),
+            deep_copy(p.in_repository_ptr()),
+            deep_copy(p.from_repository_ptr()),
+            p.additional_requirements_ptr(),
+            p.tag(),
+            stringify(p))
 {
     if (p.version_requirements_ptr())
     {
@@ -236,18 +236,18 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
 
 PythonPackageDepSpec::PythonPackageDepSpec(const PythonPackageDepSpec & p) :
     PythonStringDepSpec(p.text()),
-    PrivateImplementationPattern<PythonPackageDepSpec>(new Implementation<PythonPackageDepSpec>(
-                deep_copy(p.package_ptr()),
-                deep_copy(p.category_name_part_ptr()),
-                deep_copy(p.package_name_part_ptr()),
-                std::make_shared<VersionRequirements>(),
-                p.version_requirements_mode(),
-                p.slot_requirement_ptr(),
-                deep_copy(p.in_repository_ptr()),
-                deep_copy(p.from_repository_ptr()),
-                p.additional_requirements_ptr(),
-                p.tag(),
-                p.py_str()))
+    PrivateImplementationPattern<PythonPackageDepSpec>(
+            deep_copy(p.package_ptr()),
+            deep_copy(p.category_name_part_ptr()),
+            deep_copy(p.package_name_part_ptr()),
+            std::make_shared<VersionRequirements>(),
+            p.version_requirements_mode(),
+            p.slot_requirement_ptr(),
+            deep_copy(p.in_repository_ptr()),
+            deep_copy(p.from_repository_ptr()),
+            p.additional_requirements_ptr(),
+            p.tag(),
+            p.py_str())
 {
     std::copy(p.version_requirements_ptr()->begin(), p.version_requirements_ptr()->end(),
             _imp->version_requirements->back_inserter());

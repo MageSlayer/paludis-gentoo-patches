@@ -141,8 +141,7 @@ namespace paludis
 }
 
 PaludisEnvironment::PaludisEnvironment(const std::string & s) :
-    PrivateImplementationPattern<PaludisEnvironment>(new Implementation<PaludisEnvironment>(
-                this, std::shared_ptr<PaludisConfig>(new PaludisConfig(this, s)))),
+    PrivateImplementationPattern<PaludisEnvironment>(this, std::shared_ptr<PaludisConfig>(new PaludisConfig(this, s))),
     _imp(PrivateImplementationPattern<PaludisEnvironment>::_imp)
 {
     Context context("When loading paludis environment:");

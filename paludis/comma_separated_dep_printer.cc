@@ -61,7 +61,7 @@ namespace paludis
 
 CommaSeparatedDepPrinter::CommaSeparatedDepPrinter(const Environment * const e,
         const DependencySpecTree::ItemFormatter & f, const bool flat) :
-    PrivateImplementationPattern<CommaSeparatedDepPrinter>(new Implementation<CommaSeparatedDepPrinter>(e, f, 0, flat))
+    PrivateImplementationPattern<CommaSeparatedDepPrinter>(e, f, 0, flat)
 {
 }
 

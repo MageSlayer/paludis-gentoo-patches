@@ -504,7 +504,7 @@ namespace paludis
 }
 
 Hooker::Hooker(const Environment * const e) :
-    PrivateImplementationPattern<Hooker>(new Implementation<Hooker>(e))
+    PrivateImplementationPattern<Hooker>(e)
 {
 }
 

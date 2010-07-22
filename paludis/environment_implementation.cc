@@ -124,7 +124,7 @@ namespace paludis
 }
 
 EnvironmentImplementation::EnvironmentImplementation() :
-    PrivateImplementationPattern<EnvironmentImplementation>(new Implementation<EnvironmentImplementation>),
+    PrivateImplementationPattern<EnvironmentImplementation>(),
     _imp(PrivateImplementationPattern<EnvironmentImplementation>::_imp)
 {
 }

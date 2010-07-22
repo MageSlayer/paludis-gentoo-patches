@@ -43,7 +43,7 @@ namespace paludis
 }
 
 BufferOutputStreamBuf::BufferOutputStreamBuf() :
-    PrivateImplementationPattern<BufferOutputStreamBuf>(new Implementation<BufferOutputStreamBuf>())
+    PrivateImplementationPattern<BufferOutputStreamBuf>()
 {
     setg(0, 0, 0);
 }

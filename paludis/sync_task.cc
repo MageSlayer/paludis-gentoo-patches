@@ -58,7 +58,7 @@ namespace paludis
 }
 
 SyncTask::SyncTask(Environment * const env, const bool p) :
-    PrivateImplementationPattern<SyncTask>(new Implementation<SyncTask>(env, p))
+    PrivateImplementationPattern<SyncTask>(env, p)
 {
 }
 

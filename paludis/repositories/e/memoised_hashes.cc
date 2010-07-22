@@ -52,7 +52,7 @@ namespace paludis
 }
 
 MemoisedHashes::MemoisedHashes() :
-    PrivateImplementationPattern<MemoisedHashes>(new Implementation<MemoisedHashes>)
+    PrivateImplementationPattern<MemoisedHashes>()
 {
 }
 

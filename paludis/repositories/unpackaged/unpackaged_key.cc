@@ -64,7 +64,7 @@ UnpackagedDependencyKey::UnpackagedDependencyKey(const Environment * const env,
         const std::string & r, const std::string & h, const MetadataKeyType t,
         const std::shared_ptr<const DependenciesLabelSequence> & l,
         const std::string & v) :
-    PrivateImplementationPattern<UnpackagedDependencyKey>(new Implementation<UnpackagedDependencyKey>(env, v, l, r, h, t))
+    PrivateImplementationPattern<UnpackagedDependencyKey>(env, v, l, r, h, t)
 {
 }
 
@@ -147,7 +147,7 @@ namespace paludis
 
 UnpackagedChoicesKey::UnpackagedChoicesKey(const Environment * const env, const std::string & r, const std::string & h,
         const MetadataKeyType t, const UnpackagedID * const id) :
-    PrivateImplementationPattern<UnpackagedChoicesKey>(new Implementation<UnpackagedChoicesKey>(env, id, r, h, t))
+    PrivateImplementationPattern<UnpackagedChoicesKey>(env, id, r, h, t)
 {
 }
 

@@ -72,8 +72,7 @@ FormatMessagesOutputManager::FormatMessagesOutputManager(
         const std::string & format_error,
         const std::string & format_log,
         const FormatMessagesOutputManagerFormatFunction & f) :
-    PrivateImplementationPattern<FormatMessagesOutputManager>(new Implementation<FormatMessagesOutputManager>(
-                child, format_debug, format_info, format_warn, format_error, format_log, f))
+    PrivateImplementationPattern<FormatMessagesOutputManager>(child, format_debug, format_info, format_warn, format_error, format_log, f)
 {
 }
 

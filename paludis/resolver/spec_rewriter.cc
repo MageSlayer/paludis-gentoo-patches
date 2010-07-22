@@ -81,7 +81,7 @@ namespace paludis
 }
 
 SpecRewriter::SpecRewriter(const Environment * const e) :
-    PrivateImplementationPattern<SpecRewriter>(new Implementation<SpecRewriter>(e))
+    PrivateImplementationPattern<SpecRewriter>(e)
 {
 }
 

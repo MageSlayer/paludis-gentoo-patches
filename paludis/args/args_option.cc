@@ -197,7 +197,7 @@ StringSetArg::StringSetArg(ArgsGroup * const g, const std::string & our_long_nam
         const char our_short_name, const std::string & our_description,
         const StringSetArgOptions & opts) :
     ArgsOption(g, our_long_name, our_short_name, our_description),
-    PrivateImplementationPattern<StringSetArg>(new Implementation<StringSetArg>),
+    PrivateImplementationPattern<StringSetArg>(),
     _validator(0)
 {
     std::copy(opts._imp->options.begin(), opts._imp->options.end(),
@@ -208,7 +208,7 @@ StringSetArg::StringSetArg(ArgsGroup * const g, const std::string & our_long_nam
         const char our_short_name, const std::string & our_description,
         const StringSetArgOptions & opts, void (* v) (const std::string &)) :
     ArgsOption(g, our_long_name, our_short_name, our_description),
-    PrivateImplementationPattern<StringSetArg>(new Implementation<StringSetArg>),
+    PrivateImplementationPattern<StringSetArg>(),
     _validator(v)
 {
     std::copy(opts._imp->options.begin(), opts._imp->options.end(),
@@ -287,7 +287,7 @@ namespace paludis
 StringSequenceArg::StringSequenceArg(ArgsGroup * const g, const std::string & our_long_name,
         const char our_short_name, const std::string & our_description) :
     ArgsOption(g, our_long_name, our_short_name, our_description),
-    PrivateImplementationPattern<StringSequenceArg>(new Implementation<StringSequenceArg>)
+    PrivateImplementationPattern<StringSequenceArg>()
 {
 }
 
@@ -389,7 +389,7 @@ namespace paludis
 }
 
 StringSetArg::StringSetArgOptions::StringSetArgOptions(const std::string & opt, const std::string & desc) :
-    PrivateImplementationPattern<StringSetArgOptions>(new Implementation<StringSetArgOptions>)
+    PrivateImplementationPattern<StringSetArgOptions>()
 {
     _imp->options.push_back(std::make_pair(opt, desc));
 }
@@ -402,7 +402,7 @@ StringSetArg::StringSetArgOptions::operator() (const std::string & opt, const st
 }
 
 StringSetArg::StringSetArgOptions::StringSetArgOptions(const StringSetArg::StringSetArgOptions & o) :
-    PrivateImplementationPattern<StringSetArgOptions>(new Implementation<StringSetArgOptions>)
+    PrivateImplementationPattern<StringSetArgOptions>()
 {
     std::copy(o._imp->options.begin(), o._imp->options.end(),
             std::back_inserter(_imp->options));
@@ -413,7 +413,7 @@ StringSetArg::StringSetArgOptions::~StringSetArgOptions()
 }
 
 StringSetArg::StringSetArgOptions::StringSetArgOptions() :
-    PrivateImplementationPattern<StringSetArgOptions>(new Implementation<StringSetArgOptions>)
+    PrivateImplementationPattern<StringSetArgOptions>()
 {
 }
 
@@ -446,7 +446,7 @@ EnumArg::~EnumArg()
 }
 
 EnumArg::EnumArgOptions::EnumArgOptions(const std::string & opt, const std::string & desc) :
-    PrivateImplementationPattern<EnumArgOptions>(new Implementation<EnumArgOptions>)
+    PrivateImplementationPattern<EnumArgOptions>()
 {
     _imp->options.push_back(make_named_values<AllowedEnumArg>(
                 n::description() = desc,
@@ -456,7 +456,7 @@ EnumArg::EnumArgOptions::EnumArgOptions(const std::string & opt, const std::stri
 }
 
 EnumArg::EnumArgOptions::EnumArgOptions(const std::string & opt, const char s, const std::string & desc) :
-    PrivateImplementationPattern<EnumArgOptions>(new Implementation<EnumArgOptions>)
+    PrivateImplementationPattern<EnumArgOptions>()
 {
     _imp->options.push_back(make_named_values<AllowedEnumArg>(
                 n::description() = desc,
@@ -495,7 +495,7 @@ EnumArg::EnumArg(ArgsGroup * const our_group, const std::string & our_long_name,
         const char our_short_name, const std::string & our_description,
         const EnumArgOptions & opts, const std::string & our_default_arg) :
     ArgsOption(our_group, our_long_name, our_short_name, our_description),
-    PrivateImplementationPattern<EnumArg>(new Implementation<EnumArg>),
+    PrivateImplementationPattern<EnumArg>(),
     _argument(our_default_arg),
     _default_arg(our_default_arg)
 {

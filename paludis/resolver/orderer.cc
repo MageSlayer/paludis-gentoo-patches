@@ -87,7 +87,7 @@ Orderer::Orderer(
         const Environment * const e,
         const ResolverFunctions & f,
         const std::shared_ptr<Resolved> & r) :
-    PrivateImplementationPattern<Orderer>(new Implementation<Orderer>(e, f, r))
+    PrivateImplementationPattern<Orderer>(e, f, r)
 {
 }
 

@@ -108,7 +108,7 @@ namespace paludis
 }
 
 CRANPackageID::CRANPackageID(const Environment * const env, const std::shared_ptr<const CRANRepository> & r, const FSEntry & f) :
-    PrivateImplementationPattern<CRANPackageID>(new Implementation<CRANPackageID>(env, r, f)),
+    PrivateImplementationPattern<CRANPackageID>(env, r, f),
     _imp(PrivateImplementationPattern<CRANPackageID>::_imp)
 {
     Context context("When parsing file '" + stringify(f) + "' to create a CRAN Package ID:");
@@ -277,7 +277,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const std::shared_pt
 
 CRANPackageID::CRANPackageID(const Environment * const e,
         const std::shared_ptr<const CRANRepository> & c, const CRANPackageID * const r, const std::string & t) :
-    PrivateImplementationPattern<CRANPackageID>(new Implementation<CRANPackageID>(e, c, r, t)),
+    PrivateImplementationPattern<CRANPackageID>(e, c, r, t),
     _imp(PrivateImplementationPattern<CRANPackageID>::_imp)
 {
     Context context("When creating contained ID '" + stringify(t) + "' in " + stringify(*r) + "':");

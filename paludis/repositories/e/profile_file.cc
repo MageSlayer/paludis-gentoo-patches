@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -164,7 +164,7 @@ ProfileFile<F_>::add_file(const FSEntry & f)
 
 template <typename F_>
 ProfileFile<F_>::ProfileFile(const ERepository * const r) :
-    PrivateImplementationPattern<ProfileFile>(new Implementation<ProfileFile<F_> >(r))
+    PrivateImplementationPattern<ProfileFile>(r)
 {
 }
 

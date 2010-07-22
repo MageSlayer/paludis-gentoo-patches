@@ -73,7 +73,7 @@ namespace paludis
 }
 
 UnavailablePackageID::UnavailablePackageID(const UnavailablePackageIDParams & entry) :
-    PrivateImplementationPattern<UnavailablePackageID>(new Implementation<UnavailablePackageID>(entry)),
+    PrivateImplementationPattern<UnavailablePackageID>(entry),
     _imp(PrivateImplementationPattern<UnavailablePackageID>::_imp)
 {
     add_metadata_key(_imp->slot_key);

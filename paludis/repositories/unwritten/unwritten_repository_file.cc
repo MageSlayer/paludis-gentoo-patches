@@ -63,7 +63,7 @@ namespace paludis
 }
 
 UnwrittenRepositoryFile::UnwrittenRepositoryFile(const FSEntry & f) :
-    PrivateImplementationPattern<UnwrittenRepositoryFile>(new Implementation<UnwrittenRepositoryFile>)
+    PrivateImplementationPattern<UnwrittenRepositoryFile>()
 {
     _load(f);
 }

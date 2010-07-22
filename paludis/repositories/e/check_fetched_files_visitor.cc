@@ -118,7 +118,7 @@ CheckFetchedFilesVisitor::CheckFetchedFilesVisitor(
         const bool x,
         const bool u,
         const bool nm) :
-    PrivateImplementationPattern<CheckFetchedFilesVisitor>(new Implementation<CheckFetchedFilesVisitor>(e, i, d, c, n, m2, um, md, x, u, nm))
+    PrivateImplementationPattern<CheckFetchedFilesVisitor>(e, i, d, c, n, m2, um, md, x, u, nm)
 {
 }
 

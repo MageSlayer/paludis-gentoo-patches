@@ -34,7 +34,7 @@ namespace paludis
 }
 
 ELikeAnnotations::ELikeAnnotations(const std::shared_ptr<const Map<std::string, std::string> > & m) :
-    PrivateImplementationPattern<ELikeAnnotations>(new Implementation<ELikeAnnotations>)
+    PrivateImplementationPattern<ELikeAnnotations>()
 {
     for (Map<std::string, std::string>::ConstIterator k(m->begin()), k_end(m->end()) ;
             k != k_end ; ++k)

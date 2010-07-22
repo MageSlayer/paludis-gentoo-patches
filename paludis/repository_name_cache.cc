@@ -180,8 +180,7 @@ Implementation<RepositoryNameCache>::update(const PackageNamePart & p, NameCache
 RepositoryNameCache::RepositoryNameCache(
         const FSEntry & location,
         const Repository * const repo) :
-    PrivateImplementationPattern<RepositoryNameCache>(new Implementation<RepositoryNameCache>(
-                location, repo))
+    PrivateImplementationPattern<RepositoryNameCache>(location, repo)
 {
 }
 

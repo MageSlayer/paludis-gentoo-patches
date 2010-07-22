@@ -207,7 +207,7 @@ namespace paludis
 }
 
 RangeRewriter::RangeRewriter() :
-    PrivateImplementationPattern<RangeRewriter>(new Implementation<RangeRewriter>())
+    PrivateImplementationPattern<RangeRewriter>()
 {
 }
 

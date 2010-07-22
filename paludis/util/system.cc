@@ -230,25 +230,25 @@ namespace paludis
 }
 
 Command::Command(const std::string & s) :
-    PrivateImplementationPattern<Command>(new Implementation<Command>(s))
+    PrivateImplementationPattern<Command>(s)
 {
 }
 
 Command::Command(const char * const s) :
-    PrivateImplementationPattern<Command>(new Implementation<Command>(s))
+    PrivateImplementationPattern<Command>(s)
 {
 }
 
 Command::Command(const Command & other) :
-    PrivateImplementationPattern<Command>(new Implementation<Command>(other._imp->command,
-                other._imp->clearenv, other._imp->setenv_values, other._imp->chdir, other._imp->echo_to_stderr,
-                other._imp->uid, other._imp->gid, other._imp->stdout_prefix, other._imp->stderr_prefix,
-                other._imp->prefix_discard_blank_output,
-                other._imp->prefix_blank_lines, other._imp->pipe_command_env_var_prefix,
-                other._imp->pipe_command_handler, other._imp->captured_stdout_stream,
-                other._imp->captured_stderr_stream, other._imp->output_stream, other._imp->output_fd,
-                other._imp->output_fd_env_var, other._imp->input_stream, other._imp->input_fd,
-                other._imp->input_fd_env_var, other._imp->ptys))
+    PrivateImplementationPattern<Command>(other._imp->command,
+            other._imp->clearenv, other._imp->setenv_values, other._imp->chdir, other._imp->echo_to_stderr,
+            other._imp->uid, other._imp->gid, other._imp->stdout_prefix, other._imp->stderr_prefix,
+            other._imp->prefix_discard_blank_output,
+            other._imp->prefix_blank_lines, other._imp->pipe_command_env_var_prefix,
+            other._imp->pipe_command_handler, other._imp->captured_stdout_stream,
+            other._imp->captured_stderr_stream, other._imp->output_stream, other._imp->output_fd,
+            other._imp->output_fd_env_var, other._imp->input_stream, other._imp->input_fd,
+            other._imp->input_fd_env_var, other._imp->ptys)
 {
 }
 

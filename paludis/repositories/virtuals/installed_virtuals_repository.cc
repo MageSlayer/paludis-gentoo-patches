@@ -117,8 +117,7 @@ InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * con
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
-    PrivateImplementationPattern<InstalledVirtualsRepository>(
-            new Implementation<InstalledVirtualsRepository>(env, r)),
+    PrivateImplementationPattern<InstalledVirtualsRepository>(env, r),
     _imp(PrivateImplementationPattern<InstalledVirtualsRepository>::_imp)
 {
     add_metadata_key(_imp->root_key);

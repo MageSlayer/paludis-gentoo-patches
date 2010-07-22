@@ -71,7 +71,7 @@ namespace paludis
 
 ShowSuggestVisitor::ShowSuggestVisitor(DepList * const d, const std::shared_ptr<const DestinationsSet> & dd,
         const Environment * const e, const std::shared_ptr<const PackageID> & p, bool t, bool l) :
-    PrivateImplementationPattern<ShowSuggestVisitor>(new Implementation<ShowSuggestVisitor>(d, dd, e, p, t, l))
+    PrivateImplementationPattern<ShowSuggestVisitor>(d, dd, e, p, t, l)
 {
 }
 

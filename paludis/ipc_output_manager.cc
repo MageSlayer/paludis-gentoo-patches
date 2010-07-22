@@ -77,7 +77,7 @@ namespace paludis
 }
 
 IPCOutputManager::IPCOutputManager(const int r, const int w, const CreateOutputManagerInfo & i) :
-    PrivateImplementationPattern<IPCOutputManager>(new Implementation<IPCOutputManager>(r, w))
+    PrivateImplementationPattern<IPCOutputManager>(r, w)
 {
     std::stringstream ser_stream;
     Serialiser ser(ser_stream);
@@ -208,7 +208,7 @@ namespace paludis
 
 IPCInputManager::IPCInputManager(const Environment * const e,
         const std::function<void (const std::shared_ptr<OutputManager> &)> & c) :
-    PrivateImplementationPattern<IPCInputManager>(new Implementation<IPCInputManager>(e, c))
+    PrivateImplementationPattern<IPCInputManager>(e, c)
 {
 }
 
@@ -407,7 +407,7 @@ OutputManagerFromIPC::OutputManagerFromIPC(const Environment * const e,
         const std::shared_ptr<const PackageID> & i,
         const OutputExclusivity x,
         const ClientOutputFeatures & c) :
-    PrivateImplementationPattern<OutputManagerFromIPC>(new Implementation<OutputManagerFromIPC>(e, i, x, c))
+    PrivateImplementationPattern<OutputManagerFromIPC>(e, i, x, c)
 {
 }
 

@@ -62,8 +62,7 @@ namespace paludis
 UnavailableRepositoryDependenciesKey::UnavailableRepositoryDependenciesKey(const Environment * const env,
         const std::string & r, const std::string & h, const MetadataKeyType t,
         const std::string & v) :
-    PrivateImplementationPattern<UnavailableRepositoryDependenciesKey>(
-            new Implementation<UnavailableRepositoryDependenciesKey>(env, r, h, t, v))
+    PrivateImplementationPattern<UnavailableRepositoryDependenciesKey>(env, r, h, t, v)
 {
 }
 

@@ -62,7 +62,7 @@ namespace paludis
 }
 
 StringNode::StringNode(const std::string & t) :
-    PrivateImplementationPattern<StringNode>(new Implementation<StringNode>(t))
+    PrivateImplementationPattern<StringNode>(t)
 {
 }
 
@@ -86,7 +86,7 @@ namespace paludis
 }
 
 SequenceNode::SequenceNode() :
-    PrivateImplementationPattern<SequenceNode>(new Implementation<SequenceNode>)
+    PrivateImplementationPattern<SequenceNode>()
 {
 }
 
@@ -122,7 +122,7 @@ namespace paludis
 }
 
 MapNode::MapNode() :
-    PrivateImplementationPattern<MapNode>(new Implementation<MapNode>)
+    PrivateImplementationPattern<MapNode>()
 {
 }
 
@@ -315,7 +315,7 @@ namespace paludis
 }
 
 Document::Document(const std::string & s) :
-    PrivateImplementationPattern<Document>(new Implementation<Document>(s))
+    PrivateImplementationPattern<Document>(s)
 {
     Context c("When parsing yaml document:");
 
@@ -360,7 +360,7 @@ namespace paludis
 }
 
 NodeManager::NodeManager() :
-    PrivateImplementationPattern<NodeManager>(new Implementation<NodeManager>)
+    PrivateImplementationPattern<NodeManager>()
 {
 }
 

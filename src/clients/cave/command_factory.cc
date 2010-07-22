@@ -109,7 +109,7 @@ namespace
 }
 
 CommandFactory::CommandFactory() :
-    PrivateImplementationPattern<CommandFactory>(new Implementation<CommandFactory>)
+    PrivateImplementationPattern<CommandFactory>()
 {
     std::vector<std::string> paths;
     tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(getenv_with_default("CAVE_COMMANDS_PATH", LIBEXECDIR "/cave/commands"),

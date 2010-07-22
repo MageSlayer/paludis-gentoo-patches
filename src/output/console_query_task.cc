@@ -77,7 +77,7 @@ namespace
 }
 
 ConsoleQueryTask::ConsoleQueryTask(const Environment * const e) :
-    PrivateImplementationPattern<ConsoleQueryTask>(new Implementation<ConsoleQueryTask>(e))
+    PrivateImplementationPattern<ConsoleQueryTask>(e)
 {
 }
 

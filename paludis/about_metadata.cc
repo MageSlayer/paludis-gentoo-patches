@@ -62,7 +62,7 @@ namespace paludis
 }
 
 AboutMetadata::AboutMetadata() :
-    PrivateImplementationPattern<AboutMetadata>(new Implementation<AboutMetadata>),
+    PrivateImplementationPattern<AboutMetadata>(),
     _imp(PrivateImplementationPattern<AboutMetadata>::_imp)
 {
     add_metadata_key(_imp->package_key);

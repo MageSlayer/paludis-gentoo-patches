@@ -48,7 +48,7 @@ UnpackagedStripper::UnpackagedStripper(const UnpackagedStripperOptions & options
                 n::split() = options.split(),
                 n::strip() = options.strip()
             )),
-    PrivateImplementationPattern<UnpackagedStripper>(new Implementation<UnpackagedStripper>(options)),
+    PrivateImplementationPattern<UnpackagedStripper>(options),
     _imp(PrivateImplementationPattern<UnpackagedStripper>::_imp)
 {
 }

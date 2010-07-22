@@ -84,7 +84,7 @@ namespace paludis
 }
 
 Resolver::Resolver(const Environment * const e, const ResolverFunctions & f) :
-    PrivateImplementationPattern<Resolver>(new Implementation<Resolver>(e, f))
+    PrivateImplementationPattern<Resolver>(e, f)
 {
 }
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -107,7 +107,7 @@ namespace paludis
 
 ERepositoryNews::ERepositoryNews(const Environment * const e, const ERepository * const p,
         const erepository::ERepositoryParams & k) :
-    PrivateImplementationPattern<ERepositoryNews>(new Implementation<ERepositoryNews>(e, p, k))
+    PrivateImplementationPattern<ERepositoryNews>(e, p, k)
 {
 }
 
@@ -267,7 +267,7 @@ namespace paludis
 }
 
 NewsFile::NewsFile(const FSEntry & our_filename) :
-    PrivateImplementationPattern<NewsFile>(new Implementation<NewsFile>)
+    PrivateImplementationPattern<NewsFile>()
 {
     Context context("When parsing GLEP 42 news file '" + stringify(our_filename) + "':");
 

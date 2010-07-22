@@ -42,7 +42,7 @@ namespace paludis
 }
 
 DamerauLevenshtein::DamerauLevenshtein(const std::string & name) :
-    PrivateImplementationPattern<DamerauLevenshtein>(new Implementation<DamerauLevenshtein>(name))
+    PrivateImplementationPattern<DamerauLevenshtein>(name)
 {
 }
 

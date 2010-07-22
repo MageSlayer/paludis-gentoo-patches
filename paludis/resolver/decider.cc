@@ -94,7 +94,7 @@ namespace paludis
 
 Decider::Decider(const Environment * const e, const ResolverFunctions & f,
         const std::shared_ptr<ResolutionsByResolvent> & l) :
-    PrivateImplementationPattern<Decider>(new Implementation<Decider>(e, f, l))
+    PrivateImplementationPattern<Decider>(e, f, l)
 {
 }
 

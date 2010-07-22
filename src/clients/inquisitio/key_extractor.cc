@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -61,7 +61,7 @@ namespace paludis
 
 KeyExtractor::KeyExtractor(const std::string & k, const bool f, const bool v,
         const Environment & e) :
-    PrivateImplementationPattern<KeyExtractor>(new Implementation<KeyExtractor>(k, f, v, e))
+    PrivateImplementationPattern<KeyExtractor>(k, f, v, e)
 {
 }
 

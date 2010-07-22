@@ -54,7 +54,7 @@ namespace paludis
 TeeOutputManager::TeeOutputManager(
         const std::shared_ptr<const OutputManagerSequence> & s,
         const std::shared_ptr<const OutputManagerSequence> & ss) :
-    PrivateImplementationPattern<TeeOutputManager>(new Implementation<TeeOutputManager>(s, ss))
+    PrivateImplementationPattern<TeeOutputManager>(s, ss)
 {
     for (OutputManagerSequence::ConstIterator i(_imp->streams->begin()), i_end(_imp->streams->end()) ;
             i != i_end ; ++i)

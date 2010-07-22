@@ -108,7 +108,7 @@ namespace
 }
 
 WildcardExpander::WildcardExpander(const std::string & pattern, const paludis::FSEntry & root) :
-    PrivateImplementationPattern<WildcardExpander>(new Implementation<WildcardExpander>)
+    PrivateImplementationPattern<WildcardExpander>()
 {
     // GLOB_NOCHECK seems to be buggy in glibc 2.5: fails
     //        TEST_CHECK_EQUAL(expand("/foo\\*"), "/foo*");
@@ -125,14 +125,13 @@ WildcardExpander::WildcardExpander(const std::string & pattern, const paludis::F
 }
 
 WildcardExpander::WildcardExpander() :
-    PrivateImplementationPattern<WildcardExpander>(new Implementation<WildcardExpander>)
+    PrivateImplementationPattern<WildcardExpander>()
 {
     _imp->it = _imp->files->end();
 }
 
 WildcardExpander::WildcardExpander(const WildcardExpander & other) :
-    PrivateImplementationPattern<WildcardExpander>(
-        new Implementation<WildcardExpander>(other._imp->files, other._imp->it))
+    PrivateImplementationPattern<WildcardExpander>(other._imp->files, other._imp->it)
 {
 }
 

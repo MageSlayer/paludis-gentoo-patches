@@ -833,8 +833,7 @@ TraditionalProfile::TraditionalProfile(
         const Environment * const env, const ERepository * const p, const RepositoryName & name,
         const FSEntrySequence & location,
         const std::string & arch_var_if_special, const bool x) :
-    PrivateImplementationPattern<TraditionalProfile>(
-            new Implementation<TraditionalProfile>(env, p, name, location, arch_var_if_special, x))
+    PrivateImplementationPattern<TraditionalProfile>(env, p, name, location, arch_var_if_special, x)
 {
 }
 

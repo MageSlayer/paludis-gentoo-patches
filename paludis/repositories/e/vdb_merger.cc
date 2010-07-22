@@ -91,7 +91,7 @@ VDBMerger::VDBMerger(const VDBMergerParams & p) :
                 n::options() = p.options(),
                 n::root() = p.root()
             )),
-    PrivateImplementationPattern<VDBMerger>(new Implementation<VDBMerger>(p)),
+    PrivateImplementationPattern<VDBMerger>(p),
     _imp(PrivateImplementationPattern<VDBMerger>::_imp)
 {
 }

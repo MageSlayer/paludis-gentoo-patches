@@ -74,7 +74,7 @@ namespace paludis
 
 template <typename K_, typename V_, typename C_>
 paludis::Map<K_, V_, C_>::Map() :
-    paludis::PrivateImplementationPattern<paludis::Map<K_, V_, C_> >(new paludis::Implementation<paludis::Map<K_, V_, C_> >)
+    paludis::PrivateImplementationPattern<paludis::Map<K_, V_, C_> >()
 {
 }
 

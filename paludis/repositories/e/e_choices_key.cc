@@ -92,7 +92,7 @@ EChoicesKey::EChoicesKey(
         const std::string & r, const std::string & h, const MetadataKeyType t,
         const std::shared_ptr<const ERepository> & p,
         const std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & d) :
-    PrivateImplementationPattern<EChoicesKey>(new Implementation<EChoicesKey>(e, i, p, d, r, h, t))
+    PrivateImplementationPattern<EChoicesKey>(e, i, p, d, r, h, t)
 {
 }
 

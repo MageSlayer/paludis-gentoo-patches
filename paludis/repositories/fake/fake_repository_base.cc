@@ -64,7 +64,7 @@ namespace paludis
 FakeRepositoryBase::FakeRepositoryBase(const Environment * const e,
         const RepositoryName & our_name, const RepositoryCapabilities & caps) :
     Repository(e, our_name, caps),
-    PrivateImplementationPattern<FakeRepositoryBase>(new Implementation<FakeRepositoryBase>(e)),
+    PrivateImplementationPattern<FakeRepositoryBase>(e),
     _imp(PrivateImplementationPattern<FakeRepositoryBase>::_imp)
 {
 }

@@ -60,7 +60,7 @@ namespace paludis
 }
 
 UnavailableRepositoryFile::UnavailableRepositoryFile(const FSEntry & f) :
-    PrivateImplementationPattern<UnavailableRepositoryFile>(new Implementation<UnavailableRepositoryFile>)
+    PrivateImplementationPattern<UnavailableRepositoryFile>()
 {
     _load(f);
 }

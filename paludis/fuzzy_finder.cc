@@ -131,7 +131,7 @@ namespace paludis
 }
 
 FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::string & name, const Filter & filter) :
-    PrivateImplementationPattern<FuzzyCandidatesFinder>(new Implementation<FuzzyCandidatesFinder>)
+    PrivateImplementationPattern<FuzzyCandidatesFinder>()
 {
     Generator g = generator::All();
     std::string package(name);
@@ -192,7 +192,7 @@ namespace paludis
 }
 
 FuzzyRepositoriesFinder::FuzzyRepositoriesFinder(const Environment & e, const std::string & name) :
-    PrivateImplementationPattern<FuzzyRepositoriesFinder>(new Implementation<FuzzyRepositoriesFinder>)
+    PrivateImplementationPattern<FuzzyRepositoriesFinder>()
 {
     DamerauLevenshtein distance_calculator(tolower_0_cost(name));
 

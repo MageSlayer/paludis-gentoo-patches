@@ -65,7 +65,7 @@ Manifest2Error::Manifest2Error(const std::string & msg) throw () :
 }
 
 Manifest2Reader::Manifest2Reader(const FSEntry & f) :
-    PrivateImplementationPattern<Manifest2Reader>(new Implementation<Manifest2Reader>(f))
+    PrivateImplementationPattern<Manifest2Reader>(f)
 {
     if (! f.exists())
         return;

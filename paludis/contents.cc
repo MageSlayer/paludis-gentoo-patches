@@ -42,7 +42,7 @@ namespace paludis
 }
 
 ContentsEntry::ContentsEntry(const FSEntry & n) :
-    PrivateImplementationPattern<ContentsEntry>(new Implementation<ContentsEntry>(n)),
+    PrivateImplementationPattern<ContentsEntry>(n),
     _imp(PrivateImplementationPattern<ContentsEntry>::_imp)
 {
     add_metadata_key(_imp->location_key);
@@ -93,7 +93,7 @@ namespace paludis
 }
 
 ContentsSymEntry::ContentsSymEntry(const FSEntry & our_name, const std::string & our_target) :
-    PrivateImplementationPattern<ContentsSymEntry>(new Implementation<ContentsSymEntry>(our_target)),
+    PrivateImplementationPattern<ContentsSymEntry>(our_target),
     ContentsEntry(our_name),
     _imp(PrivateImplementationPattern<ContentsSymEntry>::_imp)
 {
@@ -126,7 +126,7 @@ namespace paludis
 }
 
 Contents::Contents() :
-    PrivateImplementationPattern<Contents>(new Implementation<Contents>())
+    PrivateImplementationPattern<Contents>()
 {
 }
 

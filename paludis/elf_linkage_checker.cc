@@ -136,7 +136,7 @@ namespace paludis
 }
 
 ElfLinkageChecker::ElfLinkageChecker(const FSEntry & root, const std::string & library) :
-    PrivateImplementationPattern<ElfLinkageChecker>(new Implementation<ElfLinkageChecker>(root, library))
+    PrivateImplementationPattern<ElfLinkageChecker>(root, library)
 {
 }
 

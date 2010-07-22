@@ -101,7 +101,7 @@ FetchVisitor::FetchVisitor(
         const bool sr,
         const std::shared_ptr<OutputManager> & md,
         const GetMirrorsFunction & g) :
-    PrivateImplementationPattern<FetchVisitor>(new Implementation<FetchVisitor>(e, i, p, d, f, u, m, n, sr, md, g))
+    PrivateImplementationPattern<FetchVisitor>(e, i, p, d, f, u, m, n, sr, md, g)
 {
 }
 

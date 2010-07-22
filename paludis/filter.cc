@@ -51,12 +51,12 @@ namespace paludis
 }
 
 Filter::Filter(const std::shared_ptr<const FilterHandler> & h) :
-    PrivateImplementationPattern<Filter>(new Implementation<Filter>(h))
+    PrivateImplementationPattern<Filter>(h)
 {
 }
 
 Filter::Filter(const Filter & other) :
-    PrivateImplementationPattern<Filter>(new Implementation<Filter>(other._imp->handler))
+    PrivateImplementationPattern<Filter>(other._imp->handler)
 {
 }
 

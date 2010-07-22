@@ -48,7 +48,7 @@ EStripper::EStripper(const EStripperOptions & options) :
                 n::split() = options.split(),
                 n::strip() = options.strip()
                 )),
-    PrivateImplementationPattern<EStripper>(new Implementation<EStripper>(options)),
+    PrivateImplementationPattern<EStripper>(options),
     _imp(PrivateImplementationPattern<EStripper>::_imp)
 {
 }

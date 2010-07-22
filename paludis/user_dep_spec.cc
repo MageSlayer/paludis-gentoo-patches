@@ -366,7 +366,7 @@ namespace paludis
 }
 
 UserKeyRequirement::UserKeyRequirement(const std::string & s) :
-    PrivateImplementationPattern<UserKeyRequirement>(new Implementation<UserKeyRequirement>(s))
+    PrivateImplementationPattern<UserKeyRequirement>(s)
 {
 }
 

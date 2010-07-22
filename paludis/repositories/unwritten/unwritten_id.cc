@@ -76,7 +76,7 @@ namespace paludis
 }
 
 UnwrittenID::UnwrittenID(const UnwrittenIDParams & entry) :
-    PrivateImplementationPattern<UnwrittenID>(new Implementation<UnwrittenID>(entry)),
+    PrivateImplementationPattern<UnwrittenID>(entry),
     _imp(PrivateImplementationPattern<UnwrittenID>::_imp)
 {
     if (_imp->slot_key)

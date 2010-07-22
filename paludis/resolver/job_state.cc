@@ -106,7 +106,7 @@ JobSkippedState::serialise(Serialiser & s) const
 }
 
 JobActiveState::JobActiveState() :
-    PrivateImplementationPattern<JobActiveState>(new Implementation<JobActiveState>)
+    PrivateImplementationPattern<JobActiveState>()
 {
 }
 
@@ -153,7 +153,7 @@ JobActiveState::serialise(Serialiser & s) const
 }
 
 JobSucceededState::JobSucceededState(const std::shared_ptr<OutputManager> & m) :
-    PrivateImplementationPattern<JobSucceededState>(new Implementation<JobSucceededState>(m))
+    PrivateImplementationPattern<JobSucceededState>(m)
 {
 }
 
@@ -182,7 +182,7 @@ JobSucceededState::serialise(Serialiser & s) const
 }
 
 JobFailedState::JobFailedState(const std::shared_ptr<OutputManager> & m) :
-    PrivateImplementationPattern<JobFailedState>(new Implementation<JobFailedState>(m))
+    PrivateImplementationPattern<JobFailedState>(m)
 {
 }
 

@@ -64,13 +64,13 @@ namespace paludis
 }
 
 TestEnvironment::TestEnvironment() :
-    PrivateImplementationPattern<TestEnvironment>(new Implementation<TestEnvironment>(this, FSEntry("/"))),
+    PrivateImplementationPattern<TestEnvironment>(this, FSEntry("/")),
     _imp(PrivateImplementationPattern<TestEnvironment>::_imp)
 {
 }
 
 TestEnvironment::TestEnvironment(const FSEntry & r) :
-    PrivateImplementationPattern<TestEnvironment>(new Implementation<TestEnvironment>(this, r)),
+    PrivateImplementationPattern<TestEnvironment>(this, r),
     _imp(PrivateImplementationPattern<TestEnvironment>::_imp)
 {
 }

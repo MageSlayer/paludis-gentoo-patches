@@ -44,7 +44,7 @@ namespace paludis
 
 template <typename Job_>
 JobList<Job_>::JobList() :
-    PrivateImplementationPattern<JobList<Job_> >(new Implementation<JobList<Job_> >)
+    PrivateImplementationPattern<JobList<Job_> >()
 {
 }
 

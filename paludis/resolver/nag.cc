@@ -128,7 +128,7 @@ namespace paludis
 }
 
 NAG::NAG() :
-    PrivateImplementationPattern<NAG>(new Implementation<NAG>)
+    PrivateImplementationPattern<NAG>()
 {
 }
 

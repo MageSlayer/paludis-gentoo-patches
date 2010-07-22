@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,8 +28,25 @@
 using namespace paludis;
 
 StringifyFormatter::StringifyFormatter() :
-    PrivateImplementationPattern<StringifyFormatter>(new Implementation<StringifyFormatter>(
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+    PrivateImplementationPattern<StringifyFormatter>(
+            static_cast<const CanFormat<std::string> *>(0),
+            static_cast<const CanFormat<ChoiceValue> *>(0),
+            static_cast<const CanFormat<KeywordName> *>(0),
+            static_cast<const CanFormat<PackageDepSpec> *>(0),
+            static_cast<const CanFormat<BlockDepSpec> *>(0),
+            static_cast<const CanFormat<FetchableURIDepSpec> *>(0),
+            static_cast<const CanFormat<SimpleURIDepSpec> *>(0),
+            static_cast<const CanFormat<LicenseDepSpec> *>(0),
+            static_cast<const CanFormat<DependenciesLabelsDepSpec> *>(0),
+            static_cast<const CanFormat<URILabelsDepSpec> *>(0),
+            static_cast<const CanFormat<PlainTextDepSpec> *>(0),
+            static_cast<const CanFormat<ConditionalDepSpec> *>(0),
+            static_cast<const CanFormat<NamedSetDepSpec> *>(0),
+            static_cast<const CanFormat<FSEntry> *>(0),
+            static_cast<const CanFormat<PackageID> *>(0),
+            static_cast<const CanFormat<PlainTextLabelDepSpec> *>(0),
+            static_cast<const CanSpace *>(0)
+            )
 {
 }
 

@@ -70,7 +70,7 @@ namespace
 }
 
 EnvironmentFactory::EnvironmentFactory() :
-    PrivateImplementationPattern<EnvironmentFactory>(new Implementation<EnvironmentFactory>)
+    PrivateImplementationPattern<EnvironmentFactory>()
 {
     using namespace environment_groups;
 

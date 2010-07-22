@@ -51,7 +51,7 @@ namespace paludis
 }
 
 UseConf::UseConf(const PaludisEnvironment * const e) :
-    PrivateImplementationPattern<UseConf>(new Implementation<UseConf>(e))
+    PrivateImplementationPattern<UseConf>(e)
 {
 }
 

@@ -140,7 +140,7 @@ namespace
 }
 
 BrokenLinkageFinder::BrokenLinkageFinder(const Environment * env, const std::string & library) :
-    PrivateImplementationPattern<BrokenLinkageFinder>(new Implementation<BrokenLinkageFinder>(env, library))
+    PrivateImplementationPattern<BrokenLinkageFinder>(env, library)
 {
     using namespace std::placeholders;
 

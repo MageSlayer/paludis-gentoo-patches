@@ -62,7 +62,7 @@ namespace paludis
 }
 
 EAPIPhase::EAPIPhase(const std::string & s) :
-    PrivateImplementationPattern<EAPIPhase>(new Implementation<EAPIPhase>)
+    PrivateImplementationPattern<EAPIPhase>()
 {
     Context c("When parsing EAPI phase '" + s + "'");
 
@@ -111,7 +111,7 @@ EAPIPhase::end_commands() const
 }
 
 EAPIPhases::EAPIPhases(const std::string & s) :
-    PrivateImplementationPattern<EAPIPhases>(new Implementation<EAPIPhases>)
+    PrivateImplementationPattern<EAPIPhases>()
 {
     Context c("When parsing EAPI phases '" + s + "'");
 

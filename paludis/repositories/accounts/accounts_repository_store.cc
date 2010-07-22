@@ -86,8 +86,7 @@ AccountsRepositoryStore::AccountsRepositoryStore(
         const Environment * const env,
         const AccountsRepository * const repo,
         const bool installed) :
-    PrivateImplementationPattern<AccountsRepositoryStore>(new Implementation<AccountsRepositoryStore>(
-                env, repo, installed))
+    PrivateImplementationPattern<AccountsRepositoryStore>(env, repo, installed)
 {
     _load(repo->shared_from_this());
 }

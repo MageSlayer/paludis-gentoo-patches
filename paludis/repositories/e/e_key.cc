@@ -139,7 +139,7 @@ EDependenciesKey::EDependenciesKey(
         const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v,
         const std::shared_ptr<const DependenciesLabelSequence> & l, const MetadataKeyType t) :
-    PrivateImplementationPattern<EDependenciesKey>(new Implementation<EDependenciesKey>(e, id, v, l, r, h, t))
+    PrivateImplementationPattern<EDependenciesKey>(e, id, v, l, r, h, t)
 {
 }
 
@@ -232,7 +232,7 @@ ELicenseKey::ELicenseKey(
         const Environment * const e,
         const std::shared_ptr<const ERepositoryID> & id,
         const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<ELicenseKey>(new Implementation<ELicenseKey>(e, id, v, m, t))
+    PrivateImplementationPattern<ELicenseKey>(e, id, v, m, t)
 {
 }
 
@@ -319,7 +319,7 @@ namespace paludis
 EFetchableURIKey::EFetchableURIKey(const Environment * const e,
         const std::shared_ptr<const ERepositoryID> & id,
         const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<EFetchableURIKey>(new Implementation<EFetchableURIKey>(e, id, m, v, t))
+    PrivateImplementationPattern<EFetchableURIKey>(e, id, m, v, t)
 {
 }
 
@@ -444,7 +444,7 @@ namespace paludis
 ESimpleURIKey::ESimpleURIKey(const Environment * const e,
         const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<ESimpleURIKey>(new Implementation<ESimpleURIKey>(e, id, v, r, h, t))
+    PrivateImplementationPattern<ESimpleURIKey>(e, id, v, r, h, t)
 {
 }
 
@@ -531,7 +531,7 @@ namespace paludis
 EPlainTextSpecKey::EPlainTextSpecKey(const Environment * const e,
         const std::shared_ptr<const ERepositoryID> & id,
         const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<EPlainTextSpecKey>(new Implementation<EPlainTextSpecKey>(e, id, v, m, t))
+    PrivateImplementationPattern<EPlainTextSpecKey>(e, id, v, m, t)
 {
 }
 
@@ -619,7 +619,7 @@ namespace paludis
 EMyOptionsKey::EMyOptionsKey(const Environment * const e,
         const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<EMyOptionsKey>(new Implementation<EMyOptionsKey>(e, id, v, r, h, t))
+    PrivateImplementationPattern<EMyOptionsKey>(e, id, v, r, h, t)
 {
 }
 
@@ -706,7 +706,7 @@ namespace paludis
 
 EProvideKey::EProvideKey(const Environment * const e, const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<EProvideKey>(new Implementation<EProvideKey>(e, id, v, r, h, t))
+    PrivateImplementationPattern<EProvideKey>(e, id, v, r, h, t)
 {
 }
 
@@ -793,7 +793,7 @@ namespace paludis
 
 EKeywordsKey::EKeywordsKey(const Environment * const e, const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<EKeywordsKey>(new Implementation<EKeywordsKey>(id, e, v, r, h, t))
+    PrivateImplementationPattern<EKeywordsKey>(id, e, v, r, h, t)
 {
 }
 
@@ -881,7 +881,7 @@ namespace paludis
 
 EStringSetKey::EStringSetKey(const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<EStringSetKey>(new Implementation<EStringSetKey>(id, v, r, h, t))
+    PrivateImplementationPattern<EStringSetKey>(id, v, r, h, t)
 {
 }
 
@@ -964,7 +964,7 @@ namespace paludis
 
 EContentsKey::EContentsKey(const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const FSEntry & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<EContentsKey>(new Implementation<EContentsKey>(id, v, r, h, t))
+    PrivateImplementationPattern<EContentsKey>(id, v, r, h, t)
 {
 }
 
@@ -1084,7 +1084,7 @@ namespace paludis
 
 EMTimeKey::EMTimeKey(const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const FSEntry & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<EMTimeKey>(new Implementation<EMTimeKey>(id, v, r, h, t))
+    PrivateImplementationPattern<EMTimeKey>(id, v, r, h, t)
 {
 }
 
@@ -1153,7 +1153,7 @@ namespace paludis
 }
 
 ESlotKey::ESlotKey(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<ESlotKey>(new Implementation<ESlotKey>(SlotName(v), m, t))
+    PrivateImplementationPattern<ESlotKey>(SlotName(v), m, t)
 {
 }
 

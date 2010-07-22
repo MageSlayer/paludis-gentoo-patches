@@ -161,7 +161,7 @@ namespace paludis
 }
 
 PackageDatabase::PackageDatabase(const Environment * const e) :
-    PrivateImplementationPattern<PackageDatabase>(new Implementation<PackageDatabase>)
+    PrivateImplementationPattern<PackageDatabase>()
 {
     _imp->environment = e;
 }

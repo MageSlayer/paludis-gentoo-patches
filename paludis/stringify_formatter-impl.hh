@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -182,37 +182,37 @@ namespace paludis
 
     template <typename T_>
     StringifyFormatter::StringifyFormatter(const T_ & t) :
-        PrivateImplementationPattern<StringifyFormatter>(new Implementation<StringifyFormatter>(
-                    StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<std::string> *>::value, std::string>::get(&t),
-                    StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<ChoiceValue> *>::value, ChoiceValue>::get(&t),
-                    StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<KeywordName> *>::value, KeywordName>::get(&t),
-                    StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<PackageDepSpec> *>::value, PackageDepSpec>::get(&t),
-                    StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<BlockDepSpec> *>::value, BlockDepSpec>::get(&t),
-                    StringifyFormatterGetForwarder<
-                        std::is_convertible<T_ *, CanFormat<FetchableURIDepSpec> *>::value,
-                        FetchableURIDepSpec>::get(&t),
-                    StringifyFormatterGetForwarder<
-                        std::is_convertible<T_ *, CanFormat<SimpleURIDepSpec> *>::value,
-                        SimpleURIDepSpec>::get(&t),
-                    StringifyFormatterGetForwarder<
-                        std::is_convertible<T_ *, CanFormat<LicenseDepSpec> *>::value,
-                        LicenseDepSpec>::get(&t),
-                    StringifyFormatterGetForwarder<
-                        std::is_convertible<T_ *, CanFormat<DependenciesLabelsDepSpec> *>::value,
-                        DependenciesLabelsDepSpec>::get(&t),
-                    StringifyFormatterGetForwarder<
-                        std::is_convertible<T_ *, CanFormat<URILabelsDepSpec> *>::value,
-                        URILabelsDepSpec>::get(&t),
-                    StringifyFormatterGetForwarder<
-                        std::is_convertible<T_ *, CanFormat<PlainTextDepSpec> *>::value,
-                        PlainTextDepSpec>::get(&t),
-                    StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<ConditionalDepSpec> *>::value, ConditionalDepSpec>::get(&t),
-                    StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<NamedSetDepSpec> *>::value, NamedSetDepSpec>::get(&t),
-                    StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<FSEntry> *>::value, FSEntry>::get(&t),
-                    StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<PackageID> *>::value, PackageID>::get(&t),
-                    StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<PlainTextLabelDepSpec> *>::value, PlainTextLabelDepSpec>::get(&t),
-                    StringifyFormatterGetSpaceForwarder<std::is_convertible<T_ *, CanSpace *>::value>::get(&t)
-                    )),
+        PrivateImplementationPattern<StringifyFormatter>(
+                StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<std::string> *>::value, std::string>::get(&t),
+                StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<ChoiceValue> *>::value, ChoiceValue>::get(&t),
+                StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<KeywordName> *>::value, KeywordName>::get(&t),
+                StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<PackageDepSpec> *>::value, PackageDepSpec>::get(&t),
+                StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<BlockDepSpec> *>::value, BlockDepSpec>::get(&t),
+                StringifyFormatterGetForwarder<
+                std::is_convertible<T_ *, CanFormat<FetchableURIDepSpec> *>::value,
+                FetchableURIDepSpec>::get(&t),
+                StringifyFormatterGetForwarder<
+                std::is_convertible<T_ *, CanFormat<SimpleURIDepSpec> *>::value,
+                SimpleURIDepSpec>::get(&t),
+                StringifyFormatterGetForwarder<
+                std::is_convertible<T_ *, CanFormat<LicenseDepSpec> *>::value,
+                LicenseDepSpec>::get(&t),
+                StringifyFormatterGetForwarder<
+                std::is_convertible<T_ *, CanFormat<DependenciesLabelsDepSpec> *>::value,
+                DependenciesLabelsDepSpec>::get(&t),
+                StringifyFormatterGetForwarder<
+                std::is_convertible<T_ *, CanFormat<URILabelsDepSpec> *>::value,
+                URILabelsDepSpec>::get(&t),
+                StringifyFormatterGetForwarder<
+        std::is_convertible<T_ *, CanFormat<PlainTextDepSpec> *>::value,
+        PlainTextDepSpec>::get(&t),
+        StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<ConditionalDepSpec> *>::value, ConditionalDepSpec>::get(&t),
+        StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<NamedSetDepSpec> *>::value, NamedSetDepSpec>::get(&t),
+        StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<FSEntry> *>::value, FSEntry>::get(&t),
+        StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<PackageID> *>::value, PackageID>::get(&t),
+        StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<PlainTextLabelDepSpec> *>::value, PlainTextLabelDepSpec>::get(&t),
+        StringifyFormatterGetSpaceForwarder<std::is_convertible<T_ *, CanSpace *>::value>::get(&t)
+        ),
         CanSpace()
     {
     }

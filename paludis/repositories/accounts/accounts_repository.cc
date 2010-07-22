@@ -106,7 +106,7 @@ namespace paludis
 }
 
 AccountsRepository::AccountsRepository(const AccountsRepositoryParams & p) :
-    PrivateImplementationPattern<AccountsRepository>(new Implementation<AccountsRepository>(this, p)),
+    PrivateImplementationPattern<AccountsRepository>(this, p),
     Repository(
             p.environment(),
             p.name(),
@@ -124,7 +124,7 @@ AccountsRepository::AccountsRepository(const AccountsRepositoryParams & p) :
 }
 
 AccountsRepository::AccountsRepository(const InstalledAccountsRepositoryParams & p) :
-    PrivateImplementationPattern<AccountsRepository>(new Implementation<AccountsRepository>(this, p)),
+    PrivateImplementationPattern<AccountsRepository>(this, p),
     Repository(
             p.environment(),
             p.name(),

@@ -52,7 +52,7 @@ namespace paludis
 }
 
 MaskFile::MaskFile(const FSEntry & f, const LineConfigFileOptions & opts) :
-    PrivateImplementationPattern<MaskFile>(new Implementation<MaskFile>)
+    PrivateImplementationPattern<MaskFile>()
 {
     LineConfigFileOptions myopts(opts);
     myopts += lcfo_disallow_comments;

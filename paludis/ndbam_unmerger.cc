@@ -74,7 +74,7 @@ NDBAMUnmerger::NDBAMUnmerger(const NDBAMUnmergerOptions & o) :
             n::ignore() = o.ignore(),
             n::root() = o.root()
             )),
-    PrivateImplementationPattern<NDBAMUnmerger>(new Implementation<NDBAMUnmerger>(o)),
+    PrivateImplementationPattern<NDBAMUnmerger>(o),
     _imp(PrivateImplementationPattern<NDBAMUnmerger>::_imp.get())
 {
 }

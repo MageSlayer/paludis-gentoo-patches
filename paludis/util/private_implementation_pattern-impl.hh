@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_PRIVATE_IMPLEMENTATION_PATTERN_IMPL_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
+#include <utility>
 
 /** \file
  * Implementation for paludis/util/private_implementation_pattern.hh .
@@ -29,9 +30,17 @@
  */
 
 template <typename C_>
-paludis::PrivateImplementationPattern<C_>::ImpPtr::ImpPtr(Implementation<C_> * p) :
-    _ptr(p)
+template <typename... Args_>
+paludis::PrivateImplementationPattern<C_>::ImpPtr::ImpPtr(Args_ && ... args) :
+    _ptr(new Implementation<C_>{std::forward<Args_>(args)...})
 {
+}
+
+template <typename C_>
+paludis::PrivateImplementationPattern<C_>::ImpPtr::ImpPtr(ImpPtr && other) :
+    _ptr(std::move(other._ptr))
+{
+    other._ptr = 0;
 }
 
 template <typename C_>
@@ -63,8 +72,9 @@ paludis::PrivateImplementationPattern<C_>::ImpPtr::reset(Implementation<C_> * p)
 }
 
 template <typename C_>
-paludis::PrivateImplementationPattern<C_>::PrivateImplementationPattern(Implementation<C_> * i) :
-    _imp(i)
+template <typename... Args_>
+paludis::PrivateImplementationPattern<C_>::PrivateImplementationPattern(Args_ && ... args) :
+    _imp(std::forward<Args_>(args)...)
 {
 }
 

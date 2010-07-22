@@ -76,7 +76,7 @@ namespace paludis
 
 template <typename T_, typename C_>
 paludis::Set<T_, C_>::Set() :
-    paludis::PrivateImplementationPattern<Set<T_, C_> >(new Implementation<Set<T_, C_> >)
+    paludis::PrivateImplementationPattern<Set<T_, C_> >()
 {
 }
 

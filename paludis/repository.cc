@@ -131,7 +131,7 @@ Repository::Repository(
         const Environment * const env,
         const RepositoryName & our_name,
         const RepositoryCapabilities & caps) :
-    PrivateImplementationPattern<Repository>(new Implementation<Repository>(our_name)),
+    PrivateImplementationPattern<Repository>(our_name),
     RepositoryCapabilities(caps),
     _imp(PrivateImplementationPattern<Repository>::_imp)
 {

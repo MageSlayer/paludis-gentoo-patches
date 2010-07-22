@@ -51,7 +51,7 @@ namespace paludis
 }
 
 AAVisitor::AAVisitor() :
-    PrivateImplementationPattern<AAVisitor>(new Implementation<AAVisitor>)
+    PrivateImplementationPattern<AAVisitor>()
 {
 }
 

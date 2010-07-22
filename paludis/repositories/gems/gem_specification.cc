@@ -245,7 +245,7 @@ namespace
 
 GemSpecification::GemSpecification(const Environment * const e,
         const std::shared_ptr<const Repository> & r, const yaml::Node & node) :
-    PrivateImplementationPattern<GemSpecification>(new Implementation<GemSpecification>(e, r)),
+    PrivateImplementationPattern<GemSpecification>(e, r),
     _imp(PrivateImplementationPattern<GemSpecification>::_imp)
 {
     TopVisitor v(_imp.get());
@@ -267,7 +267,7 @@ GemSpecification::GemSpecification(const Environment * const e,
 
 GemSpecification::GemSpecification(const Environment * const e, const std::shared_ptr<const Repository> & r,
         const PackageNamePart & q, const VersionSpec & v, const FSEntry & f) :
-    PrivateImplementationPattern<GemSpecification>(new Implementation<GemSpecification>(e, r)),
+    PrivateImplementationPattern<GemSpecification>(e, r),
     _imp(PrivateImplementationPattern<GemSpecification>::_imp)
 {
     _imp->name_part = stringify(q);

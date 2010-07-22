@@ -104,7 +104,7 @@ namespace
 }
 
 UninstallList::UninstallList(const Environment * const env, const UninstallListOptions & o) :
-    PrivateImplementationPattern<UninstallList>(new Implementation<UninstallList>(env, o)),
+    PrivateImplementationPattern<UninstallList>(env, o),
     options(_imp->options)
 {
 }

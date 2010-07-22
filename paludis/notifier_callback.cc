@@ -76,7 +76,7 @@ namespace paludis
 }
 
 ScopedNotifierCallback::ScopedNotifierCallback(Environment * const e, const NotifierCallbackFunction & f) :
-    PrivateImplementationPattern<ScopedNotifierCallback>(new Implementation<ScopedNotifierCallback>(e, f))
+    PrivateImplementationPattern<ScopedNotifierCallback>(e, f)
 {
 }
 

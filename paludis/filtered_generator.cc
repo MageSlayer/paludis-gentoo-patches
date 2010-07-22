@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -42,17 +42,17 @@ namespace paludis
 }
 
 FilteredGenerator::FilteredGenerator(const FilteredGenerator & other) :
-    PrivateImplementationPattern<FilteredGenerator>(new Implementation<FilteredGenerator>(other._imp->generator, other._imp->filter))
+    PrivateImplementationPattern<FilteredGenerator>(other._imp->generator, other._imp->filter)
 {
 }
 
 FilteredGenerator::FilteredGenerator(const Generator & g, const Filter & f) :
-    PrivateImplementationPattern<FilteredGenerator>(new Implementation<FilteredGenerator>(g, f))
+    PrivateImplementationPattern<FilteredGenerator>(g, f)
 {
 }
 
 FilteredGenerator::FilteredGenerator(const FilteredGenerator & g, const Filter & f) :
-    PrivateImplementationPattern<FilteredGenerator>(new Implementation<FilteredGenerator>(g.generator(), filter::And(g.filter(), f)))
+    PrivateImplementationPattern<FilteredGenerator>(g.generator(), filter::And(g.filter(), f))
 {
 }
 

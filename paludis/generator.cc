@@ -55,12 +55,12 @@ namespace paludis
 }
 
 Generator::Generator(const std::shared_ptr<const GeneratorHandler> & h) :
-    PrivateImplementationPattern<Generator>(new Implementation<Generator>(h))
+    PrivateImplementationPattern<Generator>(h)
 {
 }
 
 Generator::Generator(const Generator & other) :
-    PrivateImplementationPattern<Generator>(new Implementation<Generator>(other._imp->handler))
+    PrivateImplementationPattern<Generator>(other._imp->handler)
 {
 }
 

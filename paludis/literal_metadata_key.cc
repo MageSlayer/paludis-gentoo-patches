@@ -109,7 +109,7 @@ namespace paludis
 
 LiteralMetadataFSEntrySequenceKey::LiteralMetadataFSEntrySequenceKey(const std::string & r, const std::string & h,
         const MetadataKeyType t, const std::shared_ptr<const FSEntrySequence> & v) :
-    PrivateImplementationPattern<LiteralMetadataFSEntrySequenceKey>(new Implementation<LiteralMetadataFSEntrySequenceKey>(r, h, t, v)),
+    PrivateImplementationPattern<LiteralMetadataFSEntrySequenceKey>(r, h, t, v),
     _imp(PrivateImplementationPattern<LiteralMetadataFSEntrySequenceKey>::_imp)
 {
 }
@@ -159,7 +159,7 @@ LiteralMetadataFSEntrySequenceKey::type() const
 
 LiteralMetadataStringSetKey::LiteralMetadataStringSetKey(const std::string & r, const std::string & h,
         const MetadataKeyType t, const std::shared_ptr<const Set<std::string> > & v) :
-    PrivateImplementationPattern<LiteralMetadataStringSetKey>(new Implementation<LiteralMetadataStringSetKey>(r, h, t, v)),
+    PrivateImplementationPattern<LiteralMetadataStringSetKey>(r, h, t, v),
     _imp(PrivateImplementationPattern<LiteralMetadataStringSetKey>::_imp)
 {
 }
@@ -176,7 +176,7 @@ LiteralMetadataStringSetKey::value() const
 
 LiteralMetadataStringSequenceKey::LiteralMetadataStringSequenceKey(const std::string & r, const std::string & h,
         const MetadataKeyType t, const std::shared_ptr<const Sequence<std::string> > & v) :
-    PrivateImplementationPattern<LiteralMetadataStringSequenceKey>(new Implementation<LiteralMetadataStringSequenceKey>(r, h, t, v)),
+    PrivateImplementationPattern<LiteralMetadataStringSequenceKey>(r, h, t, v),
     _imp(PrivateImplementationPattern<LiteralMetadataStringSequenceKey>::_imp)
 {
 }
@@ -323,7 +323,7 @@ ExtraLiteralMetadataValueKeyMethods<std::shared_ptr<const PackageID> >::pretty_p
 template <typename T_>
 LiteralMetadataValueKey<T_>::LiteralMetadataValueKey(const std::string & r, const std::string & h,
         const MetadataKeyType t, const T_ & v) :
-    PrivateImplementationPattern<LiteralMetadataValueKey<T_> >(new Implementation<LiteralMetadataValueKey<T_> >(r, h, t, v)),
+    PrivateImplementationPattern<LiteralMetadataValueKey<T_> >(r, h, t, v),
     _imp(PrivateImplementationPattern<LiteralMetadataValueKey<T_ > >::_imp)
 {
 }
@@ -362,7 +362,7 @@ namespace paludis
 
 LiteralMetadataTimeKey::LiteralMetadataTimeKey(
         const std::string & r, const std::string & h, const MetadataKeyType k, const Timestamp v) :
-    PrivateImplementationPattern<LiteralMetadataTimeKey>(new Implementation<LiteralMetadataTimeKey>(r, h, k, v)),
+    PrivateImplementationPattern<LiteralMetadataTimeKey>(r, h, k, v),
     _imp(PrivateImplementationPattern<LiteralMetadataTimeKey>::_imp)
 {
 }

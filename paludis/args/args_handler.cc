@@ -128,7 +128,7 @@ namespace paludis
 }
 
 ArgsHandler::ArgsHandler() :
-    PrivateImplementationPattern<ArgsHandler>(new Implementation<ArgsHandler>)
+    PrivateImplementationPattern<ArgsHandler>()
 {
 }
 

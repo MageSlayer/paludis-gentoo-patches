@@ -63,7 +63,7 @@ namespace paludis
 
 QueryVisitor::QueryVisitor(const DepList * const d, const std::shared_ptr<const DestinationsSet> & dd,
         const Environment * const e, const std::shared_ptr<const PackageID> & id) :
-    PrivateImplementationPattern<QueryVisitor>(new Implementation<QueryVisitor>(d, dd, e, id))
+    PrivateImplementationPattern<QueryVisitor>(d, dd, e, id)
 {
 }
 

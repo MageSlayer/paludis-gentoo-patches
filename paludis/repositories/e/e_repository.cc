@@ -505,7 +505,7 @@ ERepository::ERepository(const ERepositoryParams & p) :
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = (*DistributionData::get_instance()->distribution_from_string(p.environment()->distribution())).support_old_style_virtuals() ? this : 0
                 )),
-    PrivateImplementationPattern<ERepository>(new Implementation<ERepository>(this, p)),
+    PrivateImplementationPattern<ERepository>(this, p),
     _imp(PrivateImplementationPattern<ERepository>::_imp)
 {
     _add_metadata_keys();

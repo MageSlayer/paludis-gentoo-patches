@@ -182,7 +182,7 @@ namespace paludis
 
 InstallTask::InstallTask(Environment * const env, const DepListOptions & options,
         const std::shared_ptr<const DestinationsSet> & d) :
-    PrivateImplementationPattern<InstallTask>(new Implementation<InstallTask>(env, options, d))
+    PrivateImplementationPattern<InstallTask>(env, options, d)
 {
 }
 

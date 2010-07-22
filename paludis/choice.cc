@@ -158,7 +158,7 @@ namespace paludis
 }
 
 Choices::Choices() :
-    PrivateImplementationPattern<Choices>(new Implementation<Choices>)
+    PrivateImplementationPattern<Choices>()
 {
 }
 
@@ -244,7 +244,7 @@ namespace paludis
 }
 
 Choice::Choice(const ChoiceParams & p) :
-    PrivateImplementationPattern<Choice>(new Implementation<Choice>(p))
+    PrivateImplementationPattern<Choice>(p)
 {
 }
 

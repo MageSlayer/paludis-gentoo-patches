@@ -85,7 +85,7 @@ UnavailableRepositoryConfigurationError::UnavailableRepositoryConfigurationError
 }
 
 UnavailableRepository::UnavailableRepository(const UnavailableRepositoryParams & p) :
-    PrivateImplementationPattern<UnavailableRepository>(new Implementation<UnavailableRepository>(this, p)),
+    PrivateImplementationPattern<UnavailableRepository>(this, p),
     Repository(
             p.environment(),
             p.name(),

@@ -160,7 +160,7 @@ EbuildID::EbuildID(const QualifiedPackageName & q, const VersionSpec & v,
         const std::string & g,
         const time_t t,
         const std::shared_ptr<const EclassMtimes> & m) :
-    PrivateImplementationPattern<EbuildID>(new Implementation<EbuildID>(q, v, e, r, f, g.empty() ? r->params().eapi_when_unknown() : g, t, m)),
+    PrivateImplementationPattern<EbuildID>(q, v, e, r, f, g.empty() ? r->params().eapi_when_unknown() : g, t, m),
     _imp(PrivateImplementationPattern<EbuildID>::_imp)
 {
 }

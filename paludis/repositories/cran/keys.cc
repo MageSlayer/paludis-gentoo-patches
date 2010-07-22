@@ -168,7 +168,7 @@ namespace paludis
 
 DepKey::DepKey(const Environment * const e, const std::string & r, const std::string & h, const std::string & v,
         const std::shared_ptr<const DependenciesLabelSequence> & s, const MetadataKeyType t) :
-    PrivateImplementationPattern<DepKey>(new Implementation<DepKey>(e, v, s, r, h, t)),
+    PrivateImplementationPattern<DepKey>(e, v, s, r, h, t),
     _imp(PrivateImplementationPattern<DepKey>::_imp)
 {
 }

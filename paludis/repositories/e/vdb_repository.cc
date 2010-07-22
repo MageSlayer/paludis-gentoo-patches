@@ -176,7 +176,7 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
                 n::provides_interface() = this,
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
-    PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(this, p)),
+    PrivateImplementationPattern<VDBRepository>(this, p),
     _imp(PrivateImplementationPattern<VDBRepository>::_imp)
 {
     _add_metadata_keys();

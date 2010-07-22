@@ -97,7 +97,7 @@ namespace paludis
 TraditionalLayout::TraditionalLayout(const ERepository * const repo, const FSEntry & tree_root,
         const std::shared_ptr<const FSEntrySequence> & f) :
     Layout(f),
-    PrivateImplementationPattern<TraditionalLayout>(new Implementation<TraditionalLayout>(repo, tree_root))
+    PrivateImplementationPattern<TraditionalLayout>(repo, tree_root)
 {
     if (master_repositories_locations())
     {

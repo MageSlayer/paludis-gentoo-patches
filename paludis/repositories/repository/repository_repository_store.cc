@@ -72,7 +72,7 @@ namespace paludis
 RepositoryRepositoryStore::RepositoryRepositoryStore(
         const Environment * const env,
         const RepositoryRepository * const repo) :
-    PrivateImplementationPattern<RepositoryRepositoryStore>(new Implementation<RepositoryRepositoryStore>(env, repo))
+    PrivateImplementationPattern<RepositoryRepositoryStore>(env, repo)
 {
     _populate();
 }

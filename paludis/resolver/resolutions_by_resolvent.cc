@@ -54,7 +54,7 @@ namespace paludis
 }
 
 ResolutionsByResolvent::ResolutionsByResolvent() :
-    PrivateImplementationPattern<ResolutionsByResolvent>(new Implementation<ResolutionsByResolvent>)
+    PrivateImplementationPattern<ResolutionsByResolvent>()
 {
 }
 

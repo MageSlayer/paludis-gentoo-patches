@@ -601,7 +601,7 @@ namespace paludis
 }
 
 SetFile::SetFile(const SetFileParams & p) :
-    PrivateImplementationPattern<SetFile>(new Implementation<SetFile>(p))
+    PrivateImplementationPattern<SetFile>(p)
 {
 }
 

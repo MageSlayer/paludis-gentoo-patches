@@ -60,7 +60,7 @@ namespace paludis
 }
 
 Constraints::Constraints() :
-    PrivateImplementationPattern<Constraints>(new Implementation<Constraints>)
+    PrivateImplementationPattern<Constraints>()
 {
 }
 

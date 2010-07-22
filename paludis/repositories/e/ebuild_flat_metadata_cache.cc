@@ -288,7 +288,7 @@ namespace
 
 EbuildFlatMetadataCache::EbuildFlatMetadataCache(const Environment * const v, FSEntry & f,
         const FSEntry & e, std::time_t t, const std::shared_ptr<const EclassMtimes> & m, bool s) :
-    PrivateImplementationPattern<EbuildFlatMetadataCache>(new Implementation<EbuildFlatMetadataCache>(v, f, e, t, m, s))
+    PrivateImplementationPattern<EbuildFlatMetadataCache>(v, f, e, t, m, s)
 {
 }
 

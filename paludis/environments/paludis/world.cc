@@ -51,7 +51,7 @@ namespace paludis
 }
 
 World::World(const Environment * const e, const std::shared_ptr<const FSEntry> & f) :
-    PrivateImplementationPattern<World>(new Implementation<World>(e, f))
+    PrivateImplementationPattern<World>(e, f)
 {
 }
 

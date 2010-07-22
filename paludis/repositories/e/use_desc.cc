@@ -79,7 +79,7 @@ namespace paludis
 }
 
 UseDesc::UseDesc(const std::shared_ptr<const UseDescFileInfoSequence> & f) :
-    PrivateImplementationPattern<UseDesc>(new Implementation<UseDesc>(f))
+    PrivateImplementationPattern<UseDesc>(f)
 {
 }
 

@@ -63,7 +63,7 @@ namespace paludis
 }
 
 Executor::Executor(int ms_update_interval) :
-    PrivateImplementationPattern<Executor>(new Implementation<Executor>(ms_update_interval))
+    PrivateImplementationPattern<Executor>(ms_update_interval)
 {
 }
 

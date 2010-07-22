@@ -113,7 +113,7 @@ namespace
 }
 
 RepositoryFactory::RepositoryFactory() :
-    PrivateImplementationPattern<RepositoryFactory>(new Implementation<RepositoryFactory>)
+    PrivateImplementationPattern<RepositoryFactory>()
 {
     using namespace repository_groups;
 

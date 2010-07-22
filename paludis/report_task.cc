@@ -128,7 +128,7 @@ namespace paludis
 }
 
 ReportTask::ReportTask(Environment * const env) :
-    PrivateImplementationPattern<ReportTask>(new Implementation<ReportTask>(env))
+     PrivateImplementationPattern<ReportTask>(env)
 {
 }
 

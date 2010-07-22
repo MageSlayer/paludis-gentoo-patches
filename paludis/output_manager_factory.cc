@@ -91,7 +91,7 @@ namespace paludis
 }
 
 OutputManagerFactory::OutputManagerFactory() :
-    PrivateImplementationPattern<OutputManagerFactory>(new Implementation<OutputManagerFactory>)
+    PrivateImplementationPattern<OutputManagerFactory>()
 {
     /* we might want to make this plugin loadable at some point */
     add_manager(BufferOutputManager::factory_managers(), BufferOutputManager::factory_create);

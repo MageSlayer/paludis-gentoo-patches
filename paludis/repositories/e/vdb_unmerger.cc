@@ -74,7 +74,7 @@ VDBUnmerger::VDBUnmerger(const VDBUnmergerOptions & o) :
                 n::ignore() = o.ignore(),
                 n::root() = o.root()
             )),
-    PrivateImplementationPattern<VDBUnmerger>(new Implementation<VDBUnmerger>(o)),
+    PrivateImplementationPattern<VDBUnmerger>(o),
     _imp(PrivateImplementationPattern<VDBUnmerger>::_imp.get())
 {
 }

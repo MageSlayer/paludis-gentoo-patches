@@ -99,7 +99,7 @@ GemsRepository::GemsRepository(const gems::RepositoryParams & params) :
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
-    PrivateImplementationPattern<GemsRepository>(new Implementation<GemsRepository>(params)),
+    PrivateImplementationPattern<GemsRepository>(params),
     _imp(PrivateImplementationPattern<GemsRepository>::_imp)
 {
     _add_metadata_keys();

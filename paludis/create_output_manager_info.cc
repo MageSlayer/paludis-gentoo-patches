@@ -138,9 +138,7 @@ CreateOutputManagerForPackageIDActionInfo::CreateOutputManagerForPackageIDAction
         const Action & a,
         const OutputExclusivity e,
         const ClientOutputFeatures & c) :
-    PrivateImplementationPattern<CreateOutputManagerForPackageIDActionInfo>(
-            new Implementation<CreateOutputManagerForPackageIDActionInfo>(i, a.simple_name(),
-                get_flags(a), e, c))
+    PrivateImplementationPattern<CreateOutputManagerForPackageIDActionInfo>(i, a.simple_name(), get_flags(a), e, c)
 {
 }
 
@@ -150,8 +148,7 @@ CreateOutputManagerForPackageIDActionInfo::CreateOutputManagerForPackageIDAction
         const std::shared_ptr<const Set<std::string> > & f,
         const OutputExclusivity e,
         const ClientOutputFeatures & c) :
-    PrivateImplementationPattern<CreateOutputManagerForPackageIDActionInfo>(
-            new Implementation<CreateOutputManagerForPackageIDActionInfo>(i, a, f, e, c))
+    PrivateImplementationPattern<CreateOutputManagerForPackageIDActionInfo>(i, a, f, e, c)
 {
 }
 
@@ -222,8 +219,7 @@ CreateOutputManagerForPackageIDActionInfo::deserialise(Deserialisation & d)
 
 CreateOutputManagerForRepositorySyncInfo::CreateOutputManagerForRepositorySyncInfo(
         const RepositoryName & r, const OutputExclusivity e, const ClientOutputFeatures & c) :
-    PrivateImplementationPattern<CreateOutputManagerForRepositorySyncInfo>(
-            new Implementation<CreateOutputManagerForRepositorySyncInfo>(r, e, c))
+    PrivateImplementationPattern<CreateOutputManagerForRepositorySyncInfo>(r, e, c)
 {
 }
 

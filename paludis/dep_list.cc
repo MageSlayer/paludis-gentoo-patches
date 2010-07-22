@@ -1052,7 +1052,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<DependenciesLabels
 }
 
 DepList::DepList(const Environment * const e, const DepListOptions & o) :
-    PrivateImplementationPattern<DepList>(new Implementation<DepList>(e, o))
+    PrivateImplementationPattern<DepList>(e, o)
 {
 }
 

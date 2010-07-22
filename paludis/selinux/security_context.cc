@@ -171,8 +171,8 @@ namespace paludis
     };
 }
 
-SecurityContext::SecurityContext()
-    : PrivateImplementationPattern<SecurityContext>(new Implementation<SecurityContext>(0))
+SecurityContext::SecurityContext() :
+    PrivateImplementationPattern<SecurityContext>(security_context_t(0))
 {
 }
 

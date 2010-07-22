@@ -94,7 +94,7 @@ VirtualsDepKey::VirtualsDepKey(const Environment * const e, const std::string & 
         const std::shared_ptr<const PackageID> & v,
         const std::shared_ptr<const DependenciesLabelSequence> & l,
         const bool exact) :
-    PrivateImplementationPattern<VirtualsDepKey>(new Implementation<VirtualsDepKey>(e, v, l, exact, r, h)),
+    PrivateImplementationPattern<VirtualsDepKey>(e, v, l, exact, r, h),
     _imp(PrivateImplementationPattern<VirtualsDepKey>::_imp)
 {
 }
@@ -205,8 +205,7 @@ VirtualsPackageID::VirtualsPackageID(
         const QualifiedPackageName & virtual_name,
         const std::shared_ptr<const PackageID> & virtual_for,
         const bool exact) :
-    PrivateImplementationPattern<VirtualsPackageID>(
-            new Implementation<VirtualsPackageID>(e, owner, virtual_name, virtual_for, exact)),
+    PrivateImplementationPattern<VirtualsPackageID>(e, owner, virtual_name, virtual_for, exact),
     _imp(PrivateImplementationPattern<VirtualsPackageID>::_imp)
 {
     add_metadata_key(_imp->virtual_for);

@@ -155,7 +155,7 @@ namespace
 }
 
 RegisterRubyClass::RegisterRubyClass() :
-    PrivateImplementationPattern<RegisterRubyClass>(new Implementation<RegisterRubyClass>)
+    PrivateImplementationPattern<RegisterRubyClass>()
 {
 }
 

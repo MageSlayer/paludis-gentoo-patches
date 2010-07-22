@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
  * Copyright (c) 2008 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -83,7 +83,7 @@ namespace paludis
 }
 
 EclassMtimes::EclassMtimes(const ERepository * r, const std::shared_ptr<const FSEntrySequence> & d) :
-    PrivateImplementationPattern<EclassMtimes>(new Implementation<EclassMtimes>(r, d))
+    PrivateImplementationPattern<EclassMtimes>(r, d)
 {
 }
 

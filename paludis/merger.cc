@@ -79,7 +79,7 @@ MergerError::MergerError(const std::string & s) throw () :
 }
 
 Merger::Merger(const MergerParams & p) :
-    PrivateImplementationPattern<Merger>(new Implementation<Merger>(p))
+    PrivateImplementationPattern<Merger>(p)
 {
 }
 

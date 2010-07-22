@@ -89,7 +89,7 @@ namespace paludis
 
 ERepositorySets::ERepositorySets(const Environment * const e, const ERepository * const p,
         const erepository::ERepositoryParams & k) :
-    PrivateImplementationPattern<ERepositorySets>(new Implementation<ERepositorySets>(e, p, k))
+    PrivateImplementationPattern<ERepositorySets>(e, p, k)
 {
 }
 

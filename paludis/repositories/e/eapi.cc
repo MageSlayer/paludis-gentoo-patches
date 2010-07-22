@@ -381,7 +381,7 @@ EAPIConfigurationError::EAPIConfigurationError(const std::string & s) throw () :
 }
 
 EAPIData::EAPIData() :
-    PrivateImplementationPattern<EAPIData>(new Implementation<EAPIData>)
+    PrivateImplementationPattern<EAPIData>()
 {
 }
 
@@ -423,7 +423,7 @@ namespace paludis
 }
 
 EAPILabels::EAPILabels(const std::string & s) :
-    PrivateImplementationPattern<EAPILabels>(new Implementation<EAPILabels>)
+    PrivateImplementationPattern<EAPILabels>()
 {
     std::vector<std::string> tokens;
 
@@ -444,7 +444,7 @@ EAPILabels::EAPILabels(const std::string & s) :
 }
 
 EAPILabels::EAPILabels(const EAPILabels & other) :
-    PrivateImplementationPattern<EAPILabels>(new Implementation<EAPILabels>(*other._imp.operator-> ()))
+    PrivateImplementationPattern<EAPILabels>(*other._imp.operator-> ())
 {
 }
 

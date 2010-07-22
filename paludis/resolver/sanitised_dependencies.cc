@@ -439,7 +439,7 @@ namespace paludis
 }
 
 SanitisedDependencies::SanitisedDependencies() :
-    PrivateImplementationPattern<SanitisedDependencies>(new Implementation<SanitisedDependencies>)
+    PrivateImplementationPattern<SanitisedDependencies>()
 {
 }
 

@@ -67,8 +67,7 @@ FakeInstalledRepository::FakeInstalledRepository(const FakeInstalledRepositoryPa
                 n::provides_interface() = this,
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
-    PrivateImplementationPattern<FakeInstalledRepository>(new Implementation<FakeInstalledRepository>(
-                p.supports_uninstall(), p.suitable_destination())),
+    PrivateImplementationPattern<FakeInstalledRepository>(p.supports_uninstall(), p.suitable_destination()),
     _imp(PrivateImplementationPattern<FakeInstalledRepository>::_imp)
 {
     add_metadata_key(_imp->format_key);

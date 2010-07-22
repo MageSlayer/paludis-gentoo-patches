@@ -109,13 +109,13 @@ namespace paludis
 }
 
 FSEntry::FSEntry(const std::string & path) :
-    PrivateImplementationPattern<FSEntry>(new Implementation<FSEntry>(path))
+    PrivateImplementationPattern<FSEntry>(path)
 {
     _normalise();
 }
 
 FSEntry::FSEntry(const FSEntry & other) :
-    PrivateImplementationPattern<FSEntry>(new Implementation<FSEntry>(other._imp->path))
+    PrivateImplementationPattern<FSEntry>(other._imp->path)
 {
     Lock l(other._imp->mutex);
     _imp->stat_info = other._imp->stat_info;
@@ -124,7 +124,7 @@ FSEntry::FSEntry(const FSEntry & other) :
 }
 
 FSEntry::FSEntry(const std::string & path, unsigned char d_type) :
-    PrivateImplementationPattern<FSEntry>(new Implementation<FSEntry>(path, d_type))
+    PrivateImplementationPattern<FSEntry>(path, d_type)
 {
     _normalise();
 }

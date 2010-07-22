@@ -39,7 +39,7 @@ namespace paludis
 
     template <typename Data_>
     ExtraDistributionData<Data_>::ExtraDistributionData() :
-        PrivateImplementationPattern<ExtraDistributionData<Data_> >(new Implementation<ExtraDistributionData<Data_> >)
+        PrivateImplementationPattern<ExtraDistributionData<Data_> >()
     {
     }
 

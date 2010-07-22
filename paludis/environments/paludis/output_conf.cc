@@ -112,7 +112,7 @@ namespace paludis
 }
 
 OutputConf::OutputConf(const PaludisEnvironment * const e) :
-    PrivateImplementationPattern<OutputConf>(new Implementation<OutputConf>(e))
+    PrivateImplementationPattern<OutputConf>(e)
 {
 }
 

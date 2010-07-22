@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -42,7 +42,7 @@ namespace paludis
 }
 
 DepListEntryHandledSkippedUnsatisfied::DepListEntryHandledSkippedUnsatisfied(const PackageDepSpec & s) :
-    PrivateImplementationPattern<DepListEntryHandledSkippedUnsatisfied>(new Implementation<DepListEntryHandledSkippedUnsatisfied>(s))
+    PrivateImplementationPattern<DepListEntryHandledSkippedUnsatisfied>(s)
 {
 }
 
@@ -71,7 +71,7 @@ namespace paludis
 }
 
 DepListEntryHandledSkippedDependent::DepListEntryHandledSkippedDependent(const std::shared_ptr<const PackageID> & i) :
-    PrivateImplementationPattern<DepListEntryHandledSkippedDependent>(new Implementation<DepListEntryHandledSkippedDependent>(i))
+    PrivateImplementationPattern<DepListEntryHandledSkippedDependent>(i)
 {
 }
 

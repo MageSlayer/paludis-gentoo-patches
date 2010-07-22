@@ -136,7 +136,7 @@ namespace
 }
 
 BrokenLinkageConfiguration::BrokenLinkageConfiguration(const FSEntry & root) :
-    PrivateImplementationPattern<BrokenLinkageConfiguration>(new Implementation<BrokenLinkageConfiguration>)
+    PrivateImplementationPattern<BrokenLinkageConfiguration>()
 {
     Context ctx("When loading broken linkage checker configuration for '" + stringify(root) + "':");
 

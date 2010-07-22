@@ -104,7 +104,7 @@ InstalledGemsRepository::InstalledGemsRepository(const gems::InstalledRepository
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
-    PrivateImplementationPattern<InstalledGemsRepository>(new Implementation<InstalledGemsRepository>(params)),
+    PrivateImplementationPattern<InstalledGemsRepository>(params),
     _imp(PrivateImplementationPattern<InstalledGemsRepository>::_imp)
 {
     _add_metadata_keys();

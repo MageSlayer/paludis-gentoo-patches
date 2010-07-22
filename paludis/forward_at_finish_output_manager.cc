@@ -59,8 +59,7 @@ ForwardAtFinishOutputManager::ForwardAtFinishOutputManager(
         const bool s,
         const bool f,
         const std::shared_ptr<OutputManager> & m) :
-    PrivateImplementationPattern<ForwardAtFinishOutputManager>(
-            new Implementation<ForwardAtFinishOutputManager>(s, f, m))
+    PrivateImplementationPattern<ForwardAtFinishOutputManager>(s, f, m)
 {
 }
 

@@ -70,7 +70,7 @@ namespace
 }
 
 LibtoolLinkageChecker::LibtoolLinkageChecker(const FSEntry & root) :
-    PrivateImplementationPattern<LibtoolLinkageChecker>(new Implementation<LibtoolLinkageChecker>(root))
+    PrivateImplementationPattern<LibtoolLinkageChecker>(root)
 {
 }
 

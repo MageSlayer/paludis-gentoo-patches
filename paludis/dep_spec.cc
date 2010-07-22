@@ -64,7 +64,7 @@ namespace paludis
 }
 
 DepSpec::DepSpec() :
-    PrivateImplementationPattern<DepSpec>(new Implementation<DepSpec>),
+    PrivateImplementationPattern<DepSpec>(),
     _imp(PrivateImplementationPattern<DepSpec>::_imp)
 {
 }
@@ -141,7 +141,7 @@ namespace paludis
 }
 
 ConditionalDepSpec::ConditionalDepSpec(const std::shared_ptr<const ConditionalDepSpecData> & d) :
-    PrivateImplementationPattern<ConditionalDepSpec>(new Implementation<ConditionalDepSpec>(d)),
+    PrivateImplementationPattern<ConditionalDepSpec>(d),
     _imp(PrivateImplementationPattern<ConditionalDepSpec>::_imp)
 {
 }
@@ -159,7 +159,7 @@ namespace
 ConditionalDepSpec::ConditionalDepSpec(const ConditionalDepSpec & other) :
     Cloneable<DepSpec>(),
     DepSpec(),
-    PrivateImplementationPattern<ConditionalDepSpec>(new Implementation<ConditionalDepSpec>(other._imp->data)),
+    PrivateImplementationPattern<ConditionalDepSpec>(other._imp->data),
     CloneUsingThis<DepSpec, ConditionalDepSpec>(other),
     _imp(PrivateImplementationPattern<ConditionalDepSpec>::_imp)
 {
@@ -544,7 +544,7 @@ namespace paludis
 
 template <typename T_>
 LabelsDepSpec<T_>::LabelsDepSpec() :
-    PrivateImplementationPattern<LabelsDepSpec<T_> >(new Implementation<LabelsDepSpec<T_> >),
+    PrivateImplementationPattern<LabelsDepSpec<T_> >(),
     _imp(PrivateImplementationPattern<LabelsDepSpec<T_> >::_imp)
 {
 }
@@ -615,7 +615,7 @@ namespace paludis
 PackageDepSpec::PackageDepSpec(const std::shared_ptr<const PackageDepSpecData> & d) :
     Cloneable<DepSpec>(),
     StringDepSpec(d->as_string()),
-    PrivateImplementationPattern<PackageDepSpec>(new Implementation<PackageDepSpec>(d, std::shared_ptr<const DepTag>())),
+    PrivateImplementationPattern<PackageDepSpec>(d, std::shared_ptr<const DepTag>()),
     _imp(PrivateImplementationPattern<PackageDepSpec>::_imp)
 {
     set_annotations_key(d->annotations_key());
@@ -628,7 +628,7 @@ PackageDepSpec::~PackageDepSpec()
 PackageDepSpec::PackageDepSpec(const PackageDepSpec & d) :
     Cloneable<DepSpec>(d),
     StringDepSpec(d._imp->data->as_string()),
-    PrivateImplementationPattern<PackageDepSpec>(new Implementation<PackageDepSpec>(d._imp->data, d._imp->tag)),
+    PrivateImplementationPattern<PackageDepSpec>(d._imp->data, d._imp->tag),
     CloneUsingThis<DepSpec, PackageDepSpec>(d),
     _imp(PrivateImplementationPattern<PackageDepSpec>::_imp)
 {
@@ -1088,17 +1088,17 @@ namespace paludis
 }
 
 PartiallyMadePackageDepSpec::PartiallyMadePackageDepSpec(const PartiallyMadePackageDepSpecOptions & o) :
-    PrivateImplementationPattern<PartiallyMadePackageDepSpec>(new Implementation<PartiallyMadePackageDepSpec>(o))
+    PrivateImplementationPattern<PartiallyMadePackageDepSpec>(o)
 {
 }
 
 PartiallyMadePackageDepSpec::PartiallyMadePackageDepSpec(const PartiallyMadePackageDepSpec & other) :
-    PrivateImplementationPattern<PartiallyMadePackageDepSpec>(new Implementation<PartiallyMadePackageDepSpec>(*other._imp.get()))
+    PrivateImplementationPattern<PartiallyMadePackageDepSpec>(*other._imp.get())
 {
 }
 
 PartiallyMadePackageDepSpec::PartiallyMadePackageDepSpec(const PackageDepSpec & other) :
-    PrivateImplementationPattern<PartiallyMadePackageDepSpec>(new Implementation<PartiallyMadePackageDepSpec>(other))
+    PrivateImplementationPattern<PartiallyMadePackageDepSpec>(other)
 {
 }
 

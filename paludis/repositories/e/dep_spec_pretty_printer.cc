@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -93,7 +93,7 @@ DepSpecPrettyPrinter::DepSpecPrettyPrinter(
         unsigned i,
         bool b,
         bool c) :
-    PrivateImplementationPattern<DepSpecPrettyPrinter>(new Implementation<DepSpecPrettyPrinter>(e, id, f, i, b, c))
+    PrivateImplementationPattern<DepSpecPrettyPrinter>(e, id, f, i, b, c)
 {
 }
 

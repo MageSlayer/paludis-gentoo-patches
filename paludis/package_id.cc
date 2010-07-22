@@ -65,7 +65,7 @@ namespace paludis
 }
 
 PackageID::PackageID() :
-    PrivateImplementationPattern<PackageID>(new Implementation<PackageID>),
+    PrivateImplementationPattern<PackageID>(),
     _imp(PrivateImplementationPattern<PackageID>::_imp)
 {
 }
@@ -179,7 +179,7 @@ namespace paludis
 }
 
 PackageIDComparator::PackageIDComparator(const PackageDatabase * const db) :
-    PrivateImplementationPattern<PackageIDComparator>(new Implementation<PackageIDComparator>)
+    PrivateImplementationPattern<PackageIDComparator>()
 {
     unsigned c(0);
     for (PackageDatabase::RepositoryConstIterator r(db->begin_repositories()),
@@ -188,7 +188,7 @@ PackageIDComparator::PackageIDComparator(const PackageDatabase * const db) :
 }
 
 PackageIDComparator::PackageIDComparator(const PackageIDComparator & other) :
-    PrivateImplementationPattern<PackageIDComparator>(new Implementation<PackageIDComparator>)
+    PrivateImplementationPattern<PackageIDComparator>()
 {
     _imp->m = other._imp->m;
 }

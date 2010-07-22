@@ -95,7 +95,7 @@ const std::shared_ptr<Set<std::string> > Implementation<InstalledAccountsID>::be
 
 InstalledAccountsID::InstalledAccountsID(const Environment * const e,
         const QualifiedPackageName & q, const std::shared_ptr<const Repository> & r, const bool u) :
-    PrivateImplementationPattern<InstalledAccountsID>(new Implementation<InstalledAccountsID>(e, q, r, u)),
+    PrivateImplementationPattern<InstalledAccountsID>(e, q, r, u),
     _imp(PrivateImplementationPattern<InstalledAccountsID>::_imp)
 {
     add_metadata_key(_imp->behaviours_key);

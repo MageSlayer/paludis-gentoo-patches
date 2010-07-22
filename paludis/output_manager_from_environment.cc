@@ -55,8 +55,7 @@ OutputManagerFromEnvironment::OutputManagerFromEnvironment(
         const std::shared_ptr<const PackageID> & i,
         const OutputExclusivity x,
         const ClientOutputFeatures & c) :
-    PrivateImplementationPattern<OutputManagerFromEnvironment>(new Implementation<OutputManagerFromEnvironment>(
-                e, i, x, c))
+    PrivateImplementationPattern<OutputManagerFromEnvironment>(e, i, x, c)
 {
 }
 

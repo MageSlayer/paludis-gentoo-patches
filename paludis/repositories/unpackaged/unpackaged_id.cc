@@ -100,7 +100,7 @@ namespace paludis
 UnpackagedID::UnpackagedID(const Environment * const e, const QualifiedPackageName & q,
         const VersionSpec & v, const SlotName & s, const RepositoryName & n, const FSEntry & l,
         const std::string & b, const std::string & r, const std::string & d) :
-    PrivateImplementationPattern<UnpackagedID>(new Implementation<UnpackagedID>(e, q, v, s, n, l, b, r, d, this)),
+    PrivateImplementationPattern<UnpackagedID>(e, q, v, s, n, l, b, r, d, this),
     _imp(PrivateImplementationPattern<UnpackagedID>::_imp)
 {
     add_metadata_key(_imp->slot_key);

@@ -117,7 +117,7 @@ CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
-    PrivateImplementationPattern<CRANRepository>(new Implementation<CRANRepository>(p, std::make_shared<Mutex>())),
+    PrivateImplementationPattern<CRANRepository>(p, std::make_shared<Mutex>()),
     _imp(PrivateImplementationPattern<CRANRepository>::_imp)
 {
     _add_metadata_keys();

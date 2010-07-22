@@ -68,7 +68,7 @@ namespace paludis
 
 template <typename T_>
 paludis::Sequence<T_>::Sequence() :
-    paludis::PrivateImplementationPattern<paludis::Sequence<T_> >(new paludis::Implementation<paludis::Sequence<T_> >)
+    paludis::PrivateImplementationPattern<paludis::Sequence<T_> >()
 {
 }
 

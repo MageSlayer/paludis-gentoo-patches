@@ -83,7 +83,7 @@ PretendFetchVisitor::PretendFetchVisitor(
         const bool f,
         const std::shared_ptr<const URILabel> & n,
         PretendFetchAction & a) :
-    PrivateImplementationPattern<PretendFetchVisitor>(new Implementation<PretendFetchVisitor>(e, i, p, d, f, n, a))
+    PrivateImplementationPattern<PretendFetchVisitor>(e, i, p, d, f, n, a)
 {
 }
 

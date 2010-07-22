@@ -73,7 +73,7 @@ namespace paludis
 template <typename C_>
 FakeMetadataValueKey<C_>::FakeMetadataValueKey(
         const std::string & r, const std::string & h, const MetadataKeyType t, const C_ & c) :
-    PrivateImplementationPattern<FakeMetadataValueKey<C_> >(new Implementation<FakeMetadataValueKey<C_> >(r, h, t, c)),
+    PrivateImplementationPattern<FakeMetadataValueKey<C_> >(r, h, t, c),
     _imp(PrivateImplementationPattern<FakeMetadataValueKey<C_> >::_imp)
 {
 }
@@ -154,7 +154,7 @@ template <typename C_>
 FakeMetadataCollectionKey<C_>::FakeMetadataCollectionKey(
         const std::string & r, const std::string & h, const MetadataKeyType t, const PackageID * const i,
         const Environment * const e) :
-    PrivateImplementationPattern<FakeMetadataCollectionKey<C_> >(new Implementation<FakeMetadataCollectionKey<C_> >(i, e, r, h, t)),
+    PrivateImplementationPattern<FakeMetadataCollectionKey<C_> >(i, e, r, h, t),
     _imp(PrivateImplementationPattern<FakeMetadataCollectionKey<C_> >::_imp)
 {
 }
@@ -281,7 +281,7 @@ namespace paludis
 template <typename C_>
 FakeMetadataSpecTreeKey<C_>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
         const std::function<const std::shared_ptr<const C_> (const std::string &)> & f, const MetadataKeyType t) :
-    PrivateImplementationPattern<FakeMetadataSpecTreeKey<C_> >(new Implementation<FakeMetadataSpecTreeKey<C_> >(f, r, h, t)),
+    PrivateImplementationPattern<FakeMetadataSpecTreeKey<C_> >(f, r, h, t),
     _imp(PrivateImplementationPattern<FakeMetadataSpecTreeKey<C_> >::_imp)
 {
     set_from_string(v);
@@ -344,8 +344,7 @@ FakeMetadataSpecTreeKey<C_>::pretty_print_flat(const typename C_::ItemFormatter 
 
 FakeMetadataSpecTreeKey<FetchableURISpecTree>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
         const std::function<const std::shared_ptr<const FetchableURISpecTree> (const std::string &)> & f, const MetadataKeyType t) :
-    PrivateImplementationPattern<FakeMetadataSpecTreeKey<FetchableURISpecTree> >(
-            new Implementation<FakeMetadataSpecTreeKey<FetchableURISpecTree> >(f, r, h, t)),
+    PrivateImplementationPattern<FakeMetadataSpecTreeKey<FetchableURISpecTree> >(f, r, h, t),
     _imp(PrivateImplementationPattern<FakeMetadataSpecTreeKey<FetchableURISpecTree> >::_imp)
 {
     set_from_string(v);
@@ -407,8 +406,7 @@ FakeMetadataSpecTreeKey<FetchableURISpecTree>::initial_label() const
 FakeMetadataSpecTreeKey<DependencySpecTree>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
         const std::function<const std::shared_ptr<const DependencySpecTree> (const std::string &)> & f,
         const std::shared_ptr<const DependenciesLabelSequence> & s, const MetadataKeyType t) :
-    PrivateImplementationPattern<FakeMetadataSpecTreeKey<DependencySpecTree> >(
-            new Implementation<FakeMetadataSpecTreeKey<DependencySpecTree> >(f, s, r, h, t)),
+    PrivateImplementationPattern<FakeMetadataSpecTreeKey<DependencySpecTree> >(f, s, r, h, t),
     _imp(PrivateImplementationPattern<FakeMetadataSpecTreeKey<DependencySpecTree> >::_imp)
 {
     set_from_string(v);
@@ -552,7 +550,7 @@ namespace
 
 FakeMetadataChoicesKey::FakeMetadataChoicesKey(const Environment * const e,
         const std::shared_ptr<const PackageID> & i) :
-    PrivateImplementationPattern<FakeMetadataChoicesKey>(new Implementation<FakeMetadataChoicesKey>(e, i)),
+    PrivateImplementationPattern<FakeMetadataChoicesKey>(e, i),
     _imp(PrivateImplementationPattern<FakeMetadataChoicesKey>::_imp)
 {
 }
@@ -626,7 +624,7 @@ namespace paludis
 }
 
 FakeUnacceptedMask::FakeUnacceptedMask(const char c, const std::string & s, const std::shared_ptr<const MetadataKey> & k) :
-    PrivateImplementationPattern<FakeUnacceptedMask>(new Implementation<FakeUnacceptedMask>(c, s, k))
+    PrivateImplementationPattern<FakeUnacceptedMask>(c, s, k)
 {
 }
 
@@ -748,7 +746,7 @@ namespace paludis
 
 FakePackageID::FakePackageID(const Environment * const e, const std::shared_ptr<const FakeRepositoryBase> & r,
         const QualifiedPackageName & q, const VersionSpec & v) :
-    PrivateImplementationPattern<FakePackageID>(new Implementation<FakePackageID>(e, r, q, v, this)),
+    PrivateImplementationPattern<FakePackageID>(e, r, q, v, this),
     _imp(PrivateImplementationPattern<FakePackageID>::_imp)
 {
     add_metadata_key(_imp->keywords);

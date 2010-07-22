@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -48,7 +48,7 @@ namespace paludis
 }
 
 TailOutputStreamBuf::TailOutputStreamBuf(const unsigned int n) :
-    PrivateImplementationPattern<TailOutputStreamBuf>(new Implementation<TailOutputStreamBuf>(n))
+    PrivateImplementationPattern<TailOutputStreamBuf>(n)
 {
 }
 

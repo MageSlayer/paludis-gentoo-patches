@@ -196,7 +196,7 @@ namespace
 
 GemSpecifications::GemSpecifications(const Environment * const e,
         const std::shared_ptr<const Repository> & r, const yaml::Node & n) :
-    PrivateImplementationPattern<GemSpecifications>(new Implementation<GemSpecifications>)
+    PrivateImplementationPattern<GemSpecifications>()
 {
     TopVisitor v(e, r, _imp.get());
     n.accept(v);

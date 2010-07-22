@@ -47,7 +47,7 @@ namespace paludis
 }
 
 TargetReason::TargetReason(const std::string & x) :
-    PrivateImplementationPattern<TargetReason>(new Implementation<TargetReason>(x))
+    PrivateImplementationPattern<TargetReason>(x)
 {
 }
 
@@ -94,7 +94,7 @@ DependencyReason::DependencyReason(const std::shared_ptr<const PackageID> & i,
         const Resolvent & r,
         const SanitisedDependency & d,
         const bool a) :
-    PrivateImplementationPattern<DependencyReason>(new Implementation<DependencyReason>(i, r, d, a))
+    PrivateImplementationPattern<DependencyReason>(i, r, d, a)
 {
 }
 
@@ -152,7 +152,7 @@ namespace paludis
 }
 
 DependentReason::DependentReason(const ChangeByResolvent & i) :
-    PrivateImplementationPattern<DependentReason>(new Implementation<DependentReason>(i))
+    PrivateImplementationPattern<DependentReason>(i)
 {
 }
 
@@ -189,7 +189,7 @@ namespace paludis
 }
 
 WasUsedByReason::WasUsedByReason(const std::shared_ptr<const ChangeByResolventSequence> & i) :
-    PrivateImplementationPattern<WasUsedByReason>(new Implementation<WasUsedByReason>(i))
+    PrivateImplementationPattern<WasUsedByReason>(i)
 {
 }
 
@@ -228,7 +228,7 @@ namespace paludis
 }
 
 PresetReason::PresetReason(const std::string & m, const std::shared_ptr<const Reason> & r) :
-    PrivateImplementationPattern<PresetReason>(new Implementation<PresetReason>(m, r))
+    PrivateImplementationPattern<PresetReason>(m, r)
 {
 }
 
@@ -274,7 +274,7 @@ namespace paludis
 }
 
 SetReason::SetReason(const SetName & s, const std::shared_ptr<const Reason> & r) :
-    PrivateImplementationPattern<SetReason>(new Implementation<SetReason>(s, r))
+    PrivateImplementationPattern<SetReason>(s, r)
 {
 }
 
@@ -320,7 +320,7 @@ namespace paludis
 }
 
 LikeOtherDestinationTypeReason::LikeOtherDestinationTypeReason(const Resolvent & s, const std::shared_ptr<const Reason> & r) :
-    PrivateImplementationPattern<LikeOtherDestinationTypeReason>(new Implementation<LikeOtherDestinationTypeReason>(s, r))
+    PrivateImplementationPattern<LikeOtherDestinationTypeReason>(s, r)
 {
 }
 
@@ -364,7 +364,7 @@ namespace paludis
 }
 
 ViaBinaryReason::ViaBinaryReason(const Resolvent & r) :
-    PrivateImplementationPattern<ViaBinaryReason>(new Implementation<ViaBinaryReason>(r))
+    PrivateImplementationPattern<ViaBinaryReason>(r)
 {
 }
 
