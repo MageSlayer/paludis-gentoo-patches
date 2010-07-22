@@ -791,11 +791,9 @@ int f(int && a)
 	return a;
 }
 ],
-	[AC_MSG_RESULT([yes])
-	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_RVALUE_REFERENCES=1"
-	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_RVALUE_REFERENCES=1"
-	],
+	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([your compiler does not support c++0x rvalue references])
 	])
 dnl }}}
 

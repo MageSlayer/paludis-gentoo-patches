@@ -30,25 +30,12 @@
 
 namespace paludis
 {
-#ifdef PALUDIS_HAVE_RVALUE_REFERENCES
-
     template <typename R_, typename... T_>
     R_ make_named_values(T_ && ... a)
     {
         R_ result = { a... };
         return result;
     }
-
-#else
-
-    template <typename R_, typename... T_>
-    R_ make_named_values(const T_ & ... a)
-    {
-        R_ result = { a... };
-        return result;
-    }
-
-#endif
 }
 
 #endif
