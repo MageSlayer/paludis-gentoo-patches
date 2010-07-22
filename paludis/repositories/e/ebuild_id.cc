@@ -1320,6 +1320,8 @@ EbuildID::make_choice_value(
                 enabled_by_default = true;
             else
                 enabled_by_default = false;
+
+            enabled = enabled_by_default;
         }
         else
         {
