@@ -23,6 +23,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/notifier_callback-fwd.hh>
+#include <string>
 
 namespace paludis
 {
